@@ -1,0 +1,1 @@
+This is the CVS entry for the CMAE source-set
