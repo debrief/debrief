@@ -4,7 +4,6 @@ import java.beans.*;
 import java.util.*;
 
 import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
@@ -13,7 +12,8 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Narrative.*;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeData.NarrativeEntry;
-import org.mwc.cmap.core.DataTypes.Temporal.TemporalDataset;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -33,7 +33,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
  * <p>
  */
 
-public class NarrativeView extends ViewPart implements IPartListener
+public class NarrativeView extends ViewPart
 {
 	private TableViewer viewer;
 
@@ -45,7 +45,7 @@ public class NarrativeView extends ViewPart implements IPartListener
 
 	private Action action2;
 
-	private Action doubleClickAction;
+	private PartMonitor _myPartMonitor;
 
 	private PropertyChangeListener _temporalListener = null;
 
@@ -62,23 +62,509 @@ public class NarrativeView extends ViewPart implements IPartListener
 	/**
 	 * whether we are controlling the time in the dataset from the narrative
 	 */
-	private boolean _controllingTime;
+	private boolean _controllingTime = true;
 
 	/**
-	 * the temporal dataset controlling/observing the narrative entry currently
-	 * displayed
+	 * the temporal dataset controlling the narrative entry currently displayed
 	 */
-	private TemporalDataset _myTemporalDataset;
+	private TimeProvider _myTemporalDataset;
+
+	/**
+	 * the "write" interface for the plot which tracks the narrative, where
+	 * avaialable
+	 */
+	private ControllableTime _controllableTime;
+
+	public class Type1_Filter extends ViewerFilter
+	{
+
+		/**
+		 * Return true if the political unit is county or smaller
+		 * 
+		 * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer,
+		 *      java.lang.Object, java.lang.Object)
+		 */
+		public boolean select(Viewer viewer, Object parentElement, Object element)
+		{
+			boolean res = false;
+
+			if (element instanceof NarrativeData.NarrativeEntry)
+			{
+				NarrativeData.NarrativeEntry ne = (NarrativeEntry) element;
+				if (ne.getEntryType().equals("type_1"))
+					res = true;
+			}
+
+			return res;
+		}
+
+		/**
+		 * @see org.eclipse.jface.viewers.ViewerFilter#isFilterProperty(java.lang.Object,
+		 *      java.lang.String)
+		 */
+		public boolean isFilterProperty(Object element, String property)
+		{
+			// Say yes to political unit
+			// return (property.equals(ILocation.POLITICAL_CHANGED));
+			return false;
+		}
+	}
+
+	/**
+	 * The constructor.
+	 */
+	public NarrativeView()
+	{
+
+	}
+
+	/**
+	 * This is a callback that will allow us to create the viewer and initialize
+	 * it.
+	 */
+	public void createPartControl(Composite parent)
+	{
+		viewer = createTableWithColumns(parent);
+		viewer.setContentProvider(_content);
+		viewer.setLabelProvider(new ViewLabelProvider());
+		viewer.setSorter(new NameSorter());
+
+		// Create Action instances
+		createViewActions();
+
+		makeActions();
+		hookContextMenu();
+		hookDoubleClickAction();
+		contributeToActionBars();
+
+		// try to add ourselves to listen out for page changes
+		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
+
+		_myPartMonitor PartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					
+				});
+//		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+//				.getPartService());
+		
+		
+//
+//		{
+//			public void narrativeProviderActivated(NarrativeProvider provider)
+//			{
+//				// and now display the data
+//				viewer.setInput(provider.getNarrative());
+//			}
+//
+//			public void timeProviderActivated(TimeProvider timeProvider)
+//			{
+//				_myTemporalDataset = timeProvider;
+//				if (_temporalListener == null)
+//				{
+//					_temporalListener = new PropertyChangeListener()
+//					{
+//						public void propertyChange(PropertyChangeEvent event)
+//						{
+//							// ok, use the new time
+//							HiResDate newDTG = (HiResDate) event.getNewValue();
+//
+//							timeUpdated(newDTG);
+//						}
+//					};
+//				}
+//				_myTemporalDataset.addListener(_temporalListener,
+//						TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+//			}
+//
+//			public void controllableTimeActivated(ControllableTime controllable)
+//			{
+//				_controllableTime = (ControllableTime) controllable;
+//			}
+//
+//			public void narrativeProviderClosed(NarrativeProvider provider)
+//			{
+//				// yes, but is it our current one?
+//				if (_content.isCurrentDocument(provider.getNarrative()))
+//				{
+//					// yes, better clear the view then
+//					viewer.setInput(null);
+//				}
+//			}
+//
+//			public void timeProviderClosed(TimeProvider provider)
+//			{
+//
+//			}
+//
+//			public void controllableTimeClosed(ControllableTime controllable)
+//			{
+//				_controllableTime = null;
+//			}
+//
+//		};
+
+	}
+
+	/**
+	 * @param parent
+	 *          what we have to fit into
+	 */
+	private static TableViewer createTableWithColumns(Composite parent)
+	{
+		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI
+				| SWT.FULL_SELECTION);
+
+		TableLayout layout = new TableLayout();
+		table.setLayout(layout);
+
+		table.setLinesVisible(true);
+		table.setHeaderVisible(true);
+		String[] STD_HEADINGS =
+		{ "DTG", "Track", "Type", "Entry" };
+
+		layout.addColumnData(new ColumnWeightData(5, 40, true));
+		TableColumn tc0 = new TableColumn(table, SWT.NONE);
+		tc0.setText(STD_HEADINGS[0]);
+		tc0.setAlignment(SWT.LEFT);
+		tc0.setResizable(true);
+
+		layout.addColumnData(new ColumnWeightData(10, true));
+		TableColumn tc1 = new TableColumn(table, SWT.NONE);
+		tc1.setText(STD_HEADINGS[1]);
+		tc1.setAlignment(SWT.LEFT);
+		tc1.setResizable(true);
+
+		layout.addColumnData(new ColumnWeightData(10, true));
+		TableColumn tc2 = new TableColumn(table, SWT.NONE);
+		tc2.setText(STD_HEADINGS[2]);
+		tc2.setAlignment(SWT.LEFT);
+		tc2.setResizable(true);
+
+		layout.addColumnData(new ColumnWeightData(10, true));
+		TableColumn tc3 = new TableColumn(table, SWT.NONE);
+		tc3.setText(STD_HEADINGS[3]);
+		tc3.setAlignment(SWT.LEFT);
+		tc3.setResizable(true);
+		return new TableViewer(table);
+	}
+
+	private void createViewActions()
+	{
+
+		// -------------------------------------------------------
+		// Toggle filter action
+		filterToggleAction = new Action("Only show Type_1", Action.AS_CHECK_BOX)
+		{
+
+			public void run()
+			{
+				// Use default political type for simplicity
+				if (isChecked())
+				{
+					if (filter == null)
+						filter = new Type1_Filter();
+					viewer.addFilter(filter);
+				}
+				else
+					viewer.removeFilter(filter);
+			}
+		};
+		filterToggleAction.setToolTipText("Hide anything other than type_1");
+		filterToggleAction.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
+	 */
+	public void dispose()
+	{
+		super.dispose();
+
+		// and stop listening for part activity
+		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
+
+		// also stop listening for time events
+		if (_controllableTime != null)
+		{
+			_myTemporalDataset.removeListener(_temporalListener,
+					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		}
+	}
+
+	private void hookContextMenu()
+	{
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener()
+		{
+			public void menuAboutToShow(IMenuManager manager)
+			{
+				NarrativeView.this.fillContextMenu(manager);
+			}
+		});
+		Menu menu = menuMgr.createContextMenu(viewer.getControl());
+		viewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, viewer);
+	}
+
+	private void contributeToActionBars()
+	{
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+
+	private void fillLocalPullDown(IMenuManager manager)
+	{
+		manager.add(action1);
+		manager.add(new Separator());
+		manager.add(action2);
+		manager.add(new Separator());
+		manager.add(filterToggleAction);
+	}
+
+	private void fillContextMenu(IMenuManager manager)
+	{
+		manager.add(action1);
+		manager.add(action2);
+		// Other plug-ins can contribute there actions here
+		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+	}
+
+	private void fillLocalToolBar(IToolBarManager manager)
+	{
+		manager.add(action1);
+		manager.add(action2);
+	}
+
+	private void makeActions()
+	{
+		action1 = new Action()
+		{
+			public void run()
+			{
+				System.out.println("Action 1 executed");
+			}
+		};
+		action1.setText("Action 1");
+		action1.setToolTipText("Action 1 tooltip");
+		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+
+		action2 = new Action()
+		{
+			public void run()
+			{
+				System.out.println("Action 2 executed");
+			}
+		};
+		action2.setText("Action 2");
+		action2.setToolTipText("Action 2 tooltip");
+		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+
+	}
+
+	private void hookDoubleClickAction()
+	{
+		viewer.addDoubleClickListener(new IDoubleClickListener()
+		{
+			public void doubleClick(DoubleClickEvent event)
+			{
+				// hmm, are we controlling the narrative time?
+				if (_controllingTime)
+				{
+					ISelection selection = viewer.getSelection();
+					Object obj = ((IStructuredSelection) selection).getFirstElement();
+					NarrativeData.NarrativeEntry ne = (NarrativeEntry) obj;
+					_controllableTime.setTime(this, ne.getDTG());
+				}
+			}
+		});
+	}
+
+	/**
+	 * Passing the focus request to the viewer's control.
+	 */
+	public void setFocus()
+	{
+		viewer.getControl().setFocus();
+	}
+
+	// //////////////////////////////
+	// temporal data management
+	// //////////////////////////////
+
+	/**
+	 * the data we are looking at has updated. If we're set to follow that time,
+	 * update ourselves
+	 */
+	private void timeUpdated(HiResDate newDTG)
+	{
+		if (_followingTime)
+		{
+			// move our list to the correct DTG
+		}
+		else
+		{
+			// hey, just ignore it
+		}
+	}
+
+	// //////////////////////////////
+	// selection listener bits
+	// //////////////////////////////
+
+	public abstract static class PartMonitor implements IPartListener
+	{
+		
+		public final static String ACTIVATED = "ACTIVATED";
+		public final static String BROUGHT_TO_TOP = "BROUGHT_TO_TOP";
+		public final static String CLOSED = "CLOSED";
+		public final static String DEACTIVATED = "DEACTIVATED";
+		public final static String OPENED = "OPENED";
+		
+		private HashMap _myEvents = new HashMap();
+
+		public PartMonitor(IPartService partService)
+		{
+			partService.addPartListener(this);
+		}
+		
+		public void dispose(IPartService partService)
+		{
+			partService.removePartListener(this);
+		}
+		
+		public interface ICallback
+		{
+			public void eventTriggered(String type, IWorkbenchPart part);
+		}
+		
+		public void addPartListener(Class Subject, 
+																String event,
+																ICallback callback)
+		{
+		
+			// ok, see if we are watching for this event type
+			HashMap thisEventList = (HashMap)_myEvents.get(event);
+			
+			// are we already looking for this event?
+			if(thisEventList != null)
+			{
+				// nope, better create it
+				thisEventList = new HashMap();
+				_myEvents.put(event, thisEventList);
+			}
+			
+			Vector thisSubjectList = (Vector)thisEventList.get(Subject);
+			
+			// are we already looking for this subject
+			if(thisSubjectList != null)
+			{
+				thisSubjectList = new Vector();
+				thisEventList.put(Subject, thisSubjectList);
+			}
+			
+			// ok, add this callback for this subject
+			thisSubjectList.add(callback);						
+		}
+
+		private void processEvent(IWorkbenchPart part, String event)
+		{
+			// ok. see if we are looking for any subjects related to this event
+			HashMap thisEventList =(HashMap) _myEvents.get(event);
+			if(thisEventList != null)
+			{
+				// double-check
+				if(thisEventList.size() > 0)
+				{
+					// yup. work though and check the objects
+					Iterator iter = thisEventList.keySet().iterator();
+					while(iter.hasNext())
+					{
+						Class thisType = (Class) iter.next();
+						Object adapter = part.getAdapter(thisType);
+						if(adapter != null)
+						{
+						  // yup, here we are. fire away.
+							ICallback callback = (ICallback) thisEventList.get(thisType);
+							callback.eventTriggered(event, part);
+						}
+					}
+				}
+			}
+			
+		}
+		
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ui.IPartListener#partActivated(org.eclipse.ui.IWorkbenchPart)
+		 */
+		public void partActivated(IWorkbenchPart part)
+		{
+			processEvent(part, ACTIVATED;	
+
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ui.IPartListener#partBroughtToTop(org.eclipse.ui.IWorkbenchPart)
+		 */
+		public void partBroughtToTop(IWorkbenchPart part)
+		{
+			processEvent(part, BROUGHT_TO_TOP);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ui.IPartListener#partClosed(org.eclipse.ui.IWorkbenchPart)
+		 */
+		public void partClosed(IWorkbenchPart part)
+		{
+			processEvent(part, CLOSED);
+		}
+
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ui.IPartListener#partDeactivated(org.eclipse.ui.IWorkbenchPart)
+		 */
+		public void partDeactivated(IWorkbenchPart part)
+		{
+			processEvent(part, DEACTIVATED);
+		}
+
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.ui.IPartListener#partOpened(org.eclipse.ui.IWorkbenchPart)
+		 */
+		public void partOpened(IWorkbenchPart part)
+		{
+			processEvent(part, OPENED);
+		}
+
+	}
 
 	/**
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
 	 * as-is. These objects may be sensitive to the current input of the view, or
 	 * ignore it and always show the same content (like Task List, for example).
+	 * 
 	 * @author ian.mayo created: {date}
 	 */
 
-	class NarrativeContentProvider implements IStructuredContentProvider,
+	private class NarrativeContentProvider implements IStructuredContentProvider,
 			PropertyChangeListener
 	{
 		private NarrativeData currentNarrative;
@@ -145,12 +631,14 @@ public class NarrativeView extends ViewPart implements IPartListener
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 		 */
 		public void propertyChange(PropertyChangeEvent arg0)
 		{
 			// JDG2E: 10b - Content Provider tells viewer about model change
-			// Make sure control exists - no sense telling a disposed widget to react
+			// Make sure control exists - no sense telling a disposed widget to
+			// react
 			Control ctrl = viewer.getControl();
 			if (ctrl != null && !ctrl.isDisposed())
 			{
@@ -165,11 +653,16 @@ public class NarrativeView extends ViewPart implements IPartListener
 		}
 	}
 
+	/**
+	 * how to show a narrative as a series of labels
+	 * 
+	 * @author ian.mayo
+	 */
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
 	{
 
-		private String[] dateFormats = { "yyyy MMM dd HH:mm", "ddHHmm ss",
-				"HH:mm:ss", "HH:mm:ss.SSS" };
+		private String[] dateFormats =
+		{ "yyyy MMM dd HH:mm", "ddHHmm ss", "HH:mm:ss", "HH:mm:ss.SSS" };
 
 		public String formattedDTG(HiResDate dtg)
 		{
@@ -213,381 +706,4 @@ public class NarrativeView extends ViewPart implements IPartListener
 	{
 	}
 
-	public class Type1_Filter extends ViewerFilter
-	{
-
-		/**
-		 * Return true if the political unit is county or smaller
-		 * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer,
-		 *      java.lang.Object, java.lang.Object)
-		 */
-		public boolean select(Viewer viewer, Object parentElement, Object element)
-		{
-			boolean res = false;
-
-			if (element instanceof NarrativeData.NarrativeEntry)
-			{
-				NarrativeData.NarrativeEntry ne = (NarrativeEntry) element;
-				if (ne.getEntryType().equals("type_1"))
-					res = true;
-			}
-
-			return res;
-		}
-
-		/**
-		 * @see org.eclipse.jface.viewers.ViewerFilter#isFilterProperty(java.lang.Object,
-		 *      java.lang.String)
-		 */
-		public boolean isFilterProperty(Object element, String property)
-		{
-			// Say yes to political unit
-			// return (property.equals(ILocation.POLITICAL_CHANGED));
-			return false;
-		}
-	}
-
-	/**
-	 * The constructor.
-	 */
-	public NarrativeView()
-	{
-
-	}
-
-	/**
-	 * This is a callback that will allow us to create the viewer and initialize
-	 * it.
-	 */
-	public void createPartControl(Composite parent)
-	{
-		viewer = createTableWithColumns(parent);
-		viewer.setContentProvider(_content);
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setSorter(new NameSorter());
-
-		// Create Action instances
-		createViewActions();
-
-		makeActions();
-		hookContextMenu();
-		hookDoubleClickAction();
-		contributeToActionBars();
-
-		// try to add ourselves to listen out for page changes
-		getSite().getWorkbenchWindow().getPartService().addPartListener(this);
-	}
-
-	/**
-	 * @param parent
-	 *          what we have to fit into
-	 */
-	private static TableViewer createTableWithColumns(Composite parent)
-	{
-		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI
-				| SWT.FULL_SELECTION);
-
-		TableLayout layout = new TableLayout();
-		table.setLayout(layout);
-
-		table.setLinesVisible(true);
-		table.setHeaderVisible(true);
-		String[] STD_HEADINGS = { "DTG", "Track", "Type", "Entry" };
-
-		layout.addColumnData(new ColumnWeightData(5, 40, true));
-		TableColumn tc0 = new TableColumn(table, SWT.NONE);
-		tc0.setText(STD_HEADINGS[0]);
-		tc0.setAlignment(SWT.LEFT);
-		tc0.setResizable(true);
-
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn tc1 = new TableColumn(table, SWT.NONE);
-		tc1.setText(STD_HEADINGS[1]);
-		tc1.setAlignment(SWT.LEFT);
-		tc1.setResizable(true);
-
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn tc2 = new TableColumn(table, SWT.NONE);
-		tc2.setText(STD_HEADINGS[2]);
-		tc2.setAlignment(SWT.LEFT);
-		tc2.setResizable(true);
-
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn tc3 = new TableColumn(table, SWT.NONE);
-		tc3.setText(STD_HEADINGS[3]);
-		tc3.setAlignment(SWT.LEFT);
-		tc3.setResizable(true);
-		return new TableViewer(table);
-	}
-
-	private void createViewActions()
-	{
-
-		// -------------------------------------------------------
-		// Toggle filter action
-		filterToggleAction = new Action("Only show Type_1", Action.AS_CHECK_BOX)
-		{
-
-			public void run()
-			{
-				// Use default political type for simplicity
-				if (isChecked())
-				{
-					if (filter == null)
-						filter = new Type1_Filter();
-					viewer.addFilter(filter);
-				}
-				else
-					viewer.removeFilter(filter);
-			}
-		};
-		filterToggleAction.setToolTipText("Hide anything other than type_1");
-		filterToggleAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
-	 */
-	public void dispose()
-	{
-		super.dispose();
-
-		// and stop listening
-		getSite().getWorkbenchWindow().getPartService().removePartListener(this);
-	}
-
-	private void hookContextMenu()
-	{
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener()
-		{
-			public void menuAboutToShow(IMenuManager manager)
-			{
-				NarrativeView.this.fillContextMenu(manager);
-			}
-		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
-	}
-
-	private void contributeToActionBars()
-	{
-		IActionBars bars = getViewSite().getActionBars();
-		fillLocalPullDown(bars.getMenuManager());
-		fillLocalToolBar(bars.getToolBarManager());
-	}
-
-	private void fillLocalPullDown(IMenuManager manager)
-	{
-		manager.add(action1);
-		manager.add(new Separator());
-		manager.add(action2);
-		manager.add(new Separator());
-		manager.add(filterToggleAction);
-	}
-
-	private void fillContextMenu(IMenuManager manager)
-	{
-		manager.add(action1);
-		manager.add(action2);
-		// Other plug-ins can contribute there actions here
-		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-	}
-
-	private void fillLocalToolBar(IToolBarManager manager)
-	{
-		manager.add(action1);
-		manager.add(action2);
-	}
-
-	private void makeActions()
-	{
-		action1 = new Action()
-		{
-			public void run()
-			{
-				showMessage("Action 1 executed");
-			}
-		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-
-		action2 = new Action()
-		{
-			public void run()
-			{
-				showMessage("Action 2 executed");
-			}
-		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-
-		doubleClickAction = new Action()
-		{
-			public void run()
-			{
-				// hmm, are we controlling the narrative time?
-				if (_controllingTime)
-				{
-					ISelection selection = viewer.getSelection();
-					Object obj = ((IStructuredSelection) selection).getFirstElement();
-					NarrativeData.NarrativeEntry ne = (NarrativeEntry) obj;
-					showMessage("updating main plot to " + ne.getDTGString());
-				}
-			}
-		};
-	}
-
-	private void hookDoubleClickAction()
-	{
-		viewer.addDoubleClickListener(new IDoubleClickListener()
-		{
-			public void doubleClick(DoubleClickEvent event)
-			{
-				doubleClickAction.run();
-			}
-		});
-	}
-
-	private void showMessage(String message)
-	{
-		MessageDialog.openInformation(viewer.getControl().getShell(),
-				"Narrative Viewer", message);
-	}
-
-	/**
-	 * Passing the focus request to the viewer's control.
-	 */
-	public void setFocus()
-	{
-		viewer.getControl().setFocus();
-	}
-
-	// //////////////////////////////
-	// temporal data management
-	// //////////////////////////////
-
-	/**
-	 * the data we are looking at has updated. If we're set to follow that time,
-	 * update ourselves
-	 */
-	private void timeUpdated(HiResDate newDTG)
-	{
-		if (_followingTime)
-		{
-			// move our list to the correct DTG
-		}
-		else
-		{
-			// hey, just ignore it
-		}
-	}
-
-	// //////////////////////////////
-	// selection listener bits
-	// //////////////////////////////
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.IPartListener#partActivated(org.eclipse.ui.IWorkbenchPart)
-	 */
-	public void partActivated(IWorkbenchPart part)
-	{
-		// first handle displaying the narrative for this document
-		Object narrativeProvider = part.getAdapter(NarrativeProvider.class);
-		if (narrativeProvider != null)
-		{
-			// cool, cast it
-			NarrativeProvider provider = (NarrativeProvider) narrativeProvider;
-
-			// and now display the data
-			viewer.setInput(provider.getNarrative());
-		}
-
-		// now handle displaying the correct DTG for this narrative
-		Object temporalDataset = part.getAdapter(TemporalDataset.class);
-		if (temporalDataset != null)
-		{
-			// cool, cast it
-			_myTemporalDataset = (TemporalDataset) temporalDataset;
-
-			if (_temporalListener == null)
-			{
-				_temporalListener = new PropertyChangeListener()
-				{
-					public void propertyChange(PropertyChangeEvent event)
-					{
-						// ok, use the new time
-						HiResDate newDTG = (HiResDate) event.getNewValue();
-
-						timeUpdated(newDTG);
-					}
-				};
-			}
-		}
-
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.IPartListener#partBroughtToTop(org.eclipse.ui.IWorkbenchPart)
-	 */
-	public void partBroughtToTop(IWorkbenchPart part)
-	{
-		// who cares?
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.IPartListener#partClosed(org.eclipse.ui.IWorkbenchPart)
-	 */
-	public void partClosed(IWorkbenchPart part)
-	{
-		// right. we don't want to still be showing our data when the file has
-		// closed. Check if this
-		// is the plot we are currently displaying. If so, clear the narrative
-		// listing
-		Object narrativeProvider = part.getAdapter(NarrativeProvider.class);
-		if (narrativeProvider != null)
-		{
-			// yup, it's the right type of document
-			NarrativeProvider provider = (NarrativeProvider) narrativeProvider;
-
-			// yes, but is it our current one?
-			if (_content.isCurrentDocument(provider.getNarrative()))
-			{
-				// yes, better clear the view then
-				viewer.setInput(null);
-			}
-		}
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.IPartListener#partDeactivated(org.eclipse.ui.IWorkbenchPart)
-	 */
-	public void partDeactivated(IWorkbenchPart part)
-	{
-		// don't bother we only replace the current view when a new one is selected,
-		// even
-		// if it means staying visible when the user is looking at a different type
-		// of document
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * @see org.eclipse.ui.IPartListener#partOpened(org.eclipse.ui.IWorkbenchPart)
-	 */
-	public void partOpened(IWorkbenchPart part)
-	{
-		// don't bother. we only get interested when it's activated
-	}
 }
