@@ -14,6 +14,20 @@
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.cmap.legacy"/>
    </requires>
 
+  <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Time Controller"
+            icon="icons/sample.gif"
+            category="org.mwc.cmap.plotViewer.DebriefCategory"
+            class="org.mwc.cmap.TimeController.views.TimeController"
+            id="org.mwc.cmap.TimeController.views.TimeController">
+      </view>
+   </extension>
+   
 </plugin>
