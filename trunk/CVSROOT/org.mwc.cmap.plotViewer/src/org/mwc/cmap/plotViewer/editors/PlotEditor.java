@@ -21,9 +21,9 @@ import MWC.GUI.Layers;
 import MWC.GUI.Shapes.*;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class PlotEditor extends EditorPart{
 
@@ -100,6 +100,15 @@ public class PlotEditor extends EditorPart{
 		l2.setName("Second layer");
 		_myLayers.addThisLayer(l2);
 		l2.add(new TextLabel(new WorldLocation(1,2,0), "text label"));
+		
+		// make the time manager match the period of the narrative
+		TimePeriod narrativePeriod = _theNarrativeProvider.getNarrative().getTimePeriod();
+		if(narrativePeriod != null)
+		_timeManager.setPeriod(this, narrativePeriod);
+		else
+			System.out.println("NO TIME PERIOD FOR NARRATIVE!");
+		
+		
 	}
 	public void dispose() {
 		super.dispose();
