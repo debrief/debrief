@@ -3,6 +3,8 @@ package org.mwc.cmap.Viewers.views;
 import java.beans.*;
 import java.util.*;
 
+import junit.framework.TestCase;
+
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -14,6 +16,7 @@ import org.mwc.cmap.core.DataTypes.Narrative.*;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeData.NarrativeEntry;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -140,69 +143,85 @@ public class NarrativeView extends ViewPart
 		// try to add ourselves to listen out for page changes
 		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
 
-		_myPartMonitor PartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+		_myPartMonitor.addPartListener(NarrativeProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					
+					public void eventTriggered(String type, Object part)
+					{
+						// implementation here.
+						NarrativeProvider np = (NarrativeProvider) part;
+						viewer.setInput(np);
+					}
 				});
-//		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-//				.getPartService());
-		
-		
-//
-//		{
-//			public void narrativeProviderActivated(NarrativeProvider provider)
-//			{
-//				// and now display the data
-//				viewer.setInput(provider.getNarrative());
-//			}
-//
-//			public void timeProviderActivated(TimeProvider timeProvider)
-//			{
-//				_myTemporalDataset = timeProvider;
-//				if (_temporalListener == null)
-//				{
-//					_temporalListener = new PropertyChangeListener()
-//					{
-//						public void propertyChange(PropertyChangeEvent event)
-//						{
-//							// ok, use the new time
-//							HiResDate newDTG = (HiResDate) event.getNewValue();
-//
-//							timeUpdated(newDTG);
-//						}
-//					};
-//				}
-//				_myTemporalDataset.addListener(_temporalListener,
-//						TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-//			}
-//
-//			public void controllableTimeActivated(ControllableTime controllable)
-//			{
-//				_controllableTime = (ControllableTime) controllable;
-//			}
-//
-//			public void narrativeProviderClosed(NarrativeProvider provider)
-//			{
-//				// yes, but is it our current one?
-//				if (_content.isCurrentDocument(provider.getNarrative()))
-//				{
-//					// yes, better clear the view then
-//					viewer.setInput(null);
-//				}
-//			}
-//
-//			public void timeProviderClosed(TimeProvider provider)
-//			{
-//
-//			}
-//
-//			public void controllableTimeClosed(ControllableTime controllable)
-//			{
-//				_controllableTime = null;
-//			}
-//
-//		};
+		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part)
+					{
+						// implementation here.
+						NarrativeProvider provider = (NarrativeProvider) part;
+						// yes, but is it our current one?
+						if (_content.isCurrentDocument(provider.getNarrative()))
+						{
+							// yes, better clear the view then
+							viewer.setInput(null);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part)
+					{
+						// implementation here.
+						_myTemporalDataset = (TimeProvider) part;
+						if (_temporalListener == null)
+						{
+							_temporalListener = new PropertyChangeListener()
+							{
+								public void propertyChange(PropertyChangeEvent event)
+								{
+									// ok, use the new time
+									HiResDate newDTG = (HiResDate) event.getNewValue();
+									timeUpdated(newDTG);
+								}
+							};
+						}
+						_myTemporalDataset.addListener(_temporalListener,
+								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+					}
+				});
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part)
+					{
+						_myTemporalDataset.removeListener(_temporalListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						_myTemporalDataset = null;
+						_temporalListener = null;
+					}
+				});		
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part)
+					{
+						// implementation here.
+						ControllableTime ct = (ControllableTime) part;
+						_controllableTime = ct;
+					}
+				});
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part)
+					{
+						ControllableTime ct = (ControllableTime) part;
+						_controllableTime = null;
+					}
+				});			
 
 	}
 
@@ -419,142 +438,6 @@ public class NarrativeView extends ViewPart
 	// selection listener bits
 	// //////////////////////////////
 
-	public abstract static class PartMonitor implements IPartListener
-	{
-		
-		public final static String ACTIVATED = "ACTIVATED";
-		public final static String BROUGHT_TO_TOP = "BROUGHT_TO_TOP";
-		public final static String CLOSED = "CLOSED";
-		public final static String DEACTIVATED = "DEACTIVATED";
-		public final static String OPENED = "OPENED";
-		
-		private HashMap _myEvents = new HashMap();
-
-		public PartMonitor(IPartService partService)
-		{
-			partService.addPartListener(this);
-		}
-		
-		public void dispose(IPartService partService)
-		{
-			partService.removePartListener(this);
-		}
-		
-		public interface ICallback
-		{
-			public void eventTriggered(String type, IWorkbenchPart part);
-		}
-		
-		public void addPartListener(Class Subject, 
-																String event,
-																ICallback callback)
-		{
-		
-			// ok, see if we are watching for this event type
-			HashMap thisEventList = (HashMap)_myEvents.get(event);
-			
-			// are we already looking for this event?
-			if(thisEventList != null)
-			{
-				// nope, better create it
-				thisEventList = new HashMap();
-				_myEvents.put(event, thisEventList);
-			}
-			
-			Vector thisSubjectList = (Vector)thisEventList.get(Subject);
-			
-			// are we already looking for this subject
-			if(thisSubjectList != null)
-			{
-				thisSubjectList = new Vector();
-				thisEventList.put(Subject, thisSubjectList);
-			}
-			
-			// ok, add this callback for this subject
-			thisSubjectList.add(callback);						
-		}
-
-		private void processEvent(IWorkbenchPart part, String event)
-		{
-			// ok. see if we are looking for any subjects related to this event
-			HashMap thisEventList =(HashMap) _myEvents.get(event);
-			if(thisEventList != null)
-			{
-				// double-check
-				if(thisEventList.size() > 0)
-				{
-					// yup. work though and check the objects
-					Iterator iter = thisEventList.keySet().iterator();
-					while(iter.hasNext())
-					{
-						Class thisType = (Class) iter.next();
-						Object adapter = part.getAdapter(thisType);
-						if(adapter != null)
-						{
-						  // yup, here we are. fire away.
-							ICallback callback = (ICallback) thisEventList.get(thisType);
-							callback.eventTriggered(event, part);
-						}
-					}
-				}
-			}
-			
-		}
-		
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.IPartListener#partActivated(org.eclipse.ui.IWorkbenchPart)
-		 */
-		public void partActivated(IWorkbenchPart part)
-		{
-			processEvent(part, ACTIVATED;	
-
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.IPartListener#partBroughtToTop(org.eclipse.ui.IWorkbenchPart)
-		 */
-		public void partBroughtToTop(IWorkbenchPart part)
-		{
-			processEvent(part, BROUGHT_TO_TOP);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.IPartListener#partClosed(org.eclipse.ui.IWorkbenchPart)
-		 */
-		public void partClosed(IWorkbenchPart part)
-		{
-			processEvent(part, CLOSED);
-		}
-
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.IPartListener#partDeactivated(org.eclipse.ui.IWorkbenchPart)
-		 */
-		public void partDeactivated(IWorkbenchPart part)
-		{
-			processEvent(part, DEACTIVATED);
-		}
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.ui.IPartListener#partOpened(org.eclipse.ui.IWorkbenchPart)
-		 */
-		public void partOpened(IWorkbenchPart part)
-		{
-			processEvent(part, OPENED);
-		}
-
-	}
-
 	/**
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
@@ -704,6 +587,11 @@ public class NarrativeView extends ViewPart
 
 	class NameSorter extends ViewerSorter
 	{
+	}
+
+	public class TestNarrativeView extends TestCase
+	{
+
 	}
 
 }
