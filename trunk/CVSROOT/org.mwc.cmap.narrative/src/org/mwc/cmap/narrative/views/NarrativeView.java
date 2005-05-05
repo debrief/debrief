@@ -44,28 +44,35 @@ public class NarrativeView extends ViewPart
 
 	private Action filterToggleAction;
 
-	private Action action1;
+	/** toggle to indicate whether user wants narrative to always highlight to current DTG
+	 * 
+	 */
+	private Action _followTimeToggle;
 
-	private Action action2;
+	/** toggle to indicate whether user wants narrative to always jump to highlighted entry
+	 * 
+	 */
+	private Action _jumpToTimeToggle;
 
+	/** toggle to indicate whether user wants rest of app to jump to highlighted entry
+	 * 
+	 */
+	private Action _controllingTimeToggle;
+
+	/** helper application to help track creation/activation of new plots
+	 * 
+	 */
 	private PartMonitor _myPartMonitor;
 
+	/** the listener we use to track time changes
+	 * 
+	 */
 	private PropertyChangeListener _temporalListener = null;
 
 	/**
 	 * the provider for our narrative data
 	 */
 	NarrativeContentProvider _content = new NarrativeContentProvider();
-
-	/**
-	 * whether we are following the time set by the narrative provider
-	 */
-	private boolean _followingTime = true;
-
-	/**
-	 * whether we are controlling the time in the dataset from the narrative
-	 */
-	private boolean _controllingTime = true;
 
 	/**
 	 * the temporal dataset controlling the narrative entry currently displayed
@@ -77,11 +84,6 @@ public class NarrativeView extends ViewPart
 	 * avaialable
 	 */
 	private ControllableTime _controllableTime;
-
-	/** whether we should make sure the current narrative entry is visible, or let it
-	 * scroll out of sight
-	 */
-	private boolean _jumpToCurrent = true;
 
 	public class Type1_Filter extends ViewerFilter
 	{
@@ -204,8 +206,6 @@ public class NarrativeView extends ViewPart
 					public void eventTriggered(String type, Object part)
 					{
 						_myTemporalDataset.removeListener(_temporalListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-						_myTemporalDataset = null;
-						_temporalListener = null;
 					}
 				});		
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
@@ -300,6 +300,8 @@ public class NarrativeView extends ViewPart
 		filterToggleAction.setToolTipText("Hide anything other than type_1");
 		filterToggleAction.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+		
+
 	}
 
 	/*
@@ -347,53 +349,59 @@ public class NarrativeView extends ViewPart
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-		manager.add(action1);
-		manager.add(new Separator());
-		manager.add(action2);
-		manager.add(new Separator());
 		manager.add(filterToggleAction);
+		manager.add(new Separator());
+		manager.add(_followTimeToggle);
+		manager.add(_jumpToTimeToggle);
+		manager.add(_controllingTimeToggle);
 	}
 
 	private void fillContextMenu(IMenuManager manager)
 	{
-		manager.add(action1);
-		manager.add(action2);
+//		manager.add(action1);
+//		manager.add(action2);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(action1);
-		manager.add(action2);
+//		manager.add(action1);
+//		manager.add(action2);
+		
+		manager.add(_followTimeToggle);
+		manager.add(_jumpToTimeToggle);
+		manager.add(_controllingTimeToggle);
 	}
 
 	private void makeActions()
 	{
-		action1 = new Action()
+		_followTimeToggle = new Action("Follow time", Action.AS_CHECK_BOX)
 		{
-			public void run()
-			{
-				System.out.println("Action 1 executed");
-			}
 		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-
-		action2 = new Action()
+		_followTimeToggle.setText("Follow time");
+		_followTimeToggle.setChecked(true);
+		_followTimeToggle.setToolTipText("Highlight entry nearest current DTG");
+		_followTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_UP));	
+		
+		_jumpToTimeToggle = new Action("Jump to time", Action.AS_CHECK_BOX)
 		{
-			public void run()
-			{
-				System.out.println("Action 2 executed");
-			}
 		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-
+		_jumpToTimeToggle.setText("Jump to current");
+		_jumpToTimeToggle.setChecked(true);
+		_jumpToTimeToggle.setToolTipText("Ensure highlighted entry is always visible");
+		_jumpToTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));	
+		
+		_controllingTimeToggle = new Action("Jump to time", Action.AS_CHECK_BOX)
+		{
+		};
+		_controllingTimeToggle.setText("Control time");
+		_controllingTimeToggle.setChecked(true);
+		_controllingTimeToggle.setToolTipText("Make rest of application follow our time");
+		_controllingTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));	
 	}
 
 	private void hookDoubleClickAction()
@@ -403,7 +411,7 @@ public class NarrativeView extends ViewPart
 			public void doubleClick(DoubleClickEvent event)
 			{
 				// hmm, are we controlling the narrative time?
-				if (_controllingTime)
+				if (_controllingTimeToggle.isChecked())
 				{
 					ISelection selection = viewer.getSelection();
 					Object obj = ((IStructuredSelection) selection).getFirstElement();
@@ -432,7 +440,7 @@ public class NarrativeView extends ViewPart
 	 */
 	private void timeUpdated(HiResDate newDTG)
 	{
-		if (_followingTime)
+		if (_followTimeToggle.isChecked())
 		{
 			// move our list to the correct DTG
 			
@@ -447,7 +455,8 @@ public class NarrativeView extends ViewPart
 				IStructuredSelection sel = new StructuredSelection(currentItem);
 				
 				// and update the table
-				viewer.setSelection(sel, _jumpToCurrent );
+				System.out.println("jump to time:" + _jumpToTimeToggle.isChecked());
+				viewer.setSelection(sel, _jumpToTimeToggle.isChecked() );
 			}
 		}
 		else

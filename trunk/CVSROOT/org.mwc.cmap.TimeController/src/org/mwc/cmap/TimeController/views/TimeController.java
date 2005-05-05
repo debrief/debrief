@@ -6,6 +6,7 @@ import java.util.Date;
 
 import junit.framework.TestCase;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -15,6 +16,8 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -74,8 +77,9 @@ public class TimeController extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		
-		// also sort out the slider conversion bits.  We do it at the start, because callbacks
+
+		// also sort out the slider conversion bits. We do it at the start, because
+		// callbacks
 		// created during initialisation may need to use/reset it
 		_slideManager = new SliderRangeManagement()
 		{
@@ -83,15 +87,18 @@ public class TimeController extends ViewPart
 			{
 				_tNowSlider.setMinimum(min);
 			}
+
 			public void setMaxVal(int max)
 			{
 				_tNowSlider.setMaximum(max);
 			}
+
 			public void setTickSize(int small, int large)
 			{
 				_tNowSlider.setIncrement(small);
 				_tNowSlider.setPageIncrement(large);
 			}
+
 			public void setEnabled(boolean val)
 			{
 				_tNowSlider.setEnabled(val);
@@ -112,11 +119,12 @@ public class TimeController extends ViewPart
 				.getActivePage());
 
 	}
-	
+
 	SliderRangeManagement _slideManager = null;
 
-	/** the slider control - remember it because we're always changing the limits, etc
-	 * 
+	/**
+	 * the slider control - remember it because we're always changing the limits,
+	 * etc
 	 */
 	private Slider _tNowSlider;
 
@@ -157,7 +165,9 @@ public class TimeController extends ViewPart
 		Button lFwd = new Button(RH, SWT.NONE);
 		lFwd.setText(">>");
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, false));
+		lFwd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
 
+		
 		// next create the time slider holder
 		_tNowSlider = new Slider(_wholePanel, SWT.NONE);
 		_tNowSlider.setMinimum(0);
@@ -167,9 +177,9 @@ public class TimeController extends ViewPart
 
 			public void widgetSelected(SelectionEvent e)
 			{
-				System.out.println("new val:" + _tNowSlider.getSelection());
 				int index = _tNowSlider.getSelection();
-				HiResDate newDTG = _slideManager.fromSliderUnits(index, _myTemporalDataset.getPeriod().getStartDTG());
+				HiResDate newDTG = _slideManager.fromSliderUnits(index,
+						_myTemporalDataset.getPeriod().getStartDTG());
 				fireNewTime(newDTG);
 			}
 
@@ -203,33 +213,37 @@ public class TimeController extends ViewPart
 
 	private void processClick(boolean small, boolean fwd)
 	{
-		System.out.println("Click pressed, small:" + small + " fwd:" + fwd);
-		long micros = _myTemporalDataset.getTime().getMicros();
-		int scale;
-		if (small)
-			scale = 1;
-		else
-			scale = 10;
-
-		int size = scale * 1000 * 1000;
-
-		if (fwd)
-			micros += size;
-		else
-			micros -= size;
-
-		HiResDate newDTG = new HiResDate(0, micros);
-
-		// find the extent of the current dataset
-		TimePeriod timeP = _myTemporalDataset.getPeriod();
-
-		// do we represent a valid time?
-		if (timeP.contains(newDTG))
+		// check that we have a current time (on initialisation some plots may not contain data)
+		HiResDate tNow = _myTemporalDataset.getTime();
+		if (tNow != null)
 		{
-			// yes, fire the new DTG
-			fireNewTime(newDTG);
-		}
+			// yup, time is there.  work with it baby
+			long micros = tNow.getMicros();
+			int scale;
+			if (small)
+				scale = 1;
+			else
+				scale = 10;
 
+			int size = scale * 1000 * 1000;
+
+			if (fwd)
+				micros += size;
+			else
+				micros -= size;
+
+			HiResDate newDTG = new HiResDate(0, micros);
+
+			// find the extent of the current dataset
+			TimePeriod timeP = _myTemporalDataset.getPeriod();
+
+			// do we represent a valid time?
+			if (timeP.contains(newDTG))
+			{
+				// yes, fire the new DTG
+				fireNewTime(newDTG);
+			}
+		}
 	}
 
 	private void fireNewTime(HiResDate dtg)
@@ -261,17 +275,23 @@ public class TimeController extends ViewPart
 								{
 									// see if it's the time or the period which
 									// has changed
-									if(event.getPropertyName().equals(TimeProvider.TIME_CHANGED_PROPERTY_NAME))
-									{									
+									if (event.getPropertyName().equals(
+											TimeProvider.TIME_CHANGED_PROPERTY_NAME))
+									{
 										// ok, use the new time
 										HiResDate newDTG = (HiResDate) event.getNewValue();
 										timeUpdated(newDTG);
 									}
-									else if(event.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
+									else if (event.getPropertyName().equals(
+											TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
 									{
 										TimePeriod newPeriod = (TimePeriod) event.getNewValue();
-										_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+										_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod
+												.getEndDTG());
 									}
+									
+									// also double-check if it's time to enable our interface
+									checkTimeEnabled();
 								}
 							};
 						}
@@ -281,11 +301,13 @@ public class TimeController extends ViewPart
 						// also configure for the current time
 						HiResDate newDTG = _myTemporalDataset.getTime();
 						timeUpdated(newDTG);
-						
+
 						// and initialise the current time
 						TimePeriod firstDTG = _myTemporalDataset.getPeriod();
-						_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG.getEndDTG());
-
+						_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG
+								.getEndDTG());
+						
+					  checkTimeEnabled();
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
@@ -295,8 +317,7 @@ public class TimeController extends ViewPart
 					{
 						_myTemporalDataset.removeListener(_temporalListener,
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-						_myTemporalDataset = null;
-						_temporalListener = null;
+					  checkTimeEnabled();
 					}
 				});
 		_myPartMonitor.addPartListener(ControllableTime.class,
@@ -307,8 +328,9 @@ public class TimeController extends ViewPart
 						// implementation here.
 						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = ct;
-						_wholePanel.setEnabled(true);
+					  checkTimeEnabled();
 					}
+
 				});
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
@@ -317,12 +339,29 @@ public class TimeController extends ViewPart
 					{
 						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = null;
-						_wholePanel.setEnabled(false);
+					  checkTimeEnabled();
 					}
 				});
 
 	}
 
+
+	/** convenience method to make the panel enabled if we have a time controller and a valid time
+	 * 
+	 *
+	 */
+	private void checkTimeEnabled()
+	{
+		boolean enable = false;
+		
+		if(_myTemporalDataset != null)
+		{
+			if((_controllableTime != null) && (_myTemporalDataset.getTime() != null))
+				enable = true;
+		}
+
+		_wholePanel.setEnabled(enable);
+	}	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -336,7 +375,7 @@ public class TimeController extends ViewPart
 		_myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
 
 		// also stop listening for time events
-		if (_controllableTime != null)
+		if (_myTemporalDataset != null)
 		{
 			_myTemporalDataset.removeListener(_temporalListener,
 					TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -368,11 +407,12 @@ public class TimeController extends ViewPart
 			// display the correct time.
 			String newVal = DebriefFormatDateTime.toStringHiRes(newDTG);
 			_timeLabel.setText(newVal);
-			
+
 			TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
-			if(dataPeriod != null)
+			if (dataPeriod != null)
 			{
-				int newIndex = _slideManager.toSliderUnits(newDTG, dataPeriod.getStartDTG());
+				int newIndex = _slideManager.toSliderUnits(newDTG, dataPeriod
+						.getStartDTG());
 				_tNowSlider.setSelection(newIndex);
 			}
 		}
@@ -388,10 +428,13 @@ public class TimeController extends ViewPart
 	private abstract static class SliderRangeManagement
 	{
 		private boolean _useMicros = false;
-		
+
 		public abstract void setMinVal(int min);
+
 		public abstract void setMaxVal(int max);
+
 		public abstract void setTickSize(int small, int large);
+
 		public abstract void setEnabled(boolean val);
 
 		public void resetRange(HiResDate min, HiResDate max)
@@ -405,7 +448,7 @@ public class TimeController extends ViewPart
 				{
 					// double-check the min value
 					setMinVal(0);
-					
+
 					// remember that we are updating the form. don't bother processing
 					// state changed events for a bit
 					// _updatingForm = true;
@@ -448,11 +491,11 @@ public class TimeController extends ViewPart
 						smallTick = NUM_MILLIS_FOR_STEP * 1000;
 					}
 					largeTick = smallTick * 10;
-					
+
 					setTickSize(smallTick, largeTick);
 
 					// ok, we've finished updating the form. back to normal processing
-				//	_updatingForm = false;
+					// _updatingForm = false;
 				}
 			}
 		}
@@ -493,62 +536,71 @@ public class TimeController extends ViewPart
 	public static class TestTimeController extends TestCase
 	{
 		private int _min, _max, _smallTick, _largeTick;
+
 		private boolean _enabled;
-		
+
 		public void testSliderScales()
 		{
 			SliderRangeManagement range = new SliderRangeManagement()
 			{
 				public void setMinVal(int min)
-				{_min = min;}
+				{
+					_min = min;
+				}
 
 				public void setMaxVal(int max)
-				{_max = max;			}
+				{
+					_max = max;
+				}
 
 				public void setTickSize(int small, int large)
-				{_smallTick = small;
-				_largeTick = large;				}
+				{
+					_smallTick = small;
+					_largeTick = large;
+				}
 
 				public void setEnabled(boolean val)
-				{					_enabled = val;				}				
+				{
+					_enabled = val;
+				}
 			};
-			
+
 			// initialise our testing values
 			_min = _max = _smallTick = _largeTick = -1;
 			_enabled = false;
-			
+
 			HiResDate starter = new HiResDate(0, 100);
 			HiResDate ender = new HiResDate(0, 200);
 			range.resetRange(starter, ender);
-			
+
 			assertEquals("min val set", 0, _min);
 			assertEquals("max val set", 100, _max);
 			assertEquals("sml tick set", 500000, _smallTick);
 			assertEquals("large tick set", 5000000, _largeTick);
-			
+
 			// ok, see how the transfer goes
 			HiResDate newToSlider = new HiResDate(0, 130);
 			int res = range.toSliderUnits(newToSlider, starter);
 			assertEquals("correct to slider units", 30, res);
-			
+
 			// and backwards
 			newToSlider = range.fromSliderUnits(res, starter);
 			assertEquals("correct from slider units", 130, newToSlider.getMicros());
-			
+
 			// right, now back to millis
 			Date starterD = new Date(2005, 3, 3, 12, 1, 1);
 			Date enderD = new Date(2005, 3, 12, 12, 1, 1);
 			starter = new HiResDate(starterD.getTime());
 			ender = new HiResDate(enderD.getTime());
 			range.resetRange(starter, ender);
-			
+
 			long diff = enderD.getTime() - starterD.getTime();
 			assertEquals("correct range in secs", diff, _max);
 			assertEquals("sml tick set", 60 * 1000 * 1000, _smallTick);
 			assertEquals("large tick set", 10 * 60 * 1000 * 1000, _largeTick);
-			
+
 		}
-		
+
 	}
 
 }
