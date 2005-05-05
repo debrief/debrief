@@ -17,6 +17,7 @@
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.junit"/>
    </requires>
 
 </plugin>
