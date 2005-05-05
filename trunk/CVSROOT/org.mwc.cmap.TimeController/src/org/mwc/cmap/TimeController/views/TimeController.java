@@ -7,6 +7,9 @@ import java.util.Date;
 import junit.framework.TestCase;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -15,9 +18,11 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -48,7 +53,7 @@ public class TimeController extends ViewPart
 	private PartMonitor _myPartMonitor;
 
 	private PropertyChangeListener _temporalListener = null;
-
+	
 	/**
 	 * the temporal dataset controlling the narrative entry currently displayed
 	 */
@@ -105,6 +110,9 @@ public class TimeController extends ViewPart
 			}
 		};
 
+		// get the actions sorted
+		createActions();
+		
 		// and fill in the interface
 		buildInterface(parent);
 
@@ -120,6 +128,10 @@ public class TimeController extends ViewPart
 
 	}
 
+	private void createActions()
+	{
+	}
+	
 	SliderRangeManagement _slideManager = null;
 
 	/**
