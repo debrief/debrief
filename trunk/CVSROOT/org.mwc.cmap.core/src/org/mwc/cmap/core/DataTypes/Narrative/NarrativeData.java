@@ -6,8 +6,10 @@ package org.mwc.cmap.core.DataTypes.Narrative;
 import java.beans.*;
 import java.beans.PropertyChangeSupport;
 import java.util.Date;
+import java.util.SortedSet;
 
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -41,6 +43,7 @@ public class NarrativeData
 	// //////////////////////////////////////
 	/**
 	 * create a new narrative
+	 * 
 	 * @param title
 	 */
 	public NarrativeData(final String title)
@@ -83,15 +86,15 @@ public class NarrativeData
 	// //////////////////////////////
 	// property change support
 	// //////////////////////////////
-	
+
 	public void addPropertyChangeListener(PropertyChangeListener listener)
 	{
-		if(_pSupport == null)
+		if (_pSupport == null)
 			_pSupport = new PropertyChangeSupport(this);
-		
+
 		_pSupport.addPropertyChangeListener(listener);
 	}
-	
+
 	public void removePropertyChangeListener(PropertyChangeListener listener)
 	{
 		_pSupport.removePropertyChangeListener(listener);
@@ -123,6 +126,49 @@ public class NarrativeData
 	public final java.util.AbstractCollection getData()
 	{
 		return _myEntries;
+	}
+
+	/** convenience function to find the narrative entry
+	 * immediately before the supplied dtg.
+	 * 
+	 * @param dtg the time to find an entry for
+	 * @return 
+	 */
+	public NarrativeEntry getEntryNearestTo(HiResDate dtg)
+	{
+		NarrativeEntry res = null;
+
+		// ahh, do we have data?
+		if (_myEntries.size() > 0)
+		{
+			NarrativeEntry firstN = (NarrativeEntry) _myEntries.first();
+			NarrativeEntry lastN = (NarrativeEntry) _myEntries.last();
+			// just see if this dtg is outside our time period
+			if (dtg.lessThan(firstN.getDTG()))
+			{
+				// hmm, off the start of the plot
+				res = null;
+			}
+			else if (dtg.greaterThan(lastN.getDTG()))
+			{
+				res = (NarrativeEntry) _myEntries.last();
+			}
+			else
+			{
+
+				// create an object to use for comparisons
+				NarrativeEntry toTest = new NarrativeEntry("", dtg, " ");
+
+				// and retrieve all items before this one
+				SortedSet before = _myEntries.headSet(toTest);
+
+				// did we find any?
+				if (before != null)
+					res = (NarrativeEntry) before.last();
+			}
+		}
+
+		return res;
 	}
 
 	// ///////////////////////////////////////
@@ -178,7 +224,7 @@ public class NarrativeData
 		{
 			return _DTG;
 		}
-		
+
 		public final String getEntryType()
 		{
 			return _entryType;
@@ -227,6 +273,22 @@ public class NarrativeData
 			return getName();
 		}
 
+	}
+
+	/** find the time period covered by the narrative data
+	 * 
+	 * @return
+	 */
+	public TimePeriod getTimePeriod()
+	{
+		TimePeriod res = null;
+		
+		NarrativeEntry firstN = (NarrativeEntry) _myEntries.first();
+		NarrativeEntry lastN = (NarrativeEntry) _myEntries.last();
+		
+		res = new TimePeriod.BaseTimePeriod(firstN.getDTG(), lastN.getDTG());
+		
+		return res;
 	}
 
 }

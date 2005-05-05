@@ -11,13 +11,16 @@ import junit.framework.TestCase;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IPartListener;
 import org.eclipse.ui.IPartListener2;
 import org.eclipse.ui.IPartService;
 import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
 
 public class PartMonitor implements IPartListener
 {
@@ -71,6 +74,20 @@ public class PartMonitor implements IPartListener
 		_myEvents.clear();
 	}
 
+	/** convenience method to fire a part-activated message representing
+	 * the currently active editor.  If there is a part already active when
+	 * the view opens we will use that part to populate the new view, 
+	 * if applicable
+	 * @param currentPage
+	 */
+	public void fireActivePart(IWorkbenchPage currentPage)
+	{
+		// just check we have an editor
+		if(currentPage != null)
+			partActivated(currentPage.getActiveEditor());
+	}
+	
+	
 	public void addPartListener(Class Subject, String event, PartMonitor.ICallback callback)
 	{
 
@@ -118,8 +135,8 @@ public class PartMonitor implements IPartListener
 				while (iter.hasNext())
 				{
 					Class thisType = (Class) iter.next();
-					Object adapter = part.getAdapter(thisType);
-					if (adapter != null)
+					Object adaptedItem = part.getAdapter(thisType);
+					if (adaptedItem != null)
 					{
 						// yup, here we are. fire away.
 						Vector callbacksForThisSubject = (Vector) thisEventList.get(thisType);
@@ -127,7 +144,7 @@ public class PartMonitor implements IPartListener
 						while(iter2.hasNext())
 						{
 							PartMonitor.ICallback callback = (PartMonitor.ICallback) iter2.next();
-							callback.eventTriggered(event, part);
+							callback.eventTriggered(event, adaptedItem);
 						}
 					}
 				}

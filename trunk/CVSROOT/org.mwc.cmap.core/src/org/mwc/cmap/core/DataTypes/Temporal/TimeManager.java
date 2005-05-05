@@ -119,8 +119,12 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 */
 	public void setPeriod(Object origin, TimePeriod period)
 	{
+		TimePeriod oldTime = null;
+		
 		// ok. remember the old period
-		TimePeriod oldTime = new TimePeriod.BaseTimePeriod(_timePeriod.getStartDTG(), _timePeriod.getEndDTG());
+		// right, do we have an old period?
+		if(_timePeriod != null)
+			oldTime = new TimePeriod.BaseTimePeriod(_timePeriod.getStartDTG(), _timePeriod.getEndDTG());
 		
 		// store the new time
 		_timePeriod = period;
