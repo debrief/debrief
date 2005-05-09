@@ -2,14 +2,14 @@ package org.mwc.cmap.TimeController.views;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -18,19 +18,18 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.dialogs.PropertyDialogAction;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.TimeController.TimeControllerPlugin;
+import org.mwc.cmap.TimeController.preferences.PreferenceConstants;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -53,7 +52,7 @@ public class TimeController extends ViewPart
 	private PartMonitor _myPartMonitor;
 
 	private PropertyChangeListener _temporalListener = null;
-	
+
 	/**
 	 * the temporal dataset controlling the narrative entry currently displayed
 	 */
@@ -112,7 +111,7 @@ public class TimeController extends ViewPart
 
 		// get the actions sorted
 		createActions();
-		
+
 		// and fill in the interface
 		buildInterface(parent);
 
@@ -131,7 +130,7 @@ public class TimeController extends ViewPart
 	private void createActions()
 	{
 	}
-	
+
 	SliderRangeManagement _slideManager = null;
 
 	/**
@@ -177,9 +176,9 @@ public class TimeController extends ViewPart
 		Button lFwd = new Button(RH, SWT.NONE);
 		lFwd.setText(">>");
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, false));
-		lFwd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(ISharedImages.IMG_TOOL_FORWARD));
+		lFwd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
+				ISharedImages.IMG_TOOL_FORWARD));
 
-		
 		// next create the time slider holder
 		_tNowSlider = new Slider(_wholePanel, SWT.NONE);
 		_tNowSlider.setMinimum(0);
@@ -225,11 +224,12 @@ public class TimeController extends ViewPart
 
 	private void processClick(boolean small, boolean fwd)
 	{
-		// check that we have a current time (on initialisation some plots may not contain data)
+		// check that we have a current time (on initialisation some plots may not
+		// contain data)
 		HiResDate tNow = _myTemporalDataset.getTime();
 		if (tNow != null)
 		{
-			// yup, time is there.  work with it baby
+			// yup, time is there. work with it baby
 			long micros = tNow.getMicros();
 			int scale;
 			if (small)
@@ -301,7 +301,7 @@ public class TimeController extends ViewPart
 										_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod
 												.getEndDTG());
 									}
-									
+
 									// also double-check if it's time to enable our interface
 									checkTimeEnabled();
 								}
@@ -318,8 +318,8 @@ public class TimeController extends ViewPart
 						TimePeriod firstDTG = _myTemporalDataset.getPeriod();
 						_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG
 								.getEndDTG());
-						
-					  checkTimeEnabled();
+
+						checkTimeEnabled();
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
@@ -329,7 +329,7 @@ public class TimeController extends ViewPart
 					{
 						_myTemporalDataset.removeListener(_temporalListener,
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-					  checkTimeEnabled();
+						checkTimeEnabled();
 					}
 				});
 		_myPartMonitor.addPartListener(ControllableTime.class,
@@ -340,7 +340,7 @@ public class TimeController extends ViewPart
 						// implementation here.
 						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = ct;
-					  checkTimeEnabled();
+						checkTimeEnabled();
 					}
 
 				});
@@ -351,29 +351,29 @@ public class TimeController extends ViewPart
 					{
 						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = null;
-					  checkTimeEnabled();
+						checkTimeEnabled();
 					}
 				});
 
 	}
 
-
-	/** convenience method to make the panel enabled if we have a time controller and a valid time
-	 * 
-	 *
+	/**
+	 * convenience method to make the panel enabled if we have a time controller
+	 * and a valid time
 	 */
 	private void checkTimeEnabled()
 	{
 		boolean enable = false;
-		
-		if(_myTemporalDataset != null)
+
+		if (_myTemporalDataset != null)
 		{
-			if((_controllableTime != null) && (_myTemporalDataset.getTime() != null))
+			if ((_controllableTime != null) && (_myTemporalDataset.getTime() != null))
 				enable = true;
 		}
 
 		_wholePanel.setEnabled(enable);
-	}	
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -417,7 +417,7 @@ public class TimeController extends ViewPart
 		if (tNow != null)
 		{
 			// display the correct time.
-			String newVal = DebriefFormatDateTime.toStringHiRes(newDTG);
+			String newVal = getFormattedDate(newDTG);
 			_timeLabel.setText(newVal);
 
 			TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
@@ -432,6 +432,70 @@ public class TimeController extends ViewPart
 		{
 			System.out.println("null DTG received by time controller");
 		}
+
+	}
+
+	private String getFormattedDate(HiResDate newDTG)
+	{
+		IPreferenceStore store = TimeControllerPlugin.getDefault()
+				.getPreferenceStore();
+		String dateFormat = store.getString(PreferenceConstants.P_STRING);
+		String newVal = "n/a";
+		try
+		{
+			newVal = toStringHiRes(newDTG, dateFormat);
+		}
+		catch (IllegalArgumentException e)
+		{
+			System.err.println("Invalid date format in preferences");
+		}
+		return newVal;
+	}
+
+	public static String toStringHiRes(HiResDate time, String pattern) throws IllegalArgumentException
+	{
+		// so, have a look at the data
+		long micros = time.getMicros();
+		long wholeSeconds = micros / 1000000;
+
+		StringBuffer res = new StringBuffer();
+
+		java.util.Date theTime = new java.util.Date(micros / 1000);
+
+		SimpleDateFormat selectedFormat = new SimpleDateFormat(pattern);
+		selectedFormat.setTimeZone(TimeZone.getTimeZone("GMT"));		
+		res.append(selectedFormat.format(theTime));
+
+		
+		DecimalFormat microsFormat = new DecimalFormat("000000");
+		DecimalFormat millisFormat = new DecimalFormat("000");
+		
+		// do we have micros?
+		if (micros % 1000 > 0)
+		{
+			// yes
+			res.append(".");
+			res.append(microsFormat.format(micros % 1000000));
+		}
+		else
+		{
+			// do we have millis?
+			if (micros % 1000000 > 0)
+			{
+				// yes, convert the value to millis
+
+				long millis = micros = (micros % 1000000) / 1000;
+
+				res.append(".");
+				res.append(millisFormat.format(millis));
+			}
+			else
+			{
+				// just use the normal output
+			}
+		}
+
+		return res.toString();
 	}
 
 	// //////////////////////////////
@@ -494,7 +558,7 @@ public class TimeController extends ViewPart
 					int NUM_MILLIS_FOR_STEP;
 					if (_useMicros)
 					{
-						NUM_MILLIS_FOR_STEP = 500;
+						NUM_MILLIS_FOR_STEP = 1000000;
 						smallTick = NUM_MILLIS_FOR_STEP * 1000;
 					}
 					else
