@@ -63,10 +63,18 @@ public class NarrativeData
 				.random() * 13), 33);
 		for (int i = 0; i < len; i++)
 		{
+			String entryTxt =  "entry number " + i + " for narrative:" + title;
+			
+			if(Math.random()>0.9)
+			{
+				entryTxt += "\n and more...";
+			}
+			
+			
 			NarrativeEntry ne = new NarrativeEntry(title, new HiResDate(newDate
 					.getTime()
-					+ i * 1000, 0), "type_" + (int) (Math.random() * 5), "entry number "
-					+ i + " for narrative:" + title);
+					+ i * 10000, 0),"type_" + (int) (Math.random() * 5), entryTxt);
+			
 			res.add(ne);
 		}
 
