@@ -20,21 +20,12 @@
       <import plugin="org.mwc.cmap.core"/>
    </requires>
 
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            name="2D Plot Editor"
-            extensions="xml"
-            icon="icons/sample.gif"
-            class="org.mwc.cmap.plotViewer.editors.PlotEditor"
-            id="org.mwc.cmap.plotViewer.editors.PlotEditor">
-      </editor>
-   </extension>
+
    <extension
          point="org.eclipse.ui.views">
       <category
-            id="org.mwc.cmap.plotViewer.DebriefCategory"
-            name="Debrief"/>
+            id="org.mwc.cmap.plotViewer.CMAP"
+            name="CMAP"/>
    </extension>
 
 </plugin>
