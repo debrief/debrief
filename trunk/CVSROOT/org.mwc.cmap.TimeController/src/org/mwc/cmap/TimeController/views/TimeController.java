@@ -97,10 +97,11 @@ public class TimeController extends ViewPart
 				_tNowSlider.setMaximum(max);
 			}
 
-			public void setTickSize(int small, int large)
+			public void setTickSize(int small, int large, int drag)
 			{
 				_tNowSlider.setIncrement(small);
 				_tNowSlider.setPageIncrement(large);
+				_tNowSlider.setThumb(drag);
 			}
 
 			public void setEnabled(boolean val)
@@ -503,13 +504,17 @@ public class TimeController extends ViewPart
 	// ////////////////////////////////
 	private abstract static class SliderRangeManagement
 	{
+		
+		// only let slider work in micros if there is under a second of data
+		private final int TIME_SPAN_TO_USE_MICROS = 1000000;
+		
 		private boolean _useMicros = false;
 
 		public abstract void setMinVal(int min);
 
 		public abstract void setMaxVal(int max);
 
-		public abstract void setTickSize(int small, int large);
+		public abstract void setTickSize(int small, int large, int drag);
 
 		public abstract void setEnabled(boolean val);
 
@@ -525,11 +530,8 @@ public class TimeController extends ViewPart
 					// double-check the min value
 					setMinVal(0);
 
-					// remember that we are updating the form. don't bother processing
-					// state changed events for a bit
-					// _updatingForm = true;
 
-					if (range < Integer.MAX_VALUE)
+					if (range < TIME_SPAN_TO_USE_MICROS)
 					{
 						setMaxVal((int) range);
 						setEnabled(true);
@@ -538,10 +540,11 @@ public class TimeController extends ViewPart
 					else
 					{
 						long rangeMillis = range / 1000;
+						long rangeSecs = rangeMillis / 1000;
 						if (rangeMillis < Integer.MAX_VALUE)
 						{
 							// ok, we're going to run in millisecond resolution
-							setMaxVal((int) rangeMillis);
+							setMaxVal((int) rangeSecs);
 							_useMicros = false;
 							setEnabled(true);
 						}
@@ -555,20 +558,23 @@ public class TimeController extends ViewPart
 					// ok. just sort out the step size when the user clicks on the slider
 					int smallTick;
 					int largeTick;
+					int dragSize;
 					int NUM_MILLIS_FOR_STEP;
 					if (_useMicros)
 					{
-						NUM_MILLIS_FOR_STEP = 1000000;
-						smallTick = NUM_MILLIS_FOR_STEP * 1000;
+						dragSize = 500; // 500 microseconds
+						NUM_MILLIS_FOR_STEP = dragSize * 20; // 10 millis 
 					}
 					else
 					{
-						NUM_MILLIS_FOR_STEP = 1000 * 60 * 1;
-						smallTick = NUM_MILLIS_FOR_STEP * 1000;
+						dragSize = 1; // one second
+						NUM_MILLIS_FOR_STEP = dragSize * 60; // one minute
 					}
+					smallTick = NUM_MILLIS_FOR_STEP;
 					largeTick = smallTick * 10;
 
-					setTickSize(smallTick, largeTick);
+					System.out.println("setting tick. small:" + smallTick + " large:" + largeTick + " drag:" + dragSize);
+					setTickSize(smallTick, largeTick, dragSize);
 
 					// ok, we've finished updating the form. back to normal processing
 					// _updatingForm = false;
@@ -583,7 +589,7 @@ public class TimeController extends ViewPart
 
 			if (!_useMicros)
 			{
-				offset /= 1000;
+				offset /= 1000000;
 			}
 
 			res = (int) offset;
@@ -594,12 +600,14 @@ public class TimeController extends ViewPart
 
 		public HiResDate fromSliderUnits(int value, HiResDate startDTG)
 		{
+			long newValue = value;
+			
 			if (!_useMicros)
 			{
-				value *= 1000;
+				newValue *= 1000000;
 			}
 
-			long newDate = startDTG.getMicros() + value;
+			long newDate = startDTG.getMicros() + newValue;
 
 			return new HiResDate(0, newDate);
 		}
@@ -611,7 +619,7 @@ public class TimeController extends ViewPart
 
 	public static class TestTimeController extends TestCase
 	{
-		private int _min, _max, _smallTick, _largeTick;
+		private int _min, _max, _smallTick, _largeTick, _dragSize;
 
 		private boolean _enabled;
 
@@ -629,10 +637,11 @@ public class TimeController extends ViewPart
 					_max = max;
 				}
 
-				public void setTickSize(int small, int large)
+				public void setTickSize(int small, int large, int drag)
 				{
 					_smallTick = small;
 					_largeTick = large;
+					_dragSize = drag;
 				}
 
 				public void setEnabled(boolean val)
@@ -652,6 +661,7 @@ public class TimeController extends ViewPart
 			assertEquals("min val set", 0, _min);
 			assertEquals("max val set", 100, _max);
 			assertEquals("sml tick set", 500000, _smallTick);
+			assertEquals("drag size set", 1000, _dragSize);
 			assertEquals("large tick set", 5000000, _largeTick);
 
 			// ok, see how the transfer goes
