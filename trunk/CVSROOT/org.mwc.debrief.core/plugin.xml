@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin
+   id="org.mwc.debrief.core"
+   name="Debrief Core"
+   version="1.0.0"
+   provider-name="NWC"
+   class="org.mwc.debrief.core.CorePlugin">
+
+   <runtime>
+      <library name="debrief_core.jar"/>
+   </runtime>
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Debrief Plot Editor"
+            extensions="xml"
+            icon="icons/sample.gif"
+            class="org.mwc.cmap.plotViewer.editors.PlotEditor"
+            id="org.mwc.cmap.plotViewer.editors.PlotEditor">
+      </editor>
+   </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <category
+            id="org.mwc.debrief.core.DebriefCategory"
+            name="Debrief"/>
+   </extension>   
+   
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.mwc.cmap.plotViewer"/>
+      
+   </requires>
+
+</plugin>
