@@ -328,8 +328,12 @@ public class TimeController extends ViewPart
 				{
 					public void eventTriggered(String type, Object part)
 					{
-						_myTemporalDataset.removeListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						// are we still listening?
+						if (_myTemporalDataset != null)
+						{
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						}
 						checkTimeEnabled();
 					}
 				});
@@ -453,7 +457,8 @@ public class TimeController extends ViewPart
 		return newVal;
 	}
 
-	public static String toStringHiRes(HiResDate time, String pattern) throws IllegalArgumentException
+	public static String toStringHiRes(HiResDate time, String pattern)
+			throws IllegalArgumentException
 	{
 		// so, have a look at the data
 		long micros = time.getMicros();
@@ -464,13 +469,12 @@ public class TimeController extends ViewPart
 		java.util.Date theTime = new java.util.Date(micros / 1000);
 
 		SimpleDateFormat selectedFormat = new SimpleDateFormat(pattern);
-		selectedFormat.setTimeZone(TimeZone.getTimeZone("GMT"));		
+		selectedFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		res.append(selectedFormat.format(theTime));
 
-		
 		DecimalFormat microsFormat = new DecimalFormat("000000");
 		DecimalFormat millisFormat = new DecimalFormat("000");
-		
+
 		// do we have micros?
 		if (micros % 1000 > 0)
 		{
@@ -504,10 +508,10 @@ public class TimeController extends ViewPart
 	// ////////////////////////////////
 	private abstract static class SliderRangeManagement
 	{
-		
+
 		// only let slider work in micros if there is under a second of data
 		private final int TIME_SPAN_TO_USE_MICROS = 1000000;
-		
+
 		private boolean _useMicros = false;
 
 		public abstract void setMinVal(int min);
@@ -529,7 +533,6 @@ public class TimeController extends ViewPart
 				{
 					// double-check the min value
 					setMinVal(0);
-
 
 					if (range < TIME_SPAN_TO_USE_MICROS)
 					{
@@ -563,7 +566,7 @@ public class TimeController extends ViewPart
 					if (_useMicros)
 					{
 						dragSize = 500; // 500 microseconds
-						NUM_MILLIS_FOR_STEP = dragSize * 20; // 10 millis 
+						NUM_MILLIS_FOR_STEP = dragSize * 20; // 10 millis
 					}
 					else
 					{
@@ -573,7 +576,8 @@ public class TimeController extends ViewPart
 					smallTick = NUM_MILLIS_FOR_STEP;
 					largeTick = smallTick * 10;
 
-					System.out.println("setting tick. small:" + smallTick + " large:" + largeTick + " drag:" + dragSize);
+					System.out.println("setting tick. small:" + smallTick + " large:"
+							+ largeTick + " drag:" + dragSize);
 					setTickSize(smallTick, largeTick, dragSize);
 
 					// ok, we've finished updating the form. back to normal processing
@@ -601,7 +605,7 @@ public class TimeController extends ViewPart
 		public HiResDate fromSliderUnits(int value, HiResDate startDTG)
 		{
 			long newValue = value;
-			
+
 			if (!_useMicros)
 			{
 				newValue *= 1000000;
