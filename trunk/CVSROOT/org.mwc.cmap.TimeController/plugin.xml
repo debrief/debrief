@@ -25,7 +25,7 @@
       <view
             name="Time Controller"
             icon="icons/sample.gif"
-            category="org.mwc.cmap.plotViewer.DebriefCategory"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.TimeController.views.TimeController"
             id="org.mwc.cmap.TimeController.views.TimeController">
       </view>
