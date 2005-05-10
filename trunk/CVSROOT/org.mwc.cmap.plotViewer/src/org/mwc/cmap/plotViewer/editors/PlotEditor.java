@@ -86,7 +86,7 @@ public class PlotEditor extends EditorPart{
 			NarrativeData _myData = null;
 			public NarrativeData getNarrative() {
 				if(_myData == null)
-				 _myData = NarrativeData.createDummyData(getEditorInput().getName(), (int)(Math.random() * 100));
+				 _myData = NarrativeData.createDummyData(getEditorInput().getName(), 3 + (int)(Math.random() * 400));
 				
 				return _myData;
 			}		
