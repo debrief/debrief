@@ -8,14 +8,16 @@
    class="org.mwc.debrief.core.CorePlugin">
 
    <runtime>
-      <library name="debrief_core.jar"/>
+      <library name="debrief_core.jar">
+         <export name="*"/>
+      </library>
    </runtime>
 
    <extension
          point="org.eclipse.ui.editors">
       <editor
             name="Debrief Plot Editor"
-            extensions="xml"
+            extensions="xml,rep"
             icon="icons/sample.gif"
             class="org.mwc.debrief.core.editors.PlotEditor"
             id="org.mwc.debrief.core.editors.PlotEditor">
@@ -35,6 +37,7 @@
       <import plugin="org.mwc.cmap.plotViewer"/>
       <import plugin="org.mwc.cmap.core"/>
       <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.eclipse.ui.editors"/>
       
    </requires>
    <extension-point id="DebriefPlotLoader" name="Plot Loader" schema="schema/DebriefPlotLoader.exsd"/>
@@ -44,6 +47,13 @@
             class="org.mwc.debrief.core.loaders.ReplayLoader"
             extensions="rep"
             name="ReplayLoader"/>
+   </extension>
+   <extension
+         point="org.mwc.debrief.core.DebriefPlotLoader">
+      <loader
+            class="org.mwc.debrief.core.loaders.XMLLoader"
+            extensions="xml"
+            name="Debrief XML Loader"/>
    </extension>
 
 
