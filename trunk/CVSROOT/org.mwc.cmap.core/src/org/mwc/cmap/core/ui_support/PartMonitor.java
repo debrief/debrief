@@ -121,6 +121,10 @@ public class PartMonitor implements IPartListener
 		if (_myEvents == null)
 			return;
 
+		// just check that we've actually received something
+		if(part == null)
+			 return;
+		
 		// ok. see if we are looking for any subjects related to this event
 		HashMap thisEventList = (HashMap) _myEvents.get(event);
 		if (thisEventList != null)
