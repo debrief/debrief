@@ -25,7 +25,7 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public class PlotEditor extends EditorPart{
+public abstract class PlotEditor extends EditorPart{
 
 	////////////////////////////////
 	// member data
@@ -34,22 +34,29 @@ public class PlotEditor extends EditorPart{
 	/** the graphic data we know about
 	 * 
 	 */
-	Layers _myLayers;
+	protected Layers _myLayers;
 	
 	/** handle narrative management
 	 * 
 	 */
-	NarrativeProvider _theNarrativeProvider;
+	protected NarrativeProvider _theNarrativeProvider;
 	
 	/** an object to look after all of the time bits
 	 *
 	 */
-	private TimeManager _timeManager;
+	protected TimeManager _timeManager;
 	
 	/** the object which listens to time-change events.  we remember
 	 * it so that it can be deleted when we close
 	 */
-	private PropertyChangeListener _timeListener;
+	protected PropertyChangeListener _timeListener;
+
+	
+	/////////////////////////////////////////////////
+	// dummy bits applicable for our dummy interface
+	/////////////////////////////////////////////////
+	Button _myButton;
+	Label _myLabel;	
 	
 	////////////////////////////////
 	// constructor
@@ -74,42 +81,7 @@ public class PlotEditor extends EditorPart{
 		_timeManager.addListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 	}
-	
-	
-	/** put some sample data into our objects
-	 * 
-	 */
-	private void createSampleData()
-	{
-		_theNarrativeProvider = new NarrativeProvider()
-		{
-			NarrativeData _myData = null;
-			public NarrativeData getNarrative() {
-				if(_myData == null)
-				 _myData = NarrativeData.createDummyData(getEditorInput().getName(), 3 + (int)(Math.random() * 400));
-				
-				return _myData;
-			}		
-		};
-		_myLayers = new Layers();
-		Layer bl = new BaseLayer();
-		bl.setName("First layer");
-		_myLayers.addThisLayer(bl);
-		bl.add(new LineShape(new WorldLocation(1,1,1), new WorldLocation(2,2,2)));
-		Layer l2 = new BaseLayer();
-		l2.setName("Second layer");
-		_myLayers.addThisLayer(l2);
-		l2.add(new TextLabel(new WorldLocation(1,2,0), "text label"));
-		
-		// make the time manager match the period of the narrative
-		TimePeriod narrativePeriod = _theNarrativeProvider.getNarrative().getTimePeriod();
-		if(narrativePeriod != null)
-		_timeManager.setPeriod(this, narrativePeriod);
-		else
-			System.out.println("NO TIME PERIOD FOR NARRATIVE!");
-		
-		
-	}
+
 	public void dispose() {
 		super.dispose();
 		
@@ -124,16 +96,7 @@ public class PlotEditor extends EditorPart{
 		// TODO Auto-generated method stub
 		
 	}
-	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
-		// TODO Auto-generated method stub
-		setSite(site);
-		setInput(input);
 
-		System.out.println("loading:" + input.getName());
-
-		// and populate our data
-		createSampleData();
-	}
 	public boolean isDirty() {
 		// TODO Auto-generated method stub
 		return false;
@@ -142,9 +105,7 @@ public class PlotEditor extends EditorPart{
 		// TODO Auto-generated method stub
 		return false;
 	}
-	
-	Button _myButton;
-	Label _myLabel;
+
 	
 	public void createPartControl(Composite parent) {
 		Composite myHolder = new Composite(parent, SWT.NONE);
