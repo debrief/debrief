@@ -6,23 +6,22 @@ import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.EditorPart;
-import org.mwc.cmap.core.DataTypes.Narrative.*;
+import org.mwc.cmap.core.DataTypes.Narrative.NarrativeData;
+import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 
-import MWC.GUI.*;
+import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Shapes.LineShape;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public abstract class PlotEditor extends EditorPart{
@@ -201,7 +200,10 @@ public abstract class PlotEditor extends EditorPart{
 	
 	private void updateLabel()
 	{
-		String msg = describeData(getEditorInput().getName(),
+		String msg = "No data yet";
+		if(_theNarrativeProvider != null)
+			msg = describeData(getEditorInput().getName(),
 				_myLayers, _theNarrativeProvider.getNarrative(), _timeManager);
+		
 		_myLabel.setText(msg);
 	}}
