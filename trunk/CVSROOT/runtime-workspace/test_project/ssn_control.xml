@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
+<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="d:\dev\Asset\src\schemas\ASSET.xsd" OutputDirectory=".\">
+	<ObserverList xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="D:\Dev\Asset\src\schemas\ASSET.xsd">
+		<DebriefReplayObserver directory_name="." Active="true" Name="Debrief plot" record_positions="true" record_detections="false" record_decisions="false"/>
+	</ObserverList>
+</ScenarioController>
