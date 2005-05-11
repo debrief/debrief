@@ -317,9 +317,12 @@ public class TimeController extends ViewPart
 
 						// and initialise the current time
 						TimePeriod firstDTG = _myTemporalDataset.getPeriod();
-						_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG
-								.getEndDTG());
-
+						if(firstDTG != null)
+						{
+							_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG
+									.getEndDTG());
+						}
+						
 						checkTimeEnabled();
 					}
 				});
