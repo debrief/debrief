@@ -4,7 +4,7 @@
    id="org.mwc.debrief.core"
    name="Debrief Core"
    version="1.0.0"
-   provider-name="NWC"
+   provider-name="MWC"
    class="org.mwc.debrief.core.CorePlugin">
 
    <runtime>
@@ -17,8 +17,8 @@
             name="Debrief Plot Editor"
             extensions="xml"
             icon="icons/sample.gif"
-            class="org.mwc.cmap.plotViewer.editors.PlotEditor"
-            id="org.mwc.cmap.plotViewer.editors.PlotEditor">
+            class="org.mwc.debrief.core.editors.PlotEditor"
+            id="org.mwc.debrief.core.editors.PlotEditor">
       </editor>
    </extension>
    <extension
@@ -27,12 +27,25 @@
             id="org.mwc.debrief.core.DebriefCategory"
             name="Debrief"/>
    </extension>   
+  
    
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.mwc.cmap.plotViewer"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.cmap.legacy"/>
       
    </requires>
+   <extension-point id="DebriefPlotLoader" name="Plot Loader" schema="schema/DebriefPlotLoader.exsd"/>
+   <extension
+         point="org.mwc.debrief.core.DebriefPlotLoader">
+      <loader
+            class="org.mwc.debrief.core.loaders.ReplayLoader"
+            extensions="rep"
+            name="ReplayLoader"/>
+   </extension>
+
+
 
 </plugin>
