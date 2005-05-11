@@ -17,7 +17,6 @@
       <import plugin="org.junit"/>
       <import plugin="org.mwc.cmap.core"/>
       <import plugin="org.mwc.cmap.legacy"/>
-      <import plugin="org.eclipse.core.resources"/>
    </requires>
 
   <extension
@@ -41,5 +40,5 @@
         point="org.eclipse.core.runtime.preferences">
      <initializer class="org.mwc.cmap.TimeController.preferences.PreferenceInitializer"/>
   </extension>
-
+  
 </plugin>
