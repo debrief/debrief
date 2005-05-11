@@ -3,6 +3,9 @@
  */
 package org.mwc.debrief.core.editors;
 
+import java.util.Enumeration;
+import java.util.Iterator;
+
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -12,11 +15,16 @@ import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.debrief.core.interfaces.INamedItem;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
+import Debrief.Tools.Tote.Watchable;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.TextLabel;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
 
@@ -38,6 +46,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";	
 	
 	private LoaderManager _loader;
+	
+	public PlotEditor()
+	{
+		_myLayers = new Layers();		
+	}
 
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		// TODO Auto-generated method stub
@@ -77,6 +90,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 				IPlotLoader thisLoader = loaders[i];
 				thisLoader.loadFile(this, input);
 				dataLoaded = true;
+				
+				// and update the time management bits
+				TimePeriod timePeriod = getPeriodFor(_myLayers);
+				super._timeManager.setPeriod(this,timePeriod);
+				
+				// also give it a current DTG
+				super._timeManager.setTime(this, timePeriod.getStartDTG());
 			}
 		}
 
@@ -86,6 +106,51 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 			createSampleData();
 		}
 		
+	}
+	
+	private static TimePeriod getPeriodFor(Layers theData)
+	{
+		TimePeriod res = null;
+
+		for (Enumeration iter = theData.elements(); iter.hasMoreElements();)
+		{
+			Layer thisLayer = (Layer) iter.nextElement();
+			
+			// and through this layer
+			if(thisLayer instanceof TrackWrapper)
+			{
+				TrackWrapper thisT = (TrackWrapper) thisLayer;
+				res = extend(res, thisT.getStartDTG());
+				res = extend(res, thisT.getEndDTG());
+			}
+			else if(thisLayer instanceof BaseLayer)				
+			{
+				Enumeration elements = thisLayer.elements();
+				while(elements.hasMoreElements())
+				{
+					Plottable nextP = (Plottable) elements.nextElement();
+					if(nextP instanceof Watchable)
+					{
+						Watchable wrapped = (Watchable) nextP;
+						res = extend(res, wrapped.getTime());
+					}
+				}
+			}
+		}
+		
+		return res;
+	}
+	
+	private static TimePeriod extend(TimePeriod period, HiResDate date)
+	{
+		if(period == null)
+		{
+			period = new TimePeriod.BaseTimePeriod(date, date);
+		}
+		else		
+			period.extend(date);
+		
+		return period;
 	}
 	
 
@@ -105,7 +170,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 				return _myData;
 			}		
 		};
-		_myLayers = new Layers();
+
 		Layer bl = new BaseLayer();
 		bl.setName("First layer");
 		_myLayers.addThisLayer(bl);
