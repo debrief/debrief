@@ -579,8 +579,6 @@ public class TimeController extends ViewPart
 					smallTick = NUM_MILLIS_FOR_STEP;
 					largeTick = smallTick * 10;
 
-					System.out.println("setting tick. small:" + smallTick + " large:"
-							+ largeTick + " drag:" + dragSize);
 					setTickSize(smallTick, largeTick, dragSize);
 
 					// ok, we've finished updating the form. back to normal processing
