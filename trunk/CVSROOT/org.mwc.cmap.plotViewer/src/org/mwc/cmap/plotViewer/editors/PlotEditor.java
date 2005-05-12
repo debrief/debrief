@@ -175,6 +175,10 @@ public abstract class PlotEditor extends EditorPart{
 		{
 			res = res + "Narrative:" + narrative.getData().size() + " elements" + "\n";
 		}
+		else
+		{
+			res = res + "Narrative empty\n";
+		}
 		
 		if(timeManager != null)
 		{
@@ -204,6 +208,11 @@ public abstract class PlotEditor extends EditorPart{
 		if(_theNarrativeProvider != null)
 			msg = describeData(getEditorInput().getName(),
 				_myLayers, _theNarrativeProvider.getNarrative(), _timeManager);
+		else
+			msg = describeData(getEditorInput().getName(),
+					_myLayers, null, _timeManager);
 		
-		_myLabel.setText(msg);
+		
+		if(_myLabel != null)
+			_myLabel.setText(msg);
 	}}
