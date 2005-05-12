@@ -503,16 +503,19 @@ public class NarrativeView extends ViewPart
 
 			// first find the current DTG
 			NarrativeData narr = (NarrativeData) viewer.getInput();
-			NarrativeEntry currentItem = narr.getEntryNearestTo(newDTG);
-
-			// did we find one?
-			if (currentItem != null)
+			if (narr != null)
 			{
-				// yup, store it in a selection
-				IStructuredSelection sel = new StructuredSelection(currentItem);
+				NarrativeEntry currentItem = narr.getEntryNearestTo(newDTG);
 
-				// and update the table
-				viewer.setSelection(sel, _jumpToTimeToggle.isChecked());
+				// did we find one?
+				if (currentItem != null)
+				{
+					// yup, store it in a selection
+					IStructuredSelection sel = new StructuredSelection(currentItem);
+
+					// and update the table
+					viewer.setSelection(sel, _jumpToTimeToggle.isChecked());
+				}
 			}
 		}
 		else
