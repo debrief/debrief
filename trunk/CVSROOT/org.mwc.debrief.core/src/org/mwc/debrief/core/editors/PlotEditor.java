@@ -7,11 +7,13 @@ import java.util.Enumeration;
 import java.util.Iterator;
 
 import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeData;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
+import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.interfaces.INamedItem;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -22,6 +24,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.HiResDate;
@@ -50,13 +53,88 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	public PlotEditor()
 	{
 		_myLayers = new Layers();		
+		
+		_myLayers.addDataExtendedListener(new DataListener(){
+
+			public void dataModified(Layers theData, Layer changedLayer)
+			{}
+
+			public void dataExtended(Layers theData)
+			{
+				layersExtended();
+			}
+
+			public void dataReformatted(Layers theData, Layer changedLayer)
+			{}
+			
+		});
 	}
 
+	/** new data has been added - have a look at the times
+	 * 
+	 *
+	 */
+	private void layersExtended()
+	{
+		
+
+	}
+
+	
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException {
 		// TODO Auto-generated method stub
 		setSite(site);
 		setInput(input);
 
+		// ok - declare and load the supplemental plugins which can load datafiles
+		initialiseFileLoaders();
+
+		// 
+		boolean dataLoaded = false;
+		
+		// right, see if any of them will do our edit
+		IPlotLoader[] loaders = _loader.findLoadersFor(input);
+		
+		// did we find any?
+		if(loaders.length > 0)
+		{
+			// cool, give them a go...
+			try
+			{
+				for (int i = 0; i < loaders.length; i++)
+				{
+					IPlotLoader thisLoader = loaders[i];
+					
+					// get it to load.  Just in case it's an asychronous load operation, we rely on it calling us back (loadingComplete)
+					thisLoader.loadFile(this, input);
+					dataLoaded = true;
+				}
+			}
+			catch (RuntimeException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+
+		if(!dataLoaded)
+		{
+			// and populate our data
+			createSampleData();			
+			dataLoaded = true;
+		}
+		
+		
+		// lastly, set the title (if we have one)
+		this.setPartName(input.getName());
+		this.setContentDescription("Includes imported Replay data");
+	}
+
+	/**
+	 * 
+	 */
+	private void initialiseFileLoaders()
+	{
 		// hey - sort out our plot readers
 		_loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
 		{
@@ -76,36 +154,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 			}
 			
 		};
-
-		// 
-		boolean dataLoaded = false;
-		
-		// right, see if any of them will do our edit
-		IPlotLoader[] loaders = _loader.findLoadersFor(input);
-		
-		if(loaders.length > 0)
-		{
-			for (int i = 0; i < loaders.length; i++)
-			{
-				IPlotLoader thisLoader = loaders[i];
-				thisLoader.loadFile(this, input);
-				dataLoaded = true;
-				
-				// and update the time management bits
-				TimePeriod timePeriod = getPeriodFor(_myLayers);
-				super._timeManager.setPeriod(this,timePeriod);
-				
-				// also give it a current DTG
-				super._timeManager.setTime(this, timePeriod.getStartDTG());
-			}
-		}
-
-		if(!dataLoaded)
-		{
-			// and populate our data
-			createSampleData();
-		}
-		
 	}
 	
 	private static TimePeriod getPeriodFor(Layers theData)
@@ -189,6 +237,28 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 		
 		
 	}
-
+	/** method called when a helper object has completed a plot-load operation
+	 * 
+	 * @param source
+	 */
+	public void loadingComplete(Object source)
+	{
+		CorePlugin.logError(Status.INFO, "File load received", null);
+		
+		super.loadingComplete(source);
+		
+		// and update the time management bits
+		TimePeriod timePeriod = getPeriodFor(_myLayers);
+		
+		if(timePeriod != null)
+		{
+			System.out.println("time period for data found..");
+			
+			super._timeManager.setPeriod(this,timePeriod);
+			
+			// also give it a current DTG
+			super._timeManager.setTime(this, timePeriod.getStartDTG());
+		}				
+	}
 	
 }
