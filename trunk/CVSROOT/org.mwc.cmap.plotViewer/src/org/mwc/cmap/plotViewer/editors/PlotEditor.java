@@ -13,12 +13,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.ui.part.EditorPart;
-import org.mwc.cmap.core.DataTypes.Narrative.NarrativeData;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
@@ -160,7 +160,7 @@ public abstract class PlotEditor extends EditorPart{
 	}
 
 	private static String describeData(String dataName, Layers theLayers, 
-				NarrativeData narrative, TimeManager timeManager)
+				NarrativeWrapper narrative, TimeManager timeManager)
 	{
 		String res = dataName + "\n";
 		
@@ -215,4 +215,13 @@ public abstract class PlotEditor extends EditorPart{
 		
 		if(_myLabel != null)
 			_myLabel.setText(msg);
-	}}
+	}
+	
+	/** method called when a helper object has completed a plot-load operation
+	 * 
+	 * @param source
+	 */
+	public void loadingComplete(Object source)
+	{
+	}
+}

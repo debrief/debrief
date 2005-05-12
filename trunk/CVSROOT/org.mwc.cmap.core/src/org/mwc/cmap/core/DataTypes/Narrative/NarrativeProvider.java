@@ -13,5 +13,5 @@ public interface NarrativeProvider
 	 * 
 	 * @return the narrative
 	 */
-	public NarrativeData getNarrative();
+	public Debrief.Wrappers.NarrativeWrapper getNarrative();
 }

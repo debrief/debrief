@@ -1,23 +1,52 @@
 package org.mwc.cmap.narrative.views;
 
-import java.beans.*;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Iterator;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerFilter;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.DataTypes.Narrative.*;
-import org.mwc.cmap.core.DataTypes.Narrative.NarrativeData.NarrativeEntry;
+import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
+import Debrief.Wrappers.NarrativeWrapper.NarrativeEntry;
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -101,10 +130,10 @@ public class NarrativeView extends ViewPart
 		{
 			boolean res = false;
 
-			if (element instanceof NarrativeData.NarrativeEntry)
+			if (element instanceof NarrativeWrapper.NarrativeEntry)
 			{
-				NarrativeData.NarrativeEntry ne = (NarrativeEntry) element;
-				if (ne.getEntryType().equals("type_1"))
+				NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) element;
+				if (ne.getType().equals("type_1"))
 					res = true;
 			}
 
@@ -472,7 +501,7 @@ public class NarrativeView extends ViewPart
 				{
 					ISelection selection = viewer.getSelection();
 					Object obj = ((IStructuredSelection) selection).getFirstElement();
-					NarrativeData.NarrativeEntry ne = (NarrativeEntry) obj;
+					NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
 					_controllableTime.setTime(this, ne.getDTG());
 				}
 			}
@@ -502,7 +531,7 @@ public class NarrativeView extends ViewPart
 			// move our list to the correct DTG
 
 			// first find the current DTG
-			NarrativeData narr = (NarrativeData) viewer.getInput();
+			NarrativeWrapper narr = (NarrativeWrapper) viewer.getInput();
 			if (narr != null)
 			{
 				NarrativeEntry currentItem = narr.getEntryNearestTo(newDTG);
@@ -540,7 +569,7 @@ public class NarrativeView extends ViewPart
 	private class NarrativeContentProvider implements IStructuredContentProvider,
 			PropertyChangeListener
 	{
-		private NarrativeData currentNarrative;
+		private NarrativeWrapper currentNarrative;
 
 		private StructuredViewer viewer;
 
@@ -558,16 +587,16 @@ public class NarrativeView extends ViewPart
 			{
 				if (currentNarrative != null)
 				{
-					currentNarrative.removePropertyChangeListener(this);
+					currentNarrative.removePropertyChangeListener(NarrativeWrapper.CONTENTS_CHANGED, this);
 				}
 
 				if (newInput != null)
 				{
 					// store the new narrative
-					currentNarrative = (NarrativeData) newInput;
+					currentNarrative = (NarrativeWrapper) newInput;
 
 					// and listen to the new one
-					currentNarrative.addPropertyChangeListener(this);
+					currentNarrative.addPropertyChangeListener(NarrativeWrapper.CONTENTS_CHANGED, this);
 				}
 			}
 		}
@@ -583,7 +612,7 @@ public class NarrativeView extends ViewPart
 			String first = null;
 			if (parent != null)
 			{
-				NarrativeData narr = (NarrativeData) parent;
+				NarrativeWrapper narr = (NarrativeWrapper) parent;
 				if (narr != null)
 					first = "one:" + narr.getName();
 				else
@@ -593,7 +622,7 @@ public class NarrativeView extends ViewPart
 				Iterator iter = narr.getData().iterator();
 				while (iter.hasNext())
 				{
-					NarrativeData.NarrativeEntry ne = (NarrativeEntry) iter.next();
+					NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) iter.next();
 					theNarrs.add(ne);
 				}
 				res = theNarrs.toArray();
@@ -645,7 +674,7 @@ public class NarrativeView extends ViewPart
 		public String getColumnText(Object obj, int index)
 		{
 			String res = null;
-			NarrativeData.NarrativeEntry ne = (NarrativeEntry) obj;
+			NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
 
 			switch (index)
 			{
@@ -656,7 +685,7 @@ public class NarrativeView extends ViewPart
 				res = ne.getTrackName();
 				break;
 			case 2:
-				res = ne.getEntryType();
+				res = ne.getType();
 				break;
 			case 3:
 				res = ne.getEntry();
