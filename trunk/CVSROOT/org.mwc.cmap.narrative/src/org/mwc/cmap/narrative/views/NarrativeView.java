@@ -40,6 +40,7 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -72,6 +73,11 @@ public class NarrativeView extends ViewPart
 	private ViewerFilter filter = null;
 
 	private Action filterToggleAction;
+	
+	/** the action which stores the current DTG as a bookmark
+	 * 
+	 */
+	private Action _setAsBookmarkAction;
 
 	/**
 	 * toggle to indicate whether user wants narrative to always highlight to
@@ -133,8 +139,12 @@ public class NarrativeView extends ViewPart
 			if (element instanceof NarrativeWrapper.NarrativeEntry)
 			{
 				NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) element;
-				if (ne.getType().equals("type_1"))
-					res = true;
+				String thisType = ne.getType();
+				if(thisType != null)
+				{
+					if (thisType.equals("type_1"))
+						res = true;
+				}
 			}
 
 			return res;
@@ -361,6 +371,7 @@ public class NarrativeView extends ViewPart
 		return new TableViewer(table);
 	}
 
+	
 	private void createViewActions()
 	{
 
@@ -442,8 +453,7 @@ public class NarrativeView extends ViewPart
 
 	private void fillContextMenu(IMenuManager manager)
 	{
-		// manager.add(action1);
-		// manager.add(action2);
+		manager.add(_setAsBookmarkAction);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 	}
@@ -488,6 +498,27 @@ public class NarrativeView extends ViewPart
 				.setToolTipText("Make rest of application follow our time");
 		_controllingTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+
+		_setAsBookmarkAction = new Action("Add DTG to bookmarks", Action.AS_PUSH_BUTTON)
+		{
+
+			public void run()
+			{
+				super.run();
+				
+				// get the current selection
+				ISelection selection = viewer.getSelection();
+				NarrativeWrapper.NarrativeEntry current = getCurrentEntry(); 
+					
+				if(current != null)
+				{
+					System.out.println("ADDING: " +  current.getDTGString() + "  AS BOOKMARK");
+				}
+			}
+			
+		};
+		_setAsBookmarkAction.setText("Add");
+		
 	}
 
 	private void hookDoubleClickAction()
@@ -499,15 +530,25 @@ public class NarrativeView extends ViewPart
 				// hmm, are we controlling the narrative time?
 				if (_controllingTimeToggle.isChecked())
 				{
-					ISelection selection = viewer.getSelection();
-					Object obj = ((IStructuredSelection) selection).getFirstElement();
-					NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
+					NarrativeWrapper.NarrativeEntry ne = getCurrentEntry();
 					_controllableTime.setTime(this, ne.getDTG());
 				}
 			}
+
 		});
 	}
 
+	/**
+	 * @return
+	 */
+	private NarrativeWrapper.NarrativeEntry getCurrentEntry()
+	{
+		ISelection selection = viewer.getSelection();
+		Object obj = ((IStructuredSelection) selection).getFirstElement();
+		NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
+		return ne;
+	}
+	
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
