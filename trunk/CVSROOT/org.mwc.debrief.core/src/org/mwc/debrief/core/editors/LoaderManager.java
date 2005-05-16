@@ -11,7 +11,6 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
-import org.eclipse.ui.IEditorInput;
 import org.mwc.debrief.core.interfaces.INamedItem;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -117,7 +116,7 @@ public abstract class LoaderManager
 	 */
 	abstract INamedItem createInstance(IConfigurationElement configElement, String label);
 
-	public IPlotLoader[] findLoadersFor(IEditorInput input)
+	public IPlotLoader[] findLoadersFor(String fileName)
 	{
 		Vector list = new Vector(0,1);
 		
@@ -126,7 +125,7 @@ public abstract class LoaderManager
 			IPlotLoader element = (IPlotLoader) iter.next();
 
 			// can it do it?
-			if(element.canLoad(input))
+			if(element.canLoad(fileName))
 			{
 				// cool, add to the list
 				list.add(element);

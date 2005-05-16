@@ -3,6 +3,7 @@
  */
 package org.mwc.debrief.core.editors;
 
+import java.io.File;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IConfigurationElement;
@@ -51,8 +52,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";
 
+	/** helper object which loads plugin file-loaders
+	 * 
+	 */
 	private LoaderManager _loader;
 
+	/** constructor - quite simple really.
+	 * 
+	 *
+	 */
 	public PlotEditor()
 	{
 		_myLayers = new Layers();
@@ -94,12 +102,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 		// ok - declare and load the supplemental plugins which can load datafiles
 		initialiseFileLoaders();
 
-		// 
-		boolean dataLoaded = false;
+		// and start the load
+		loadThisFile(input);
 
+		// lastly, set the title (if we have one)
+		this.setPartName(input.getName());
+		this.setContentDescription("Includes imported Replay data");
+	}
+
+	/**
+	 * @param input the file to insert
+	 */
+	private void loadThisFile(IEditorInput input)
+	{
 		// right, see if any of them will do our edit
-		IPlotLoader[] loaders = _loader.findLoadersFor(input);
-
+		IPlotLoader[] loaders = _loader.findLoadersFor(input.getName());
 		// did we find any?
 		if (loaders.length > 0)
 		{
@@ -113,7 +130,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 					// get it to load. Just in case it's an asychronous load operation, we
 					// rely on it calling us back (loadingComplete)
 					thisLoader.loadFile(this, input);
-					dataLoaded = true;
 				}
 			}
 			catch (RuntimeException e)
@@ -122,17 +138,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 				e.printStackTrace();
 			}
 		}
-
-		if (!dataLoaded)
-		{
-			// and populate our data
-			createSampleData();
-			dataLoaded = true;
-		}
-
-		// lastly, set the title (if we have one)
-		this.setPartName(input.getName());
-		this.setContentDescription("Includes imported Replay data");
 	}
 
 	/**
@@ -292,4 +297,25 @@ public void loadingComplete(Object source)
 		}
 		
 	}
+
+	protected void filesDropped(String[] fileNames)
+	{
+		super.filesDropped(fileNames);
+		
+		// ok, iterate through the files
+		for (int i = 0; i < fileNames.length; i++)
+		{
+			final String thisFilename = fileNames[i];			
+			File thisFile = new File(thisFilename);
+//			org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF = new org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
+//			IFile theFile = (IFile) localF.getAdapter(IFile.class);			
+//			FileEditorInput theInput = new FileEditorInput(theFile); 
+//			this.loadThisFile(theInput);			
+			
+		}
+		
+		// ok, get loading.
+	}
+
+	
 }
