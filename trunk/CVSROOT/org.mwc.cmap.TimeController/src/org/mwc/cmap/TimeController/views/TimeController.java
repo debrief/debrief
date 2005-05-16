@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
@@ -276,7 +277,7 @@ public class TimeController extends ViewPart
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						_myTemporalDataset = (TimeProvider) part;
@@ -329,7 +330,7 @@ public class TimeController extends ViewPart
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// are we still listening?
 						if (_myTemporalDataset != null)
@@ -343,7 +344,7 @@ public class TimeController extends ViewPart
 		_myPartMonitor.addPartListener(ControllableTime.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						ControllableTime ct = (ControllableTime) part;
@@ -355,7 +356,7 @@ public class TimeController extends ViewPart
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = null;
