@@ -25,7 +25,7 @@ public class PartMonitor implements IPartListener
 
 	public static interface ICallback
 	{
-		public void eventTriggered(String type, Object instance);
+		public void eventTriggered(String type, Object instance, IWorkbenchPart parentPart);
 	}
 
 	public final static String ACTIVATED = "ACTIVATED";
@@ -146,7 +146,7 @@ public class PartMonitor implements IPartListener
 						while(iter2.hasNext())
 						{
 							PartMonitor.ICallback callback = (PartMonitor.ICallback) iter2.next();
-							callback.eventTriggered(event, adaptedItem);
+							callback.eventTriggered(event, adaptedItem, part);
 						}
 					}
 				}
@@ -291,7 +291,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(String.class, PartMonitor.OPENED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part)
+						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 						{
 							_openedCalled = true;
 							_eventNames.add(type);
@@ -303,7 +303,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(String.class, PartMonitor.CLOSED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part)
+						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 						{
 							_closedCalled = true;
 							_eventNames.add(type);
@@ -335,7 +335,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(Integer.class, PartMonitor.OPENED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part)
+						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 						{
 							_openedCalled = true;
 							_eventNames.add(type);
@@ -345,7 +345,7 @@ public class PartMonitor implements IPartListener
 			pm.addPartListener(Integer.class, PartMonitor.CLOSED,
 					new PartMonitor.ICallback()
 					{
-						public void eventTriggered(String type, Object part)
+						public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 						{
 							_closedCalled = true;
 							_eventNames.add(type);
