@@ -18,6 +18,8 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.mwc.cmap.legacy"/>
       <import plugin="org.junit"/>
+      <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.eclipse.core.resources"/>
    </requires>
 
 </plugin>
