@@ -27,10 +27,10 @@ public interface IPlotLoader extends INamedItem
 	
 	/** test whether this loader can load the suppled input source
 	 * 
-	 * @param input the input file to check
+	 * @param fileName the input file to check
 	 * @return yes/no
 	 */
-	public boolean canLoad(IEditorInput input);
+	public boolean canLoad(String fileName);
 	
 	/** utility method to initialise this loader - we need to do
 	 * this since when we use these objects as plugins Eclipse has to 
@@ -72,12 +72,12 @@ public interface IPlotLoader extends INamedItem
 		
 		/** test whether this loader can load the suppled input source
 		 * 
-		 * @param input the input file to check
+		 * @param fileName the input file to check
 		 * @return yes/no
 		 */
-		public boolean canLoad(IEditorInput input)
+		public boolean canLoad(String fileName)
 		{
-			return (input.getName().toUpperCase().indexOf(_fileTypes.toUpperCase()) > 0);
+			return (fileName.toUpperCase().indexOf(_fileTypes.toUpperCase()) > 0);
 		}
 		
 	
