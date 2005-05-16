@@ -41,6 +41,7 @@
       <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.debug.core"/>
       
    </requires>
    <extension-point id="DebriefPlotLoader" name="Plot Loader" schema="schema/DebriefPlotLoader.exsd"/>
