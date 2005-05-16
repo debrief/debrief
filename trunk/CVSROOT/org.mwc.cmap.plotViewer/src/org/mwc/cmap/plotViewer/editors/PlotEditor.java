@@ -1,17 +1,28 @@
 package org.mwc.cmap.plotViewer.editors;
 
+import interfaces.IResourceProvider;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
@@ -24,7 +35,8 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public abstract class PlotEditor extends EditorPart{
+public abstract class PlotEditor extends EditorPart implements IResourceProvider
+{
 
 	////////////////////////////////
 	// member data
@@ -51,11 +63,17 @@ public abstract class PlotEditor extends EditorPart{
 	protected PropertyChangeListener _timeListener;
 
 	
+	// drag-drop bits
+	
+	protected DropTarget target;
+	
 	/////////////////////////////////////////////////
 	// dummy bits applicable for our dummy interface
 	/////////////////////////////////////////////////
 	Button _myButton;
-	Label _myLabel;	
+	Label _myLabel;
+
+	private Composite _plotPanel;	
 	
 	////////////////////////////////
 	// constructor
@@ -107,9 +125,9 @@ public abstract class PlotEditor extends EditorPart{
 
 	
 	public void createPartControl(Composite parent) {
-		Composite myHolder = new Composite(parent, SWT.NONE);
-		myHolder.setLayout(new FillLayout());
-		_myButton = new Button(myHolder, SWT.NONE);
+		_plotPanel = new Composite(parent, SWT.NONE);
+		_plotPanel.setLayout(new FillLayout());
+		_myButton = new Button(_plotPanel, SWT.NONE);
 		_myButton.setText("push me");
 		
 
@@ -124,10 +142,77 @@ public abstract class PlotEditor extends EditorPart{
 			}
 		});
 		
-		_myLabel = new Label(myHolder, SWT.NONE);
+		_myLabel = new Label(_plotPanel, SWT.NONE);
 		_myLabel.setText("the label");
 
+		//and the drop support
+		configureFileDropSupport();
+		
 	}
+	
+	/** sort out the file-drop target
+	 * 
+	 *
+	 */
+	private void configureFileDropSupport()
+	{
+		int dropOperation = DND.DROP_COPY;
+		Transfer[] dropTypes = {FileTransfer.getInstance()};
+			
+		target = new DropTarget(_plotPanel, dropOperation);
+		target.setTransfer(dropTypes);
+		target.addDropListener(new DropTargetListener()
+		{
+			public void dragEnter(DropTargetEvent event)
+			{
+				if(FileTransfer.getInstance().isSupportedType(event.currentDataType))
+				{
+					if(event.detail != DND.DROP_COPY)
+					{
+						event.detail = DND.DROP_COPY;
+					}
+				}
+			}
+
+			public void dragLeave(DropTargetEvent event)
+			{			}
+
+			public void dragOperationChanged(DropTargetEvent event)
+			{			}
+
+			public void dragOver(DropTargetEvent event)
+			{			}
+
+			public void dropAccept(DropTargetEvent event)
+			{			}
+
+			public void drop(DropTargetEvent event)
+			{
+				String[] fileNames = null;
+				if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
+				{
+					fileNames = (String[])event.data;			
+				}				
+				if(fileNames != null)
+				{
+					filesDropped(fileNames);
+				}
+			}
+			
+		});
+		
+		
+	}
+
+	/** process the files dropped onto this panel
+	 * 
+	 * @param fileNames list of filenames
+	 */
+	protected void filesDropped(String[] fileNames)
+	{
+		System.out.println("Files dropped");
+	}
+
 	public void setFocus() {
 		// TODO Auto-generated method stub
 		
@@ -154,6 +239,23 @@ public abstract class PlotEditor extends EditorPart{
 		else if(adapter == ControllableTime.class)
 		{
 			return _timeManager;
+		}
+		else if (adapter == IGotoMarker.class)
+		{
+			return new IGotoMarker()
+			{
+				public void gotoMarker(IMarker marker)
+				{
+						String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
+						if(lineNum != "na")
+						{
+							// right, convert to DTG
+							HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
+						  _timeManager.setTime(this, tNow);
+						}
+				}
+				
+			};
 		}
 		
 		return res;
@@ -223,5 +325,15 @@ public abstract class PlotEditor extends EditorPart{
 	 */
 	public void loadingComplete(Object source)
 	{
+	}
+	
+	/** return the file representing where this plot is stored
+	 * 
+	 * @return the file location
+	 */
+	public IResource getResource()
+	{
+		// have we been saved yet?
+		return null;
 	}
 }
