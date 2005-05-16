@@ -2,17 +2,24 @@ package org.mwc.cmap.narrative.views;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.IWorkspace;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ColumnWeightData;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
@@ -36,18 +43,21 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
-import Debrief.Wrappers.NarrativeWrapper.NarrativeEntry;
 import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.NarrativeWrapper.NarrativeEntry;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -73,9 +83,9 @@ public class NarrativeView extends ViewPart
 	private ViewerFilter filter = null;
 
 	private Action filterToggleAction;
-	
-	/** the action which stores the current DTG as a bookmark
-	 * 
+
+	/**
+	 * the action which stores the current DTG as a bookmark
 	 */
 	private Action _setAsBookmarkAction;
 
@@ -123,12 +133,16 @@ public class NarrativeView extends ViewPart
 	 */
 	private ControllableTime _controllableTime;
 
+	/**
+	 * the editor currently providing our narrative
+	 */
+	protected IEditorPart _currentEditor;
+
 	public class Type1_Filter extends ViewerFilter
 	{
 
 		/**
 		 * Return true if the political unit is county or smaller
-		 * 
 		 * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer,
 		 *      java.lang.Object, java.lang.Object)
 		 */
@@ -140,7 +154,7 @@ public class NarrativeView extends ViewPart
 			{
 				NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) element;
 				String thisType = ne.getType();
-				if(thisType != null)
+				if (thisType != null)
 				{
 					if (thisType.equals("type_1"))
 						res = true;
@@ -197,11 +211,9 @@ public class NarrativeView extends ViewPart
 		_myPartMonitor.addPartListener(NarrativeProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						NarrativeProvider np = (NarrativeProvider) part;
-						viewer.setInput(np.getNarrative());
+						storeDetails(part, parentPart);
 					}
 				});
 
@@ -210,18 +222,17 @@ public class NarrativeView extends ViewPart
 		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						NarrativeProvider np = (NarrativeProvider) part;
-						viewer.setInput(np.getNarrative());
+						storeDetails(part, parentPart);
 					}
+
 				});
 
 		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						NarrativeProvider provider = (NarrativeProvider) part;
@@ -230,13 +241,14 @@ public class NarrativeView extends ViewPart
 						{
 							// yes, better clear the view then
 							viewer.setInput(null);
+							_currentEditor = null;
 						}
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// just check we're not already looking at it
 						if (part != _myTemporalDataset)
@@ -263,7 +275,7 @@ public class NarrativeView extends ViewPart
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						_myTemporalDataset = (TimeProvider) part;
@@ -286,7 +298,7 @@ public class NarrativeView extends ViewPart
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						_myTemporalDataset.removeListener(_temporalListener,
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -295,7 +307,7 @@ public class NarrativeView extends ViewPart
 		_myPartMonitor.addPartListener(ControllableTime.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						ControllableTime ct = (ControllableTime) part;
@@ -305,7 +317,7 @@ public class NarrativeView extends ViewPart
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						ControllableTime ct = (ControllableTime) part;
@@ -315,12 +327,13 @@ public class NarrativeView extends ViewPart
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = null;
 					}
 				});
+
 
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
@@ -329,8 +342,7 @@ public class NarrativeView extends ViewPart
 	}
 
 	/**
-	 * @param parent
-	 *          what we have to fit into
+	 * @param parent what we have to fit into
 	 */
 	private static TableViewer createTableWithColumns(Composite parent)
 	{
@@ -371,7 +383,6 @@ public class NarrativeView extends ViewPart
 		return new TableViewer(table);
 	}
 
-	
 	private void createViewActions()
 	{
 
@@ -401,7 +412,6 @@ public class NarrativeView extends ViewPart
 
 	/*
 	 * (non-Javadoc)
-	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
 	public void dispose()
@@ -499,26 +509,69 @@ public class NarrativeView extends ViewPart
 		_controllingTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 
-		_setAsBookmarkAction = new Action("Add DTG to bookmarks", Action.AS_PUSH_BUTTON)
+		_setAsBookmarkAction = new Action("Add DTG to bookmarks",
+				Action.AS_PUSH_BUTTON)
 		{
 
 			public void run()
 			{
 				super.run();
-				
+
 				// get the current selection
 				ISelection selection = viewer.getSelection();
-				NarrativeWrapper.NarrativeEntry current = getCurrentEntry(); 
-					
-				if(current != null)
-				{
-					System.out.println("ADDING: " +  current.getDTGString() + "  AS BOOKMARK");
-				}
+				NarrativeWrapper.NarrativeEntry current = getCurrentEntry();
+
+				addMarker(current);
 			}
-			
+
 		};
 		_setAsBookmarkAction.setText("Add");
-		
+
+	}
+
+	protected void addMarker(NarrativeEntry entry)
+	{
+		IWorkspace space = org.eclipse.core.resources.ResourcesPlugin
+				.getWorkspace();
+		try
+		{
+			// right, do we have an editor with a file?
+			IEditorInput input = _currentEditor.getEditorInput();
+			if (input instanceof IFileEditorInput)
+			{
+				// aaah, and is there a file present?
+				IFileEditorInput ife = (IFileEditorInput) input;
+				IResource file = ife.getFile();
+				if (file != null)
+				{
+					// yup, get the description
+					InputDialog inputD = new InputDialog(getViewSite().getShell(),
+							"Add bookmark at this DTG", "Enter description of this bookmark",
+							"", null);
+					inputD.open();
+
+					String content = inputD.getValue();
+					if (content != null)
+					{
+						IMarker marker = file.createMarker(IMarker.BOOKMARK);
+						Map attributes = new HashMap(4);
+						attributes.put(IMarker.MESSAGE, content + "-"
+								+ entry.getDTGString());
+						attributes.put(IMarker.LOCATION, "plot title");
+						attributes.put(IMarker.LINE_NUMBER, "" + entry.getDTG().getMicros());
+						attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
+						marker.setAttributes(attributes);
+					}
+				}
+
+			}
+		}
+		catch (CoreException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
 	}
 
 	private void hookDoubleClickAction()
@@ -548,7 +601,7 @@ public class NarrativeView extends ViewPart
 		NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
 		return ne;
 	}
-	
+
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
@@ -556,6 +609,22 @@ public class NarrativeView extends ViewPart
 	{
 		viewer.getControl().setFocus();
 	}
+	
+
+	/**
+	 * @param part
+	 * @param parentPart
+	 */
+	private void storeDetails(Object part, IWorkbenchPart parentPart)
+	{
+		// implementation here.
+		NarrativeProvider np = (NarrativeProvider) part;
+		viewer.setInput(np.getNarrative());
+		if(parentPart instanceof IEditorPart)
+		{
+			_currentEditor = (IEditorPart)parentPart;
+		}
+	}	
 
 	// //////////////////////////////
 	// temporal data management
@@ -603,7 +672,6 @@ public class NarrativeView extends ViewPart
 	 * view. It can wrap existing objects in adapters or simply return objects
 	 * as-is. These objects may be sensitive to the current input of the view, or
 	 * ignore it and always show the same content (like Task List, for example).
-	 * 
 	 * @author ian.mayo created: {date}
 	 */
 
@@ -628,7 +696,8 @@ public class NarrativeView extends ViewPart
 			{
 				if (currentNarrative != null)
 				{
-					currentNarrative.removePropertyChangeListener(NarrativeWrapper.CONTENTS_CHANGED, this);
+					currentNarrative.removePropertyChangeListener(
+							NarrativeWrapper.CONTENTS_CHANGED, this);
 				}
 
 				if (newInput != null)
@@ -637,7 +706,8 @@ public class NarrativeView extends ViewPart
 					currentNarrative = (NarrativeWrapper) newInput;
 
 					// and listen to the new one
-					currentNarrative.addPropertyChangeListener(NarrativeWrapper.CONTENTS_CHANGED, this);
+					currentNarrative.addPropertyChangeListener(
+							NarrativeWrapper.CONTENTS_CHANGED, this);
 				}
 			}
 		}
@@ -674,7 +744,6 @@ public class NarrativeView extends ViewPart
 
 		/*
 		 * (non-Javadoc)
-		 * 
 		 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 		 */
 		public void propertyChange(PropertyChangeEvent arg0)
@@ -698,7 +767,6 @@ public class NarrativeView extends ViewPart
 
 	/**
 	 * how to show a narrative as a series of labels
-	 * 
 	 * @author ian.mayo
 	 */
 	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
