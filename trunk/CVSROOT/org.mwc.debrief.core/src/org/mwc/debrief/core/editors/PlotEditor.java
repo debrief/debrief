@@ -262,8 +262,6 @@ public void loadingComplete(Object source)
 	{
 		CorePlugin.logError(Status.INFO, "File load received", null);
 		
-		super.loadingComplete(source);
-		
 		// and update the time management bits
 		TimePeriod timePeriod = getPeriodFor(_myLayers);
 		

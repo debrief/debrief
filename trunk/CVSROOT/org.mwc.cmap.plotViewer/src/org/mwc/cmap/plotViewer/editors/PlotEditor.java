@@ -1,5 +1,6 @@
 package org.mwc.cmap.plotViewer.editors;
 
+import interfaces.IControllableView;
 import interfaces.IResourceProvider;
 
 import java.beans.PropertyChangeEvent;
@@ -30,12 +31,15 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 
 import Debrief.Wrappers.NarrativeWrapper;
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public abstract class PlotEditor extends EditorPart implements IResourceProvider
+public abstract class PlotEditor extends EditorPart implements IResourceProvider,
+	IControllableView
 {
 
 	////////////////////////////////
@@ -323,9 +327,7 @@ public abstract class PlotEditor extends EditorPart implements IResourceProvider
 	 * 
 	 * @param source
 	 */
-	public void loadingComplete(Object source)
-	{
-	}
+	abstract public void loadingComplete(Object source);
 	
 	/** return the file representing where this plot is stored
 	 * 
@@ -336,4 +338,31 @@ public abstract class PlotEditor extends EditorPart implements IResourceProvider
 		// have we been saved yet?
 		return null;
 	}
+
+	public WorldArea getViewport()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setViewport(WorldArea target)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public PlainProjection getProjection()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void setProjection(PlainProjection proj)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
+	
 }
