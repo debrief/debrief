@@ -1,6 +1,6 @@
 package org.mwc.cmap.plotViewer.editors;
 
-import interfaces.IControllableView;
+import interfaces.IControllableViewport;
 import interfaces.IResourceProvider;
 
 import java.beans.PropertyChangeEvent;
@@ -39,7 +39,7 @@ import MWC.GenericData.WorldArea;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public abstract class PlotEditor extends EditorPart implements IResourceProvider,
-	IControllableView
+	IControllableViewport
 {
 
 	////////////////////////////////
