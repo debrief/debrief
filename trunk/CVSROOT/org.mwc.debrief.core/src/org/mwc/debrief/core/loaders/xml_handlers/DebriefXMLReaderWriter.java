@@ -6,7 +6,7 @@
 
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import interfaces.IControllableView;
+import interfaces.IControllableViewport;
 
 import java.io.IOException;
 
@@ -42,7 +42,7 @@ public final class DebriefXMLReaderWriter extends MWC.Utilities.ReaderWriter.XML
   public final void importThis(final String fName,
                                final java.io.InputStream is,
                                Layers destination,
-                               IControllableView view)
+                               IControllableViewport view)
   {
     // create the handler for this type of data
     final MWCXMLReader handler = new PlotHandler(fName, destination, view);

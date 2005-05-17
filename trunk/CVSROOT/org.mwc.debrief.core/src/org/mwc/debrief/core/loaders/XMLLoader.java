@@ -3,7 +3,7 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import interfaces.IControllableView;
+import interfaces.IControllableViewport;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -54,7 +54,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	public void doTheLoad(Layers destination, 
 			InputStream source, 
 			String fileName,
-			IControllableView view)
+			IControllableViewport view)
 	{			
 		_myReader.importThis(fileName, source ,destination, view);
 	}

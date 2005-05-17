@@ -1,6 +1,6 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import interfaces.IControllableView;
+import interfaces.IControllableViewport;
 import MWC.GUI.Layers;
 
 /**
@@ -16,7 +16,7 @@ import MWC.GUI.Layers;
 final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  public PlotHandler(String fileName, Layers destination, IControllableView view)
+  public PlotHandler(String fileName, Layers destination, IControllableViewport view)
   {
     // inform our parent what type of class we are
     super("plot");

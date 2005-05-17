@@ -1,6 +1,6 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import interfaces.IControllableView;
+import interfaces.IControllableViewport;
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
@@ -17,7 +17,7 @@ import MWC.GUI.Layers;
 
 public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  public SessionHandler(Layers _theLayers, final IControllableView  view)
+  public SessionHandler(Layers _theLayers, final IControllableViewport  view)
   {
     // inform our parent what type of class we are
     super("session");
