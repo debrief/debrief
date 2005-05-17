@@ -499,7 +499,7 @@ public class NarrativeView extends ViewPart
 		_jumpToTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
-		_controllingTimeToggle = new Action("Jump to time", Action.AS_CHECK_BOX)
+		_controllingTimeToggle = new Action("Control time", Action.AS_CHECK_BOX)
 		{
 		};
 		_controllingTimeToggle.setText("Control time");
