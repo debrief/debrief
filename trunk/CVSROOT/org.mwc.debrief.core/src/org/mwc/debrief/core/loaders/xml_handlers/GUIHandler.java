@@ -1,0 +1,134 @@
+package org.mwc.debrief.core.loaders.xml_handlers;
+
+/**
+ * Title:        Debrief 2000
+ * Description:  Debrief 2000 Track Analysis Software
+ * Copyright:    Copyright (c) 2000
+ * Company:      MWC
+ * @author Ian Mayo
+ * @version 1.0
+ */
+
+import java.awt.Color;
+
+import org.w3c.dom.Element;
+
+import Debrief.ReaderWriter.XML.GUI.BackgroundHandler;
+import Debrief.ReaderWriter.XML.GUI.ToteHandler;
+
+
+public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+{
+
+  static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
+
+  public GUIHandler()
+  {
+    // inform our parent what type of class we are
+    super("gui");
+
+ //   addHandler(new ToteHandler(null, null));
+//    addHandler(new ComponentHandler(){
+//      public void addComponent(ComponentDetails details)
+//      {
+//        addThisComponent(details);
+//      }
+//    });
+    addHandler(new BackgroundHandler()
+    {
+      public void setBackgroundColor(Color theColor)
+      {
+//      	
+//        PlainView pv = _session.getCurrentView();
+//        if(pv instanceof AnalysisView)
+//        {
+//          AnalysisView av = (AnalysisView)pv;
+//          av.getChart().getCanvas().setBackgroundColor(theColor);
+//        }
+      }
+    });
+
+    // collate our list of exporters
+//    if(_myStepperHandler == null)
+//      _myStepperHandler = new StepperHandler();
+//
+//    _myCreators.put("Stepper", _myStepperHandler);
+  }
+
+  private void addThisComponent(ComponentDetails details)
+  {
+//    // sort out this component
+//    String cType = details.type;
+//
+//    ComponentCreator cc = (ComponentCreator)_myCreators.get(cType);
+//    if(cc != null)
+//    {
+//      cc.makeThis(details, _analysisView);
+//    }
+//    else
+//      MWC.Utilities.Errors.Trace.trace("XML Handler not found for " + cType);
+  }
+
+  static public final class ComponentDetails
+  {
+    public final java.util.Hashtable properties = new java.util.Hashtable();
+    public String type = null;
+    public final void addProperty(String name, String val)
+    {
+      properties.put(name, val);
+    }
+    public final void exportTo(String title, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+    {
+      Element comp = doc.createElement("component");
+      comp.setAttribute("Type", title);
+      java.util.Enumeration iter = properties.keys();
+      while(iter.hasMoreElements())
+      {
+        String thisK = (String)iter.nextElement();
+        String value = (String)properties.get(thisK);
+        MWC.Utilities.ReaderWriter.XML.Util.PropertyHandler.exportProperty(thisK, value, comp, doc);
+      }
+
+      parent.appendChild(comp);
+    }
+  }
+
+  public static  interface ComponentCreator
+  {
+    public void makeThis(ComponentDetails details, Debrief.GUI.Views.AnalysisView view);
+  }
+
+  /////////////////////////////////////////////////////////////////////////
+  // the constructors for our components
+  /////////////////////////////////////////////////////////////////////////
+
+  public static void exportThis(Debrief.GUI.Frames.Session session, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+  {
+    // create ourselves
+    Element gui = doc.createElement("gui");
+
+    ////////////////////////////////////////////////
+    // first the tote
+    ////////////////////////////////////////////////
+    ToteHandler.exportTote(session, gui, doc);
+
+    // try to export the other features
+
+    // check the stepper handler
+//    if(_myStepperHandler == null)
+//      _myStepperHandler = new StepperHandler();
+//    ComponentDetails stepperD = _myStepperHandler.exportThis(session);
+//    stepperD.exportTo("Stepper", gui, doc);
+//
+//    PlainView pv = session.getCurrentView();
+//    if(pv instanceof AnalysisView)
+//    {
+//      AnalysisView av = (AnalysisView)pv;
+//      Color col = av.getChart().getCanvas().getBackgroundColor();
+//      BackgroundHandler.exportThis(col, gui, doc);
+//    }
+//
+//    parent.appendChild(gui);
+  }
+
+}
