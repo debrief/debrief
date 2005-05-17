@@ -542,12 +542,13 @@ public class NarrativeView extends ViewPart
 				// aaah, and is there a file present?
 				IFileEditorInput ife = (IFileEditorInput) input;
 				IResource file = ife.getFile();
+				String currentText = entry.getEntry();
 				if (file != null)
 				{
 					// yup, get the description
 					InputDialog inputD = new InputDialog(getViewSite().getShell(),
 							"Add bookmark at this DTG", "Enter description of this bookmark",
-							"", null);
+							currentText, null);
 					inputD.open();
 
 					String content = inputD.getValue();
