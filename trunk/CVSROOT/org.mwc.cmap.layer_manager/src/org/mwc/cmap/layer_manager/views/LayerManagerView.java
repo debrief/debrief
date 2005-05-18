@@ -1,6 +1,9 @@
 package org.mwc.cmap.layer_manager.views;
 
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -11,8 +14,16 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.ui.*;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.SWT;
+import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.views.support.ViewContentProvider;
 import org.mwc.cmap.layer_manager.views.support.ViewLabelProvider;
+
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -31,7 +42,15 @@ import org.mwc.cmap.layer_manager.views.support.ViewLabelProvider;
 
 public class LayerManagerView extends ViewPart
 {
-	private TreeViewer viewer;
+	
+
+	/**
+	 * helper application to help track creation/activation of new plots
+	 */
+	private PartMonitor _myPartMonitor;
+	
+	
+	private TreeViewer _treeViewer;
 
 	private DrillDownAdapter drillDownAdapter;
 
@@ -41,9 +60,42 @@ public class LayerManagerView extends ViewPart
 
 	private Action doubleClickAction;
 
+
+	private Layers _myLayers;
+
+
+	private Layers.DataListener _myLayersListener;
+
 	class NameSorter extends ViewerSorter
 	{
 	}
+	
+	
+
+	public void dispose()
+	{
+		// TODO Auto-generated method stub
+		super.dispose();
+		
+		// make sure we close the listeners
+		clearLayerListener();
+
+	}
+	
+
+	/** stop listening to the layer, if necessary
+	 * 
+	 *
+	 */
+	private void clearLayerListener()
+	{
+		if(_myLayers != null)
+		{
+		_myLayers.removeDataExtendedListener(_myLayersListener);
+		_myLayersListener = null;
+		_myLayers = null;
+		}
+	}	
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -51,15 +103,15 @@ public class LayerManagerView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		viewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		drillDownAdapter = new DrillDownAdapter(viewer);
-		viewer.setContentProvider(new ViewContentProvider(this));
-		viewer.setLabelProvider(new ViewLabelProvider(this));
-		viewer.setSorter(new NameSorter());
-		viewer.setInput(getViewSite());
+		_treeViewer = new TreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		drillDownAdapter = new DrillDownAdapter(_treeViewer);
+		_treeViewer.setContentProvider(new ViewContentProvider(this));
+		_treeViewer.setLabelProvider(new ViewLabelProvider(this));
+		_treeViewer.setSorter(new NameSorter());
+		_treeViewer.setInput(getViewSite());
 
 		// and format the tree
-		Tree tree = viewer.getTree();
+		Tree tree = _treeViewer.getTree();
 		tree.setHeaderVisible(true);
 		formatTree(tree);
 
@@ -67,6 +119,48 @@ public class LayerManagerView extends ViewPart
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
+		
+		
+		// and setup the part monitoring
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
+				.getPartService());
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						processNewLayers(part);
+					}
+				});
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						processNewLayers(part);
+					}
+				});
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// is this our set of layers?
+						if(part == _myLayers)
+						{
+							clearLayerListener();
+						}
+					}
+
+				});
+
+		// ok we're all ready now. just try and see if the current part is valid
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
+				.getActivePage());		
+		
+		// set ourselves as selection source
+		getSite().setSelectionProvider(_treeViewer);
+		
 	}
 
 	private void formatTree(Tree tree)
@@ -91,9 +185,9 @@ public class LayerManagerView extends ViewPart
 				LayerManagerView.this.fillContextMenu(manager);
 			}
 		});
-		Menu menu = menuMgr.createContextMenu(viewer.getControl());
-		viewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, viewer);
+		Menu menu = menuMgr.createContextMenu(_treeViewer.getControl());
+		_treeViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, _treeViewer);
 	}
 
 	private void contributeToActionBars()
@@ -157,7 +251,7 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				ISelection selection = viewer.getSelection();
+				ISelection selection = _treeViewer.getSelection();
 				Object obj = ((IStructuredSelection) selection).getFirstElement();
 				showMessage("Double-click detected on " + obj.toString());
 			}
@@ -166,7 +260,7 @@ public class LayerManagerView extends ViewPart
 
 	private void hookDoubleClickAction()
 	{
-		viewer.addDoubleClickListener(new IDoubleClickListener()
+		_treeViewer.addDoubleClickListener(new IDoubleClickListener()
 		{
 			public void doubleClick(DoubleClickEvent event)
 			{
@@ -177,7 +271,7 @@ public class LayerManagerView extends ViewPart
 
 	private void showMessage(String message)
 	{
-		MessageDialog.openInformation(viewer.getControl().getShell(),
+		MessageDialog.openInformation(_treeViewer.getControl().getShell(),
 				"Layer Manager", message);
 	}
 
@@ -186,6 +280,44 @@ public class LayerManagerView extends ViewPart
 	 */
 	public void setFocus()
 	{
-		viewer.getControl().setFocus();
+		_treeViewer.getControl().setFocus();
+	}
+
+
+	private void processNewLayers(Object part)
+	{
+		// just check we're not already looking at it
+		if (part != _myLayers)
+		{
+			// implementation here.
+			_myLayers = (Layers) part;
+			if (_myLayersListener == null)
+			{
+				_myLayersListener = new Layers.DataListener()
+				{
+
+					public void dataModified(Layers theData, Layer changedLayer)
+					{
+					}
+
+					public void dataExtended(Layers theData)
+					{
+						processNewData(theData);
+					}
+
+					public void dataReformatted(Layers theData, Layer changedLayer)
+					{									}
+				};
+			}
+			_myLayers.addDataExtendedListener(_myLayersListener);
+			
+			// do an initial population.
+			processNewData(_myLayers);
+		}
+	}
+	
+	private void processNewData(Layers theData)
+	{
+		_treeViewer.setInput(theData);
 	}
 }

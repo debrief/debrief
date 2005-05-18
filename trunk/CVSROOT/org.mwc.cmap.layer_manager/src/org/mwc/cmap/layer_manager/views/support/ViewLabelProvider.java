@@ -10,6 +10,8 @@ import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
 
+import MWC.GUI.Plottable;
+
 public class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
 {
 
@@ -56,7 +58,14 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 		if (columnIndex == 0)
 			res = getText(element);
 		else
-			res = "-";
+		{
+			// sort out the visibility
+			Plottable pl = (Plottable) element;
+			if(pl.getVisible())
+			  res = "y";
+			else
+				res = "n";
+		}
 
 		return res;
 	}

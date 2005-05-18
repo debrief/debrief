@@ -3,10 +3,18 @@
  */
 package org.mwc.cmap.layer_manager.views.support;
 
+import java.util.Enumeration;
+import java.util.Vector;
+
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
+
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GUI.Plottables;
 
 
 /*
@@ -46,15 +54,29 @@ public class ViewContentProvider implements IStructuredContentProvider,
 
 	public Object[] getElements(Object parent)
 	{
+		Object[] res = null;
 		if (parent.equals(_myViewProvider.getViewSite()))
 		{
-			if (invisibleRoot == null)
-				initialize();
-			
-			System.out.println("returning children for invisible root");
-			return getChildren(invisibleRoot);
+			res = null;
 		}
-		return getChildren(parent);
+		else
+		{
+			if(parent instanceof Layers)
+			{
+				// cool - run through the layers
+				Vector list = new Vector(0,1);
+			  Layers theLayers = (Layers) parent;
+				Enumeration numer = theLayers.elements();
+				while(numer.hasMoreElements())
+				{
+					Layer thisL = (Layer) numer.nextElement();
+					list.add(thisL);
+				}
+				res = list.toArray();
+			}
+		}
+		
+		return res;
 	}
 
 	public Object getParent(Object child)
@@ -68,18 +90,37 @@ public class ViewContentProvider implements IStructuredContentProvider,
 
 	public Object[] getChildren(Object parent)
 	{
+		Object [] res = new Object[0];
 		if (parent instanceof TreeParent)
 		{
-			return ((TreeParent) parent).getChildren();
+			res=  ((TreeParent) parent).getChildren();
 		}
-		return new Object[0];
+		if(parent instanceof Layer)
+		{
+			Layer thisL = (Layer) parent;
+			Vector list = new Vector(0,1);
+			Enumeration numer = thisL.elements();
+			while(numer.hasMoreElements())
+			{
+				Plottable thisP = (Plottable) numer.nextElement();
+				list.add(thisP);
+			}
+			res = list.toArray();
+		}
+		return res;
 	}
 
 	public boolean hasChildren(Object parent)
 	{
+		boolean res =  false;
 		if (parent instanceof TreeParent)
-			return ((TreeParent) parent).hasChildren();
-		return false;
+			res = ((TreeParent) parent).hasChildren();
+		else if(parent instanceof Layer)
+		{
+			res = true;
+		}
+			
+		return res;
 	}
 
 	/*
