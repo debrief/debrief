@@ -16,6 +16,12 @@
       <library name="libs/xmlParserAPIs.jar">
          <export name="*"/>
       </library>
+      <library name="libs/jcommon-0.7.1.jar">
+         <export name="*"/>
+      </library>
+      <library name="libs/openmap.jar">
+         <export name="*"/>
+      </library>
    </runtime>
    <requires>
       <import plugin="org.eclipse.pde.junit.runtime"/>
