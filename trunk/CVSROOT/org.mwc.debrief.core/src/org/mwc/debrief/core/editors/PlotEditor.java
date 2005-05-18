@@ -193,7 +193,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 					if (nextP instanceof Watchable)
 					{
 						Watchable wrapped = (Watchable) nextP;
-						res = extend(res, wrapped.getTime());
+						HiResDate dtg = wrapped.getTime();
+						if(dtg != null)
+							res = extend(res, dtg);
 					}
 				}
 			}
