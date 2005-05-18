@@ -1,5 +1,7 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
+import java.util.Vector;
+
 import interfaces.IControllableViewport;
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
 import MWC.Algorithms.PlainProjection;
@@ -30,7 +32,13 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 						view.setProjection(proj);
 					}
     		});
-    addHandler(new GUIHandler());
+    addHandler(new GUIHandler()
+    		{
+					public void assignTracks(String primaryTrack, Vector secondaryTracks)
+					{
+						System.err.println("SHOULD BE STORING PRIMARY & SECONDARY TRACKS");
+					}
+    		});
     addHandler(new DebriefLayersHandler(_theLayers));
 
   }

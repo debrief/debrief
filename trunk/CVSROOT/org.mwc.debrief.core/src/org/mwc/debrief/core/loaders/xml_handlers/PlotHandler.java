@@ -1,6 +1,7 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
 import interfaces.IControllableViewport;
+import Debrief.ReaderWriter.XML.DetailsHandler;
 import MWC.GUI.Layers;
 
 /**
@@ -23,7 +24,7 @@ final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
     // sort out the handlers
     addHandler(new SessionHandler(destination, view));
- //   addHandler(new DetailsHandler(null));
+    addHandler(new DetailsHandler(null));
 
 
     super.addAttributeHandler(new HandleAttribute("Name")

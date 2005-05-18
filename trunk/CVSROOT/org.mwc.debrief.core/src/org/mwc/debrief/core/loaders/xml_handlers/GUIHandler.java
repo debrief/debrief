@@ -1,134 +1,148 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
 /**
- * Title:        Debrief 2000
- * Description:  Debrief 2000 Track Analysis Software
- * Copyright:    Copyright (c) 2000
- * Company:      MWC
+ * Title: Debrief 2000 Description: Debrief 2000 Track Analysis Software
+ * Copyright: Copyright (c) 2000 Company: MWC
  * @author Ian Mayo
  * @version 1.0
  */
 
 import java.awt.Color;
+import java.util.Vector;
 
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.GUI.BackgroundHandler;
-import Debrief.ReaderWriter.XML.GUI.ToteHandler;
+import Debrief.ReaderWriter.XML.GUI.ComponentHandler;
+import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 
-
-public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract public class GUIHandler extends
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
+	static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
 
-  public GUIHandler()
-  {
-    // inform our parent what type of class we are
-    super("gui");
+	String _primaryTrack = null;
 
- //   addHandler(new ToteHandler(null, null));
-//    addHandler(new ComponentHandler(){
-//      public void addComponent(ComponentDetails details)
-//      {
-//        addThisComponent(details);
-//      }
-//    });
-    addHandler(new BackgroundHandler()
-    {
-      public void setBackgroundColor(Color theColor)
-      {
-//      	
-//        PlainView pv = _session.getCurrentView();
-//        if(pv instanceof AnalysisView)
-//        {
-//          AnalysisView av = (AnalysisView)pv;
-//          av.getChart().getCanvas().setBackgroundColor(theColor);
-//        }
-      }
-    });
+	Vector _secondaryTracks = null;
 
-    // collate our list of exporters
-//    if(_myStepperHandler == null)
-//      _myStepperHandler = new StepperHandler();
-//
-//    _myCreators.put("Stepper", _myStepperHandler);
-  }
+	public GUIHandler()
+	{
+		// inform our parent what type of class we are
+		super("gui");
 
-  private void addThisComponent(ComponentDetails details)
-  {
-//    // sort out this component
-//    String cType = details.type;
-//
-//    ComponentCreator cc = (ComponentCreator)_myCreators.get(cType);
-//    if(cc != null)
-//    {
-//      cc.makeThis(details, _analysisView);
-//    }
-//    else
-//      MWC.Utilities.Errors.Trace.trace("XML Handler not found for " + cType);
-  }
+		addHandler(new ToteHandler(null, null)
+		{
+			public void setPrimarySecondary(boolean isPrimary, String trackName)
+			{
+				// cool, sort out which tracks are on the tote
+				if (isPrimary)
+					_primaryTrack = trackName;
+				else
+				{
+					if (_secondaryTracks == null)
+					{
+						_secondaryTracks = new Vector(0, 1);
+					}
+					_secondaryTracks.add(trackName);
+				}
+			}
+		});
 
-  static public final class ComponentDetails
-  {
-    public final java.util.Hashtable properties = new java.util.Hashtable();
-    public String type = null;
-    public final void addProperty(String name, String val)
-    {
-      properties.put(name, val);
-    }
-    public final void exportTo(String title, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
-    {
-      Element comp = doc.createElement("component");
-      comp.setAttribute("Type", title);
-      java.util.Enumeration iter = properties.keys();
-      while(iter.hasMoreElements())
-      {
-        String thisK = (String)iter.nextElement();
-        String value = (String)properties.get(thisK);
-        MWC.Utilities.ReaderWriter.XML.Util.PropertyHandler.exportProperty(thisK, value, comp, doc);
-      }
+		addHandler(new ComponentHandler()
+		{
+			public void addComponent(ComponentDetails details)
+			{
+				addThisComponent(details);
+			}
+		});
+		addHandler(new BackgroundHandler()
+		{
+			public void setBackgroundColor(Color theColor)
+			{
+				//      	
+				// PlainView pv = _session.getCurrentView();
+				// if(pv instanceof AnalysisView)
+				// {
+				// AnalysisView av = (AnalysisView)pv;
+				// av.getChart().getCanvas().setBackgroundColor(theColor);
+				// }
+			}
+		});
 
-      parent.appendChild(comp);
-    }
-  }
+		// collate our list of exporters
+		// if(_myStepperHandler == null)
+		// _myStepperHandler = new StepperHandler();
+		//
+		// _myCreators.put("Stepper", _myStepperHandler);
+	}
 
-  public static  interface ComponentCreator
-  {
-    public void makeThis(ComponentDetails details, Debrief.GUI.Views.AnalysisView view);
-  }
+	public void elementClosed()
+	{
+		// TODO Auto-generated method stub
+		super.elementClosed();
 
-  /////////////////////////////////////////////////////////////////////////
-  // the constructors for our components
-  /////////////////////////////////////////////////////////////////////////
+		// right - store the tracks
+		assignTracks(_primaryTrack, _secondaryTracks);
 
-  public static void exportThis(Debrief.GUI.Frames.Session session, org.w3c.dom.Element parent, org.w3c.dom.Document doc)
-  {
-    // create ourselves
-    Element gui = doc.createElement("gui");
+		// and ditch the working vars
+		_primaryTrack = null;
+		_secondaryTracks = null;
+	}
 
-    ////////////////////////////////////////////////
-    // first the tote
-    ////////////////////////////////////////////////
-    ToteHandler.exportTote(session, gui, doc);
+	/**
+	 * store the current primary and secondary tracks for this plot
+	 * @param primaryTrack primary track name
+	 * @param secondaryTracks list of tracks name for secondary tracks
+	 */
+	abstract public void assignTracks(String primaryTrack, Vector secondaryTracks);
 
-    // try to export the other features
+	private void addThisComponent(ComponentDetails details)
+	{
+		// // sort out this component
+		// String cType = details.type;
+		//
+		// ComponentCreator cc = (ComponentCreator)_myCreators.get(cType);
+		// if(cc != null)
+		// {
+		// cc.makeThis(details, _analysisView);
+		// }
+		// else
+		// MWC.Utilities.Errors.Trace.trace("XML Handler not found for " + cType);
+	}
 
-    // check the stepper handler
-//    if(_myStepperHandler == null)
-//      _myStepperHandler = new StepperHandler();
-//    ComponentDetails stepperD = _myStepperHandler.exportThis(session);
-//    stepperD.exportTo("Stepper", gui, doc);
-//
-//    PlainView pv = session.getCurrentView();
-//    if(pv instanceof AnalysisView)
-//    {
-//      AnalysisView av = (AnalysisView)pv;
-//      Color col = av.getChart().getCanvas().getBackgroundColor();
-//      BackgroundHandler.exportThis(col, gui, doc);
-//    }
-//
-//    parent.appendChild(gui);
-  }
+	// ///////////////////////////////////////////////////////////////////////
+	// the constructors for our components
+	// ///////////////////////////////////////////////////////////////////////
+
+	public static void exportThis(Debrief.GUI.Frames.Session session,
+			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	{
+		// create ourselves
+		Element gui = doc.createElement("gui");
+
+		// //////////////////////////////////////////////
+		// first the tote
+		// //////////////////////////////////////////////
+		ToteHandler.exportTote(session, gui, doc);
+
+		// try to export the other features
+
+		// check the stepper handler
+		// if(_myStepperHandler == null)
+		// _myStepperHandler = new StepperHandler();
+		// ComponentDetails stepperD = _myStepperHandler.exportThis(session);
+		// stepperD.exportTo("Stepper", gui, doc);
+		//
+		// PlainView pv = session.getCurrentView();
+		// if(pv instanceof AnalysisView)
+		// {
+		// AnalysisView av = (AnalysisView)pv;
+		// Color col = av.getChart().getCanvas().getBackgroundColor();
+		// BackgroundHandler.exportThis(col, gui, doc);
+		// }
+		//
+		// parent.appendChild(gui);
+	}
 
 }
