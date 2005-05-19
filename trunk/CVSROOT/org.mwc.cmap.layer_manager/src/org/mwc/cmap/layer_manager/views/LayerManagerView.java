@@ -497,8 +497,6 @@ public class LayerManagerView extends ViewPart
 			for (Iterator iter = _pendingLayers.iterator(); iter.hasNext();)
 			{
 				Layer changedLayer = (Layer) iter.next();
-
-				System.out.println("repainting layer:" + changedLayer);
 				
 				// right. has just one layer updated?
 				if (changedLayer != null)

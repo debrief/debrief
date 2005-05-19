@@ -16,6 +16,7 @@ import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.Tree;
 
@@ -57,17 +58,19 @@ public class ColorHelper extends EditorHelper
 
 		ImageData data = null;
 
-		GC gc = new GC(_parentControl.getParent().getParent());
-		FontMetrics fm = gc.getFontMetrics();
-		int size = fm.getAscent();
-		gc.dispose();
+//		GC gc = new GC(_parentControl.getParent().getParent());
+//		FontMetrics fm = gc.getFontMetrics();
+//		int size = fm.getAscent();
+//		gc.dispose();
+		int size = 14;
 
 		int indent = 6;
-		int extent = 16;
-		if (_parentControl instanceof Table)
-			extent = ((Table) _parentControl).getItemHeight() - 1;
-		else if (_parentControl instanceof Tree)
-			extent = ((Tree) _parentControl).getItemHeight() - 1;
+		int extent = 8;
+		
+//		if (_parentControl instanceof Table)
+//			extent = ((Table) _parentControl).getItemHeight() - 1;
+//		else if (_parentControl instanceof Tree)
+//			extent = ((Tree) _parentControl).getItemHeight() - 1;
 
 		if (size > extent)
 			size = extent;
@@ -106,20 +109,17 @@ public class ColorHelper extends EditorHelper
 			public String getText(Object element)
 			{
 				RGB rgb = (RGB) element;
-				String res = "";
+				String res = "(" + rgb.red + ", " + rgb.green + ", " + rgb.blue + ")";
 				return res;
 			}
 
 			public Image getImage(Object element)
 			{
 				Image res = null;
-				if (_parentControl != null)
-				{
-					RGB rgb = (RGB) element;
-					ImageData id = createColorImage(rgb);
-					ImageData mask = id.getTransparencyMask();
-					res = new Image(_parentControl.getDisplay(), id, mask);
-				}
+				RGB rgb = (RGB) element;
+				ImageData id = createColorImage(rgb);
+				ImageData mask = id.getTransparencyMask();
+				res = new Image(Display.getCurrent(), id, mask);
 				return res;
 			}
 
