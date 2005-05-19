@@ -14,7 +14,6 @@ import org.mwc.cmap.layer_manager.views.LayerManagerView;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
-import MWC.GUI.Plottables;
 
 /*
  * The content provider class is responsible for providing objects to the view.
@@ -22,8 +21,7 @@ import MWC.GUI.Plottables;
  * These objects may be sensitive to the current input of the view, or ignore it
  * and always show the same content (like Task List, for example).
  */
-public class ViewContentProvider implements IStructuredContentProvider,
-		ITreeContentProvider
+public class ViewContentProvider implements IStructuredContentProvider,	ITreeContentProvider
 {
 	/**
 	 * the view provider
@@ -57,7 +55,8 @@ public class ViewContentProvider implements IStructuredContentProvider,
 		if (parent.equals(_myViewProvider.getViewSite()))
 		{
 			res = new Object[0];
-		} else
+		}
+		else
 		{
 			if (parent instanceof Layers)
 			{
@@ -80,15 +79,18 @@ public class ViewContentProvider implements IStructuredContentProvider,
 
 	public Object getParent(Object child)
 	{
+		Object res = null;
 		if (child instanceof TreeObject)
 		{
-			return ((TreeObject) child).getParent();
+			res = ((TreeObject) child).getParent();
 		}
-		if(child instanceof PlottableWrapper)
+		else if (child instanceof PlottableWrapper)
 		{
-			return ((PlottableWrapper)child).getParent();
+			PlottableWrapper thisP = (PlottableWrapper) child;
+			PlottableWrapper parent = thisP.getParent();
+			res = parent;
 		}
-		return null;
+		return res;
 	}
 
 	public Object[] getChildren(Object parent)
@@ -99,14 +101,14 @@ public class ViewContentProvider implements IStructuredContentProvider,
 			PlottableWrapper pl = (PlottableWrapper) parent;
 			if (pl.hasChildren())
 			{
-        
+
 				Layer thisL = (Layer) pl.getPlottable();
 				Vector list = new Vector(0, 1);
 				Enumeration numer = thisL.elements();
 				while (numer.hasMoreElements())
 				{
 					Plottable thisP = (Plottable) numer.nextElement();
-					PlottableWrapper pw = new PlottableWrapper(thisP, thisL);
+					PlottableWrapper pw = new PlottableWrapper(thisP, pl);
 					list.add(pw);
 				}
 				res = list.toArray();
@@ -127,37 +129,5 @@ public class ViewContentProvider implements IStructuredContentProvider,
 		}
 
 		return res;
-	}
-
-	/**
-	 * embedded class which wraps a plottable object alongside some useful other
-	 * bits
-	 */
-	public static class PlottableWrapper
-	{
-		private Plottable _plottable;
-
-		private Layer _parent;
-
-		public PlottableWrapper(Plottable plottable, Layer parent)
-		{
-			_plottable = plottable;
-			_parent = parent;
-		}
-
-		public Plottable getPlottable()
-		{
-			return _plottable;
-		}
-
-		public Layer getParent()
-		{
-			return _parent;
-		}
-
-		public boolean hasChildren()
-		{
-			return (_plottable instanceof Layer);
-		}
 	}
 }
