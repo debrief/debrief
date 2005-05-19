@@ -1,6 +1,7 @@
 package org.mwc.cmap.core;
 
 import org.eclipse.ui.plugin.*;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.BundleContext;
 import java.util.*;
@@ -81,4 +82,19 @@ public class CorePlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
 	}
+	
+	/** error logging utility
+	 * 
+	 * @param severity the severity; one of <code>OK</code>, <code>ERROR</code>, 
+	 * <code>INFO</code>, <code>WARNING</code>,  or <code>CANCEL</code>
+	 * @param message a human-readable message, localized to the
+	 *    current locale
+	 * @param exception a low-level exception, or <code>null</code> if not
+	 *    applicable 
+	 */
+	public static void logError(int severity, String message, Throwable exception)
+	{
+		Status stat = new Status(severity,"org.mwc.cmap.core", Status.OK, message, exception);
+		getDefault().getLog().log(stat);
+	}	
 }
