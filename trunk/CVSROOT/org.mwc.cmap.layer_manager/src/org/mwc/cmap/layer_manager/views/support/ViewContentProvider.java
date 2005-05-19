@@ -9,7 +9,6 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
 
 import MWC.GUI.Layer;
@@ -28,11 +27,6 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	 * the view provider
 	 */
 	private final LayerManagerView _myViewProvider;
-
-	/**
-	 * the parent of the layers
-	 */
-	private TreeParent invisibleRoot;
 
 	/**
 	 * @param view
@@ -81,11 +75,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	public Object getParent(Object child)
 	{
 		Object res = null;
-		if (child instanceof TreeObject)
-		{
-			res = ((TreeObject) child).getParent();
-		}
-		else if (child instanceof PlottableWrapper)
+		if (child instanceof PlottableWrapper)
 		{
 			PlottableWrapper thisP = (PlottableWrapper) child;
 			PlottableWrapper parent = thisP.getParent();
@@ -121,9 +111,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	public boolean hasChildren(Object parent)
 	{
 		boolean res = false;
-		if (parent instanceof TreeParent)
-			res = ((TreeParent) parent).hasChildren();
-		else if (parent instanceof PlottableWrapper)
+		if (parent instanceof PlottableWrapper)
 		{
 			PlottableWrapper pw = (PlottableWrapper) parent;
 			res = pw.hasChildren();
