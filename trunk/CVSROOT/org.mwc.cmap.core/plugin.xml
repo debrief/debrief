@@ -20,6 +20,7 @@
       <import plugin="org.junit"/>
       <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui.views"/>
    </requires>
 
 </plugin>
