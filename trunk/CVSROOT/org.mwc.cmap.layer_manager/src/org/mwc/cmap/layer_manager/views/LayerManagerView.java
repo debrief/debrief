@@ -1,6 +1,9 @@
 package org.mwc.cmap.layer_manager.views;
 
+import java.util.Comparator;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
@@ -18,6 +21,7 @@ import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.Tree;
 import org.eclipse.swt.widgets.TreeColumn;
@@ -30,8 +34,8 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.layer_manager.views.support.PlottableWrapper;
 import org.mwc.cmap.layer_manager.views.support.ViewContentProvider;
 import org.mwc.cmap.layer_manager.views.support.ViewLabelProvider;
 
@@ -113,13 +117,13 @@ public class LayerManagerView extends ViewPart
 		{
 			super(parent, style);
 		}
-		
+
 		public Widget findPlottable(Plottable item)
 		{
 			return super.findItem(item);
 		}
 	}
-	
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -134,43 +138,42 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setLabelProvider(new ViewLabelProvider(this));
 		_treeViewer.setSorter(new NameSorter());
 		_treeViewer.setInput(getViewSite());
-		_treeViewer.setComparer(new IElementComparer(){
+		_treeViewer.setComparer(new IElementComparer()
+		{
 
 			public boolean equals(Object a, Object b)
 			{
 				// do our special case for comparing plottables
-				if(a instanceof PlottableWrapper)
+				if (a instanceof PlottableWrapper)
 				{
 					PlottableWrapper pw = (PlottableWrapper) a;
 					a = pw.getPlottable();
 				}
-				
-				if(b instanceof PlottableWrapper)
+
+				if (b instanceof PlottableWrapper)
 				{
 					PlottableWrapper pw = (PlottableWrapper) b;
 					b = pw.getPlottable();
 				}
-				
-				
+
 				return a == b;
 			}
 
 			public int hashCode(Object element)
 			{
 				int res = 0;
-				
-				if(element instanceof PlottableWrapper)
+
+				if (element instanceof PlottableWrapper)
 				{
-					PlottableWrapper pw = (PlottableWrapper) element;				
+					PlottableWrapper pw = (PlottableWrapper) element;
 					res += pw.getPlottable().hashCode();
 				}
 				else
 					res = element.hashCode();
-				
-				
+
 				return res;
 			}
-		
+
 		});
 
 		// and format the tree
@@ -344,7 +347,7 @@ public class LayerManagerView extends ViewPart
 		{
 			public void doubleClick(DoubleClickEvent event)
 			{
-				doubleClickAction.run();
+				// doubleClickAction.run();
 			}
 		});
 	}
@@ -386,7 +389,7 @@ public class LayerManagerView extends ViewPart
 
 					public void dataReformatted(Layers theData, Layer changedLayer)
 					{
-						processReformattedLayer(changedLayer);
+						handleReformattedLayer(changedLayer);
 					}
 				};
 			}
@@ -401,18 +404,22 @@ public class LayerManagerView extends ViewPart
 		}
 	}
 
-	/** recursive class used to build up a list containing the item together
-	 * with all child items
-	 * @param list the list we're building up
-	 * @param item the item to add (together with its children)
+	/**
+	 * recursive class used to build up a list containing the item together with
+	 * all child items
+	 * 
+	 * @param list
+	 *          the list we're building up
+	 * @param item
+	 *          the item to add (together with its children)
 	 */
 	private void addItemAndChildrenToList(Vector list, TreeItem item)
 	{
 		Object myData = item.getData();
-		if(myData != null)
+		if (myData != null)
 			list.add(item.getData());
 		TreeItem[] children = item.getItems();
-		if(children.length > 0)
+		if (children.length > 0)
 		{
 			for (int i = 0; i < children.length; i++)
 			{
@@ -421,42 +428,117 @@ public class LayerManagerView extends ViewPart
 			}
 		}
 	}
-	
-	protected void processReformattedLayer(Layer changedLayer)
+
+	private static boolean _alreadyDeferring = false;
+
+	private static Set _pendingLayers = new TreeSet(new Comparator()
 	{
-		System.out.println("re-presenting layer after formatting:" + changedLayer);
-
-		// right, we'll be building up a list of objects to refresh (all of the objects in the indicated layer)
-		Vector newList = new Vector(0,1);
-		
-		Widget changed = null;
-		
-		// right. has just one layer updated?
-		if(changedLayer != null)
+		public int compare(Object arg0, Object arg1)
 		{
-			changed = _treeViewer.findPlottable(changedLayer);	
-			// see if we can find the element related to the indicated layer
-			TreeItem thisItem = (TreeItem) changed;
+			int res = 1;
+			
+			if(arg0.equals(arg1))
+				res = 0;
+			
+			if(arg0.getClass() == arg1.getClass())
+			{
+				if(arg0 instanceof Comparable)
+				{
+					Comparable c0 = (Comparable) arg0;
+					Comparable c1 = (Comparable) arg1;
+					res = c1.compareTo(c1);
+				}
+			}
+			
+			return res;
+		}
 
-			// add the item and its children to the list
-			addItemAndChildrenToList(newList, thisItem);
+	});
+
+	/** one or more layers have been changed.  This method may get called lots of times.
+	 * Stack up the events - and just call our UI update method once at the end
+	 * 
+	 * @param changedLayer the layer which has changed
+	 */
+	protected void handleReformattedLayer(Layer changedLayer)
+	{
+		// right - store this layer
+		_pendingLayers.add(changedLayer);
+
+		if (_alreadyDeferring)
+		{
+			// hey - already processing - add this layer to the pending ones
 		}
 		else
 		{
-			changed = _treeViewer.findPlottable(_myLayers);
-			
-			Tree theTree = (Tree) changed;
-			TreeItem[] children = theTree.getItems();
-			for (int i = 0; i < children.length; i++)
-			{
-				TreeItem thisItem = children[i];
-				addItemAndChildrenToList(newList, thisItem);
-			}
-		}
+			_alreadyDeferring = true;
 
-		// and do the update
-		Object[] itemsToUpdate = newList.toArray();
-		_treeViewer.update(itemsToUpdate, new String[]{VISIBILITY_COLUMN_NAME});
+			// right. we're not already doing some processing
+			Display dis = Display.getCurrent();
+			dis.asyncExec(new Runnable()
+			{
+				public void run()
+				{
+					processReformattedLayers();
+				}
+			});
+		}
+	}
+
+	protected void processReformattedLayers()
+	{
+		try
+		{
+			// right, we'll be building up a list of objects to refresh (all of the
+			// objects in the indicated layer)
+			Vector newList = new Vector(0, 1);
+			Widget changed = null;
+
+			for (Iterator iter = _pendingLayers.iterator(); iter.hasNext();)
+			{
+				Layer changedLayer = (Layer) iter.next();
+
+				System.out.println("repainting layer:" + changedLayer);
+				
+				// right. has just one layer updated?
+				if (changedLayer != null)
+				{
+					changed = _treeViewer.findPlottable(changedLayer);
+					// see if we can find the element related to the indicated layer
+					TreeItem thisItem = (TreeItem) changed;
+
+					// add the item and its children to the list
+					addItemAndChildrenToList(newList, thisItem);
+				}
+				else
+				{
+					// hey, all of the layers need updating.
+					// better get on with it.
+					changed = _treeViewer.findPlottable(_myLayers);
+
+					Tree theTree = (Tree) changed;
+					TreeItem[] children = theTree.getItems();
+					for (int i = 0; i < children.length; i++)
+					{
+						TreeItem thisItem = children[i];
+						addItemAndChildrenToList(newList, thisItem);
+					}
+				}
+
+			}
+
+			// and do the update
+			Object[] itemsToUpdate = newList.toArray();
+			_treeViewer
+					.update(itemsToUpdate, new String[] { VISIBILITY_COLUMN_NAME });
+		} catch (Exception e)
+		{
+
+		} finally
+		{
+			_alreadyDeferring = false;
+			_pendingLayers.clear();
+		}
 	}
 
 	private void processNewData(Layers theData)
@@ -500,7 +582,7 @@ public class LayerManagerView extends ViewPart
 			// and remember that it worked
 			madeChange = true;
 
-      parentLayer = thisP.getTopLevelLayer();
+			thisParentLayer = thisP.getTopLevelLayer();
 
 			// ok. we've now got the parent layer
 			// - is it the first one?

@@ -8,6 +8,7 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
+import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
 
 import MWC.GUI.Plottable;

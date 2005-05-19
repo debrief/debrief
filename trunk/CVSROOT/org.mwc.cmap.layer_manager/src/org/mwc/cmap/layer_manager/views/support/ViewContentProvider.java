@@ -9,6 +9,7 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
 
 import MWC.GUI.Layer;
@@ -67,7 +68,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 				while (numer.hasMoreElements())
 				{
 					Layer thisL = (Layer) numer.nextElement();
-					PlottableWrapper wrapper = new PlottableWrapper(thisL, null);
+					PlottableWrapper wrapper = new PlottableWrapper(thisL, null, theLayers);
 					list.add(wrapper);
 				}
 				res = list.toArray();
@@ -108,7 +109,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 				while (numer.hasMoreElements())
 				{
 					Plottable thisP = (Plottable) numer.nextElement();
-					PlottableWrapper pw = new PlottableWrapper(thisP, pl);
+					PlottableWrapper pw = new PlottableWrapper(thisP, pl, pl.getLayers());
 					list.add(pw);
 				}
 				res = list.toArray();
