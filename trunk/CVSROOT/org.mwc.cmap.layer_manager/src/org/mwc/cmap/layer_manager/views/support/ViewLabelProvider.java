@@ -9,6 +9,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
+import org.mwc.cmap.layer_manager.views.support.ViewContentProvider.PlottableWrapper;
 
 import MWC.GUI.Plottable;
 
@@ -30,7 +31,8 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 
 	public String getText(Object obj)
 	{
-		return obj.toString();
+		ViewContentProvider.PlottableWrapper pw = (PlottableWrapper) obj;
+		return pw.getPlottable().toString();
 	}
 
 	public Image getImage(Object obj)
@@ -60,7 +62,8 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 		else
 		{
 			// sort out the visibility
-			Plottable pl = (Plottable) element;
+			ViewContentProvider.PlottableWrapper pw = (ViewContentProvider.PlottableWrapper) element;
+			Plottable pl = pw.getPlottable();
 			if(pl.getVisible())
 			  res = "y";
 			else

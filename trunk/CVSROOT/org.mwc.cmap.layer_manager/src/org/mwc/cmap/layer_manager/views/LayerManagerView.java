@@ -20,9 +20,11 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.views.support.ViewContentProvider;
 import org.mwc.cmap.layer_manager.views.support.ViewLabelProvider;
+import org.mwc.cmap.layer_manager.views.support.ViewContentProvider.PlottableWrapper;
 
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 
 /**
@@ -253,7 +255,16 @@ public class LayerManagerView extends ViewPart
 			{
 				ISelection selection = _treeViewer.getSelection();
 				Object obj = ((IStructuredSelection) selection).getFirstElement();
-				showMessage("Double-click detected on " + obj.toString());
+				if(obj instanceof ViewContentProvider.PlottableWrapper)
+				{
+					ViewContentProvider.PlottableWrapper thisP =  (PlottableWrapper) obj;
+					Plottable thePlottable = thisP.getPlottable();
+					thePlottable.setVisible(!thePlottable.getVisible());
+					
+					// find the parent layer for this object
+					Layer parentLayer = thisP.getParent();
+					_myLayers.fireReformatted(parentLayer);
+				}
 			}
 		};
 	}
@@ -306,7 +317,9 @@ public class LayerManagerView extends ViewPart
 					}
 
 					public void dataReformatted(Layers theData, Layer changedLayer)
-					{									}
+					{								
+						processReformattedLayer(changedLayer);
+					}
 				};
 			}
 			_myLayers.addDataExtendedListener(_myLayersListener);
@@ -316,8 +329,16 @@ public class LayerManagerView extends ViewPart
 		}
 	}
 	
+	protected void processReformattedLayer(Layer changedLayer)
+	{
+		System.out.println("re-presenting layer after formatting:" + changedLayer);
+		_treeViewer.refresh();
+	}
+
+
 	private void processNewData(Layers theData)
 	{
+		if(!_treeViewer.getTree().isDisposed())
 		_treeViewer.setInput(theData);
 	}
 }

@@ -16,23 +16,22 @@ import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 
-
 /*
- * The content provider class is responsible for providing objects to the
- * view. It can wrap existing objects in adapters or simply return objects
- * as-is. These objects may be sensitive to the current input of the view, or
- * ignore it and always show the same content (like Task List, for example).
+ * The content provider class is responsible for providing objects to the view.
+ * It can wrap existing objects in adapters or simply return objects as-is.
+ * These objects may be sensitive to the current input of the view, or ignore it
+ * and always show the same content (like Task List, for example).
  */
 public class ViewContentProvider implements IStructuredContentProvider,
 		ITreeContentProvider
 {
-	/** the view provider
-	 * 
+	/**
+	 * the view provider
 	 */
 	private final LayerManagerView _myViewProvider;
 
-	/** the parent of the layers
-	 * 
+	/**
+	 * the parent of the layers
 	 */
 	private TreeParent invisibleRoot;
 
@@ -57,25 +56,25 @@ public class ViewContentProvider implements IStructuredContentProvider,
 		Object[] res = null;
 		if (parent.equals(_myViewProvider.getViewSite()))
 		{
-			res = null;
-		}
-		else
+			res = new Object[0];
+		} else
 		{
-			if(parent instanceof Layers)
+			if (parent instanceof Layers)
 			{
 				// cool - run through the layers
-				Vector list = new Vector(0,1);
-			  Layers theLayers = (Layers) parent;
+				Vector list = new Vector(0, 1);
+				Layers theLayers = (Layers) parent;
 				Enumeration numer = theLayers.elements();
-				while(numer.hasMoreElements())
+				while (numer.hasMoreElements())
 				{
 					Layer thisL = (Layer) numer.nextElement();
-					list.add(thisL);
+					PlottableWrapper wrapper = new PlottableWrapper(thisL, null);
+					list.add(wrapper);
 				}
 				res = list.toArray();
 			}
 		}
-		
+
 		return res;
 	}
 
@@ -85,67 +84,80 @@ public class ViewContentProvider implements IStructuredContentProvider,
 		{
 			return ((TreeObject) child).getParent();
 		}
+		if(child instanceof PlottableWrapper)
+		{
+			return ((PlottableWrapper)child).getParent();
+		}
 		return null;
 	}
 
 	public Object[] getChildren(Object parent)
 	{
-		Object [] res = new Object[0];
-		if (parent instanceof TreeParent)
+		Object[] res = new Object[0];
+		if (parent instanceof PlottableWrapper)
 		{
-			res=  ((TreeParent) parent).getChildren();
-		}
-		if(parent instanceof Layer)
-		{
-			Layer thisL = (Layer) parent;
-			Vector list = new Vector(0,1);
-			Enumeration numer = thisL.elements();
-			while(numer.hasMoreElements())
+			PlottableWrapper pl = (PlottableWrapper) parent;
+			if (pl.hasChildren())
 			{
-				Plottable thisP = (Plottable) numer.nextElement();
-				list.add(thisP);
+        
+				Layer thisL = (Layer) pl.getPlottable();
+				Vector list = new Vector(0, 1);
+				Enumeration numer = thisL.elements();
+				while (numer.hasMoreElements())
+				{
+					Plottable thisP = (Plottable) numer.nextElement();
+					PlottableWrapper pw = new PlottableWrapper(thisP, thisL);
+					list.add(pw);
+				}
+				res = list.toArray();
 			}
-			res = list.toArray();
 		}
 		return res;
 	}
 
 	public boolean hasChildren(Object parent)
 	{
-		boolean res =  false;
+		boolean res = false;
 		if (parent instanceof TreeParent)
 			res = ((TreeParent) parent).hasChildren();
-		else if(parent instanceof Layer)
+		else if (parent instanceof PlottableWrapper)
 		{
-			res = true;
+			PlottableWrapper pw = (PlottableWrapper) parent;
+			res = pw.hasChildren();
 		}
-			
+
 		return res;
 	}
 
-	/*
-	 * We will set up a dummy model to initialize tree heararchy. In a real
-	 * code, you will connect to a real model and expose its hierarchy.
+	/**
+	 * embedded class which wraps a plottable object alongside some useful other
+	 * bits
 	 */
-	private void initialize()
+	public static class PlottableWrapper
 	{
-		TreeObject to1 = new TreeObject(_myViewProvider, "Leaf 1");
-		TreeObject to2 = new TreeObject(_myViewProvider, "Leaf 2");
-		TreeObject to3 = new TreeObject(_myViewProvider, "Leaf 3");
-		TreeParent p1 = new TreeParent(_myViewProvider, "Parent 1");
-		p1.addChild(to1);
-		p1.addChild(to2);
-		p1.addChild(to3);
+		private Plottable _plottable;
 
-		TreeObject to4 = new TreeObject(_myViewProvider, "Leaf 4");
-		TreeParent p2 = new TreeParent(_myViewProvider, "Parent 2");
-		p2.addChild(to4);
+		private Layer _parent;
 
-		TreeParent root = new TreeParent(_myViewProvider, "Root");
-		root.addChild(p1);
-		root.addChild(p2);
+		public PlottableWrapper(Plottable plottable, Layer parent)
+		{
+			_plottable = plottable;
+			_parent = parent;
+		}
 
-		invisibleRoot = new TreeParent(_myViewProvider, "");
-		invisibleRoot.addChild(root);
+		public Plottable getPlottable()
+		{
+			return _plottable;
+		}
+
+		public Layer getParent()
+		{
+			return _parent;
+		}
+
+		public boolean hasChildren()
+		{
+			return (_plottable instanceof Layer);
+		}
 	}
 }
