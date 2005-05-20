@@ -1,10 +1,14 @@
 package org.mwc.cmap.core;
 
-import org.eclipse.ui.plugin.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
-import java.util.*;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -14,6 +18,12 @@ public class CorePlugin extends AbstractUIPlugin {
 	private static CorePlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
+	
+	
+	/** where we cache our images
+	 * 
+	 */
+	private ImageRegistry _imageRegistry;	
 	
 	/**
 	 * The constructor.
@@ -97,4 +107,34 @@ public class CorePlugin extends AbstractUIPlugin {
 		Status stat = new Status(severity,"org.mwc.cmap.core", Status.OK, message, exception);
 		getDefault().getLog().log(stat);
 	}	
+	
+	private static ImageRegistry getRegistry()
+	{
+		return plugin._imageRegistry;
+	}
+	
+	public static Image getImageFromRegistry(String name)
+	{
+		Image res = null;
+		
+		// do we already have an image
+		if(getRegistry() == null)
+		{
+			plugin._imageRegistry = new ImageRegistry();
+		}
+
+		// ok - do we have it already?
+		res = getRegistry().get(name);
+		
+		if(res == null)
+		{
+				ImageDescriptor desc = getImageDescriptor("icons/" + name);
+				getRegistry().put(name, desc);
+				res = getRegistry().get(name);
+		}
+		
+		// and return it..
+		return res;
+	}
+		
 }

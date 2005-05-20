@@ -9,6 +9,7 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
+import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
 
 import MWC.GUI.Layer;
