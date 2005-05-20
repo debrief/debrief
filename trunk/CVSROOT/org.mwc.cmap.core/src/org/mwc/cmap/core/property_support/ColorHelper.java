@@ -57,9 +57,9 @@ public class ColorHelper extends EditorHelper
 		return res;		
 	}
 	
-	public static org.eclipse.swt.graphics.Color convertColor(java.awt.Color javaCol)
+	public static org.eclipse.swt.graphics.Color getColor(java.awt.Color javaCol)
 	{
-		
+	
 		// check we have our registry
 		if(_colRegistry == null)
 			_colRegistry = new ColorRegistry();
@@ -83,6 +83,15 @@ public class ColorHelper extends EditorHelper
 		}
 		
 		return thisCol;
+	}
+	
+	public static org.eclipse.swt.graphics.RGB convertColor(java.awt.Color javaCol)
+	{
+		RGB res  =null;
+		org.eclipse.swt.graphics.Color thisCol = getColor(javaCol);
+		if(thisCol != null)
+			res = thisCol.getRGB();
+		return res;
 	}
 	
 	private ImageData createColorImage(RGB color)
