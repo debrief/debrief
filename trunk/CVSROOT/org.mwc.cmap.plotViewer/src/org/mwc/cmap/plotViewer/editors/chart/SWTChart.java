@@ -4,7 +4,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.1  2005-05-20 13:45:04  Ian.Mayo
+// Revision 1.2  2005-05-20 15:34:45  Ian.Mayo
+// Hey, practically working!
+//
+// Revision 1.1  2005/05/20 13:45:04  Ian.Mayo
 // Start doing chart
 //
 //
@@ -24,6 +27,8 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Widget;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
@@ -86,6 +91,10 @@ public class SWTChart extends PlainChart implements Serializable
     _theCanvas = createCanvas(parent, style);
     _theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
 
+    // sort out the area of coverage of the plot
+    WorldArea area = theLayers.getBounds();
+    _theCanvas.getProjection().setDataArea(area);
+    
     // add us as a painter to the canvas
     _theCanvas.addPainter(this);
 
@@ -99,7 +108,9 @@ public class SWTChart extends PlainChart implements Serializable
     });
 
     Dimension dim = _theCanvas.getSize();
-    _theCanvas.getProjection().setScreenArea(dim);
+    
+    if(dim != null)    	
+    	_theCanvas.getProjection().setScreenArea(dim);
 
     _theCanvas.addMouseMoveListener(new MouseMoveListener(){
 
@@ -199,9 +210,17 @@ public class SWTChart extends PlainChart implements Serializable
   	return null;
 //    return _theCanvas;
   }
+  
+  public final Control getCanvasControl()
+  {
+  	return _theCanvas.getCanvas();
+  }
 
   public final void update()
   {
+  	// just check we have some data
+  	
+  	
     // clear out the layers object
     _myLayers.clear();
 
@@ -232,8 +251,14 @@ public class SWTChart extends PlainChart implements Serializable
   /**
    * over-ride the parent's version of paint, so that we can try to do it by layers.
    */
-  public final void dont_paintMe(final CanvasType dest)
+  public final void paintMe(final CanvasType dest)
   {
+  	
+    // draw in the solid background
+    paintBackground(dest);
+    
+    super.paintMe(dest);
+  	
 //    // check that we have a valid canvas (that the sizes are set)
 //    final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
 //    if (sArea != null)
@@ -365,13 +390,11 @@ public class SWTChart extends PlainChart implements Serializable
    */
   private void paintBackground(final CanvasType dest)
   {
-//  	Point size = _theCanvas.getSize();
-//  	
-//    // fill the background, to start with
-//    final Dimension sz = new Dimension(size.x, size.y);
-//    dest.setColor(dest.getBackgroundColor());
-//    dest.fillRect(0, 0, sz.width, sz.height);
-//
+    // fill the background, to start with
+    final Dimension sz = _theCanvas.getSize();
+    dest.setColor(dest.getBackgroundColor());
+    dest.fillRect(0, 0, sz.width, sz.height);
+
 //    // do we have an image?
 //    if (_ourImage != null)
 //    {
@@ -436,8 +459,7 @@ public class SWTChart extends PlainChart implements Serializable
 
   public void doMouseMove(MouseEvent e)
   {
-  	System.err.println("PRODUCE NEW MOUSE EVENT TRANSLATOR!!!");
-//  	super.mouseMoved()
+  	// todo:   PRODUCE NEW MOUSE EVENT TRANSLATOR!!!
   }
 
 }

@@ -128,7 +128,7 @@ public abstract class PlotEditor extends EditorPart implements IResourceProvider
 	SWTChart _myChart = null;
 	
 	public void createPartControl(Composite parent) {
-		_myChart = new SWTChart(_myLayers, parent, SWT.NONE); 
+		_myChart = new SWTChart(_myLayers, parent, SWT.NO_BACKGROUND); 
 		
 //		_plotPanel = new Composite(parent, SWT.NONE);
 //		_plotPanel.setLayout(new FillLayout());
@@ -164,7 +164,7 @@ public abstract class PlotEditor extends EditorPart implements IResourceProvider
 		int dropOperation = DND.DROP_COPY;
 		Transfer[] dropTypes = {FileTransfer.getInstance()};
 			
-		target = new DropTarget(_plotPanel, dropOperation);
+		target = new DropTarget(_myChart.getCanvasControl(), dropOperation);
 		target.setTransfer(dropTypes);
 		target.addDropListener(new DropTargetListener()
 		{
