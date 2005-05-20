@@ -17,9 +17,6 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.events.SelectionListener;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -29,6 +26,7 @@ import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import Debrief.Wrappers.NarrativeWrapper;
 import MWC.Algorithms.PlainProjection;
@@ -127,27 +125,30 @@ public abstract class PlotEditor extends EditorPart implements IResourceProvider
 		return false;
 	}
 
+	SWTChart _myChart = null;
 	
 	public void createPartControl(Composite parent) {
-		_plotPanel = new Composite(parent, SWT.NONE);
-		_plotPanel.setLayout(new FillLayout());
-		_myButton = new Button(_plotPanel, SWT.NONE);
-		_myButton.setText("push me");
+		_myChart = new SWTChart(_myLayers, parent, SWT.NONE); 
 		
-
-		
-		_myButton.addSelectionListener(new SelectionListener(){
-
-			public void widgetSelected(SelectionEvent e) {
-				updateLabel();
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e) {
-			}
-		});
-		
-		_myLabel = new Label(_plotPanel, SWT.NONE);
-		_myLabel.setText("the label");
+//		_plotPanel = new Composite(parent, SWT.NONE);
+//		_plotPanel.setLayout(new FillLayout());
+//		_myButton = new Button(_plotPanel, SWT.NONE);
+//		_myButton.setText("push me");
+//		
+//
+//		
+//		_myButton.addSelectionListener(new SelectionListener(){
+//
+//			public void widgetSelected(SelectionEvent e) {
+//				updateLabel();
+//			}
+//
+//			public void widgetDefaultSelected(SelectionEvent e) {
+//			}
+//		});
+//		
+//		_myLabel = new Label(_plotPanel, SWT.NONE);
+//		_myLabel.setText("the label");
 
 		//and the drop support
 		configureFileDropSupport();
