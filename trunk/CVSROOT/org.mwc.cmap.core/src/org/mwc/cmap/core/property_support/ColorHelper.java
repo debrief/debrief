@@ -5,11 +5,10 @@ package org.mwc.cmap.core.property_support;
 
 import java.awt.Color;
 
+import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
-import org.eclipse.swt.graphics.FontMetrics;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.PaletteData;
@@ -17,8 +16,6 @@ import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.Tree;
 
 public class ColorHelper extends EditorHelper
 {
@@ -38,21 +35,56 @@ public class ColorHelper extends EditorHelper
 	public Object translateToSWT(Object value)
 	{
 		// ok, convert the AWT color to SWT
-		Object res;
 		Color col = (Color) value;
-		res = new RGB(col.getRed(), col.getGreen(), col.getBlue());
-		return res;
+		return convertColor(col);
 	}
 
 	public Object translateFromSWT(Object value)
 	{
 		// ok, convert the AWT color to SWT
-		Object res = null;
 		RGB col = (RGB) value;
-		res = new Color(col.red, col.green, col.blue);
-		return res;
+		return convertColor(col);
 	}
 
+	private static ColorRegistry _colRegistry;
+	
+	public static java.awt.Color convertColor(org.eclipse.swt.graphics.RGB swtCol)
+	{
+		// ok, convert the AWT color to SWT
+		java.awt.Color res = null;
+		RGB col = (RGB) swtCol;
+		res = new Color(col.red, col.green, col.blue);
+		return res;		
+	}
+	
+	public static org.eclipse.swt.graphics.Color convertColor(java.awt.Color javaCol)
+	{
+		
+		// check we have our registry
+		if(_colRegistry == null)
+			_colRegistry = new ColorRegistry();
+		
+		final String colName = javaCol.toString();
+		
+		// retrieve the color
+		org.eclipse.swt.graphics.Color thisCol = _colRegistry.get(colName);
+		
+		// ok. do we have the color?
+		if(thisCol == null)
+		{
+			System.out.println("creating new color for:" + javaCol);
+			
+			// bugger, we'll have to  create it
+			RGB newData = new RGB(javaCol.getRed(), javaCol.getGreen(), javaCol.getBlue());
+			_colRegistry.put(colName, newData);
+			
+			// and try to retrieve it again
+			thisCol = _colRegistry.get(colName);
+		}
+		
+		return thisCol;
+	}
+	
 	private ImageData createColorImage(RGB color)
 	{
 
