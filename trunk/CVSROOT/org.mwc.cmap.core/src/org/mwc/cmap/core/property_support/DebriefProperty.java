@@ -185,7 +185,8 @@ public class DebriefProperty implements IPropertyDescriptor
 				String msg = "editor not found for:"
 						+ PlottableWrapper.getPropertyClass(prop) + "("
 						+ prop.getDisplayName() + ")";
-				CorePlugin.logError(Status.INFO, msg, null);
+				System.out.println(msg);
+			//	CorePlugin.logError(Status.INFO, msg, null);
 			}
 
 		}
