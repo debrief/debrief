@@ -6,10 +6,17 @@ import interfaces.IResourceProvider;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
 import org.eclipse.swt.dnd.DropTargetEvent;
@@ -25,6 +32,7 @@ import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import Debrief.Wrappers.NarrativeWrapper;
@@ -39,7 +47,7 @@ import MWC.GenericData.WorldArea;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public abstract class PlotEditor extends EditorPart implements
-		IResourceProvider, IControllableViewport
+		IResourceProvider, IControllableViewport, ISelectionProvider
 {
 
 	// //////////////////////////////
@@ -167,21 +175,24 @@ public abstract class PlotEditor extends EditorPart implements
 		
     // and add our dbl click listener
     // and add our dbl click listener
-    getChart().addCursorDblClickedListener(new DblClickEdit(_myLayers, null)
+    getChart().addLeftClickListener(new DblClickEdit(_myLayers, null)
     		{
 					protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
 					{
 						System.out.println("opening editor for:" + res);
+						PlottableWrapper parentP = new PlottableWrapper(parentLayer, null, getChart().getLayers());
+						PlottableWrapper wrapped = new PlottableWrapper(res, parentP, getChart().getLayers());
+						ISelection selected = new StructuredSelection(wrapped);
+						fireSelectionChanged(selected);
 					}
 
 					protected void handleItemNotFound(PlainProjection projection)
 					{
-						// don't bother - just ignore it...
 					}
-    	
     		});
 
-
+    getSite().setSelectionProvider(this);
+    
 	}
 
 	/**
@@ -414,6 +425,60 @@ public abstract class PlotEditor extends EditorPart implements
 	public SWTChart getChart()
 	{
 		return _myChart;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+	 */
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		if(_selectionListeners == null)
+			_selectionListeners = new Vector(0,1);
+		
+		_selectionListeners.add(listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
+	 */
+	public ISelection getSelection()
+	{
+		return _currentSelection;
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
+	 */
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionListeners.remove(listener);
+	}
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
+	 */
+	public void setSelection(ISelection selection)
+	{
+		// TODO Auto-generated method stub
+	_currentSelection = selection;
+	}
+	
+	Vector _selectionListeners;
+	ISelection _currentSelection;
+	
+	protected void fireSelectionChanged(ISelection sel)
+	{
+		_currentSelection = sel;
+		if(_selectionListeners != null)
+		{
+			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
+			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			{
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				thisL.selectionChanged(sEvent);
+			}
+		}
+		
 	}
 
 }
