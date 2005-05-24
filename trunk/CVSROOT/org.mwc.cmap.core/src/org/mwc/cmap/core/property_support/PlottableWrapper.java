@@ -18,22 +18,21 @@ import MWC.GUI.Plottable;
  */
 public class PlottableWrapper implements IPropertySource
 {
-	/** the data object we are wrapping
-	 * 
+	/**
+	 * the data object we are wrapping
 	 */
 	private final Plottable _plottable;
 
-	/** the parent of this object
-	 * 
+	/**
+	 * the parent of this object
 	 */
 	private final PlottableWrapper _parent;
 
-	/** the parent layers object containing us
-	 * 
+	/**
+	 * the parent layers object containing us
 	 */
 	private final Layers _layers;
 
-	
 	/**
 	 * the editable properties of this object
 	 */
@@ -44,8 +43,7 @@ public class PlottableWrapper implements IPropertySource
 	 */
 	static String[] _booleanTags = new String[] { "Yes", "No" };
 
-	public PlottableWrapper(Plottable plottable, 
-			PlottableWrapper parent,
+	public PlottableWrapper(Plottable plottable, PlottableWrapper parent,
 			Layers layers)
 	{
 		if (plottable == null)
@@ -94,7 +92,7 @@ public class PlottableWrapper implements IPropertySource
 	{
 		return _parent;
 	}
-	
+
 	public Layers getLayers()
 	{
 		return _layers;
@@ -243,7 +241,7 @@ public class PlottableWrapper implements IPropertySource
 
 		// find the parent layer
 		Layer parent = getTopLevelLayer();
-		
+
 		// fire the reformatted event for the parent layer
 		getLayers().fireReformatted(parent);
 	}
