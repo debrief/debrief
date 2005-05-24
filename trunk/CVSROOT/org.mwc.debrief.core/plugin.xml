@@ -59,7 +59,31 @@
             extensions="xml"
             name="Debrief XML Loader"/>
    </extension>
-
-
-
+   <extension
+         id="org.mwc.debrief.core.editors.DebriefActions"
+         name="DebriefActions"
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="org.mwc.debrief.core.editors.PlotEditorActions"
+            targetID="org.mwc.debrief.core.editors.PlotEditor">
+         <menu
+               id="org.mwc.debrief.core.EditorActions"
+               label="&amp;Debrief"
+               path="additions">
+            <groupMarker name="view"/>
+         </menu>
+         <action
+               class="org.mwc.cmap.plotViewer.actions.FitToWindow"
+               id="org.mwc.debrief.core.FitToWindow"
+               label="&amp;Fit to window"
+               menubarPath="org.mwc.debrief.core.EditorActions/view"
+               style="push"/>
+         <action
+               class="org.mwc.cmap.plotViewer.actions.ZoomOut"
+               id="org.mwc.debrief.core.ZoomOut"
+               label="Zoom &amp;Out"
+               menubarPath="org.mwc.debrief.core.EditorActions/view"
+               style="push"/>
+      </editorContribution>
+   </extension>
 </plugin>
