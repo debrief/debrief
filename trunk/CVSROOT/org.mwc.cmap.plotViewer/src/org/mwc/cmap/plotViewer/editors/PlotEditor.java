@@ -363,6 +363,11 @@ public abstract class PlotEditor extends EditorPart implements IResourceProvider
 		// TODO Auto-generated method stub
 		
 	}
+
+	public SWTChart getChart()
+	{
+		return _myChart;
+	}
 	
 	
 	
