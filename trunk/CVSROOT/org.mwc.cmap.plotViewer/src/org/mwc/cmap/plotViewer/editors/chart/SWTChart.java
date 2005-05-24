@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.4  2005-05-24 13:26:43  Ian.Mayo
+// Revision 1.5  2005-05-24 14:09:49  Ian.Mayo
+// Sort out mouse-clicked events
+//
+// Revision 1.4  2005/05/24 13:26:43  Ian.Mayo
 // Start including double-click support.
 //
 // Revision 1.3  2005/05/24 07:39:54  Ian.Mayo
@@ -521,18 +524,29 @@ public class SWTChart extends PlainChart implements Serializable
 
 	protected void doMouseUp(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-		System.err.println("process mouse up event");
+		// ok. did we move at all?
+		Point thisP = new Point(e.x,  e.y);
+		if(thisP.equals(_startPoint))
+		{
+			// hey, it was just a click - process it
+      if (_theLeftClickListener != null)
+      {
+      	// get the world location
+      	java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
+      	WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
+        _theLeftClickListener.CursorClicked(jPoint,
+                                            loc,
+                                            getCanvas(),
+                                            _theLayers);
+      }
+		}
 		_startPoint = null;
-		// _dragTracker = null;
 	}
 
 	protected void doMouseDown(MouseEvent e)
 	{
-		System.err.println("process mouse down event");
 		if (_dragTracker == null)
 		{
-			System.err.println("starting drag");
 			_startPoint = new Point(e.x, e.y);
 		}
 	}
