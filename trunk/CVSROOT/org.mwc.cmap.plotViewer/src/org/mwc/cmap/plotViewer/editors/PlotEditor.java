@@ -286,6 +286,10 @@ public abstract class PlotEditor extends EditorPart implements
 		{
 			return _timeManager;
 		}
+		else if (adapter == ISelectionProvider.class)
+		{
+			return this;
+		}
 		else if (adapter == ControllableTime.class)
 		{
 			return _timeManager;
@@ -435,7 +439,9 @@ public abstract class PlotEditor extends EditorPart implements
 		if(_selectionListeners == null)
 			_selectionListeners = new Vector(0,1);
 		
-		_selectionListeners.add(listener);
+		// see if we don't already contain it..
+		if(!_selectionListeners.contains(listener))
+			_selectionListeners.add(listener);
 	}
 
 	/* (non-Javadoc)
