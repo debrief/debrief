@@ -16,7 +16,12 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.IElementComparer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
@@ -34,6 +39,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.views.support.ViewContentProvider;
@@ -76,13 +82,22 @@ public class LayerManagerView extends ViewPart
 
 	private Action action1;
 
-	private Action action2;
+	private Action _swapVisAction;
 
 	private Action doubleClickAction;
 
 	private Layers _myLayers;
 
 	private Layers.DataListener _myLayersListener;
+
+	private ISelectionChangedListener _selectionChangeListener;
+	
+
+	/**
+	 * toggle to indicate whether user wants narrative to always jump to
+	 * highlighted entry
+	 */
+	private Action _followSelectionToggle;	
 
 	class NameSorter extends ViewerSorter
 	{
@@ -226,12 +241,54 @@ public class LayerManagerView extends ViewPart
 
 				});
 
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						ISelectionProvider iS = (ISelectionProvider) part;
+						iS.addSelectionChangedListener(_selectionChangeListener);
+					}
+				});
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						ISelectionProvider iS = (ISelectionProvider) part;
+						iS.removeSelectionChangedListener(_selectionChangeListener);
+					}
+				});
+
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
 				.getActivePage());
 
 		// set ourselves as selection source
 		getSite().setSelectionProvider(_treeViewer);
+
+		_selectionChangeListener = new ISelectionChangedListener()
+		{
+
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+				// right, see what it is
+				ISelection sel = event.getSelection();
+				if (sel instanceof StructuredSelection)
+				{
+					StructuredSelection ss = (StructuredSelection) sel;
+					Object datum = ss.getFirstElement();
+					if (datum instanceof PlottableWrapper)
+					{
+						PlottableWrapper pw = (PlottableWrapper) datum;
+						plottableSelected(sel, pw);
+					}
+				}
+
+			}
+		};
 
 	}
 
@@ -271,15 +328,16 @@ public class LayerManagerView extends ViewPart
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
+		manager.add(_followSelectionToggle);		
 		manager.add(action1);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(_swapVisAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager)
 	{
 		manager.add(action1);
-		manager.add(action2);
+		manager.add(_swapVisAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -288,14 +346,26 @@ public class LayerManagerView extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
+		manager.add(_followSelectionToggle);		
 		manager.add(action1);
-		manager.add(action2);
+		manager.add(_swapVisAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions()
 	{
+		
+		_followSelectionToggle = new Action("Jump to selection", Action.AS_CHECK_BOX)
+		{
+		};
+		_followSelectionToggle.setText("Follow selection");
+		_followSelectionToggle.setChecked(true);
+		_followSelectionToggle
+				.setToolTipText("Ensure selected item in plot is always visible");
+		_followSelectionToggle.setImageDescriptor(
+				CorePlugin.getImageDescriptor("icons/follow_selection.gif"));
+		
 		action1 = new Action()
 		{
 			public void run()
@@ -308,7 +378,7 @@ public class LayerManagerView extends ViewPart
 		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
-		action2 = new Action()
+		_swapVisAction = new Action()
 		{
 			public void run()
 			{
@@ -321,9 +391,9 @@ public class LayerManagerView extends ViewPart
 				});
 			}
 		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
-		action2.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+		_swapVisAction.setText("Swap vis");
+		_swapVisAction.setToolTipText("Swap visiblity of selected items");
+		_swapVisAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action()
 		{
@@ -436,29 +506,32 @@ public class LayerManagerView extends ViewPart
 		public int compare(Object arg0, Object arg1)
 		{
 			int res = 1;
-			
-			if(arg0.equals(arg1))
+
+			if (arg0.equals(arg1))
 				res = 0;
-			
-			if(arg0.getClass() == arg1.getClass())
+
+			if (arg0.getClass() == arg1.getClass())
 			{
-				if(arg0 instanceof Comparable)
+				if (arg0 instanceof Comparable)
 				{
 					Comparable c0 = (Comparable) arg0;
 					Comparable c1 = (Comparable) arg1;
 					res = c1.compareTo(c1);
 				}
 			}
-			
+
 			return res;
 		}
 
 	});
 
-	/** one or more layers have been changed.  This method may get called lots of times.
-	 * Stack up the events - and just call our UI update method once at the end
+	/**
+	 * one or more layers have been changed. This method may get called lots of
+	 * times. Stack up the events - and just call our UI update method once at the
+	 * end
 	 * 
-	 * @param changedLayer the layer which has changed
+	 * @param changedLayer
+	 *          the layer which has changed
 	 */
 	protected void handleReformattedLayer(Layer changedLayer)
 	{
@@ -497,7 +570,7 @@ public class LayerManagerView extends ViewPart
 			for (Iterator iter = _pendingLayers.iterator(); iter.hasNext();)
 			{
 				Layer changedLayer = (Layer) iter.next();
-				
+
 				// right. has just one layer updated?
 				if (changedLayer != null)
 				{
@@ -620,6 +693,12 @@ public class LayerManagerView extends ViewPart
 	private void triggerChartUpdate(Layer changedLayer)
 	{
 		_myLayers.fireReformatted(changedLayer);
+	}
+
+	public void plottableSelected(ISelection sel, PlottableWrapper pw)
+	{
+		if(_followSelectionToggle.isChecked())
+			_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
 	}
 
 }
