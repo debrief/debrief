@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.2  2005-05-20 15:34:44  Ian.Mayo
+// Revision 1.3  2005-05-24 07:35:57  Ian.Mayo
+// Ignore anti-alias bits, sort out text-writing in filling areas
+//
+// Revision 1.2  2005/05/20 15:34:44  Ian.Mayo
 // Hey, practically working!
 //
 // Revision 1.1  2005/05/20 13:45:03  Ian.Mayo
@@ -34,13 +37,13 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
+import org.mwc.cmap.core.property_support.FontHelper;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
@@ -218,20 +221,20 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		// return;
 		//
 
-		try
-		{
-			if (val)
-			{
-				 _theDest.setAntialias(SWT.ON);
-			}
-			else
-			{
-				 _theDest.setAntialias(SWT.OFF);
-			}
-		} catch (RuntimeException e)
-		{
-			CorePlugin.logError(Status.ERROR, "Graphics library not found", e);
-		}
+//		try
+//		{
+//			if (val)
+//			{
+//				 _theDest.setAntialias(SWT.ON);
+//			}
+//			else
+//			{
+//				 _theDest.setAntialias(SWT.OFF);
+//			}
+//		} catch (RuntimeException e)
+//		{
+////			CorePlugin.logError(Status.ERROR, "Graphics library not found", e);
+//		}
 	}
 
 	/**
@@ -722,12 +725,10 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 
 		// doDecide the anti-alias
 		this.switchAntiAliasOn(SWTCanvas.antiAliasThis(theFont));
-		//
-		// if (_theDest == null)
-		// return;
-		//
-		// _theDest.setFont(theFont);
-		// _theDest.drawString(theStr, x, y);
+
+		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFont(theFont);
+		_theDest.setFont(swtFont);
+		_theDest.drawString(theStr, x, y, true);
 	}
 
 	public final void drawRect(final int x1, final int y1, final int wid,
@@ -751,7 +752,26 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
+		fillOn();
+		
 		_theDest.fillRectangle(x, y, wid, height);
+		
+		fillOff();
+	}
+	
+	private static Color _theOldColor;
+	
+	protected void fillOn()
+	{
+		_theOldColor = _myCanvas.getBackground();
+		Color theForeColor = _myCanvas.getForeground();
+		_myCanvas.setBackground(theForeColor);
+	}
+	
+	protected void fillOff()
+	{
+		_myCanvas.setBackground(_theOldColor);
+		_theOldColor = null;
 	}
 
 	/**
@@ -883,8 +903,8 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		// erase background
 		final Dimension sz = this.getSize();
 
-		g1.setForeground(_myCanvas.getBackground());
-		g1.fillRectangle(0, 0, sz.width, sz.height);
+//		g1.setForeground(_myCanvas.getBackground());
+//		g1.fillRectangle(0, 0, sz.width, sz.height);
 
 		// do the actual paint
 		paintIt(this);
