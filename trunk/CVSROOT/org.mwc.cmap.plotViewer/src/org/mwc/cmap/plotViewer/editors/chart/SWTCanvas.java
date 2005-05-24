@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.3  2005-05-24 07:35:57  Ian.Mayo
+// Revision 1.4  2005-05-24 13:26:42  Ian.Mayo
+// Start including double-click support.
+//
+// Revision 1.3  2005/05/24 07:35:57  Ian.Mayo
 // Ignore anti-alias bits, sort out text-writing in filling areas
 //
 // Revision 1.2  2005/05/20 15:34:44  Ian.Mayo
@@ -26,7 +29,6 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
@@ -34,6 +36,7 @@ import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
@@ -41,7 +44,6 @@ import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.property_support.FontHelper;
 
@@ -123,12 +125,13 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 	/**
 	 * default constructor.
 	 */
-	public SWTCanvas(Composite parent, int style)
+	public SWTCanvas(Composite parent)
 	{
-		_myCanvas = new Canvas(parent, style);
+		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
 
 		// start with our background colour
-		setBackgroundColor(java.awt.Color.red);
+		setBackgroundColor(java.awt.Color.black);
+		
 
 		// initialisation
 		_thePainters = new Vector(0, 1);
@@ -156,18 +159,23 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		{
 
 			public void paintControl(PaintEvent e)
-			{				
+			{
 				repaintMe(e);
 			}
 		});
 	}
 
+
+	// ////////////////////////////////////////////////////
+	// screen redraw related
+	// ////////////////////////////////////////////////////
+	
 	protected void repaintMe(PaintEvent pe)
 	{
-		
+
 		// get the graphics destination
 		GC gc = pe.gc;
-		
+
 		// put double-buffering code in here.
 		if (_dblBuff == null)
 		{
@@ -186,10 +194,45 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		}
 
 		// finally put the required bits of the target image onto the screen
-		gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height,pe.x, pe.y, pe.width, pe.height);
+		gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
+				pe.width, pe.height);
 
 	}
 
+
+	/**
+	 * the real paint function, called when it's not satisfactory to just paint in
+	 * our safe double-buffered image.
+	 * 
+	 * @param g1
+	 */
+	private void paintPlot(GC g1)
+	{
+
+		// prepare the ground (remember the graphics dest for a start)
+		startDraw(g1);
+
+		// go through our painters
+		final Enumeration enumer = _thePainters.elements();
+		while (enumer.hasMoreElements())
+		{
+			final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer
+					.nextElement();
+
+			// check the screen has been defined
+			final Dimension area = this.getProjection().getScreenArea();
+			if ((area == null) || (area.getWidth() <= 0) || (area.getHeight() <= 0))
+			{
+				return;
+			}
+
+			// it must be ok
+			thisPainter.paintMe(this);
+		}
+
+		// all finished, close it now
+		endDraw(null);
+	}	
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
@@ -221,20 +264,20 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		// return;
 		//
 
-//		try
-//		{
-//			if (val)
-//			{
-//				 _theDest.setAntialias(SWT.ON);
-//			}
-//			else
-//			{
-//				 _theDest.setAntialias(SWT.OFF);
-//			}
-//		} catch (RuntimeException e)
-//		{
-////			CorePlugin.logError(Status.ERROR, "Graphics library not found", e);
-//		}
+		// try
+		// {
+		// if (val)
+		// {
+		// _theDest.setAntialias(SWT.ON);
+		// }
+		// else
+		// {
+		// _theDest.setAntialias(SWT.OFF);
+		// }
+		// } catch (RuntimeException e)
+		// {
+		// // CorePlugin.logError(Status.ERROR, "Graphics library not found", e);
+		// }
 	}
 
 	/**
@@ -583,6 +626,7 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		Color newCol = ColorHelper.getColor(theCol);
 
 		_theDest.setForeground(newCol);
+		_theDest.setBackground(newCol);
 	}
 
 	static public java.awt.BasicStroke getStrokeFor(final int style)
@@ -695,6 +739,9 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 	public final void startDraw(final Object theVal)
 	{
 		_theDest = (GC) theVal;
+		
+		// initialise the background color
+		_theDest.setBackground(_myCanvas.getBackground());
 
 		// set the thickness
 		// final BasicStroke bs = new BasicStroke(_lineWidth);
@@ -721,14 +768,18 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		// todo: use the font information
-
 		// doDecide the anti-alias
 		this.switchAntiAliasOn(SWTCanvas.antiAliasThis(theFont));
 
+		// get/set the font
 		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFont(theFont);
 		_theDest.setFont(swtFont);
-		_theDest.drawString(theStr, x, y, true);
+		
+		// shift the y.  JDK uses bottom left coordinate, SWT uses top-left
+		FontData[] data = swtFont.getFontData();
+		FontData first = data[0];
+		int y2 = y - first.height;
+		_theDest.drawString(theStr, x, y2, true);
 	}
 
 	public final void drawRect(final int x1, final int y1, final int wid,
@@ -752,25 +803,29 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		fillOn();
-		
+	//	fillOn();
+
+	//	_theDest.setBackground(ColorHelper.getColor(java.awt.Color.green));
 		_theDest.fillRectangle(x, y, wid, height);
 		
-		fillOff();
+		// now, the fill only fills in the provided rectangle. we also have to paint in it's border
+		_theDest.drawRectangle(x, y, wid, height);
+
+	//	fillOff();
 	}
-	
+
 	private static Color _theOldColor;
-	
+
 	protected void fillOn()
 	{
-		_theOldColor = _myCanvas.getBackground();
-		Color theForeColor = _myCanvas.getForeground();
-		_myCanvas.setBackground(theForeColor);
+		_theOldColor = _theDest.getBackground();
+		Color theForeColor = _theDest.getForeground();
+		_theDest.setBackground(theForeColor);
 	}
-	
+
 	protected void fillOff()
 	{
-		_myCanvas.setBackground(_theOldColor);
+		_theDest.setBackground(_theOldColor);
 		_theOldColor = null;
 	}
 
@@ -779,7 +834,7 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 	 */
 	public final java.awt.Color getBackgroundColor()
 	{
-		Color swtCol = _myCanvas.getBackground();
+		Color swtCol = _theDest.getBackground();
 		java.awt.Color theCol = ColorHelper.convertColor(swtCol.getRGB());
 		// convert to java-color
 		return theCol;
@@ -794,9 +849,6 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 
 		// set the colour in the parent
 		_myCanvas.setBackground(swtCol);
-
-		// invalidate the screen
-		updateMe();
 	}
 
 	public final BoundedInteger getLineThickness()
@@ -861,99 +913,6 @@ public class SWTCanvas implements CanvasType, Serializable, Editable
 		return _thePainters.elements();
 	}
 
-	// ////////////////////////////////////////////////////
-	// screen redraw related
-	// ////////////////////////////////////////////////////
-	//
-	// public final void paint(final java.awt.Graphics p1)
-	// {
-	// // paint code moved to Update function
-	// update(p1);
-	// }
-	//
-	// /**
-	// * screen redraw, just repaint the buffer
-	// */
-	// public void update(final java.awt.Graphics p1)
-	// {
-	// // this is a screen redraw, we can just paint in the buffer
-	// // (although we may have to redraw it first)
-	//
-	// if (_dblBuff == null)
-	// {
-	// paintPlot();
-	// }
-	//
-	// // // and paste the image
-	// // p1.drawImage(_dblBuff, 0, 0, this);
-	//
-	// }
-
-	/**
-	 * method to produce the buffered image - we paint this buffered image when we
-	 * get one of the numerous Windows repaint calls
-	 */
-	private void paintPlot(GC g1)
-	{
-		System.out.println("doing paint.");
-
-		// prepare the ground (remember the graphics dest for a start)
-		startDraw(g1);
-
-		// erase background
-		final Dimension sz = this.getSize();
-
-//		g1.setForeground(_myCanvas.getBackground());
-//		g1.fillRectangle(0, 0, sz.width, sz.height);
-
-		// do the actual paint
-		paintIt(this);
-
-		System.out.println("repainting");
-
-		// all finished, close it now
-		endDraw(null);
-
-		// and dispose
-		// g1.dispose();
-
-		// put the image back in our buffer
-		// _dblBuff = tmpBuff;
-
-	}
-
-	/**
-	 * the real paint function, called when it's not satisfactory to just paint in
-	 * our safe double-buffered image.
-	 */
-	public final void paintIt(final CanvasType canvas)
-	{
-		// go through our painters
-		final Enumeration enumer = _thePainters.elements();
-		while (enumer.hasMoreElements())
-		{
-			final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer
-					.nextElement();
-
-			if (canvas == null)
-			{
-				System.out.println("Canvas not ready yet");
-			}
-			else
-			{
-				// check the screen has been defined
-				final Dimension area = this.getProjection().getScreenArea();
-				if ((area == null) || (area.getWidth() <= 0) || (area.getHeight() <= 0))
-				{
-					return;
-				}
-
-				// it must be ok
-				thisPainter.paintMe(canvas);
-			}
-
-		}
-	}
 
 	/**
 	 * first repaint the plot, then trigger a screen update
