@@ -11,13 +11,15 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.ui.views.properties.ComboBoxLabelProvider;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
 
@@ -48,6 +50,86 @@ public class DebriefProperty implements IPropertyDescriptor
 		_myHelper = findHelperFor(prop, subject);
 	}
 
+	public static class TagListHelper extends EditorHelper
+	{
+		String [] _theTags;
+		final java.beans.PropertyEditor _propEditor;
+		
+		public TagListHelper(String[] theTags, final java.beans.PropertyEditor propEditor)
+		{
+			super(null);
+			_theTags = theTags;
+			_propEditor = propEditor;
+		}
+		
+		public CellEditor getEditorFor(Composite parent)
+		{
+			return new ComboBoxCellEditor(parent, _theTags);
+		}
+
+		public Object translateFromSWT(Object value)
+		{
+			Object res = value;
+			if (value instanceof String)
+			{
+				_propEditor.setAsText((String) value);
+				res = _propEditor.getValue();
+			}
+			else
+			{
+				Integer index = (Integer) value;
+				// ok, set the index of the text field first, then get the
+				// object vlaue
+				String selectedItem = _theTags[index.intValue()];
+				res = translateFromSWT(selectedItem);
+			}
+			return res;
+		}
+
+		public Object translateToSWT(Object value)
+		{
+			Object res = value;
+			if (value instanceof String)
+			{
+				// we have to translate the string to the string index
+				for (int i = 0; i < _theTags.length; i++)
+				{
+					String thisItem = _theTags[i];
+					if (thisItem.equals(value))
+					{
+						res = new Integer(i);
+						break;
+					}
+				}
+			}
+			else
+			{
+				// get the string representation of the object, then get the
+				// index of
+				// that string
+				_propEditor.setValue(value);
+				String txtVersion = _propEditor.getAsText();
+				res = translateToSWT(txtVersion);
+			}
+			return res;
+		}
+
+		public ILabelProvider getLabelFor(Object value)
+		{
+			LabelProvider theProvider = new LabelProvider()
+			{
+				public String getText(Object element)
+				{
+					String res = null;
+					_propEditor.setValue(element);
+					res = _propEditor.getAsText();
+					return res;
+				}
+			};
+			return theProvider;
+		}
+	};
+	
 	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
 	{
 		EditorHelper res = null;
@@ -75,75 +157,8 @@ public class DebriefProperty implements IPropertyDescriptor
 				{
 					// ok - do one of the combo-box editor types
 					final String[] theTags = propEditor.getTags();
-					res = new EditorHelper(null)
-					{
-						public CellEditor getEditorFor(Composite parent)
-						{
-							return new ComboBoxCellEditor(parent, theTags);
-						}
+					res = new TagListHelper(theTags, propEditor);
 
-						public Object translateFromSWT(Object value)
-						{
-							Object res = value;
-							if (value instanceof String)
-							{
-								propEditor.setAsText((String) value);
-								res = propEditor.getValue();
-							}
-							else
-							{
-								Integer index = (Integer) value;
-								// ok, set the index of the text field first, then get the
-								// object vlaue
-								String selectedItem = theTags[index.intValue()];
-								res = translateFromSWT(selectedItem);
-							}
-							return res;
-						}
-
-						public Object translateToSWT(Object value)
-						{
-							Object res = value;
-							if (value instanceof String)
-							{
-								// we have to translate the string to the string index
-								for (int i = 0; i < theTags.length; i++)
-								{
-									String thisItem = theTags[i];
-									if (thisItem.equals(value))
-									{
-										res = new Integer(i);
-										break;
-									}
-								}
-							}
-							else
-							{
-								// get the string representation of the object, then get the
-								// index of
-								// that string
-								propEditor.setValue(value);
-								String txtVersion = propEditor.getAsText();
-								res = translateToSWT(txtVersion);
-							}
-							return res;
-						}
-
-						public ILabelProvider getLabelFor(Object value)
-						{
-							LabelProvider theProvider = new LabelProvider()
-							{
-								public String getText(Object element)
-								{
-									String res = null;
-									propEditor.setValue(element);
-									res = propEditor.getAsText();
-									return res;
-								}
-							};
-							return theProvider;
-						}
-					};
 				}
 			}
 		}
@@ -167,9 +182,10 @@ public class DebriefProperty implements IPropertyDescriptor
 			if (res == null)
 			{
 				// ok, log the error
-				String msg = "editor not found for:" + PlottableWrapper.getPropertyClass(prop)
-				+ "(" + prop.getDisplayName() + ")";
-				CorePlugin.logError(Status.INFO,msg, null);
+				String msg = "editor not found for:"
+						+ PlottableWrapper.getPropertyClass(prop) + "("
+						+ prop.getDisplayName() + ")";
+				CorePlugin.logError(Status.INFO, msg, null);
 			}
 
 		}
@@ -220,44 +236,7 @@ public class DebriefProperty implements IPropertyDescriptor
 				}
 
 			});
-			_myHelperList.add(new EditorHelper(Boolean.class)
-			{
-
-				public CellEditor getEditorFor(Composite parent)
-				{
-					return new ComboBoxCellEditor(parent, PlottableWrapper._booleanTags);
-				}
-
-				public boolean editsThis(Class target)
-				{
-					return ((target == Boolean.class) || (target == boolean.class));
-				}
-
-				public Object translateToSWT(Object value)
-				{
-					Integer res;
-					Boolean val = (Boolean) value;
-					if (val.booleanValue())
-					{
-						res = new Integer(0);
-					}
-					else
-						res = new Integer(1);
-					return res;
-				}
-
-				public Object translateFromSWT(Object value)
-				{
-					Integer intg = (Integer) value;
-					boolean res = (intg.intValue() == 0);
-					return new Boolean(res);
-				}
-
-				public ILabelProvider getLabelFor(Object currentValue)
-				{
-					return new ComboBoxLabelProvider(PlottableWrapper._booleanTags);
-				}
-			});
+			_myHelperList.add(new BooleanHelper());
 
 		}
 	}
@@ -384,4 +363,5 @@ public class DebriefProperty implements IPropertyDescriptor
 		}
 
 	}
+
 }
