@@ -84,6 +84,12 @@
                label="Zoom &amp;Out"
                menubarPath="org.mwc.debrief.core.EditorActions/view"
                style="push"/>
+         <action
+               class="org.mwc.cmap.plotViewer.actions.Redraw"
+               id="org.mwc.debrief.core.Redraw"
+               label="&amp;Redraw"
+               menubarPath="org.mwc.debrief.core.EditorActions/view"
+               style="push"/>
       </editorContribution>
    </extension>
 </plugin>
