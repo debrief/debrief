@@ -4,7 +4,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.2  2005-05-20 15:34:45  Ian.Mayo
+// Revision 1.3  2005-05-24 07:39:54  Ian.Mayo
+// Start mouse support
+//
+// Revision 1.2  2005/05/20 15:34:45  Ian.Mayo
 // Hey, practically working!
 //
 // Revision 1.1  2005/05/20 13:45:04  Ian.Mayo
@@ -15,19 +18,23 @@
 
 package org.mwc.cmap.plotViewer.editors.chart;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.io.Serializable;
 import java.util.HashMap;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ControlAdapter;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.events.MouseMoveListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Tracker;
 import org.eclipse.swt.widgets.Widget;
 
 import MWC.GUI.CanvasType;
@@ -35,6 +42,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 
 
@@ -126,10 +134,12 @@ public class SWTChart extends PlainChart implements Serializable
 			}
 
 			public void mouseDown(MouseEvent e)
-			{			}
+			{		
+				doMouseDown(e);
+			}
 
 			public void mouseUp(MouseEvent e)
-			{			}});
+			{	doMouseUp(e);		}});
     
 
     // store the rubber band
@@ -140,11 +150,6 @@ public class SWTChart extends PlainChart implements Serializable
 
   }
 
-  protected void doMouseDoubleClick(MouseEvent e)
-	{
-		// TODO Auto-generated method stub
-		System.err.println("send double-click event!!");
-	}
 
 	/**
    * constructor, providing us with a set of layers to plot, together with a background
@@ -255,7 +260,7 @@ public class SWTChart extends PlainChart implements Serializable
   {
   	
     // draw in the solid background
-    paintBackground(dest);
+   paintBackground(dest);
     
     super.paintMe(dest);
   	
@@ -392,7 +397,7 @@ public class SWTChart extends PlainChart implements Serializable
   {
     // fill the background, to start with
     final Dimension sz = _theCanvas.getSize();
-    dest.setColor(dest.getBackgroundColor());
+    dest.setColor(Color.black);
     dest.fillRect(0, 0, sz.width, sz.height);
 
 //    // do we have an image?
@@ -460,8 +465,74 @@ public class SWTChart extends PlainChart implements Serializable
   public void doMouseMove(MouseEvent e)
   {
   	// todo:   PRODUCE NEW MOUSE EVENT TRANSLATOR!!!
+  	if(_startPoint == null)
+  		return;
+  	if(_dragTracker != null)
+  		return;
+  	
+  	int deltaX = _startPoint.x - e.x;
+  	int deltaY = _startPoint.y - e.y;
+  	if(Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
+  		return;
+  	_dragTracker = new Tracker((Composite) _theCanvas.getCanvas(), SWT.RESIZE);
+  	Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX, deltaY); 
+  	_dragTracker.setRectangles(new Rectangle[]{rect});
+  	boolean dragResult = _dragTracker.open();
+  	if(dragResult)
+  	{
+  		Rectangle[] rects = _dragTracker.getRectangles();
+  		Rectangle res = rects[0];
+  		// get world area
+  		java.awt.Point tl = new java.awt.Point(res.x, res.y);
+  		java.awt.Point br = new java.awt.Point(res.x + res.width, res.y + res.height);
+  		WorldLocation locA = new WorldLocation(_theCanvas.getProjection().toWorld(tl));
+  		WorldLocation locB = new WorldLocation(_theCanvas.getProjection().toWorld(br));
+  		WorldArea area = new WorldArea(locA, locB);
+
+  		System.out.println("zooming in on:" + area);
+  		
+  		
+  		_theCanvas.getProjection().setDataArea(area);
+  		_theCanvas.updateMe();
+  		
+  		_dragTracker = null;
+  		_startPoint = null;
+  	}
+  	else
+  	{
+  		System.out.println("user cancelled drag operation!");
+  	}
   }
 
+  private final int JITTER = 2;
+  private Tracker _dragTracker = null;
+  private Point _startPoint = null;
+  
+  protected void doMouseUp(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		System.err.println("process mouse up event");
+		_startPoint = null;
+	//	_dragTracker = null;
+	}
+
+	protected void doMouseDown(MouseEvent e)
+	{
+		System.err.println("process mouse down event");
+		if(_dragTracker == null)
+		{
+			System.err.println("starting drag");
+			_startPoint = new Point(e.x, e.y);
+		}
+	}
+
+	protected void doMouseDoubleClick(MouseEvent e)
+	{
+		// TODO Auto-generated method stub
+		System.err.println("send double-click event!!");
+		_theCanvas.rescale();
+		_theCanvas.updateMe();
+	}  
 }
 
 
