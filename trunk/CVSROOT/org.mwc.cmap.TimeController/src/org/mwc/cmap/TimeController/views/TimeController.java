@@ -17,7 +17,10 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Slider;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.IWorkbenchPart;
@@ -145,7 +148,10 @@ public class TimeController extends ViewPart
 	{
 		// ok, draw our wonderful GUI.
 
-		_wholePanel = new Composite(parent, SWT.NONE);
+		_wholePanel = new Composite(parent, SWT.NONE)
+		{
+			
+		};
 		RowLayout onTop = new RowLayout();
 		onTop.type = SWT.VERTICAL;
 		_wholePanel.setLayout(onTop);
@@ -162,10 +168,10 @@ public class TimeController extends ViewPart
 		LH.setLayout(lhGrid);
 		Button lBwd = new Button(LH, SWT.NONE);
 		lBwd.setText("<<");
-		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, false));
+		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, 10));
 		Button sBwd = new Button(LH, SWT.NONE);
 		sBwd.setText("<");
-		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, true));
+		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, 1));
 		_timeLabel = new Label(_btnPanel, SWT.NONE);
 		_timeLabel.setText("-------------------");
 		Composite RH = new Composite(_btnPanel, SWT.NONE);
@@ -174,10 +180,10 @@ public class TimeController extends ViewPart
 		RH.setLayout(rhGrid);
 		Button sFwd = new Button(RH, SWT.NONE);
 		sFwd.setText(">");
-		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, true));
+		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, 1));
 		Button lFwd = new Button(RH, SWT.NONE);
 		lFwd.setText(">>");
-		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, false));
+		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, 10));
 		lFwd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
 				ISharedImages.IMG_TOOL_FORWARD));
 
@@ -200,23 +206,67 @@ public class TimeController extends ViewPart
 			{
 			}
 		});
+		
+		_wholePanel.addListener(SWT.MouseWheel, new Listener(){
+
+			public void handleEvent(Event event)
+			{
+				int count = event.count;
+				boolean fwd;
+				int scale = 1;
+				
+				// is the control button down?
+				int keys = event.stateMask;
+				if((keys & SWT.CONTROL) != 0)
+					scale *= 10;
+				else
+					scale *= 1;
+
+				if((keys & SWT.SHIFT) != 0)
+					scale *= 60;
+				else
+					scale *= 1;
+
+				
+				if(count < 0)
+					fwd = true;
+				else
+					fwd = false;
+				
+				processClick(scale, fwd);
+			}});
+
+		/* the next bit is a fudge (taken from "How to scroll a canvas" on Eclipse newsgroups
+		 * 
+		 */
+		_wholePanel.addListener(SWT.MouseDown, new Listener(){
+
+			public void handleEvent(Event event)
+			{
+				Control focus = event.display.getFocusControl();
+				while(focus != null)
+				{
+					focus = focus.getParent();
+				}
+				_wholePanel.setFocus();
+			}});
 	}
 
 	private class TimeButtonSelectionListener implements SelectionListener
 	{
 		private boolean _fwd;
 
-		private boolean _small;
+		private int _scale;
 
-		public TimeButtonSelectionListener(boolean fwd, boolean small)
+		public TimeButtonSelectionListener(boolean fwd, int scale)
 		{
 			_fwd = fwd;
-			_small = small;
+			_scale = scale;
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
-			processClick(_small, _fwd);
+			processClick(_scale, _fwd);
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
@@ -224,7 +274,7 @@ public class TimeController extends ViewPart
 		}
 	}
 
-	private void processClick(boolean small, boolean fwd)
+	private void processClick(int scale, boolean fwd)
 	{
 		// check that we have a current time (on initialisation some plots may not
 		// contain data)
@@ -233,11 +283,6 @@ public class TimeController extends ViewPart
 		{
 			// yup, time is there. work with it baby
 			long micros = tNow.getMicros();
-			int scale;
-			if (small)
-				scale = 1;
-			else
-				scale = 10;
 
 			int size = scale * 1000 * 1000;
 
