@@ -5,6 +5,7 @@ package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.resource.FontRegistry;
 import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.DialogCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Font;
@@ -13,20 +14,49 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.FontDialog;
 
 public class FontHelper extends EditorHelper
 {
-	Control _parentControl;
+	public static class FontDataDialogCellEditor extends DialogCellEditor
+	{
 
-	public FontHelper(Control parentControl)
+		public FontDataDialogCellEditor(Composite parent)
+		{
+			super(parent);
+		}
+
+		protected Object openDialogBox(Control cellEditorWindow)
+		{
+			Font res = null;
+			FontDialog ftDialog = new FontDialog(cellEditorWindow.getShell());
+			Font thisFont = (Font) getValue();
+			if(thisFont != null)
+			{
+				FontData[] list = thisFont.getFontData();
+				ftDialog.setFontList(list);				
+			}
+			FontData fData = ftDialog.open();
+			if(fData != null)
+			{
+				res = new Font(Display.getCurrent(), fData);
+				
+			}
+				
+			return res;
+		}
+		
+	}
+	
+	public FontHelper()
 	{
 		super(java.awt.Font.class);
-		_parentControl = parentControl;
 	}
 
 	public CellEditor getEditorFor(Composite parent)
 	{
-		return null;
+		CellEditor editor = new FontDataDialogCellEditor(parent);
+		return editor;
 	}
 
 	public Object translateToSWT(Object value)
@@ -39,17 +69,18 @@ public class FontHelper extends EditorHelper
 	public Object translateFromSWT(Object value)
 	{
 		// ok, convert the AWT color to SWT
-		FontData col = (FontData) value;
-		return convertFont(col);
+		Font font = (Font) value;
+		return convertFont(font);
 	}
 
 	private static FontRegistry _fontRegistry;
 	
-	public static java.awt.Font convertFont(org.eclipse.swt.graphics.FontData swtFont)
+	public static java.awt.Font convertFont(org.eclipse.swt.graphics.Font swtFont)
 	{
 		// ok, convert the AWT color to SWT
 		java.awt.Font res = null;
-		res = new java.awt.Font(swtFont.getName(), swtFont.getStyle(), swtFont.getHeight());
+		FontData fd = swtFont.getFontData()[0];
+		res = new java.awt.Font(fd.getName(), fd.getStyle(), fd.getHeight());
 		return res;		
 	}
 	
@@ -61,24 +92,28 @@ public class FontHelper extends EditorHelper
 			_fontRegistry = new FontRegistry(Display.getCurrent(), true);
 		
 		final String fontName = javaFont.toString();
-		
-		// retrieve the color
 		org.eclipse.swt.graphics.Font thisFont = _fontRegistry.get(fontName);
 		
-		// ok. do we have the color?
-		if(thisFont == null)
+		
+		// do we have a font for this style?
+		if(!_fontRegistry.hasValueFor(fontName))
 		{
-			System.out.println("creating new color for:" + javaFont);
-			
 			// bugger, we'll have to  create it
 			FontData newF = new FontData(javaFont.getName(), javaFont.getStyle(), javaFont.getSize());
 			_fontRegistry.put(fontName,new FontData[]{newF});
-			
-			// and try to retrieve it again
-			thisFont = _fontRegistry.get(fontName);
 		}
 		
+		// ok, try to receive it.  if we don't we'll just get a default one any way. cool.
+		thisFont = _fontRegistry.get(fontName);
+		
 		return thisFont;
+	}
+
+	public static org.eclipse.swt.graphics.Font getFont(FontData fd)
+	{
+		org.eclipse.swt.graphics.Font res = null;
+		
+		return res;
 	}
 	
 	public ILabelProvider getLabelFor(Object currentValue)

@@ -9,19 +9,14 @@ import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.CategorisedPropertyDescriptor;
@@ -238,6 +233,7 @@ public class DebriefProperty implements IPropertyDescriptor
 
 			});
 			_myHelperList.add(new BooleanHelper());
+			_myHelperList.add(new FontHelper());
 
 		}
 	}
