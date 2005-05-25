@@ -300,7 +300,7 @@ public void loadingComplete(Object source)
 		// ok - update our painter
 		if(getChart() != null)
 		{
-			getChart().update();
+			getChart().getCanvas().updateMe();
 		}
 	}
 
