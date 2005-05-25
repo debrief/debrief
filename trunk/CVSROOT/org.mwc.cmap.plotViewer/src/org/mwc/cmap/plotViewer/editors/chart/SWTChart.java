@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.5  2005-05-24 14:09:49  Ian.Mayo
+// Revision 1.6  2005-05-25 13:24:42  Ian.Mayo
+// Tidy background painting
+//
+// Revision 1.5  2005/05/24 14:09:49  Ian.Mayo
 // Sort out mouse-clicked events
 //
 // Revision 1.4  2005/05/24 13:26:43  Ian.Mayo
@@ -22,6 +25,7 @@
 
 package org.mwc.cmap.plotViewer.editors.chart;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.io.Serializable;
@@ -260,131 +264,137 @@ public class SWTChart extends PlainChart implements Serializable
 	public final void paintMe(final CanvasType dest)
 	{
 
-		// draw in the solid background
-		paintBackground(dest);
-
-		super.paintMe(dest);
-
-		// // check that we have a valid canvas (that the sizes are set)
-		// final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
-		// if (sArea != null)
-		// {
-		// if (sArea.width > 0)
-		// {
-		//
-		// // hey, we've plotted at least once, has the data area changed?
-		// if (_lastDataArea != _theCanvas.getProjection().getDataArea())
-		// {
-		// // remember the data area for next time
-		// _lastDataArea = _theCanvas.getProjection().getDataArea();
-		//
-		// // clear out all of the layers we are using
-		// _myLayers.clear();
-		// }
-		//
-		// // draw in the solid background
-		// paintBackground(dest);
-		//
-		// int canvasHeight = _theCanvas.getSize().y;
-		// int canvasWidth = _theCanvas.getSize().x;
-		//        
-		// // ok, pass through the layers, repainting any which need it
-		// final int len = _theLayers.size();
-		// for (int i = 0; i < len; i++)
-		// {
-		// final Layer thisLayer = _theLayers.elementAt(i);
-		//
-		// boolean isAlreadyPlotted = false;
-		//
-		// // just check if this layer is visible
-		// if (thisLayer.getVisible())
-		// {
-		//
-		// if (doubleBufferPlot())
-		// {
-		//
-		// // check we're plotting to a SwingCanvas, because we don't double-buffer
-		// anything else
-		// if (dest instanceof MWC.GUI.Canvas.Swing.SwingCanvas)
-		// {
-		//
-		// // does this layer want to be double-buffered?
-		// if (thisLayer instanceof BaseLayer)
-		// {
-		//
-		// // just check if there is a property which over-rides the
-		// double-buffering
-		// final BaseLayer bl = (BaseLayer) thisLayer;
-		// if (bl.isBuffered())
-		// {
-		// isAlreadyPlotted = true;
-		//
-		// // do our double-buffering bit
-		// // do we have a layer for this object
-		// org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image)
-		// _myLayers.get(thisLayer);
-		// if (image == null)
-		// {
-		// // sure it is, create an image to paint into (the TYPE_INT_ARGB ensures
-		// it has a transparent background)
-		// image = new org.eclipse.swt.graphics.Image(Display.getCurrent(),
-		// canvasWidth, canvasHeight);
-		// // image = new BufferedImage(_theCanvas.getWidth(),
-		// _theCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
-		//
-		// final Graphics g2 = image.getGraphics();
-		//
-		// // wrap the Graphics to make it look like a CanvasType
-		// final CanvasAdaptor ca = new CanvasAdaptor(_theCanvas.getProjection(),
-		// g2);
-		//
-		// // draw into it
-		// thisLayer.paint(ca);
-		//
-		// // ditch the graphics
-		// g2.dispose();
-		//
-		// // store this image in our list, indexed by the layer object itself
-		// _myLayers.put(thisLayer, image);
-		// }
-		//
-		// // have we ended up with an image to paint?
-		// if (image != null)
-		// {
-		// // get the graphics to paint to
-		// final Graphics gr = dest.getGraphicsTemp();
-		//
-		// if (gr != null)
-		// {
-		// // lastly add this image to our Graphics object
-		// gr.drawImage(image, 0, 0, _theCanvas);
-		//
-		// // and ditch it
-		// gr.dispose();
-		//
-		// }
-		// else
-		// MWC.Utilities.Errors.Trace.trace("SwingChart.PaintMe() :FAILED TO GET
-		// GRAPHICS TEMP");
-		// }
-		//
-		// }
-		// }
-		// } // whether we were plotting to a SwingCanvas (which may be
-		// double-buffered
-		// } // whther we are happy to do double-buffering
-		//
-		// // did we manage to paint it
-		// if (!isAlreadyPlotted)
-		// {
-		// thisLayer.paint(dest);
-		//
-		// isAlreadyPlotted = true;
-		// }
-		// }
-		// }
-		// }
-		// }
+		 // draw in the solid background
+		 paintBackground(dest);
+		
+		 super.paintMe(dest);
+//
+//		// check that we have a valid canvas (that the sizes are set)
+//		final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
+//		if (sArea != null)
+//		{
+//			if (sArea.width > 0)
+//			{
+//
+//				// hey, we've plotted at least once, has the data area changed?
+//				if (_lastDataArea != _theCanvas.getProjection().getDataArea())
+//				{
+//					// remember the data area for next time
+//					_lastDataArea = _theCanvas.getProjection().getDataArea();
+//
+//					// clear out all of the layers we are using
+//					_myLayers.clear();
+//				}
+//
+//				// draw in the solid background
+//				paintBackground(dest);
+//
+//				int canvasHeight = _theCanvas.getSize().height;
+//				int canvasWidth = _theCanvas.getSize().width;
+//
+//				// ok, pass through the layers, repainting any which need it
+//				final int len = _theLayers.size();
+//				for (int i = 0; i < len; i++)
+//				{
+//					final Layer thisLayer = _theLayers.elementAt(i);
+//
+//					boolean isAlreadyPlotted = false;
+//
+//					// just check if this layer is visible
+//					if (thisLayer.getVisible())
+//					{
+//
+//						if (doubleBufferPlot())
+//						{
+//
+//							// check we're plotting to a SwingCanvas, because we don't
+//							// double-buffer
+//							// anything else
+//							if (dest instanceof SWTCanvas)
+//							{
+//
+//								// does this layer want to be double-buffered?
+//								if (thisLayer instanceof BaseLayer)
+//								{
+//
+//									// just check if there is a property which over-rides the
+//									// double-buffering
+//									final BaseLayer bl = (BaseLayer) thisLayer;
+//									if (bl.isBuffered())
+//									{
+//										isAlreadyPlotted = true;
+//
+//										// do our double-buffering bit
+//										// do we have a layer for this object
+//										org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image) _myLayers
+//												.get(thisLayer);
+//										if (image == null)
+//										{
+//											// sure it is, create an image to paint into (the
+//											// TYPE_INT_ARGB ensures it
+//											// has a transparent background)
+//											image = new org.eclipse.swt.graphics.Image(Display.getCurrent(), canvasWidth, canvasHeight);
+//											
+//											GC newGC = new GC(image);
+//											
+//											// image = new BufferedImage(_theCanvas.getWidth(),
+//											// _theCanvas.getHeight(), BufferedImage.TYPE_INT_ARGB);
+//
+////											image.
+////											final Graphics g2 = image.getGraphics();
+////
+////											// wrap the Graphics to make it look like a CanvasType
+////											final CanvasAdaptor ca = new CanvasAdaptor(_theCanvas
+////													.getProjection(), g2);
+//
+//											// draw into it
+//											thisLayer.paint(newGC);
+//
+//											// ditch the graphics
+//											g2.dispose();
+//
+//											// store this image in our list, indexed by the layer
+//											// object itself
+//											_myLayers.put(thisLayer, image);
+//										}
+//
+//										// have we ended up with an image to paint?
+//										if (image != null)
+//										{
+//											// get the graphics to paint to
+//											final Graphics gr = dest.getGraphicsTemp();
+//
+//											if (gr != null)
+//											{
+//												// lastly add this image to our Graphics object
+//												gr.drawImage(image, 0, 0, _theCanvas);
+//
+//												// and ditch it
+//												gr.dispose();
+//
+//											}
+//											else
+//												MWC.Utilities.Errors.Trace
+//														.trace("SwingChart.PaintMe() :FAILED TO GET GRAPHICS TEMP");
+//										}
+//
+//									}
+//								}
+//							} // whether we were plotting to a SwingCanvas (which may be
+//							// double-buffered
+//						} // whther we are happy to do double-buffering
+//
+//						// did we manage to paint it
+//						if (!isAlreadyPlotted)
+//						{
+//							thisLayer.paint(dest);
+//
+//							isAlreadyPlotted = true;
+//						}
+//					}
+//				}
+//			}
+//		}
 
 	}
 
@@ -407,8 +417,13 @@ public class SWTChart extends PlainChart implements Serializable
 	{
 		// fill the background, to start with
 		final Dimension sz = _theCanvas.getSize();
-		// dest.setColor(dest.getBackgroundColor());
-		// dest.fillRect(0, 0, sz.width, sz.height);
+		
+		final Color theCol = dest.getBackgroundColor();
+		dest.setBackgroundColor(theCol);
+//		dest.setColor(java.awt.Color.black);
+//		dest.setBackgroundColor(Color.black);
+		dest.fillRect(0, 0, sz.width, sz.height);
+		System.out.print("b");
 
 		// // do we have an image?
 		// if (_ourImage != null)
@@ -525,20 +540,18 @@ public class SWTChart extends PlainChart implements Serializable
 	protected void doMouseUp(MouseEvent e)
 	{
 		// ok. did we move at all?
-		Point thisP = new Point(e.x,  e.y);
-		if(thisP.equals(_startPoint))
+		Point thisP = new Point(e.x, e.y);
+		if (thisP.equals(_startPoint))
 		{
 			// hey, it was just a click - process it
-      if (_theLeftClickListener != null)
-      {
-      	// get the world location
-      	java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
-      	WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
-        _theLeftClickListener.CursorClicked(jPoint,
-                                            loc,
-                                            getCanvas(),
-                                            _theLayers);
-      }
+			if (_theLeftClickListener != null)
+			{
+				// get the world location
+				java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
+				WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
+				_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(),
+						_theLayers);
+			}
 		}
 		_startPoint = null;
 	}
@@ -564,18 +577,18 @@ public class SWTChart extends PlainChart implements Serializable
 		{
 			// right, find out which one it was.
 			java.awt.Point pt = new java.awt.Point(e.x, e.y);
-			
+
 			// and now the WorldLocation
 			WorldLocation loc = getCanvas().getProjection().toWorld(pt);
-			
+
 			// and now see if we are near anything..
-		   if (_theDblClickListeners.size() > 0)
-	      {
-	        // get the top one off the stack
-	        ChartDoubleClickListener lc = (ChartDoubleClickListener)
-	          _theDblClickListeners.lastElement();
-	        lc.cursorDblClicked(this, loc, pt);
-	      }
+			if (_theDblClickListeners.size() > 0)
+			{
+				// get the top one off the stack
+				ChartDoubleClickListener lc = (ChartDoubleClickListener) _theDblClickListeners
+						.lastElement();
+				lc.cursorDblClicked(this, loc, pt);
+			}
 		}
 	}
 }
