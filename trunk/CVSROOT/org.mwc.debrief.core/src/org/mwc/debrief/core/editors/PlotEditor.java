@@ -3,16 +3,21 @@
  */
 package org.mwc.debrief.core.editors;
 
+import java.awt.Dimension;
 import java.io.File;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.events.PaintListener;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.debrief.core.CorePlugin;
+import org.mwc.debrief.core.editors.painters.PlainHighlighter;
 import org.mwc.debrief.core.interfaces.INamedItem;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -20,7 +25,9 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -29,6 +36,7 @@ import MWC.GUI.Shapes.LineShape;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -51,6 +59,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";
+	
+	private PlainHighlighter _myTimeHighlighter;
 
 	/** helper object which loads plugin file-loaders
 	 * 
@@ -63,6 +73,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	 */
 	public PlotEditor()
 	{
+		super();
+		
 		_myLayers = new Layers();
 
 		_myLayers.addDataExtendedListener(new DataListener()
@@ -82,6 +94,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 			}
 
 		});
+
 	}
 
 	/**
@@ -108,6 +121,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 		// lastly, set the title (if we have one)
 		this.setPartName(input.getName());
 		this.setContentDescription("Includes imported Replay data");
+		
 	}
 
 	/**
@@ -217,46 +231,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	}
 
 	/**
-	 * put some sample data into our objects
-	 */
-	private void createSampleData()
-	{
-		_theNarrativeProvider = new NarrativeProvider()
-		{
-			NarrativeWrapper _myData = null;
-
-			public NarrativeWrapper getNarrative()
-			{
-				if (_myData == null)
-					_myData = NarrativeWrapper.createDummyData(
-							getEditorInput().getName(), 3 + (int) (Math.random() * 400));
-
-				return _myData;
-			}
-		};
-
-		Layer bl = new BaseLayer();
-		bl.setName("First layer");
-		_myLayers.addThisLayer(bl);
-		bl
-				.add(new LineShape(new WorldLocation(1, 1, 1), new WorldLocation(2, 2,
-						2)));
-		Layer l2 = new BaseLayer();
-		l2.setName("Second layer");
-		_myLayers.addThisLayer(l2);
-		l2.add(new TextLabel(new WorldLocation(1, 2, 0), "text label"));
-
-		// make the time manager match the period of the narrative
-		TimePeriod narrativePeriod = _theNarrativeProvider.getNarrative()
-				.getTimePeriod();
-		if (narrativePeriod != null)
-			_timeManager.setPeriod(this, narrativePeriod);
-		else
-			System.out.println("NO TIME PERIOD FOR NARRATIVE!");
-
-	}
-
-	/**
 	 * method called when a helper object has completed a plot-load operation
 	 * @param source
 	 */
@@ -269,8 +243,6 @@ public void loadingComplete(Object source)
 		
 		if(timePeriod != null)
 		{
-			System.out.println("time period for data found..");
-			
 			super._timeManager.setPeriod(this,timePeriod);
 			
 			// also give it a current DTG
@@ -315,6 +287,58 @@ public void loadingComplete(Object source)
 		}
 		
 		// ok, get loading.
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#timeChanged()
+	 */
+	protected void timeChanged(HiResDate newDTG)
+	{
+		// TODO Auto-generated method stub
+		super.timeChanged(newDTG);
+		
+		// ok - update our painter
+		if(getChart() != null)
+		{
+			getChart().update();
+		}
+	}
+
+	/* (non-Javadoc)
+	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#createPartControl(org.eclipse.swt.widgets.Composite)
+	 */
+	public void createPartControl(Composite parent)
+	{
+		// TODO Auto-generated method stub
+		super.createPartControl(parent);
+		
+		
+		super.getChart().getCanvas().addPainter(new CanvasType.PaintListener(){
+
+			public void paintMe(CanvasType dest)
+			{
+				// ok - get the highlighter to draw itself
+				PlainHighlighter.update(_timeManager.getTime(), _myLayers, dest);
+			}
+
+			public WorldArea getDataArea()
+			{
+				// TODO Auto-generated method stub
+				return null;
+			}
+
+			public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
+			{
+				// TODO Auto-generated method stub
+				
+			}
+
+			public String getName()
+			{
+				// TODO Auto-generated method stub
+				return null;
+			}});		
+		
 	}
 
 	
