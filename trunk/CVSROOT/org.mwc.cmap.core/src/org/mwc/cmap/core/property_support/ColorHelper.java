@@ -71,9 +71,7 @@ public class ColorHelper extends EditorHelper
 		
 		// ok. do we have the color?
 		if(thisCol == null)
-		{
-			System.out.println("creating new color for:" + javaCol);
-			
+		{	
 			// bugger, we'll have to  create it
 			RGB newData = new RGB(javaCol.getRed(), javaCol.getGreen(), javaCol.getBlue());
 			_colRegistry.put(colName, newData);
