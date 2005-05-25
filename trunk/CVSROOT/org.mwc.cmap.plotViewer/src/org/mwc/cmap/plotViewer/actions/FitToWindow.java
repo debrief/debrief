@@ -4,7 +4,6 @@
 package org.mwc.cmap.plotViewer.actions;
 
 
-import MWC.Algorithms.PlainProjection;
 import MWC.GUI.PlainChart;
 
 /**
