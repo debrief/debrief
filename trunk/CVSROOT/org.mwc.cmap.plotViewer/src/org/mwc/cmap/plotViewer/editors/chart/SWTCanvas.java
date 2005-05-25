@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.5  2005-05-25 14:18:17  Ian.Mayo
+// Revision 1.6  2005-05-25 15:31:54  Ian.Mayo
+// Get double-buffering going
+//
+// Revision 1.5  2005/05/25 14:18:17  Ian.Mayo
 // Refactor to provide more useful SWT GC wrapper (hopefully suitable for buffered images)
 //
 // Revision 1.4  2005/05/24 13:26:42  Ian.Mayo
@@ -76,7 +79,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public SWTCanvas(Composite parent)
 	{
-		super();
+		super(null);
 		
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
 
@@ -116,29 +119,30 @@ public class SWTCanvas extends SWTCanvasAdapter
 	protected void repaintMe(PaintEvent pe)
 	{
 
-		// get the graphics destination
-		GC gc = pe.gc;
-
-		// put double-buffering code in here.
-		if (_dblBuff == null)
-		{
-			// ok, create the new image
-			Point theSize = _myCanvas.getSize();
-
-			if ((theSize.x == 0) || (theSize.y == 0))
-				return;
-
-			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
-			GC theDest = new GC(_dblBuff);
-
-			// and paint into it
-			paintPlot(theDest);
-
-		}
-
-		// finally put the required bits of the target image onto the screen
-		gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
-				pe.width, pe.height);
+		paintPlot(pe.gc);
+//		// get the graphics destination
+//		GC gc = pe.gc;
+//
+//		// put double-buffering code in here.
+//		if (_dblBuff == null)
+//		{
+//			// ok, create the new image
+//			Point theSize = _myCanvas.getSize();
+//
+//			if ((theSize.x == 0) || (theSize.y == 0))
+//				return;
+//
+//			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
+//			GC theDest = new GC(_dblBuff);
+//
+//			// and paint into it
+//			paintPlot(theDest);
+//
+//		}
+//
+//		// finally put the required bits of the target image onto the screen
+//		gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
+//				pe.width, pe.height);
 
 	}
 

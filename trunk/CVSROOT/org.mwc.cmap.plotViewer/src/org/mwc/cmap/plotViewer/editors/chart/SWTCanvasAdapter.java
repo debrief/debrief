@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.1  2005-05-25 14:18:18  Ian.Mayo
+// Revision 1.2  2005-05-25 15:31:54  Ian.Mayo
+// Get double-buffering going
+//
+// Revision 1.1  2005/05/25 14:18:18  Ian.Mayo
 // Refactor to provide more useful SWT GC wrapper (hopefully suitable for buffered images)
 //
 // Revision 1.4  2005/05/24 13:26:42  Ian.Mayo
@@ -35,6 +38,7 @@ import java.util.Vector;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.property_support.FontHelper;
 
@@ -115,7 +119,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	/**
 	 * default constructor.
 	 */
-	public SWTCanvasAdapter()
+	public SWTCanvasAdapter(PlainProjection proj)
 	{
 		// start with our background colour
 		setBackgroundColor(java.awt.Color.black);
@@ -123,9 +127,12 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 		// initialisation
 		_thePainters = new Vector(0, 1);
-
+		
 		// create our projection
-		_theProjection = new FlatProjection();
+		if(proj != null)
+			_theProjection = proj;
+		else
+			_theProjection = new FlatProjection();
 	}
 
 
@@ -367,6 +374,21 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		return false;
 
 	}
+	
+	public final boolean drawSWTImage(final Image img, final int x,
+			final int y, final int width, final int height)
+	{
+		if (_theDest == null)
+			return true;
+
+		_theDest.drawImage(img, x, y, width, height, x, y, width, height);
+		// return _theDest.drawImage(img, x, y, width, height, observer);
+
+		return false;
+
+	}
+	
+	
 
 	public final void drawLine(final int x1, final int y1, final int x2,
 			final int y2)
