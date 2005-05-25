@@ -54,8 +54,8 @@ public abstract class PlotEditor extends EditorPart implements
 	// member data
 	// //////////////////////////////
 
-	/** the chart we store/manager
-	 * 
+	/**
+	 * the chart we store/manager
 	 */
 	SWTChart _myChart = null;
 
@@ -115,8 +115,9 @@ public abstract class PlotEditor extends EditorPart implements
 		{
 			public void propertyChange(PropertyChangeEvent arg0)
 			{
-				// right, the time has changed. better redraw parts of the plot
-				updateLabel();
+
+				HiResDate newDTG = (HiResDate) arg0.getNewValue();
+				timeChanged(newDTG);
 			}
 		};
 
@@ -172,27 +173,29 @@ public abstract class PlotEditor extends EditorPart implements
 
 		// and the drop support
 		configureFileDropSupport();
-		
-    // and add our dbl click listener
-    // and add our dbl click listener
-    getChart().addLeftClickListener(new DblClickEdit(_myLayers, null)
-    		{
-					protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
-					{
-						System.out.println("opening editor for:" + res);
-						PlottableWrapper parentP = new PlottableWrapper(parentLayer, null, getChart().getLayers());
-						PlottableWrapper wrapped = new PlottableWrapper(res, parentP, getChart().getLayers());
-						ISelection selected = new StructuredSelection(wrapped);
-						fireSelectionChanged(selected);
-					}
 
-					protected void handleItemNotFound(PlainProjection projection)
-					{
-					}
-    		});
+		// and add our dbl click listener
+		// and add our dbl click listener
+		getChart().addLeftClickListener(new DblClickEdit(_myLayers, null)
+		{
+			protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
+			{
+				System.out.println("opening editor for:" + res);
+				PlottableWrapper parentP = new PlottableWrapper(parentLayer, null,
+						getChart().getLayers());
+				PlottableWrapper wrapped = new PlottableWrapper(res, parentP,
+						getChart().getLayers());
+				ISelection selected = new StructuredSelection(wrapped);
+				fireSelectionChanged(selected);
+			}
 
-    getSite().setSelectionProvider(this);
-    
+			protected void handleItemNotFound(PlainProjection projection)
+			{
+			}
+		});
+
+		getSite().setSelectionProvider(this);
+
 	}
 
 	/**
@@ -349,29 +352,8 @@ public abstract class PlotEditor extends EditorPart implements
 		return res;
 	}
 
-	/**
-	 * ok, the time has changed. update our own time, inform the listeners
-	 * 
-	 * @param origin
-	 * @param newDate
-	 */
-	public void setNewTime(Object origin, HiResDate newDate)
+	protected void timeChanged(HiResDate newDTG)
 	{
-		updateLabel();
-	}
-
-	private void updateLabel()
-	{
-		String msg = "No data yet";
-		if (_theNarrativeProvider != null)
-			msg = describeData(getEditorInput().getName(), _myLayers,
-					_theNarrativeProvider.getNarrative(), _timeManager);
-		else
-			msg = describeData(getEditorInput().getName(), _myLayers, null,
-					_timeManager);
-
-		if (_myLabel != null)
-			_myLabel.setText(msg);
 	}
 
 	/**
@@ -431,20 +413,24 @@ public abstract class PlotEditor extends EditorPart implements
 		return _myChart;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ISelectionProvider#addSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
-		if(_selectionListeners == null)
-			_selectionListeners = new Vector(0,1);
-		
+		if (_selectionListeners == null)
+			_selectionListeners = new Vector(0, 1);
+
 		// see if we don't already contain it..
-		if(!_selectionListeners.contains(listener))
+		if (!_selectionListeners.contains(listener))
 			_selectionListeners.add(listener);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ISelectionProvider#getSelection()
 	 */
 	public ISelection getSelection()
@@ -452,7 +438,9 @@ public abstract class PlotEditor extends EditorPart implements
 		return _currentSelection;
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ISelectionProvider#removeSelectionChangedListener(org.eclipse.jface.viewers.ISelectionChangedListener)
 	 */
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
@@ -460,31 +448,35 @@ public abstract class PlotEditor extends EditorPart implements
 		_selectionListeners.remove(listener);
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.jface.viewers.ISelectionProvider#setSelection(org.eclipse.jface.viewers.ISelection)
 	 */
 	public void setSelection(ISelection selection)
 	{
 		// TODO Auto-generated method stub
-	_currentSelection = selection;
+		_currentSelection = selection;
 	}
-	
+
 	Vector _selectionListeners;
+
 	ISelection _currentSelection;
-	
+
 	protected void fireSelectionChanged(ISelection sel)
 	{
 		_currentSelection = sel;
-		if(_selectionListeners != null)
+		if (_selectionListeners != null)
 		{
 			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
 			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
 			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+						.next();
 				thisL.selectionChanged(sEvent);
 			}
 		}
-		
+
 	}
 
 }
