@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.mwc.debrief.core.interfaces;
+package org.mwc.cmap.core.interfaces;
 
 /**
  * @author ian.mayo
