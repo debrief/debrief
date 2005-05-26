@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
+import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.plotViewer.editors.PlotEditor;
 import org.mwc.debrief.core.CorePlugin;
 
