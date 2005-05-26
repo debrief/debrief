@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.7  2005-05-26 07:53:56  Ian.Mayo
+// Revision 1.8  2005-05-26 14:04:50  Ian.Mayo
+// Tidy up double-buffering
+//
+// Revision 1.7  2005/05/26 07:53:56  Ian.Mayo
 // Minor tidying
 //
 // Revision 1.6  2005/05/25 15:31:54  Ian.Mayo
@@ -40,9 +43,7 @@ import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Canvas;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.property_support.ColorHelper;
 
 import MWC.GUI.CanvasType;
@@ -120,30 +121,30 @@ public class SWTCanvas extends SWTCanvasAdapter
 	protected void repaintMe(PaintEvent pe)
 	{
 
-		paintPlot(pe.gc);
-//		// get the graphics destination
-//		GC gc = pe.gc;
-//
-//		// put double-buffering code in here.
-//		if (_dblBuff == null)
-//		{
-//			// ok, create the new image
-//			Point theSize = _myCanvas.getSize();
-//
-//			if ((theSize.x == 0) || (theSize.y == 0))
-//				return;
-//
-//			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
-//			GC theDest = new GC(_dblBuff);
-//
-//			// and paint into it
-//			paintPlot(theDest);
-//
-//		}
-//
-//		// finally put the required bits of the target image onto the screen
-//		gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
-//				pe.width, pe.height);
+//		paintPlot(pe.gc);
+		// get the graphics destination
+		GC gc = pe.gc;
+
+		// put double-buffering code in here.
+		if (_dblBuff == null)
+		{
+			// ok, create the new image
+			Point theSize = _myCanvas.getSize();
+
+			if ((theSize.x == 0) || (theSize.y == 0))
+				return;
+
+			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
+			GC theDest = new GC(_dblBuff);
+
+			// and paint into it
+			paintPlot(theDest);
+
+		}
+
+		// finally put the required bits of the target image onto the screen
+		gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
+				pe.width, pe.height);
 
 	}
 

@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.8  2005-05-26 07:34:47  Ian.Mayo
+// Revision 1.9  2005-05-26 14:04:51  Ian.Mayo
+// Tidy up double-buffering
+//
+// Revision 1.8  2005/05/26 07:34:47  Ian.Mayo
 // Minor tidying
 //
 // Revision 1.7  2005/05/25 15:31:55  Ian.Mayo
@@ -340,6 +343,9 @@ public class SWTChart extends PlainChart implements Serializable
 														canvasHeight);
 											}
 
+											System.out
+													.println("== new double-buffer image being created for:"
+															+ thisLayer);
 											image = createSWTImage(template);
 
 											GC newGC = new GC(image);
@@ -347,7 +353,7 @@ public class SWTChart extends PlainChart implements Serializable
 											// wrap the GC into something we know how to plot to.
 											SWTCanvasAdapter ca = new SWTCanvasAdapter(dest
 													.getProjection());
-											
+
 											// and store the GC
 											ca.startDraw(newGC);
 
@@ -434,7 +440,6 @@ public class SWTChart extends PlainChart implements Serializable
 		// dest.setColor(java.awt.Color.black);
 		// dest.setBackgroundColor(Color.black);
 		dest.fillRect(0, 0, sz.width, sz.height);
-		System.out.print("b");
 
 		// // do we have an image?
 		// if (_ourImage != null)
@@ -503,14 +508,14 @@ public class SWTChart extends PlainChart implements Serializable
 		// todo: PRODUCE NEW MOUSE EVENT TRANSLATOR!!!
 		if (_startPoint == null)
 			return;
-		if (_dragTracker != null)
-			return;
+//		if (_dragTracker != null)
+//			return;
 
 		int deltaX = _startPoint.x - e.x;
 		int deltaY = _startPoint.y - e.y;
 		if (Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
 			return;
-		_dragTracker = new Tracker((Composite) _theCanvas.getCanvas(), SWT.RESIZE);
+		Tracker _dragTracker = new Tracker((Composite) _theCanvas.getCanvas(), SWT.RESIZE);
 		Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX, deltaY);
 		_dragTracker.setRectangles(new Rectangle[] { rect });
 		boolean dragResult = _dragTracker.open();
@@ -528,8 +533,6 @@ public class SWTChart extends PlainChart implements Serializable
 					.toWorld(br));
 			WorldArea area = new WorldArea(locA, locB);
 
-			System.out.println("zooming in on:" + area);
-
 			_theCanvas.getProjection().setDataArea(area);
 			_theCanvas.updateMe();
 
@@ -542,9 +545,7 @@ public class SWTChart extends PlainChart implements Serializable
 		}
 	}
 
-	private final int JITTER = 2;
-
-	private Tracker _dragTracker = null;
+	private final int JITTER = 10;
 
 	private Point _startPoint = null;
 
@@ -554,25 +555,26 @@ public class SWTChart extends PlainChart implements Serializable
 		Point thisP = new Point(e.x, e.y);
 		if (thisP.equals(_startPoint))
 		{
-			// hey, it was just a click - process it
-			if (_theLeftClickListener != null)
-			{
-				// get the world location
-				java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
-				WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
-				_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(),
-						_theLayers);
+				// hey, it was just a click - process it
+				if (_theLeftClickListener != null)
+				{
+					// get the world location
+					java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
+					WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
+					_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(),
+							_theLayers);
+				}
 			}
-		}
+	
 		_startPoint = null;
 	}
 
 	protected void doMouseDown(MouseEvent e)
 	{
-		if (_dragTracker == null)
-		{
+//		if (_dragTracker == null)
+//		{
 			_startPoint = new Point(e.x, e.y);
-		}
+//		}
 	}
 
 	protected void doMouseDoubleClick(MouseEvent e)
