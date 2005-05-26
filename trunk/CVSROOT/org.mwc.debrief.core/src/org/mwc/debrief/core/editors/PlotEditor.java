@@ -9,8 +9,6 @@ import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
@@ -20,6 +18,7 @@ import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;
 import org.mwc.debrief.core.interfaces.INamedItem;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
+import org.mwc.debrief.core.loaders.LoaderManager;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Watchable;
@@ -32,12 +31,9 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.Layers.DataListener;
-import MWC.GUI.Shapes.LineShape;
-import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 /**
  * @author ian.mayo
@@ -163,7 +159,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 		_loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
 		{
 
-			INamedItem createInstance(IConfigurationElement configElement,
+			public INamedItem createInstance(IConfigurationElement configElement,
 					String label)
 			{
 				// get the attributes

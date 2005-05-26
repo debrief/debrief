@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.mwc.debrief.core.editors;
+package org.mwc.debrief.core.loaders;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -114,7 +114,7 @@ public abstract class LoaderManager
 	 * @param label
 	 * @return
 	 */
-	abstract INamedItem createInstance(IConfigurationElement configElement, String label);
+	abstract public INamedItem createInstance(IConfigurationElement configElement, String label);
 
 	public IPlotLoader[] findLoadersFor(String fileName)
 	{
