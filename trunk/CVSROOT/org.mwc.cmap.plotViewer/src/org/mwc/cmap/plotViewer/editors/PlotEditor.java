@@ -178,6 +178,11 @@ public abstract class PlotEditor extends EditorPart implements
 		// and add our dbl click listener
 		getChart().addLeftClickListener(new DblClickEdit(_myLayers, null)
 		{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
 			{
 				System.out.println("opening editor for:" + res);

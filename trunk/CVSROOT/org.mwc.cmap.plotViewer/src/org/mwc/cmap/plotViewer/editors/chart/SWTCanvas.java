@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.6  2005-05-25 15:31:54  Ian.Mayo
+// Revision 1.7  2005-05-26 07:53:56  Ian.Mayo
+// Minor tidying
+//
+// Revision 1.6  2005/05/25 15:31:54  Ian.Mayo
 // Get double-buffering going
 //
 // Revision 1.5  2005/05/25 14:18:17  Ian.Mayo
@@ -25,7 +28,6 @@
 
 package org.mwc.cmap.plotViewer.editors.chart;
 
-import java.awt.Color;
 import java.awt.Dimension;
 import java.util.Enumeration;
 
@@ -41,7 +43,6 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Canvas;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.property_support.ColorHelper;
 
 import MWC.GUI.CanvasType;
