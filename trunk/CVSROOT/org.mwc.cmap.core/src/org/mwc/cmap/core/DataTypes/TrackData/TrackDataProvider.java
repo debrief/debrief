@@ -31,5 +31,14 @@ public interface TrackDataProvider
 	 */
 	public void addTrackDataListener(TrackDataListener listener);
 
+	/** find out what the primary track is
+	 * 
+	 */
+	public WatchableList getPrimaryTrack();
+	
+	/** find out what the secondary track is
+	 * 
+	 */
+	public WatchableList[] getSecondaryTracks();
 	
 }
