@@ -30,6 +30,7 @@ import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.interfaces.IResourceProvider;
 import org.mwc.cmap.core.property_support.PlottableWrapper;

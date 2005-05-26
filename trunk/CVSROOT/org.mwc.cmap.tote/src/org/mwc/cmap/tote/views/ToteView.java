@@ -15,6 +15,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
@@ -116,11 +117,11 @@ public class ToteView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-//		_tempStatus = new Label(parent, SWT.NONE);
-//		_tempStatus.setText("pending");
+		// _tempStatus = new Label(parent, SWT.NONE);
+		// _tempStatus.setText("pending");
 		//		
-		_tableViewer = createTableWithColumns(parent);
-		_content = new ToteContentProvider();		
+		_tableViewer = new TableViewer(createTableWithColumns(parent));
+		_content = new ToteContentProvider();
 		_tableViewer.setContentProvider(_content);
 		_tableViewer.setLabelProvider(new ToteLabelProvider());
 		_tableViewer.setInput(this);
@@ -139,44 +140,49 @@ public class ToteView extends ViewPart
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
-		_myPartMonitor.addPartListener(NarrativeProvider.class,
+		_myPartMonitor.addPartListener(TrackDataProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						storeDetails(part, parentPart);
+						TrackDataProvider provider = (TrackDataProvider) part;
+
+						// is this different to our current one?
+						if (provider != _trackData)
+							storeDetails(provider, parentPart);
 					}
 				});
 
 		// unusually, we are also going to track the open event for narrative data
 		// so that we can start off with some data
-		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.OPENED,
+		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						storeDetails(part, parentPart);
+						TrackDataProvider provider = (TrackDataProvider) part;
+
+						// is this different to our current one?
+						if (provider != _trackData)
+							storeDetails(provider, parentPart);
 					}
 
 				});
 
-		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.CLOSED,
+		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
 						// implementation here.
-						NarrativeProvider provider = (NarrativeProvider) part;
-						// yes, but is it our current one?
-						// if (_content.isCurrentDocument(provider.getNarrative()))
-						// {
-						// // yes, better clear the view then
-						// _tableViewer.setInput(null);
-						// _currentEditor = null;
-						// }
+						TrackDataProvider provider = (TrackDataProvider) part;
+
+						// is this our current provider?
+						if (_trackData == provider)
+							_trackData = null;
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
@@ -248,11 +254,39 @@ public class ToteView extends ViewPart
 
 	}
 
+	private void updateTableLayout()
+	{
+		Table tbl = _tableViewer.getTable();
+		tbl.removeAll();
+
+		TableLayout layout = new TableLayout();
+		tbl.setLayout(layout);
+
+		WatchableList priTrack = _trackData.getPrimaryTrack();
+		WatchableList[] secTracks = _trackData.getSecondaryTracks();
+
+		layout.addColumnData(new ColumnWeightData(10, true));
+		TableColumn labels = new TableColumn(tbl, SWT.NONE);
+		labels.setText("==");
+
+		layout.addColumnData(new ColumnWeightData(10, true));
+		TableColumn pri = new TableColumn(tbl, SWT.NONE);
+		pri.setText(priTrack.getName());
+
+		for (int i = 0; i < secTracks.length; i++)
+		{
+			WatchableList secTrack = secTracks[i];
+			layout.addColumnData(new ColumnWeightData(10, true));
+			TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+			thisSec.setText(priTrack.getName());
+		}
+	}
+
 	/**
 	 * @param parent
 	 *          what we have to fit into
 	 */
-	private static TableViewer createTableWithColumns(Composite parent)
+	private static Table createTableWithColumns(Composite parent)
 	{
 		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI
 				| SWT.FULL_SELECTION);
@@ -269,25 +303,25 @@ public class ToteView extends ViewPart
 		tc0.setText(STD_HEADINGS[0]);
 		tc0.setAlignment(SWT.LEFT);
 		tc0.setResizable(true);
-
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn tc1 = new TableColumn(table, SWT.NONE);
-		tc1.setText(STD_HEADINGS[1]);
-		tc1.setAlignment(SWT.LEFT);
-		tc1.setResizable(true);
-
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn tc2 = new TableColumn(table, SWT.NONE);
-		tc2.setText(STD_HEADINGS[2]);
-		tc2.setAlignment(SWT.LEFT);
-		tc2.setResizable(true);
-
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn tc3 = new TableColumn(table, SWT.NONE);
-		tc3.setText(STD_HEADINGS[3]);
-		tc3.setAlignment(SWT.LEFT);
-		tc3.setResizable(true);
-		return new TableViewer(table);
+		//
+		// layout.addColumnData(new ColumnWeightData(10, true));
+		// TableColumn tc1 = new TableColumn(table, SWT.NONE);
+		// tc1.setText(STD_HEADINGS[1]);
+		// tc1.setAlignment(SWT.LEFT);
+		// tc1.setResizable(true);
+		//
+		// layout.addColumnData(new ColumnWeightData(10, true));
+		// TableColumn tc2 = new TableColumn(table, SWT.NONE);
+		// tc2.setText(STD_HEADINGS[2]);
+		// tc2.setAlignment(SWT.LEFT);
+		// tc2.setResizable(true);
+		//
+		// layout.addColumnData(new ColumnWeightData(10, true));
+		// TableColumn tc3 = new TableColumn(table, SWT.NONE);
+		// tc3.setText(STD_HEADINGS[3]);
+		// tc3.setAlignment(SWT.LEFT);
+		// tc3.setResizable(true);
+		return table;
 	}
 
 	/*
@@ -420,9 +454,13 @@ public class ToteView extends ViewPart
 	 * @param part
 	 * @param parentPart
 	 */
-	private void storeDetails(Object part, IWorkbenchPart parentPart)
+	private void storeDetails(TrackDataProvider part, IWorkbenchPart parentPart)
 	{
-		// implementation here.
+		// ok, store it
+		_trackData = part;
+
+		// and update the table
+		updateTableLayout();
 	}
 
 	// //////////////////////////////
@@ -435,116 +473,10 @@ public class ToteView extends ViewPart
 	 */
 	private void timeUpdated(HiResDate newDTG)
 	{
-		Watchable pri = new Watchable()
-		{
-			public WorldLocation getLocation()
-			{
-				double lon = Math.random();
-				double lat = Math.random();
-				return new WorldLocation(lat, lon, 0);
-			}
-
-			public double getCourse()
-			{
-				double crse = Math.random() * 360;
-				return crse;
-			}
-
-			public double getSpeed()
-			{
-				return 2;
-			}
-
-			public double getDepth()
-			{
-				return 3;
-			}
-
-			public WorldArea getBounds()
-			{
-				return null;
-			}
-
-			public void setVisible(boolean val)
-			{
-			}
-
-			public boolean getVisible()
-			{
-				return true;
-			}
-
-			public HiResDate getTime()
-			{
-				return null;
-			}
-
-			public String getName()
-			{
-				return "aa";
-			}
-
-			public Color getColor()
-			{
-				return null;
-			}
-		};
-		Watchable sec = new Watchable()
-		{
-			public WorldLocation getLocation()
-			{
-				double lon = Math.random();
-				double lat = Math.random();
-				return new WorldLocation(lat, lon, 0);
-			}
-
-			public double getCourse()
-			{
-				double crse = Math.random() * 360;
-				return crse;
-			}
-
-			public double getSpeed()
-			{
-				return 4;
-			}
-
-			public double getDepth()
-			{
-				return 5;
-			}
-
-			public WorldArea getBounds()
-			{
-				return null;
-			}
-
-			public void setVisible(boolean val)
-			{
-			}
-
-			public boolean getVisible()
-			{
-				return true;
-			}
-
-			public HiResDate getTime()
-			{
-				return null;
-			}
-
-			public String getName()
-			{
-				return "aa";
-			}
-
-			public Color getColor()
-			{
-				return null;
-			}
-		};
-
-		_tableViewer.refresh(true);
+		if(!_tableViewer.getTable().isDisposed())
+			_tableViewer.refresh(true);
+		else
+			System.out.println("not updating. table is disposed");
 	}
 
 	// //////////////////////////////
@@ -591,9 +523,9 @@ public class ToteView extends ViewPart
 
 		public Object[] getElements(Object inputElement)
 		{
-			System.out.println("Tote TABLE: returning new elements");
-			return new Object[]{"a", "b", "c"};
-//			return _myCalculations.toArray();
+			// System.out.println("Tote TABLE: returning new elements");
+			// return new Object[]{"a", "b", "c"};
+			return _myCalculations.toArray();
 		}
 
 		public void dispose()
@@ -631,7 +563,16 @@ public class ToteView extends ViewPart
 
 		public String getColumnText(Object element, int columnIndex)
 		{
-			return element+ ":" + columnIndex;
+			String res = "";
+			toteCalculation tc = (toteCalculation) element;
+			if (columnIndex == 0)
+				res = tc.getTitle();
+			if (columnIndex == 1)
+				res = "pri";
+			if (columnIndex > 1)
+				res = "sec";
+
+			return res;
 		}
 
 		public void addListener(ILabelProviderListener listener)

@@ -14,6 +14,8 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
 import org.eclipse.ui.PartInitException;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;
@@ -21,7 +23,7 @@ import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Tools.Tote.Watchable;
+import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
@@ -298,6 +300,52 @@ public void loadingComplete(Object source)
 		{
 			getChart().getCanvas().updateMe();
 		}
+	}
+	
+	
+	
+
+	/* (non-Javadoc)
+	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#getAdapter(java.lang.Class)
+	 */
+	public Object getAdapter(Class adapter)
+	{
+		Object res = null;
+		
+		if (adapter == TrackDataProvider.class)
+		{
+			res = new TrackDataProvider()
+			{
+			
+				public WatchableList[] getSecondaryTracks()
+				{
+					// TODO Auto-generated method stub
+					TrackWrapper sec = (TrackWrapper) _myLayers.findLayer("Tomato");
+					return new WatchableList[]{sec};
+				}
+			
+				public WatchableList getPrimaryTrack()
+				{
+					TrackWrapper pri = (TrackWrapper) _myLayers.findLayer("Carpet");
+					return pri;
+				}
+			
+				public void addTrackDataListener(TrackDataListener listener)
+				{
+					// TODO Auto-generated method stub
+				}
+			};
+		}		
+		
+		// did we find anything?
+		if(res == null)
+		{
+			// nope, don't bother.
+			res =  super.getAdapter(adapter);
+		}
+
+		// ok, done
+		return res;
 	}
 
 	/* (non-Javadoc)
