@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.7  2005-05-25 15:31:55  Ian.Mayo
+// Revision 1.8  2005-05-26 07:34:47  Ian.Mayo
+// Minor tidying
+//
+// Revision 1.7  2005/05/25 15:31:55  Ian.Mayo
 // Get double-buffering going
 //
 // Revision 1.6  2005/05/25 13:24:42  Ian.Mayo
@@ -272,11 +275,6 @@ public class SWTChart extends PlainChart implements Serializable
 	 */
 	public final void paintMe(final CanvasType dest)
 	{
-
-		// draw in the solid background
-		// paintBackground(dest);
-
-		// super.paintMe(dest);
 
 		Image template = null;
 
