@@ -11,15 +11,25 @@ import Debrief.Tools.Tote.WatchableList;
  */
 public interface TrackDataProvider
 {
-	/** find out what the current primary track is
-	 * 
-	 * @return primary track
+	public static interface TrackDataListener
+	{
+		/** find out that the primary has changed
+		 * 
+		 * @param primary the primary track
+		 */
+		public void primaryUpdated(WatchableList primary);
+		
+		/** find out that the secondaries have changed
+		 * 
+		 * @param secondaries list of secondary tracks
+		 */
+		public void secondariesUpdated(WatchableList[] secondaries);
+	}
+
+	/** declare that we want to be informed about changes
+	 * in selected tracks
 	 */
-	public WatchableList getPrimary();
+	public void addTrackDataListener(TrackDataListener listener);
+
 	
-	/** find out what the current set of secondary tracks are
-	 * 
-	 * @return list of secondaries
-	 */
-	public WatchableList[] getSecondaries();
 }
