@@ -1,8 +1,10 @@
 package org.mwc.cmap.tote.views;
 
+import java.awt.Color;
 import java.beans.*;
-import java.util.Vector;
+import java.util.*;
 
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -13,10 +15,10 @@ import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
-import Debrief.Wrappers.NarrativeWrapper;
-import Debrief.Wrappers.NarrativeWrapper.NarrativeEntry;
-import MWC.GenericData.HiResDate;
+import Debrief.Tools.Tote.*;
+import MWC.GenericData.*;
 
 /**
  * View which provides a track tote. The track tote is a table of values who are
@@ -26,6 +28,20 @@ import MWC.GenericData.HiResDate;
 
 public class ToteView extends ViewPart
 {
+	// Extension point tag and attributes in plugin.xml
+	private static final String EXTENSION_POINT_ID = "ToteCalculation";
+
+	private static final String EXTENSION_TAG = "calculation";
+
+	private static final String EXTENSION_TAG_LABEL_ATTRIB = "name";
+
+	private static final String EXTENSION_TAG_ICON_ATTRIB = "icon";
+
+	private static final String EXTENSION_TAG_CLASS_ATTRIB = "class";
+
+	// Plug-in ID from <plugin> tag in plugin.xml
+	private static final String PLUGIN_ID = "org.mwc.cmap.tote";
+
 	/**
 	 * the table showing the calcs
 	 */
@@ -74,51 +90,19 @@ public class ToteView extends ViewPart
 	 */
 	protected IEditorPart _currentEditor;
 
-	public class Type1_Filter extends ViewerFilter
-	{
+	/**
+	 * helper object which loads plugin file-loaders
+	 */
+	private CalculationLoaderManager _loader;
 
-		/**
-		 * Return true if the political unit is county or smaller
-		 * 
-		 * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer,
-		 *      java.lang.Object, java.lang.Object)
-		 */
-		public boolean select(Viewer viewer, Object parentElement, Object element)
-		{
-			boolean res = false;
-
-			if (element instanceof NarrativeWrapper.NarrativeEntry)
-			{
-				NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) element;
-				String thisType = ne.getType();
-				if (thisType != null)
-				{
-					if (thisType.equals("type_1"))
-						res = true;
-				}
-			}
-
-			return res;
-		}
-
-		/**
-		 * @see org.eclipse.jface.viewers.ViewerFilter#isFilterProperty(java.lang.Object,
-		 *      java.lang.String)
-		 */
-		public boolean isFilterProperty(Object element, String property)
-		{
-			// Say yes to political unit
-			// return (property.equals(ILocation.POLITICAL_CHANGED));
-			return false;
-		}
-	}
+	private Label _tempStatus;
 
 	/**
 	 * The constructor.
 	 */
 	public ToteView()
 	{
-
+		_myCalculations = new Vector(0,1);
 	}
 
 	/**
@@ -127,8 +111,8 @@ public class ToteView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		Button tester = new Button(parent, SWT.NONE);
-		tester.setText("and here we are");
+		_tempStatus = new Label(parent, SWT.NONE);
+		_tempStatus.setText("pending");
 		//		
 		// _tableViewer = createTableWithColumns(parent);
 		// _tableViewer.setContentProvider(_content);
@@ -256,6 +240,27 @@ public class ToteView extends ViewPart
 				.getActivePage());
 
 	}
+	
+	
+
+	/* (non-Javadoc)
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite, org.eclipse.ui.IMemento)
+	 */
+	public void init(IViewSite site, IMemento memento) throws PartInitException
+	{
+		// let the parent do its bits
+		super.init(site, memento);
+
+		// ok - declare and load the supplemental plugins which can load datafiles
+		initialiseCalcLoaders();		
+
+		toteCalculation[] calcs = _loader.findCalculations();
+		for (int i = 0; i < calcs.length; i++)
+		{
+			toteCalculation thisCalc = calcs[i];
+			_myCalculations.add(thisCalc);
+		}
+	}
 
 	private void createViewActions()
 	{
@@ -308,18 +313,18 @@ public class ToteView extends ViewPart
 
 	private void hookContextMenu()
 	{
-//		MenuManager menuMgr = new MenuManager("#PopupMenu");
-//		menuMgr.setRemoveAllWhenShown(true);
-//		menuMgr.addMenuListener(new IMenuListener()
-//		{
-//			public void menuAboutToShow(IMenuManager manager)
-//			{
-//				ToteView.this.fillContextMenu(manager);
-//			}
-//		});
-//		Menu menu = menuMgr.createContextMenu(_tableViewer.getControl());
-//		_tableViewer.getControl().setMenu(menu);
-//		getSite().registerContextMenu(menuMgr, _tableViewer);
+		// MenuManager menuMgr = new MenuManager("#PopupMenu");
+		// menuMgr.setRemoveAllWhenShown(true);
+		// menuMgr.addMenuListener(new IMenuListener()
+		// {
+		// public void menuAboutToShow(IMenuManager manager)
+		// {
+		// ToteView.this.fillContextMenu(manager);
+		// }
+		// });
+		// Menu menu = menuMgr.createContextMenu(_tableViewer.getControl());
+		// _tableViewer.getControl().setMenu(menu);
+		// getSite().registerContextMenu(menuMgr, _tableViewer);
 	}
 
 	private void contributeToActionBars()
@@ -354,22 +359,11 @@ public class ToteView extends ViewPart
 	}
 
 	/**
-	 * @return
-	 */
-	private NarrativeWrapper.NarrativeEntry getCurrentEntry()
-	{
-		ISelection selection = _tableViewer.getSelection();
-		Object obj = ((IStructuredSelection) selection).getFirstElement();
-		NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
-		return ne;
-	}
-
-	/**
 	 * Passing the focus request to the _tableViewer's control.
 	 */
 	public void setFocus()
 	{
-	//	_tableViewer.getControl().setFocus();
+		// _tableViewer.getControl().setFocus();
 	}
 
 	/**
@@ -391,11 +385,135 @@ public class ToteView extends ViewPart
 	 */
 	private void timeUpdated(HiResDate newDTG)
 	{
-		System.out.println("time updated");
+		Watchable pri = new Watchable(){
+			public WorldLocation getLocation()
+			{
+				double lon = Math.random();
+				double lat = Math.random();
+				return new WorldLocation(lat, lon, 0);
+			}
+			public double getCourse()
+			{
+				double crse = Math.random() * 360;
+				return crse;
+			}
+			public double getSpeed()
+			{
+				return 2;
+			}
+			public double getDepth()
+			{
+				return 3;
+			}
+			public WorldArea getBounds()
+			{
+				return null;
+			}
+			public void setVisible(boolean val)
+			{
+			}
+			public boolean getVisible()
+			{
+				return true;
+			}
+			public HiResDate getTime()
+			{
+				return null;
+			}
+			public String getName()
+			{
+				return "aa";
+			}
+			public Color getColor()
+			{
+				return null;
+			}};
+			Watchable sec = new Watchable(){
+				public WorldLocation getLocation()
+				{
+					double lon = Math.random();
+					double lat = Math.random();
+					return new WorldLocation(lat, lon, 0);
+				}
+				public double getCourse()
+				{
+					double crse = Math.random() * 360;
+					return crse;
+				}
+				public double getSpeed()
+				{
+					return 4;
+				}
+				public double getDepth()
+				{
+					return 5;
+				}
+				public WorldArea getBounds()
+				{
+					return null;
+				}
+				public void setVisible(boolean val)
+				{
+				}
+				public boolean getVisible()
+				{
+					return true;
+				}
+				public HiResDate getTime()
+				{
+					return null;
+				}
+				public String getName()
+				{
+					return "aa";
+				}
+				public Color getColor()
+				{
+					return null;
+				}};		
+			
+		String msg = "";
+		for (Iterator iter = _myCalculations.iterator(); iter.hasNext();)
+		{
+			toteCalculation thisC = (toteCalculation) iter.next();
+			msg += "" + thisC.getTitle() + "," + thisC.getUnits()  +" " + thisC.update(pri, sec, newDTG) + "\n";
+		}
+		_tempStatus.setText(msg);
 	}
 
 	// //////////////////////////////
 	// selection listener bits
 	// //////////////////////////////
+
+	/**
+	 * 
+	 */
+	private void initialiseCalcLoaders()
+	{
+		// hey - sort out our plot readers
+		_loader = new CalculationLoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG,
+				PLUGIN_ID)
+		{
+
+			public toteCalculation createInstance(
+					IConfigurationElement configElement, String label)
+			{
+				// get the attributes
+				label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
+				String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
+
+				// create the instance
+				toteCalculation res = null;
+
+				// create the instance
+				res = new CalculationLoaderManager.DeferredCalculation(configElement,
+						label, icon);
+				
+				// and return it.
+				return res;
+			}
+
+		};
+	}
 
 }

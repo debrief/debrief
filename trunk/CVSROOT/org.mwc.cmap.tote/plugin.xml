@@ -11,4 +11,21 @@
             id="org.mwc.cmap.tote.views.ToteView">
       </view>
    </extension>
+   
+   <extension-point 
+   		id="ToteCalculation" 
+   		name="Tote Calculation" 
+   		schema="schema/ToteCalculation.exsd"/>
+   <extension
+         point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation
+            class="org.mwc.cmap.tote.calculations.SWTRangeCalc"
+            name="SWT Calc"/>
+   </extension>   
+   <extension
+         point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation
+            class="Debrief.Tools.Tote.Calculations.rangeCalc"
+            name="Deb range"/>
+   </extension>   
 </plugin>
