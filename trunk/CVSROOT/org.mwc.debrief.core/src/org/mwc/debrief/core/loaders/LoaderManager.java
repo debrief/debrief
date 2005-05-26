@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.IExtension;
 import org.eclipse.core.runtime.IExtensionPoint;
 import org.eclipse.core.runtime.Platform;
-import org.mwc.debrief.core.interfaces.INamedItem;
+import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 /** convenience class which handles loading/creating extensions
@@ -42,7 +42,7 @@ public abstract class LoaderManager
 	{		
 		Vector res = new Vector(0,1);
 		
-		System.out.println("*Action Configuration Start*");
+		System.out.println("*Debrief loader Configuration Start*");
 
 		_loaders = new ArrayList();
 		IExtensionPoint point = Platform.getExtensionRegistry()
@@ -69,7 +69,7 @@ public abstract class LoaderManager
 			System.out.println("* No configuration found!");
 		}
 
-		System.out.println("*Action Configuration End*");		
+		System.out.println("*Debrief loader Configuration End*");		
 		
 		return res;
 	}
