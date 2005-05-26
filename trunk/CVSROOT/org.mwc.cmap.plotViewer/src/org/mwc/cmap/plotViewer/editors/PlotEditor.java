@@ -1,7 +1,5 @@
 package org.mwc.cmap.plotViewer.editors;
 
-import interfaces.IControllableViewport;
-import interfaces.IResourceProvider;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -32,6 +30,8 @@ import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.IResourceProvider;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
