@@ -97,7 +97,7 @@ public abstract class CalculationLoaderManager
 		boolean doubleEntry = false;
 		for (int i = 0; i < getToolActionDescriptors().size(); i++)
 		{
-			String l = ((INamedItem) getToolActionDescriptors().get(i)).getName();
+			String l = ((toteCalculation) getToolActionDescriptors().get(i)).getTitle();
 			if (l.equals(label))
 				doubleEntry = true;
 		}
