@@ -1,6 +1,7 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
+
 import Debrief.ReaderWriter.XML.DetailsHandler;
 import MWC.GUI.Layers;
 

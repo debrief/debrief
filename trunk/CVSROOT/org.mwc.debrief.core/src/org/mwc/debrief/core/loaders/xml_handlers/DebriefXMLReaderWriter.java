@@ -6,13 +6,13 @@
 
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import interfaces.IControllableViewport;
 
 import java.io.IOException;
 
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.w3c.dom.Document;
 
 import MWC.GUI.Layers;

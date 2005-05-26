@@ -3,7 +3,6 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import interfaces.IControllableViewport;
 
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
@@ -18,6 +17,7 @@ import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.plotViewer.editors.PlotEditor;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.interfaces.IPlotLoader;

@@ -2,7 +2,8 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 
 import java.util.Vector;
 
-import interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
+
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layers;
