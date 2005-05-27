@@ -1,8 +1,8 @@
 package org.mwc.cmap.tote.views;
 
-import java.awt.Color;
 import java.beans.*;
 import java.util.*;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.*;
@@ -12,15 +12,13 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
 import Debrief.Tools.Tote.*;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
 
 /**
  * View which provides a track tote. The track tote is a table of values who are
@@ -103,6 +101,8 @@ public class ToteView extends ViewPart
 
 	private Label _tempStatus;
 
+	private ToteLabelProvider _labelProvider;
+
 	/**
 	 * The constructor.
 	 */
@@ -123,7 +123,8 @@ public class ToteView extends ViewPart
 		_tableViewer = new TableViewer(createTableWithColumns(parent));
 		_content = new ToteContentProvider();
 		_tableViewer.setContentProvider(_content);
-		_tableViewer.setLabelProvider(new ToteLabelProvider());
+		_labelProvider = new ToteLabelProvider();
+		_tableViewer.setLabelProvider(_labelProvider);
 		_tableViewer.setInput(this);
 		// _tableViewer.setSorter(new NameSorter());
 
@@ -257,28 +258,32 @@ public class ToteView extends ViewPart
 	private void updateTableLayout()
 	{
 		Table tbl = _tableViewer.getTable();
-		tbl.removeAll();
 
-		TableLayout layout = new TableLayout();
-		tbl.setLayout(layout);
+		// ok, remove all of the columns (except the first one)
+		TableColumn[] cols = tbl.getColumns();
+		for (int i = 1; i < cols.length; i++)
+		{
+			TableColumn column = cols[i];
+			column.dispose();
+		}
 
+		// first sort out the primary track column
 		WatchableList priTrack = _trackData.getPrimaryTrack();
-		WatchableList[] secTracks = _trackData.getSecondaryTracks();
 
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn labels = new TableColumn(tbl, SWT.NONE);
-		labels.setText("==");
-
-		layout.addColumnData(new ColumnWeightData(10, true));
 		TableColumn pri = new TableColumn(tbl, SWT.NONE);
 		pri.setText(priTrack.getName());
 
-		for (int i = 0; i < secTracks.length; i++)
+		// and now the secondary track columns
+		WatchableList[] secTracks = _trackData.getSecondaryTracks();
+
+		if (secTracks != null)
 		{
-			WatchableList secTrack = secTracks[i];
-			layout.addColumnData(new ColumnWeightData(10, true));
-			TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-			thisSec.setText(priTrack.getName());
+			for (int i = 0; i < secTracks.length; i++)
+			{
+				WatchableList secTrack = secTracks[i];
+				TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+				thisSec.setText(priTrack.getName());
+			}
 		}
 	}
 
@@ -473,8 +478,11 @@ public class ToteView extends ViewPart
 	 */
 	private void timeUpdated(HiResDate newDTG)
 	{
-		if(!_tableViewer.getTable().isDisposed())
+		if (!_tableViewer.getTable().isDisposed())
+		{
 			_tableViewer.refresh(true);
+			_labelProvider.setDTG(newDTG);
+		}
 		else
 			System.out.println("not updating. table is disposed");
 	}
@@ -539,7 +547,7 @@ public class ToteView extends ViewPart
 		}
 	}
 
-	public static class ToteLabelProvider implements ITableLabelProvider
+	public class ToteLabelProvider implements ITableLabelProvider
 	{
 		/**
 		 * the DTG we're updating for.
@@ -564,14 +572,61 @@ public class ToteView extends ViewPart
 		public String getColumnText(Object element, int columnIndex)
 		{
 			String res = "";
-			toteCalculation tc = (toteCalculation) element;
-			if (columnIndex == 0)
-				res = tc.getTitle();
-			if (columnIndex == 1)
-				res = "pri";
-			if (columnIndex > 1)
-				res = "sec";
 
+			if (_theDTG != null)
+			{
+
+				toteCalculation tc = (toteCalculation) element;
+
+				if (columnIndex == 0)
+					res = tc.getTitle();
+				else
+				{
+					if (_trackData != null)
+					{
+						WatchableList _thePrimary = _trackData.getPrimaryTrack();
+						WatchableList[] secLists = _trackData.getSecondaryTracks();
+
+						// check that we've got a primary
+						if (_thePrimary != null)
+						{
+
+							// so, we the calculations have been added to the tote list
+							// in order going across the page
+
+							// get the primary ready,
+							Watchable[] list = _thePrimary.getNearestTo(_theDTG);
+							Watchable pw = null;
+							if (list.length > 0)
+								pw = list[0];
+
+							// are we only looking at the primary?
+							if (columnIndex == 1)
+							{
+								res = tc.update(null, pw, _theDTG);
+							}
+							else
+							{
+								if (secLists != null)
+								{
+									if (columnIndex - 2 < secLists.length)
+									{
+										// prepare the list of secondary watchables
+										WatchableList wList = secLists[columnIndex - 2];
+										list = wList.getNearestTo(_theDTG);
+
+										Watchable nearest = null;
+										if (list.length > 0)
+											nearest = list[0];
+										res = tc.update(pw, nearest, _theDTG);
+									}
+								}
+							}
+
+						}
+					}
+				}
+			}
 			return res;
 		}
 
