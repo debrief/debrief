@@ -7,6 +7,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
@@ -29,7 +30,7 @@ import MWC.GenericData.HiResDate;
 public class ToteView extends ViewPart
 {
 
-//	private Action _followTimeToggle;
+	// private Action _followTimeToggle;
 
 	private Action _removeTrackAction;
 
@@ -323,7 +324,7 @@ public class ToteView extends ViewPart
 	private static Table createTableWithColumns(Composite parent)
 	{
 		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL
-				| SWT.HIDE_SELECTION);
+				| SWT.FULL_SELECTION);
 
 		table.setLinesVisible(true);
 
@@ -369,24 +370,24 @@ public class ToteView extends ViewPart
 
 		// -------------------------------------------------------
 		// Toggle filter action
-		_removeTrackAction = new Action("Remove this track", Action.AS_CHECK_BOX)
+		_removeTrackAction = new Action("Remove this track", Action.AS_PUSH_BUTTON)
 		{
-			/* (non-Javadoc)
+			/*
+			 * (non-Javadoc)
+			 * 
 			 * @see org.eclipse.jface.action.Action#runWithEvent(org.eclipse.swt.widgets.Event)
 			 */
 			public void runWithEvent(Event event)
 			{
-				// TODO Auto-generated method stub
-				super.runWithEvent(event);
-				// ok - fire the event
-				System.err.println("removing this track!!");
-				
+				// cool. sorted.
 				Point pt = new Point(event.x, event.y);
-				Table myTable = _tableViewer.getTable();
-				TableItem selected = myTable.getSelection()[0];
-				System.out.println("is:" + selected);
-				
-				
+				TableItem ti = _tableViewer.getTable().getItem(pt);
+				int index = findSelectedColumn(event.x, event.y, _tableViewer
+						.getTable());
+				if (index != -1)
+				{
+					System.out.println("removing col number:" + index);
+				}
 			}
 		};
 		_removeTrackAction.setToolTipText("Remove this track from the tote");
@@ -419,18 +420,51 @@ public class ToteView extends ViewPart
 
 	private void hookContextMenu()
 	{
-		MenuManager menuMgr = new MenuManager("#PopupMenu");
-		menuMgr.setRemoveAllWhenShown(true);
-		menuMgr.addMenuListener(new IMenuListener()
+		Table theTable = _tableViewer.getTable();
+		theTable.addMouseListener(new MouseAdapter()
 		{
-			public void menuAboutToShow(IMenuManager manager)
+			public void mouseUp(MouseEvent e)
 			{
-				ToteView.this.fillContextMenu(manager);
+				// so, right-click>
+				if (e.button == 3)
+				{
+					// cool. sorted.
+					Point pt = new Point(e.x, e.y);
+					TableItem ti = _tableViewer.getTable().getItem(pt);
+					int index = findSelectedColumn(e.x, e.y, _tableViewer.getTable());
+					if (index != -1)
+					{
+						System.out.println("selected column is:" + index);
+
+						MenuManager mmgr = new MenuManager();
+						fillContextMenu(mmgr, index);
+						Menu thisM = mmgr.createContextMenu(_tableViewer.getTable());
+						thisM.setVisible(true);
+					}
+
+				}
 			}
+
 		});
-		Menu menu = menuMgr.createContextMenu(_tableViewer.getControl());
-		_tableViewer.getControl().setMenu(menu);
-		getSite().registerContextMenu(menuMgr, _tableViewer);
+		// MenuManager menuMgr = new MenuManager("#PopupMenu");
+		// menuMgr.setRemoveAllWhenShown(true);
+		// menuMgr.addMenuListener(new IMenuListener()
+		// {
+		// public void menuAboutToShow(IMenuManager manager)
+		// {
+		// ToteView.this.fillContextMenu(manager);
+		// }
+		// });
+		// menuMgr.addMenuListener(new IMenuListener(){
+		//
+		// public void menuAboutToShow(IMenuManager manager)
+		// {
+		// TableItem[] ti = _tableViewer.getTable().getSelection();
+		// System.out.println("ti is:" + ti);
+		// }});
+		// Menu menu = menuMgr.createContextMenu(_tableViewer.getControl());
+		// _tableViewer.getControl().setMenu(menu);
+		// getSite().registerContextMenu(menuMgr, _tableViewer);
 	}
 
 	private void contributeToActionBars()
@@ -446,8 +480,26 @@ public class ToteView extends ViewPart
 
 	}
 
-	private void fillContextMenu(IMenuManager manager)
+	private void fillContextMenu(IMenuManager manager, final int index)
 	{
+		// -------------------------------------------------------
+		// Toggle filter action
+		_removeTrackAction = new Action("Remove this track", Action.AS_PUSH_BUTTON)
+		{
+			/*
+			 * (non-Javadoc)
+			 * 
+			 * @see org.eclipse.jface.action.Action#runWithEvent(org.eclipse.swt.widgets.Event)
+			 */
+			public void runWithEvent(Event event)
+			{
+				System.out.println("removing col number:" + index);
+			}
+		};
+		_removeTrackAction.setToolTipText("Remove this track from the tote");
+		_removeTrackAction.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 		manager.add(_removeTrackAction);
@@ -457,7 +509,7 @@ public class ToteView extends ViewPart
 	{
 		// manager.add(action1);
 		// manager.add(action2);
-//		manager.add(_followTimeToggle);
+		// manager.add(_followTimeToggle);
 	}
 
 	private void makeActions()
@@ -704,5 +756,26 @@ public class ToteView extends ViewPart
 		{
 		}
 
+	}
+
+	private static int findSelectedColumn(int x, int y, Table table)
+	{
+		int index = -1;
+		TableItem[] selectedCols = table.getSelection();
+		if (selectedCols != null)
+		{
+			TableItem selection = selectedCols[0];
+			TableColumn[] tc = table.getColumns();
+			for (int i = 1; i < tc.length - 1; i++)
+			{
+				TableColumn column = tc[i];
+				Rectangle bounds = selection.getBounds(i);
+				if (bounds.contains(x, bounds.y))
+				{
+					index = i;
+				}
+			}
+		}
+		return index;
 	}
 }
