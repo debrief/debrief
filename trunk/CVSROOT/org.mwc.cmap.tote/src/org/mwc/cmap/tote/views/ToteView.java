@@ -1,18 +1,19 @@
 package org.mwc.cmap.tote.views;
 
 import java.beans.*;
-import java.util.*;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
+import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
@@ -28,7 +29,9 @@ import MWC.GenericData.HiResDate;
 public class ToteView extends ViewPart
 {
 
-	private Action _followTimeToggle;
+//	private Action _followTimeToggle;
+
+	private Action _removeTrackAction;
 
 	// Extension point tag and attributes in plugin.xml
 	private static final String EXTENSION_POINT_ID = "ToteCalculation";
@@ -43,6 +46,12 @@ public class ToteView extends ViewPart
 
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.cmap.tote";
+
+	/**
+	 * the table showing the calcs
+	 */
+	private TableViewer _tableViewer;
+
 	/**
 	 * the table content provider (containing both the calculations and the
 	 * tracks)
@@ -99,8 +108,6 @@ public class ToteView extends ViewPart
 
 	private ToteLabelProvider _labelProvider;
 
-	private SWTTote _myTote;
-
 	/**
 	 * The constructor.
 	 */
@@ -117,16 +124,13 @@ public class ToteView extends ViewPart
 	{
 		// _tempStatus = new Label(parent, SWT.NONE);
 		// _tempStatus.setText("pending");
-		//		
-		_myTote = new SWTTote();
-		_myTote.createControl(parent);
-
-		// _tableViewer = new TableViewer(createTableWithColumns(parent));
-		// _content = new ToteContentProvider();
-		// _tableViewer.setContentProvider(_content);
-		// _labelProvider = new ToteLabelProvider();
-		// _tableViewer.setLabelProvider(_labelProvider);
-		// _tableViewer.setInput(this);
+		//
+		_tableViewer = new TableViewer(createTableWithColumns(parent));
+		_content = new ToteContentProvider();
+		_tableViewer.setContentProvider(_content);
+		_labelProvider = new ToteLabelProvider();
+		_tableViewer.setLabelProvider(_labelProvider);
+		_tableViewer.setInput(this);
 		// _tableViewer.setSorter(new NameSorter());
 
 		// Create Action instances
@@ -134,7 +138,6 @@ public class ToteView extends ViewPart
 
 		makeActions();
 		hookContextMenu();
-		// hookDoubleClickAction();
 		contributeToActionBars();
 
 		// try to add ourselves to listen out for page changes
@@ -212,6 +215,9 @@ public class ToteView extends ViewPart
 							}
 							_myTemporalDataset.addListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+							// artificially fire time updated event
+							timeUpdated(_myTemporalDataset.getTime());
 						}
 					}
 				});
@@ -256,6 +262,59 @@ public class ToteView extends ViewPart
 
 	}
 
+	private void updateTableLayout()
+	{
+		// check we have some data
+		if (_trackData == null)
+			return;
+
+		Table tbl = _tableViewer.getTable();
+
+		// ok, remove all of the columns
+		TableColumn[] cols = tbl.getColumns();
+		for (int i = 0; i < cols.length; i++)
+		{
+			TableColumn column = cols[i];
+			column.dispose();
+		}
+
+		TableLayout layout = new TableLayout();
+		tbl.setLayout(layout);
+
+		// first put in the labels
+		layout.addColumnData(new ColumnWeightData(5, true));
+		TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
+		tc0.setText("Calculation");
+
+		// first sort out the primary track column
+		WatchableList priTrack = _trackData.getPrimaryTrack();
+		if (priTrack != null)
+		{
+
+			layout.addColumnData(new ColumnWeightData(10, true));
+			TableColumn pri = new TableColumn(tbl, SWT.NONE);
+			pri.setText(priTrack.getName());
+
+			// and now the secondary track columns
+			WatchableList[] secTracks = _trackData.getSecondaryTracks();
+
+			if (secTracks != null)
+			{
+				for (int i = 0; i < secTracks.length; i++)
+				{
+					WatchableList secTrack = secTracks[i];
+					layout.addColumnData(new ColumnWeightData(10, true));
+					TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+					thisSec.setText(secTrack.getName());
+				}
+			}
+
+			// and the units column
+			layout.addColumnData(new ColumnWeightData(5, true));
+			TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+			thisSec.setText("Units");
+		}
+	}
 
 	/**
 	 * @param parent
@@ -263,39 +322,23 @@ public class ToteView extends ViewPart
 	 */
 	private static Table createTableWithColumns(Composite parent)
 	{
-		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.MULTI
-				| SWT.FULL_SELECTION);
+		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL
+				| SWT.HIDE_SELECTION);
+
+		table.setLinesVisible(true);
 
 		TableLayout layout = new TableLayout();
 		table.setLayout(layout);
 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		String[] STD_HEADINGS = { "Calculation", "Primary", "Sec 1", "Sec 2" };
 
 		layout.addColumnData(new ColumnWeightData(5, 40, true));
 		TableColumn tc0 = new TableColumn(table, SWT.NONE);
-		tc0.setText(STD_HEADINGS[0]);
+		tc0.setText("Calculation");
 		tc0.setAlignment(SWT.LEFT);
 		tc0.setResizable(true);
-		//
-		// layout.addColumnData(new ColumnWeightData(10, true));
-		// TableColumn tc1 = new TableColumn(table, SWT.NONE);
-		// tc1.setText(STD_HEADINGS[1]);
-		// tc1.setAlignment(SWT.LEFT);
-		// tc1.setResizable(true);
-		//
-		// layout.addColumnData(new ColumnWeightData(10, true));
-		// TableColumn tc2 = new TableColumn(table, SWT.NONE);
-		// tc2.setText(STD_HEADINGS[2]);
-		// tc2.setAlignment(SWT.LEFT);
-		// tc2.setResizable(true);
-		//
-		// layout.addColumnData(new ColumnWeightData(10, true));
-		// TableColumn tc3 = new TableColumn(table, SWT.NONE);
-		// tc3.setText(STD_HEADINGS[3]);
-		// tc3.setAlignment(SWT.LEFT);
-		// tc3.setResizable(true);
+
 		return table;
 	}
 
@@ -324,27 +367,31 @@ public class ToteView extends ViewPart
 	private void createViewActions()
 	{
 
-		// // -------------------------------------------------------
-		// // Toggle filter action
-		// filterToggleAction = new Action("Only show Type_1", Action.AS_CHECK_BOX)
-		// {
-		//
-		// public void run()
-		// {
-		// // Use default political type for simplicity
-		// if (isChecked())
-		// {
-		// if (filter == null)
-		// filter = new Type1_Filter();
-		// _tableViewer.addFilter(filter);
-		// }
-		// else
-		// _tableViewer.removeFilter(filter);
-		// }
-		// };
-		// filterToggleAction.setToolTipText("Hide anything other than type_1");
-		// filterToggleAction.setImageDescriptor(PlatformUI.getWorkbench()
-		// .getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+		// -------------------------------------------------------
+		// Toggle filter action
+		_removeTrackAction = new Action("Remove this track", Action.AS_CHECK_BOX)
+		{
+			/* (non-Javadoc)
+			 * @see org.eclipse.jface.action.Action#runWithEvent(org.eclipse.swt.widgets.Event)
+			 */
+			public void runWithEvent(Event event)
+			{
+				// TODO Auto-generated method stub
+				super.runWithEvent(event);
+				// ok - fire the event
+				System.err.println("removing this track!!");
+				
+				Point pt = new Point(event.x, event.y);
+				Table myTable = _tableViewer.getTable();
+				TableItem selected = myTable.getSelection()[0];
+				System.out.println("is:" + selected);
+				
+				
+			}
+		};
+		_removeTrackAction.setToolTipText("Remove this track from the tote");
+		_removeTrackAction.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
 	}
 
@@ -372,18 +419,18 @@ public class ToteView extends ViewPart
 
 	private void hookContextMenu()
 	{
-		// MenuManager menuMgr = new MenuManager("#PopupMenu");
-		// menuMgr.setRemoveAllWhenShown(true);
-		// menuMgr.addMenuListener(new IMenuListener()
-		// {
-		// public void menuAboutToShow(IMenuManager manager)
-		// {
-		// ToteView.this.fillContextMenu(manager);
-		// }
-		// });
-		// Menu menu = menuMgr.createContextMenu(_tableViewer.getControl());
-		// _tableViewer.getControl().setMenu(menu);
-		// getSite().registerContextMenu(menuMgr, _tableViewer);
+		MenuManager menuMgr = new MenuManager("#PopupMenu");
+		menuMgr.setRemoveAllWhenShown(true);
+		menuMgr.addMenuListener(new IMenuListener()
+		{
+			public void menuAboutToShow(IMenuManager manager)
+			{
+				ToteView.this.fillContextMenu(manager);
+			}
+		});
+		Menu menu = menuMgr.createContextMenu(_tableViewer.getControl());
+		_tableViewer.getControl().setMenu(menu);
+		getSite().registerContextMenu(menuMgr, _tableViewer);
 	}
 
 	private void contributeToActionBars()
@@ -403,32 +450,18 @@ public class ToteView extends ViewPart
 	{
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
-
-		manager.add(_followTimeToggle);
+		manager.add(_removeTrackAction);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
 		// manager.add(action1);
 		// manager.add(action2);
-		manager.add(_followTimeToggle);
+//		manager.add(_followTimeToggle);
 	}
 
 	private void makeActions()
 	{
-		_followTimeToggle = new Action("Debug", Action.AS_PUSH_BUTTON)
-		{
-			public void run()
-			{
-			}
-
-		};
-		_followTimeToggle.setText("Debug");
-		_followTimeToggle.setChecked(true);
-		_followTimeToggle.setToolTipText("Do Ian's debug operation");
-		_followTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_HOVER));
 	}
 
 	/**
@@ -452,26 +485,39 @@ public class ToteView extends ViewPart
 			// ok, store it
 			_trackData = part;
 
-			WatchableList pri = _trackData.getPrimaryTrack();
-			if (pri != null)
-			{
-				_myTote.setPrimary(pri);
+			_tableViewer.setInput(this);
 
-				WatchableList[] secs = _trackData.getSecondaryTracks();
-				if (secs != null)
+			// and update the table
+			updateTableLayout();
+
+			// and fire the update
+			_tableViewer.getTable().layout(true);
+
+			// lastly color-code the columns
+			TableItem[] items = _tableViewer.getTable().getItems();
+
+			WatchableList pri = _trackData.getPrimaryTrack();
+			Color thisCol = ColorHelper.getColor(pri.getColor());
+			for (int j = 0; j < items.length; j++)
+			{
+				TableItem thisRow = items[j];
+				thisRow.setForeground(1, thisCol);
+			}
+
+			WatchableList[] secs = _trackData.getSecondaryTracks();
+			if (secs != null)
+			{
+				for (int i = 0; i < secs.length; i++)
 				{
-					for (int i = 0; i < secs.length; i++)
+					WatchableList thisSec = secs[i];
+					thisCol = ColorHelper.getColor(thisSec.getColor());
+					for (int j = 0; j < items.length; j++)
 					{
-						WatchableList thisSec = secs[i];
-						_myTote.setSecondary(thisSec);
+						TableItem thisRow = items[j];
+						thisRow.setForeground(2 + i, thisCol);
 					}
 				}
 			}
-
-			// cool, and update
-			_myTote.updateToteMembers();
-			
-			_myTote.getPanel().layout(true);
 		}
 	}
 
@@ -485,16 +531,13 @@ public class ToteView extends ViewPart
 	 */
 	private void timeUpdated(HiResDate newDTG)
 	{
-		_myTote.newTime(null, newDTG, null);
-		
-		_myTote.updateToteInformation();
-//		if (!_tableViewer.getTable().isDisposed())
-//		{
-//			_tableViewer.refresh(true);
-//			_labelProvider.setDTG(newDTG);
-//		}
-//		else
-//			System.out.println("not updating. table is disposed");
+		if (!_tableViewer.getTable().isDisposed())
+		{
+			_tableViewer.refresh(true);
+			_labelProvider.setDTG(newDTG);
+		}
+		else
+			System.out.println("not updating. table is disposed");
 	}
 
 	// //////////////////////////////
@@ -502,7 +545,7 @@ public class ToteView extends ViewPart
 	// //////////////////////////////
 
 	/**
-	 * 
+	 *
 	 */
 	private void initialiseCalcLoaders()
 	{
@@ -541,8 +584,6 @@ public class ToteView extends ViewPart
 
 		public Object[] getElements(Object inputElement)
 		{
-			// System.out.println("Tote TABLE: returning new elements");
-			// return new Object[]{"a", "b", "c"};
 			return _myCalculations.toArray();
 		}
 
@@ -552,8 +593,6 @@ public class ToteView extends ViewPart
 
 		public void inputChanged(Viewer viewer, Object oldInput, Object newInput)
 		{
-			System.out.println("input changed!!");
-
 		}
 	}
 
@@ -581,58 +620,66 @@ public class ToteView extends ViewPart
 
 		public String getColumnText(Object element, int columnIndex)
 		{
-			String res = "";
+			String res = null;
+			toteCalculation tc = (toteCalculation) element;
 
-			if (_theDTG != null)
+			// right, is this the title column?
+			if (columnIndex == 0)
 			{
-
-				toteCalculation tc = (toteCalculation) element;
-
-				if (columnIndex == 0)
-					res = tc.getTitle();
-				else
+				res = tc.getTitle();
+			}
+			else
+			{
+				// hmm, could it be the units column?
+				int numCols = _tableViewer.getTable().getColumnCount();
+				if (columnIndex == numCols - 1)
 				{
-					if (_trackData != null)
+					res = tc.getUnits();
+				}
+			}
+
+			// is this already sorted?
+			if ((res == null) && (_theDTG != null))
+			{
+				if (_trackData != null)
+				{
+					WatchableList _thePrimary = _trackData.getPrimaryTrack();
+					WatchableList[] secLists = _trackData.getSecondaryTracks();
+
+					// check that we've got a primary
+					if (_thePrimary != null)
 					{
-						WatchableList _thePrimary = _trackData.getPrimaryTrack();
-						WatchableList[] secLists = _trackData.getSecondaryTracks();
 
-						// check that we've got a primary
-						if (_thePrimary != null)
+						// so, we the calculations have been added to the tote list
+						// in order going across the page
+
+						// get the primary ready,
+						Watchable[] list = _thePrimary.getNearestTo(_theDTG);
+						Watchable pw = null;
+						if (list.length > 0)
+							pw = list[0];
+
+						// are we only looking at the primary?
+						if (columnIndex == 1)
 						{
-
-							// so, we the calculations have been added to the tote list
-							// in order going across the page
-
-							// get the primary ready,
-							Watchable[] list = _thePrimary.getNearestTo(_theDTG);
-							Watchable pw = null;
-							if (list.length > 0)
-								pw = list[0];
-
-							// are we only looking at the primary?
-							if (columnIndex == 1)
+							res = tc.update(null, pw, _theDTG);
+						}
+						else
+						{
+							if (secLists != null)
 							{
-								res = tc.update(null, pw, _theDTG);
-							}
-							else
-							{
-								if (secLists != null)
+								if (columnIndex - 2 < secLists.length)
 								{
-									if (columnIndex - 2 < secLists.length)
-									{
-										// prepare the list of secondary watchables
-										WatchableList wList = secLists[columnIndex - 2];
-										list = wList.getNearestTo(_theDTG);
+									// prepare the list of secondary watchables
+									WatchableList wList = secLists[columnIndex - 2];
+									list = wList.getNearestTo(_theDTG);
 
-										Watchable nearest = null;
-										if (list.length > 0)
-											nearest = list[0];
-										res = tc.update(pw, nearest, _theDTG);
-									}
+									Watchable nearest = null;
+									if (list.length > 0)
+										nearest = list[0];
+									res = tc.update(pw, nearest, _theDTG);
 								}
 							}
-
 						}
 					}
 				}
