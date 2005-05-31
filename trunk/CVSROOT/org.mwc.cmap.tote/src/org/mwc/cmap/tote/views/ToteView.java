@@ -43,12 +43,6 @@ public class ToteView extends ViewPart
 
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.cmap.tote";
-
-	/**
-	 * the table showing the calcs
-	 */
-	private TableViewer _tableViewer;
-
 	/**
 	 * the table content provider (containing both the calculations and the
 	 * tracks)
@@ -105,6 +99,8 @@ public class ToteView extends ViewPart
 
 	private ToteLabelProvider _labelProvider;
 
+	private SWTTote _myTote;
+
 	/**
 	 * The constructor.
 	 */
@@ -122,12 +118,15 @@ public class ToteView extends ViewPart
 		// _tempStatus = new Label(parent, SWT.NONE);
 		// _tempStatus.setText("pending");
 		//		
-		_tableViewer = new TableViewer(createTableWithColumns(parent));
-		_content = new ToteContentProvider();
-		_tableViewer.setContentProvider(_content);
-		_labelProvider = new ToteLabelProvider();
-		_tableViewer.setLabelProvider(_labelProvider);
-		_tableViewer.setInput(this);
+		_myTote = new SWTTote();
+		_myTote.createControl(parent);
+
+		// _tableViewer = new TableViewer(createTableWithColumns(parent));
+		// _content = new ToteContentProvider();
+		// _tableViewer.setContentProvider(_content);
+		// _labelProvider = new ToteLabelProvider();
+		// _tableViewer.setLabelProvider(_labelProvider);
+		// _tableViewer.setInput(this);
 		// _tableViewer.setSorter(new NameSorter());
 
 		// Create Action instances
@@ -257,54 +256,6 @@ public class ToteView extends ViewPart
 
 	}
 
-	private void updateTableLayout()
-	{
-		// check we have some data
-		if (_trackData == null)
-			return;
-
-		Table tbl = _tableViewer.getTable();
-
-		// ok, remove all of the columns
-		TableColumn[] cols = tbl.getColumns();
-		for (int i = 0; i < cols.length; i++)
-		{
-			TableColumn column = cols[i];
-			column.dispose();
-		}
-
-		TableLayout layout = new TableLayout();
-		tbl.setLayout(layout);
-
-		// first put in the labels
-		layout.addColumnData(new ColumnWeightData(5, 40, true));
-		TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
-		tc0.setText("Calculation");
-
-		// first sort out the primary track column
-		WatchableList priTrack = _trackData.getPrimaryTrack();
-		if (priTrack != null)
-		{
-
-			layout.addColumnData(new ColumnWeightData(5, 40, true));
-			TableColumn pri = new TableColumn(tbl, SWT.NONE);
-			pri.setText(priTrack.getName());
-
-			// and now the secondary track columns
-			WatchableList[] secTracks = _trackData.getSecondaryTracks();
-
-			if (secTracks != null)
-			{
-				for (int i = 0; i < secTracks.length; i++)
-				{
-					WatchableList secTrack = secTracks[i];
-					layout.addColumnData(new ColumnWeightData(5, 40, true));
-					TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-					thisSec.setText(secTrack.getName());
-				}
-			}
-		}
-	}
 
 	/**
 	 * @param parent
@@ -469,19 +420,6 @@ public class ToteView extends ViewPart
 		{
 			public void run()
 			{
-				System.out.println("running...");
-				// get the table
-				Table tbl = _tableViewer.getTable();
-
-				// try to add a column
-				TableLayout layout = new TableLayout();
-				tbl.setLayout(layout);
-
-				// first put in the labels
-				layout.addColumnData(new ColumnWeightData(5, 40, true));
-				TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
-				tc0.setText("Calculation 2");
-
 			}
 
 		};
@@ -514,10 +452,26 @@ public class ToteView extends ViewPart
 			// ok, store it
 			_trackData = part;
 
-			_tableViewer.setInput(this);
+			WatchableList pri = _trackData.getPrimaryTrack();
+			if (pri != null)
+			{
+				_myTote.setPrimary(pri);
 
-			// and update the table
-			updateTableLayout();
+				WatchableList[] secs = _trackData.getSecondaryTracks();
+				if (secs != null)
+				{
+					for (int i = 0; i < secs.length; i++)
+					{
+						WatchableList thisSec = secs[i];
+						_myTote.setSecondary(thisSec);
+					}
+				}
+			}
+
+			// cool, and update
+			_myTote.updateToteMembers();
+			
+			_myTote.getPanel().layout(true);
 		}
 	}
 
@@ -531,13 +485,16 @@ public class ToteView extends ViewPart
 	 */
 	private void timeUpdated(HiResDate newDTG)
 	{
-		if (!_tableViewer.getTable().isDisposed())
-		{
-			_tableViewer.refresh(true);
-			_labelProvider.setDTG(newDTG);
-		}
-		else
-			System.out.println("not updating. table is disposed");
+		_myTote.newTime(null, newDTG, null);
+		
+		_myTote.updateToteInformation();
+//		if (!_tableViewer.getTable().isDisposed())
+//		{
+//			_tableViewer.refresh(true);
+//			_labelProvider.setDTG(newDTG);
+//		}
+//		else
+//			System.out.println("not updating. table is disposed");
 	}
 
 	// //////////////////////////////
