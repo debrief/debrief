@@ -1,6 +1,5 @@
 package org.mwc.cmap.plotViewer.editors;
 
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.Enumeration;
@@ -479,7 +478,10 @@ public abstract class PlotEditor extends EditorPart implements
 			{
 				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
 						.next();
-				thisL.selectionChanged(sEvent);
+				if (thisL != null)
+				{
+					thisL.selectionChanged(sEvent);
+				}
 			}
 		}
 
