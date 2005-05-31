@@ -818,9 +818,4 @@ public class NarrativeView extends ViewPart
 	{
 	}
 
-	public class TestNarrativeView extends TestCase
-	{
-
-	}
-
 }
