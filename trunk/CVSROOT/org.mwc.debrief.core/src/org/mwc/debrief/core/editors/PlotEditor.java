@@ -57,22 +57,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";
-	
+
 	private PlainHighlighter _myTimeHighlighter;
 
-	/** helper object which loads plugin file-loaders
-	 * 
+	/**
+	 * helper object which loads plugin file-loaders
 	 */
 	private LoaderManager _loader;
 
-	/** constructor - quite simple really.
-	 * 
-	 *
+	/**
+	 * constructor - quite simple really.
 	 */
 	public PlotEditor()
 	{
 		super();
-		
+
 		_myLayers = new Layers();
 
 		_myLayers.addDataExtendedListener(new DataListener()
@@ -119,11 +118,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 		// lastly, set the title (if we have one)
 		this.setPartName(input.getName());
 		this.setContentDescription("Includes imported Replay data");
-		
+
 	}
 
 	/**
-	 * @param input the file to insert
+	 * @param input
+	 *          the file to insert
 	 */
 	private void loadThisFile(IEditorInput input)
 	{
@@ -143,8 +143,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 					// rely on it calling us back (loadingComplete)
 					thisLoader.loadFile(this, input);
 				}
-			}
-			catch (RuntimeException e)
+			} catch (RuntimeException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -206,7 +205,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 					{
 						Watchable wrapped = (Watchable) nextP;
 						HiResDate dtg = wrapped.getTime();
-						if(dtg != null)
+						if (dtg != null)
 							res = extend(res, dtg);
 					}
 				}
@@ -230,32 +229,33 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 
 	/**
 	 * method called when a helper object has completed a plot-load operation
+	 * 
 	 * @param source
 	 */
-public void loadingComplete(Object source)
+	public void loadingComplete(Object source)
 	{
 		CorePlugin.logError(Status.INFO, "File load received", null);
-		
+
 		// and update the time management bits
 		TimePeriod timePeriod = getPeriodFor(_myLayers);
-		
-		if(timePeriod != null)
+
+		if (timePeriod != null)
 		{
-			super._timeManager.setPeriod(this,timePeriod);
-			
+			super._timeManager.setPeriod(this, timePeriod);
+
 			// also give it a current DTG
 			super._timeManager.setTime(this, timePeriod.getStartDTG());
-		}				
-		
+		}
+
 		// so, do we have any narrative data?
 		Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
 
 		// did we find it?
-		if(narr != null)
+		if (narr != null)
 		{
 			// cool, cast to object
 			final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
-			
+
 			// and put it into our narrative provider
 			_theNarrativeProvider = new NarrativeProvider()
 			{
@@ -265,50 +265,53 @@ public void loadingComplete(Object source)
 				}
 			};
 		}
-		
+
 	}
 
 	protected void filesDropped(String[] fileNames)
 	{
 		super.filesDropped(fileNames);
-		
+
 		// ok, iterate through the files
 		for (int i = 0; i < fileNames.length; i++)
 		{
-			final String thisFilename = fileNames[i];			
+			final String thisFilename = fileNames[i];
 			File thisFile = new File(thisFilename);
-//			org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF = new org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
-//			IFile theFile = (IFile) localF.getAdapter(IFile.class);			
-//			FileEditorInput theInput = new FileEditorInput(theFile); 
-//			this.loadThisFile(theInput);			
-			
+			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
+			// = new
+			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
+			// IFile theFile = (IFile) localF.getAdapter(IFile.class);
+			// FileEditorInput theInput = new FileEditorInput(theFile);
+			// this.loadThisFile(theInput);
+
 		}
-		
+
 		// ok, get loading.
 	}
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#timeChanged()
 	 */
 	protected void timeChanged(HiResDate newDTG)
 	{
 		// TODO Auto-generated method stub
 		super.timeChanged(newDTG);
-		
+
 		// ok - update our painter
-		if(getChart() != null)
+		if (getChart() != null)
 		{
 			getChart().getCanvas().updateMe();
 		}
 	}
-	
-	
-	
 
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#getAdapter(java.lang.Class)
 	 */
-	public Object getAdapter(Class adapter)
+public Object getAdapter(Class adapter)
 	{
 		Object res = null;
 		
@@ -321,7 +324,10 @@ public void loadingComplete(Object source)
 				{
 					// TODO Auto-generated method stub
 					TrackWrapper sec = (TrackWrapper) _myLayers.findLayer("Tomato");
-					return new WatchableList[]{sec};
+					WatchableList[] res = null;
+					if(sec != null)
+						res =  new WatchableList[]{sec};
+					return res;
 				}
 			
 				public WatchableList getPrimaryTrack()
@@ -347,17 +353,18 @@ public void loadingComplete(Object source)
 		// ok, done
 		return res;
 	}
-
-	/* (non-Javadoc)
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(Composite parent)
 	{
 		// TODO Auto-generated method stub
 		super.createPartControl(parent);
-		
-		
-		super.getChart().getCanvas().addPainter(new CanvasType.PaintListener(){
+
+		super.getChart().getCanvas().addPainter(new CanvasType.PaintListener()
+		{
 
 			public void paintMe(CanvasType dest)
 			{
@@ -374,16 +381,16 @@ public void loadingComplete(Object source)
 			public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
 			{
 				// TODO Auto-generated method stub
-				
+
 			}
 
 			public String getName()
 			{
 				// TODO Auto-generated method stub
 				return null;
-			}});		
-		
+			}
+		});
+
 	}
 
-	
 }
