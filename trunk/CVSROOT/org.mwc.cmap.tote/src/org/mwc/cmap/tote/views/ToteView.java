@@ -2,7 +2,6 @@ package org.mwc.cmap.tote.views;
 
 import java.beans.*;
 import java.util.*;
-import java.util.Vector;
 
 import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.*;
@@ -28,6 +27,9 @@ import MWC.GenericData.HiResDate;
 
 public class ToteView extends ViewPart
 {
+
+	private Action _followTimeToggle;
+
 	// Extension point tag and attributes in plugin.xml
 	private static final String EXTENSION_POINT_ID = "ToteCalculation";
 
@@ -257,32 +259,49 @@ public class ToteView extends ViewPart
 
 	private void updateTableLayout()
 	{
+		// check we have some data
+		if (_trackData == null)
+			return;
+
 		Table tbl = _tableViewer.getTable();
 
-		// ok, remove all of the columns (except the first one)
+		// ok, remove all of the columns
 		TableColumn[] cols = tbl.getColumns();
-		for (int i = 1; i < cols.length; i++)
+		for (int i = 0; i < cols.length; i++)
 		{
 			TableColumn column = cols[i];
 			column.dispose();
 		}
 
+		TableLayout layout = new TableLayout();
+		tbl.setLayout(layout);
+
+		// first put in the labels
+		layout.addColumnData(new ColumnWeightData(5, 40, true));
+		TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
+		tc0.setText("Calculation");
+
 		// first sort out the primary track column
 		WatchableList priTrack = _trackData.getPrimaryTrack();
-
-		TableColumn pri = new TableColumn(tbl, SWT.NONE);
-		pri.setText(priTrack.getName());
-
-		// and now the secondary track columns
-		WatchableList[] secTracks = _trackData.getSecondaryTracks();
-
-		if (secTracks != null)
+		if (priTrack != null)
 		{
-			for (int i = 0; i < secTracks.length; i++)
+
+			layout.addColumnData(new ColumnWeightData(5, 40, true));
+			TableColumn pri = new TableColumn(tbl, SWT.NONE);
+			pri.setText(priTrack.getName());
+
+			// and now the secondary track columns
+			WatchableList[] secTracks = _trackData.getSecondaryTracks();
+
+			if (secTracks != null)
 			{
-				WatchableList secTrack = secTracks[i];
-				TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-				thisSec.setText(priTrack.getName());
+				for (int i = 0; i < secTracks.length; i++)
+				{
+					WatchableList secTrack = secTracks[i];
+					layout.addColumnData(new ColumnWeightData(5, 40, true));
+					TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+					thisSec.setText(secTrack.getName());
+				}
 			}
 		}
 	}
@@ -433,18 +452,45 @@ public class ToteView extends ViewPart
 	{
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+
+		manager.add(_followTimeToggle);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
 		// manager.add(action1);
 		// manager.add(action2);
-
+		manager.add(_followTimeToggle);
 	}
 
 	private void makeActions()
 	{
+		_followTimeToggle = new Action("Debug", Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				System.out.println("running...");
+				// get the table
+				Table tbl = _tableViewer.getTable();
 
+				// try to add a column
+				TableLayout layout = new TableLayout();
+				tbl.setLayout(layout);
+
+				// first put in the labels
+				layout.addColumnData(new ColumnWeightData(5, 40, true));
+				TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
+				tc0.setText("Calculation 2");
+
+			}
+
+		};
+		_followTimeToggle.setText("Debug");
+		_followTimeToggle.setChecked(true);
+		_followTimeToggle.setToolTipText("Do Ian's debug operation");
+		_followTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_UNDO_HOVER));
 	}
 
 	/**
@@ -461,11 +507,18 @@ public class ToteView extends ViewPart
 	 */
 	private void storeDetails(TrackDataProvider part, IWorkbenchPart parentPart)
 	{
-		// ok, store it
-		_trackData = part;
+		// hmm - are we already looking at this one?
+		if (part != _trackData)
+		{
 
-		// and update the table
-		updateTableLayout();
+			// ok, store it
+			_trackData = part;
+
+			_tableViewer.setInput(this);
+
+			// and update the table
+			updateTableLayout();
+		}
 	}
 
 	// //////////////////////////////
