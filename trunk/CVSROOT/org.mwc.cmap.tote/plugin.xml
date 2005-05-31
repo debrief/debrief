@@ -45,7 +45,7 @@
             name="Brg Rate"/>
    </extension>   
    <extension point="org.mwc.cmap.tote.ToteCalculation">
-      <calculation class="Debrief.Tools.Tote.Calculations.timeCalc"
+      <calculation class="Debrief.Tools.Tote.Calculations.timeSecsCalc"
             name="Time"/>
    </extension>   
 </plugin>
