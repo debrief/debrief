@@ -434,8 +434,6 @@ public class ToteView extends ViewPart
 					int index = findSelectedColumn(e.x, e.y, _tableViewer.getTable());
 					if (index != -1)
 					{
-						System.out.println("selected column is:" + index);
-
 						MenuManager mmgr = new MenuManager();
 						fillContextMenu(mmgr, index);
 						Menu thisM = mmgr.createContextMenu(_tableViewer.getTable());
