@@ -94,12 +94,22 @@ public class FontHelper extends EditorHelper
 		final String fontName = javaFont.toString();
 		org.eclipse.swt.graphics.Font thisFont = _fontRegistry.get(fontName);
 		
-		
 		// do we have a font for this style?
 		if(!_fontRegistry.hasValueFor(fontName))
 		{
 			// bugger, we'll have to  create it
-			FontData newF = new FontData(javaFont.getFontName(), javaFont.getSize(), javaFont.getStyle());
+			
+			int size = javaFont.getSize();
+			int style = javaFont.getStyle();
+			String name = javaFont.getName();
+			
+			// WORKAROUND
+			// - on windows, our 'sans serif' recorded in the xml file doesn't get translated to Arial.  So,  we do it by hand
+			if(name.equals("Sans Serif"))
+				name = "Arial";
+			
+			
+			FontData newF = new FontData(name, size, style);
 			_fontRegistry.put(fontName,new FontData[]{newF});
 		}
 		
