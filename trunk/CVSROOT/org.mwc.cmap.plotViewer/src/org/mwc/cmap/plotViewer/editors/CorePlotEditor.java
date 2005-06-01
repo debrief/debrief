@@ -46,7 +46,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public abstract class PlotEditor extends EditorPart implements
+public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider
 {
 
@@ -103,7 +103,7 @@ public abstract class PlotEditor extends EditorPart implements
 	// constructor
 	// //////////////////////////////
 
-	public PlotEditor()
+	public CorePlotEditor()
 	{
 		super();
 

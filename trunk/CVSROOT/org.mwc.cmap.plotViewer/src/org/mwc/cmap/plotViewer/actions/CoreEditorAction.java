@@ -9,7 +9,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.plotViewer.editors.PlotEditor;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
 import MWC.GUI.PlainChart;
 
@@ -19,7 +19,7 @@ import MWC.GUI.PlainChart;
 abstract public class CoreEditorAction implements IEditorActionDelegate
 {
 
-	protected PlotEditor _myEditor = null;
+	protected CorePlotEditor _myEditor = null;
 
 	/*
 	 * (non-Javadoc)
@@ -32,9 +32,9 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 		if(targetEditor == null)
 			return;
 		
-		if (targetEditor instanceof PlotEditor)
+		if (targetEditor instanceof CorePlotEditor)
 		{
-			_myEditor = (PlotEditor) targetEditor;
+			_myEditor = (CorePlotEditor) targetEditor;
 		}
 		else
 		{
@@ -44,7 +44,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 
 	}
 	
-	protected PlotEditor getPlot()
+	protected CorePlotEditor getPlot()
 	{
 		return _myEditor;
 	}

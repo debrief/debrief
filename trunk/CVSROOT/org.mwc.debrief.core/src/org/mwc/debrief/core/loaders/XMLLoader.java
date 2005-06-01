@@ -18,7 +18,7 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
-import org.mwc.cmap.plotViewer.editors.PlotEditor;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefXMLReaderWriter;
@@ -61,10 +61,10 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 
 	/*
 	 * (non-Javadoc)
-	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.PlotEditor,
+	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
-	public void loadFile(final PlotEditor thePlot, IEditorInput input)
+	public void loadFile(final CorePlotEditor thePlot, IEditorInput input)
 	{
 		String source = super.getFileName(input);
 

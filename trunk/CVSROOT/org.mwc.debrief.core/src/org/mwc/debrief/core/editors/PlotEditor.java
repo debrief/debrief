@@ -40,7 +40,7 @@ import MWC.GenericData.WorldArea;
 /**
  * @author ian.mayo
  */
-public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
+public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 {
 	// Extension point tag and attributes in plugin.xml
 	private static final String EXTENSION_POINT_ID = "DebriefPlotLoader";
@@ -297,7 +297,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#timeChanged()
+	 * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#timeChanged()
 	 */
 	protected void timeChanged(HiResDate newDTG)
 	{
@@ -314,7 +314,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#getAdapter(java.lang.Class)
+	 * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
 	 */
 	public Object getAdapter(Class adapter)
 	{
@@ -367,7 +367,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#createPartControl(org.eclipse.swt.widgets.Composite)
+	 * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#createPartControl(org.eclipse.swt.widgets.Composite)
 	 */
 	public void createPartControl(Composite parent)
 	{

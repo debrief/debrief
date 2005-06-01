@@ -8,7 +8,7 @@ import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
 import org.mwc.cmap.core.interfaces.INamedItem;
-import org.mwc.cmap.plotViewer.editors.PlotEditor;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
 
 /** Interface for classes which are capable of populating a plot from a file
@@ -23,7 +23,7 @@ public interface IPlotLoader extends INamedItem
 	 * @param thePlot the plot destination
 	 * @param input the file source
 	 */
-	public void loadFile(PlotEditor thePlot, IEditorInput input);
+	public void loadFile(CorePlotEditor thePlot, IEditorInput input);
 
 	
 	/** test whether this loader can load the suppled input source
@@ -106,7 +106,7 @@ public interface IPlotLoader extends INamedItem
 		}
 		
 
-		public void loadFile(PlotEditor thePlot, IEditorInput input)
+		public void loadFile(CorePlotEditor thePlot, IEditorInput input)
 		{
 			if(_myLoader == null)
 			{
