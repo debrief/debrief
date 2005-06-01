@@ -65,6 +65,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	 */
 	private LoaderManager _loader;
 
+	/** we keep the reference to our track-type adapter
+	 * 
+	 */
+	private TrackDataProvider _trackDataProvider;
+
 	/**
 	 * constructor - quite simple really.
 	 */
@@ -311,48 +316,54 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.PlotEditor
 	 * 
 	 * @see org.mwc.cmap.plotViewer.editors.PlotEditor#getAdapter(java.lang.Class)
 	 */
-public Object getAdapter(Class adapter)
+	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
-		
+
 		if (adapter == TrackDataProvider.class)
 		{
-			res = new TrackDataProvider()
+			if (_trackDataProvider == null)
 			{
-			
-				public WatchableList[] getSecondaryTracks()
+				_trackDataProvider = new TrackDataProvider()
 				{
-					// TODO Auto-generated method stub
-					TrackWrapper sec = (TrackWrapper) _myLayers.findLayer("Tomato");
-					WatchableList[] res = null;
-					if(sec != null)
-						res =  new WatchableList[]{sec};
-					return res;
-				}
-			
-				public WatchableList getPrimaryTrack()
-				{
-					TrackWrapper pri = (TrackWrapper) _myLayers.findLayer("Carpet");
-					return pri;
-				}
-			
-				public void addTrackDataListener(TrackDataListener listener)
-				{
-					// TODO Auto-generated method stub
-				}
-			};
-		}		
-		
+
+					public WatchableList[] getSecondaryTracks()
+					{
+						// TODO Auto-generated method stub
+						TrackWrapper sec = (TrackWrapper) _myLayers.findLayer("Tomato");
+						WatchableList[] res = null;
+						if (sec != null)
+							res = new WatchableList[] { sec };
+						return res;
+					}
+
+					public WatchableList getPrimaryTrack()
+					{
+						TrackWrapper pri = (TrackWrapper) _myLayers.findLayer("Carpet");
+						return pri;
+					}
+
+					public void addTrackDataListener(TrackDataListener listener)
+					{
+						// TODO Auto-generated method stub
+					}
+				};
+			}
+
+			res = _trackDataProvider;
+		}
+
 		// did we find anything?
-		if(res == null)
+		if (res == null)
 		{
 			// nope, don't bother.
-			res =  super.getAdapter(adapter);
+			res = super.getAdapter(adapter);
 		}
 
 		// ok, done
 		return res;
 	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
