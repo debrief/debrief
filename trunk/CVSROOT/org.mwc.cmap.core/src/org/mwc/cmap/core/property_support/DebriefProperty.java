@@ -10,9 +10,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.ComboBoxCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TextCellEditor;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -45,86 +43,6 @@ public class DebriefProperty implements IPropertyDescriptor
 		_myHelper = findHelperFor(prop, subject);
 	}
 
-	public static class TagListHelper extends EditorHelper
-	{
-		String [] _theTags;
-		final java.beans.PropertyEditor _propEditor;
-		
-		public TagListHelper(String[] theTags, final java.beans.PropertyEditor propEditor)
-		{
-			super(null);
-			_theTags = theTags;
-			_propEditor = propEditor;
-		}
-		
-		public CellEditor getEditorFor(Composite parent)
-		{
-			return new ComboBoxCellEditor(parent, _theTags);
-		}
-
-		public Object translateFromSWT(Object value)
-		{
-			Object res = value;
-			if (value instanceof String)
-			{
-				_propEditor.setAsText((String) value);
-				res = _propEditor.getValue();
-			}
-			else
-			{
-				Integer index = (Integer) value;
-				// ok, set the index of the text field first, then get the
-				// object vlaue
-				String selectedItem = _theTags[index.intValue()];
-				res = translateFromSWT(selectedItem);
-			}
-			return res;
-		}
-
-		public Object translateToSWT(Object value)
-		{
-			Object res = value;
-			if (value instanceof String)
-			{
-				// we have to translate the string to the string index
-				for (int i = 0; i < _theTags.length; i++)
-				{
-					String thisItem = _theTags[i];
-					if (thisItem.equals(value))
-					{
-						res = new Integer(i);
-						break;
-					}
-				}
-			}
-			else
-			{
-				// get the string representation of the object, then get the
-				// index of
-				// that string
-				_propEditor.setValue(value);
-				String txtVersion = _propEditor.getAsText();
-				res = translateToSWT(txtVersion);
-			}
-			return res;
-		}
-
-		public ILabelProvider getLabelFor(Object value)
-		{
-			LabelProvider theProvider = new LabelProvider()
-			{
-				public String getText(Object element)
-				{
-					String res = null;
-					_propEditor.setValue(element);
-					res = _propEditor.getAsText();
-					return res;
-				}
-			};
-			return theProvider;
-		}
-	};
-	
 	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
 	{
 		EditorHelper res = null;
@@ -234,6 +152,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			});
 			_myHelperList.add(new BooleanHelper());
 			_myHelperList.add(new FontHelper());
+			_myHelperList.add(new DTGHelper());
 
 		}
 	}
