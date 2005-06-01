@@ -99,7 +99,7 @@ public class FontHelper extends EditorHelper
 		if(!_fontRegistry.hasValueFor(fontName))
 		{
 			// bugger, we'll have to  create it
-			FontData newF = new FontData(javaFont.getName(), javaFont.getStyle(), javaFont.getSize());
+			FontData newF = new FontData(javaFont.getFontName(), javaFont.getSize(), javaFont.getStyle());
 			_fontRegistry.put(fontName,new FontData[]{newF});
 		}
 		
