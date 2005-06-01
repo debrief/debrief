@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.2  2005-05-25 15:31:54  Ian.Mayo
+// Revision 1.3  2005-06-01 10:45:08  Ian.Mayo
+// Re-instate anti-alias graphics
+//
+// Revision 1.2  2005/05/25 15:31:54  Ian.Mayo
 // Get double-buffering going
 //
 // Revision 1.1  2005/05/25 14:18:18  Ian.Mayo
@@ -35,6 +38,7 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
@@ -171,20 +175,20 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// return;
 		//
 
-		// try
-		// {
-		// if (val)
-		// {
-		// _theDest.setAntialias(SWT.ON);
-		// }
-		// else
-		// {
-		// _theDest.setAntialias(SWT.OFF);
-		// }
-		// } catch (RuntimeException e)
-		// {
-		// // CorePlugin.logError(Status.ERROR, "Graphics library not found", e);
-		// }
+		 try
+		 {
+		 if (val)
+		 {
+		 _theDest.setAntialias(SWT.ON);
+		 }
+		 else
+		 {
+		 _theDest.setAntialias(SWT.OFF);
+		 }
+		 } catch (RuntimeException e)
+		 {
+		 // CorePlugin.logError(Status.ERROR, "Graphics library not found", e);
+		 }
 	}
 
 	/**
@@ -309,6 +313,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// if (fm != null)
 		// res = fm.getHeight();
 
+		//_theDest.setFont(FontHelper.convertFont(theFont));
 		res = _theDest.getFontMetrics().getHeight();
 
 		return res;
@@ -319,6 +324,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		int res = 0;
 
+	//	_theDest.setFont(FontHelper.convertFont(theFont));
+		
+	//	res = _theDest.textExtent(theString).x;
 		res = _theDest.getFontMetrics().getAverageCharWidth() * theString.length();
 
 		// final java.awt.FontMetrics fm = getFontMetrics(theFont);
