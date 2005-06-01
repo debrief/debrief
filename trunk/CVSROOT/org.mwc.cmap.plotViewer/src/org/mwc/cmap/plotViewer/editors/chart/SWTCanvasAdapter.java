@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.3  2005-06-01 10:45:08  Ian.Mayo
+// Revision 1.4  2005-06-01 13:24:53  Ian.Mayo
+// Safe fall-over for missing GDI libs
+//
+// Revision 1.3  2005/06/01 10:45:08  Ian.Mayo
 // Re-instate anti-alias graphics
 //
 // Revision 1.2  2005/05/25 15:31:54  Ian.Mayo
@@ -38,11 +41,13 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.property_support.FontHelper;
 
@@ -69,11 +74,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	// member variables
 	// //////////////////////////////////////////////////////////
 
-	/** remember the background color - SWT has trouble remembering it
-	 * 
+	/**
+	 * remember the background color - SWT has trouble remembering it
 	 */
 	java.awt.Color _backgroundColor;
-	
+
 	/**
 	 * the projection in use
 	 */
@@ -95,7 +100,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 */
 	protected java.awt.Dimension _theSize;
 
-
 	/**
 	 * our tool tip handler.
 	 */
@@ -116,6 +120,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 */
 	private float _lineWidth;
 
+	
+	/** flag for whether we have the GDI library availble.  The plotting algs
+	 * will keep on failing if it's not.  We should remember when its
+	 * not avaialble, and not bother calling from there on.
+	 */
+	private boolean _gdiAvailable = true;
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -127,23 +138,21 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		// start with our background colour
 		setBackgroundColor(java.awt.Color.black);
-		
 
 		// initialisation
 		_thePainters = new Vector(0, 1);
-		
+
 		// create our projection
-		if(proj != null)
+		if (proj != null)
 			_theProjection = proj;
 		else
 			_theProjection = new FlatProjection();
 	}
 
-
 	// ////////////////////////////////////////////////////
 	// screen redraw related
 	// ////////////////////////////////////////////////////
-	
+
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
@@ -167,28 +176,27 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 */
 	protected void switchAntiAliasOn(final boolean val)
 	{
-		// todo: sort out this bit..
-		// // ignore this
-		// final Graphics2D g2 = (Graphics2D) _theDest;
-		//
-		// if (g2 == null)
-		// return;
-		//
 
-		 try
-		 {
-		 if (val)
-		 {
-		 _theDest.setAntialias(SWT.ON);
-		 }
-		 else
-		 {
-		 _theDest.setAntialias(SWT.OFF);
-		 }
-		 } catch (RuntimeException e)
-		 {
-		 // CorePlugin.logError(Status.ERROR, "Graphics library not found", e);
-		 }
+		// hmmm, has the GDI retrieval already failed
+		if (_gdiAvailable)
+		{
+			// well, this is either the first time, or we already know it's there for us
+			try
+			{
+				if (val)
+				{
+					_theDest.setAntialias(SWT.ON);
+				}
+				else
+				{
+					_theDest.setAntialias(SWT.OFF);
+				}
+			} catch (RuntimeException e)
+			{
+				CorePlugin.logError(Status.INFO, "Graphics library not found", e);
+				_gdiAvailable = false;
+			}
+		}
 	}
 
 	/**
@@ -313,7 +321,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// if (fm != null)
 		// res = fm.getHeight();
 
-		//_theDest.setFont(FontHelper.convertFont(theFont));
+		// _theDest.setFont(FontHelper.convertFont(theFont));
 		res = _theDest.getFontMetrics().getHeight();
 
 		return res;
@@ -324,9 +332,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		int res = 0;
 
-	//	_theDest.setFont(FontHelper.convertFont(theFont));
-		
-	//	res = _theDest.textExtent(theString).x;
+		// _theDest.setFont(FontHelper.convertFont(theFont));
+
+		// res = _theDest.textExtent(theString).x;
 		res = _theDest.getFontMetrics().getAverageCharWidth() * theString.length();
 
 		// final java.awt.FontMetrics fm = getFontMetrics(theFont);
@@ -382,9 +390,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		return false;
 
 	}
-	
-	public final boolean drawSWTImage(final Image img, final int x,
-			final int y, final int width, final int height)
+
+	public final boolean drawSWTImage(final Image img, final int x, final int y,
+			final int width, final int height)
 	{
 		if (_theDest == null)
 			return true;
@@ -395,8 +403,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		return false;
 
 	}
-	
-	
 
 	public final void drawLine(final int x1, final int y1, final int x2,
 			final int y2)
@@ -405,7 +411,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 
 		// doDecide whether to anti-alias this line
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+				.getLineWidth()));
 
 		// check that the points are vaguely plottable
 		if ((Math.abs(x1) > 9000) || (Math.abs(y1) > 9000) || (Math.abs(x2) > 9000)
@@ -473,7 +480,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 
 		// doDecide whether to anti-alias this line
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+				.getLineWidth()));
 
 		// translate the polygon to SWT format
 		int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
@@ -498,7 +506,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 
 		// doDecide whether to anti-alias this line
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+				.getLineWidth()));
 
 		// translate the polygon to SWT format
 		int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
@@ -510,7 +519,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			final int height)
 	{
 		if (_theDest != null)
-			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+					.getLineWidth()));
 
 		if (_theDest != null)
 			_theDest.drawOval(x, y, width, height);
@@ -625,7 +635,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest != null)
 		{
 			// doDecide whether to anti-alias this line
-			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+					.getLineWidth()));
 		}
 
 		if (_theDest != null)
@@ -648,7 +659,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	public final void startDraw(final Object theVal)
 	{
 		_theDest = (GC) theVal;
-		
+
 		// initialise the background color
 		_theDest.setBackground(_theDest.getBackground());
 
@@ -683,8 +694,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// get/set the font
 		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFont(theFont);
 		_theDest.setFont(swtFont);
-		
-		// shift the y.  JDK uses bottom left coordinate, SWT uses top-left
+
+		// shift the y. JDK uses bottom left coordinate, SWT uses top-left
 		FontData[] data = swtFont.getFontData();
 		FontData first = data[0];
 		int y2 = y - first.height;
@@ -698,7 +709,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 
 		// doDecide whether to anti-alias this line
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth()));
+		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+				.getLineWidth()));
 
 		if (_theDest == null)
 			return;
@@ -712,15 +724,16 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-	//	fillOn();
+		// fillOn();
 
-	//	_theDest.setBackground(ColorHelper.getColor(java.awt.Color.green));
+		// _theDest.setBackground(ColorHelper.getColor(java.awt.Color.green));
 		_theDest.fillRectangle(x, y, wid, height);
-		
-		// now, the fill only fills in the provided rectangle. we also have to paint in it's border
+
+		// now, the fill only fills in the provided rectangle. we also have to paint
+		// in it's border
 		_theDest.drawRectangle(x, y, wid, height);
 
-	//	fillOff();
+		// fillOff();
 	}
 
 	private static Color _theOldColor;
@@ -754,12 +767,12 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		// remember it
 		_backgroundColor = theColor;
-		
+
 		// convert to SWT
 		Color swtCol = ColorHelper.getColor(theColor);
 
 		// set the colour in the parent
-		if(_theDest != null)
+		if (_theDest != null)
 			_theDest.setBackground(swtCol);
 	}
 
@@ -824,7 +837,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		return _thePainters.elements();
 	}
-
 
 	/**
 	 * first repaint the plot, then trigger a screen update
@@ -958,6 +970,5 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		return _theSize;
 	}
-
 
 }
