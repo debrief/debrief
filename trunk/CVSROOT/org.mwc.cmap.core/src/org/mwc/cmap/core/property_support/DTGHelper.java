@@ -195,7 +195,16 @@ public class DTGHelper extends EditorHelper
 
 		public String toString()
 		{
-			return "" + _date + "Z" + _time;
+			String res;
+			if((_date == UNSET) || (_time == UNSET))
+			{
+				res = "unset";
+			}
+			else
+			{
+				res = "" + _date + "Z" + _time;
+			}
+			return res;
 		}
 
 		public boolean isPropertyResettable(Object id)
