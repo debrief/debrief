@@ -1,49 +1,27 @@
 package org.mwc.cmap.plotViewer.editors;
 
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
+import java.beans.*;
+import java.util.*;
 
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.FileTransfer;
-import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.widgets.Button;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Label;
+import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
-import org.mwc.cmap.core.interfaces.IResourceProvider;
+import org.mwc.cmap.core.DataTypes.Temporal.*;
+import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import Debrief.Wrappers.NarrativeWrapper;
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
+import MWC.GUI.*;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Tools.Chart.DblClickEdit;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldArea;
+import MWC.GenericData.*;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public abstract class CorePlotEditor extends EditorPart implements
