@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.mwc.cmap.installer" default="upload" basedir=".">
+	  <property name="destDir" value="l://TD Submarines Info/PlanetMayo/Debrief/eclipse/updates" description="the destination for the updates"/>
+	  <property name="srcDir" value="D://Dev/Eclipse2/org.mwc.cmap.installer" description="where the updated install-sets are located"/>
+
+	  <target name="clean" description="clear the output directory" depends="">
+	  	<delete dir="${destDir}/features" />
+	  	<delete dir="${destDir}/plugins" />
+	  </target>	
+	
+	  <target name="upload" description="upload updated files to td submarines directory" depends="clean">
+	  	 <copy todir="${destDir}">
+	  	    <fileset dir="${srcDir}"/>
+	  	  </copy>	  	
+	  </target>	
+</project>
