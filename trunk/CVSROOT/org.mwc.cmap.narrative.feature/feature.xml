@@ -4,11 +4,11 @@
       label="org.mwc.cmap.narrative.feature"
       version="1.0.0">
 
-   <description url="http://www.yourdomain.com/description">
+   <description>
       [Enter Feature Description here.]
    </description>
 
-   <copyright url="http://www.yourdomain.com/copyright">
+   <copyright>
       [Enter Copyright Description here.]
    </copyright>
 
@@ -30,6 +30,6 @@
          id="org.mwc.cmap.narrative"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="1.0.1"/>
 
 </feature>

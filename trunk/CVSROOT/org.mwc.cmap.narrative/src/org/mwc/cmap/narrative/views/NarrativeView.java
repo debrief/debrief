@@ -556,8 +556,7 @@ public class NarrativeView extends ViewPart
 					{
 						IMarker marker = file.createMarker(IMarker.BOOKMARK);
 						Map attributes = new HashMap(4);
-						attributes.put(IMarker.MESSAGE, content + "-"
-								+ entry.getDTGString());
+						attributes.put(IMarker.MESSAGE, entry.getDTGString() + ":" + content);
 						attributes.put(IMarker.LOCATION, "plot title");
 						attributes.put(IMarker.LINE_NUMBER, "" + entry.getDTG().getMicros());
 						attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
