@@ -9,7 +9,7 @@
    <feature url="features/org.mwc.cmap.narrative.feature_1.0.0.jar" id="org.mwc.cmap.narrative.feature" version="1.0.0">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.0.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.0">
+   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.1.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.1">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.tote.feature_1.0.0.jar" id="org.mwc.cmap.tote.feature" version="1.0.0">
