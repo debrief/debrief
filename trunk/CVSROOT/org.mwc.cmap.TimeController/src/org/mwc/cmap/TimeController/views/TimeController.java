@@ -150,7 +150,7 @@ public class TimeController extends ViewPart
 
 		_wholePanel = new Composite(parent, SWT.NONE)
 		{
-			
+
 		};
 		RowLayout onTop = new RowLayout();
 		onTop.type = SWT.VERTICAL;
@@ -164,8 +164,11 @@ public class TimeController extends ViewPart
 		// put some bits in. First the BWD buttons
 		Composite LH = new Composite(_btnPanel, SWT.NONE);
 		GridLayout lhGrid = new GridLayout();
-		lhGrid.numColumns = 2;
+		lhGrid.numColumns = 3;
 		LH.setLayout(lhGrid);
+		Button eBwd = new Button(LH, SWT.NONE);
+		eBwd.setText("<-");
+		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, 0));
 		Button lBwd = new Button(LH, SWT.NONE);
 		lBwd.setText("<<");
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, 10));
@@ -176,7 +179,7 @@ public class TimeController extends ViewPart
 		_timeLabel.setText("-------------------");
 		Composite RH = new Composite(_btnPanel, SWT.NONE);
 		GridLayout rhGrid = new GridLayout();
-		rhGrid.numColumns = 2;
+		rhGrid.numColumns = 3;
 		RH.setLayout(rhGrid);
 		Button sFwd = new Button(RH, SWT.NONE);
 		sFwd.setText(">");
@@ -184,8 +187,11 @@ public class TimeController extends ViewPart
 		Button lFwd = new Button(RH, SWT.NONE);
 		lFwd.setText(">>");
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, 10));
-		lFwd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
-				ISharedImages.IMG_TOOL_FORWARD));
+//		lFwd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
+//				ISharedImages.IMG_TOOL_FORWARD));
+		Button eFwd = new Button(RH, SWT.NONE);
+		eFwd.setText("->");
+		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, 0));
 
 		// next create the time slider holder
 		_tNowSlider = new Slider(_wholePanel, SWT.NONE);
@@ -206,50 +212,54 @@ public class TimeController extends ViewPart
 			{
 			}
 		});
-		
-		_wholePanel.addListener(SWT.MouseWheel, new Listener(){
+
+		_wholePanel.addListener(SWT.MouseWheel, new Listener()
+		{
 
 			public void handleEvent(Event event)
 			{
 				int count = event.count;
 				boolean fwd;
 				int scale = 1;
-				
+
 				// is the control button down?
 				int keys = event.stateMask;
-				if((keys & SWT.CONTROL) != 0)
+				if ((keys & SWT.CONTROL) != 0)
 					scale *= 10;
 				else
 					scale *= 1;
 
-				if((keys & SWT.SHIFT) != 0)
+				if ((keys & SWT.SHIFT) != 0)
 					scale *= 60;
 				else
 					scale *= 1;
 
-				
-				if(count < 0)
+				if (count < 0)
 					fwd = true;
 				else
 					fwd = false;
-				
-				processClick(scale, fwd);
-			}});
 
-		/* the next bit is a fudge (taken from "How to scroll a canvas" on Eclipse newsgroups
-		 * 
+				processClick(scale, fwd);
+			}
+		});
+
+		/*
+		 * the next bit is a fudge (taken from "How to scroll a canvas" on Eclipse
+		 * newsgroups
 		 */
-		_wholePanel.addListener(SWT.MouseDown, new Listener(){
+		_wholePanel.addListener(SWT.MouseDown, new Listener()
+		{
 
 			public void handleEvent(Event event)
 			{
 				Control focus = event.display.getFocusControl();
-				while(focus != null)
+				while (focus != null)
 				{
 					focus = focus.getParent();
 				}
 				_wholePanel.setFocus();
-			}});
+			}
+		});
 	}
 
 	private class TimeButtonSelectionListener implements SelectionListener
@@ -284,12 +294,27 @@ public class TimeController extends ViewPart
 			// yup, time is there. work with it baby
 			long micros = tNow.getMicros();
 
-			int size = scale * 1000 * 1000;
-
-			if (fwd)
-				micros += size;
+			// right, special case for when user wants to go straight to the end - in
+			// which
+			// case there is a zero in the scale
+			if (scale == 0.0)
+			{
+				// right, fwd or bwd
+				if (fwd)
+					micros = _myTemporalDataset.getPeriod().getEndDTG().getMicros();
+				else
+					micros = _myTemporalDataset.getPeriod().getStartDTG().getMicros();
+			}
 			else
-				micros -= size;
+			{
+				// normal processing..
+				int size = scale * 1000 * 1000;
+
+				if (fwd)
+					micros += size;
+				else
+					micros -= size;
+			}
 
 			HiResDate newDTG = new HiResDate(0, micros);
 
@@ -322,7 +347,8 @@ public class TimeController extends ViewPart
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						_myTemporalDataset = (TimeProvider) part;
@@ -363,19 +389,20 @@ public class TimeController extends ViewPart
 
 						// and initialise the current time
 						TimePeriod firstDTG = _myTemporalDataset.getPeriod();
-						if(firstDTG != null)
+						if (firstDTG != null)
 						{
 							_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG
 									.getEndDTG());
 						}
-						
+
 						checkTimeEnabled();
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						// are we still listening?
 						if (_myTemporalDataset != null)
@@ -389,7 +416,8 @@ public class TimeController extends ViewPart
 		_myPartMonitor.addPartListener(ControllableTime.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						ControllableTime ct = (ControllableTime) part;
@@ -401,7 +429,8 @@ public class TimeController extends ViewPart
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
 					{
 						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = null;
@@ -498,8 +527,7 @@ public class TimeController extends ViewPart
 		try
 		{
 			newVal = toStringHiRes(newDTG, dateFormat);
-		}
-		catch (IllegalArgumentException e)
+		} catch (IllegalArgumentException e)
 		{
 			System.err.println("Invalid date format in preferences");
 		}
