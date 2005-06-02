@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.mwc.debrief.feature"
+      label="org.mwc.debrief.feature"
+      version="1.0.0">
+
+   <description url="http://www.yourdomain.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.yourdomain.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.yourdomain.com/license">
+      the license
+   </license>
+
+   <requires>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.mwc.cmap.plotViewer"/>
+   </requires>
+
+   <plugin
+         id="org.mwc.debrief.core"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+</feature>

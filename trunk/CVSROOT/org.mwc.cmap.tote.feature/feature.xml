@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.mwc.cmap.tote.feature"
+      label="org.mwc.cmap.tote.feature"
+      version="1.0.0">
+
+   <description url="http://www.yourdomain.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.yourdomain.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.yourdomain.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.core" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.legacy" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.debrief.legacy" version="0.0.0" match="greaterOrEqual"/>
+   </requires>
+
+   <plugin
+         id="org.mwc.cmap.tote"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+</feature>

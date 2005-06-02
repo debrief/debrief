@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.mwc.cmap.TimeController.feature"
+      label="org.mwc.cmap.TimeController.feature"
+      version="1.0.0">
+
+   <description url="http://www.yourdomain.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.yourdomain.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.yourdomain.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.junit"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.cmap.legacy"/>
+   </requires>
+
+   <plugin
+         id="org.mwc.cmap.TimeController"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+</feature>

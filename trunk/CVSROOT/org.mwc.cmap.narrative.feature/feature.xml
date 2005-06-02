@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<feature
+      id="org.mwc.cmap.narrative.feature"
+      label="org.mwc.cmap.narrative.feature"
+      version="1.0.0">
+
+   <description url="http://www.yourdomain.com/description">
+      [Enter Feature Description here.]
+   </description>
+
+   <copyright url="http://www.yourdomain.com/copyright">
+      [Enter Copyright Description here.]
+   </copyright>
+
+   <license url="http://www.yourdomain.com/license">
+      [Enter License Description here.]
+   </license>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.eclipse.core.resources"/>
+      <import plugin="org.eclipse.ui.ide"/>
+   </requires>
+
+   <plugin
+         id="org.mwc.cmap.narrative"
+         download-size="0"
+         install-size="0"
+         version="1.0.0"/>
+
+</feature>
