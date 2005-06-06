@@ -546,12 +546,16 @@ public class ToteView extends ViewPart
 			// lastly color-code the columns
 			TableItem[] items = _tableViewer.getTable().getItems();
 
+			Color thisCol = null;
 			WatchableList pri = _trackData.getPrimaryTrack();
-			Color thisCol = ColorHelper.getColor(pri.getColor());
-			for (int j = 0; j < items.length; j++)
+			if (pri != null)
 			{
-				TableItem thisRow = items[j];
-				thisRow.setForeground(1, thisCol);
+				thisCol = ColorHelper.getColor(pri.getColor());
+				for (int j = 0; j < items.length; j++)
+				{
+					TableItem thisRow = items[j];
+					thisRow.setForeground(1, thisCol);
+				}
 			}
 
 			WatchableList[] secs = _trackData.getSecondaryTracks();
