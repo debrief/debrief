@@ -3,21 +3,13 @@
  */
 package org.mwc.debrief.core.editors.painters;
 
-import java.awt.Color;
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.util.Enumeration;
 
-import com.jrefinery.chart.Plot;
-
-import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldArea;
+import MWC.GUI.*;
+import MWC.GenericData.*;
 
 /**
  * @author ian.mayo

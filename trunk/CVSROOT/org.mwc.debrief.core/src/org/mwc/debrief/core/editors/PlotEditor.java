@@ -7,15 +7,11 @@ import java.awt.Dimension;
 import java.io.File;
 import java.util.Enumeration;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.*;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;
@@ -24,18 +20,11 @@ import org.mwc.debrief.core.loaders.LoaderManager;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.*;
-import Debrief.Wrappers.NarrativeWrapper;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.BaseLayer;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
+import MWC.GUI.*;
 import MWC.GUI.Layers.DataListener;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
-import MWC.GenericData.WorldArea;
+import MWC.GenericData.*;
 
 /**
  * @author ian.mayo
@@ -110,7 +99,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException
 	{
-		// TODO Auto-generated method stub
 		setSite(site);
 		setInput(input);
 
@@ -150,7 +138,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 			} catch (RuntimeException e)
 			{
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -301,7 +288,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	protected void timeChanged(HiResDate newDTG)
 	{
-		// TODO Auto-generated method stub
 		super.timeChanged(newDTG);
 
 		// ok - update our painter
@@ -329,7 +315,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 					public WatchableList[] getSecondaryTracks()
 					{
-						// TODO Auto-generated method stub
 						TrackWrapper sec = (TrackWrapper) _myLayers.findLayer("Tomato");
 						WatchableList[] res = null;
 						if (sec != null)
@@ -345,7 +330,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 					public void addTrackDataListener(TrackDataListener listener)
 					{
-						// TODO Auto-generated method stub
 					}
 				};
 			}
@@ -371,7 +355,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	public void createPartControl(Composite parent)
 	{
-		// TODO Auto-generated method stub
 		super.createPartControl(parent);
 
 		super.getChart().getCanvas().addPainter(new CanvasType.PaintListener()
@@ -385,19 +368,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			public WorldArea getDataArea()
 			{
-				// TODO Auto-generated method stub
 				return null;
 			}
 
 			public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
 			{
-				// TODO Auto-generated method stub
-
 			}
 
 			public String getName()
 			{
-				// TODO Auto-generated method stub
 				return null;
 			}
 		});

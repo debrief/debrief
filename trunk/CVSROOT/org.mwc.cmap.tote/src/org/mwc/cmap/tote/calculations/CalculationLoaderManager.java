@@ -7,7 +7,6 @@ import java.text.NumberFormat;
 import java.util.*;
 
 import org.eclipse.core.runtime.*;
-import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.tote.TotePlugin;
 
 import Debrief.Tools.Tote.*;
