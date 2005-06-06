@@ -2,17 +2,17 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.0">
+      version="1.0.1">
 
-   <description url="http://www.yourdomain.com/description">
+   <description>
       [Enter Feature Description here.]
    </description>
 
-   <copyright url="http://www.yourdomain.com/copyright">
+   <copyright>
       [Enter Copyright Description here.]
    </copyright>
 
-   <license url="http://www.yourdomain.com/license">
+   <license>
       [Enter License Description here.]
    </license>
 
@@ -28,6 +28,6 @@
          id="org.mwc.cmap.tote"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="1.0.1"/>
 
 </feature>
