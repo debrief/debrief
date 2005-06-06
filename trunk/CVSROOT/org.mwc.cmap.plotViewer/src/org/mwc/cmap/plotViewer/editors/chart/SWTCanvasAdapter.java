@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.4  2005-06-01 13:24:53  Ian.Mayo
+// Revision 1.5  2005-06-06 14:50:45  Ian.Mayo
+// Correctly support plotting polylines & line-styles
+//
+// Revision 1.4  2005/06/01 13:24:53  Ian.Mayo
 // Safe fall-over for missing GDI libs
 //
 // Revision 1.3  2005/06/01 10:45:08  Ian.Mayo
@@ -456,8 +459,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 		for (int i = 0; i < nPoints; i++)
 		{
-			poly[i] = xPoints[i];
-			poly[i + 1] = yPoints[i];
+			poly[2 * i] = xPoints[i];
+			poly[2 * i + 1] = yPoints[i];
 		}
 
 		return poly;
@@ -578,7 +581,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 	public final void setLineStyle(final int style)
 	{
-		_theDest.setLineStyle(style);
+		// convert the swing line-style to SWT
+		int SWT_style = style + 1;
+		
+		_theDest.setLineStyle(SWT_style);
 		// final java.awt.BasicStroke stk = getStrokeFor(style);
 		// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
 		// g2.setStroke(stk);
