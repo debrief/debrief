@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.10  2005-06-07 10:50:02  Ian.Mayo
+// Revision 1.11  2005-06-07 15:29:57  Ian.Mayo
+// Add panel to show current cursor position
+//
+// Revision 1.10  2005/06/07 10:50:02  Ian.Mayo
 // Ignore right-clicks for drag,mouse-up
 //
 // Revision 1.9  2005/05/26 14:04:51  Ian.Mayo
@@ -103,6 +106,11 @@ public class SWTChart extends PlainChart implements Serializable
 	 * the image we paint into the corner of the canvas.
 	 */
 	// private Image _ourImage;
+	/**
+	 * the bit which plots the current cursor position
+	 */
+	private CursorTracker _tracker;
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -243,6 +251,11 @@ public class SWTChart extends PlainChart implements Serializable
 	public final Control getCanvasControl()
 	{
 		return _theCanvas.getCanvas();
+	}
+
+	public final SWTCanvas getSWTCanvas()
+	{
+		return _theCanvas;
 	}
 
 	public final void update()
@@ -508,6 +521,8 @@ public class SWTChart extends PlainChart implements Serializable
 
 	public void doMouseMove(MouseEvent e)
 	{
+		super.mouseMoved(new java.awt.Point(e.x, e.y));
+
 		// todo: PRODUCE NEW MOUSE EVENT TRANSLATOR!!!
 		if (_startPoint == null)
 			return;
@@ -551,7 +566,7 @@ public class SWTChart extends PlainChart implements Serializable
 		}
 	}
 
-	private final int JITTER = 10;
+	private final int JITTER = 3;
 
 	private Point _startPoint = null;
 

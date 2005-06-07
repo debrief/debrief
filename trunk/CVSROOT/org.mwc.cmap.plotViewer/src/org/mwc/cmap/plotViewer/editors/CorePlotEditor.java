@@ -8,13 +8,16 @@ import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.EditorPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
-import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.cmap.core.ui_support.LineItem;
+import org.mwc.cmap.plotViewer.editors.chart.*;
 
 import Debrief.Wrappers.NarrativeWrapper;
 import MWC.Algorithms.PlainProjection;
@@ -76,6 +79,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 	Label _myLabel;
 
 	private Composite _plotPanel;
+
+	private CursorTracker _myTracker;
 
 	// //////////////////////////////
 	// constructor
@@ -178,6 +183,24 @@ public abstract class CorePlotEditor extends EditorPart implements
 		});
 
 		getSite().setSelectionProvider(this);
+
+	  LineItem 	lineItem = CorePlugin.getStatusLine(this);
+	  _myTracker = new CursorTracker(_myChart, lineItem);
+	  
+	  
+//		
+//				Display.getDefault().asyncExec(new Runnable()
+//		{
+//			public void run()
+//			{
+//				IStatusLineManager mgr = getActionbar().getStatusLineManager();
+//				CursorTracker.LineItem item = new CursorTracker.LineItem("vv aa");
+//				mgr.add(item);
+//				mgr.update(true);
+//				item.update("bbb ccc");
+//				mgr.update(true);
+//			}
+//		});
 
 	}
 
@@ -409,6 +432,16 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// see if we don't already contain it..
 		if (!_selectionListeners.contains(listener))
 			_selectionListeners.add(listener);
+	}
+
+	/**
+	 * Returns the ActionbarContributor for the Editor.
+	 * 
+	 * @return the ActionbarContributor for the Editor.
+	 */
+	public SubActionBars2 getActionbar()
+	{
+		return (SubActionBars2) getEditorSite().getActionBars();
 	}
 
 	/*

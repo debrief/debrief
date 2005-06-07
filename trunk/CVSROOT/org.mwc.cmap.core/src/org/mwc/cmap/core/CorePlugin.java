@@ -1,34 +1,43 @@
 package org.mwc.cmap.core;
 
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.resource.*;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.ui_support.LineItem;
 import org.osgi.framework.BundleContext;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class CorePlugin extends AbstractUIPlugin {
-	//The shared instance.
+public class CorePlugin extends AbstractUIPlugin
+{
+	// The shared instance.
 	private static CorePlugin plugin;
-	//Resource bundle.
+
+	// Resource bundle.
 	private ResourceBundle resourceBundle;
 	
-	
-	/** where we cache our images
+
+	/** the shared line of status text used across CMAP apps
 	 * 
 	 */
-	private ImageRegistry _imageRegistry;	
-	
+	private static LineItem _myLineItem = null;	
+
+	/**
+	 * where we cache our images
+	 */
+	private ImageRegistry _imageRegistry;
+
 	/**
 	 * The constructor.
 	 */
-	public CorePlugin() {
+	public CorePlugin()
+	{
 		super();
 		plugin = this;
 	}
@@ -36,14 +45,16 @@ public class CorePlugin extends AbstractUIPlugin {
 	/**
 	 * This method is called upon plug-in activation
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception
+	{
 		super.start(context);
 	}
 
 	/**
 	 * This method is called when the plug-in is stopped
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception
+	{
 		super.stop(context);
 		plugin = null;
 		resourceBundle = null;
@@ -52,19 +63,23 @@ public class CorePlugin extends AbstractUIPlugin {
 	/**
 	 * Returns the shared instance.
 	 */
-	public static CorePlugin getDefault() {
+	public static CorePlugin getDefault()
+	{
 		return plugin;
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+	 * Returns the string from the plugin's resource bundle, or 'key' if not
+	 * found.
 	 */
-	public static String getResourceString(String key) {
+	public static String getResourceString(String key)
+	{
 		ResourceBundle bundle = CorePlugin.getDefault().getResourceBundle();
-		try {
+		try
+		{
 			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
+		} catch (MissingResourceException e)
+		{
 			return key;
 		}
 	}
@@ -72,69 +87,94 @@ public class CorePlugin extends AbstractUIPlugin {
 	/**
 	 * Returns the plugin's resource bundle,
 	 */
-	public ResourceBundle getResourceBundle() {
-		try {
+	public ResourceBundle getResourceBundle()
+	{
+		try
+		{
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.mwc.cmap.core.CorePluginResources");
-		} catch (MissingResourceException x) {
+				resourceBundle = ResourceBundle
+						.getBundle("org.mwc.cmap.core.CorePluginResources");
+		} catch (MissingResourceException x)
+		{
 			resourceBundle = null;
 		}
 		return resourceBundle;
 	}
 
 	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 *
-	 * @param path the path
+	 * Returns an image descriptor for the image file at the given plug-in
+	 * relative path.
+	 * 
+	 * @param path
+	 *          the path
 	 * @return the image descriptor
 	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
+	public static ImageDescriptor getImageDescriptor(String path)
+	{
+		return AbstractUIPlugin
+				.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
 	}
-	
-	/** error logging utility
+
+	/**
+	 * error logging utility
 	 * 
-	 * @param severity the severity; one of <code>OK</code>, <code>ERROR</code>, 
-	 * <code>INFO</code>, <code>WARNING</code>,  or <code>CANCEL</code>
-	 * @param message a human-readable message, localized to the
-	 *    current locale
-	 * @param exception a low-level exception, or <code>null</code> if not
-	 *    applicable 
+	 * @param severity
+	 *          the severity; one of <code>OK</code>, <code>ERROR</code>,
+	 *          <code>INFO</code>, <code>WARNING</code>, or
+	 *          <code>CANCEL</code>
+	 * @param message
+	 *          a human-readable message, localized to the current locale
+	 * @param exception
+	 *          a low-level exception, or <code>null</code> if not applicable
 	 */
 	public static void logError(int severity, String message, Throwable exception)
 	{
-		Status stat = new Status(severity,"org.mwc.cmap.core", Status.OK, message, exception);
+		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message,
+				exception);
 		getDefault().getLog().log(stat);
-	}	
-	
+	}
+
 	private static ImageRegistry getRegistry()
 	{
 		return plugin._imageRegistry;
 	}
-	
+
 	public static Image getImageFromRegistry(String name)
 	{
 		Image res = null;
-		
+
 		// do we already have an image
-		if(getRegistry() == null)
+		if (getRegistry() == null)
 		{
 			plugin._imageRegistry = new ImageRegistry();
 		}
 
 		// ok - do we have it already?
 		res = getRegistry().get(name);
-		
-		if(res == null)
+
+		if (res == null)
 		{
-				ImageDescriptor desc = getImageDescriptor("icons/" + name);
-				getRegistry().put(name, desc);
-				res = getRegistry().get(name);
+			ImageDescriptor desc = getImageDescriptor("icons/" + name);
+			getRegistry().put(name, desc);
+			res = getRegistry().get(name);
 		}
-		
+
 		// and return it..
 		return res;
 	}
-		
+
+
+	public static LineItem getStatusLine(EditorPart editor)
+	{
+		if(_myLineItem == null)
+		{
+		IStatusLineManager mgr = editor.getEditorSite().getActionBars()
+				.getStatusLineManager();
+		_myLineItem = new LineItem("vv aa");
+		mgr.add(_myLineItem);
+		}
+
+		return _myLineItem;
+	}
+
 }
