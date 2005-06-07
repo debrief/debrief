@@ -44,8 +44,6 @@ public abstract class CalculationLoaderManager
 	{
 		Vector res = new Vector(0, 1);
 
-		System.out.println("*Calculation Configuration Start*");
-
 		_loaders = new ArrayList();
 		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
 				PLUGIN_ID, EXTENSION_POINT_ID);
@@ -75,8 +73,6 @@ public abstract class CalculationLoaderManager
 			System.out.println("* No configuration found!");
 		}
 
-		System.out.println("*Calculation Configuration End*");
-
 		return res;
 	}
 
@@ -87,8 +83,6 @@ public abstract class CalculationLoaderManager
 
 	private void addToolActionDescriptor(IConfigurationElement configElement)
 	{
-		System.out.print("Loading tag...");
-
 		String label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 
 		// get menu item label
@@ -106,7 +100,6 @@ public abstract class CalculationLoaderManager
 		{
 			toteCalculation newInstance = createInstance(configElement, label);
 			getToolActionDescriptors().add(newInstance);
-			System.out.println("...success!");
 		}
 		else
 		{
@@ -164,8 +157,6 @@ public abstract class CalculationLoaderManager
 			{
 				try
 				{
-					System.out.println("About to load new loader for:" + _name);
-
 					// and create the loader
 					_myCalc = (toteCalculation) _config.createExecutableExtension("class");
 				} catch (CoreException e)

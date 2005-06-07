@@ -110,8 +110,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		// lastly, set the title (if we have one)
 		this.setPartName(input.getName());
-		this.setContentDescription("Includes imported Replay data");
-
 	}
 
 	/**
