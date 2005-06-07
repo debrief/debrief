@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.9  2005-05-26 14:04:51  Ian.Mayo
+// Revision 1.10  2005-06-07 10:50:02  Ian.Mayo
+// Ignore right-clicks for drag,mouse-up
+//
+// Revision 1.9  2005/05/26 14:04:51  Ian.Mayo
 // Tidy up double-buffering
 //
 // Revision 1.8  2005/05/26 07:34:47  Ian.Mayo
@@ -508,40 +511,43 @@ public class SWTChart extends PlainChart implements Serializable
 		// todo: PRODUCE NEW MOUSE EVENT TRANSLATOR!!!
 		if (_startPoint == null)
 			return;
-//		if (_dragTracker != null)
-//			return;
+		// if (_dragTracker != null)
+		// return;
 
-		int deltaX = _startPoint.x - e.x;
-		int deltaY = _startPoint.y - e.y;
-		if (Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
-			return;
-		Tracker _dragTracker = new Tracker((Composite) _theCanvas.getCanvas(), SWT.RESIZE);
-		Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX, deltaY);
-		_dragTracker.setRectangles(new Rectangle[] { rect });
-		boolean dragResult = _dragTracker.open();
-		if (dragResult)
+		// was this the right-hand button
+		if (e.button != 3)
 		{
-			Rectangle[] rects = _dragTracker.getRectangles();
-			Rectangle res = rects[0];
-			// get world area
-			java.awt.Point tl = new java.awt.Point(res.x, res.y);
-			java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
-					+ res.height);
-			WorldLocation locA = new WorldLocation(_theCanvas.getProjection()
-					.toWorld(tl));
-			WorldLocation locB = new WorldLocation(_theCanvas.getProjection()
-					.toWorld(br));
-			WorldArea area = new WorldArea(locA, locB);
 
-			_theCanvas.getProjection().setDataArea(area);
-			_theCanvas.updateMe();
+			int deltaX = _startPoint.x - e.x;
+			int deltaY = _startPoint.y - e.y;
+			if (Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
+				return;
+			Tracker _dragTracker = new Tracker((Composite) _theCanvas.getCanvas(),
+					SWT.RESIZE);
+			Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
+					deltaY);
+			_dragTracker.setRectangles(new Rectangle[] { rect });
+			boolean dragResult = _dragTracker.open();
+			if (dragResult)
+			{
+				Rectangle[] rects = _dragTracker.getRectangles();
+				Rectangle res = rects[0];
+				// get world area
+				java.awt.Point tl = new java.awt.Point(res.x, res.y);
+				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
+						+ res.height);
+				WorldLocation locA = new WorldLocation(_theCanvas.getProjection()
+						.toWorld(tl));
+				WorldLocation locB = new WorldLocation(_theCanvas.getProjection()
+						.toWorld(br));
+				WorldArea area = new WorldArea(locA, locB);
 
-			_dragTracker = null;
-			_startPoint = null;
-		}
-		else
-		{
-			System.out.println("user cancelled drag operation!");
+				_theCanvas.getProjection().setDataArea(area);
+				_theCanvas.updateMe();
+
+				_dragTracker = null;
+				_startPoint = null;
+			}
 		}
 	}
 
@@ -551,10 +557,13 @@ public class SWTChart extends PlainChart implements Serializable
 
 	protected void doMouseUp(MouseEvent e)
 	{
-		// ok. did we move at all?
-		Point thisP = new Point(e.x, e.y);
-		if (thisP.equals(_startPoint))
+		// was this the right-hand button
+		if (e.button != 3)
 		{
+			// ok. did we move at all?
+			Point thisP = new Point(e.x, e.y);
+			if (thisP.equals(_startPoint))
+			{
 				// hey, it was just a click - process it
 				if (_theLeftClickListener != null)
 				{
@@ -565,16 +574,17 @@ public class SWTChart extends PlainChart implements Serializable
 							_theLayers);
 				}
 			}
-	
+		}
+
 		_startPoint = null;
 	}
 
 	protected void doMouseDown(MouseEvent e)
 	{
-//		if (_dragTracker == null)
-//		{
-			_startPoint = new Point(e.x, e.y);
-//		}
+		// if (_dragTracker == null)
+		// {
+		_startPoint = new Point(e.x, e.y);
+		// }
 	}
 
 	protected void doMouseDoubleClick(MouseEvent e)
