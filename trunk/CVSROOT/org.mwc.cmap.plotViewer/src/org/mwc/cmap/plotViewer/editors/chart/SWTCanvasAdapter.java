@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.5  2005-06-06 14:50:45  Ian.Mayo
+// Revision 1.6  2005-06-07 10:49:24  Ian.Mayo
+// Minor tidying
+//
+// Revision 1.5  2005/06/06 14:50:45  Ian.Mayo
 // Correctly support plotting polylines & line-styles
 //
 // Revision 1.4  2005/06/01 13:24:53  Ian.Mayo
@@ -453,7 +456,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		_theDest.fillPolygon(poly);
 	}
 
-	public static int[] getPolygonArray(int[] xPoints, int[] yPoints, int nPoints)
+	private static int[] getPolygonArray(int[] xPoints, int[] yPoints, int nPoints)
 	{
 		int[] poly = new int[nPoints * 2];
 
