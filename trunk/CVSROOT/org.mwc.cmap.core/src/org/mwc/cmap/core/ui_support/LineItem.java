@@ -2,7 +2,6 @@ package org.mwc.cmap.core.ui_support;
 
 import org.eclipse.jface.action.ControlContribution;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.widgets.*;
 
 
