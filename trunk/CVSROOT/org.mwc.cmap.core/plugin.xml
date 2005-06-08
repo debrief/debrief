@@ -23,4 +23,16 @@
       <import plugin="org.mwc.debrief.legacy"/>
    </requires>
 
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.cmap.core.preferences.VPFPrefsPage"
+           id="org.mwc.cmap.core.preferences.VPFPrefsPage"
+           name="VPF Data storage"/>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer class="org.mwc.cmap.core.preferences.VPFPrefsPage.VPFPreferenceInitializer"/>
+  </extension>
+
 </plugin>

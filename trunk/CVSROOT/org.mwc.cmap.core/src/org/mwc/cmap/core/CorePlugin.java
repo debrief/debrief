@@ -11,6 +11,8 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.osgi.framework.BundleContext;
 
+import MWC.GUI.Tools.Palette.CreateVPFLayers;
+
 /**
  * The main plugin class to be used in the desktop.
  */
@@ -21,6 +23,11 @@ public class CorePlugin extends AbstractUIPlugin
 
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
+	
+	/** the Debrief tool-parent used to provide legacy access to properties
+	 * 
+	 */
+	private static DebriefToolParent _toolParent;
 	
 
 	/** the shared line of status text used across CMAP apps
@@ -40,6 +47,7 @@ public class CorePlugin extends AbstractUIPlugin
 	{
 		super();
 		plugin = this;
+
 	}
 
 	/**
@@ -48,6 +56,13 @@ public class CorePlugin extends AbstractUIPlugin
 	public void start(BundleContext context) throws Exception
 	{
 		super.start(context);
+		
+		
+		// create something capable of handling legacy preferences
+		_toolParent = new DebriefToolParent(getPreferenceStore());
+		
+		// tell the VPF generator where to get its preferences from
+		CreateVPFLayers.initialise(_toolParent);		
 	}
 
 	/**
