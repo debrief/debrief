@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.6  2005-06-07 10:49:24  Ian.Mayo
+// Revision 1.7  2005-06-09 10:59:09  Ian.Mayo
+// Correct silly drawText error
+//
+// Revision 1.6  2005/06/07 10:49:24  Ian.Mayo
 // Minor tidying
 //
 // Revision 1.5  2005/06/06 14:50:45  Ian.Mayo
@@ -688,7 +691,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		drawText(theStr, x, y);
+		_theDest.drawText(theStr, x, y);
 	}
 
 	public void drawText(final java.awt.Font theFont, final String theStr,
