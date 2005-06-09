@@ -2,7 +2,11 @@ package org.mwc.cmap.plotViewer;
 
 import org.eclipse.ui.plugin.*;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.mwc.cmap.plotViewer.editors.chart.SWTRasterPainter;
 import org.osgi.framework.BundleContext;
+
+import MWC.GUI.Chart.Painters.SpatialRasterPainter;
+
 import java.util.*;
 
 /**
@@ -27,6 +31,9 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		// override the spatial raster painter - since we're working with SWT images, not JAva ones
+		SpatialRasterPainter.overridePainter(new SWTRasterPainter());
 	}
 
 	/**
