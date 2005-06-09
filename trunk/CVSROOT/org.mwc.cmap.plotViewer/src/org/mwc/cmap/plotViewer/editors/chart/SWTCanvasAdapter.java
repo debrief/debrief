@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.7  2005-06-09 10:59:09  Ian.Mayo
+// Revision 1.8  2005-06-09 14:51:50  Ian.Mayo
+// Implement SWT plotting
+//
+// Revision 1.7  2005/06/09 10:59:09  Ian.Mayo
 // Correct silly drawText error
 //
 // Revision 1.6  2005/06/07 10:49:24  Ian.Mayo
@@ -40,33 +43,28 @@
 
 package org.mwc.cmap.plotViewer.editors.chart;
 
-import java.awt.Dimension;
+import java.awt.*;
 import java.awt.Font;
 import java.awt.event.MouseEvent;
 import java.awt.image.ImageObserver;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
+import java.beans.*;
 import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.ColorHelper;
-import org.mwc.cmap.core.property_support.FontHelper;
+import org.mwc.cmap.core.property_support.*;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
+import MWC.GUI.*;
 import MWC.GUI.Properties.BoundedInteger;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
+import MWC.GenericData.*;
 
 /**
  * Swing implementation of a canvas.
@@ -129,10 +127,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 */
 	private float _lineWidth;
 
-	
-	/** flag for whether we have the GDI library availble.  The plotting algs
-	 * will keep on failing if it's not.  We should remember when its
-	 * not avaialble, and not bother calling from there on.
+	/**
+	 * flag for whether we have the GDI library availble. The plotting algs will
+	 * keep on failing if it's not. We should remember when its not avaialble, and
+	 * not bother calling from there on.
 	 */
 	private boolean _gdiAvailable = true;
 
@@ -189,7 +187,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// hmmm, has the GDI retrieval already failed
 		if (_gdiAvailable)
 		{
-			// well, this is either the first time, or we already know it's there for us
+			// well, this is either the first time, or we already know it's there for
+			// us
 			try
 			{
 				if (val)
@@ -387,19 +386,44 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// super.setFont(theFont);
 	}
 
-	public final boolean drawImage(final java.awt.Image img, final int x,
-			final int y, final int width, final int height,
+	public final boolean drawImage(final java.awt.Image img, final int x0,
+			final int y0, final int width, final int height,
 			final ImageObserver observer)
 	{
 		if (_theDest == null)
 			return true;
+
+		
+		
+		PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
+//		PaletteData palette = new PaletteData(new RGB[]{new RGB(255,0,0), new RGB(0,255,0)});
+		ImageData imageData = new ImageData(48, 48, 24, palette);
+
+		for (int x = 0; x < 48; x++)
+		{
+			for (int y = 0; y < 48; y++)
+			{
+				if (y > 11 && y < 35 && x > 11 && x < 35)
+				{
+					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(255, 0, 0)); // Set the center to red
+				}
+				else
+				{
+					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(0, 255, 0)); // Set the outside to green
+				}
+			}
+		}
+		;
+		Image image = new Image(Display.getCurrent(), imageData);
+
+		_theDest.drawImage(image, 0, 0);
 
 		// return _theDest.drawImage(img, x, y, width, height, observer);
 
 		return false;
 
 	}
-
+	
 	public final boolean drawSWTImage(final Image img, final int x, final int y,
 			final int width, final int height)
 	{
@@ -589,7 +613,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		// convert the swing line-style to SWT
 		int SWT_style = style + 1;
-		
+
 		_theDest.setLineStyle(SWT_style);
 		// final java.awt.BasicStroke stk = getStrokeFor(style);
 		// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
@@ -981,6 +1005,12 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	public Dimension getSize()
 	{
 		return _theSize;
+	}
+
+	public void drawImage(Image image, int x, int y, int width, int height)
+	{
+		if(_theDest != null)
+			_theDest.drawImage(image, x, y);
 	}
 
 }

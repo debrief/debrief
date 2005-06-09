@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.11  2005-06-07 15:29:57  Ian.Mayo
+// Revision 1.12  2005-06-09 14:51:51  Ian.Mayo
+// Implement SWT plotting
+//
+// Revision 1.11  2005/06/07 15:29:57  Ian.Mayo
 // Add panel to show current cursor position
 //
 // Revision 1.10  2005/06/07 10:50:02  Ian.Mayo
@@ -358,10 +361,6 @@ public class SWTChart extends PlainChart implements Serializable
 												template = new Image(Display.getCurrent(), canvasWidth,
 														canvasHeight);
 											}
-
-											System.out
-													.println("== new double-buffer image being created for:"
-															+ thisLayer);
 											image = createSWTImage(template);
 
 											GC newGC = new GC(image);
