@@ -8,10 +8,11 @@ import org.eclipse.jface.resource.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.preferences.ETOPOPrefsPage;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.osgi.framework.BundleContext;
 
-import MWC.GUI.Tools.Palette.CreateVPFLayers;
+import MWC.GUI.Tools.Palette.*;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -62,7 +63,10 @@ public class CorePlugin extends AbstractUIPlugin
 		_toolParent = new DebriefToolParent(getPreferenceStore());
 		
 		// tell the VPF generator where to get its preferences from
-		CreateVPFLayers.initialise(_toolParent);		
+		CreateVPFLayers.initialise(_toolParent);
+		
+		// also initialise the ETOPO wrapper (if we have to)
+		CreateTOPO.initialise(_toolParent);
 	}
 
 	/**

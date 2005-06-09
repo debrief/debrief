@@ -1,5 +1,6 @@
 package org.mwc.cmap.core.preferences;
 
+import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
@@ -18,16 +19,17 @@ import org.mwc.cmap.core.CorePlugin;
  * be accessed directly via the preference store.
  */
 
-public class VPFPrefsPage
+public class CMAPPrefsPage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
 
-	public VPFPrefsPage() {
-		super("VPF Library locations", CorePlugin.getImageDescriptor("icons/large_vpf.gif"), GRID);
+	public CMAPPrefsPage() {
+		super(GRID);
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-		setDescription("Location for VPF library data");
+		setDescription("Settings applicable to MWC's Core Maritime Analysis Platform");		
 	}
 	
+
 	/**
 	 * Creates the field editors. Field editors are abstractions of
 	 * the common GUI blocks needed to manipulate various types
@@ -35,15 +37,7 @@ public class VPFPrefsPage
 	 * restore itself.
 	 */
 	public void createFieldEditors() {
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_1, 
-				"&VPF Directory preference (1):", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_2, 
-				"&VPF Directory preference (2):", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_3, 
-				"&VPF Directory preference (3):", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_4, 
-				"&VPF Directory preference (4):", getFieldEditorParent()));
-	}
+			}
 
 	/* (non-Javadoc)
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
@@ -55,11 +49,20 @@ public class VPFPrefsPage
 	 * Constant definitions for plug-in preferences
 	 */
 	public static class PreferenceConstants {
+	}
+	
+	public static class CMAPPreferenceInitializer extends AbstractPreferenceInitializer {
 
-		public static final String P_PATH_1 = "VPF_DATABASE_DIR.1";
-		public static final String P_PATH_2 = "VPF_DATABASE_DIR.2";
-		public static final String P_PATH_3 = "VPF_DATABASE_DIR.3";
-		public static final String P_PATH_4 = "VPF_DATABASE_DIR.4";	
+		/*
+		 * (non-Javadoc)
+		 * 
+		 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
+		 */
+		public void initializeDefaultPreferences() {
+			IPreferenceStore store = CorePlugin.getDefault()
+					.getPreferenceStore();
+		}
+
 	}	
 	
 }

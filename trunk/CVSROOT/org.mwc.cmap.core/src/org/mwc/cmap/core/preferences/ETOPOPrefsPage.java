@@ -1,8 +1,12 @@
 package org.mwc.cmap.core.preferences;
 
 import org.eclipse.jface.preference.*;
+import org.eclipse.jface.util.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
+
+import MWC.GUI.ETOPO.ETOPO_2_Minute;
+import MWC.GUI.Tools.Palette.CreateTOPO;
 
 /**
  * This class represents a preference page that
@@ -18,16 +22,17 @@ import org.mwc.cmap.core.CorePlugin;
  * be accessed directly via the preference store.
  */
 
-public class VPFPrefsPage
+public class ETOPOPrefsPage
 	extends FieldEditorPreferencePage
 	implements IWorkbenchPreferencePage {
 
-	public VPFPrefsPage() {
-		super("VPF Library locations", CorePlugin.getImageDescriptor("icons/large_vpf.gif"), GRID);
+	public ETOPOPrefsPage() {
+		super("ETOPO library data", CorePlugin.getImageDescriptor("icons/large_vpf.gif"), GRID);
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-		setDescription("Location for VPF library data");
+		setDescription("Location of ETOPO data-file");
 	}
-	
+
+
 	/**
 	 * Creates the field editors. Field editors are abstractions of
 	 * the common GUI blocks needed to manipulate various types
@@ -35,14 +40,8 @@ public class VPFPrefsPage
 	 * restore itself.
 	 */
 	public void createFieldEditors() {
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_1, 
-				"&VPF Directory preference (1):", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_2, 
-				"&VPF Directory preference (2):", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_3, 
-				"&VPF Directory preference (3):", getFieldEditorParent()));
-		addField(new DirectoryFieldEditor(PreferenceConstants.P_PATH_4, 
-				"&VPF Directory preference (4):", getFieldEditorParent()));
+		addField(new FileFieldEditor(PreferenceConstants.ETOPO_FILE, 
+				"&ETOPO data file location:",true, getFieldEditorParent()));
 	}
 
 	/* (non-Javadoc)
@@ -56,10 +55,7 @@ public class VPFPrefsPage
 	 */
 	public static class PreferenceConstants {
 
-		public static final String P_PATH_1 = "VPF_DATABASE_DIR.1";
-		public static final String P_PATH_2 = "VPF_DATABASE_DIR.2";
-		public static final String P_PATH_3 = "VPF_DATABASE_DIR.3";
-		public static final String P_PATH_4 = "VPF_DATABASE_DIR.4";	
-	}	
+		public static final String ETOPO_FILE = CreateTOPO.ETOPO_PATH;
+	}
 	
 }
