@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.8  2005-06-09 14:51:50  Ian.Mayo
+// Revision 1.9  2005-06-10 14:11:04  Ian.Mayo
+// Implement setFont support, minor tidying
+//
+// Revision 1.8  2005/06/09 14:51:50  Ian.Mayo
 // Implement SWT plotting
 //
 // Revision 1.7  2005/06/09 10:59:09  Ian.Mayo
@@ -383,7 +386,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 	public final void setFont(final java.awt.Font theFont)
 	{
-		// super.setFont(theFont);
+		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFont(theFont);
+		_theDest.setFont(swtFont);
 	}
 
 	public final boolean drawImage(final java.awt.Image img, final int x0,
@@ -393,10 +397,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return true;
 
-		
-		
 		PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-//		PaletteData palette = new PaletteData(new RGB[]{new RGB(255,0,0), new RGB(0,255,0)});
+		// PaletteData palette = new PaletteData(new RGB[]{new RGB(255,0,0), new
+		// RGB(0,255,0)});
 		ImageData imageData = new ImageData(48, 48, 24, palette);
 
 		for (int x = 0; x < 48; x++)
@@ -405,11 +408,19 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			{
 				if (y > 11 && y < 35 && x > 11 && x < 35)
 				{
-					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(255, 0, 0)); // Set the center to red
+					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(255, 0, 0)); // Set
+																																						// the
+																																						// center
+																																						// to
+																																						// red
 				}
 				else
 				{
-					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(0, 255, 0)); // Set the outside to green
+					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(0, 255, 0)); // Set
+																																						// the
+																																						// outside
+																																						// to
+																																						// green
 				}
 			}
 		}
@@ -423,7 +434,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		return false;
 
 	}
-	
+
 	public final boolean drawSWTImage(final Image img, final int x, final int y,
 			final int width, final int height)
 	{
@@ -575,10 +586,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 
 		// transfer the color
-		Color newCol = ColorHelper.getColor(theCol);
+		Color swtCol = ColorHelper.getColor(theCol);
 
-		_theDest.setForeground(newCol);
-		_theDest.setBackground(newCol);
+		_theDest.setForeground(swtCol);
+		_theDest.setBackground(swtCol);
 	}
 
 	static public java.awt.BasicStroke getStrokeFor(final int style)
@@ -715,7 +726,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		_theDest.drawText(theStr, x, y);
+		_theDest.drawText(theStr, x, y, true);
 	}
 
 	public void drawText(final java.awt.Font theFont, final String theStr,
@@ -728,13 +739,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThis(theFont));
 
 		// get/set the font
-		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFont(theFont);
-		_theDest.setFont(swtFont);
+		setFont(theFont);
 
 		// shift the y. JDK uses bottom left coordinate, SWT uses top-left
-		FontData[] data = swtFont.getFontData();
-		FontData first = data[0];
-		int y2 = y - first.height;
+		int y2 = y - getStringHeight(theFont);
 		_theDest.drawString(theStr, x, y2, true);
 	}
 
@@ -768,6 +776,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// now, the fill only fills in the provided rectangle. we also have to paint
 		// in it's border
 		_theDest.drawRectangle(x, y, wid, height);
+		_theDest.drawRectangle(x + 1, y + 1, wid - 2, height - 2);
 
 		// fillOff();
 	}
@@ -1009,7 +1018,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 	public void drawImage(Image image, int x, int y, int width, int height)
 	{
-		if(_theDest != null)
+		if (_theDest != null)
 			_theDest.drawImage(image, x, y);
 	}
 
