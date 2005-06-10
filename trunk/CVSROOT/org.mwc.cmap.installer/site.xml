@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.mwc.cmap.feature_1.0.1.jar" id="org.mwc.cmap.feature" version="1.0.1">
+   <feature url="features/org.mwc.cmap.feature_1.0.6.jar" id="org.mwc.cmap.feature" version="1.0.6">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.layer_manager.feature_1.0.0.jar" id="org.mwc.cmap.layer_manager.feature" version="1.0.0">
@@ -9,16 +9,16 @@
    <feature url="features/org.mwc.cmap.narrative.feature_1.0.1.jar" id="org.mwc.cmap.narrative.feature" version="1.0.1">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.1.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.1">
+   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.2.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.2">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.tote.feature_1.0.1.jar" id="org.mwc.cmap.tote.feature" version="1.0.1">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.0.jar" id="org.mwc.debrief.feature" version="1.0.0">
+   <feature url="features/org.mwc.debrief.feature_1.0.6.jar" id="org.mwc.debrief.feature" version="1.0.6">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.0.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.0">
+   <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.1.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.1">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

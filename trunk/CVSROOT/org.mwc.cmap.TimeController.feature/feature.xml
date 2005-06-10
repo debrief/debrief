@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.1">
+      version="1.0.2">
 
    <description>
-      CMAP Time Controller
+      [1.0.2] Remove junit dependency
+CMAP Time Controller
 This view controls the time for temporal datasets.  Buttons are
 provided for forward and backward travel, as is a time-slider.
 The time-format used to display the current date-time is configurable
@@ -32,6 +33,6 @@ via the Windows-Preferences dialog.
          id="org.mwc.cmap.TimeController"
          download-size="0"
          install-size="0"
-         version="1.0.1"/>
+         version="1.0.2"/>
 
 </feature>
