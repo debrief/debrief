@@ -22,37 +22,24 @@ public class SWTRasterPainter extends PainterComponent
 	 */
 	private ImageData _myImageBuffer;
 
+	/**
+	 * keep a list of depths (since we can't insert the depth into the image
+	 * buffer
+	 */
+	private int[][] _depthData;
+
+	/**
+	 * convert the color
+	 * 
+	 * @param r
+	 * @param g
+	 * @param b
+	 * @return
+	 */
 	public static int toSWTColor(int r, int g, int b)
 	{
 		int res = b * 256 * 256 + g * 256 + r;
 		return res;
-	}
-
-	private void test()
-	{
-
-		PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-		ImageData imageData = new ImageData(48, 48, 24, palette);
-
-		for (int x = 0; x < 48; x++)
-		{
-			for (int y = 0; y < 48; y++)
-			{
-				if (y > 11 && y < 35 && x > 11 && x < 35)
-				{
-					imageData.setPixel(x, y, toSWTColor(255, 0, 0)); // Set the center to
-					// red
-				}
-				else
-				{
-					imageData.setPixel(x, y, toSWTColor(0, 255, 0)); // Set the outside
-					// to green
-				}
-			}
-		}
-		;
-		Image image = new Image(Display.getCurrent(), imageData);
-
 	}
 
 	/**
@@ -68,6 +55,9 @@ public class SWTRasterPainter extends PainterComponent
 		{
 			PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
 			_myImageBuffer = new ImageData(width, height, 24, palette);
+
+			// also create the double bugger
+			_depthData = new int[width][height];
 		}
 	}
 
@@ -81,13 +71,14 @@ public class SWTRasterPainter extends PainterComponent
 	protected void paintTheImage(final CanvasType dest, final int width,
 			final int height)
 	{
+		// cast the canvas - so that we can do an SWT draw image operation
+		SWTCanvasAdapter canvas = (SWTCanvasAdapter) dest;
+
+		// create our new image
 		Image image = new Image(Display.getCurrent(), _myImageBuffer);
-		
-		if(dest instanceof SWTCanvasAdapter)
-		{
-			SWTCanvasAdapter canvas = (SWTCanvasAdapter) dest;
-			canvas.drawImage(image, 0, 0, width, height);
-		}
+
+		// and draw it to the canvas
+		canvas.drawImage(image, 0, 0, width, height);
 	}
 
 	/**
@@ -101,10 +92,8 @@ public class SWTRasterPainter extends PainterComponent
 	protected void assignPixel(final int width, final int thisValue,
 			final int x_coord, final int y_coord)
 	{
-		final int idx = (y_coord) * width + (x_coord);
-
-		// put this elevation into our array
-		_myImageBuffer.setPixel(x_coord, y_coord, thisValue);
+		// put this depth datum into our depths list
+		_depthData[x_coord][y_coord] = thisValue;
 	}
 
 	/**
@@ -122,13 +111,29 @@ public class SWTRasterPainter extends PainterComponent
 	{
 		// do a second pass to set the actual colours
 		for (int i = 0; i < height; i++)
-		{
 			for (int j = 0; j < width; j++)
 			{
-				int thisP = _myImageBuffer.getPixel(j, i);
-				final int thisCol = parent.getColor(thisP, min_height, max_height);
+				// retrieve this depth
+				int thisD = _depthData[j][i];
+				
+				// convert the color
+				int thisCol = parent.getColor(thisD, min_height, max_height, this);
+				
+				// and place into the image
 				_myImageBuffer.setPixel(j, i, thisCol);
 			}
-		}
 	}
+
+	/** convert the three shades to an SWT color version
+	 * 
+	 * @param red 
+	 * @param green
+	 * @param blue
+	 * @return SWT integer value for our color
+	 */
+	public int convertColor(int red, int green, int blue)
+	{
+		return toSWTColor(red, green, blue);
+	}
+
 }
