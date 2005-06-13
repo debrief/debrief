@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.9  2005-06-10 14:11:04  Ian.Mayo
+// Revision 1.10  2005-06-13 09:08:41  Ian.Mayo
+// Tidy up font management, investigate antiAlias bug
+//
+// Revision 1.9  2005/06/10 14:11:04  Ian.Mayo
 // Implement setFont support, minor tidying
 //
 // Revision 1.8  2005/06/09 14:51:50  Ian.Mayo
@@ -196,10 +199,12 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			{
 				if (val)
 				{
-					_theDest.setAntialias(SWT.ON);
+					if(_theDest.getAntialias() != SWT.ON)
+						_theDest.setAntialias(SWT.ON);
 				}
 				else
 				{
+					if(_theDest.getAntialias() != SWT.OFF)
 					_theDest.setAntialias(SWT.OFF);
 				}
 			} catch (RuntimeException e)
@@ -343,14 +348,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		int res = 0;
 
-		// _theDest.setFont(FontHelper.convertFont(theFont));
+		// set the font to start with,
+		_theDest.setFont(FontHelper.convertFont(theFont));
 
 		// res = _theDest.textExtent(theString).x;
 		res = _theDest.getFontMetrics().getAverageCharWidth() * theString.length();
-
-		// final java.awt.FontMetrics fm = getFontMetrics(theFont);
-		// if (fm != null)
-		// res = fm.stringWidth(theString);
 
 		return res;
 	}
@@ -454,9 +456,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		// doDecide whether to anti-alias this line
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-				.getLineWidth()));
+		// Decide whether to anti-alias this line
+		float thisWid = this.getLineWidth();
+		boolean doAntiAlias = SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth());
+		
+		// BUG:  when we adjust the anti-alaising, the colours in the ETOPO key were getting messed up. bugger.  
+		// The bug was fixed on 31st May 2005.  Builds after this date should be ok. 
+		this.switchAntiAliasOn(doAntiAlias);
 
 		// check that the points are vaguely plottable
 		if ((Math.abs(x1) > 9000) || (Math.abs(y1) > 9000) || (Math.abs(x2) > 9000)
@@ -464,10 +470,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		{
 			return;
 		}
-
-		// double-check
-		if (_theDest == null)
-			return;
 
 		_theDest.drawLine(x1, y1, x2, y2);
 	}
@@ -776,7 +778,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// now, the fill only fills in the provided rectangle. we also have to paint
 		// in it's border
 		_theDest.drawRectangle(x, y, wid, height);
-		_theDest.drawRectangle(x + 1, y + 1, wid - 2, height - 2);
 
 		// fillOff();
 	}
@@ -999,7 +1000,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		boolean res = false;
 
-		if (width > 1)
+		if (width > 2)
 			res = true;
 
 		return res;
