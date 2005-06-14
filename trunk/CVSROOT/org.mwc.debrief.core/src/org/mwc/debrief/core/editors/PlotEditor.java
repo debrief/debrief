@@ -4,22 +4,27 @@
 package org.mwc.debrief.core.editors;
 
 import java.awt.Dimension;
-import java.io.File;
+import java.io.*;
 import java.util.Enumeration;
 
+import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
+import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
+import Debrief.GUI.Frames.Session;
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Tools.Tote.Watchable;
+import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
+import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
@@ -58,7 +63,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * 
 	 */
 	private TrackDataProvider _trackDataProvider;
-
+	
 	/**
 	 * constructor - quite simple really.
 	 */
@@ -66,35 +71,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		super();
 
-		_myLayers = new Layers();
-
-		_myLayers.addDataExtendedListener(new DataListener()
-		{
-
-			public void dataModified(Layers theData, Layer changedLayer)
-			{
-			}
-
-			public void dataExtended(Layers theData)
-			{
-				layersExtended();
-			}
-
-			public void dataReformatted(Layers theData, Layer changedLayer)
-			{
-			}
-
-		});
-
+		// create the track manager to manage the primary & secondary tracks
 		_trackDataProvider = new TrackManager(_myLayers);
-	}
-
-	/**
-	 * new data has been added - have a look at the times
-	 */
-	private void layersExtended()
-	{
-
+		
+		// and listen out form modifications, because we want to mark ourselves as dirty once they've updated
+		_trackDataProvider.addTrackDataListener(new TrackDataListener(){
+			public void primaryUpdated(WatchableList primary)
+			{
+				fireDirty();
+			}
+			public void secondariesUpdated(WatchableList[] secondaries)
+			{
+				fireDirty();
+			}});
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -131,6 +120,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				{
 					IPlotLoader thisLoader = loaders[i];
 
+					
 					// get it to load. Just in case it's an asychronous load operation, we
 					// rely on it calling us back (loadingComplete)
 					thisLoader.loadFile(this, input);
@@ -225,6 +215,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	public void loadingComplete(Object source)
 	{
+		
+
+		// ok, stop listening for dirty calls - since there will be so many and we don't want
+		// to start off with a dirty plot
+		startIgnoringDirtyCalls();
+		
 		CorePlugin.logError(Status.INFO, "File load received", null);
 
 		// and update the time management bits
@@ -256,6 +252,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 			};
 		}
+		
+		// done - now we can process dirty calls again
+		stopIgnoringDirtyCalls();
 
 	}
 
@@ -313,6 +312,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			res = _trackDataProvider;
 		}
+	  else if (adapter == PlainProjection.class)
+	  {
+	  	res = super.getChart().getCanvas().getProjection();
+	  }
 
 		// did we find anything?
 		if (res == null)
@@ -358,6 +361,55 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			}
 		});
 
+	}
+
+	public void doSave(IProgressMonitor monitor)
+	{
+		boolean itWorked = false; 
+		
+		IFile theFile;
+		if(getEditorInput()instanceof IFileEditorInput)
+		{
+			theFile = ((IFileEditorInput)getEditorInput()).getFile();
+		}
+		else
+		{
+			// input is an IStorageEditorInput - somehow get file details..
+			theFile = null;
+		}
+					
+		// ok, now write to the file
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		DebriefEclipseXMLReaderWriter.exportThis(this, bos);
+		
+		// now convert to String
+		byte[] output = bos.toByteArray();
+		InputStream is = new ByteArrayInputStream(output);
+		
+		try
+		{
+			theFile.setContents(is, false, false, monitor);
+			
+			itWorked = true;
+		} catch (CoreException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		// ok, lastly indicate that the save worked (if it did!)
+		_plotIsDirty = !itWorked;
+		firePropertyChange(PROP_DIRTY);
+	}
+
+	public void doSaveAs()
+	{
+		_plotIsDirty = false;
+	}
+
+	public boolean isSaveAsAllowed()
+	{
+		return true;
 	}
 
 }
