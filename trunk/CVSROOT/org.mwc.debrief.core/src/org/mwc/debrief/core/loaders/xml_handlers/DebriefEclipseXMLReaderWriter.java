@@ -13,6 +13,7 @@ import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.debrief.core.editors.PlotEditor;
 import org.w3c.dom.Document;
 
 import MWC.GUI.Layers;
@@ -22,13 +23,13 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
  * @author IAN MAYO
  * @version 1
  */
-public final class DebriefXMLReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter
+public final class DebriefEclipseXMLReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLReaderWriter
 {
 
   /**
    * Creates new XMLReaderWriter
    */
-  public DebriefXMLReaderWriter()
+  public DebriefEclipseXMLReaderWriter()
   {
   }
 
@@ -55,11 +56,11 @@ public final class DebriefXMLReaderWriter extends MWC.Utilities.ReaderWriter.XML
   /**
    * exporting the session
    */
-  static public void exportThis(final Debrief.GUI.Frames.Session session, final java.io.OutputStream os)
+  static public void exportThis(final PlotEditor thePlot, final java.io.OutputStream os)
   {
     // first put the plot into an XML document
     final Document doc = new DocumentImpl();
-    final org.w3c.dom.Element plot = PlotHandler.exportPlot(session, doc);
+    final org.w3c.dom.Element plot = PlotHandler.exportPlot(thePlot, doc);
     doc.appendChild(plot);
 
     // and now export it.
