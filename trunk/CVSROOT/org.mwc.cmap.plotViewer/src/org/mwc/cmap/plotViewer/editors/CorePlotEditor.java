@@ -26,6 +26,7 @@ import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.Editable.EditorType;
+import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.*;
 import MWC.TacticalData.Track;
@@ -47,7 +48,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	/**
 	 * the graphic data we know about
 	 */
-	protected Layers _myLayers;
+	final protected Layers _myLayers;
 
 	/**
 	 * handle narrative management
@@ -75,14 +76,27 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	protected DropTarget target;
 
+
+	Vector _selectionListeners;
+
+	ISelection _currentSelection;
+
+	/** keep track of whether the current plot is dirty...
+	 * 
+	 */
+	protected boolean _plotIsDirty = false;
+	
+	/** whether to ignore firing dirty events for the time being (such as when we're loading data)
+	 * 
+	 */
+	protected boolean _ignoreDirtyCalls = false;
+	
 	// ///////////////////////////////////////////////
 	// dummy bits applicable for our dummy interface
 	// ///////////////////////////////////////////////
 	Button _myButton;
 
 	Label _myLabel;
-
-	private Composite _plotPanel;
 
 	private CursorTracker _myTracker;
 
@@ -93,6 +107,34 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public CorePlotEditor()
 	{
 		super();
+		
+
+		_myLayers = new Layers();
+		
+		DataListener listenForMods = new DataListener()
+		{
+
+			public void dataModified(Layers theData, Layer changedLayer)
+			{
+				fireDirty();
+			}
+
+			public void dataExtended(Layers theData)
+			{
+				layersExtended();
+				fireDirty();
+			}
+
+			public void dataReformatted(Layers theData, Layer changedLayer)
+			{
+				fireDirty();
+			}
+
+		};
+		_myLayers.addDataExtendedListener(listenForMods);
+		_myLayers.addDataModifiedListener(listenForMods);
+		_myLayers.addDataReformattedListener(listenForMods);
+		
 
 		// create the time manager. cool
 		_timeManager = new TimeManager();
@@ -103,8 +145,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 			public void propertyChange(PropertyChangeEvent arg0)
 			{
 
+				// right, retrieve the time
 				HiResDate newDTG = (HiResDate) arg0.getNewValue();
 				timeChanged(newDTG);
+				
+				// now make a note that the current DTG has changed
+				fireDirty();
 			}
 		};
 
@@ -120,30 +166,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// stop listening to the time manager
 		_timeManager.removeListener(_timeListener,
 				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-	}
-
-	public void doSave(IProgressMonitor monitor)
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public void doSaveAs()
-	{
-		// TODO Auto-generated method stub
-
-	}
-
-	public boolean isDirty()
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	public boolean isSaveAsAllowed()
-	{
-		// TODO Auto-generated method stub
-		return false;
 	}
 
 	public void createPartControl(Composite parent)
@@ -478,9 +500,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_currentSelection = selection;
 	}
 
-	Vector _selectionListeners;
-
-	ISelection _currentSelection;
 
 	protected void fireSelectionChanged(ISelection sel)
 	{
@@ -501,5 +520,50 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
+	/** hmm, are we dirty?
+	 * 
+	 * @return
+	 */
+	public boolean isDirty()
+	{
+		return _plotIsDirty;
+	}
+
+	/** make a note that the data is now dirty, and needs saving.
+	 * 
+	 *
+	 */
+	protected void fireDirty()
+	{
+		if(!_ignoreDirtyCalls)
+		{
+			_plotIsDirty = true;
+			firePropertyChange(PROP_DIRTY);
+		}
+	}
+
+	/**
+	 * new data has been added - have a look at the times
+	 */
+	private void layersExtended()
+	{
+	
+	}
+
+	/** start ignoring dirty calls, since we're loading the initial data (for instance)
+	 * 
+	 */
+	protected void startIgnoringDirtyCalls()
+	{
+		_ignoreDirtyCalls = true;
+	}
+
+	/** start ignoring dirty calls, since we're loading the initial data (for instance)
+	 * 
+	 */
+	protected void stopIgnoringDirtyCalls()
+	{
+		_ignoreDirtyCalls = false;
+	}
 
 }
