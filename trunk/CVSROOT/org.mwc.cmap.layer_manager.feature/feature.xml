@@ -2,14 +2,14 @@
 <feature
       id="org.mwc.cmap.layer_manager.feature"
       label="org.mwc.cmap.layer_manager.feature"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="MWC">
 
-   <description url="http://www.yourdomain.com/description">
-      [Enter Feature Description here.]
+   <description>
+      [1.0.1]  Provide management of primary/secondary tracks
    </description>
 
-   <copyright url="http://www.yourdomain.com/copyright">
+   <copyright>
       [Enter Copyright Description here.]
    </copyright>
 

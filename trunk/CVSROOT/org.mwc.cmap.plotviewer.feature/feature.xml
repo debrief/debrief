@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.1">
+      version="1.0.2">
 
    <description>
-      [1.0.1] Add Etopo/VPF Plotting
+      [1.0.2] Keep track of file clean/dirty status
+[1.0.1] Add Etopo/VPF Plotting
    </description>
 
    <copyright>

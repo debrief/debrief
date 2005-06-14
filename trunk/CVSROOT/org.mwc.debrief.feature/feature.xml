@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.6">
+      version="1.0.7">
 
    <description>
-      [1.0.5] Add more supporting libraries
+      [1.0.7] Implement file-save
+[1.0.5] Add more supporting libraries
 [1.0.3] Add Debrief icons
 [1.0.2] Include more supporting libraries
 [1.0.1] Core Debrief viewer, able to import REP &amp; Debrief XML
