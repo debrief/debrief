@@ -14,6 +14,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
@@ -529,41 +530,71 @@ public class ToteView extends ViewPart
 
 			_tableViewer.setInput(this);
 
-			// and update the table
-			updateTableLayout();
+			// ok - now update the content of our table
+			redoTableAfterTrackChanges();
+			
+			// lastly listen out for any future changes
+			part.addTrackDataListener(new TrackDataListener(){
 
-			// and fire the update
-			_tableViewer.getTable().layout(true);
+				public void primaryUpdated(WatchableList primary)
+				{
+					// ok - now update the content of our table
+					redoTableAfterTrackChanges();
+				}
 
-			// lastly color-code the columns
-			TableItem[] items = _tableViewer.getTable().getItems();
+				public void secondariesUpdated(WatchableList[] secondaries)
+				{
+					// ok - now update the content of our table
+					redoTableAfterTrackChanges();
+				}});
+		}
+	}
 
-			Color thisCol = null;
-			WatchableList pri = _trackData.getPrimaryTrack();
-			if (pri != null)
+	/**
+	 * 
+	 */
+	private void redoTableAfterTrackChanges()
+	{
+		// and update the table
+		updateTableLayout();
+
+		// and fire the update
+		_tableViewer.getTable().layout(true);
+
+		// lastly color-code the columns
+		TableItem[] items = _tableViewer.getTable().getItems();
+
+		Color thisCol = null;
+		WatchableList pri = _trackData.getPrimaryTrack();
+		if (pri != null)
+		{
+			thisCol = ColorHelper.getColor(pri.getColor());
+			for (int j = 0; j < items.length; j++)
 			{
-				thisCol = ColorHelper.getColor(pri.getColor());
+				TableItem thisRow = items[j];
+				thisRow.setForeground(1, thisCol);
+			}
+		}
+
+		WatchableList[] secs = _trackData.getSecondaryTracks();
+		if (secs != null)
+		{
+			for (int i = 0; i < secs.length; i++)
+			{
+				WatchableList thisSec = secs[i];
+				thisCol = ColorHelper.getColor(thisSec.getColor());
 				for (int j = 0; j < items.length; j++)
 				{
 					TableItem thisRow = items[j];
-					thisRow.setForeground(1, thisCol);
+					thisRow.setForeground(2 + i, thisCol);
 				}
 			}
-
-			WatchableList[] secs = _trackData.getSecondaryTracks();
-			if (secs != null)
-			{
-				for (int i = 0; i < secs.length; i++)
-				{
-					WatchableList thisSec = secs[i];
-					thisCol = ColorHelper.getColor(thisSec.getColor());
-					for (int j = 0; j < items.length; j++)
-					{
-						TableItem thisRow = items[j];
-						thisRow.setForeground(2 + i, thisCol);
-					}
-				}
-			}
+		}
+		
+		// lastly, fire a time-update to fill in the calcs
+		if(_myTemporalDataset != null)
+		{
+			timeUpdated(_myTemporalDataset.getTime());
 		}
 	}
 
