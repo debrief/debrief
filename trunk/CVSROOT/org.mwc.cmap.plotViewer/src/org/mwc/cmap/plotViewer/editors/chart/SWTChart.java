@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.13  2005-06-14 09:49:29  Ian.Mayo
+// Revision 1.14  2005-06-14 15:21:03  Ian.Mayo
+// fire update after zoom
+//
+// Revision 1.13  2005/06/14 09:49:29  Ian.Mayo
 // Eclipse-triggered tidying (unused variables)
 //
 // Revision 1.12  2005/06/09 14:51:51  Ian.Mayo
@@ -556,7 +559,11 @@ public class SWTChart extends PlainChart implements Serializable
 				WorldArea area = new WorldArea(locA, locB);
 
 				_theCanvas.getProjection().setDataArea(area);
+				
+				super.getLayers().fireModified(null);
+				
 				_theCanvas.updateMe();
+				
 
 				_dragTracker = null;
 				_startPoint = null;
