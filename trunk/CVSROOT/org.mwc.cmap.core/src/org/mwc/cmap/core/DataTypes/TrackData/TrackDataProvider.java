@@ -30,6 +30,11 @@ public interface TrackDataProvider
 	 * in selected tracks
 	 */
 	public void addTrackDataListener(TrackDataListener listener);
+	
+	/** forget that somebody wants to know about track changes
+	 * 
+	 */
+	public void removeTrackDataListener(TrackDataListener listener);
 
 	/** find out what the primary track is
 	 * 
