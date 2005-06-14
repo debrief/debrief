@@ -5,6 +5,7 @@ import java.util.Vector;
 import org.eclipse.core.runtime.IAdaptable;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
 import MWC.Algorithms.PlainProjection;
@@ -64,24 +65,23 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   //	setGUIDetails(null);
   }
 
-  public static void exportThis(Debrief.GUI.Frames.Session session, org.w3c.dom.Element parent,
+  public static void exportThis(PlotEditor thePlot, org.w3c.dom.Element parent,
                                 org.w3c.dom.Document doc)
   {
     org.w3c.dom.Element eSession = doc.createElement("session");
 
+    // ok, get the layers
+    Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+    
     // now the Layers
-    DebriefLayersHandler.exportThis(session, eSession, doc);
+    DebriefLayersHandler.exportThis(theLayers, eSession, doc);
 
     // now the projection
-    Debrief.GUI.Views.PlainView pl = session.getCurrentView();
-    if (pl instanceof Debrief.GUI.Views.AnalysisView)
-    {
-      Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) pl;
-      ProjectionHandler.exportProjection(av.getChart().getCanvas().getProjection(), eSession, doc);
-    }
+    PlainProjection proj =  (PlainProjection) thePlot.getAdapter(PlainProjection.class);
+    ProjectionHandler.exportProjection(proj, eSession, doc);
 
     // now the GUI
-    GUIHandler.exportThis(session, eSession, doc);
+    GUIHandler.exportThis(thePlot, eSession, doc);
 
     // send out the data
     parent.appendChild(eSession);

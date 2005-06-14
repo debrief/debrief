@@ -1,6 +1,7 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
 import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.ReaderWriter.XML.DetailsHandler;
 import MWC.GUI.Layers;
@@ -44,13 +45,13 @@ final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     });
   }
 
-  public static org.w3c.dom.Element exportPlot(Debrief.GUI.Frames.Session session, org.w3c.dom.Document doc)
+  public static org.w3c.dom.Element exportPlot(PlotEditor thePlot, org.w3c.dom.Document doc)
   {
     org.w3c.dom.Element plt = doc.createElement("plot");
     plt.setAttribute("Created", new java.util.Date().toString());
     plt.setAttribute("Name", "Debrief Plot");
     String details = "Saved with Debrief version dated " + Debrief.GUI.VersionInfo.getVersion();
-    SessionHandler.exportThis(session, plt, doc);
+    SessionHandler.exportThis(thePlot, plt, doc);
  //   DetailsHandler.exportPlot(details, plt, doc);
     return plt;
   }

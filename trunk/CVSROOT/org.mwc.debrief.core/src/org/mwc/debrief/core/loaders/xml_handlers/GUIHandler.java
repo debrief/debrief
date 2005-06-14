@@ -10,6 +10,8 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 import java.awt.Color;
 import java.util.Vector;
 
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.debrief.core.editors.PlotEditor;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.GUI.BackgroundHandler;
@@ -115,7 +117,7 @@ abstract public class GUIHandler extends
 	// the constructors for our components
 	// ///////////////////////////////////////////////////////////////////////
 
-	public static void exportThis(Debrief.GUI.Frames.Session session,
+	public static void exportThis(PlotEditor thePlot,
 			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
 	{
 		// create ourselves
@@ -124,7 +126,8 @@ abstract public class GUIHandler extends
 		// //////////////////////////////////////////////
 		// first the tote
 		// //////////////////////////////////////////////
-		ToteHandler.exportTote(session, gui, doc);
+		TrackDataProvider theTracks = (TrackDataProvider) thePlot.getAdapter(TrackDataProvider.class);
+		ToteHandler.exportTote(theTracks, gui, doc);
 
 		// try to export the other features
 
@@ -142,7 +145,7 @@ abstract public class GUIHandler extends
 		// BackgroundHandler.exportThis(col, gui, doc);
 		// }
 		//
-		// parent.appendChild(gui);
+		parent.appendChild(gui);
 	}
 
 }

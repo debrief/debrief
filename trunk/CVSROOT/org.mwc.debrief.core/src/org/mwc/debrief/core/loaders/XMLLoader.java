@@ -21,7 +21,7 @@ import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
-import org.mwc.debrief.core.loaders.xml_handlers.DebriefXMLReaderWriter;
+import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.Layers;
 
@@ -34,14 +34,14 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	/** the static object we use for data-file load/open
 	 * 
 	 */
-	private static DebriefXMLReaderWriter _myReader;
+	private static DebriefEclipseXMLReaderWriter _myReader;
 	
 	
 	public XMLLoader()
 	{
 		if(_myReader == null)
 		{
-			_myReader = new DebriefXMLReaderWriter();
+			_myReader = new DebriefEclipseXMLReaderWriter();
 		}
 	}
 	
@@ -126,7 +126,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 							theLayers.suspendFiringExtended(false);
 
 							// and trigger an update ourselves
-							theLayers.fireExtended();
+//							theLayers.fireExtended();
 						}
 					}
 				});
