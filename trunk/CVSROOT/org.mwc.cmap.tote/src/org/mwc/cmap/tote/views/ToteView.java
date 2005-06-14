@@ -186,6 +186,8 @@ public class ToteView extends ViewPart
 						// is this our current provider?
 						if (_trackData == provider)
 							_trackData = null;
+						
+						redoTableAfterTrackChanges();
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
@@ -264,7 +266,11 @@ public class ToteView extends ViewPart
 	{
 		// check we have some data
 		if (_trackData == null)
+		{
+			// aah = no track data. better clear the table
+			_tableViewer.getTable().removeAll();
 			return;
+		}
 
 		Table tbl = _tableViewer.getTable();
 
@@ -566,12 +572,19 @@ public class ToteView extends ViewPart
 	 */
 	private void redoTableAfterTrackChanges()
 	{
-		// and update the table
+		// and update the table column layout
 		updateTableLayout();
 
 		// and fire the update
 		_tableViewer.getTable().layout(true);
 
+		// hmm, check if we have any track data
+		if(_trackData == null)
+		{
+			// don't bother with any further processing.
+			return;
+		}
+		
 		// lastly color-code the columns
 		TableItem[] items = _tableViewer.getTable().getItems();
 
