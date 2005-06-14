@@ -14,17 +14,21 @@ import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 
-import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Tools.Tote.WatchableList;
+import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.*;
+import MWC.TacticalData.Track;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public abstract class CorePlotEditor extends EditorPart implements
@@ -184,23 +188,22 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		getSite().setSelectionProvider(this);
 
-	  LineItem 	lineItem = CorePlugin.getStatusLine(this);
-	  _myTracker = new CursorTracker(_myChart, lineItem);
-	  
-	  
-//		
-//				Display.getDefault().asyncExec(new Runnable()
-//		{
-//			public void run()
-//			{
-//				IStatusLineManager mgr = getActionbar().getStatusLineManager();
-//				CursorTracker.LineItem item = new CursorTracker.LineItem("vv aa");
-//				mgr.add(item);
-//				mgr.update(true);
-//				item.update("bbb ccc");
-//				mgr.update(true);
-//			}
-//		});
+		LineItem lineItem = CorePlugin.getStatusLine(this);
+		_myTracker = new CursorTracker(_myChart, lineItem);
+
+		//		
+		// Display.getDefault().asyncExec(new Runnable()
+		// {
+		// public void run()
+		// {
+		// IStatusLineManager mgr = getActionbar().getStatusLineManager();
+		// CursorTracker.LineItem item = new CursorTracker.LineItem("vv aa");
+		// mgr.add(item);
+		// mgr.update(true);
+		// item.update("bbb ccc");
+		// mgr.update(true);
+		// }
+		// });
 
 	}
 
@@ -498,4 +501,173 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
+	/**
+	 * embedded class which manages the primary & secondary tracks
+	 */
+	public static class TrackManager implements TrackDataProvider,
+			TrackDataProvider.TrackDataListener
+	{
+
+		private WatchableList _thePrimary;
+
+		private WatchableList[] _theSecondaries;
+
+		private Vector _myListeners;
+
+		private Layers _theLayers;
+
+		public TrackManager(Layers parentLayers)
+		{
+			_theLayers = parentLayers;
+		}
+
+		public void assignTracks(String primaryTrack, Vector secondaryTracks)
+		{
+			// ok - find the matching tracks/
+			Object theP = _theLayers.findLayer(primaryTrack);
+			if (theP != null)
+			{
+				if (theP instanceof WatchableList)
+				{
+					_thePrimary = (WatchableList) theP;
+				}
+			}
+
+			// do we have secondaries?
+			if (secondaryTracks != null)
+			{
+				// and now the secs
+				Vector secs = new Vector(0, 1);
+				Iterator iter = secondaryTracks.iterator();
+				while (iter.hasNext())
+				{
+					String thisS = (String) iter.next();
+					Object theS = _theLayers.findLayer(thisS);
+					if (theS != null)
+						if (theS instanceof WatchableList)
+						{
+							secs.add(theS);
+						}
+				}
+
+				if (secs.size() > 0)
+				{
+					_theSecondaries = new WatchableList[] { null };
+					_theSecondaries = (WatchableList[]) secs.toArray(_theSecondaries);
+				}
+			}
+		}
+
+		public void addTrackDataListener(TrackDataListener listener)
+		{
+			if (_myListeners == null)
+				_myListeners = new Vector();
+
+			_myListeners.add(listener);
+		}
+
+		public WatchableList getPrimaryTrack()
+		{
+			return _thePrimary;
+		}
+
+		public WatchableList[] getSecondaryTracks()
+		{
+			return _theSecondaries;
+		}
+
+		public void primaryUpdated(WatchableList primary)
+		{
+			_thePrimary = primary;
+		}
+
+		public void secondariesUpdated(WatchableList[] secondaries)
+		{
+			_theSecondaries = secondaries;
+		}
+	}
+
+	/**
+	 * PUT IN SOME TESTING
+	 */
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testTrackManager extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testTrackManager(final String val)
+		{
+			super(val);
+		}
+
+		public void testLists()
+		{
+			TrackWrapper ta = new TrackWrapper();
+			ta.setTrack(new Track());
+			ta.setName("ta");
+			TrackWrapper tb = new TrackWrapper();
+			tb.setTrack(new Track());
+			tb.setName("tb");
+			TrackWrapper tc = new TrackWrapper();
+			tc.setTrack(new Track());
+			tc.setName("tc");
+			Layers theLayers = new Layers();
+			theLayers.addThisLayer(ta);
+			theLayers.addThisLayer(tb);
+			theLayers.addThisLayer(tc);
+
+			String pri_a = "ta";
+			String pri_b = "tz";
+			String sec_b = "tb";
+			String sec_c = "tc";
+			String sec_d = "tz";
+			Vector secs = new Vector(0, 1);
+			secs.add(sec_b);
+			secs.add(sec_c);
+
+			// create the mgr
+			TrackManager tm = new TrackManager(theLayers);
+
+			// do some checks
+			assertNull("pri empty", tm._thePrimary);
+			assertNull("secs empty", tm._theSecondaries);
+			assertNotNull("layers assigned", tm._theLayers);
+
+			// now get going
+			tm.assignTracks(pri_a, secs);
+
+			// and do the tests
+			assertNotNull("pri assigned", tm._thePrimary);
+			assertEquals("pri matches", tm._thePrimary, ta);
+
+			// and the secs
+			assertNotNull("sec assigned", tm._theSecondaries);
+			assertEquals("correct num", 2, tm._theSecondaries.length);
+
+			// setup duff data
+			secs.clear();
+			secs.add(sec_b);
+			secs.add(sec_d);
+
+			// assign duff data
+			tm.assignTracks(pri_b, secs);
+
+			// and test duff data
+			assertNotNull("pri still assigned", tm._thePrimary);
+			assertEquals("pri matches", tm._thePrimary, ta);
+			assertNotNull("sec assigned", tm._theSecondaries);
+			assertEquals("correct num", 1, tm._theSecondaries.length);
+
+			// assign more real data
+			tm.assignTracks(sec_c, secs);
+
+			// and test duff data
+			assertNotNull("pri still assigned", tm._thePrimary);
+			assertEquals("pri matches", tm._thePrimary, tc);
+			assertNotNull("sec assigned", tm._theSecondaries);
+			assertEquals("correct num", 1, tm._theSecondaries.length);
+		}
+	}
 }

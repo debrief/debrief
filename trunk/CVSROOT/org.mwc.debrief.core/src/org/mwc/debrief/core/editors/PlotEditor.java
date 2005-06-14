@@ -5,13 +5,14 @@ package org.mwc.debrief.core.editors;
 
 import java.awt.Dimension;
 import java.io.File;
-import java.util.Enumeration;
+import java.util.*;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;
@@ -86,6 +87,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		});
 
+		_trackDataProvider = new TrackManager(_myLayers);
 	}
 
 	/**
@@ -304,34 +306,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		Object res = null;
 
-		if (adapter == TrackDataProvider.class)
+	  if(adapter == TrackManager.class)
 		{
-			if (_trackDataProvider == null)
-			{
-				_trackDataProvider = new TrackDataProvider()
-				{
-
-					public WatchableList[] getSecondaryTracks()
-					{
-						TrackWrapper sec = (TrackWrapper) _myLayers.findLayer("Tomato");
-						WatchableList[] res = null;
-						if (sec != null)
-							res = new WatchableList[] { sec };
-						return res;
-					}
-
-					public WatchableList getPrimaryTrack()
-					{
-						TrackWrapper pri = (TrackWrapper) _myLayers.findLayer("Carpet");
-						return pri;
-					}
-
-					public void addTrackDataListener(TrackDataListener listener)
-					{
-					}
-				};
-			}
-
+			res = _trackDataProvider;
+		}
+	  else if(adapter == TrackDataProvider.class)
+		{
 			res = _trackDataProvider;
 		}
 

@@ -2,7 +2,10 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 
 import java.util.Vector;
 
+import org.eclipse.core.runtime.IAdaptable;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor.TrackManager;
 
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
 import MWC.Algorithms.PlainProjection;
@@ -20,7 +23,8 @@ import MWC.GUI.Layers;
 
 public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  public SessionHandler(Layers _theLayers, final IControllableViewport  view)
+  public SessionHandler(Layers _theLayers, 
+  		final IControllableViewport  view)
   {
     // inform our parent what type of class we are
     super("session");
@@ -37,9 +41,20 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     		{
 					public void assignTracks(String primaryTrack, Vector secondaryTracks)
 					{
-						System.err.println("SHOULD BE STORING PRIMARY & SECONDARY TRACKS");
+						// see if we have our track data listener
+						if(view instanceof IAdaptable)
+						{
+							IAdaptable ad = (IAdaptable) view;
+							Object adaptee = ad.getAdapter(org.mwc.cmap.plotViewer.editors.CorePlotEditor.TrackManager.class);
+							if(adaptee != null)
+							{
+								TrackManager tl = (TrackManager) adaptee;
+								tl.assignTracks(primaryTrack, secondaryTracks);
+							}
+						}
 					}
     		});
+    
     addHandler(new DebriefLayersHandler(_theLayers));
 
   }
