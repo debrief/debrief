@@ -71,7 +71,7 @@ public class ToteView extends ViewPart
 	/**
 	 * where we get our track data from
 	 */
-	TrackDataProvider _trackData = null;
+	TrackManager _trackData = null;
 
 	/**
 	 * where we get/store what the current set of calcs are
@@ -143,13 +143,13 @@ public class ToteView extends ViewPart
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
-		_myPartMonitor.addPartListener(TrackDataProvider.class,
+		_myPartMonitor.addPartListener(TrackManager.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						TrackDataProvider provider = (TrackDataProvider) part;
+						TrackManager provider = (TrackManager) part;
 
 						// is this different to our current one?
 						if (provider != _trackData)
@@ -159,13 +159,13 @@ public class ToteView extends ViewPart
 
 		// unusually, we are also going to track the open event for narrative data
 		// so that we can start off with some data
-		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.OPENED,
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						TrackDataProvider provider = (TrackDataProvider) part;
+						TrackManager provider = (TrackManager) part;
 
 						// is this different to our current one?
 						if (provider != _trackData)
@@ -174,14 +174,14 @@ public class ToteView extends ViewPart
 
 				});
 
-		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.CLOSED,
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
 						// implementation here.
-						TrackDataProvider provider = (TrackDataProvider) part;
+						TrackManager provider = (TrackManager) part;
 
 						// is this our current provider?
 						if (_trackData == provider)
@@ -484,7 +484,18 @@ public class ToteView extends ViewPart
 			 */
 			public void runWithEvent(Event event)
 			{
-				System.out.println("removing col number:" + index);
+				// ok, is this the primary?
+				if(index == 1)
+				{
+					// yes, go for it
+					_trackData.primaryUpdated(null);
+				}
+				else
+				{
+					// ok, inform the removal of the secondary
+					WatchableList thisSec = _trackData.getSecondaryTracks()[index - 2];
+					_trackData.removeSecondary(thisSec);
+				}
 			}
 		};
 		_removeTrackAction.setToolTipText("Remove this track from the tote");
@@ -519,7 +530,7 @@ public class ToteView extends ViewPart
 	 * @param part
 	 * @param parentPart
 	 */
-	private void storeDetails(TrackDataProvider part, IWorkbenchPart parentPart)
+	private void storeDetails(TrackManager part, IWorkbenchPart parentPart)
 	{
 		// hmm - are we already looking at this one?
 		if (part != _trackData)

@@ -2,9 +2,6 @@ package org.mwc.cmap.core.DataTypes.TrackData;
 
 import java.util.*;
 
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
-
-
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
@@ -88,12 +85,12 @@ public class TrackManager implements TrackDataProvider,
 	public void primaryUpdated(WatchableList primary)
 	{
 		_thePrimary = primary;
-		
+
 		// and inform the listeners
-		if(_myListeners != null)
+		if (_myListeners != null)
 		{
 			Iterator iter = _myListeners.iterator();
-			while(iter.hasNext())
+			while (iter.hasNext())
 			{
 				TrackDataListener list = (TrackDataListener) iter.next();
 				list.primaryUpdated(primary);
@@ -104,49 +101,48 @@ public class TrackManager implements TrackDataProvider,
 	public void secondariesUpdated(WatchableList[] secondaries)
 	{
 		_theSecondaries = secondaries;
-		
+
 		// and inform the listeners
 		fireSecondariesChanged();
 	}
 
-
 	private void fireSecondariesChanged()
 	{
-		if(_myListeners != null)
+		if (_myListeners != null)
 		{
 			Iterator iter = _myListeners.iterator();
-			while(iter.hasNext())
+			while (iter.hasNext())
 			{
 				TrackDataListener list = (TrackDataListener) iter.next();
 				list.secondariesUpdated(_theSecondaries);
 			}
 		}
 	}
-	
+
 	public void addSecondary(WatchableList secondary)
 	{
 		// store the new list
-		Vector newList = new Vector(1,1);
-		
+		Vector newList = new Vector(1, 1);
+
 		// copy in the old list
-		if(_theSecondaries != null)
+		if (_theSecondaries != null)
 		{
-			for(int i=0;i<_theSecondaries.length;i++)
+			for (int i = 0; i < _theSecondaries.length; i++)
 			{
 				newList.add(_theSecondaries[i]);
 			}
 		}
-		
+
 		// and add the new item
 		newList.add(secondary);
-		
-		WatchableList[] demo = new WatchableList[]{null};
+
+		WatchableList[] demo = new WatchableList[] { null };
 		_theSecondaries = (WatchableList[]) newList.toArray(demo);
-		
+
 		// and inform the listeners
 		fireSecondariesChanged();
 	}
-	
+
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -231,5 +227,44 @@ public class TrackManager implements TrackDataProvider,
 	public void removeTrackDataListener(TrackDataListener listener)
 	{
 		_myListeners.remove(listener);
+	}
+
+	/**
+	 * remove the indicated secondary track
+	 * 
+	 * @param thisSec
+	 */
+	public void removeSecondary(WatchableList thisSec)
+	{
+		// store the new list
+		Vector newList = new Vector(1, 1);
+
+		// copy in the old list
+		if (_theSecondaries != null)
+		{
+			for (int i = 0; i < _theSecondaries.length; i++)
+			{
+				WatchableList curSec = _theSecondaries[i];
+				if (curSec == thisSec)
+				{
+					// hey, just ignore it
+				}
+				else
+				{
+					newList.add(_theSecondaries[i]);
+				}
+			}
+		}
+
+		if (newList.size() > 0)
+		{
+			WatchableList[] demo = new WatchableList[] { null };
+			_theSecondaries = (WatchableList[]) newList.toArray(demo);
+		}
+		else
+			_theSecondaries = new WatchableList[0];
+
+		// and inform the listeners
+		fireSecondariesChanged();
 	}
 }

@@ -1,56 +1,21 @@
 package org.mwc.cmap.layer_manager.views;
 
-import java.util.Comparator;
-import java.util.Iterator;
-import java.util.Set;
-import java.util.TreeSet;
-import java.util.Vector;
+import java.util.*;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.IToolBarManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
-import org.eclipse.jface.viewers.IElementComparer;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TreeViewer;
-import org.eclipse.jface.viewers.ViewerSorter;
+import org.eclipse.jface.action.*;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-import org.eclipse.swt.widgets.Tree;
-import org.eclipse.swt.widgets.TreeColumn;
-import org.eclipse.swt.widgets.TreeItem;
-import org.eclipse.swt.widgets.Widget;
-import org.eclipse.ui.IActionBars;
-import org.eclipse.ui.ISharedImages;
-import org.eclipse.ui.IWorkbenchActionConstants;
-import org.eclipse.ui.IWorkbenchPart;
-import org.eclipse.ui.PlatformUI;
-import org.eclipse.ui.part.DrillDownAdapter;
-import org.eclipse.ui.part.ViewPart;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
+import org.eclipse.ui.part.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.layer_manager.views.support.ViewContentProvider;
-import org.mwc.cmap.layer_manager.views.support.ViewLabelProvider;
+import org.mwc.cmap.layer_manager.views.support.*;
 
 import Debrief.Tools.Tote.WatchableList;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
+import MWC.GUI.*;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -102,8 +67,6 @@ public class LayerManagerView extends ViewPart
 	 * 
 	 */
 	private Action _revealAction;
-
-	private Action doubleClickAction;
 
 	private Layers _myLayers;
 
@@ -504,22 +467,6 @@ public class LayerManagerView extends ViewPart
 		_revealAction.setToolTipText("Reveal selected items");
 		_revealAction.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
-		
-		
-		doubleClickAction = new Action()
-		{
-			public void run()
-			{
-				applyOperationToSelection(new IOperateOn()
-				{
-
-					public void doItTo(Plottable item)
-					{
-						item.setVisible(!item.getVisible());
-					}
-				});
-			}
-		};		
 	}
 
 	private void hookDoubleClickAction()
@@ -531,12 +478,6 @@ public class LayerManagerView extends ViewPart
 				// doubleClickAction.run();
 			}
 		});
-	}
-
-	private void showMessage(String message)
-	{
-		MessageDialog.openInformation(_treeViewer.getControl().getShell(),
-				"Layer Manager", message);
 	}
 
 	/**
@@ -627,7 +568,7 @@ public class LayerManagerView extends ViewPart
 				{
 					Comparable c0 = (Comparable) arg0;
 					Comparable c1 = (Comparable) arg1;
-					res = c1.compareTo(c1);
+					res = c0.compareTo(c1);
 				}
 			}
 
