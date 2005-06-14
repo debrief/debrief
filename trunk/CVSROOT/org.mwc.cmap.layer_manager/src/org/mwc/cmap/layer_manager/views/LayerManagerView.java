@@ -40,11 +40,14 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.DrillDownAdapter;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.views.support.ViewContentProvider;
 import org.mwc.cmap.layer_manager.views.support.ViewLabelProvider;
 
+import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -80,7 +83,15 @@ public class LayerManagerView extends ViewPart
 
 	private DrillDownAdapter drillDownAdapter;
 
-	private Action action1;
+	/**
+	 * make the current item the primary track
+	 */
+	private Action _makePrimary;
+
+	/**
+	 * add the current item to the secondary track
+	 */
+	private Action _makeSecondary;
 
 	private Action _swapVisAction;
 
@@ -91,13 +102,14 @@ public class LayerManagerView extends ViewPart
 	private Layers.DataListener _myLayersListener;
 
 	private ISelectionChangedListener _selectionChangeListener;
-	
 
 	/**
 	 * toggle to indicate whether user wants narrative to always jump to
 	 * highlighted entry
 	 */
-	private Action _followSelectionToggle;	
+	private Action _followSelectionToggle;
+
+	protected TrackManager _theTrackDataListener;
 
 	class NameSorter extends ViewerSorter
 	{
@@ -262,6 +274,27 @@ public class LayerManagerView extends ViewPart
 					}
 				});
 
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						// cool, remember about it.
+						_theTrackDataListener = (TrackManager) part;
+					}
+				});
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						// ok, ditch it.
+						_theTrackDataListener = null;
+					}
+				});
+
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
 				.getActivePage());
@@ -328,26 +361,30 @@ public class LayerManagerView extends ViewPart
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-		manager.add(_followSelectionToggle);		
-		manager.add(action1);
+		manager.add(_followSelectionToggle);
+		manager.add(_makePrimary);
+		manager.add(_makeSecondary);
 		manager.add(new Separator());
 		manager.add(_swapVisAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager)
 	{
-		manager.add(action1);
+		manager.add(_makePrimary);
+		manager.add(_makeSecondary);
 		manager.add(_swapVisAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
+
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(_followSelectionToggle);		
-		manager.add(action1);
+		manager.add(_followSelectionToggle);
+		manager.add(_makePrimary);
+		manager.add(_makeSecondary);
 		manager.add(_swapVisAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
@@ -355,28 +392,70 @@ public class LayerManagerView extends ViewPart
 
 	private void makeActions()
 	{
-		
-		_followSelectionToggle = new Action("Jump to selection", Action.AS_CHECK_BOX)
+
+		_followSelectionToggle = new Action("Jump to selection",
+				Action.AS_CHECK_BOX)
 		{
 		};
 		_followSelectionToggle.setText("Follow selection");
 		_followSelectionToggle.setChecked(true);
 		_followSelectionToggle
 				.setToolTipText("Ensure selected item in plot is always visible");
-		_followSelectionToggle.setImageDescriptor(
-				CorePlugin.getImageDescriptor("icons/follow_selection.gif"));
-		
-		action1 = new Action()
+		_followSelectionToggle.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/follow_selection.gif"));
+
+		_makePrimary = new Action()
 		{
 			public void run()
 			{
-				showMessage("Action 1 executed");
+				applyOperationToSelection(new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						// is it a watchable-list?
+						if (item instanceof WatchableList)
+						{
+							WatchableList list = (WatchableList) item;
+
+							// make it the primary
+							if (_theTrackDataListener != null)
+								_theTrackDataListener.primaryUpdated(list);
+						}
+					}
+				});
+
 			}
 		};
-		action1.setText("Action 1");
-		action1.setToolTipText("Action 1 tooltip");
-		action1.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+		_makePrimary.setText("Make Primary");
+		_makePrimary.setToolTipText("Make this item the primary ");
+		_makePrimary.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+
+		_makeSecondary = new Action()
+		{
+			public void run()
+			{
+				applyOperationToSelection(new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						// is it a watchable-list?
+						if (item instanceof WatchableList)
+						{
+							WatchableList list = (WatchableList) item;
+
+							// make it the primary
+							if (_theTrackDataListener != null)
+								_theTrackDataListener.addSecondary(list);
+						}
+					}
+				});
+			}
+		};
+		_makeSecondary.setText("Make Secondary");
+		_makeSecondary.setToolTipText("Add this item to the secondary tracks");
+		_makeSecondary.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 		_swapVisAction = new Action()
 		{
@@ -393,8 +472,8 @@ public class LayerManagerView extends ViewPart
 		};
 		_swapVisAction.setText("Swap vis");
 		_swapVisAction.setToolTipText("Swap visiblity of selected items");
-		_swapVisAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		_swapVisAction.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 		doubleClickAction = new Action()
 		{
 			public void run()
@@ -697,7 +776,7 @@ public class LayerManagerView extends ViewPart
 
 	public void plottableSelected(ISelection sel, PlottableWrapper pw)
 	{
-		if(_followSelectionToggle.isChecked())
+		if (_followSelectionToggle.isChecked())
 			_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
 	}
 
