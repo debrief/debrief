@@ -3,9 +3,8 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IAdaptable;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor.TrackManager;
 
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
 import MWC.Algorithms.PlainProjection;
@@ -45,7 +44,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 						if(view instanceof IAdaptable)
 						{
 							IAdaptable ad = (IAdaptable) view;
-							Object adaptee = ad.getAdapter(org.mwc.cmap.plotViewer.editors.CorePlotEditor.TrackManager.class);
+							Object adaptee = ad.getAdapter(org.mwc.cmap.core.DataTypes.TrackData.TrackManager.class);
 							if(adaptee != null)
 							{
 								TrackManager tl = (TrackManager) adaptee;
