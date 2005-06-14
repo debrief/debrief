@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.12  2005-06-09 14:51:51  Ian.Mayo
+// Revision 1.13  2005-06-14 09:49:29  Ian.Mayo
+// Eclipse-triggered tidying (unused variables)
+//
+// Revision 1.12  2005/06/09 14:51:51  Ian.Mayo
 // Implement SWT plotting
 //
 // Revision 1.11  2005/06/07 15:29:57  Ian.Mayo
@@ -104,11 +107,7 @@ public class SWTChart extends PlainChart implements Serializable
 	 * is needed).
 	 */
 	private WorldArea _lastDataArea = null;
-
-	/**
-	 * the image we paint into the corner of the canvas.
-	 */
-	// private Image _ourImage;
+	
 	/**
 	 * the bit which plots the current cursor position
 	 */

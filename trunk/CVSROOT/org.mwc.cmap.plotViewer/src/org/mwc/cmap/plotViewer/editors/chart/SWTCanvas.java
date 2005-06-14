@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.8  2005-05-26 14:04:50  Ian.Mayo
+// Revision 1.9  2005-06-14 09:49:28  Ian.Mayo
+// Eclipse-triggered tidying (unused variables)
+//
+// Revision 1.8  2005/05/26 14:04:50  Ian.Mayo
 // Tidy up double-buffering
 //
 // Revision 1.7  2005/05/26 07:53:56  Ian.Mayo
@@ -197,7 +200,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 	{
 		super.setScreenSize(p1);
 		
-		Dimension theDim = p1;
 		// check if this is a real resize
 		if ((_theSize == null) || (!_theSize.equals(p1)))
 		{

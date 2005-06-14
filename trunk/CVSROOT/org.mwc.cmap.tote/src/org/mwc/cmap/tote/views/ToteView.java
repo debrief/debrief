@@ -43,8 +43,6 @@ public class ToteView extends ViewPart
 
 	private static final String EXTENSION_TAG_ICON_ATTRIB = "icon";
 
-	private static final String EXTENSION_TAG_CLASS_ATTRIB = "class";
-
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.cmap.tote";
 
@@ -104,8 +102,6 @@ public class ToteView extends ViewPart
 	 * helper object which loads plugin file-loaders
 	 */
 	private CalculationLoaderManager _loader;
-
-	private Label _tempStatus;
 
 	private ToteLabelProvider _labelProvider;
 
@@ -380,8 +376,6 @@ public class ToteView extends ViewPart
 			public void runWithEvent(Event event)
 			{
 				// cool. sorted.
-				Point pt = new Point(event.x, event.y);
-				TableItem ti = _tableViewer.getTable().getItem(pt);
 				int index = findSelectedColumn(event.x, event.y, _tableViewer
 						.getTable());
 				if (index != -1)
@@ -429,8 +423,6 @@ public class ToteView extends ViewPart
 				if (e.button == 3)
 				{
 					// cool. sorted.
-					Point pt = new Point(e.x, e.y);
-					TableItem ti = _tableViewer.getTable().getItem(pt);
 					int index = findSelectedColumn(e.x, e.y, _tableViewer.getTable());
 					if (index != -1)
 					{
@@ -770,7 +762,6 @@ public class ToteView extends ViewPart
 			TableColumn[] tc = table.getColumns();
 			for (int i = 1; i < tc.length - 1; i++)
 			{
-				TableColumn column = tc[i];
 				Rectangle bounds = selection.getBounds(i);
 				if (bounds.contains(x, bounds.y))
 				{

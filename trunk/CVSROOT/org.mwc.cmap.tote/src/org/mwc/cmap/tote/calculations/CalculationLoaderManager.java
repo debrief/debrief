@@ -131,10 +131,6 @@ public abstract class CalculationLoaderManager
 
 		final private IConfigurationElement _config;
 
-		final private String _name;
-
-		final private String _icon;
-
 		/**
 		 * constructor - stores the information necessary to load the data
 		 * 
@@ -147,9 +143,9 @@ public abstract class CalculationLoaderManager
 				String name, String icon)
 		{
 			_config = configElement;
-			_name = name;
-			_icon = icon;
 		}
+		
+		
 
 		private void checkMe()
 		{
