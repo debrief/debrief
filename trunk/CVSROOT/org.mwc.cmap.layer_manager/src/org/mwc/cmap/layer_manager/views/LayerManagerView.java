@@ -93,7 +93,15 @@ public class LayerManagerView extends ViewPart
 	 */
 	private Action _makeSecondary;
 
-	private Action _swapVisAction;
+	/** hide the selected item(s)
+	 * 
+	 */
+	private Action _hideAction;
+
+	/** reveal the selected item(s)
+	 * 
+	 */
+	private Action _revealAction;
 
 	private Action doubleClickAction;
 
@@ -364,15 +372,17 @@ public class LayerManagerView extends ViewPart
 		manager.add(_followSelectionToggle);
 		manager.add(_makePrimary);
 		manager.add(_makeSecondary);
+		manager.add(_revealAction);
 		manager.add(new Separator());
-		manager.add(_swapVisAction);
+		manager.add(_hideAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager)
 	{
 		manager.add(_makePrimary);
 		manager.add(_makeSecondary);
-		manager.add(_swapVisAction);
+		manager.add(_hideAction);
+		manager.add(_revealAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -385,7 +395,8 @@ public class LayerManagerView extends ViewPart
 		manager.add(_followSelectionToggle);
 		manager.add(_makePrimary);
 		manager.add(_makeSecondary);
-		manager.add(_swapVisAction);
+		manager.add(_hideAction);
+		manager.add(_revealAction);
 		manager.add(new Separator());
 		drillDownAdapter.addNavigationActions(manager);
 	}
@@ -429,7 +440,7 @@ public class LayerManagerView extends ViewPart
 		_makePrimary.setText("Make Primary");
 		_makePrimary.setToolTipText("Make this item the primary ");
 		_makePrimary.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+				.getImageDescriptor(ISharedImages.IMG_TOOL_NEW_WIZARD));
 
 		_makeSecondary = new Action()
 		{
@@ -455,9 +466,9 @@ public class LayerManagerView extends ViewPart
 		_makeSecondary.setText("Make Secondary");
 		_makeSecondary.setToolTipText("Add this item to the secondary tracks");
 		_makeSecondary.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
-		_swapVisAction = new Action()
+		_hideAction = new Action()
 		{
 			public void run()
 			{
@@ -465,15 +476,36 @@ public class LayerManagerView extends ViewPart
 				{
 					public void doItTo(Plottable item)
 					{
-						item.setVisible(!item.getVisible());
+						item.setVisible(false);
 					}
 				});
 			}
 		};
-		_swapVisAction.setText("Swap vis");
-		_swapVisAction.setToolTipText("Swap visiblity of selected items");
-		_swapVisAction.setImageDescriptor(PlatformUI.getWorkbench()
+		_hideAction.setText("Hide item");
+		_hideAction.setToolTipText("Stop selected items from being visible");
+		_hideAction.setImageDescriptor(PlatformUI.getWorkbench()
+				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_ELEMENT));
+		
+
+		_revealAction = new Action()
+		{
+			public void run()
+			{
+				applyOperationToSelection(new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						item.setVisible(true);
+					}
+				});
+			}
+		};
+		_revealAction.setText("Refeal item");
+		_revealAction.setToolTipText("Reveal selected items");
+		_revealAction.setImageDescriptor(PlatformUI.getWorkbench()
 				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		
+		
 		doubleClickAction = new Action()
 		{
 			public void run()
@@ -487,7 +519,7 @@ public class LayerManagerView extends ViewPart
 					}
 				});
 			}
-		};
+		};		
 	}
 
 	private void hookDoubleClickAction()
