@@ -5,14 +5,13 @@ package org.mwc.debrief.core.editors;
 
 import java.awt.Dimension;
 import java.io.File;
-import java.util.*;
+import java.util.Enumeration;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
+import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.PlainHighlighter;
@@ -20,7 +19,7 @@ import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Tools.Tote.*;
+import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
