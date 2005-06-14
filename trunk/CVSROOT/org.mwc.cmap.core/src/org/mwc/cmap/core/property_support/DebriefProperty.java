@@ -106,6 +106,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		{
 			_myHelperList = new Vector(0, 1);
 			_myHelperList.add(new ColorHelper(_theControl));
+			_myHelperList.add(new BoundedIntegerHelper());
 			_myHelperList.add(new EditorHelper(String.class)
 			{
 

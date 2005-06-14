@@ -19,12 +19,12 @@ import org.eclipse.swt.widgets.Display;
 
 public class ColorHelper extends EditorHelper
 {
-	Control _parentControl;
+//	Control _parentControl;
 
 	public ColorHelper(Control parentControl)
 	{
 		super(java.awt.Color.class);
-		_parentControl = parentControl;
+	//	_parentControl = parentControl;
 	}
 
 	public CellEditor getEditorFor(Composite parent)

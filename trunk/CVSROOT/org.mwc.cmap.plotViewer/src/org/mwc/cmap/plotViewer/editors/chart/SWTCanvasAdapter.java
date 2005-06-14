@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.10  2005-06-13 09:08:41  Ian.Mayo
+// Revision 1.11  2005-06-14 08:22:18  Ian.Mayo
+// Minor tidying
+//
+// Revision 1.10  2005/06/13 09:08:41  Ian.Mayo
 // Tidy up font management, investigate antiAlias bug
 //
 // Revision 1.9  2005/06/10 14:11:04  Ian.Mayo
@@ -199,13 +202,13 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			{
 				if (val)
 				{
-					if(_theDest.getAntialias() != SWT.ON)
+					if (_theDest.getAntialias() != SWT.ON)
 						_theDest.setAntialias(SWT.ON);
 				}
 				else
 				{
-					if(_theDest.getAntialias() != SWT.OFF)
-					_theDest.setAntialias(SWT.OFF);
+					if (_theDest.getAntialias() != SWT.OFF)
+						_theDest.setAntialias(SWT.OFF);
 				}
 			} catch (RuntimeException e)
 			{
@@ -292,7 +295,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 */
 	protected void setScreenSize(final java.awt.Dimension p1)
 	{
-		Dimension theDim = p1;
 		// check if this is a real resize
 		if ((_theSize == null) || (!_theSize.equals(p1)))
 		{
@@ -411,18 +413,18 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 				if (y > 11 && y < 35 && x > 11 && x < 35)
 				{
 					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(255, 0, 0)); // Set
-																																						// the
-																																						// center
-																																						// to
-																																						// red
+					// the
+					// center
+					// to
+					// red
 				}
 				else
 				{
 					imageData.setPixel(x, y, SWTRasterPainter.toSWTColor(0, 255, 0)); // Set
-																																						// the
-																																						// outside
-																																						// to
-																																						// green
+					// the
+					// outside
+					// to
+					// green
 				}
 			}
 		}
@@ -456,14 +458,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		// Decide whether to anti-alias this line
-		float thisWid = this.getLineWidth();
-		boolean doAntiAlias = SWTCanvasAdapter.antiAliasThisLine(this.getLineWidth());
-		
-		// BUG:  when we adjust the anti-alaising, the colours in the ETOPO key were getting messed up. bugger.  
-		// The bug was fixed on 31st May 2005.  Builds after this date should be ok. 
-		this.switchAntiAliasOn(doAntiAlias);
-
 		// check that the points are vaguely plottable
 		if ((Math.abs(x1) > 9000) || (Math.abs(y1) > 9000) || (Math.abs(x2) > 9000)
 				|| (Math.abs(y2) > 9000))
@@ -471,6 +465,16 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 		}
 
+		// Decide whether to anti-alias this line
+		final float thisWid = this.getLineWidth();
+		final boolean doAntiAlias = SWTCanvasAdapter.antiAliasThisLine(thisWid);
+
+		// BUG: when we adjust the anti-alaising, the colours in the ETOPO key were
+		// getting messed up. bugger.
+		// The bug was fixed on 31st May 2005. Builds after this date should be ok.
+		this.switchAntiAliasOn(doAntiAlias);
+
+		// ok, may as well go for it now..
 		_theDest.drawLine(x1, y1, x2, y2);
 	}
 
@@ -1000,7 +1004,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		boolean res = false;
 
-		if (width > 2)
+		if (width > 1)
 			res = true;
 
 		return res;
@@ -1008,7 +1012,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 	public String getName()
 	{
-		// TODO Auto-generated method stub
 		return "SWT Canvas";
 	}
 
