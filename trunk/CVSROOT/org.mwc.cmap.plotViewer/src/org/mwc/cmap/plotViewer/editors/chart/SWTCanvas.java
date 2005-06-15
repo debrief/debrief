@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.10  2005-06-15 11:03:42  Ian.Mayo
+// Revision 1.11  2005-06-15 14:30:11  Ian.Mayo
+// Refactor, so that we can call it more easily from WMF painter
+//
+// Revision 1.10  2005/06/15 11:03:42  Ian.Mayo
 // Overcome tidying error
 //
 // Revision 1.9  2005/06/14 09:49:28  Ian.Mayo
@@ -143,8 +146,16 @@ public class SWTCanvas extends SWTCanvasAdapter
 			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
 			GC theDest = new GC(_dblBuff);
 
+
+			// prepare the ground (remember the graphics dest for a start)
+			startDraw(theDest);
+			
 			// and paint into it
-			paintPlot(theDest);
+			paintPlot(this);
+			
+
+			// all finished, close it now
+			endDraw(null);			
 
 		}
 
@@ -161,12 +172,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * 
 	 * @param g1
 	 */
-	private void paintPlot(GC g1)
+	public void paintPlot(CanvasType dest)
 	{
-
-		// prepare the ground (remember the graphics dest for a start)
-		startDraw(g1);
-
 		// go through our painters
 		final Enumeration enumer = _thePainters.elements();
 		while (enumer.hasMoreElements())
@@ -182,11 +189,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 			}
 
 			// it must be ok
-			thisPainter.paintMe(this);
+			thisPainter.paintMe(dest);
 		}
 
-		// all finished, close it now
-		endDraw(null);
 	}	
 	// ///////////////////////////////////////////////////////////
 	// member functions
