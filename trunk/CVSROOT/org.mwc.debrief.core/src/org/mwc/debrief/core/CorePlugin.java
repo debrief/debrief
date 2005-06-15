@@ -3,6 +3,7 @@ package org.mwc.debrief.core;
 import org.eclipse.ui.plugin.*;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.osgi.framework.BundleContext;
 import java.util.*;
 
@@ -28,6 +29,9 @@ public class CorePlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		ExportWMF.init(org.mwc.cmap.core.CorePlugin.getToolParent());
+		
 	}
 
 	/**
