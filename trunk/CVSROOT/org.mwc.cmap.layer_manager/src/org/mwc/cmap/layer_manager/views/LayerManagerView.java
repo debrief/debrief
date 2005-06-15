@@ -218,7 +218,8 @@ public class LayerManagerView extends ViewPart
 							clearLayerListener();
 
 							// and clear the tree
-							_treeViewer.setInput(null);
+							if(_treeViewer.getContentProvider() != null)
+								_treeViewer.setInput(null);
 						}
 					}
 
@@ -333,10 +334,11 @@ public class LayerManagerView extends ViewPart
 	private void fillLocalPullDown(IMenuManager manager)
 	{
 		manager.add(_followSelectionToggle);
+		manager.add(new Separator());
 		manager.add(_makePrimary);
 		manager.add(_makeSecondary);
-		manager.add(_revealAction);
 		manager.add(new Separator());
+		manager.add(_revealAction);
 		manager.add(_hideAction);
 	}
 
