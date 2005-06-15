@@ -12,6 +12,8 @@ import org.mwc.cmap.core.preferences.ETOPOPrefsPage;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.osgi.framework.BundleContext;
 
+import Debrief.Tools.Tote.Calculations.rangeCalc;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Palette.*;
 
 /**
@@ -67,6 +69,9 @@ public class CorePlugin extends AbstractUIPlugin
 		
 		// also initialise the ETOPO wrapper (if we have to)
 		CreateTOPO.initialise(_toolParent);
+		
+		// and the range calculator
+		rangeCalc.init(_toolParent);
 	}
 
 	/**
@@ -87,6 +92,14 @@ public class CorePlugin extends AbstractUIPlugin
 		return plugin;
 	}
 
+	/** retrieve the toolparent we're using
+	 * 
+	 */
+	public static ToolParent getToolParent()
+	{
+		return _toolParent;
+	}
+	
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
