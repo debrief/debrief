@@ -148,6 +148,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			_myHelperList.add(new BooleanHelper());
 			_myHelperList.add(new FontHelper());
 			_myHelperList.add(new DTGHelper());
+			_myHelperList.add(new LatLongHelper());
 
 		}
 	}
