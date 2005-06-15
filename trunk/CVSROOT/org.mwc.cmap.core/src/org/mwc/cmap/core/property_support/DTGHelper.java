@@ -8,8 +8,8 @@ import java.util.*;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
 
@@ -184,7 +184,6 @@ public class DTGHelper extends EditorHelper
 			if (ID_DATE.equals(propName))
 			{
 				_date = new String((String) value);
-				Integer newInt = new Integer((String) value);
 			}
 			if (ID_TIME.equals(propName))
 			{
