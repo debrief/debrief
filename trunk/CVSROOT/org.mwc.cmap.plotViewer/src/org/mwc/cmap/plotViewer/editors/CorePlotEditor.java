@@ -185,7 +185,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		// and add our dbl click listener
 		// and add our dbl click listener
-		getChart().addLeftClickListener(new DblClickEdit(_myLayers, null)
+		getChart().addCursorDblClickedListener(new DblClickEdit(_myLayers, null)
 		{
 			/**
 			 * 
