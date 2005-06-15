@@ -70,6 +70,8 @@
                label="&amp;Debrief"
                path="additions">
             <groupMarker name="view"/>
+            <separator name="sep1"/>
+            <groupMarker name="operation"/>
          </menu>
          <action
                class="org.mwc.cmap.plotViewer.actions.FitToWindow"
@@ -87,6 +89,8 @@
                menubarPath="org.mwc.debrief.core.EditorActions/view"
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorActions/view"/>
+               
+             
          <action
                class="org.mwc.cmap.plotViewer.actions.Redraw"
                icon="icons/repaint.gif"
@@ -95,6 +99,14 @@
                menubarPath="org.mwc.debrief.core.EditorActions/view"
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorActions/view"/>
+               
+         <action
+               class="org.mwc.cmap.plotViewer.actions.ExportWMF"
+               icon="icons/write_wmf.gif"
+               id="org.mwc.debrief.core.ExportWMF"
+               label="&amp;Export WMF"
+               menubarPath="file/additions"
+               style="push" />                 
       </editorContribution>
    </extension>
 </plugin>
