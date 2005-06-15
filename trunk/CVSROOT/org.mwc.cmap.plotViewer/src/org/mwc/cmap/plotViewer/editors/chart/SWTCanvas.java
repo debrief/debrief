@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.9  2005-06-14 09:49:28  Ian.Mayo
+// Revision 1.10  2005-06-15 11:03:42  Ian.Mayo
+// Overcome tidying error
+//
+// Revision 1.9  2005/06/14 09:49:28  Ian.Mayo
 // Eclipse-triggered tidying (unused variables)
 //
 // Revision 1.8  2005/05/26 14:04:50  Ian.Mayo
@@ -241,7 +244,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 			_dblBuff = null;
 		}
 
-		_myCanvas.redraw();
+		if(!_myCanvas.isDisposed())
+			_myCanvas.redraw();
 	}
 
 	/**
