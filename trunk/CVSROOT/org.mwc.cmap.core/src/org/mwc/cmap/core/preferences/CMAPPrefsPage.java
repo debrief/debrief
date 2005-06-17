@@ -5,64 +5,92 @@ import org.eclipse.jface.preference.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 
+import MWC.GUI.Properties.UnitsPropertyEditor;
+
 /**
- * This class represents a preference page that
- * is contributed to the Preferences dialog. By 
- * subclassing <samp>FieldEditorPreferencePage</samp>, we
- * can use the field support built into JFace that allows
- * us to create a page that is small and knows how to 
- * save, restore and apply itself.
+ * This class represents a preference page that is contributed to the
+ * Preferences dialog. By subclassing <samp>FieldEditorPreferencePage</samp>,
+ * we can use the field support built into JFace that allows us to create a page
+ * that is small and knows how to save, restore and apply itself.
  * <p>
- * This page is used to modify preferences only. They
- * are stored in the preference store that belongs to
- * the main plug-in class. That way, preferences can
- * be accessed directly via the preference store.
+ * This page is used to modify preferences only. They are stored in the
+ * preference store that belongs to the main plug-in class. That way,
+ * preferences can be accessed directly via the preference store.
  */
 
-public class CMAPPrefsPage
-	extends FieldEditorPreferencePage
-	implements IWorkbenchPreferencePage {
+public class CMAPPrefsPage extends FieldEditorPreferencePage implements
+		IWorkbenchPreferencePage
+{
 
-	public CMAPPrefsPage() {
+	public CMAPPrefsPage()
+	{
 		super(GRID);
 		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
-		setDescription("Settings applicable to MWC's Core Maritime Analysis Platform");		
+		setDescription("Settings applicable to MWC's Core Maritime Analysis Platform");
 	}
-	
+
+	/** the tags and labels to use in the range units editor
+	 * 
+	 */
+	private static String[][] _distanceUnitTags;
 
 	/**
-	 * Creates the field editors. Field editors are abstractions of
-	 * the common GUI blocks needed to manipulate various types
-	 * of preferences. Each field editor knows how to save and
-	 * restore itself.
+	 * Creates the field editors. Field editors are abstractions of the common GUI
+	 * blocks needed to manipulate various types of preferences. Each field editor
+	 * knows how to save and restore itself.
 	 */
-	public void createFieldEditors() {
-			}
+	public void createFieldEditors()
+	{
+		// initialise the units tags, if we have to
+		if (_distanceUnitTags == null)
+		{
+			// get the unit types
+			UnitsPropertyEditor units = new UnitsPropertyEditor();
+			String[] tags = units.getTags();
 
-	/* (non-Javadoc)
+			_distanceUnitTags = new String[tags.length][2];
+			for (int i = 0; i < tags.length; i++)
+			{
+				_distanceUnitTags[i][0] = tags[i];
+				_distanceUnitTags[i][1] = tags[i];
+			}
+		}
+
+		addField(new RadioGroupFieldEditor(PreferenceConstants.RNG_UNITS,
+				"Default &range units:", 1, _distanceUnitTags, getFieldEditorParent()));
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.IWorkbenchPreferencePage#init(org.eclipse.ui.IWorkbench)
 	 */
-	public void init(IWorkbench workbench) {
+	public void init(IWorkbench workbench)
+	{
 	}
-	
+
 	/**
 	 * Constant definitions for plug-in preferences
 	 */
-	public static class PreferenceConstants {
+	public static class PreferenceConstants
+	{
+		public static final String RNG_UNITS = MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY;
 	}
-	
-	public static class CMAPPreferenceInitializer extends AbstractPreferenceInitializer {
+
+	public static class CMAPPreferenceInitializer extends
+			AbstractPreferenceInitializer
+	{
 
 		/*
 		 * (non-Javadoc)
 		 * 
 		 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
 		 */
-		public void initializeDefaultPreferences() {
-			IPreferenceStore store = CorePlugin.getDefault()
-					.getPreferenceStore();
+		public void initializeDefaultPreferences()
+		{
+			IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 		}
 
-	}	
-	
+	}
+
 }
