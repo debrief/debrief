@@ -78,14 +78,14 @@ public class LatLongHelper extends EditorHelper
 		static
 		{
 			descriptors = new IPropertyDescriptor[] {
-					new CategorisedDescriptor(ID_LAT_DEG, "Lat Degrees", "Lat"),
-					new CategorisedDescriptor(ID_LAT_MIN, "Lat Minutes", "Lat"),
-					new CategorisedDescriptor(ID_LAT_SEC, "Lat Seconds", "Lat"),
-					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "Lat zHemisphere", new String[] {"N", "S"}),
-					new CategorisedDescriptor(ID_LONG_DEG, "Long Degrees", "Long"),
-					new CategorisedDescriptor(ID_LONG_MIN, "Long Minutes", "Long"),
-					new CategorisedDescriptor(ID_LONG_SEC, "Long Seconds", "Long"),
-					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "Long Hemisphere", new String[] {"E", "W"})
+					new CategorisedDescriptor(ID_LAT_DEG, "1. Lat Degrees", "Lat"),
+					new CategorisedDescriptor(ID_LAT_MIN, "2. Lat Minutes", "Lat"),
+					new CategorisedDescriptor(ID_LAT_SEC, "3. Lat Seconds", "Lat"),
+					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "4. Lat Hemisphere", new String[] {"N", "S"}),
+					new CategorisedDescriptor(ID_LONG_DEG, "5. Long Degrees", "Long"),
+					new CategorisedDescriptor(ID_LONG_MIN, "6. Long Minutes", "Long"),
+					new CategorisedDescriptor(ID_LONG_SEC, "7. Long Seconds", "Long"),
+					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "8. Long Hemisphere", new String[] {"E", "W"})
 					};
 		}
 
