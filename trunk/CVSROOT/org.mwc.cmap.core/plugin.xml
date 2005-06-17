@@ -58,5 +58,19 @@
   </extension>
   
   
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.cmap.core.preferences.WMFExportPrefsPage"
+           id="org.mwc.cmap.core.preferences.WMFExportPrefsPage"
+           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+           name="WMF Export directory"/>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer class="org.mwc.cmap.core.preferences.WMFExportPreferenceInitializer"/>
+  </extension>
+  
+    
   
 </plugin>
