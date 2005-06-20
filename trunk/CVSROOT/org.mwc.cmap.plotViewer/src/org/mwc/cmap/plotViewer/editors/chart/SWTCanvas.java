@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.11  2005-06-15 14:30:11  Ian.Mayo
+// Revision 1.12  2005-06-20 08:06:10  Ian.Mayo
+// Experiment with right-click support (copy location)
+//
+// Revision 1.11  2005/06/15 14:30:11  Ian.Mayo
 // Refactor, so that we can call it more easily from WMF painter
 //
 // Revision 1.10  2005/06/15 11:03:42  Ian.Mayo
@@ -43,19 +46,15 @@ package org.mwc.cmap.plotViewer.editors.chart;
 import java.awt.Dimension;
 import java.util.Enumeration;
 
+import org.eclipse.jface.action.*;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.events.PaintEvent;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.property_support.ColorHelper;
 
 import MWC.GUI.CanvasType;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Swing implementation of a canvas.
@@ -79,7 +78,10 @@ public class SWTCanvas extends SWTCanvasAdapter
 	/**
 	 * our double-buffering safe copy.
 	 */
-	private transient Image _dblBuff;	
+	private transient Image _dblBuff;
+
+
+	private Action _copyLocation;	
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -120,6 +122,68 @@ public class SWTCanvas extends SWTCanvasAdapter
 		});
 		
 		_myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.black));
+		
+			
+		_myCanvas.addMouseListener(new MouseAdapter()
+		{
+
+			/**
+			 * @param e
+			 */
+			public void mouseUp(MouseEvent e)
+			{
+				if(e.button == 3)
+				{
+					// cool, right-had button. process it
+					MenuManager mmgr = new MenuManager();
+					Point display = Display.getCurrent().getCursorLocation();
+					Point control =  _myCanvas.toControl(display);
+					WorldLocation targetLoc = getProjection().toWorld(new java.awt.Point(control.x, control.y));
+					fillContextMenu(mmgr, targetLoc);
+					Menu thisM = mmgr.createContextMenu(_myCanvas);
+					thisM.setVisible(true);					
+				}
+			}
+			
+		});
+		
+//		Menu rhMenu = new Menu(_myCanvas);
+//		MenuItem copyLocation = new MenuItem(rhMenu, SWT.POP_UP);
+//		copyLocation.setText("here");
+//		copyLocation.addSelectionListener(new SelectionListener(){
+//
+//			public void widgetSelected(SelectionEvent e)
+//			{
+//				Point pt = Display.getCurrent().getCursorLocation();
+//				Point pt2 = _myCanvas.toControl(pt);
+//				System.out.println("clicked at:" + e.x + ", " + e.y + " -- " + pt + " : " + pt2);
+//				WorldLocation toLoc = getProjection().toWorld(new java.awt.Point(pt2.x, pt2.y));
+//				System.out.println("clicked at:" + e.x + ", " + e.y + " -- " + pt + " : " + pt2 + " loc:" + BriefFormatLocation.toString(toLoc));
+//			}
+//
+//			public void widgetDefaultSelected(SelectionEvent e)
+//			{
+//			}});
+//		
+//		_myCanvas.setMenu(rhMenu);
+	}
+
+
+	/** ok - insert the right-hand button related items
+	 * 
+	 * @param mmgr
+	 */
+	protected void fillContextMenu(MenuManager mmgr, final WorldLocation target)
+	{
+		_copyLocation = new Action("Copy cursor location", SWT.PUSH)
+		{
+			public void run()
+			{
+				System.out.println("clicked at:" + target);
+			}
+			
+		};
+		mmgr.add(_copyLocation);
 	}
 
 
