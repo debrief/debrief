@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.13  2005-06-22 09:18:32  Ian.Mayo
+// Revision 1.14  2005-06-22 10:27:43  Ian.Mayo
+// Insert tests, tidy export of location to clipboard
+//
+// Revision 1.13  2005/06/22 09:18:32  Ian.Mayo
 // Tidy implementation of actions which receive location data
 //
 // Revision 1.12  2005/06/20 08:06:10  Ian.Mayo
@@ -57,11 +60,10 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
+import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 
-import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 /**
  * Swing implementation of a canvas.
@@ -170,9 +172,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 			 */
 			public void run(WorldLocation theLoc)
 			{
-				System.out.println("clicked at:" + theLoc);
-				
-				String locText = BriefFormatLocation.toString(theLoc);
+				// represent the location as a text-string
+				String locText = PlotViewerPlugin.toClipboard(theLoc);
 				
 				// right, copy the location to the clipboard
 				Clipboard clip = CorePlugin.getDefault().getClipboard();
@@ -393,4 +394,42 @@ public class SWTCanvas extends SWTCanvasAdapter
 		 */
 		abstract public void run(WorldLocation loc);
 	}
+	
+  //////////////////////////////////////////////////
+  // testing code...
+  //////////////////////////////////////////////////
+  static public class testImport extends junit.framework.TestCase
+  {
+    static public final String TEST_ALL_TEST_TYPE = "CONV";
+
+    public testImport(String val)
+    {
+      super(val);
+    }
+
+    public void testClipboardTextManagement()
+    {
+    	WorldLocation theLoc = new WorldLocation(12.3, 12.555555, 1.2);
+    	String txt = PlotViewerPlugin.toClipboard(theLoc);
+    	assertEquals("correct string not produced", "LOC:12.3,12.555555,1.2", txt);
+    	
+    	// check for valid location
+    	boolean validStr;
+    	validStr = PlotViewerPlugin.isLocation(txt);
+    	assertTrue("is a location string", validStr);
+    	
+    	// and check for duff location
+    	validStr = PlotViewerPlugin.isLocation("aasdfasdfasdfadf");
+    	assertFalse("is a location string", validStr);
+    	
+    	// and back to the location
+    	WorldLocation loc2 = PlotViewerPlugin.fromClipboard(txt);
+    	assertEquals("correct location parsed back in", theLoc, loc2);
+    	
+    	// try southern/western location
+    	theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
+    	txt = PlotViewerPlugin.toClipboard(theLoc);
+    	assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2", txt);
+    }
+  }
 }
