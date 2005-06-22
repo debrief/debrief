@@ -5,10 +5,11 @@ import java.util.*;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.resource.*;
+import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.core.preferences.ETOPOPrefsPage;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.osgi.framework.BundleContext;
 
@@ -42,6 +43,11 @@ public class CorePlugin extends AbstractUIPlugin
 	 * where we cache our images
 	 */
 	private ImageRegistry _imageRegistry;
+
+	/** our CMAP-wide clipboard
+	 * 
+	 */
+	private Clipboard _myClipboard;
 
 	/**
 	 * The constructor.
@@ -116,6 +122,19 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 	}
 
+	
+	/** get the CMAP clipboard
+	 * 
+	 * @return
+	 */
+	public Clipboard getClipboard()
+	{
+		if(_myClipboard == null)
+			_myClipboard = new Clipboard(Display.getCurrent());
+		
+		return _myClipboard;
+	}
+	
 	/**
 	 * Returns the plugin's resource bundle,
 	 */
