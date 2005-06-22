@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.12  2005-06-20 08:06:10  Ian.Mayo
+// Revision 1.13  2005-06-22 09:18:32  Ian.Mayo
+// Tidy implementation of actions which receive location data
+//
+// Revision 1.12  2005/06/20 08:06:10  Ian.Mayo
 // Experiment with right-click support (copy location)
 //
 // Revision 1.11  2005/06/15 14:30:11  Ian.Mayo
@@ -48,13 +51,17 @@ import java.util.Enumeration;
 
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
 
+import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 /**
  * Swing implementation of a canvas.
@@ -81,7 +88,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	private transient Image _dblBuff;
 
 
-	private Action _copyLocation;	
+	private LocationSelectedAction _copyLocation;	
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -137,8 +144,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 					// cool, right-had button. process it
 					MenuManager mmgr = new MenuManager();
 					Point display = Display.getCurrent().getCursorLocation();
-					Point control =  _myCanvas.toControl(display);
-					WorldLocation targetLoc = getProjection().toWorld(new java.awt.Point(control.x, control.y));
+					Point control =  _myCanvas.toControl(display);			
+					WorldLocation targetLoc = getProjection().toWorld(new java.awt.Point(control.x, control.y));					
 					fillContextMenu(mmgr, targetLoc);
 					Menu thisM = mmgr.createContextMenu(_myCanvas);
 					thisM.setVisible(true);					
@@ -146,43 +153,36 @@ public class SWTCanvas extends SWTCanvasAdapter
 			}
 			
 		});
-		
-//		Menu rhMenu = new Menu(_myCanvas);
-//		MenuItem copyLocation = new MenuItem(rhMenu, SWT.POP_UP);
-//		copyLocation.setText("here");
-//		copyLocation.addSelectionListener(new SelectionListener(){
-//
-//			public void widgetSelected(SelectionEvent e)
-//			{
-//				Point pt = Display.getCurrent().getCursorLocation();
-//				Point pt2 = _myCanvas.toControl(pt);
-//				System.out.println("clicked at:" + e.x + ", " + e.y + " -- " + pt + " : " + pt2);
-//				WorldLocation toLoc = getProjection().toWorld(new java.awt.Point(pt2.x, pt2.y));
-//				System.out.println("clicked at:" + e.x + ", " + e.y + " -- " + pt + " : " + pt2 + " loc:" + BriefFormatLocation.toString(toLoc));
-//			}
-//
-//			public void widgetDefaultSelected(SelectionEvent e)
-//			{
-//			}});
-//		
-//		_myCanvas.setMenu(rhMenu);
 	}
-
 
 	/** ok - insert the right-hand button related items
 	 * 
 	 * @param mmgr
 	 */
-	protected void fillContextMenu(MenuManager mmgr, final WorldLocation target)
+	protected void fillContextMenu(MenuManager mmgr, WorldLocation loc)
 	{
-		_copyLocation = new Action("Copy cursor location", SWT.PUSH)
+		// right, we create the actions afresh each time here.  We can't automatically calculate it.
+		_copyLocation = new LocationSelectedAction("Copy cursor location", SWT.PUSH, loc)
 		{
-			public void run()
+			/**
+			 * @param loc the converted world location for the mouse-click
+			 * @param pt the screen coordinate of the click
+			 */
+			public void run(WorldLocation theLoc)
 			{
-				System.out.println("clicked at:" + target);
+				System.out.println("clicked at:" + theLoc);
+				
+				String locText = BriefFormatLocation.toString(theLoc);
+				
+				// right, copy the location to the clipboard
+				Clipboard clip = CorePlugin.getDefault().getClipboard();
+				Object[] data = new Object[] { locText };
+				Transfer[] types = new Transfer[] { TextTransfer.getInstance()};
+				clip.setContents(data, types);				
+				
 			}
-			
-		};
+		};	
+		
 		mmgr.add(_copyLocation);
 	}
 
@@ -356,4 +356,41 @@ public class SWTCanvas extends SWTCanvasAdapter
 		return _myCanvas;
 	}
 
+	public abstract static class LocationSelectedAction extends Action
+	{
+		
+		WorldLocation _theLoc;
+		
+		/** pass some parameters back to the main parent
+		 * 
+		 * @param text
+		 * @param style 
+		 * @param theCanvas - used to get the screen coords
+		 * @param theProjection - our screen/world converter
+		 */
+		public LocationSelectedAction(String text, int style, WorldLocation theLoc)
+		{
+			super(text, style);
+			_theLoc = theLoc;
+		}
+
+		
+		
+		/**
+		 * 
+		 */
+		public void run()
+		{
+			// ok - trigger our geospatial operation
+			run(_theLoc);
+		}
+
+
+
+		/** so, the user has selected a chart location, process the selection
+		 * 
+		 * @param loc
+		 */
+		abstract public void run(WorldLocation loc);
+	}
 }
