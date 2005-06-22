@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.14  2005-06-22 10:27:43  Ian.Mayo
+// Revision 1.15  2005-06-22 13:22:00  Ian.Mayo
+// Part way through implementation of copy location from plot
+//
+// Revision 1.14  2005/06/22 10:27:43  Ian.Mayo
 // Insert tests, tidy export of location to clipboard
 //
 // Revision 1.13  2005/06/22 09:18:32  Ian.Mayo
@@ -60,7 +63,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.ColorHelper;
-import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
@@ -173,7 +175,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 			public void run(WorldLocation theLoc)
 			{
 				// represent the location as a text-string
-				String locText = PlotViewerPlugin.toClipboard(theLoc);
+				String locText = CorePlugin.toClipboard(theLoc);
 				
 				// right, copy the location to the clipboard
 				Clipboard clip = CorePlugin.getDefault().getClipboard();
@@ -410,25 +412,25 @@ public class SWTCanvas extends SWTCanvasAdapter
     public void testClipboardTextManagement()
     {
     	WorldLocation theLoc = new WorldLocation(12.3, 12.555555, 1.2);
-    	String txt = PlotViewerPlugin.toClipboard(theLoc);
+    	String txt = CorePlugin.toClipboard(theLoc);
     	assertEquals("correct string not produced", "LOC:12.3,12.555555,1.2", txt);
     	
     	// check for valid location
     	boolean validStr;
-    	validStr = PlotViewerPlugin.isLocation(txt);
+    	validStr = CorePlugin.isLocation(txt);
     	assertTrue("is a location string", validStr);
     	
     	// and check for duff location
-    	validStr = PlotViewerPlugin.isLocation("aasdfasdfasdfadf");
+    	validStr = CorePlugin.isLocation("aasdfasdfasdfadf");
     	assertFalse("is a location string", validStr);
     	
     	// and back to the location
-    	WorldLocation loc2 = PlotViewerPlugin.fromClipboard(txt);
+    	WorldLocation loc2 = CorePlugin.fromClipboard(txt);
     	assertEquals("correct location parsed back in", theLoc, loc2);
     	
     	// try southern/western location
     	theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
-    	txt = PlotViewerPlugin.toClipboard(theLoc);
+    	txt = CorePlugin.toClipboard(theLoc);
     	assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2", txt);
     }
   }

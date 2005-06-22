@@ -6,7 +6,6 @@ import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.osgi.framework.BundleContext;
 
 import MWC.GUI.Chart.Painters.SpatialRasterPainter;
-import MWC.GenericData.WorldLocation;
 
 import java.util.*;
 
@@ -18,11 +17,6 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	private static PlotViewerPlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
-	
-	/** fixed string used to indicate a string is in our location format
-	 * 
-	 */
-	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
 	
 	/**
 	 * The constructor.
@@ -82,47 +76,6 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 			resourceBundle = null;
 		}
 		return resourceBundle;
-	}
-
-	/** convenience method to assist in extracting a location from the clipboard
-	 * 
-	 * @param txt
-	 * @return
-	 */
-	public static WorldLocation fromClipboard(String txt)
-	{		
-		// get rid of the title
-		String dataPart = txt.substring(PlotViewerPlugin.LOCATION_STRING_IDENTIFIER.length(), txt.length());
-	  StringTokenizer st = new StringTokenizer(dataPart);
-	  String latP = st.nextToken(",");
-	  String longP = st.nextToken(",");
-	  String depthP = st.nextToken();
-	  Double _lat = new Double(latP);
-	  Double _long = new Double(longP);
-	  Double _depth = new Double(depthP);
-	  WorldLocation res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth.doubleValue());
-		return res;
-	}
-
-	/** convenience method to check if a string is in our format
-	 * 
-	 * @param txt
-	 * @return
-	 */
-	public static boolean isLocation(String txt)
-	{
-		return txt.startsWith(PlotViewerPlugin.LOCATION_STRING_IDENTIFIER);
-	}
-
-	/** convenience method to assist placing locations on the clipboard
-	 * 
-	 * @param loc
-	 * @return
-	 */
-	public static String toClipboard(WorldLocation loc)
-	{
-		String res = PlotViewerPlugin.LOCATION_STRING_IDENTIFIER + loc.getLat() + "," + loc.getLong() + "," + loc.getDepth();
-		return res;
 	}
 
 	/**
