@@ -64,7 +64,11 @@ public class LatLongHelper extends EditorHelper
 		public static String ID_LONG_HEM = "LONG_HEM";
 
 
+		
+		
 		protected static IPropertyDescriptor[] descriptors;
+		protected static String[] _latCats;
+		protected static String[] _longCats;
 
 		public static class CategorisedDescriptor extends TextPropertyDescriptor
 		{
@@ -77,15 +81,18 @@ public class LatLongHelper extends EditorHelper
 		
 		static
 		{
+			_latCats = new String[] {"N", "S"};
+			_longCats = new String[] {"E", "W"};
+			
 			descriptors = new IPropertyDescriptor[] {
 					new CategorisedDescriptor(ID_LAT_DEG, "1. Lat Degrees", "Lat"),
 					new CategorisedDescriptor(ID_LAT_MIN, "2. Lat Minutes", "Lat"),
 					new CategorisedDescriptor(ID_LAT_SEC, "3. Lat Seconds", "Lat"),
-					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "4. Lat Hemisphere", new String[] {"N", "S"}),
+					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "4. Lat Hemisphere", _latCats),
 					new CategorisedDescriptor(ID_LONG_DEG, "5. Long Degrees", "Long"),
 					new CategorisedDescriptor(ID_LONG_MIN, "6. Long Minutes", "Long"),
 					new CategorisedDescriptor(ID_LONG_SEC, "7. Long Seconds", "Long"),
-					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "8. Long Hemisphere", new String[] {"E", "W"})
+					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "8. Long Hemisphere", _longCats)
 					};
 		}
 
@@ -172,7 +179,7 @@ public class LatLongHelper extends EditorHelper
 				res = _longSec;
 			else if(ID_LONG_HEM.equals(propName))
 			{
-				if(_latHem.equals("E"))
+				if(_longHem.equals("E"))
 					res = new Integer(0);
 				else
 					res = new Integer(1);
@@ -261,7 +268,10 @@ public class LatLongHelper extends EditorHelper
 			else if (ID_LAT_SEC.equals(propName))
 				 _latSec = new String((String)value);
 			else if (ID_LAT_HEM.equals(propName))
-				 _latHem = new String( (String)value);
+			{
+				int index = ((Integer)value).intValue();
+				_latHem = _latCats[index];
+			}
 			else if (ID_LONG_DEG.equals(propName))
 				 _longDeg = new String( (String)value);
 			else if (ID_LONG_MIN.equals(propName))
@@ -269,7 +279,10 @@ public class LatLongHelper extends EditorHelper
 			else if (ID_LONG_SEC.equals(propName))
 				 _longSec = new String( (String)value);
 			else if (ID_LONG_HEM.equals(propName))
-				 _longHem = new String( (String)value);
+			{
+				int index = ((Integer)value).intValue();
+				_longHem = _longCats[index];
+			}
 
 			firePropertyChanged((String) propName);
 		}
