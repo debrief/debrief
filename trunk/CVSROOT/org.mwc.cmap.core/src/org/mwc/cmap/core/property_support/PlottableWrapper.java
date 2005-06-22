@@ -1,5 +1,6 @@
 package org.mwc.cmap.core.property_support;
 
+import java.beans.*;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Vector;
@@ -138,26 +139,72 @@ public class PlottableWrapper implements IPropertySource
 	 */
 	public IPropertyDescriptor[] getPropertyDescriptors()
 	{
-
+		
 		if (_myDescriptors == null)
 		{
-			IPropertyDescriptor[] res = null;
+			Vector list = new Vector(0,1);
+			IPropertyDescriptor[] res = new IPropertyDescriptor[]{null};
 			Editable.EditorType editor = _plottable.getInfo();
 			if (editor != null)
 			{
-				Vector list = new Vector(0, 1);
 				PropertyDescriptor[] properties = editor.getPropertyDescriptors();
-				_myDescriptors = new IPropertyDescriptor[properties.length];
+//				_myDescriptors = new IPropertyDescriptor[properties.length];
 
 				for (int i = 0; i < properties.length; i++)
 				{
 					final PropertyDescriptor thisProp = properties[i];
 					IPropertyDescriptor newProp = new DebriefProperty(thisProp,
 							_plottable, null);
-					_myDescriptors[i] = newProp;
+//					_myDescriptors[i] = newProp;
+					list.add(newProp);
 				}
 
+				// hmm, are there any "supplemental" editors?
+				BeanInfo[] others = editor.getAdditionalBeanInfo();
+				if (others != null)
+				{
+					// adding more editors
+					for (int i = 0; i < others.length; i++)
+					{
+						BeanInfo bn = others[i];
+						if (bn instanceof MWC.GUI.Editable.EditorType)
+						{
+							Editable.EditorType et = (Editable.EditorType) bn;
+							Editable obj = (Editable) et.getData();
+							PropertyDescriptor[] pds = et.getPropertyDescriptors();
+							if (pds != null)
+							{
+								for (int j = 0; j < pds.length; j++)
+								{
+									PropertyDescriptor pd = pds[j];
+
+									// is this an 'expert' property which
+									// should not appear in here as an additional?
+									if (pd.isExpert())
+									{
+										// do nothing, we don't want to show this
+									}
+									else
+									{
+										// ok, add this editor
+										IPropertyDescriptor newProp = new DebriefProperty(pd,
+												obj, null);
+										
+										list.add(newProp);
+									}
+								}
+							}
+						}
+					}
+				}
 			}
+			
+			// hmm, did we find any
+			if(list.size() > 0)
+			{
+				_myDescriptors = (IPropertyDescriptor[]) list.toArray(res);
+			}
+			
 		}
 		return _myDescriptors;
 	}
