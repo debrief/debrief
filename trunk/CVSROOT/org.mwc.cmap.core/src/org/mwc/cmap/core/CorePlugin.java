@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IStatusLineManager;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.*;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
@@ -273,6 +274,18 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 
 		return _myLineItem;
+	}
+	
+	/** show a message to the user
+	 * 
+	 * @param title
+	 * @param message
+	 */
+	public static void showMessage(final String title, final String message) {
+		MessageDialog.openInformation(
+				Display.getCurrent().getActiveShell(),
+			title,
+			message);
 	}
 
 }
