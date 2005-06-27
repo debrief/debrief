@@ -8,72 +8,41 @@ import java.text.DecimalFormat;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
 
-import MWC.GenericData.*;
+import MWC.GUI.Dialogs.DialogFactory;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.*;
 
 public class LatLongHelper extends EditorHelper
 {
 
-	/** remember how to format items on line
-	 * 
+	/**
+	 * remember how to format items on line
 	 */
 	protected static DecimalFormat _floatFormat = new DecimalFormat("0.0000");
 
-	/** constructor.  just declare our object type
-	 * 
-	 *
+	/**
+	 * constructor. just declare our object type
 	 */
 	public LatLongHelper()
 	{
 		super(WorldLocation.class);
 	}
 
-	/** we define a custom cell editor just to get the "Paste" button
+	/**
+	 * we define a custom cell editor just to get the "Paste" button
 	 * 
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getEditorFor(Composite parent)
+	public CellEditor getEditorFor(Composite cellParent)
 	{
-		DialogCellEditor res = new DialogCellEditor(parent)
-		{
-			/** override operation triggered when button pressed.  We should strictly
-			 * be opening a new dialog, instead we're looking for a valid location on the clipboard.
-			 * If one is there, we paste it.
-			 * 
-			 * @param cellEditorWindow
-			 * @return
-			 */
-			protected Object openDialogBox(Control cellEditorWindow)
-			{
-				// right, see what's on the clipboard
-				// right, copy the location to the clipboard
-				Clipboard clip = CorePlugin.getDefault().getClipboard();
-				Object val = clip.getContents(TextTransfer.getInstance());
-				if (val != null)
-				{
-					if (val instanceof String)
-					{
-						String txt = (String) val;
-						if (CorePlugin.isLocation(txt))
-						{
-							// cool, get the text
-							WorldLocation loc = CorePlugin.fromClipboard(txt);
+		DialogCellEditor res = new PasteLocationDialogCellEditor(cellParent);
 
-							// and store it
-							storeLocation(loc);
-						}
-					}
-				}
-				return null;
-			}
-		};
 		return res;
 	}
 
@@ -118,11 +87,6 @@ public class LatLongHelper extends EditorHelper
 	/**
 	 * @param loc
 	 */
-	private void storeLocation(WorldLocation loc)
-	{
-		System.out.println("location is:" + loc);
-	}
-
 	public static class LatLongPropertySource implements IPropertySource2
 	{
 
@@ -407,4 +371,83 @@ public class LatLongHelper extends EditorHelper
 
 	}
 
+	/**
+	 * custom cell editor which re-purposes button used to open dialog as a paste
+	 * button
+	 * 
+	 * @author ian.mayo
+	 */
+	private static class PasteLocationDialogCellEditor extends DialogCellEditor
+	{
+		/**
+		 * constructor - just pass on to parent
+		 * 
+		 * @param cellParent
+		 */
+		public PasteLocationDialogCellEditor(Composite cellParent)
+		{
+			super(cellParent);
+		}
+
+		/**
+		 * override operation triggered when button pressed. We should strictly be
+		 * opening a new dialog, instead we're looking for a valid location on the
+		 * clipboard. If one is there, we paste it.
+		 * 
+		 * @param cellEditorWindow
+		 *          the parent control we belong to
+		 * @return
+		 */
+		protected Object openDialogBox(Control cellEditorWindow)
+		{
+			LatLongPropertySource output = null;
+
+			// right, see what's on the clipboard
+			// right, copy the location to the clipboard
+			Clipboard clip = CorePlugin.getDefault().getClipboard();
+			Object val = clip.getContents(TextTransfer.getInstance());
+			if (val != null)
+			{
+				String txt = (String) val;
+				if (CorePlugin.isLocation(txt))
+				{
+					// cool, get the text
+					WorldLocation loc = CorePlugin.fromClipboard(txt);
+
+					// create the output value
+					output = new LatLongPropertySource(loc);
+				}
+				else
+				{
+					CorePlugin.showMessage("Paste location",
+							"Sorry the clipboard text is not in the right format." + "\nContents:" + txt);
+				}
+			}
+			else
+			{
+				CorePlugin.showMessage("Paste location",
+						"Sorry, there is no suitable text on the clipboard");
+			}
+			return output;
+		}
+
+		/**
+		 * Creates the button for this cell editor under the given parent control.
+		 * <p>
+		 * The default implementation of this framework method creates the button
+		 * display on the right hand side of the dialog cell editor. Subclasses may
+		 * extend or reimplement.
+		 * </p>
+		 * 
+		 * @param parent
+		 *          the parent control
+		 * @return the new button control
+		 */
+		protected Button createButton(Composite parent)
+		{
+			Button result = super.createButton(parent);
+			result.setText("Paste");
+			return result;
+		}
+	}
 }
