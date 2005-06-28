@@ -3,10 +3,7 @@
  */
 package org.mwc.debrief.core.ChartFeatures;
 
-import java.awt.Color;
-
-import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.Shapes.RectangleShape;
+import MWC.GUI.Shapes.*;
 import MWC.GenericData.*;
 
 /**
@@ -17,14 +14,17 @@ public class InsertRectangle extends CoreInsertShape
 {
 
 
-	protected ShapeWrapper getShape(WorldLocation centre)
+	/** produce the shape for the user
+	 * 
+	 * @param centre the current centre of the screen
+	 * @return a shape, based on the centre
+	 */
+	protected PlainShape getShape(WorldLocation centre)
 	{
 		// generate the shape
-		ShapeWrapper res = new ShapeWrapper("New rectangle", 
-				new RectangleShape(centre, 
-						centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45),
-            0.05, 0))),
-				Color.red, null);
+		PlainShape res = new RectangleShape(
+						centre, 
+						centre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(45), 0.05, 0)));
 		return res;
 	}	
 }
