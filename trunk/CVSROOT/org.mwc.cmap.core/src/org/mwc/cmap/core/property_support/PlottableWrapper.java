@@ -5,13 +5,13 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;
 import java.util.Vector;
 
-import org.eclipse.ui.views.properties.IPropertyDescriptor;
-import org.eclipse.ui.views.properties.IPropertySource;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.*;
+import org.eclipse.ui.views.properties.*;
+import org.mwc.cmap.core.CorePlugin;
 
-import MWC.GUI.Editable;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
+import MWC.GUI.*;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other
@@ -283,14 +283,17 @@ public class PlottableWrapper implements IPropertySource
 		// ok. now find the matching descriptor
 		DebriefProperty thisProp = getDescriptorFor(thisName);
 
-		// get the value, if it worked
-		thisProp.setValue(value);
-
+		// and find the existing value
+		Object oldVal = thisProp.getValue();
+		
 		// find the parent layer
 		Layer parent = getTopLevelLayer();
 
-		// fire the reformatted event for the parent layer
-		getLayers().fireReformatted(parent);
+		// ok, create the action
+		PropertyChangeAction pca = new PropertyChangeAction(oldVal,value, thisProp, getPlottable(), parent, getLayers());
+		
+		// and sort it out with the history
+		CorePlugin.run(pca);
 	}
 
 	protected static Class getPropertyClass(PropertyDescriptor thisProp)
@@ -310,4 +313,74 @@ public class PlottableWrapper implements IPropertySource
 		return res;
 	}
 
+	/** embedded class which stores a property change in an undoable operation
+	 * 
+	 * @author ian.mayo
+	 *
+	 */
+	private static class PropertyChangeAction extends AbstractOperation 
+	{
+		private final Object _oldValue;
+		private final Object _newValue;
+		private final DebriefProperty _property;
+		private final Layer _parentLayer;
+		private final Layers _wholeLayers;
+
+		/** setup the change details
+		 * 
+		 * @param oldValue old value (to undo to)
+		 * @param newValue new value 
+		 * @param subject the item being edited
+		 * @param parentLayer the parent layer - the one to be updated following a change
+		 * @param wholeLayers the layers object we inform about the change
+		 */
+		public PropertyChangeAction(Object oldValue,
+				Object newValue,
+				DebriefProperty subject,
+				Plottable item,
+				Layer parentLayer,
+				Layers wholeLayers)
+		{
+			super(item.getName() + " " + subject.getDisplayName());
+			
+			this.addContext(CorePlugin.CMAP_CONTEXT);
+			
+			_oldValue = oldValue;
+			_newValue = newValue;
+			_property = subject;
+			_parentLayer = parentLayer;
+			_wholeLayers = wholeLayers;
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		{
+				// get the value, if it worked
+				_property.setValue(_newValue);
+
+				// fire the reformatted event for the parent layer
+				_wholeLayers.fireReformatted(_parentLayer);
+
+			return Status.OK_STATUS;
+		}
+
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		{
+			return execute(monitor, info);
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		{
+			// get the value, if it worked
+			_property.setValue(_oldValue);
+
+			// fire the reformatted event for the parent layer
+			_wholeLayers.fireReformatted(_parentLayer);
+			
+			// and return the status
+			return Status.OK_STATUS;
+		}
+		
+	}
+
+	
 }
