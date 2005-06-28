@@ -2,6 +2,8 @@ package org.mwc.cmap.core;
 
 import java.util.*;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.*;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -50,6 +52,16 @@ public class CorePlugin extends AbstractUIPlugin
 	 * 
 	 */
 	private Clipboard _myClipboard;
+	
+	/** the undo buffer we manage/support
+	 * 
+	 */
+	private static IOperationHistory _myHistory;
+	
+	/** and the context used to describe our undo list
+	 * 
+	 */
+	public final static IUndoContext CMAP_CONTEXT = new ObjectUndoContext("CMAP"); 
 
 	/** fixed string used to indicate a string is in our location format
 	 * 
@@ -63,7 +75,7 @@ public class CorePlugin extends AbstractUIPlugin
 	{
 		super();
 		plugin = this;
-
+		
 	}
 
 	/**
@@ -75,7 +87,7 @@ public class CorePlugin extends AbstractUIPlugin
 		
 		
 		// create something capable of handling legacy preferences
-		_toolParent = new DebriefToolParent(getPreferenceStore());
+		_toolParent = new DebriefToolParent(getPreferenceStore(), getHistory());
 		
 		// tell the VPF generator where to get its preferences from
 		CreateVPFLayers.initialise(_toolParent);
@@ -140,6 +152,17 @@ public class CorePlugin extends AbstractUIPlugin
 			_myClipboard = new Clipboard(Display.getCurrent());
 		
 		return _myClipboard;
+	}
+	
+	/** get the undo buffer
+	 * @return the undo buffer (called a History in Eclipse)
+	 */
+	public static IOperationHistory getHistory()
+	{
+		if(_myHistory == null)
+			_myHistory = OperationHistoryFactory.getOperationHistory();
+		
+		return _myHistory;
 	}
 	
 	/**
@@ -286,6 +309,25 @@ public class CorePlugin extends AbstractUIPlugin
 				Display.getCurrent().getActiveShell(),
 			title,
 			message);
+	}
+
+	/** run this supplied action, then add it to our undo buffer
+	 * 
+	 * @param theAction the action to run...
+	 */
+	public static void run(IUndoableOperation  theAction)
+	{
+		// and now run it
+		try
+		{
+			// add, then run the action to the buffer
+			getHistory().execute(theAction, null, null);
+		}
+		catch (ExecutionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }

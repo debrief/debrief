@@ -5,8 +5,11 @@ package org.mwc.cmap.core;
 
 import java.util.*;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.preference.*;
+import org.eclipse.jface.preference.IPreferenceStore;
+import org.mwc.cmap.core.operations.DebriefActionWrapper;
 
 import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
@@ -21,10 +24,17 @@ public class DebriefToolParent implements ToolParent
 	 * the set of preferences we support
 	 */
 	private IPreferenceStore _myPrefs;
+	
+	/** the undo buffer we support
+	 * 
+	 */
+	private IOperationHistory _myUndo;
 
-	public DebriefToolParent(IPreferenceStore prefs)
+	public DebriefToolParent(IPreferenceStore prefs,
+			IOperationHistory undoBuffer)
 	{
 		_myPrefs = prefs;
+		_myUndo = undoBuffer;
 	}
 
 	/**
@@ -50,8 +60,20 @@ public class DebriefToolParent implements ToolParent
 	 */
 	public void addActionToBuffer(Action theAction)
 	{
-		// TODO Auto-generated method stub
-
+		// ok, better wrap the action first
+		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
+		
+		// now add it to the buffer (though we don't need to start with the activate bit)
+		try
+		{
+			_myUndo.execute(daw, null, null);
+		}
+		catch (ExecutionException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
 	}
 
 	/**
