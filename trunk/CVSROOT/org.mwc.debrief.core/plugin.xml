@@ -99,7 +99,17 @@
                menubarPath="org.mwc.debrief.core.EditorActions/view"
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorActions/view"/>
-               
+
+             
+         <action
+               class="org.mwc.debrief.core.ChartFeatures.InsertRectangle"
+               icon="icons/rectangle.gif"
+               id="org.mwc.debrief.core.ChartFeatures.InsertRectangle"
+               label="&amp;Rectangle"
+               menubarPath="org.mwc.debrief.core.EditorActions/view"
+               style="push"
+               toolbarPath="org.mwc.debrief.core.EditorActions/operation"/>
+                              
          <action
                class="org.mwc.cmap.plotViewer.actions.ExportWMF"
                icon="icons/write_wmf.gif"
