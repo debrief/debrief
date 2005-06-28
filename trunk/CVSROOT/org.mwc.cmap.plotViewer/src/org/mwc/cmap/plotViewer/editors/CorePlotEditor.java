@@ -4,33 +4,29 @@ import java.beans.*;
 import java.util.*;
 
 import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.SubActionBars2;
+import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.ide.IGotoMarker;
+import org.eclipse.ui.operations.*;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 
-import Debrief.Tools.Tote.WatchableList;
-import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.*;
-import MWC.TacticalData.Track;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public abstract class CorePlotEditor extends EditorPart implements
 		IResourceProvider, IControllableViewport, ISelectionProvider
@@ -76,21 +72,21 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	protected DropTarget target;
 
-
 	Vector _selectionListeners;
 
 	ISelection _currentSelection;
 
-	/** keep track of whether the current plot is dirty...
-	 * 
+	/**
+	 * keep track of whether the current plot is dirty...
 	 */
 	protected boolean _plotIsDirty = false;
-	
-	/** whether to ignore firing dirty events for the time being (such as when we're loading data)
-	 * 
+
+	/**
+	 * whether to ignore firing dirty events for the time being (such as when
+	 * we're loading data)
 	 */
 	protected boolean _ignoreDirtyCalls = false;
-	
+
 	// ///////////////////////////////////////////////
 	// dummy bits applicable for our dummy interface
 	// ///////////////////////////////////////////////
@@ -107,10 +103,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public CorePlotEditor()
 	{
 		super();
-		
 
 		_myLayers = new Layers();
-		
+
 		DataListener listenForMods = new DataListener()
 		{
 
@@ -134,7 +129,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_myLayers.addDataExtendedListener(listenForMods);
 		_myLayers.addDataModifiedListener(listenForMods);
 		_myLayers.addDataReformattedListener(listenForMods);
-		
 
 		// create the time manager. cool
 		_timeManager = new TimeManager();
@@ -148,7 +142,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 				// right, retrieve the time
 				HiResDate newDTG = (HiResDate) arg0.getNewValue();
 				timeChanged(newDTG);
-				
+
 				// now make a note that the current DTG has changed
 				fireDirty();
 			}
@@ -156,7 +150,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 		_timeManager.addListener(_timeListener,
 				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
 	}
 
 	public void dispose()
@@ -227,6 +220,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// }
 		// });
 
+		// and over-ride the undo button
+		IAction undoAction = new UndoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
+		IAction redoAction = new RedoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
+
+
+		getEditorSite().getActionBars().setGlobalActionHandler(
+				ActionFactory.UNDO.getId(), undoAction);
+		getEditorSite().getActionBars().setGlobalActionHandler(
+				ActionFactory.REDO.getId(), redoAction);
 	}
 
 	/**
@@ -349,40 +351,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		return res;
 	}
 
-	private static String describeData(String dataName, Layers theLayers,
-			NarrativeWrapper narrative, TimeManager timeManager)
-	{
-		String res = dataName + "\n";
-
-		Enumeration enumer = theLayers.elements();
-		while (enumer.hasMoreElements())
-		{
-			Layer thisL = (Layer) enumer.nextElement();
-			res = res + thisL.getName() + "\n";
-		}
-
-		if (narrative != null)
-		{
-			res = res + "Narrative:" + narrative.getData().size() + " elements"
-					+ "\n";
-		}
-		else
-		{
-			res = res + "Narrative empty\n";
-		}
-
-		if (timeManager != null)
-		{
-			HiResDate tNow = timeManager.getTime();
-			if (tNow != null)
-				res = res + DebriefFormatDateTime.toStringHiRes(tNow);
-			else
-				res = res + " time not set";
-		}
-
-		return res;
-	}
-
 	protected void timeChanged(HiResDate newDTG)
 	{
 	}
@@ -500,7 +468,6 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_currentSelection = selection;
 	}
 
-
 	protected void fireSelectionChanged(ISelection sel)
 	{
 		_currentSelection = sel;
@@ -520,7 +487,8 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	}
 
-	/** hmm, are we dirty?
+	/**
+	 * hmm, are we dirty?
 	 * 
 	 * @return
 	 */
@@ -529,13 +497,12 @@ public abstract class CorePlotEditor extends EditorPart implements
 		return _plotIsDirty;
 	}
 
-	/** make a note that the data is now dirty, and needs saving.
-	 * 
-	 *
+	/**
+	 * make a note that the data is now dirty, and needs saving.
 	 */
 	protected void fireDirty()
 	{
-		if(!_ignoreDirtyCalls)
+		if (!_ignoreDirtyCalls)
 		{
 			_plotIsDirty = true;
 			firePropertyChange(PROP_DIRTY);
@@ -547,19 +514,21 @@ public abstract class CorePlotEditor extends EditorPart implements
 	 */
 	private void layersExtended()
 	{
-	
+
 	}
 
-	/** start ignoring dirty calls, since we're loading the initial data (for instance)
-	 * 
+	/**
+	 * start ignoring dirty calls, since we're loading the initial data (for
+	 * instance)
 	 */
 	protected void startIgnoringDirtyCalls()
 	{
 		_ignoreDirtyCalls = true;
 	}
 
-	/** start ignoring dirty calls, since we're loading the initial data (for instance)
-	 * 
+	/**
+	 * start ignoring dirty calls, since we're loading the initial data (for
+	 * instance)
 	 */
 	protected void stopIgnoringDirtyCalls()
 	{
