@@ -3,21 +3,31 @@
  */
 package org.mwc.cmap.plotViewer.actions;
 
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.operations.DebriefActionWrapper;
+
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.PlainChart;
+import MWC.GUI.Tools.Action;
+import MWC.GenericData.WorldArea;
 
 /**
  * @author ian.mayo
- *
  */
 public class ZoomOut extends CoreEditorAction
 {
 	protected void run()
 	{
 		PlainChart theChart = getChart();
-		PlainProjection proj = theChart.getCanvas().getProjection();
-		proj.zoom(2.0);
-		redrawChart();
 
+		WorldArea oldArea = theChart.getDataArea();
+		Action theAction = new MWC.GUI.Tools.Chart.ZoomOut.ZoomOutAction(theChart,
+				oldArea, 2.0);
+
+		// and wrap it
+		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
+
+		// and add it to the clipboard
+		CorePlugin.run(daw);
 	}
 }
