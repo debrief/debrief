@@ -499,7 +499,7 @@ public class LayerManagerView extends ViewPart
 			_myLayers = (Layers) part;
 			if (_myLayersListener == null)
 			{
-				_myLayersListener = new Layers.DataListener()
+				_myLayersListener = new Layers.DataListener2()
 				{
 
 					public void dataModified(Layers theData, Layer changedLayer)
@@ -508,12 +508,17 @@ public class LayerManagerView extends ViewPart
 
 					public void dataExtended(Layers theData)
 					{
-						processNewData(theData);
+						dataExtended(theData, null);
 					}
 
 					public void dataReformatted(Layers theData, Layer changedLayer)
 					{
 						handleReformattedLayer(changedLayer);
+					}
+
+					public void dataExtended(Layers theData, Plottable newItem)
+					{
+						processNewData(theData, newItem);
 					}
 				};
 			}
@@ -524,7 +529,7 @@ public class LayerManagerView extends ViewPart
 			_myLayers.addDataReformattedListener(_myLayersListener);
 
 			// do an initial population.
-			processNewData(_myLayers);
+			processNewData(_myLayers, null);
 		}
 	}
 
@@ -666,10 +671,22 @@ public class LayerManagerView extends ViewPart
 		}
 	}
 
-	private void processNewData(Layers theData)
+	private void processNewData(Layers theData, Plottable newItem)
 	{
 		if (!_treeViewer.getTree().isDisposed())
 			_treeViewer.setInput(theData);
+		
+		// hmm, do we know about the new item? If so, better select it
+		if(newItem != null)
+		{
+			// wrap the plottable
+			PlottableWrapper wrapped = new PlottableWrapper(newItem, null,theData);
+			ISelection selected = new StructuredSelection(wrapped);
+			
+			// and select it
+			plottableSelected(selected, wrapped);
+		}
+		
 	}
 
 	private static interface IOperateOn
