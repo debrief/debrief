@@ -508,7 +508,7 @@ public class LayerManagerView extends ViewPart
 
 					public void dataExtended(Layers theData)
 					{
-						dataExtended(theData, null);
+						dataExtended(theData, null, null);
 					}
 
 					public void dataReformatted(Layers theData, Layer changedLayer)
@@ -516,9 +516,9 @@ public class LayerManagerView extends ViewPart
 						handleReformattedLayer(changedLayer);
 					}
 
-					public void dataExtended(Layers theData, Plottable newItem)
+					public void dataExtended(Layers theData, Plottable newItem, Layer parentLayer)
 					{
-						processNewData(theData, newItem);
+						processNewData(theData, newItem, parentLayer);
 					}
 				};
 			}
@@ -529,7 +529,7 @@ public class LayerManagerView extends ViewPart
 			_myLayers.addDataReformattedListener(_myLayersListener);
 
 			// do an initial population.
-			processNewData(_myLayers, null);
+			processNewData(_myLayers, null, null);
 		}
 	}
 
@@ -671,7 +671,7 @@ public class LayerManagerView extends ViewPart
 		}
 	}
 
-	private void processNewData(Layers theData, Plottable newItem)
+	private void processNewData(Layers theData, Plottable newItem, Layer parentLayer)
 	{
 		if (!_treeViewer.getTree().isDisposed())
 			_treeViewer.setInput(theData);
@@ -680,7 +680,8 @@ public class LayerManagerView extends ViewPart
 		if(newItem != null)
 		{
 			// wrap the plottable
-			PlottableWrapper wrapped = new PlottableWrapper(newItem, null,theData);
+			PlottableWrapper parentWrapper = new PlottableWrapper(parentLayer, null, theData);
+			PlottableWrapper wrapped = new PlottableWrapper(newItem, parentWrapper,theData);
 			ISelection selected = new StructuredSelection(wrapped);
 			
 			// and select it
