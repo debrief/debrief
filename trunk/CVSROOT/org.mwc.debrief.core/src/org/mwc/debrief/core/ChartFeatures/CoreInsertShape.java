@@ -12,7 +12,7 @@ import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import Debrief.Tools.Palette.CreateShape;
 import Debrief.Wrappers.ShapeWrapper;
 import MWC.GUI.*;
-import MWC.GUI.Shapes.*;
+import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.*;
 
@@ -49,6 +49,8 @@ abstract public class CoreInsertShape extends CoreEditorAction
 		CorePlugin.run(daw);
 
 		// res.execute();
+		
+		
 
 	}
 
