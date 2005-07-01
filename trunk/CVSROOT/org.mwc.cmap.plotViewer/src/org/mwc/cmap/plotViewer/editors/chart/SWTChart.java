@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.14  2005-06-14 15:21:03  Ian.Mayo
+// Revision 1.15  2005-07-01 08:17:46  Ian.Mayo
+// refactor, so we can override layer painting
+//
+// Revision 1.14  2005/06/14 15:21:03  Ian.Mayo
 // fire update after zoom
 //
 // Revision 1.13  2005/06/14 09:49:29  Ian.Mayo
@@ -86,7 +89,7 @@ import MWC.GenericData.WorldLocation;
  * class. This is configured by setting the listeners to the chart/panel to be
  * the listener functions defined in the parent.
  */
-public class SWTChart extends PlainChart implements Serializable
+public class SWTChart extends PlainChart
 {
 
 	// ///////////////////////////////////////////////////////////
@@ -374,7 +377,7 @@ public class SWTChart extends PlainChart implements Serializable
 											// and store the GC
 											ca.startDraw(newGC);
 
-											// draw into it
+											// ok, paint the layer into this canvas
 											thisLayer.paint(ca);
 
 											// done.
@@ -404,7 +407,7 @@ public class SWTChart extends PlainChart implements Serializable
 						// did we manage to paint it
 						if (!isAlreadyPlotted)
 						{
-							thisLayer.paint(dest);
+							paintThisLayer(thisLayer, dest);
 
 							isAlreadyPlotted = true;
 						}
@@ -413,6 +416,17 @@ public class SWTChart extends PlainChart implements Serializable
 			}
 		}
 
+	}
+
+	/**  Convenience method added, to allow child classes to override how we plot
+	 * non-background layers.  This was originally inserted to let us support snail trails
+	 * @param thisLayer
+	 * @param dest
+	 */
+	protected void paintThisLayer(final Layer thisLayer, CanvasType dest)
+	{
+		// draw into it
+		thisLayer.paint(dest);
 	}
 
 	/**
