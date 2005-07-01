@@ -164,7 +164,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	public void createPartControl(Composite parent)
 	{
 		// hey, create the chart
-		_myChart = new SWTChart(_myLayers, parent);
+		_myChart = createTheChart(parent);
 
 		// and update the projection, if we have one
 		if (_pendingProjection != null)
@@ -229,6 +229,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 				ActionFactory.UNDO.getId(), undoAction);
 		getEditorSite().getActionBars().setGlobalActionHandler(
 				ActionFactory.REDO.getId(), redoAction);
+	}
+
+	/** create the chart we're after
+	 * @param parent the parent object to stick it into
+	 */
+	protected SWTChart createTheChart(Composite parent)
+	{
+		SWTChart res  = new SWTChart(_myLayers, parent);
+		return res;
 	}
 
 	/**
