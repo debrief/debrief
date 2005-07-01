@@ -1,3 +1,4 @@
+
 /**
  * 
  */
@@ -15,20 +16,18 @@ import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
+import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.debrief.core.CorePlugin;
-import org.mwc.debrief.core.editors.painters.PlainHighlighter;
+import org.mwc.debrief.core.editors.painters.*;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
-import Debrief.GUI.Frames.Session;
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
-import MWC.GUI.Layers.DataListener;
 import MWC.GenericData.*;
 
 /**
@@ -52,8 +51,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";
 
-	private PlainHighlighter _myTimeHighlighter;
-
 	/**
 	 * helper object which loads plugin file-loaders
 	 */
@@ -63,6 +60,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * 
 	 */
 	private TrackDataProvider _trackDataProvider;
+	
+	/** the current layer painter
+	 * 
+	 */
+	private TemporalLayerPainter _myLayerPainter;
 	
 	/**
 	 * constructor - quite simple really.
@@ -84,6 +86,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				fireDirty();
 			}});
+		
+		_myLayerPainter = new PlainHighlighter();
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -328,6 +332,35 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		return res;
 	}
 
+	
+	
+	/**
+	 * @param parent
+	 */
+	protected SWTChart createTheChart(Composite parent)
+	{
+		// TODO Auto-generated method stub
+		SWTChart res = new SWTChart(_myLayers, parent)
+		{
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			/**
+			 * @param thisLayer
+			 * @param dest
+			 */
+			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
+			{
+				_myLayerPainter.paintThisLayer(thisLayer, dest, _timeManager.getTime());
+			}
+			
+		};
+		return res;
+	}
+
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -337,29 +370,29 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		super.createPartControl(parent);
 
-		super.getChart().getCanvas().addPainter(new CanvasType.PaintListener()
-		{
-
-			public void paintMe(CanvasType dest)
-			{
-				// ok - get the highlighter to draw itself
-				PlainHighlighter.update(_timeManager.getTime(), _myLayers, dest);
-			}
-
-			public WorldArea getDataArea()
-			{
-				return null;
-			}
-
-			public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
-			{
-			}
-
-			public String getName()
-			{
-				return null;
-			}
-		});
+//		super.getChart().getCanvas().addPainter(new CanvasType.PaintListener()
+//		{
+//
+//			public void paintMe(CanvasType dest)
+//			{
+//				// ok - get the highlighter to draw itself
+//				PlainHighlighter.update(_timeManager.getTime(), _myLayers, dest, _timeManager.getTime());
+//			}
+//
+//			public WorldArea getDataArea()
+//			{
+//				return null;
+//			}
+//
+//			public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
+//			{
+//			}
+//
+//			public String getName()
+//			{
+//				return null;
+//			}
+//		});
 
 	}
 
@@ -411,5 +444,4 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		return true;
 	}
-
 }
