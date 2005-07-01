@@ -87,7 +87,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				fireDirty();
 			}});
 		
-		_myLayerPainter = new PlainHighlighter();
+		_myLayerPainter = new SnailHighlighter(_trackDataProvider);
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
