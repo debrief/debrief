@@ -4,7 +4,6 @@
 package org.mwc.debrief.core.editors.painters;
 
 import java.awt.*;
-import java.util.Enumeration;
 
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.TrackWrapper;
@@ -12,39 +11,18 @@ import MWC.GUI.*;
 import MWC.GenericData.*;
 
 /**
+ * painter which plots all data, and draws a square rectangle around tactical
+ * items at the current dtg
+ * 
  * @author ian.mayo
  */
-public class PlainHighlighter
+public class PlainHighlighter implements TemporalLayerPainter
 {
 	private static Color _myColor = Color.white;
-  private static int _mySize = 5;
-  
-	public static void update(HiResDate time, Layers layers, CanvasType dest)
-	{
 
-		// ok, find the tracks
-		Enumeration numer = layers.elements();
-		while (numer.hasMoreElements())
-		{
-			Layer thisLayer = (Layer) numer.nextElement();
-			if (thisLayer instanceof TrackWrapper)
-			{
-				TrackWrapper tw = (TrackWrapper) thisLayer;
-				Watchable[] list = tw.getNearestTo(time);
-				if (list != null)
-				{
-					for (int i = 0; i < list.length; i++)
-					{
-						Watchable thisW = list[i];
+	private static int _mySize = 5;
 
-						highlightIt(dest.getProjection(), dest, thisW);
-					}
-				}
-			}
-		}
-	}
-
-	public static final void highlightIt(MWC.Algorithms.PlainProjection proj,
+	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
 			CanvasType dest, Debrief.Tools.Tote.Watchable watch)
 	{
 		// check that our graphics context is still valid -
@@ -82,11 +60,45 @@ public class PlainHighlighter
 
 			// plot the rectangle
 			dest.drawRect(x, y, wid, ht);
-		} catch (IllegalStateException e)
+		}
+		catch (IllegalStateException e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
 
+	}
+
+	/** ok, paint this layer, adding highlights where applicable
+	 * 
+	 * @param theLayer
+	 * @param dest
+	 * @param dtg
+	 */
+	public void paintThisLayer(Layer theLayer, CanvasType dest, HiResDate dtg)
+	{
+		// paint it, to start off with
+		theLayer.paint(dest);
+
+		// now think about the highlight
+
+		// do we have a dtg?
+		if (dtg != null)
+		{
+			if (theLayer instanceof TrackWrapper)
+			{
+				TrackWrapper tw = (TrackWrapper) theLayer;
+				Watchable[] list = tw.getNearestTo(dtg);
+				if (list != null)
+				{
+					for (int i = 0; i < list.length; i++)
+					{
+						Watchable thisW = list[i];
+
+						highlightIt(dest.getProjection(), dest, thisW);
+					}
+				}
+			}
+		}
 	}
 
 }
