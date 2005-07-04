@@ -7,6 +7,7 @@ import java.util.*;
 import junit.framework.TestCase;
 
 import org.eclipse.jface.preference.IPreferenceStore;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.*;
@@ -17,6 +18,7 @@ import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.TimeController.preferences.PreferenceConstants;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.debrief.core.editors.painters.*;
 
 import MWC.GenericData.*;
 
@@ -129,6 +131,10 @@ public class TimeController extends ViewPart
 	 */
 	private Slider _tNowSlider;
 
+	private ComboViewer _painterSelector;
+
+	protected LayerPainterManager _myLayerPainterManager;
+
 	private void buildInterface(Composite parent)
 	{
 		// ok, draw our wonderful GUI.
@@ -184,7 +190,6 @@ public class TimeController extends ViewPart
 		_tNowSlider.setMaximum(100);
 		_tNowSlider.addSelectionListener(new SelectionListener()
 		{
-
 			public void widgetSelected(SelectionEvent e)
 			{
 				int index = _tNowSlider.getSelection();
@@ -192,41 +197,28 @@ public class TimeController extends ViewPart
 						_myTemporalDataset.getPeriod().getStartDTG());
 				fireNewTime(newDTG);
 			}
-
 			public void widgetDefaultSelected(SelectionEvent e)
-			{
-			}
+			{			}
 		});
-
-		_wholePanel.addListener(SWT.MouseWheel, new Listener()
-		{
-
-			public void handleEvent(Event event)
+		
+		// lastly the painter cursor selector
+		_painterSelector = new ComboViewer(_wholePanel, SWT.NONE);
+		_painterSelector.addSelectionChangedListener(new ISelectionChangedListener(){
+			public void selectionChanged(SelectionChangedEvent event)
 			{
-				int count = event.count;
-				boolean fwd;
-				int scale = 1;
+				if(_myLayerPainterManager != null)
+				{
+				// ok, get what's selected
+				ISelection sel = _painterSelector.getSelection();
+				IStructuredSelection sel2 = (IStructuredSelection) sel;
+				TemporalLayerPainter newOne = (TemporalLayerPainter) sel2.getFirstElement();
+				_myLayerPainterManager.setCurrent(newOne);
+				}
+				
+			}});
+		
 
-				// is the control button down?
-				int keys = event.stateMask;
-				if ((keys & SWT.CONTROL) != 0)
-					scale *= 10;
-				else
-					scale *= 1;
-
-				if ((keys & SWT.SHIFT) != 0)
-					scale *= 60;
-				else
-					scale *= 1;
-
-				if (count < 0)
-					fwd = true;
-				else
-					fwd = false;
-
-				processClick(scale, fwd);
-			}
-		});
+		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent() );
 
 		/*
 		 * the next bit is a fudge (taken from "How to scroll a canvas" on Eclipse
@@ -422,7 +414,42 @@ public class TimeController extends ViewPart
 						checkTimeEnabled();
 					}
 				});
+		_myPartMonitor.addPartListener(LayerPainterManager.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						_myLayerPainterManager = (LayerPainterManager) part;
+						TemporalLayerPainter[] list = _myLayerPainterManager.getList();
+						
+						// clear the list
+						
+						
+						// add the items
+						for (int i = 0; i < list.length; i++)
+						{
+							TemporalLayerPainter painter = list[i];
+							_painterSelector.add(painter);
+						}
+						// and activate it
+						_painterSelector.getCombo().setEnabled(true);
+						
+					}
 
+				});
+		_myPartMonitor.addPartListener(LayerPainterManager.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						_painterSelector.getCombo().setEnabled(false);
+						_myLayerPainterManager = null;
+					}
+				});
+		
+		
 	}
 
 	/**
@@ -753,4 +780,32 @@ public class TimeController extends ViewPart
 
 	}
 
+	private class WheelMovedEvent implements Listener
+	{
+		public void handleEvent(Event event)
+		{
+			int count = event.count;
+			boolean fwd;
+			int scale = 1;
+
+			// is the control button down?
+			int keys = event.stateMask;
+			if ((keys & SWT.CONTROL) != 0)
+				scale *= 10;
+			else
+				scale *= 1;
+
+			if ((keys & SWT.SHIFT) != 0)
+				scale *= 60;
+			else
+				scale *= 1;
+
+			if (count < 0)
+				fwd = true;
+			else
+				fwd = false;
+
+			processClick(scale, fwd);
+		}
+	}
 }
