@@ -1,14 +1,14 @@
 package org.mwc.debrief.core.editors.painters.snail;
 
-import MWC.GUI.*;
-import MWC.GUI.Canvas.CanvasAdaptor;
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.*;
-import MWC.GenericData.*;
 import java.awt.*;
 import java.util.*;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
+
+import Debrief.Tools.Tote.Watchable;
+import Debrief.Wrappers.*;
+import MWC.GUI.CanvasType;
+import MWC.GenericData.*;
 
 /** class to draw a 'back-track' of points backwards from the current
  * datapoint for the indicated period.
@@ -102,28 +102,21 @@ final class SnailDrawSWTTrack
     {
       // cast it back to the vector
       dotPoints = (Collection)myList;
-
-//      // we only remove this list from our hashtable if
-//      // we are not in a repaint operation
-//      if(!parent.isRepainting())
-//      {
-//
-//        // and remove it from the list
-//        _fixLists.remove(theFix);
-//
-//      }
-//      else
-//      {
-//        // we are in a repaint, which means we _do_ want to draw
-//        // in the correctly coloured tail
-//      }
     }
     else
     {
       // retrieve the points in range
-      dotPoints = trk.getUnfilteredItems(new HiResDate(0, dtg.getMicros() - _trailLength), dtg);
+      dotPoints = trk.getUnfilteredItems(new HiResDate(0, dtg.getMicros() - _trailLength), 
+      		new HiResDate(0, dtg.getMicros()+2));
       
-      System.out.println("num found:" + dotPoints.size());
+      
+      // add the target fix aswell.  We are showing the symbol nearest to the current DTG -
+      //  which may be ahead of the current DTG.  We were drawing lines connecting points
+      //  from the current DTG back through the indicated time period.  This may
+      //  result in there being a gap between the current symbol and the snail trail.  Therefore,
+      //  add the current fix to the list of points if we don't already contain it.
+      //if(!dotPoints.contains(theFix))
+      	dotPoints.add(theFix);
 
       // check that we found some points for this track
       if(dotPoints != null)
