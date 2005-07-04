@@ -119,4 +119,12 @@
                style="push" />                 
       </editorContribution>
    </extension>
+   
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.debrief.core.preferences.DebriefPrefsPage"
+           id="org.mwc.debrief.core.preferences.DebriefPrefsPage"
+           name="Debrief"/>
+  </extension>   
 </plugin>
