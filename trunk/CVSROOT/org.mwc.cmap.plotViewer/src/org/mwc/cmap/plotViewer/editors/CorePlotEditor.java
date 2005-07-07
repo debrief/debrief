@@ -39,7 +39,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 	/**
 	 * the chart we store/manager
 	 */
-	SWTChart _myChart = null;
+	protected SWTChart _myChart = null;
 
 	/**
 	 * the graphic data we know about
