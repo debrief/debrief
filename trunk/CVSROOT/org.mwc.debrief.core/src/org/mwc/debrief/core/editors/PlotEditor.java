@@ -1,24 +1,26 @@
-
 /**
  * 
  */
 package org.mwc.debrief.core.editors;
 
-import java.awt.Dimension;
+import java.beans.*;
 import java.io.*;
 import java.util.Enumeration;
 
-import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
+import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.CorePlugin;
-import org.mwc.debrief.core.editors.painters.*;
+import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
@@ -46,7 +48,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 	private static final String EXTENSION_TAG_ICON_ATTRIB = "icon";
 
-	private static final String EXTENSION_TAG_CLASS_ATTRIB = "class";
+	// private static final String EXTENSION_TAG_CLASS_ATTRIB = "class";
 
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.debrief.core";
@@ -56,16 +58,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	private LoaderManager _loader;
 
-	/** we keep the reference to our track-type adapter
-	 * 
+	/**
+	 * we keep the reference to our track-type adapter
 	 */
 	private TrackDataProvider _trackDataProvider;
-	
-	/** the current layer painter
-	 * 
+
+	/**
+	 * something to look after our layer painters
 	 */
-	private TemporalLayerPainter _myLayerPainter;
-	
+	private LayerPainterManager _layerPainterManager;
+
 	/**
 	 * constructor - quite simple really.
 	 */
@@ -75,19 +77,44 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		// create the track manager to manage the primary & secondary tracks
 		_trackDataProvider = new TrackManager(_myLayers);
-		
-		// and listen out form modifications, because we want to mark ourselves as dirty once they've updated
-		_trackDataProvider.addTrackDataListener(new TrackDataListener(){
+
+		// and listen out form modifications, because we want to mark ourselves as
+		// dirty once they've updated
+		_trackDataProvider.addTrackDataListener(new TrackDataListener()
+		{
 			public void primaryUpdated(WatchableList primary)
 			{
 				fireDirty();
 			}
+
 			public void secondariesUpdated(WatchableList[] secondaries)
 			{
 				fireDirty();
-			}});
+			}
+		});
+
+		_layerPainterManager = new LayerPainterManager(_trackDataProvider);
+		_layerPainterManager.addPropertyChangeListener(new PropertyChangeListener()
+		{
+			public void propertyChange(PropertyChangeEvent arg0)
+			{
+				System.out.println("new painter, redraw plot.");
+				// ok, trigger repaint of plot
+				getChart().update();
+			}
+		});
 		
-		_myLayerPainter = new SnailHighlighter(_trackDataProvider);
+		// listen out for when our input changes, since we will change the editor window title
+		this.addPropertyListener(new IPropertyListener(){
+
+			public void propertyChanged(Object source, int propId)
+			{
+				if(propId == PROP_INPUT)
+				{
+					IFileEditorInput inp = (IFileEditorInput) getEditorInput();
+				  setPartName(inp.getName());
+				}
+			}});
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -124,12 +151,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				{
 					IPlotLoader thisLoader = loaders[i];
 
-					
 					// get it to load. Just in case it's an asychronous load operation, we
 					// rely on it calling us back (loadingComplete)
 					thisLoader.loadFile(this, input);
 				}
-			} catch (RuntimeException e)
+			}
+			catch (RuntimeException e)
 			{
 				e.printStackTrace();
 			}
@@ -219,12 +246,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	public void loadingComplete(Object source)
 	{
-		
 
-		// ok, stop listening for dirty calls - since there will be so many and we don't want
+		// ok, stop listening for dirty calls - since there will be so many and we
+		// don't want
 		// to start off with a dirty plot
 		startIgnoringDirtyCalls();
-		
+
 		CorePlugin.logError(Status.INFO, "File load received", null);
 
 		// and update the time management bits
@@ -256,7 +283,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 			};
 		}
-		
+
 		// done - now we can process dirty calls again
 		stopIgnoringDirtyCalls();
 
@@ -270,7 +297,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		for (int i = 0; i < fileNames.length; i++)
 		{
 			final String thisFilename = fileNames[i];
-			File thisFile = new File(thisFilename);
+			// File thisFile = new File(thisFilename);
+			System.out.println("should be loading:" + thisFilename);
 			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
 			// = new
 			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
@@ -308,18 +336,22 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		Object res = null;
 
-	  if(adapter == TrackManager.class)
+		if (adapter == TrackManager.class)
 		{
 			res = _trackDataProvider;
 		}
-	  else if(adapter == TrackDataProvider.class)
+		else if (adapter == TrackDataProvider.class)
 		{
 			res = _trackDataProvider;
 		}
-	  else if (adapter == PlainProjection.class)
-	  {
-	  	res = super.getChart().getCanvas().getProjection();
-	  }
+		else if (adapter == PlainProjection.class)
+		{
+			res = super.getChart().getCanvas().getProjection();
+		}
+		else if (adapter == LayerPainterManager.class)
+		{
+			res = _layerPainterManager;
+		}
 
 		// did we find anything?
 		if (res == null)
@@ -332,8 +364,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		return res;
 	}
 
-	
-	
 	/**
 	 * @param parent
 	 */
@@ -354,9 +384,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			 */
 			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
 			{
-				_myLayerPainter.paintThisLayer(thisLayer, dest, _timeManager.getTime());
+				_layerPainterManager.getCurrent().paintThisLayer(thisLayer, dest,
+						_timeManager.getTime());
 			}
-			
+
 		};
 		return res;
 	}
@@ -370,74 +401,164 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		super.createPartControl(parent);
 
-//		super.getChart().getCanvas().addPainter(new CanvasType.PaintListener()
-//		{
-//
-//			public void paintMe(CanvasType dest)
-//			{
-//				// ok - get the highlighter to draw itself
-//				PlainHighlighter.update(_timeManager.getTime(), _myLayers, dest, _timeManager.getTime());
-//			}
-//
-//			public WorldArea getDataArea()
-//			{
-//				return null;
-//			}
-//
-//			public void resizedEvent(PlainProjection theProj, Dimension newScreenArea)
-//			{
-//			}
-//
-//			public String getName()
-//			{
-//				return null;
-//			}
-//		});
+		// super.getChart().getCanvas().addPainter(new CanvasType.PaintListener()
+		// {
+		//
+		// public void paintMe(CanvasType dest)
+		// {
+		// // ok - get the highlighter to draw itself
+		// PlainHighlighter.update(_timeManager.getTime(), _myLayers, dest,
+		// _timeManager.getTime());
+		// }
+		//
+		// public WorldArea getDataArea()
+		// {
+		// return null;
+		// }
+		//
+		// public void resizedEvent(PlainProjection theProj, Dimension
+		// newScreenArea)
+		// {
+		// }
+		//
+		// public String getName()
+		// {
+		// return null;
+		// }
+		// });
 
 	}
 
+	/**
+	 * @see org.eclipse.ui.IEditorPart#doSave(IProgressMonitor)
+	 */
 	public void doSave(IProgressMonitor monitor)
 	{
-		boolean itWorked = false; 
+
+		IEditorInput input = getEditorInput();
 		
-		IFile theFile;
-		if(getEditorInput()instanceof IFileEditorInput)
+		if (input.exists())
 		{
-			theFile = ((IFileEditorInput)getEditorInput()).getFile();
+			// is this the correct type of file?
+			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+			IPath path = file.getFullPath();
+			String ext = path.getFileExtension();
+			if (ext == null || ext.equalsIgnoreCase("rep"))
+			{
+				// not, we have to do a save-as
+				doSaveAs();
+			}
+			else
+				doSaveTo(file, monitor);
+		}
+	}
+
+	private void doSaveTo(IFile destination, IProgressMonitor monitor)
+	{
+		boolean itWorked = false;
+
+		IFile theFile;
+		if (getEditorInput() instanceof IFileEditorInput)
+		{
+			theFile = ((IFileEditorInput) getEditorInput()).getFile();
 		}
 		else
 		{
 			// input is an IStorageEditorInput - somehow get file details..
 			theFile = null;
 		}
-					
-		// ok, now write to the file
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		DebriefEclipseXMLReaderWriter.exportThis(this, bos);
-		
-		// now convert to String
-		byte[] output = bos.toByteArray();
-		InputStream is = new ByteArrayInputStream(output);
-		
-		try
+
+		if (theFile != null)
 		{
-			theFile.setContents(is, false, false, monitor);
-			
-			itWorked = true;
-		} catch (CoreException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
+			// ok, now write to the file
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			DebriefEclipseXMLReaderWriter.exportThis(this, bos);
+
+			// now convert to String
+			byte[] output = bos.toByteArray();
+			InputStream is = new ByteArrayInputStream(output);
+
+			try
+			{
+				theFile.setContents(is, false, false, monitor);
+
+				itWorked = true;
+			}
+			catch (CoreException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			// ok, lastly indicate that the save worked (if it did!)
+			_plotIsDirty = !itWorked;
+			firePropertyChange(PROP_DIRTY);
 		}
-		
-		// ok, lastly indicate that the save worked (if it did!)
-		_plotIsDirty = !itWorked;
-		firePropertyChange(PROP_DIRTY);
+		else
+		{
+			CorePlugin.logError(Status.ERROR,
+					"Unable to identify source file for plot", null);
+		}
+
 	}
 
 	public void doSaveAs()
 	{
+		String message = "Save as";
+		SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
+		dialog.setTitle("Save Plot As");
+		if (getEditorInput() instanceof FileEditorInput)
+		{
+			IFile oldFile = ((FileEditorInput) getEditorInput()).getFile();
+//			dialog.setOriginalFile(oldFile);
+			
+			IPath oldPath = oldFile.getFullPath();
+			IPath newStart = oldPath.removeFileExtension();
+			IPath newPath = newStart.addFileExtension("xml");
+			File asFile = newPath.toFile();
+			String newName = asFile.getName();
+	//		dialog.setOriginalFile(newName);
+			dialog.setOriginalName(newName);
+		}
+		dialog.create();
+		if (message != null)
+			dialog.setMessage(message, IMessageProvider.WARNING);
+		else
+			dialog.setMessage("Save file to another location.");
+		dialog.open();
+		IPath path = dialog.getResult();
+
+		if (path == null)
+		{
+			return;
+		}
+		else
+		{
+			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			if (!file.exists())
+				try
+				{
+					System.out.println("creating:" + file.getName());
+					file.create(new ByteArrayInputStream(new byte[] {}), false, null);
+				}
+				catch (CoreException e)
+				{
+					CorePlugin.logError(IStatus.ERROR, "Failed trying to create new file for save-as", e);
+					return;
+				}
+
+			// ok, write to the file
+			doSaveTo(file, new NullProgressMonitor());
+			
+			// also make this new file our input
+			IFileEditorInput newInput = new FileEditorInput(file);
+			setInput(newInput);
+			firePropertyChange(PROP_INPUT);			
+		}
+
 		_plotIsDirty = false;
+		firePropertyChange(PROP_DIRTY);
 	}
 
 	public boolean isSaveAsAllowed()
