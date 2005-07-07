@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.TimeController"
    name="Time Controller Plug-in"
-   version="1.0.2"
+   version="1.0.3"
    provider-name="MWC"
    class="org.mwc.cmap.TimeController.TimeControllerPlugin">
 
@@ -16,6 +16,7 @@
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.mwc.cmap.core"/>
       <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.mwc.debrief.core"/>
    </requires>
 
   <extension

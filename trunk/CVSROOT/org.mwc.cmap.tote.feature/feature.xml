@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.2">
+      version="1.0.3">
 
    <description>
       [1.0.2] Incorporate removing primary/secondary tracks
@@ -28,6 +28,6 @@
          id="org.mwc.cmap.tote"
          download-size="0"
          install-size="0"
-         version="1.0.1"/>
+         version="1.0.3"/>
 
 </feature>

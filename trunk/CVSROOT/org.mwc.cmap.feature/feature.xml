@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.7"
+      version="1.0.8"
       provider-name="MWC">
 
    <description>
-      [1.0.7] Better support for primary/secondary tracks
+      [1.0.8] Property editing
+[1.0.7] Better support for primary/secondary tracks
 [1.0.6] Add more libs
 [1.0.5] Don&apos;t include all legacy MWC sources
 [1.0.4] Update Legacy VPF importer
@@ -39,13 +40,13 @@
          id="org.mwc.cmap.core"
          download-size="0"
          install-size="0"
-         version="1.0.4"/>
+         version="1.0.6"/>
 
    <plugin
          id="org.mwc.cmap.legacy"
          download-size="0"
          install-size="0"
-         version="1.0.2"/>
+         version="1.0.3"/>
 
    <plugin
          id="org.eclipse.ui"

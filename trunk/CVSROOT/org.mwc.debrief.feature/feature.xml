@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.7">
+      version="1.0.8">
 
    <description>
       [1.0.7] Implement file-save
@@ -40,13 +40,13 @@ files
          id="org.mwc.debrief.core"
          download-size="0"
          install-size="0"
-         version="1.0.3"/>
+         version="1.0.5"/>
 
    <plugin
          id="org.mwc.debrief.legacy"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="1.0.1"/>
 
    <plugin
          id="org.eclipse.ui.ide"

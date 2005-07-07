@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.layer_manager.feature"
       label="org.mwc.cmap.layer_manager.feature"
-      version="1.0.1"
+      version="1.0.2"
       provider-name="MWC">
 
    <description>
@@ -30,6 +30,6 @@
          id="org.mwc.cmap.layer_manager"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="1.0.2"/>
 
 </feature>

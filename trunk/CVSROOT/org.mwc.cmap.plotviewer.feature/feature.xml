@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.2">
+      version="1.0.3">
 
    <description>
       [1.0.2] Keep track of file clean/dirty status
@@ -32,6 +32,6 @@
          id="org.mwc.cmap.plotViewer"
          download-size="0"
          install-size="0"
-         version="1.0.0"/>
+         version="1.0.2"/>
 
 </feature>
