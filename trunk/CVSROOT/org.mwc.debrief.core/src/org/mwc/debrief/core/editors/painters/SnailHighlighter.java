@@ -200,4 +200,10 @@ public class SnailHighlighter implements TemporalLayerPainter
 		return new SWTPlotHighlighter.RectangleHighlight();
 	}
 
+
+	public String toString()
+	{
+		return "Snail";
+	}
+	
 }

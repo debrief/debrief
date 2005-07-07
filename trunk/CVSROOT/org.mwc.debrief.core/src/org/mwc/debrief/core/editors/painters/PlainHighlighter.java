@@ -101,4 +101,9 @@ public class PlainHighlighter implements TemporalLayerPainter
 		}
 	}
 
+	public String toString()
+	{
+		return "Normal";
+	}
+
 }
