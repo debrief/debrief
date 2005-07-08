@@ -139,9 +139,10 @@ public class TimeController extends ViewPart
 	{
 		// ok, draw our wonderful GUI.
 
-		_wholePanel = new Composite(parent, SWT.NONE);
-		RowLayout onTop = new RowLayout();
-		onTop.type = SWT.VERTICAL;
+		_wholePanel = new Composite(parent, SWT.BORDER);
+		GridLayout onTop = new GridLayout();
+//		onTop.type = SWT.VERTICAL;
+		onTop.numColumns = 1;
 		_wholePanel.setLayout(onTop);
 
 		// first create the button holder
@@ -150,7 +151,7 @@ public class TimeController extends ViewPart
 		Composite _btnPanel = new Composite(_btnPanelHolder, SWT.NONE);
 
 		GridLayout grid = new GridLayout();
-		grid.numColumns = 3;
+		grid.numColumns = 4;
 		_btnPanel.setLayout(grid);
 		// put some bits in. First the BWD buttons
 		Composite LH = new Composite(_btnPanel, SWT.NONE);
@@ -184,8 +185,8 @@ public class TimeController extends ViewPart
 		eFwd.setText("->");
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, 0));
 
-		FillLayout otherBitsLayout = new FillLayout();
-		// otherBitsLayout.type = SWT.HORIZONTAL;
+		RowLayout otherBitsLayout = new RowLayout();
+		 otherBitsLayout.type = SWT.HORIZONTAL;
 		Composite otherBitsPanel = new Composite(_wholePanel, SWT.NONE);
 		otherBitsPanel.setLayout(otherBitsLayout);
 
