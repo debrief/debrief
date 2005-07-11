@@ -596,6 +596,7 @@ public class ToteView extends ViewPart
 			for (int j = 0; j < items.length; j++)
 			{
 				TableItem thisRow = items[j];
+//				thisRow.setBackground(1, thisCol);
 				thisRow.setForeground(1, thisCol);
 			}
 		}
@@ -611,6 +612,7 @@ public class ToteView extends ViewPart
 				{
 					TableItem thisRow = items[j];
 					thisRow.setForeground(2 + i, thisCol);
+//					thisRow.setBackground(2 + i, thisCol);
 				}
 			}
 		}
