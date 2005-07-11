@@ -7,7 +7,6 @@ import java.awt.*;
 import java.util.*;
 
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.plotViewer.editors.chart.SWTCanvasAdapter;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 import org.mwc.debrief.core.editors.painters.snail.*;
 

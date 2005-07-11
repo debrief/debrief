@@ -5,15 +5,15 @@ package org.mwc.debrief.core.editors.painters.snail;
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.1  2005-07-04 07:45:52  Ian.Mayo
+// Revision 1.2  2005-07-11 11:51:33  Ian.Mayo
+// Do tidying as recommended by Eclipse
+//
+// Revision 1.1  2005/07/04 07:45:52  Ian.Mayo
 // Initial snail implementation
 //
 
 
-import Debrief.Tools.Tote.*;
-import Debrief.Wrappers.*;
-import MWC.GenericData.*;
-import java.awt.*;
+import Debrief.Tools.Tote.Watchable;
 
 
 /**
