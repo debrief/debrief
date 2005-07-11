@@ -25,4 +25,14 @@ public class InsertCircle extends CoreInsertShape
 		PlainShape res = new CircleShape(centre, 4000);
 		return res;
 	}	
+	
+	/** return the name of this shape, used give the shape an initial name
+	 * 
+	 * @return the name of this type of shape, eg: rectangle
+	 */
+	protected String getShapeName()
+	{
+		return "circle";
+	}	
+	
 }

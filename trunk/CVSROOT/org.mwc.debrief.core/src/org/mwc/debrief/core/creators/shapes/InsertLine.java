@@ -27,4 +27,14 @@ public class InsertLine extends CoreInsertShape
             0.05, 0)));
 		return res;
 	}	
+	
+	/** return the name of this shape, used give the shape an initial name
+	 * 
+	 * @return the name of this type of shape, eg: rectangle
+	 */
+	protected String getShapeName()
+	{
+		return "line";
+	}	
+	
 }

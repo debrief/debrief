@@ -70,7 +70,7 @@ abstract public class CoreInsertShape extends CoreEditorAction
 			PlainShape shape = getShape(centre);
 
 			// and now wrap the shape
-			ShapeWrapper theWrapper = new ShapeWrapper("New rectangle", shape,
+			ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(), shape,
 					Color.red, null);
 
 			// lastly, get the data
@@ -104,6 +104,12 @@ abstract public class CoreInsertShape extends CoreEditorAction
 
 		return res;
 	}
+
+	/** return the name of this shape, used give the shape an initial name
+	 * 
+	 * @return the name of this type of shape, eg: rectangle
+	 */
+	abstract protected String getShapeName();
 
 	/**
 	 * @return

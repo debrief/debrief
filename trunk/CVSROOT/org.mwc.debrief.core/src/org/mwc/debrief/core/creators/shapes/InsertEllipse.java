@@ -28,4 +28,14 @@ public class InsertEllipse extends CoreInsertShape
 		PlainShape res = new EllipseShape(centre, 45, maxDegs, minDegs);
 		return res;
 	}	
+	
+	/** return the name of this shape, used give the shape an initial name
+	 * 
+	 * @return the name of this type of shape, eg: rectangle
+	 */
+	protected String getShapeName()
+	{
+		return "ellipse";
+	}	
+	
 }
