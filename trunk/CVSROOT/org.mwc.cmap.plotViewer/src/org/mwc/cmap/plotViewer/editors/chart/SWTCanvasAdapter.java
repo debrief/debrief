@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.11  2005-06-14 08:22:18  Ian.Mayo
+// Revision 1.12  2005-08-31 15:03:09  Ian.Mayo
+// Check the dest isn't disposed before we call it
+//
+// Revision 1.11  2005/06/14 08:22:18  Ian.Mayo
 // Minor tidying
 //
 // Revision 1.10  2005/06/13 09:08:41  Ian.Mayo
@@ -200,17 +203,22 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			// us
 			try
 			{
-				if (val)
+				if (!_theDest.isDisposed())
 				{
-					if (_theDest.getAntialias() != SWT.ON)
-						_theDest.setAntialias(SWT.ON);
+
+					if (val)
+					{
+						if (_theDest.getAntialias() != SWT.ON)
+							_theDest.setAntialias(SWT.ON);
+					}
+					else
+					{
+						if (_theDest.getAntialias() != SWT.OFF)
+							_theDest.setAntialias(SWT.OFF);
+					}
 				}
-				else
-				{
-					if (_theDest.getAntialias() != SWT.OFF)
-						_theDest.setAntialias(SWT.OFF);
-				}
-			} catch (RuntimeException e)
+			}
+			catch (RuntimeException e)
 			{
 				CorePlugin.logError(Status.INFO, "Graphics library not found", e);
 				_gdiAvailable = false;
@@ -351,11 +359,14 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		int res = 0;
 
 		// set the font to start with,
-		_theDest.setFont(FontHelper.convertFont(theFont));
+		if (!_theDest.isDisposed())
+		{
+			_theDest.setFont(FontHelper.convertFont(theFont));
 
-		// res = _theDest.textExtent(theString).x;
-		res = _theDest.getFontMetrics().getAverageCharWidth() * theString.length();
-
+			// res = _theDest.textExtent(theString).x;
+			res = _theDest.getFontMetrics().getAverageCharWidth()
+					* theString.length();
+		}
 		return res;
 	}
 
@@ -391,7 +402,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	public final void setFont(final java.awt.Font theFont)
 	{
 		org.eclipse.swt.graphics.Font swtFont = FontHelper.convertFont(theFont);
-		_theDest.setFont(swtFont);
+		if (!_theDest.isDisposed())
+			_theDest.setFont(swtFont);
 	}
 
 	public final boolean drawImage(final java.awt.Image img, final int x0,
@@ -431,7 +443,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		;
 		Image image = new Image(Display.getCurrent(), imageData);
 
-		_theDest.drawImage(image, 0, 0);
+		if (_theDest.isDisposed())
+			_theDest.drawImage(image, 0, 0);
 
 		// return _theDest.drawImage(img, x, y, width, height, observer);
 
@@ -445,7 +458,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return true;
 
-		_theDest.drawImage(img, x, y, width, height, x, y, width, height);
+		if (!_theDest.isDisposed())
+			_theDest.drawImage(img, x, y, width, height, x, y, width, height);
+
 		// return _theDest.drawImage(img, x, y, width, height, observer);
 
 		return false;
@@ -475,7 +490,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		this.switchAntiAliasOn(doAntiAlias);
 
 		// ok, may as well go for it now..
-		_theDest.drawLine(x1, y1, x2, y2);
+		if (!_theDest.isDisposed())
+			_theDest.drawLine(x1, y1, x2, y2);
 	}
 
 	/**
@@ -494,10 +510,14 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		// translate the polygon to SWT format
-		int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+		if (!_theDest.isDisposed())
+		{
 
-		_theDest.fillPolygon(poly);
+			// translate the polygon to SWT format
+			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+
+			_theDest.fillPolygon(poly);
+		}
 	}
 
 	private static int[] getPolygonArray(int[] xPoints, int[] yPoints, int nPoints)
@@ -529,14 +549,17 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		// doDecide whether to anti-alias this line
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-				.getLineWidth()));
+		if (!_theDest.isDisposed())
+		{
+			// doDecide whether to anti-alias this line
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+					.getLineWidth()));
 
-		// translate the polygon to SWT format
-		int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+			// translate the polygon to SWT format
+			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
 
-		_theDest.drawPolyline(poly);
+			_theDest.drawPolyline(poly);
+		}
 	}
 
 	/**
@@ -555,14 +578,18 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		// doDecide whether to anti-alias this line
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
-				.getLineWidth()));
+		if (!_theDest.isDisposed())
+		{
 
-		// translate the polygon to SWT format
-		int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+			// doDecide whether to anti-alias this line
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
+					.getLineWidth()));
 
-		_theDest.drawPolygon(poly);
+			// translate the polygon to SWT format
+			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+
+			_theDest.drawPolygon(poly);
+		}
 	}
 
 	public final void drawOval(final int x, final int y, final int width,
@@ -594,8 +621,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// transfer the color
 		Color swtCol = ColorHelper.getColor(theCol);
 
-		_theDest.setForeground(swtCol);
-		_theDest.setBackground(swtCol);
+		if (!_theDest.isDisposed())
+		{
+			_theDest.setForeground(swtCol);
+			_theDest.setBackground(swtCol);
+		}
 	}
 
 	static public java.awt.BasicStroke getStrokeFor(final int style)
@@ -631,10 +661,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// convert the swing line-style to SWT
 		int SWT_style = style + 1;
 
-		_theDest.setLineStyle(SWT_style);
-		// final java.awt.BasicStroke stk = getStrokeFor(style);
-		// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
-		// g2.setStroke(stk);
+		if (!_theDest.isDisposed())
+			_theDest.setLineStyle(SWT_style);
 	}
 
 	/**
@@ -654,7 +682,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			// final java.awt.BasicStroke stk = new BasicStroke(width);
 			// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
 			// g2.setStroke(stk);
-			_theDest.setLineWidth((int) width);
+			if (!_theDest.isDisposed())
+				_theDest.setLineWidth((int) width);
 		}
 	}
 
@@ -663,13 +692,15 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 */
 	public final float getLineWidth()
 	{
-		final float res;
+		float res = 0;
 
 		// are we currently in a plot operation?
 		if (_theDest != null)
 		{
+
 			// create the stroke
-			res = _theDest.getLineWidth();
+			if (!_theDest.isDisposed())
+				res = _theDest.getLineWidth();
 			// final java.awt.Graphics2D g2 = (java.awt.Graphics2D) _theDest;
 			// final BasicStroke bs = (BasicStroke) g2.getStroke();
 			// res = bs.getLineWidth();
@@ -694,7 +725,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 		if (_theDest != null)
 		{
-			_theDest.drawArc(x, y, width, height, startAngle, arcAngle);
+			if (_theDest.isDisposed())
+				_theDest.drawArc(x, y, width, height, startAngle, arcAngle);
 		}
 	}
 
@@ -702,7 +734,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			final int height, final int startAngle, final int arcAngle)
 	{
 		if (_theDest != null)
-			_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
+			if (!_theDest.isDisposed())
+				_theDest.fillArc(x, y, width, height, startAngle, arcAngle);
 		// else
 		// MWC.Utilities.Errors.Trace.trace("Graphics object not available when
 		// painting oval - occasionally happens in first pass", false);
@@ -714,7 +747,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		_theDest = (GC) theVal;
 
 		// initialise the background color
-		_theDest.setBackground(_theDest.getBackground());
+		if (!_theDest.isDisposed())
+			_theDest.setBackground(_theDest.getBackground());
 
 		// set the thickness
 		// final BasicStroke bs = new BasicStroke(_lineWidth);
@@ -732,7 +766,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		_theDest.drawText(theStr, x, y, true);
+		if(!_theDest.isDisposed())
+			_theDest.drawText(theStr, x, y, true);
 	}
 
 	public void drawText(final java.awt.Font theFont, final String theStr,
@@ -741,15 +776,18 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		// doDecide the anti-alias
-		this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThis(theFont));
+		if (!_theDest.isDisposed())
+		{
+			// doDecide the anti-alias
+			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThis(theFont));
 
-		// get/set the font
-		setFont(theFont);
+			// get/set the font
+			setFont(theFont);
 
-		// shift the y. JDK uses bottom left coordinate, SWT uses top-left
-		int y2 = y - getStringHeight(theFont);
-		_theDest.drawString(theStr, x, y2, true);
+			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
+			int y2 = y - getStringHeight(theFont);
+			_theDest.drawString(theStr, x, y2, true);
+		}
 	}
 
 	public final void drawRect(final int x1, final int y1, final int wid,
@@ -765,7 +803,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		if (_theDest == null)
 			return;
 
-		_theDest.drawRectangle(x1, y1, wid, height);
+		if (!_theDest.isDisposed())
+			_theDest.drawRectangle(x1, y1, wid, height);
 	}
 
 	public final void fillRect(final int x, final int y, final int wid,
@@ -776,12 +815,16 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 		// fillOn();
 
-		// _theDest.setBackground(ColorHelper.getColor(java.awt.Color.green));
-		_theDest.fillRectangle(x, y, wid, height);
+		if (!_theDest.isDisposed())
+		{
+			// _theDest.setBackground(ColorHelper.getColor(java.awt.Color.green));
+			_theDest.fillRectangle(x, y, wid, height);
 
-		// now, the fill only fills in the provided rectangle. we also have to paint
-		// in it's border
-		_theDest.drawRectangle(x, y, wid, height);
+			// now, the fill only fills in the provided rectangle. we also have to
+			// paint
+			// in it's border
+			_theDest.drawRectangle(x, y, wid, height);
+		}
 
 		// fillOff();
 	}
@@ -790,14 +833,18 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 	protected void fillOn()
 	{
-		_theOldColor = _theDest.getBackground();
-		Color theForeColor = _theDest.getForeground();
-		_theDest.setBackground(theForeColor);
+		if (!_theDest.isDisposed())
+		{
+			_theOldColor = _theDest.getBackground();
+			Color theForeColor = _theDest.getForeground();
+			_theDest.setBackground(theForeColor);
+		}
 	}
 
 	protected void fillOff()
 	{
-		_theDest.setBackground(_theOldColor);
+		if (!_theDest.isDisposed())
+			_theDest.setBackground(_theOldColor);
 		_theOldColor = null;
 	}
 
@@ -823,7 +870,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 		// set the colour in the parent
 		if (_theDest != null)
-			_theDest.setBackground(swtCol);
+			if (!_theDest.isDisposed())
+				_theDest.setBackground(swtCol);
 	}
 
 	public final BoundedInteger getLineThickness()
@@ -953,7 +1001,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 				return res;
 
-			} catch (IntrospectionException e)
+			}
+			catch (IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1023,7 +1072,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	public void drawImage(Image image, int x, int y, int width, int height)
 	{
 		if (_theDest != null)
-			_theDest.drawImage(image, x, y);
+			if (!_theDest.isDisposed())
+				_theDest.drawImage(image, x, y);
 	}
 
 }
