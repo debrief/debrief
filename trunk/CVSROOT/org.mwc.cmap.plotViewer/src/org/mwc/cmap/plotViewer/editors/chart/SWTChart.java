@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.15  2005-07-01 08:17:46  Ian.Mayo
+// Revision 1.16  2005-08-31 15:03:38  Ian.Mayo
+// Minor tidying
+//
+// Revision 1.15  2005/07/01 08:17:46  Ian.Mayo
 // refactor, so we can override layer painting
 //
 // Revision 1.14  2005/06/14 15:21:03  Ian.Mayo
@@ -52,36 +55,21 @@
 
 package org.mwc.cmap.plotViewer.editors.chart;
 
+import java.awt.*;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.io.Serializable;
 import java.util.HashMap;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ControlAdapter;
-import org.eclipse.swt.events.ControlEvent;
-import org.eclipse.swt.events.MouseEvent;
-import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.MouseMoveListener;
-import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Tracker;
 
-import MWC.GUI.BaseLayer;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.PlainChart;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
+import MWC.GUI.*;
+import MWC.GenericData.*;
 
 /**
  * The Chart is a canvas placed in a panel. the majority of functionality is
@@ -113,11 +101,6 @@ public class SWTChart extends PlainChart
 	 * is needed).
 	 */
 	private WorldArea _lastDataArea = null;
-	
-	/**
-	 * the bit which plots the current cursor position
-	 */
-	private CursorTracker _tracker;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
