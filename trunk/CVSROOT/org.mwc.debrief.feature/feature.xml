@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.8">
+      version="1.0.9">
 
    <description>
-      [1.0.7] Implement file-save
+      [1.0.7] Add more creator buttons
+[1.0.7] Implement file-save
 [1.0.5] Add more supporting libraries
 [1.0.3] Add Debrief icons
 [1.0.2] Include more supporting libraries
@@ -40,7 +41,7 @@ files
          id="org.mwc.debrief.core"
          download-size="0"
          install-size="0"
-         version="1.0.5"/>
+         version="1.0.6"/>
 
    <plugin
          id="org.mwc.debrief.legacy"

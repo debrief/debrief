@@ -40,6 +40,8 @@
       <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.ide"/>
+      <import plugin="org.eclipse.ui.editors"/>
+      <import plugin="org.eclipse.debug.core"/>
       
    </requires>
    <extension-point id="DebriefPlotLoader" 
@@ -264,5 +266,17 @@
            class="org.mwc.debrief.core.preferences.DebriefPrefsPage"
            id="org.mwc.debrief.core.preferences.DebriefPrefsPage"
            name="Debrief"/>
+  </extension>
+  <extension
+        point="org.eclipse.ui.newWizards">
+     <category
+           id="org.mwc.debrief.core"
+           name="New Plots"/>
+     <wizard
+           category="org.mwc.debrief.core"
+           class="org.mwc.debrief.core.wizards.NewPlotWizard"
+           icon="icons/sample.gif"
+           id="org.mwc.debrief.core.wizards.NewPlotWizard"
+           name="Debrief Plot"/>
   </extension>   
 </plugin>

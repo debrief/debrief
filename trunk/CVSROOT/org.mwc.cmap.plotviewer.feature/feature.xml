@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.3">
+      version="1.0.4">
 
    <description>
-      [1.0.2] Keep track of file clean/dirty status
+      [1.0.4] Don&apos;t allow save of REP files
+[1.0.3] Implement correct save-as function
+[1.0.2] Keep track of file clean/dirty status
 [1.0.1] Add Etopo/VPF Plotting
    </description>
 
@@ -32,6 +34,6 @@
          id="org.mwc.cmap.plotViewer"
          download-size="0"
          install-size="0"
-         version="1.0.2"/>
+         version="1.0.3"/>
 
 </feature>
