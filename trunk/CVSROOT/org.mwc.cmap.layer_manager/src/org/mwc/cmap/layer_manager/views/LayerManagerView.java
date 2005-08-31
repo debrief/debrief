@@ -671,22 +671,31 @@ public class LayerManagerView extends ViewPart
 		}
 	}
 
-	private void processNewData(Layers theData, Plottable newItem, Layer parentLayer)
+	private void processNewData(final Layers theData, final Plottable newItem, final Layer parentLayer)
 	{
 		if (!_treeViewer.getTree().isDisposed())
-			_treeViewer.setInput(theData);
-		
-		// hmm, do we know about the new item? If so, better select it
-		if(newItem != null)
 		{
-			// wrap the plottable
-			PlottableWrapper parentWrapper = new PlottableWrapper(parentLayer, null, theData);
-			PlottableWrapper wrapped = new PlottableWrapper(newItem, parentWrapper,theData);
-			ISelection selected = new StructuredSelection(wrapped);
-			
-			// and select it
-			plottableSelected(selected, wrapped);
+			Display.getDefault().asyncExec(new Runnable(){
+				public void run()
+				{
+					// ok, fire the change in the UI thread
+					_treeViewer.setInput(theData);
+					
+					// hmm, do we know about the new item? If so, better select it
+					if(newItem != null)
+					{
+						// wrap the plottable
+						PlottableWrapper parentWrapper = new PlottableWrapper(parentLayer, null, theData);
+						PlottableWrapper wrapped = new PlottableWrapper(newItem, parentWrapper,theData);
+						ISelection selected = new StructuredSelection(wrapped);
+						
+						// and select it
+						plottableSelected(selected, wrapped);
+					}					
+				}
+			});
 		}
+		
 		
 	}
 

@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.15  2005-06-22 13:22:00  Ian.Mayo
+// Revision 1.16  2005-08-31 15:02:23  Ian.Mayo
+// Do display updates in UI thread
+//
+// Revision 1.15  2005/06/22 13:22:00  Ian.Mayo
 // Part way through implementation of copy location from plot
 //
 // Revision 1.14  2005/06/22 10:27:43  Ian.Mayo
@@ -82,17 +85,14 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	private static final long serialVersionUID = 1L;
 
-
 	org.eclipse.swt.widgets.Canvas _myCanvas = null;
-	
 
 	/**
 	 * our double-buffering safe copy.
 	 */
 	private transient Image _dblBuff;
 
-
-	private LocationSelectedAction _copyLocation;	
+	private LocationSelectedAction _copyLocation;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -104,7 +104,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	public SWTCanvas(Composite parent)
 	{
 		super(null);
-		
+
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
 
 		// add handler to catch canvas resizes
@@ -131,10 +131,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 				repaintMe(e);
 			}
 		});
-		
+
 		_myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.black));
-		
-			
+
 		_myCanvas.addMouseListener(new MouseAdapter()
 		{
 
@@ -143,61 +142,66 @@ public class SWTCanvas extends SWTCanvasAdapter
 			 */
 			public void mouseUp(MouseEvent e)
 			{
-				if(e.button == 3)
+				if (e.button == 3)
 				{
 					// cool, right-had button. process it
 					MenuManager mmgr = new MenuManager();
 					Point display = Display.getCurrent().getCursorLocation();
-					Point control =  _myCanvas.toControl(display);			
-					WorldLocation targetLoc = getProjection().toWorld(new java.awt.Point(control.x, control.y));					
+					Point control = _myCanvas.toControl(display);
+					WorldLocation targetLoc = getProjection().toWorld(
+							new java.awt.Point(control.x, control.y));
 					fillContextMenu(mmgr, targetLoc);
 					Menu thisM = mmgr.createContextMenu(_myCanvas);
-					thisM.setVisible(true);					
+					thisM.setVisible(true);
 				}
 			}
-			
+
 		});
 	}
 
-	/** ok - insert the right-hand button related items
+	/**
+	 * ok - insert the right-hand button related items
 	 * 
 	 * @param mmgr
 	 */
 	protected void fillContextMenu(MenuManager mmgr, WorldLocation loc)
 	{
-		// right, we create the actions afresh each time here.  We can't automatically calculate it.
-		_copyLocation = new LocationSelectedAction("Copy cursor location", SWT.PUSH, loc)
+		// right, we create the actions afresh each time here. We can't
+		// automatically calculate it.
+		_copyLocation = new LocationSelectedAction("Copy cursor location",
+				SWT.PUSH, loc)
 		{
 			/**
-			 * @param loc the converted world location for the mouse-click
-			 * @param pt the screen coordinate of the click
+			 * @param loc
+			 *          the converted world location for the mouse-click
+			 * @param pt
+			 *          the screen coordinate of the click
 			 */
 			public void run(WorldLocation theLoc)
 			{
 				// represent the location as a text-string
 				String locText = CorePlugin.toClipboard(theLoc);
-				
+
 				// right, copy the location to the clipboard
 				Clipboard clip = CorePlugin.getDefault().getClipboard();
 				Object[] data = new Object[] { locText };
-				Transfer[] types = new Transfer[] { TextTransfer.getInstance()};
-				clip.setContents(data, types);				
-				
+				Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
+				clip.setContents(data, types);
+
 			}
-		};	
-		
+		};
+
 		mmgr.add(_copyLocation);
 	}
-
 
 	// ////////////////////////////////////////////////////
 	// screen redraw related
 	// ////////////////////////////////////////////////////
-	
+
 	protected void repaintMe(PaintEvent pe)
 	{
 
-//		paintPlot(pe.gc);
+		// paintPlot(pe.gc);
 		// get the graphics destination
 		GC gc = pe.gc;
 
@@ -213,16 +217,14 @@ public class SWTCanvas extends SWTCanvasAdapter
 			_dblBuff = new Image(Display.getCurrent(), theSize.x, theSize.y);
 			GC theDest = new GC(_dblBuff);
 
-
 			// prepare the ground (remember the graphics dest for a start)
 			startDraw(theDest);
-			
+
 			// and paint into it
 			paintPlot(this);
-			
 
 			// all finished, close it now
-			endDraw(null);			
+			endDraw(null);
 
 		}
 
@@ -231,7 +233,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 				pe.width, pe.height);
 
 	}
-
 
 	/**
 	 * the real paint function, called when it's not satisfactory to just paint in
@@ -259,7 +260,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 			thisPainter.paintMe(dest);
 		}
 
-	}	
+	}
+
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
@@ -274,7 +276,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	protected void setScreenSize(final java.awt.Dimension p1)
 	{
 		super.setScreenSize(p1);
-		
+
 		// check if this is a real resize
 		if ((_theSize == null) || (!_theSize.equals(p1)))
 		{
@@ -308,7 +310,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	/**
 	 * first repaint the plot, then trigger a screen update
 	 */
-	public final void updateMe()
+public final void updateMe()
 	{
 		if (_dblBuff != null)
 		{
@@ -317,9 +319,17 @@ public class SWTCanvas extends SWTCanvasAdapter
 		}
 
 		if(!_myCanvas.isDisposed())
-			_myCanvas.redraw();
+		{
+			// called deferred redraw method
+			Display.getDefault().asyncExec(new Runnable(){
+				public void run()
+				{
+					_myCanvas.redraw();
+				}
+				
+			});
+		}
 	}
-
 	/**
 	 * provide close method, clear elements.
 	 */
@@ -361,15 +371,18 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 	public abstract static class LocationSelectedAction extends Action
 	{
-		
+
 		WorldLocation _theLoc;
-		
-		/** pass some parameters back to the main parent
+
+		/**
+		 * pass some parameters back to the main parent
 		 * 
 		 * @param text
-		 * @param style 
-		 * @param theCanvas - used to get the screen coords
-		 * @param theProjection - our screen/world converter
+		 * @param style
+		 * @param theCanvas -
+		 *          used to get the screen coords
+		 * @param theProjection -
+		 *          our screen/world converter
 		 */
 		public LocationSelectedAction(String text, int style, WorldLocation theLoc)
 		{
@@ -377,8 +390,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 			_theLoc = theLoc;
 		}
 
-		
-		
 		/**
 		 * 
 		 */
@@ -388,50 +399,50 @@ public class SWTCanvas extends SWTCanvasAdapter
 			run(_theLoc);
 		}
 
-
-
-		/** so, the user has selected a chart location, process the selection
+		/**
+		 * so, the user has selected a chart location, process the selection
 		 * 
 		 * @param loc
 		 */
 		abstract public void run(WorldLocation loc);
 	}
-	
-  //////////////////////////////////////////////////
-  // testing code...
-  //////////////////////////////////////////////////
-  static public class testImport extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-    public testImport(String val)
-    {
-      super(val);
-    }
+	// ////////////////////////////////////////////////
+	// testing code...
+	// ////////////////////////////////////////////////
+	static public class testImport extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "CONV";
 
-    public void testClipboardTextManagement()
-    {
-    	WorldLocation theLoc = new WorldLocation(12.3, 12.555555, 1.2);
-    	String txt = CorePlugin.toClipboard(theLoc);
-    	assertEquals("correct string not produced", "LOC:12.3,12.555555,1.2", txt);
-    	
-    	// check for valid location
-    	boolean validStr;
-    	validStr = CorePlugin.isLocation(txt);
-    	assertTrue("is a location string", validStr);
-    	
-    	// and check for duff location
-    	validStr = CorePlugin.isLocation("aasdfasdfasdfadf");
-    	assertFalse("is a location string", validStr);
-    	
-    	// and back to the location
-    	WorldLocation loc2 = CorePlugin.fromClipboard(txt);
-    	assertEquals("correct location parsed back in", theLoc, loc2);
-    	
-    	// try southern/western location
-    	theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
-    	txt = CorePlugin.toClipboard(theLoc);
-    	assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2", txt);
-    }
-  }
+		public testImport(String val)
+		{
+			super(val);
+		}
+
+		public void testClipboardTextManagement()
+		{
+			WorldLocation theLoc = new WorldLocation(12.3, 12.555555, 1.2);
+			String txt = CorePlugin.toClipboard(theLoc);
+			assertEquals("correct string not produced", "LOC:12.3,12.555555,1.2", txt);
+
+			// check for valid location
+			boolean validStr;
+			validStr = CorePlugin.isLocation(txt);
+			assertTrue("is a location string", validStr);
+
+			// and check for duff location
+			validStr = CorePlugin.isLocation("aasdfasdfasdfadf");
+			assertFalse("is a location string", validStr);
+
+			// and back to the location
+			WorldLocation loc2 = CorePlugin.fromClipboard(txt);
+			assertEquals("correct location parsed back in", theLoc, loc2);
+
+			// try southern/western location
+			theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
+			txt = CorePlugin.toClipboard(theLoc);
+			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2",
+					txt);
+		}
+	}
 }
