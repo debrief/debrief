@@ -632,12 +632,17 @@ public class ToteView extends ViewPart
 	 * the data we are looking at has updated. If we're set to follow that time,
 	 * update ourselves
 	 */
-	private void timeUpdated(HiResDate newDTG)
+	private void timeUpdated(final HiResDate newDTG)
 	{
 		if (!_tableViewer.getTable().isDisposed())
 		{
-			_tableViewer.refresh(true);
-			_labelProvider.setDTG(newDTG);
+			Display.getDefault().asyncExec(new Runnable(){
+
+				public void run()
+				{
+					_tableViewer.refresh(true);
+					_labelProvider.setDTG(newDTG);
+				}});
 		}
 		else
 			System.out.println("not updating. table is disposed");

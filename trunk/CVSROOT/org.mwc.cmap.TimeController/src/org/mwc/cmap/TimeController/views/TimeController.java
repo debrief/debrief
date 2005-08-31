@@ -479,8 +479,17 @@ public class TimeController extends ViewPart
 				enable = true;
 		}
 
+		final boolean finalEnabled = enable;
+		
 		if (!_wholePanel.isDisposed())
-			_wholePanel.setEnabled(enable);
+		{
+			Display.getDefault().asyncExec(new Runnable(){
+				public void run()
+				{
+					_wholePanel.setEnabled(finalEnabled);
+				}
+			});
+		}
 	}
 
 	/*
@@ -520,25 +529,31 @@ public class TimeController extends ViewPart
 	 * the data we are looking at has updated. If we're set to follow that time,
 	 * update ourselves
 	 */
-	private void timeUpdated(HiResDate newDTG)
+	private void timeUpdated(final HiResDate newDTG)
 	{
-		HiResDate tNow = newDTG;
-		if (tNow != null)
+		if (newDTG != null)
 		{
 			if (!_timeLabel.isDisposed())
 			{
 
-				// display the correct time.
-				String newVal = getFormattedDate(newDTG);
-				_timeLabel.setText(newVal);
+				// updating the text items has to be done in the UI thread.  make it so
+				Display.getDefault().asyncExec(new Runnable(){
+					public void run()
+					{
+						// display the correct time.
+						String newVal = getFormattedDate(newDTG);
 
-				TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
-				if (dataPeriod != null)
-				{
-					int newIndex = _slideManager.toSliderUnits(newDTG, dataPeriod
-							.getStartDTG());
-					_tNowSlider.setSelection(newIndex);
-				}
+						_timeLabel.setText(newVal);
+						
+						TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
+						if (dataPeriod != null)
+						{
+							int newIndex = _slideManager.toSliderUnits(newDTG, dataPeriod
+									.getStartDTG());
+							_tNowSlider.setSelection(newIndex);
+						}
+					}
+				});
 			}
 		}
 		else

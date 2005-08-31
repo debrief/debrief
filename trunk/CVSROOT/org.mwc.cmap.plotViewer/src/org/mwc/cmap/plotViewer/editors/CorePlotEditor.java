@@ -221,9 +221,10 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// });
 
 		// and over-ride the undo button
-		IAction undoAction = new UndoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
-		IAction redoAction = new RedoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
-
+		IAction undoAction = new UndoActionHandler(getEditorSite(),
+				CorePlugin.CMAP_CONTEXT);
+		IAction redoAction = new RedoActionHandler(getEditorSite(),
+				CorePlugin.CMAP_CONTEXT);
 
 		getEditorSite().getActionBars().setGlobalActionHandler(
 				ActionFactory.UNDO.getId(), undoAction);
@@ -231,12 +232,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 				ActionFactory.REDO.getId(), redoAction);
 	}
 
-	/** create the chart we're after
-	 * @param parent the parent object to stick it into
+	/**
+	 * create the chart we're after
+	 * 
+	 * @param parent
+	 *          the parent object to stick it into
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res  = new SWTChart(_myLayers, parent);
+		SWTChart res = new SWTChart(_myLayers, parent);
 		return res;
 	}
 
@@ -479,21 +483,25 @@ public abstract class CorePlotEditor extends EditorPart implements
 
 	protected void fireSelectionChanged(ISelection sel)
 	{
-		_currentSelection = sel;
-		if (_selectionListeners != null)
+		// just double-check that we're not already processing this
+		if (sel != _currentSelection)
 		{
-			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
-			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			_currentSelection = sel;
+			if (_selectionListeners != null)
 			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
-						.next();
-				if (thisL != null)
+				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
+				for (Iterator stepper = _selectionListeners.iterator(); stepper
+						.hasNext();)
 				{
-					thisL.selectionChanged(sEvent);
+					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+							.next();
+					if (thisL != null)
+					{
+						thisL.selectionChanged(sEvent);
+					}
 				}
 			}
 		}
-
 	}
 
 	/**
@@ -514,7 +522,14 @@ public abstract class CorePlotEditor extends EditorPart implements
 		if (!_ignoreDirtyCalls)
 		{
 			_plotIsDirty = true;
-			firePropertyChange(PROP_DIRTY);
+			Display.getDefault().asyncExec(new Runnable()
+			{
+
+				public void run()
+				{
+					firePropertyChange(PROP_DIRTY);
+				}
+			});
 		}
 	}
 
