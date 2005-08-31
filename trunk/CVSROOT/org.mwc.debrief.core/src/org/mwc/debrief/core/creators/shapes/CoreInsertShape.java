@@ -105,11 +105,6 @@ abstract public class CoreInsertShape extends CoreEditorAction
 		return res;
 	}
 
-	/** return the name of this shape, used give the shape an initial name
-	 * 
-	 * @return the name of this type of shape, eg: rectangle
-	 */
-	abstract protected String getShapeName();
 
 	/**
 	 * @return
@@ -126,4 +121,11 @@ abstract public class CoreInsertShape extends CoreEditorAction
 	 * @return a shape, based on the centre
 	 */	
 	abstract protected PlainShape getShape(WorldLocation centre);
+	
+
+	/** return the name of this shape, used give the shape an initial name
+	 * 
+	 * @return the name of this type of shape, eg: rectangle
+	 */
+	abstract protected String getShapeName();	
 }
