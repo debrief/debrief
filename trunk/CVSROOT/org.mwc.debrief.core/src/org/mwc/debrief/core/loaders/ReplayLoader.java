@@ -3,19 +3,13 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
+import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
@@ -30,10 +24,11 @@ import MWC.GUI.Layers;
 public class ReplayLoader extends IPlotLoader.BaseLoader
 {
 
-	public void doTheLoad(Layers destination, InputStream source, String fileName)
-	{
-
-	}
+	// public void doTheLoad(Layers destination, InputStream source, String
+	// fileName)
+	// {
+	//
+	// }
 
 	/**
 	 * @param _theFile
@@ -41,8 +36,8 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	 * @param theLayers
 	 * @param is
 	 */
-	private void doTheLoad(final IFile _theFile, final String thePath,
-			final Layers theLayers, final InputStream is)
+	private void doTheLoad(final String thePath, final String theFileName, final Layers theLayers,
+			final InputStream is)
 	{
 		final ImportReplay importer = new Debrief.ReaderWriter.Replay.ImportReplay()
 		{
@@ -57,19 +52,13 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 				{
 					// create ourselves a fresh stream. we create some fresh streams
 					// based on this one which get closed in processing
-					final InputStream lineCounterStream = _theFile.getContents();
-					lines = super.countLinesInStream(lineCounterStream);
+					final FileInputStream lineCounterStream = new FileInputStream(fName);
+					lines = super.countLinesInStream(lineCounterStream);			
 					lineCounterStream.close();
 					CorePlugin.logError(Status.INFO, "Replay loader - counted:" + lines
 							+ " lines", null);
 				}
 				catch (IOException e)
-				{
-					CorePlugin.logError(Status.ERROR,
-							"Failed to open stream for counting lines:" + fName, null);
-					e.printStackTrace();
-				}
-				catch (CoreException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Failed to open stream for counting lines:" + fName, null);
@@ -85,92 +74,108 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
-	public void loadFile(final CorePlotEditor thePlot, IEditorInput input)
+public void loadFile(final CorePlotEditor thePlot, IEditorInput input)
 	{
-		String source = super.getFileName(input);
-
-		Object theInput = input;
-
-		Class inputClass = theInput.getClass();
-
-		if (input instanceof org.eclipse.ui.part.FileEditorInput)
+		final String theFileName;
+		final String thePath;
+		
+		if(input instanceof FileEditorInput)
 		{
-			org.eclipse.ui.part.FileEditorInput ife = (org.eclipse.ui.part.FileEditorInput) input;
-			final IFile _theFile = ife.getFile();
-			String theName = _theFile.getName();
-
-			final String thePath = _theFile.getFullPath().toOSString();
-			IPath iPath = _theFile.getFullPath();
-
-			CorePlugin.logError(Status.INFO, "About to load REPLAY file:" + theName,
+			FileEditorInput iff = (FileEditorInput) input;
+			theFileName = iff.getName();
+			thePath =  iff.getPath().toOSString();
+		}	
+		else if(input instanceof IPathEditorInput)
+		{
+			IPathEditorInput ip = (IPathEditorInput) input;
+			theFileName = ip.getName();
+			thePath = ip.getPath().toOSString();
+		}
+		else
+		{
+			CorePlugin.logError(Status.ERROR, "Failed to recognise file type of:" + input.getName(),
 					null);
-			final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+			
+			theFileName = null;
+			thePath = null;
+			
+			return;
+		}
 
-			try
+// org.eclipse.ui.part.FileEditorInput ife =
+// (org.eclipse.ui.part.FileEditorInput) input;
+// final IFile _theFile = ife.getFile();
+// String theName = _theFile.getName();
+
+// final String thePath = _theFile.getFullPath().toOSString();
+// IPath iPath = _theFile.getFullPath();
+
+		CorePlugin.logError(Status.INFO, "About to load REPLAY file:" + theFileName,
+				null);
+		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+
+		try
+		{
+			// stick it in a stream
+			final InputStream is = new FileInputStream(thePath);
+
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IProgressService ps = wb.getProgressService();
+			ps.busyCursorWhile(new IRunnableWithProgress()
 			{
-				// stick it in a stream
-				final InputStream is = _theFile.getContents();
-
-				IWorkbench wb = PlatformUI.getWorkbench();
-				IProgressService ps = wb.getProgressService();
-				ps.busyCursorWhile(new IRunnableWithProgress()
+				public void run(IProgressMonitor pm)
 				{
-					public void run(IProgressMonitor pm)
+					// right, better suspend the LayerManager extended updates from
+					// firing
+					theLayers.suspendFiringExtended(true);
+
+					try
 					{
-						// right, better suspend the LayerManager extended updates from
-						// firing
-						theLayers.suspendFiringExtended(true);
-
-						try
-						{
-							// ok - get loading going
-							doTheLoad(_theFile, thePath, theLayers, is);
-							
-							// and inform the plot editor
-							thePlot.loadingComplete(this);
-						}
-						catch (RuntimeException e)
-						{
-							e.printStackTrace();
-							CorePlugin.logError(Status.ERROR, "Problem loading datafile:" + thePath, e);
-						}
-						finally
-						{
-							// ok, allow the layers object to inform anybody what's happening
-							// again
-							theLayers.suspendFiringExtended(false);
-
-							// and trigger an update ourselves
-							theLayers.fireExtended();
-						}
+						// ok - get loading going
+						doTheLoad(thePath, theFileName, theLayers, is);
+						
+						// and inform the plot editor
+						thePlot.loadingComplete(this);
 					}
-				});
+					catch (RuntimeException e)
+					{
+						e.printStackTrace();
+						CorePlugin.logError(Status.ERROR, "Problem loading datafile:" + theFileName, e);
+					}
+					finally
+					{
+						// ok, allow the layers object to inform anybody what's happening
+						// again
+						theLayers.suspendFiringExtended(false);
 
-			}
-
-			catch (CoreException e)
-			{
-				CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
-						"Unable to open REP file for input:" + theName, e);
-			}
-			catch (InvocationTargetException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			catch (InterruptedException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			finally
-			{
-			}
+						// and trigger an update ourselves
+						theLayers.fireExtended();
+					}
+				}
+			});
+		}
+		catch (FileNotFoundException e)
+		{
+			CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
+					"Unable to open REP file for input:" + theFileName, e);
+		}
+		catch (InvocationTargetException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (InterruptedException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		finally
+		{
 		}
 		// ok, load the data...
 		CorePlugin.logError(Status.INFO, "Successfully loaded REPLAY file", null);
-	}
-}
+	}}

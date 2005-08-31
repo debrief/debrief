@@ -13,6 +13,7 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
@@ -297,20 +298,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		for (int i = 0; i < fileNames.length; i++)
 		{
 			final String thisFilename = fileNames[i];
+			File newFile = new java.io.File(thisFilename);
 			// File thisFile = new File(thisFilename);
 			System.out.println("should be loading:" + thisFilename);
-			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
-			// = new
-			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
-			// IFile theFile = (IFile) localF.getAdapter(IFile.class);
-			// FileEditorInput theInput = new FileEditorInput(theFile);
-			// this.loadThisFile(theInput);
+//			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
+//			 = new
+//			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
+//			 IFile theFile = (IFile) localF.getAdapter(IFile.class);
+			 IEditorInput theInput = new JavaFileEditorInput(newFile);
+			 this.loadThisFile(theInput);
 
 		}
 
 		// ok, get loading.
-	}
+	
 
+ }
+
+	
 	/*
 	 * (non-Javadoc)
 	 * 
