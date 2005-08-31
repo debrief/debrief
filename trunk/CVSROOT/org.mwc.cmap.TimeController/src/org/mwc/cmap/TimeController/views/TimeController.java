@@ -141,7 +141,7 @@ public class TimeController extends ViewPart
 
 		_wholePanel = new Composite(parent, SWT.BORDER);
 		GridLayout onTop = new GridLayout();
-//		onTop.type = SWT.VERTICAL;
+		// onTop.type = SWT.VERTICAL;
 		onTop.numColumns = 1;
 		_wholePanel.setLayout(onTop);
 
@@ -186,7 +186,7 @@ public class TimeController extends ViewPart
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, 0));
 
 		RowLayout otherBitsLayout = new RowLayout();
-		 otherBitsLayout.type = SWT.HORIZONTAL;
+		otherBitsLayout.type = SWT.HORIZONTAL;
 		Composite otherBitsPanel = new Composite(_wholePanel, SWT.NONE);
 		otherBitsPanel.setLayout(otherBitsLayout);
 
@@ -480,16 +480,17 @@ public class TimeController extends ViewPart
 		}
 
 		final boolean finalEnabled = enable;
-		
-		if (!_wholePanel.isDisposed())
+
+		Display.getDefault().asyncExec(new Runnable()
 		{
-			Display.getDefault().asyncExec(new Runnable(){
-				public void run()
+			public void run()
+			{
+				if (!_wholePanel.isDisposed())
 				{
 					_wholePanel.setEnabled(finalEnabled);
 				}
-			});
-		}
+			}
+		});
 	}
 
 	/*
@@ -536,15 +537,16 @@ public class TimeController extends ViewPart
 			if (!_timeLabel.isDisposed())
 			{
 
-				// updating the text items has to be done in the UI thread.  make it so
-				Display.getDefault().asyncExec(new Runnable(){
+				// updating the text items has to be done in the UI thread. make it so
+				Display.getDefault().asyncExec(new Runnable()
+				{
 					public void run()
 					{
 						// display the correct time.
 						String newVal = getFormattedDate(newDTG);
 
 						_timeLabel.setText(newVal);
-						
+
 						TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
 						if (dataPeriod != null)
 						{
@@ -585,7 +587,7 @@ public class TimeController extends ViewPart
 	{
 		// so, have a look at the data
 		long micros = time.getMicros();
-//		long wholeSeconds = micros / 1000000;
+		// long wholeSeconds = micros / 1000000;
 
 		StringBuffer res = new StringBuffer();
 
@@ -788,7 +790,7 @@ public class TimeController extends ViewPart
 			assertEquals("sml tick set", 10000, _smallTick);
 			assertEquals("drag size set", 500, _dragSize);
 			assertEquals("large tick set", 100000, _largeTick);
-			
+
 			assertTrue("slider should be enabled", _enabled);
 
 			// ok, see how the transfer goes
@@ -810,8 +812,8 @@ public class TimeController extends ViewPart
 			long diff = (enderD.getTime() - starterD.getTime()) / 1000;
 			assertEquals("correct range in secs", diff, _max);
 			assertEquals("sml tick set", 60, _smallTick);
-			assertEquals("large tick set",  600, _largeTick);
-			
+			assertEquals("large tick set", 600, _largeTick);
+
 		}
 
 	}
