@@ -3,8 +3,7 @@
  */
 package org.mwc.debrief.core.loaders;
 
-
-import java.io.InputStream;
+import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFile;
@@ -30,37 +29,36 @@ import MWC.GUI.Layers;
  */
 public class XMLLoader extends IPlotLoader.BaseLoader
 {
-	
-	/** the static object we use for data-file load/open
-	 * 
+
+	/**
+	 * the static object we use for data-file load/open
 	 */
 	private static DebriefEclipseXMLReaderWriter _myReader;
-	
-	
+
 	public XMLLoader()
 	{
-		if(_myReader == null)
+		if (_myReader == null)
 		{
 			_myReader = new DebriefEclipseXMLReaderWriter();
 		}
 	}
-	
-	/** load the data-file
+
+	/**
+	 * load the data-file
 	 * 
 	 * @param destination
 	 * @param source
 	 * @param fileName
 	 */
-	public void doTheLoad(Layers destination, 
-			InputStream source, 
-			String fileName,
-			IControllableViewport view)
-	{			
-		_myReader.importThis(fileName, source ,destination, view);
+	public void doTheLoad(Layers destination, InputStream source,
+			String fileName, IControllableViewport view)
+	{
+		_myReader.importThis(fileName, source, destination, view);
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
@@ -81,7 +79,8 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 			final String thePath = _theFile.getFullPath().toOSString();
 			IPath iPath = _theFile.getFullPath();
 
-			CorePlugin.logError(Status.INFO, "About to load XML file:" + theName,	null);
+			CorePlugin.logError(Status.INFO, "About to load XML file:" + theName,
+					null);
 			final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 			try
@@ -89,50 +88,67 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 				// stick it in a stream
 				final InputStream is = _theFile.getContents();
 
-				IWorkbench wb = PlatformUI.getWorkbench();
-				IProgressService ps = wb.getProgressService();
-				ps.busyCursorWhile(new IRunnableWithProgress()
+				// hmm, is there anything in the file?
+				int numAvailable = is.available();
+				if (numAvailable > 0)
 				{
-					public void run(IProgressMonitor pm)
+
+					IWorkbench wb = PlatformUI.getWorkbench();
+					IProgressService ps = wb.getProgressService();
+					ps.busyCursorWhile(new IRunnableWithProgress()
 					{
-						// right, better suspend the LayerManager extended updates from
-						// firing
-						theLayers.suspendFiringExtended(true);
-
-						try
+						public void run(IProgressMonitor pm)
 						{
-							CorePlugin.logError(Status.INFO, "about to start loading:" + thePath, null);
+							// right, better suspend the LayerManager extended updates from
+							// firing
+							theLayers.suspendFiringExtended(true);
 
-							// ok - get loading going
-							doTheLoad(theLayers, is, thePath, thePlot);
-							
-							CorePlugin.logError(Status.INFO, "completed loading:" + thePath, null);
+							try
+							{
+								CorePlugin.logError(Status.INFO, "about to start loading:"
+										+ thePath, null);
 
-							// and inform the plot editor
-							thePlot.loadingComplete(this);
+								// ok - get loading going
 
-							CorePlugin.logError(Status.INFO, "parent plot informed", null);
+								doTheLoad(theLayers, is, thePath, thePlot);
 
+								CorePlugin.logError(Status.INFO,
+										"completed loading:" + thePath, null);
+
+								// and inform the plot editor
+								thePlot.loadingComplete(this);
+
+								CorePlugin.logError(Status.INFO, "parent plot informed", null);
+
+							}
+							catch (RuntimeException e)
+							{
+								e.printStackTrace();
+								CorePlugin.logError(Status.ERROR, "Problem loading datafile:"
+										+ thePath, e);
+							}
+							finally
+							{
+								// ok, allow the layers object to inform anybody what's
+								// happening
+								// again
+								theLayers.suspendFiringExtended(false);
+
+								// and trigger an update ourselves
+								// theLayers.fireExtended();
+							}
 						}
-						catch (RuntimeException e)
-						{
-							e.printStackTrace();
-							CorePlugin.logError(Status.ERROR, "Problem loading datafile:" + thePath, e);
-						}
-						finally
-						{
-							// ok, allow the layers object to inform anybody what's happening
-							// again
-							theLayers.suspendFiringExtended(false);
+					});
 
-							// and trigger an update ourselves
-//							theLayers.fireExtended();
-						}
-					}
-				});
+				}
 
 			}
 
+			catch (IOException e)
+			{
+				CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
+						"Unable to do valid file check for:" + theName, e);
+			}
 			catch (CoreException e)
 			{
 				CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
