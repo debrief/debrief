@@ -1,19 +1,14 @@
 package org.mwc.debrief.core.wizards;
 
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.wizard.Wizard;
-import org.eclipse.ui.INewWizard;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.operation.*;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Date;
-
-import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.CoreException;
 import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
+import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.wizard.Wizard;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
@@ -32,7 +27,7 @@ import MWC.GUI.Layers;
  */
 
 public class NewPlotWizard extends Wizard implements INewWizard {
-	private NewPlotWizardPage page;
+	private FilenameWizardPage page;
 	private ISelection selection;
 	
 	private Layers _myNewLayers;
@@ -52,7 +47,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		page = new NewPlotWizardPage(selection);
+		page = new FilenameWizardPage(selection);
 		addPage(page);
 	}
 
