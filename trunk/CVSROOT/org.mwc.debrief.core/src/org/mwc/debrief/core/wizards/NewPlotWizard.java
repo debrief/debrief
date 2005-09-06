@@ -27,7 +27,10 @@ import MWC.GUI.Layers;
  */
 
 public class NewPlotWizard extends Wizard implements INewWizard {
-	private FilenameWizardPage page;
+	private FilenameWizardPage _fileWizard;	
+	private ScaleWizardPage _scaleWizard;
+	private CoastWizardPage _coastWizard;
+	
 	private ISelection selection;
 	
 	private Layers _myNewLayers;
@@ -47,8 +50,12 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	 */
 
 	public void addPages() {
-		page = new FilenameWizardPage(selection);
-		addPage(page);
+		_fileWizard = new FilenameWizardPage(selection);
+		_scaleWizard = new ScaleWizardPage(selection);
+		_coastWizard = new CoastWizardPage(selection);
+		addPage(_fileWizard);
+		addPage(_scaleWizard);
+		addPage(_coastWizard);
 	}
 
 	/**
@@ -57,8 +64,16 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	 * using wizard as execution context.
 	 */
 	public boolean performFinish() {
-		final String containerName = page.getContainerName();
-		final String fileName = page.getFileName();
+		
+		// hey, what's our data?
+		System.out.println("scale units:" + _scaleWizard.getScale().getDisplayUnits());
+		System.out.println("scale auto:" + _scaleWizard.getScale().getAutoMode());
+		System.out.println("scale min:" + _scaleWizard.getScale().getScaleMax());
+		
+		if(true) return true;
+		
+		final String containerName = _fileWizard.getContainerName();
+		final String fileName = _fileWizard.getFileName();
 		IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor) throws InvocationTargetException {
 				try {

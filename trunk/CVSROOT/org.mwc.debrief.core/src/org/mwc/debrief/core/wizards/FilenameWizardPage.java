@@ -41,7 +41,7 @@ public class FilenameWizardPage extends WizardPage {
 	public FilenameWizardPage(ISelection selection) {
 		super("wizardPage");
 		setTitle("Create new Debrief Plot");
-		setDescription("This wizard creates a new Debrief Plot-file with a *.xml extension that can be the Debrief plot viewer.");
+		setDescription("This wizard creates a new Debrief Plot-file, please provide a name for the file.");
 		this.selection = selection;
 	}
 
