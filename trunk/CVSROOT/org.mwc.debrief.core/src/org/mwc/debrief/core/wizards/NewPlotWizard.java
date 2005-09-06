@@ -7,6 +7,8 @@ import org.eclipse.ui.IWorkbench;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.*;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Date;
+
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.core.resources.*;
@@ -128,8 +130,9 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	 */
 
 	private InputStream openContentStream() {
-		String contents =
-			"This is the initial file contents for *.xml file that should be word-sorted in the Preview page of the multi-page editor";
+		String dateToday = new Date().toString();
+		String contents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><plot Created=\"" + dateToday + "\" Name=\"Debrief Plot\">  <session><layers>";
+		contents += "</layers></session></plot>";
 		return new ByteArrayInputStream(contents.getBytes());
 	}
 

@@ -40,8 +40,8 @@ public class NewPlotWizardPage extends WizardPage {
 	 */
 	public NewPlotWizardPage(ISelection selection) {
 		super("wizardPage");
-		setTitle("Multi-page Editor File");
-		setDescription("This wizard creates a new file with *.xml extension that can be opened by a multi-page editor.");
+		setTitle("Create new Debrief Plot");
+		setDescription("This wizard creates a new Debrief Plot-file with a *.xml extension that can be the Debrief plot viewer.");
 		this.selection = selection;
 	}
 
