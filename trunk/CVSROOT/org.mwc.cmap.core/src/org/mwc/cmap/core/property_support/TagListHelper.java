@@ -4,7 +4,8 @@
 package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
 
 public class TagListHelper extends EditorHelper
 {
@@ -18,10 +19,12 @@ public class TagListHelper extends EditorHelper
 		_propEditor = propEditor;
 	}
 	
-	public CellEditor getEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(Composite parent)
 	{
 		return new ComboBoxCellEditor(parent, _theTags);
 	}
+	
+	
 
 	public Object translateFromSWT(Object value)
 	{
@@ -83,5 +86,12 @@ public class TagListHelper extends EditorHelper
 			}
 		};
 		return theProvider;
+	}
+
+	public Control getEditorControlFor(Composite parent)
+	{
+		final Combo myCombo = new Combo(parent, SWT.DROP_DOWN);
+		myCombo.setItems(_theTags);
+		return myCombo;
 	}
 }

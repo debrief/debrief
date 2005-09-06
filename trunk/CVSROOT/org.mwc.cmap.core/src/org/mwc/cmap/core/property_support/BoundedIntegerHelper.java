@@ -118,7 +118,7 @@ public class BoundedIntegerHelper extends EditorHelper
 		super(BoundedInteger.class);
 	}
 
-	public CellEditor getEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(Composite parent)
 	{
 		return new SliderEditor(parent);
 	}

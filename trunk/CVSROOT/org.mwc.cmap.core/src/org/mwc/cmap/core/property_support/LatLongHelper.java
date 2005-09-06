@@ -39,7 +39,7 @@ public class LatLongHelper extends EditorHelper
 	 * @param parent
 	 * @return
 	 */
-	public CellEditor getEditorFor(Composite cellParent)
+	public CellEditor getCellEditorFor(Composite cellParent)
 	{
 		DialogCellEditor res = new PasteLocationDialogCellEditor(cellParent);
 

@@ -7,7 +7,9 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.CorePlugin;
 
@@ -19,7 +21,7 @@ public class BooleanHelper extends EditorHelper
 		super(Boolean.class);
 	}
 
-	public CellEditor getEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(Composite parent)
 	{
 		return new CheckboxCellEditor(parent);
 	}
@@ -68,5 +70,12 @@ public class BooleanHelper extends EditorHelper
 
 		};
 		return label1;
-	}		
+	}
+	
+
+	public Control getEditorControlFor(Composite parent)
+	{
+		final Button myCheckbox = new Button(parent, SWT.CHECK);
+		return myCheckbox;
+	}	
 }

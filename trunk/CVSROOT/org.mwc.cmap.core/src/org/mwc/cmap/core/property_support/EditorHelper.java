@@ -5,7 +5,8 @@ package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.*;
 
 abstract class EditorHelper
 {
@@ -21,7 +22,24 @@ abstract class EditorHelper
 		return (target == _myTargetClass);
 	}
 
-	abstract public CellEditor getEditorFor(Composite parent);
+	/** get a cell editor - suited for insertion into the properties window
+	 * 
+	 * @param parent
+	 * @return
+	 */
+	abstract public CellEditor getCellEditorFor(Composite parent);
+	
+	/** create an editor suitable for insertion into a dialog
+	 * 
+	 * @param parent the parent object to insert the control into
+	 * @return the new control
+	 */
+	public Control getEditorControlFor(Composite parent)
+	{
+		// just provide a text editor
+		Text res = new Text(parent, SWT.SINGLE);
+		return res;
+	}
 
 	public Object translateToSWT(Object value)
 	{

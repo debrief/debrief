@@ -27,7 +27,7 @@ public class ColorHelper extends EditorHelper
 	//	_parentControl = parentControl;
 	}
 
-	public CellEditor getEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(Composite parent)
 	{
 		return new org.eclipse.jface.viewers.ColorCellEditor(parent);
 	}

@@ -110,7 +110,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			_myHelperList.add(new EditorHelper(String.class)
 			{
 
-				public CellEditor getEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(Composite parent)
 				{
 					return new TextCellEditor(parent);
 				}
@@ -119,7 +119,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			_myHelperList.add(new EditorHelper(Long.class)
 			{
 
-				public CellEditor getEditorFor(Composite parent)
+				public CellEditor getCellEditorFor(Composite parent)
 				{
 					return new TextCellEditor(parent);
 				}
@@ -158,10 +158,21 @@ public class DebriefProperty implements IPropertyDescriptor
 		CellEditor res = null;
 		if (_myHelper != null)
 		{
-			res = _myHelper.getEditorFor(parent);
+			res = _myHelper.getCellEditorFor(parent);
 		}
 		return res;
 	}
+	
+
+	public Control createEditor(Composite parent)
+	{
+		Control res = null;
+		if (_myHelper != null)
+		{
+			res = _myHelper.getEditorControlFor(parent);
+		}
+		return res;
+	}	
 
 	public String getCategory()
 	{

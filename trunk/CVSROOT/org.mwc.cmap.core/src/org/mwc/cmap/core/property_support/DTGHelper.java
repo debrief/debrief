@@ -219,7 +219,7 @@ public class DTGHelper extends EditorHelper
 		super(HiResDate.class);
 	}
 
-	public CellEditor getEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(Composite parent)
 	{
 		return null;
 	}

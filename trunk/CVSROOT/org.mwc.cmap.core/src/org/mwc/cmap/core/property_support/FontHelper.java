@@ -63,7 +63,7 @@ public class FontHelper extends EditorHelper
 		super(java.awt.Font.class);
 	}
 
-	public CellEditor getEditorFor(Composite parent)
+	public CellEditor getCellEditorFor(Composite parent)
 	{
 		CellEditor editor = new FontDataDialogCellEditor(parent);
 		return editor;
