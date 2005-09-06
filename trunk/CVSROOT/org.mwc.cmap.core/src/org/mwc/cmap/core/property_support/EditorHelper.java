@@ -6,6 +6,7 @@ package org.mwc.cmap.core.property_support;
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 abstract class EditorHelper
@@ -34,10 +35,16 @@ abstract class EditorHelper
 	 * @param parent the parent object to insert the control into
 	 * @return the new control
 	 */
-	public Control getEditorControlFor(Composite parent)
+	public Control getEditorControlFor(final Composite parent, final DebriefProperty property)
 	{
 		// just provide a text editor
-		Text res = new Text(parent, SWT.SINGLE);
+		Text res = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		res.addModifyListener(new ModifyListener(){
+			public void modifyText(ModifyEvent e)
+			{
+				// inform our parent property that we've changed
+				property.setValue(e.toString());
+			}});
 		return res;
 	}
 

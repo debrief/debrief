@@ -169,7 +169,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		Control res = null;
 		if (_myHelper != null)
 		{
-			res = _myHelper.getEditorControlFor(parent);
+			res = _myHelper.getEditorControlFor(parent, this);
 		}
 		return res;
 	}	

@@ -5,26 +5,27 @@ package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
 public class TagListHelper extends EditorHelper
 {
-	String [] _theTags;
+	String[] _theTags;
+
 	final java.beans.PropertyEditor _propEditor;
-	
-	public TagListHelper(String[] theTags, final java.beans.PropertyEditor propEditor)
+
+	public TagListHelper(String[] theTags,
+			final java.beans.PropertyEditor propEditor)
 	{
 		super(null);
 		_theTags = theTags;
 		_propEditor = propEditor;
 	}
-	
+
 	public CellEditor getCellEditorFor(Composite parent)
 	{
 		return new ComboBoxCellEditor(parent, _theTags);
 	}
-	
-	
 
 	public Object translateFromSWT(Object value)
 	{
@@ -88,10 +89,28 @@ public class TagListHelper extends EditorHelper
 		return theProvider;
 	}
 
-	public Control getEditorControlFor(Composite parent)
+	public Control getEditorControlFor(Composite parent,
+			final DebriefProperty property)
 	{
-		final Combo myCombo = new Combo(parent, SWT.DROP_DOWN);
+		final Combo myCombo = new Combo(parent, SWT.NONE);
+		
 		myCombo.setItems(_theTags);
+
+		// also insert a listener
+		myCombo.addSelectionListener(new SelectionAdapter()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				// process the new selection
+				int index = myCombo.getSelectionIndex();
+				if (index != -1)
+				{
+					String res = _theTags[index];
+					property.setValue(res);
+				}
+			}
+		});
+
 		return myCombo;
 	}
 }
