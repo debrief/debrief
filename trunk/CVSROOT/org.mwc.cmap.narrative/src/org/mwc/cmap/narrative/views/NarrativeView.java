@@ -290,7 +290,6 @@ public class NarrativeView extends ViewPart
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						ControllableTime ct = (ControllableTime) part;
 						_controllableTime = null;
 					}
 				});
@@ -479,7 +478,6 @@ public class NarrativeView extends ViewPart
 				super.run();
 
 				// get the current selection
-				ISelection selection = viewer.getSelection();
 				NarrativeWrapper.NarrativeEntry current = getCurrentEntry();
 
 				addMarker(current);
@@ -492,8 +490,6 @@ public class NarrativeView extends ViewPart
 
 	protected void addMarker(NarrativeEntry entry)
 	{
-		IWorkspace space = org.eclipse.core.resources.ResourcesPlugin
-				.getWorkspace();
 		try
 		{
 			// right, do we have an editor with a file?
@@ -680,14 +676,9 @@ public class NarrativeView extends ViewPart
 		{
 			Object[] res = null;
 			// ok, cn
-			String first = null;
 			if (parent != null)
 			{
 				NarrativeWrapper narr = (NarrativeWrapper) parent;
-				if (narr != null)
-					first = "one:" + narr.getName();
-				else
-					first = "One";
 
 				Vector theNarrs = new Vector(10, 10);
 				Iterator iter = narr.getData().iterator();
@@ -729,15 +720,25 @@ public class NarrativeView extends ViewPart
 	 * how to show a narrative as a series of labels
 	 * @author ian.mayo
 	 */
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
+	static class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
 	{
 
-		private String[] dateFormats =
+		/** keep track of which date format we're plotting with
+		 * 
+		 */
+		private String _myDateFormat = dateFormats[1];
+		
+		private static String[] dateFormats =
 		{ "yyyy MMM dd HH:mm", "ddHHmm ss", "HH:mm:ss", "HH:mm:ss.SSS" };
 
+		/** ok, output the time component
+		 * 
+		 * @param dtg
+		 * @return
+		 */
 		public String formattedDTG(HiResDate dtg)
 		{
-			return DebriefFormatDateTime.toStringHiRes(dtg);
+			return DebriefFormatDateTime.toStringHiRes(dtg, _myDateFormat);
 		}
 
 		public String getColumnText(Object obj, int index)
