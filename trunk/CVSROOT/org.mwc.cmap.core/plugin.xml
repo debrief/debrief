@@ -71,6 +71,11 @@
      <initializer class="org.mwc.cmap.core.preferences.WMFExportPreferenceInitializer"/>
   </extension>
   
-    
+  <extension
+        point="org.eclipse.ui.newWizards">
+     <category
+           id="org.mwc.cmap.core"
+           name="New CMAP Files"/>
+  </extension>      
   
 </plugin>
