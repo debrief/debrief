@@ -55,8 +55,8 @@ public class LayeredCanvas extends javax.swing.JComponent
     {
 
 
-      Image ti = this.createImage(this.getWidth(), this.getHeight());
-      Graphics g2 = ti.getGraphics();
+  //    Image ti = this.createImage(this.getWidth(), this.getHeight());
+//      Graphics g2 = ti.getGraphics();
       // paint the background
  //     g2.setColor(Color.black);
  //     g2.fillRect(0,0,this.getWidth()-1, this.getHeight()-1);

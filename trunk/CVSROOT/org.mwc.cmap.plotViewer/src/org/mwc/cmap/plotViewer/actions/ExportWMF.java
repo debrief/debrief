@@ -7,7 +7,6 @@ import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 
-import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.WriteMetafile;

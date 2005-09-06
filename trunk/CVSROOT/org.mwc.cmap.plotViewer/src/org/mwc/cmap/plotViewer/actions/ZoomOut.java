@@ -6,7 +6,6 @@ package org.mwc.cmap.plotViewer.actions;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 
-import MWC.Algorithms.PlainProjection;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.WorldArea;
