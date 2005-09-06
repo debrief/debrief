@@ -16,6 +16,9 @@ import org.eclipse.core.runtime.CoreException;
 import java.io.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
+import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
+
+import MWC.GUI.Layers;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -31,6 +34,8 @@ import org.eclipse.ui.ide.IDE;
 public class NewPlotWizard extends Wizard implements INewWizard {
 	private NewPlotWizardPage page;
 	private ISelection selection;
+	
+	private Layers _myNewLayers;
 
 	/**
 	 * Constructor for NewPlotWizard.
@@ -38,6 +43,8 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	public NewPlotWizard() {
 		super();
 		setNeedsProgressMonitor(true);
+		
+		_myNewLayers = new Layers();
 	}
 	
 	/**
@@ -126,14 +133,17 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	}
 	
 	/**
-	 * We will initialize file contents with a sample text.
+	 * Put our layers object into a file
 	 */
-
 	private InputStream openContentStream() {
-		String dateToday = new Date().toString();
-		String contents = "<?xml version=\"1.0\" encoding=\"UTF-8\"?><plot Created=\"" + dateToday + "\" Name=\"Debrief Plot\">  <session><layers>";
-		contents += "</layers></session></plot>";
-		return new ByteArrayInputStream(contents.getBytes());
+		// ok, where do we dump our layers to?
+		ByteArrayOutputStream bos = new ByteArrayOutputStream();
+		
+		// hmm, now actually output the layers
+		DebriefEclipseXMLReaderWriter.exportThis(_myNewLayers, bos);
+		
+		// and return our OS as an IS
+		return new ByteArrayInputStream(bos.toByteArray());
 	}
 
 	private void throwCoreException(String message) throws CoreException {

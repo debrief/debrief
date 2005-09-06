@@ -9,7 +9,9 @@ import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
 import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Layers;
+import MWC.GenericData.WorldArea;
 
 /**
  * Title:        Debrief 2000
@@ -68,23 +70,64 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   public static void exportThis(PlotEditor thePlot, org.w3c.dom.Element parent,
                                 org.w3c.dom.Document doc)
   {
-    org.w3c.dom.Element eSession = doc.createElement("session");
-
     // ok, get the layers
     Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
+
+    exportTheseLayers(theLayers, thePlot, parent, doc);
+  }
+
+  public static void exportTheseLayers(Layers theLayers, PlotEditor thePlot, org.w3c.dom.Element parent,
+      org.w3c.dom.Document doc)
+  {
+    org.w3c.dom.Element eSession = doc.createElement("session");
     
     // now the Layers
     DebriefLayersHandler.exportThis(theLayers, eSession, doc);
 
     // now the projection
-    PlainProjection proj =  (PlainProjection) thePlot.getAdapter(PlainProjection.class);
+    final PlainProjection proj;
+    if(thePlot != null)
+    {
+    	proj =  (PlainProjection) thePlot.getAdapter(PlainProjection.class);
+    }
+    else
+    {    
+    	proj = new FlatProjection()
+    	{
+    		public WorldArea getDataArea()
+    		{
+    			// TODO Auto-generated method stub
+    			return Layers.getDebriefOrigin();
+    		}
+
+				/**
+				 * @return
+				 */
+				public double getDataBorder()
+				{
+					return 1.1;
+				}
+
+				/**
+				 * @return
+				 */
+				public boolean getRelativePlot()
+				{
+					return false;
+				}
+    		
+    	};
+    }
+    	
     ProjectionHandler.exportProjection(proj, eSession, doc);
 
     // now the GUI
-    GUIHandler.exportThis(thePlot, eSession, doc);
+    // do we have a gui?
+    if(thePlot != null)
+    	GUIHandler.exportThis(thePlot, eSession, doc);
 
     // send out the data
     parent.appendChild(eSession);
   }
-
+  
 }

@@ -63,7 +63,29 @@ public final class DebriefEclipseXMLReaderWriter extends MWC.Utilities.ReaderWri
     final org.w3c.dom.Element plot = PlotHandler.exportPlot(thePlot, doc);
     doc.appendChild(plot);
 
-    // and now export it.
+    outputContent(os, doc);
+  }
+
+  /**
+   * exporting the session
+   */
+  static public void exportThis(final Layers theLayers, final java.io.OutputStream os)
+  {
+    // first put the plot into an XML document
+    final Document doc = new DocumentImpl();
+    final org.w3c.dom.Element plot = PlotHandler.exportPlot(theLayers, doc);
+    doc.appendChild(plot);
+
+    outputContent(os, doc);
+  }
+
+	/** ok - we've got our output in a doc, write it to the specified stream
+	 * @param os - where we're writing to
+	 * @param doc - the content we're outputting
+	 */
+	private static void outputContent(final java.io.OutputStream os, final Document doc)
+	{
+		// and now export it.
     // this way of exporting the dom came from sample code in the Xerces 2.6.2 download
     try
     {
@@ -80,8 +102,9 @@ public final class DebriefEclipseXMLReaderWriter extends MWC.Utilities.ReaderWri
       MWC.Utilities.Errors.Trace.trace("Debrief failed to save this file correctly.  Please investigate the trace file", true);
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
-  }
-
+	}
+  
+  
   /////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
   //////////////////////////////////////////////////////////////////////////////////////////////////
