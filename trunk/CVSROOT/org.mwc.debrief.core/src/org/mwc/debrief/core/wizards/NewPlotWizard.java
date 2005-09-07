@@ -14,6 +14,7 @@ import org.eclipse.ui.ide.IDE;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.Layers;
+import MWC.GUI.Chart.Painters.ScalePainter;
 
 /**
  * This is a sample new wizard. Its role is to create a new file 
@@ -30,6 +31,7 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	private FilenameWizardPage _fileWizard;	
 	private ScaleWizardPage _scaleWizard;
 	private CoastWizardPage _coastWizard;
+	private GridWizardPage _gridWizard;
 	
 	private ISelection selection;
 	
@@ -53,9 +55,11 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 		_fileWizard = new FilenameWizardPage(selection);
 		_scaleWizard = new ScaleWizardPage(selection);
 		_coastWizard = new CoastWizardPage(selection);
+		_gridWizard = new GridWizardPage(selection);
 		addPage(_fileWizard);
 		addPage(_scaleWizard);
 		addPage(_coastWizard);
+		addPage(_gridWizard);
 	}
 
 	/**
@@ -66,9 +70,11 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	public boolean performFinish() {
 		
 		// hey, what's our data?
-		System.out.println("scale units:" + _scaleWizard.getScale().getDisplayUnits());
-		System.out.println("scale auto:" + _scaleWizard.getScale().getAutoMode());
-		System.out.println("scale min:" + _scaleWizard.getScale().getScaleMax());
+		ScalePainter sp = (ScalePainter) _scaleWizard.getPlottable();
+		System.out.println("scale units:" + sp.getDisplayUnits());
+		System.out.println("scale auto:" + sp.getAutoMode());
+		System.out.println("scale min:" + sp.getScaleMax());
+		System.out.println("scale color:" + sp.getColor());
 		
 		if(true) return true;
 		

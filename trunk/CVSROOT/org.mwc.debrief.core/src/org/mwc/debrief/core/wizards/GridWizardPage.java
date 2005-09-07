@@ -13,7 +13,7 @@ import MWC.GUI.Chart.Painters.*;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class CoastWizardPage extends CorePlottableWizardPage
+public class GridWizardPage extends CorePlottableWizardPage
 {
 	
 
@@ -22,16 +22,16 @@ public class CoastWizardPage extends CorePlottableWizardPage
 	 * 
 	 * @param pageName
 	 */
-	public CoastWizardPage(ISelection selection)
+	public GridWizardPage(ISelection selection)
 	{
-		super(selection, "coastPage", "Add Coastline to Plot", 
-				"This page adds a low resolution coastline to your plot");
+		super(selection, "gridPage", "Add Grid to Plot", 
+				"This page adds a grid to your plot");
 	}
 
 	protected Plottable createMe()
 	{
 		if(_plottable == null)
-			 _plottable = new CoastPainter();
+			 _plottable = new GridPainter();
 		
 		return _plottable;
 	}
@@ -42,7 +42,9 @@ public class CoastWizardPage extends CorePlottableWizardPage
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
 		PropertyDescriptor[] descriptors = {
-        prop("Color", "the Color to draw the coast", getPlottable())				
+        prop("Color", "the Color to draw the grid", getPlottable()),
+        prop("PlotLabels", "whether to plot grid labels", getPlottable()),
+        prop("Delta", "the step size for the grid", getPlottable())
 		};
 		return descriptors;
 	}
