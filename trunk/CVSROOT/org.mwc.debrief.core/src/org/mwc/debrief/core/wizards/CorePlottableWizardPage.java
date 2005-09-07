@@ -56,7 +56,21 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	 */
 	final public Plottable getPlottable()
 	{
-		return _plottable;
+		final Plottable res;
+		
+		// hmm, does the user want one?
+		if(_enabledBtn.getSelection())
+		{
+			// yes, return it.
+			res = _plottable;
+		}
+		else
+		{
+			// no, return null instead
+			res = null;
+		}
+		
+		return res;
 	}
 
 	/**
@@ -87,6 +101,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 			public void widgetSelected(SelectionEvent e)
 			{
 				enabledChanged();
+				dialogChanged();
 			}
 		});
 		// and set enabled, so the controls are editable
@@ -180,6 +195,13 @@ abstract public class CorePlottableWizardPage extends WizardPage
 		}
 	}
 
+	/** create a property descriptor to take the auto-determined editor class
+	 * 
+	 * @param name of property
+	 * @param description help-text
+	 * @param subject object being edited
+	 * @return new property descriptor
+	 */
 	final protected static PropertyDescriptor prop(String name,
 			String description, Object subject)
 	{
@@ -197,6 +219,15 @@ abstract public class CorePlottableWizardPage extends WizardPage
 		return res;
 	}
 
+	/** create a property descriptor with supplied editor class
+	 * 
+	 * @param name of property
+	 * @param description help-text
+	 * @param subject object being edited
+	 * @param editorClass the specified editor to use
+	 * @return new property descriptor
+	 * @return
+	 */
 	final protected static PropertyDescriptor longProp(String name,
 			String description, Object subject, Class editorClass)
 	{
@@ -226,7 +257,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	/**
 	 * Ensures that all fields are set.
 	 */
-	private void enabledChanged()
+	final private void enabledChanged()
 	{
 		// cycle through our controls, enabling/disabling them as necessary
 		for (Iterator iter = _myEditors.iterator(); iter.hasNext();)
@@ -239,7 +270,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	/**
 	 * Ensures that all fields are set.
 	 */
-	final protected void dialogChanged()
+	final private void dialogChanged()
 	{
 		if(_enabledBtn.getSelection())
 		{

@@ -1,5 +1,6 @@
 package org.mwc.debrief.core.wizards;
 
+import java.beans.*;
 import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
@@ -52,5 +53,5 @@ public class ScaleWizardPage extends CorePlottableWizardPage
 		return descriptors;
 	}
 	
-
+	
 }

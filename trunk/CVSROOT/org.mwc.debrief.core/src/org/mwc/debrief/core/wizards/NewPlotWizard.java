@@ -14,44 +14,48 @@ import org.eclipse.ui.ide.IDE;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.Layers;
-import MWC.GUI.Chart.Painters.ScalePainter;
+import MWC.GUI.Chart.Painters.*;
 
 /**
- * This is a sample new wizard. Its role is to create a new file 
- * resource in the provided container. If the container resource
- * (a folder or a project) is selected in the workspace 
- * when the wizard is opened, it will accept it as the target
- * container. The wizard creates one file with the extension
- * "xml". If a sample multi-page editor (also available
- * as a template) is registered for the same extension, it will
- * be able to open it.
+ * This is a sample new wizard. Its role is to create a new file resource in the
+ * provided container. If the container resource (a folder or a project) is
+ * selected in the workspace when the wizard is opened, it will accept it as the
+ * target container. The wizard creates one file with the extension "xml". If a
+ * sample multi-page editor (also available as a template) is registered for the
+ * same extension, it will be able to open it.
  */
 
-public class NewPlotWizard extends Wizard implements INewWizard {
-	private FilenameWizardPage _fileWizard;	
+public class NewPlotWizard extends Wizard implements INewWizard
+{
+	private FilenameWizardPage _fileWizard;
+
 	private ScaleWizardPage _scaleWizard;
+
 	private CoastWizardPage _coastWizard;
+
 	private GridWizardPage _gridWizard;
-	
+
 	private ISelection selection;
-	
+
 	private Layers _myNewLayers;
 
 	/**
 	 * Constructor for NewPlotWizard.
 	 */
-	public NewPlotWizard() {
+	public NewPlotWizard()
+	{
 		super();
 		setNeedsProgressMonitor(true);
-		
+
 		_myNewLayers = new Layers();
 	}
-	
+
 	/**
 	 * Adding the page to the wizard.
 	 */
 
-	public void addPages() {
+	public void addPages()
+	{
 		_fileWizard = new FilenameWizardPage(selection);
 		_scaleWizard = new ScaleWizardPage(selection);
 		_coastWizard = new CoastWizardPage(selection);
@@ -63,117 +67,161 @@ public class NewPlotWizard extends Wizard implements INewWizard {
 	}
 
 	/**
-	 * This method is called when 'Finish' button is pressed in
-	 * the wizard. We will create an operation and run it
-	 * using wizard as execution context.
+	 * This method is called when 'Finish' button is pressed in the wizard. We
+	 * will create an operation and run it using wizard as execution context.
 	 */
-	public boolean performFinish() {
-		
+	public boolean performFinish()
+	{
+
 		// hey, what's our data?
 		ScalePainter sp = (ScalePainter) _scaleWizard.getPlottable();
-		System.out.println("scale units:" + sp.getDisplayUnits());
-		System.out.println("scale auto:" + sp.getAutoMode());
-		System.out.println("scale min:" + sp.getScaleMax());
-		System.out.println("scale color:" + sp.getColor());
+		if (sp != null)
+		{
+			System.out.println("scale units:" + sp.getDisplayUnits());
+			System.out.println("scale auto:" + sp.getAutoMode());
+			System.out.println("scale min:" + sp.getScaleMax());
+			System.out.println("scale color:" + sp.getColor());
+		}
 		
-		if(true) return true;
+		GridPainter gp = (GridPainter) _gridWizard.getPlottable();
+		if(gp != null)
+		{
+			System.out.println("Grid col:" + gp.getColor());
+			System.out.println("Grid delta:" + gp.getDelta());
+		}
 		
+		CoastPainter cp = (CoastPainter) _coastWizard.getPlottable();
+		if(cp != null)
+		{
+			System.out.println("coast color:" + cp.getColor());
+		}
+
+		if (true)
+			return true;
+
 		final String containerName = _fileWizard.getContainerName();
 		final String fileName = _fileWizard.getFileName();
-		IRunnableWithProgress op = new IRunnableWithProgress() {
-			public void run(IProgressMonitor monitor) throws InvocationTargetException {
-				try {
+		IRunnableWithProgress op = new IRunnableWithProgress()
+		{
+			public void run(IProgressMonitor monitor)
+					throws InvocationTargetException
+			{
+				try
+				{
 					doFinish(containerName, fileName, monitor);
-				} catch (CoreException e) {
+				}
+				catch (CoreException e)
+				{
 					throw new InvocationTargetException(e);
-				} finally {
+				}
+				finally
+				{
 					monitor.done();
 				}
 			}
 		};
-		try {
+		try
+		{
 			getContainer().run(true, false, op);
-		} catch (InterruptedException e) {
+		}
+		catch (InterruptedException e)
+		{
 			return false;
-		} catch (InvocationTargetException e) {
+		}
+		catch (InvocationTargetException e)
+		{
 			Throwable realException = e.getTargetException();
 			MessageDialog.openError(getShell(), "Error", realException.getMessage());
 			return false;
 		}
 		return true;
 	}
-	
+
 	/**
-	 * The worker method. It will find the container, create the
-	 * file if missing or just replace its contents, and open
-	 * the editor on the newly created file.
+	 * The worker method. It will find the container, create the file if missing
+	 * or just replace its contents, and open the editor on the newly created
+	 * file.
 	 */
 
-	private void doFinish(
-		String containerName,
-		String fileName,
-		IProgressMonitor monitor)
-		throws CoreException {
+	private void doFinish(String containerName, String fileName,
+			IProgressMonitor monitor) throws CoreException
+	{
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
 		IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		IResource resource = root.findMember(new Path(containerName));
-		if (!resource.exists() || !(resource instanceof IContainer)) {
+		if (!resource.exists() || !(resource instanceof IContainer))
+		{
 			throwCoreException("Container \"" + containerName + "\" does not exist.");
 		}
 		IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));
-		try {
+		try
+		{
 			InputStream stream = openContentStream();
-			if (file.exists()) {
+			if (file.exists())
+			{
 				file.setContents(stream, true, true, monitor);
-			} else {
+			}
+			else
+			{
 				file.create(stream, true, monitor);
 			}
 			stream.close();
-		} catch (IOException e) {
+		}
+		catch (IOException e)
+		{
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
-		getShell().getDisplay().asyncExec(new Runnable() {
-			public void run() {
-				IWorkbenchPage page =
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage();
-				try {
+		getShell().getDisplay().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				IWorkbenchPage page = PlatformUI.getWorkbench()
+						.getActiveWorkbenchWindow().getActivePage();
+				try
+				{
 					IDE.openEditor(page, file, true);
-				} catch (PartInitException e) {
+				}
+				catch (PartInitException e)
+				{
 				}
 			}
 		});
 		monitor.worked(1);
 	}
-	
+
 	/**
 	 * Put our layers object into a file
 	 */
-	private InputStream openContentStream() {
+	private InputStream openContentStream()
+	{
 		// ok, where do we dump our layers to?
 		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		
+
 		// hmm, now actually output the layers
 		DebriefEclipseXMLReaderWriter.exportThis(_myNewLayers, bos);
-		
+
 		// and return our OS as an IS
 		return new ByteArrayInputStream(bos.toByteArray());
 	}
 
-	private void throwCoreException(String message) throws CoreException {
-		IStatus status =
-			new Status(IStatus.ERROR, "org.mwc.debrief.core", IStatus.OK, message, null);
+	private void throwCoreException(String message) throws CoreException
+	{
+		IStatus status = new Status(IStatus.ERROR, "org.mwc.debrief.core",
+				IStatus.OK, message, null);
 		throw new CoreException(status);
 	}
 
 	/**
-	 * We will accept the selection in the workbench to see if
-	 * we can initialize from it.
+	 * We will accept the selection in the workbench to see if we can initialize
+	 * from it.
+	 * 
 	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
 	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection) {
+	public void init(IWorkbench workbench, IStructuredSelection selection)
+	{
 		this.selection = selection;
 	}
 }

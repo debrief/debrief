@@ -3,9 +3,9 @@ package org.mwc.debrief.core.wizards;
 import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
+import org.mwc.debrief.core.creators.chartFeatures.SWTCoastPainter;
 
 import MWC.GUI.Plottable;
-import MWC.GUI.Chart.Painters.*;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -31,7 +31,7 @@ public class CoastWizardPage extends CorePlottableWizardPage
 	protected Plottable createMe()
 	{
 		if(_plottable == null)
-			 _plottable = new CoastPainter();
+			 _plottable = new SWTCoastPainter();
 		
 		return _plottable;
 	}
