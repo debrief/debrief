@@ -5,15 +5,15 @@ package org.mwc.cmap.core.property_support;
 
 import java.awt.Color;
 
+import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.resource.ColorRegistry;
+import org.eclipse.jface.util.*;
 import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.graphics.ImageData;
-import org.eclipse.swt.graphics.PaletteData;
-import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
+import org.mwc.cmap.core.CorePlugin;
 
 public class ColorHelper extends EditorHelper
 {
@@ -91,7 +91,7 @@ public class ColorHelper extends EditorHelper
 		return res;
 	}
 
-	private ImageData createColorImage(RGB color)
+	private static ImageData createColorImage(RGB color)
 	{
 
 		ImageData data = null;
@@ -169,6 +169,42 @@ public class ColorHelper extends EditorHelper
 
 		public ColorLabelProvider()
 		{
+			
+		}
+
+		/**
+		 * @param element
+		 * @return
+		 */
+		public Image getImage(Object element)
+		{
+//			RGB rgCol = (RGB) element;
+//			ImageData theD = createColorImage(rgCol);
+//			Image theI = new Image(Display.getDefault(), theD);
+//			return theI;
+			
+			String imageKey = "vpf.gif";
+			imageKey = ISharedImages.IMG_OBJ_FOLDER;
+
+			Image theImage = PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
+			
+			if(theImage == null)
+			{
+				// ok, try to get the image from our own registry
+				theImage = CorePlugin.getImageFromRegistry(imageKey);
+			}
+			
+			return theImage; 			
+			
+		}
+
+		/**
+		 * @param element
+		 * @return
+		 */
+		public String getText(Object element)
+		{
+			return super.getText(element);
 		}
 		
 		
@@ -176,6 +212,15 @@ public class ColorHelper extends EditorHelper
 	
 	public static class ColorsListProvider extends ArrayContentProvider
 	{
+		/**
+		 * @param inputElement
+		 * @return
+		 */
+		public Object[] getElements(Object inputElement)
+		{
+			RGB[] cols = new RGB[]{new RGB(255,0,0), new RGB(0,255,0), new RGB(0,0,255)};
+			return cols;
+		}
 		
 	}
 	
@@ -188,27 +233,20 @@ public class ColorHelper extends EditorHelper
 			final DebriefProperty property)
 	{
 
-		// do JFace bits for better color editor
-		final ComboViewer myViewer = new ComboViewer(parent);
-		myViewer.setLabelProvider(new ColorLabelProvider());
-		myViewer.setContentProvider(new ColorsListProvider());
-
-		// also insert a listener
-		myViewer.getCombo().addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
+		final ColorSelector sel = new ColorSelector(parent);
+		sel.addListener(new IPropertyChangeListener(){
+			public void propertyChange(PropertyChangeEvent event)
 			{
-				// process the new selection
-				int index = myViewer.getCombo().getSelectionIndex();
-				if (index != -1)
-				{
-					String res = _theTags[index];
-					property.setValue(res);
-				}
-			}
-		});
+				RGB theCol = sel.getColorValue();
+				property.setValue(theCol);
+			}});
+		
+		// try to set the default color
+		RGB current = (RGB) property.getValue();
+		sel.setColorValue(current);
+		
+		return sel.getButton();
 
-		return myViewer.getCombo();
 	}
 
 }

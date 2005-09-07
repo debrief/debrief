@@ -38,12 +38,12 @@ abstract class EditorHelper
 	public Control getEditorControlFor(final Composite parent, final DebriefProperty property)
 	{
 		// just provide a text editor
-		Text res = new Text(parent, SWT.SINGLE | SWT.BORDER);
+		final Text res = new Text(parent, SWT.SINGLE | SWT.BORDER);
 		res.addModifyListener(new ModifyListener(){
 			public void modifyText(ModifyEvent e)
 			{
 				// inform our parent property that we've changed
-				property.setValue(e.toString());
+				property.setValue(res.getText());
 			}});
 		return res;
 	}

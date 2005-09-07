@@ -8,9 +8,9 @@ import org.eclipse.jface.viewers.CheckboxCellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.CorePlugin;
 
 public class BooleanHelper extends EditorHelper
@@ -73,9 +73,15 @@ public class BooleanHelper extends EditorHelper
 	}
 	
 
-	public Control getEditorControlFor(Composite parent)
+	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
 		final Button myCheckbox = new Button(parent, SWT.CHECK);
+		myCheckbox.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e)
+			{
+				Boolean val = new Boolean(myCheckbox.getSelection());
+				property.setValue(val);
+			}});
 		return myCheckbox;
 	}	
 }
