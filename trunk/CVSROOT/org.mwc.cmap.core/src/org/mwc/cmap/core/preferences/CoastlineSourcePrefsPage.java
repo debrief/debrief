@@ -57,7 +57,7 @@ public class CoastlineSourcePrefsPage
 	 */
 	public static class PreferenceConstants {
 
-		public static final String COASTLINE_FILE =  CoastPainter.FILENAME;
+		public static final String COASTLINE_FILE =  CoastPainter.PREF_NAME;
 	}
 	
 }
