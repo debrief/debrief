@@ -127,4 +127,9 @@ public class DebriefToolParent implements ToolParent
 
 	}
 
+	public void logError(int status, String text, Exception e)
+	{
+		CorePlugin.logError(status, text, e);
+	}
+
 }
