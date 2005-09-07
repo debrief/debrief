@@ -18,6 +18,7 @@ import org.osgi.framework.BundleContext;
 
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import MWC.GUI.ToolParent;
+import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Tools.Palette.*;
 import MWC.GenericData.WorldLocation;
 
@@ -97,6 +98,9 @@ public class CorePlugin extends AbstractUIPlugin
 		
 		// and the range calculator
 		rangeCalc.init(_toolParent);
+		
+		// and the coastline-reader
+		CoastPainter.initialise(_toolParent);
 	}
 
 	/**
