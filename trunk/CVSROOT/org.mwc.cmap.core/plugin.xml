@@ -72,6 +72,19 @@
   </extension>
   
   <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.cmap.core.preferences.CoastlineSourcePrefsPage"
+           id="org.mwc.cmap.core.preferences.CoastlineSourcePrefsPage"
+           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+           name="Coastline file location"/>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer class="org.mwc.cmap.core.preferences.CoastlineSourcePreferenceInitializer"/>
+  </extension>  
+  
+  <extension
         point="org.eclipse.ui.newWizards">
      <category
            id="org.mwc.cmap.core"
