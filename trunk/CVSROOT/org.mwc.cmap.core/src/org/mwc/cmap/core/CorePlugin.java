@@ -16,6 +16,7 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.osgi.framework.BundleContext;
 
+import Debrief.GUI.Frames.Application;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
@@ -101,6 +102,9 @@ public class CorePlugin extends AbstractUIPlugin
 		
 		// and the coastline-reader
 		CoastPainter.initialise(_toolParent);
+		
+		// and the application - so we can use our own toolparent for the properties
+		Application.initialise(_toolParent);
 	}
 
 	/**
