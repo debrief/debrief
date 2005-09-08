@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.12  2005-08-31 15:03:09  Ian.Mayo
+// Revision 1.13  2005-09-08 11:01:42  Ian.Mayo
+// Makeing more robust when plotting fails through disposed GC
+//
+// Revision 1.12  2005/08/31 15:03:09  Ian.Mayo
 // Check the dest isn't disposed before we call it
 //
 // Revision 1.11  2005/06/14 08:22:18  Ian.Mayo
@@ -343,12 +346,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	public final int getStringHeight(final java.awt.Font theFont)
 	{
 		int res = 0;
-		// final java.awt.FontMetrics fm = getFontMetrics(theFont);
-		// if (fm != null)
-		// res = fm.getHeight();
-
-		// _theDest.setFont(FontHelper.convertFont(theFont));
-		res = _theDest.getFontMetrics().getHeight();
+		
+		if(!_theDest.isDisposed())
+			res = _theDest.getFontMetrics().getHeight();
 
 		return res;
 	}

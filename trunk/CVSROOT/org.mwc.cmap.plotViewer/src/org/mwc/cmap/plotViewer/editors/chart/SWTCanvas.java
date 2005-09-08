@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.16  2005-08-31 15:02:23  Ian.Mayo
+// Revision 1.17  2005-09-08 11:01:41  Ian.Mayo
+// Makeing more robust when plotting fails through disposed GC
+//
+// Revision 1.16  2005/08/31 15:02:23  Ian.Mayo
 // Do display updates in UI thread
 //
 // Revision 1.15  2005/06/22 13:22:00  Ian.Mayo
@@ -58,6 +61,7 @@ package org.mwc.cmap.plotViewer.editors.chart;
 import java.awt.Dimension;
 import java.util.Enumeration;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.*;
@@ -229,9 +233,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 		}
 
 		// finally put the required bits of the target image onto the screen
-		gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
+		if(_dblBuff != null)
+			gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
 				pe.width, pe.height);
-
+		else
+		{
+			CorePlugin.logError(Status.INFO, "Double-buffering failed, no image produced", null);
+		}
 	}
 
 	/**
