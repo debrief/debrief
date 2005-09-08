@@ -25,7 +25,7 @@ public class GridWizardPage extends CorePlottableWizardPage
 	public GridWizardPage(ISelection selection)
 	{
 		super(selection, "gridPage", "Add Grid to Plot",
-				"This page adds a grid to your plot");
+				"This page adds a grid to your plot", "images/grid_wizard.gif");
 	}
 
 	protected Plottable createMe()

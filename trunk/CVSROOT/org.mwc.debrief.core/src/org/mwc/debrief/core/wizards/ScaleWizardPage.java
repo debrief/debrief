@@ -25,7 +25,7 @@ public class ScaleWizardPage extends CorePlottableWizardPage
 	public ScaleWizardPage(ISelection selection)
 	{
 		super(selection, "scalePage", "Add Scale to Plot", 
-				"This page adds a scale to your plot");
+				"This page adds a scale to your plot", "images/scale_wizard.gif");
 	}
 
 	protected Plottable createMe()
@@ -43,7 +43,7 @@ public class ScaleWizardPage extends CorePlottableWizardPage
 	{
 		PropertyDescriptor[] descriptors = {
         prop("Color", "the Color to draw the Scale", getPlottable()),
-        longProp("DisplayUnits", "ths units to use for the scale", getPlottable(),
+        longProp("DisplayUnits", "the units to use for the scale", getPlottable(),
                  MWC.GUI.Properties.UnitsPropertyEditor.class),
         longProp("Location",
                  "the scale location",  getPlottable(),

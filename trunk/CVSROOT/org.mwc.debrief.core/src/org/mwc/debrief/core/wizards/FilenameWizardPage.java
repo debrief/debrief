@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
 import org.eclipse.ui.dialogs.ContainerSelectionDialog;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -43,6 +44,7 @@ public class FilenameWizardPage extends WizardPage {
 		setTitle("Create new Debrief Plot");
 		setDescription("This wizard creates a new Debrief Plot-file, please provide a name for the file.");
 		this.selection = selection;
+		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
 
 	/**

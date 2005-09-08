@@ -25,7 +25,7 @@ public class CoastWizardPage extends CorePlottableWizardPage
 	public CoastWizardPage(ISelection selection)
 	{
 		super(selection, "coastPage", "Add Coastline to Plot", 
-				"This page adds a low resolution coastline to your plot");
+				"This page adds a low resolution coastline to your plot", "images/coast_wizard.gif");
 	}
 
 	protected Plottable createMe()

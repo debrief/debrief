@@ -3,13 +3,18 @@ package org.mwc.debrief.core.wizards;
 import java.beans.*;
 import java.util.*;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogPage;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 
 import MWC.GUI.Plottable;
@@ -35,6 +40,31 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	 */
 	private Button _enabledBtn;
 
+
+	/**
+	 * Constructor for SampleNewWizardPage.
+	 * 
+	 * @param pageName
+	 */
+	public CorePlottableWizardPage(ISelection selection, String pageName,
+			String title, String description, String imageName)
+	{
+		super(pageName);
+		setTitle(title);
+		setDescription(description);
+		this.selection = selection;
+		
+		// ok, now try to set the image
+		if(imageName != null)
+		{
+			ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.core", imageName);
+			if(id != null)
+				super.setImageDescriptor(id);
+			else
+				CorePlugin.logError(Status.WARNING, "Wizard image file not found for:" + imageName, null);
+		}
+	}
+	
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -43,10 +73,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	public CorePlottableWizardPage(ISelection selection, String pageName,
 			String title, String description)
 	{
-		super(pageName);
-		setTitle(title);
-		setDescription(description);
-		this.selection = selection;
+		this(selection, pageName, title, description, null);
 	}
 
 	/**

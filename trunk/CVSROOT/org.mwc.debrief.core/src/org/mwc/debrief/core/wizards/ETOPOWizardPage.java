@@ -27,8 +27,8 @@ public class ETOPOWizardPage extends CorePlottableWizardPage
 	 */
 	public ETOPOWizardPage(ISelection selection)
 	{
-		super(selection, "etopoPage", "Add Gridded depth data to Plot", 
-				"This page adds a 2-minute resolution gridded depth layer to your plot");
+		super(selection, "etopoPage", "Add Gridded depth data", 
+				"This page adds a 2-minute resolution gridded depth layer to your plot", "images/etopo_wizard.gif");
 	}
 
 	protected Plottable createMe()
