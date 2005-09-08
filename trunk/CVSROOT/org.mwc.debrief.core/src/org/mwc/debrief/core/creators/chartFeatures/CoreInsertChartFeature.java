@@ -73,15 +73,16 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		}
 
 		// and put it into an action (so we can undo it)
-		res = new PlainCreate.CreateLabelAction(null, theLayer,
-				theChart.getLayers(), myFeature);
+		res = new PlainCreate.CreateLabelAction(null, theLayer, theChart.getLayers(),
+				myFeature);
 
 		return res;
 	}
 
-	/** ok, create whatever we're after
-	 * @param theChart 
+	/**
+	 * ok, create whatever we're after
 	 * 
+	 * @param theChart
 	 * @return
 	 */
 	abstract protected Plottable getPlottable(PlainChart theChart);

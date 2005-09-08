@@ -18,7 +18,7 @@ public class InsertETOPO extends CoreInsertChartFeature
 	 */
 	protected Plottable getPlottable(PlainChart theChart)
 	{
-		return CreateTOPO.loadBathyData(theChart.getLayers());
+		return CreateTOPO.load2MinBathyData();
 	}
 
 }
