@@ -5,6 +5,7 @@ import org.eclipse.jface.preference.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 
+import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import MWC.GUI.Properties.UnitsPropertyEditor;
 
 /**
@@ -33,6 +34,12 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 	 * 
 	 */
 	private static String[][] _distanceUnitTags;
+	
+	/** the tags and labels to use in the relative bearing format selector
+	 * 
+	 */
+	private static String[][] _relBearingTags;
+	
 
 	/**
 	 * Creates the field editors. Field editors are abstractions of the common GUI
@@ -56,8 +63,22 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 			}
 		}
 
+		// initialise the units tags, if we have to
+		if (_relBearingTags == null)
+		{
+			_relBearingTags = new String[2][2];
+			_relBearingTags[0][0] = "UK format (R180..G180)";
+			_relBearingTags[0][1] = relBearingCalc.UK_REL_BEARING_FORMAT;
+			_relBearingTags[1][0] = "US format (0..360)";
+			_relBearingTags[1][1] = relBearingCalc.US_REL_BEARING_FORMAT;
+		}
+
 		addField(new RadioGroupFieldEditor(PreferenceConstants.RNG_UNITS,
 				"Default &range units:", 1, _distanceUnitTags, getFieldEditorParent()));
+		
+		
+		addField(new RadioGroupFieldEditor(PreferenceConstants.REL_BEARING_FORMAT,
+				"Relative &bearingf format:", 1, _relBearingTags, getFieldEditorParent()));
 	}
 
 	/*
@@ -75,6 +96,7 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 	public static class PreferenceConstants
 	{
 		public static final String RNG_UNITS = MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY;
+		public static final String REL_BEARING_FORMAT = relBearingCalc.REL_BEARING_FORMAT;
 	}
 
 	public static class CMAPPreferenceInitializer extends
@@ -89,6 +111,7 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 		public void initializeDefaultPreferences()
 		{
 			IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+			store.setDefault(PreferenceConstants.REL_BEARING_FORMAT, relBearingCalc.UK_REL_BEARING_FORMAT);
 		}
 
 	}
