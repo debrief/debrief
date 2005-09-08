@@ -7,14 +7,9 @@ import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 
 import org.eclipse.core.resources.IFile;
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IPath;
-import org.eclipse.core.runtime.IProgressMonitor;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.IEditorInput;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.*;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -64,12 +59,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 */
 	public void loadFile(final CorePlotEditor thePlot, IEditorInput input)
 	{
-		String source = super.getFileName(input);
-
-		Object theInput = input;
-
-		Class inputClass = theInput.getClass();
-
 		if (input instanceof org.eclipse.ui.part.FileEditorInput)
 		{
 			org.eclipse.ui.part.FileEditorInput ife = (org.eclipse.ui.part.FileEditorInput) input;
@@ -77,8 +66,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 			String theName = _theFile.getName();
 
 			final String thePath = _theFile.getFullPath().toOSString();
-			IPath iPath = _theFile.getFullPath();
-
 			CorePlugin.logError(Status.INFO, "About to load XML file:" + theName,
 					null);
 			final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);

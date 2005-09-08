@@ -88,7 +88,7 @@ public class DebriefPrefsPage extends FieldEditorPreferencePage implements
 		 */
 		public void initializeDefaultPreferences()
 		{
-			IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
+//			IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 		}
 
 	}

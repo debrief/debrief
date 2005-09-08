@@ -5,9 +5,7 @@ import java.beans.PropertyDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 
 import MWC.GUI.Plottable;
-import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.SpatialRasterPainter.KeyLocationPropertyEditor;
-import MWC.GUI.Properties.LineWidthPropertyEditor;
 import MWC.GUI.Tools.Palette.CreateTOPO;
 
 /**

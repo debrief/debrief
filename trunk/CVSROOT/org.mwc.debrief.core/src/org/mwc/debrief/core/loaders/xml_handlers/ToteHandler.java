@@ -20,7 +20,7 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 {
 
   private final Debrief.GUI.Tote.AnalysisTote _myTote;
-  private final MWC.GUI.Layers _theData;
+//  private final MWC.GUI.Layers _theData;
 
   public ToteHandler(Debrief.GUI.Tote.AnalysisTote theTote, MWC.GUI.Layers theData)
   {
@@ -32,7 +32,7 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     if (_myTote == null)
       System.err.println("Tote information missing from Tote handler");
 
-    _theData = theData;
+//    _theData = theData;
 
     addHandler(new PrimarySecondaryHandler("primary")
     {
@@ -54,45 +54,45 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 
   abstract public void setPrimarySecondary(boolean isPrimary, String trackName);
   
-  private Debrief.Tools.Tote.WatchableList getTrack(String name)
-  {
-    Debrief.Tools.Tote.WatchableList res = null;
-
-    // look at the data
-    MWC.GUI.Plottable ly = _theData.findLayer(name);
-
-    if (ly == null)
-    {
-      // no, this isn't a top level layer, maybe it's an element
-
-      // find the nearest editable item
-      int num = _theData.size();
-      for (int i = 0; i < num; i++)
-      {
-        MWC.GUI.Layer thisL = _theData.elementAt(i);
-        // go through this layer
-        java.util.Enumeration iter = thisL.elements();
-        while (iter.hasMoreElements())
-        {
-          MWC.GUI.Plottable p = (MWC.GUI.Plottable) iter.nextElement();
-          String nm = p.getName();
-          if (nm.equals(name))
-          {
-            ly = p;
-            break;
-          }
-        }
-      }
-
-    }
-
-    if (ly instanceof Debrief.Tools.Tote.WatchableList)
-    {
-      res = (Debrief.Tools.Tote.WatchableList) ly;
-    }
-
-    return res;
-  }
+//  private Debrief.Tools.Tote.WatchableList getTrack(String name)
+//  {
+//    Debrief.Tools.Tote.WatchableList res = null;
+//
+//    // look at the data
+//    MWC.GUI.Plottable ly = _theData.findLayer(name);
+//
+//    if (ly == null)
+//    {
+//      // no, this isn't a top level layer, maybe it's an element
+//
+//      // find the nearest editable item
+//      int num = _theData.size();
+//      for (int i = 0; i < num; i++)
+//      {
+//        MWC.GUI.Layer thisL = _theData.elementAt(i);
+//        // go through this layer
+//        java.util.Enumeration iter = thisL.elements();
+//        while (iter.hasMoreElements())
+//        {
+//          MWC.GUI.Plottable p = (MWC.GUI.Plottable) iter.nextElement();
+//          String nm = p.getName();
+//          if (nm.equals(name))
+//          {
+//            ly = p;
+//            break;
+//          }
+//        }
+//      }
+//
+//    }
+//
+//    if (ly instanceof Debrief.Tools.Tote.WatchableList)
+//    {
+//      res = (Debrief.Tools.Tote.WatchableList) ly;
+//    }
+//
+//    return res;
+//  }
 
   public static void exportTote(TrackDataProvider tracks, 
   		org.w3c.dom.Element parent,

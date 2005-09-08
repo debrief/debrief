@@ -94,7 +94,12 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     {    
     	proj = new FlatProjection()
     	{
-    		public WorldArea getDataArea()
+    		/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public WorldArea getDataArea()
     		{
     			// TODO Auto-generated method stub
     			return Layers.getDebriefOrigin();

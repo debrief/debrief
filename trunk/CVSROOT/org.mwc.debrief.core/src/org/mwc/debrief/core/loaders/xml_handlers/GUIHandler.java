@@ -22,7 +22,7 @@ abstract public class GUIHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-	static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
+//	static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
 
 	String _primaryTrack = null;
 
