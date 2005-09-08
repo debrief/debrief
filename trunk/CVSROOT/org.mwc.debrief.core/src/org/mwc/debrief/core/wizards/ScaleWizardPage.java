@@ -1,6 +1,5 @@
 package org.mwc.debrief.core.wizards;
 
-import java.beans.*;
 import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;

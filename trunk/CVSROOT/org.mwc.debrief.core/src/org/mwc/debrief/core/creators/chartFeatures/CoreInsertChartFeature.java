@@ -91,7 +91,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	 */
 	protected String getLayerName()
 	{
-		final String myLayer = "Chart Features";
+		final String myLayer = Layers.CHART_FEATURES;
 		return myLayer;
 	}
 }

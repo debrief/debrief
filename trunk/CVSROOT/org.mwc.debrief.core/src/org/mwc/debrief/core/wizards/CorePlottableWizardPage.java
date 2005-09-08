@@ -96,6 +96,11 @@ abstract public class CorePlottableWizardPage extends WizardPage
 		label.setText("Include");
 
 		_enabledBtn = new Button(container, SWT.CHECK);
+
+		// set enabled, so the controls are editable
+		_enabledBtn.setSelection(true);
+		
+		// now start listening out for changes for the enabled btn
 		_enabledBtn.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -104,8 +109,6 @@ abstract public class CorePlottableWizardPage extends WizardPage
 				dialogChanged();
 			}
 		});
-		// and set enabled, so the controls are editable
-		_enabledBtn.setSelection(true);
 
 		label = new Label(container, SWT.NONE);
 		label.setText("Whether to include this item");
@@ -124,8 +127,9 @@ abstract public class CorePlottableWizardPage extends WizardPage
 		dialogChanged();
 		setControl(container);
 
-		// finally, update the enabled state of all of the bits
-		enabledChanged();
+		// finally, just clear the error message, we're not ready for it yet
+		setErrorMessage(null);
+
 	}
 
 	/**

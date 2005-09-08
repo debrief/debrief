@@ -13,8 +13,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
-import MWC.GUI.Layers;
-import MWC.GUI.Chart.Painters.*;
+import MWC.GUI.*;
 
 /**
  * This is a sample new wizard. Its role is to create a new file resource in the
@@ -73,31 +72,20 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	public boolean performFinish()
 	{
 
-		// hey, what's our data?
-		ScalePainter sp = (ScalePainter) _scaleWizard.getPlottable();
-		if (sp != null)
+		// get the chart features layer.
+		Layer chartFeatures = _myNewLayers.findLayer(Layers.CHART_FEATURES);
+		if (chartFeatures == null)
 		{
-			System.out.println("scale units:" + sp.getDisplayUnits());
-			System.out.println("scale auto:" + sp.getAutoMode());
-			System.out.println("scale min:" + sp.getScaleMax());
-			System.out.println("scale color:" + sp.getColor());
-		}
-		
-		GridPainter gp = (GridPainter) _gridWizard.getPlottable();
-		if(gp != null)
-		{
-			System.out.println("Grid col:" + gp.getColor());
-			System.out.println("Grid delta:" + gp.getDelta());
-		}
-		
-		CoastPainter cp = (CoastPainter) _coastWizard.getPlottable();
-		if(cp != null)
-		{
-			System.out.println("coast color:" + cp.getColor());
+			chartFeatures = new BaseLayer();
+			chartFeatures.setName(Layers.CHART_FEATURES);
+			_myNewLayers.addThisLayer(chartFeatures);
 		}
 
-		if (true)
-			return true;
+		// ok, add our new layers. The wizards return null if one isn't wanted,
+		// the layers object manages that ok.
+		chartFeatures.add(_scaleWizard.getPlottable());
+		chartFeatures.add(_gridWizard.getPlottable());
+		chartFeatures.add(_coastWizard.getPlottable());
 
 		final String containerName = _fileWizard.getContainerName();
 		final String fileName = _fileWizard.getFileName();
