@@ -31,7 +31,7 @@ public class CoastWizardPage extends CorePlottableWizardPage
 	protected Plottable createMe()
 	{
 		if(_plottable == null)
-			 _plottable = new CoastPainter();
+			 _plottable = CoastPainter.getCoastPainterDontLoadData();
 		
 		return _plottable;
 	}

@@ -14,6 +14,7 @@ import org.eclipse.ui.ide.IDE;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.*;
+import MWC.GUI.Chart.Painters.CoastPainter;
 
 /**
  * This is a sample new wizard. Its role is to create a new file resource in the
@@ -27,12 +28,10 @@ import MWC.GUI.*;
 public class NewPlotWizard extends Wizard implements INewWizard
 {
 	private FilenameWizardPage _fileWizard;
-
 	private ScaleWizardPage _scaleWizard;
-
 	private CoastWizardPage _coastWizard;
-
 	private GridWizardPage _gridWizard;
+	private ETOPOWizardPage _etopoWizard;
 
 	private ISelection selection;
 
@@ -59,10 +58,12 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		_scaleWizard = new ScaleWizardPage(selection);
 		_coastWizard = new CoastWizardPage(selection);
 		_gridWizard = new GridWizardPage(selection);
+		_etopoWizard = new ETOPOWizardPage(selection);
 		addPage(_fileWizard);
 		addPage(_scaleWizard);
 		addPage(_coastWizard);
 		addPage(_gridWizard);
+		addPage(_etopoWizard);
 	}
 
 	/**
@@ -85,7 +86,21 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		// the layers object manages that ok.
 		chartFeatures.add(_scaleWizard.getPlottable());
 		chartFeatures.add(_gridWizard.getPlottable());
-		chartFeatures.add(_coastWizard.getPlottable());
+		
+		CoastPainter coast = (CoastPainter) _coastWizard.getPlottable();
+		if(coast != null)
+		{
+			// complete the laze instantiation of the coastline - we're only going to load the data if/when we need it
+			coast.initData();
+			
+			// cool add it to our plot
+			chartFeatures.add(coast);
+		}
+		
+		// also add in the ETOPO layer if it worked
+		Layer etopoLayer = (Layer) _etopoWizard.getPlottable();
+		if(etopoLayer != null)
+			 _myNewLayers.addThisLayer(etopoLayer);
 
 		final String containerName = _fileWizard.getContainerName();
 		final String fileName = _fileWizard.getFileName();
