@@ -27,7 +27,7 @@ public class InsertCoastline extends CoreInsertChartFeature
 		{
 			cp.setVisible(true);
 			WorldArea ca = cp.getBounds();
-			cp.setVisible(false);
+			cp.setVisible(true);
 			theChart.getCanvas().getProjection().setDataArea(ca);
 		}
 
