@@ -125,7 +125,7 @@
                class="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
                icon="icons/coast.gif"
                id="org.mwc.debrief.core.creators.chartFeatures.InsertCoastline"
-               label="&amp;Label"
+               label="&amp;Coastline"
                menubarPath="org.mwc.debrief.core.EditorFeatures/features"
                style="push"/>
 
