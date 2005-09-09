@@ -18,11 +18,11 @@ import Debrief.ReaderWriter.XML.GUI.BackgroundHandler;
 import Debrief.ReaderWriter.XML.GUI.ComponentHandler;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 
-abstract public class GUIHandler extends
-		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-//	static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
+	// static private final java.util.Hashtable _myCreators = new
+	// java.util.Hashtable();
 
 	String _primaryTrack = null;
 
@@ -33,7 +33,7 @@ abstract public class GUIHandler extends
 		// inform our parent what type of class we are
 		super("gui");
 
-		addHandler(new ToteHandler(null, null)
+		addHandler(new ToteHandler()
 		{
 			public void setPrimarySecondary(boolean isPrimary, String trackName)
 			{
@@ -94,8 +94,11 @@ abstract public class GUIHandler extends
 
 	/**
 	 * store the current primary and secondary tracks for this plot
-	 * @param primaryTrack primary track name
-	 * @param secondaryTracks list of tracks name for secondary tracks
+	 * 
+	 * @param primaryTrack
+	 *          primary track name
+	 * @param secondaryTracks
+	 *          list of tracks name for secondary tracks
 	 */
 	abstract public void assignTracks(String primaryTrack, Vector secondaryTracks);
 
@@ -117,8 +120,8 @@ abstract public class GUIHandler extends
 	// the constructors for our components
 	// ///////////////////////////////////////////////////////////////////////
 
-	public static void exportThis(PlotEditor thePlot,
-			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	public static void exportThis(PlotEditor thePlot, org.w3c.dom.Element parent,
+			org.w3c.dom.Document doc)
 	{
 		// create ourselves
 		Element gui = doc.createElement("gui");
@@ -126,7 +129,8 @@ abstract public class GUIHandler extends
 		// //////////////////////////////////////////////
 		// first the tote
 		// //////////////////////////////////////////////
-		TrackDataProvider theTracks = (TrackDataProvider) thePlot.getAdapter(TrackDataProvider.class);
+		TrackDataProvider theTracks = (TrackDataProvider) thePlot
+				.getAdapter(TrackDataProvider.class);
 		ToteHandler.exportTote(theTracks, gui, doc);
 
 		// try to export the other features

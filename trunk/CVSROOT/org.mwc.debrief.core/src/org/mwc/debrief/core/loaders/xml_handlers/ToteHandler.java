@@ -19,20 +19,10 @@ import Debrief.Tools.Tote.WatchableList;
 public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private final Debrief.GUI.Tote.AnalysisTote _myTote;
-//  private final MWC.GUI.Layers _theData;
-
-  public ToteHandler(Debrief.GUI.Tote.AnalysisTote theTote, MWC.GUI.Layers theData)
+  public ToteHandler()
   {
     // inform our parent what type of class we are
     super("tote");
-
-    _myTote = theTote;
-
-    if (_myTote == null)
-      System.err.println("Tote information missing from Tote handler");
-
-//    _theData = theData;
 
     addHandler(new PrimarySecondaryHandler("primary")
     {
