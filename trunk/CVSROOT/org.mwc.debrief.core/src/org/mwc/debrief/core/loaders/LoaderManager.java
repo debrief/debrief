@@ -7,10 +7,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.IExtension;
-import org.eclipse.core.runtime.IExtensionPoint;
-import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.*;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -42,7 +40,7 @@ public abstract class LoaderManager
 	{		
 		Vector res = new Vector(0,1);
 		
-		System.out.println("*Debrief loader Configuration Start*");
+		CorePlugin.logError(Status.INFO, "Starting to load Debrief data importers", null);
 
 		_loaders = new ArrayList();
 		IExtensionPoint point = Platform.getExtensionRegistry()
@@ -66,10 +64,10 @@ public abstract class LoaderManager
 
 		// Check if no extensions or empty extensions
 		if (point == null || getToolActionDescriptors().size() == 0) {
-			System.out.println("* No configuration found!");
+			CorePlugin.logError(Status.WARNING, "No data loaders found", null);
 		}
 
-		System.out.println("*Debrief loader Configuration End*");		
+		CorePlugin.logError(Status.INFO, "Finished loading Debrief importers", null);
 		
 		return res;
 	}
@@ -82,7 +80,7 @@ public abstract class LoaderManager
 
 	private void addToolActionDescriptor(IConfigurationElement configElement)
 	{
-		System.out.print("Loading tag...");
+		CorePlugin.logError(Status.INFO, "About to load tag:" + configElement.getName(), null);
 
 		String label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 		
@@ -100,10 +98,9 @@ public abstract class LoaderManager
 		if (!doubleEntry) {
 			INamedItem newInstance = createInstance(configElement, label);
 			getToolActionDescriptors().add(newInstance);
-			System.out.println("...success!");
+			CorePlugin.logError(Status.INFO, "Tag:" + configElement.getName() + " loaded", null);
 		} else {
-			System.out.println("...failed! Reason: Label '" + label
-					+ "' already exists.  Check your plugin.xml");
+			CorePlugin.logError(Status.ERROR, "Tag:" + configElement.getName() + " failed to load. " + label + " already. Check for double-entry in plugin.xml", null);
 		}
 
 	}	
