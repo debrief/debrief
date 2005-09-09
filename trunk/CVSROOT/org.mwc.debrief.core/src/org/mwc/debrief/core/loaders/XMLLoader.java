@@ -11,7 +11,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.*;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -46,9 +46,9 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 * @param fileName
 	 */
 	public void doTheLoad(Layers destination, InputStream source,
-			String fileName, IControllableViewport view)
+			String fileName, IControllableViewport view, IPlotGUI plot)
 	{
-		_myReader.importThis(fileName, source, destination, view);
+		_myReader.importThis(fileName, source, destination, view, plot);
 	}
 
 	/*
@@ -97,7 +97,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 
 								// ok - get loading going
 
-								doTheLoad(theLayers, is, thePath, thePlot);
+								doTheLoad(theLayers, is, thePath, thePlot, thePlot);
 
 								CorePlugin.logError(Status.INFO,
 										"completed loading:" + thePath, null);

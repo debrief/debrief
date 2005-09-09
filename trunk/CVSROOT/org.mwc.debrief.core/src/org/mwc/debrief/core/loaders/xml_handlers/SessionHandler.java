@@ -4,7 +4,7 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IAdaptable;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.*;
 import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.ReaderWriter.XML.DebriefLayersHandler;
@@ -26,7 +26,7 @@ import MWC.GenericData.WorldArea;
 public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   public SessionHandler(Layers _theLayers, 
-  		final IControllableViewport  view)
+  		final IControllableViewport  view, IPlotGUI plot)
   {
     // inform our parent what type of class we are
     super("session");
@@ -39,7 +39,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 						view.setProjection(proj);
 					}
     		});
-    addHandler(new GUIHandler()
+    addHandler(new GUIHandler(plot)
     		{
 					public void assignTracks(String primaryTrack, Vector secondaryTracks)
 					{

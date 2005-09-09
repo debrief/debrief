@@ -11,6 +11,7 @@ import java.awt.Color;
 import java.util.Vector;
 
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.core.interfaces.IPlotGUI;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.w3c.dom.Element;
 
@@ -28,7 +29,7 @@ abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
 	Vector _secondaryTracks = null;
 
-	public GUIHandler()
+	public GUIHandler(final IPlotGUI plot)
 	{
 		// inform our parent what type of class we are
 		super("gui");
@@ -62,13 +63,7 @@ abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 		{
 			public void setBackgroundColor(Color theColor)
 			{
-				//      	
-				// PlainView pv = _session.getCurrentView();
-				// if(pv instanceof AnalysisView)
-				// {
-				// AnalysisView av = (AnalysisView)pv;
-				// av.getChart().getCanvas().setBackgroundColor(theColor);
-				// }
+				plot.setBackgroundColor(theColor);
 			}
 		});
 
@@ -141,14 +136,9 @@ abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 		// ComponentDetails stepperD = _myStepperHandler.exportThis(session);
 		// stepperD.exportTo("Stepper", gui, doc);
 		//
-		// PlainView pv = session.getCurrentView();
-		// if(pv instanceof AnalysisView)
-		// {
-		// AnalysisView av = (AnalysisView)pv;
-		// Color col = av.getChart().getCanvas().getBackgroundColor();
-		// BackgroundHandler.exportThis(col, gui, doc);
-		// }
-		//
+
+		BackgroundHandler.exportThis(thePlot.getBackgroundColor(), gui, doc);
+
 		parent.appendChild(gui);
 	}
 

@@ -1,6 +1,6 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
-import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.*;
 import org.mwc.debrief.core.editors.PlotEditor;
 
 import Debrief.ReaderWriter.XML.DetailsHandler;
@@ -18,14 +18,14 @@ import MWC.GUI.Layers;
 
 final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-
-  public PlotHandler(String fileName, Layers destination, IControllableViewport view)
+  public PlotHandler(String fileName, Layers destination, 
+  		IControllableViewport view, final IPlotGUI plot)
   {
     // inform our parent what type of class we are
     super("plot");
 
     // sort out the handlers
-    addHandler(new SessionHandler(destination, view));
+    addHandler(new SessionHandler(destination, view, plot));
     addHandler(new DetailsHandler(null));
 
 

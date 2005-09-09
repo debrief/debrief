@@ -12,7 +12,7 @@ import java.io.IOException;
 import org.apache.xerces.dom.DocumentImpl;
 import org.apache.xml.serialize.OutputFormat;
 import org.apache.xml.serialize.XMLSerializer;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.*;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.w3c.dom.Document;
 
@@ -43,10 +43,11 @@ public final class DebriefEclipseXMLReaderWriter extends MWC.Utilities.ReaderWri
   public final void importThis(final String fName,
                                final java.io.InputStream is,
                                Layers destination,
-                               IControllableViewport view)
+                               IControllableViewport view,
+                               IPlotGUI plot)
   {
     // create the handler for this type of data
-    final MWCXMLReader handler = new PlotHandler(fName, destination, view);
+    final MWCXMLReader handler = new PlotHandler(fName, destination, view, plot);
 
     // import the datafile into this set of layers
     importThis(fName, is, handler);

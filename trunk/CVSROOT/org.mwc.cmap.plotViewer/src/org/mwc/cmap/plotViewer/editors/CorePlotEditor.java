@@ -1,5 +1,6 @@
 package org.mwc.cmap.plotViewer.editors;
 
+import java.awt.Color;
 import java.beans.*;
 import java.util.*;
 
@@ -29,18 +30,27 @@ import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.*;
 
 public abstract class CorePlotEditor extends EditorPart implements
-		IResourceProvider, IControllableViewport, ISelectionProvider
+		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI
 {
 
 	// //////////////////////////////
 	// member data
 	// //////////////////////////////
 
+	
+	
 	/**
 	 * the chart we store/manager
 	 */
 	protected SWTChart _myChart = null;
 
+
+	/** we may learn the background color of the canvas before it has loaded.
+	 * temporarily store the color here, and set the background color when
+	 * we load the canvas
+	 */
+	private Color _pendingCanvasBackgroundColor;	
+	
 	/**
 	 * the graphic data we know about
 	 */
@@ -159,12 +169,24 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// stop listening to the time manager
 		_timeManager.removeListener(_timeListener,
 				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		
+		// and clear the tracker
+		if(null != _myTracker)
+			_myTracker = null;
 	}
 
 	public void createPartControl(Composite parent)
 	{
 		// hey, create the chart
 		_myChart = createTheChart(parent);
+		
+		// set the chart color, if we have one
+		if(_pendingCanvasBackgroundColor != null)
+		{
+			 _myChart.getCanvas().setBackgroundColor(_pendingCanvasBackgroundColor);
+			 // and promptly forget it
+			 _pendingCanvasBackgroundColor = null;
+		}
 
 		// and update the projection, if we have one
 		if (_pendingProjection != null)
@@ -419,7 +441,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		}
 
 	}
-
+	
 	public SWTChart getChart()
 	{
 		return _myChart;
@@ -559,4 +581,26 @@ public abstract class CorePlotEditor extends EditorPart implements
 		_ignoreDirtyCalls = false;
 	}
 
+	/**
+	 * @return
+	 */
+	public Color getBackgroundColor()
+	{
+		return _myChart.getCanvas().getBackgroundColor();
+	}
+
+	
+	/**
+	 * @param theColor
+	 */
+	public void setBackgroundColor(Color theColor)
+	{
+		if(_myChart == null)
+				_pendingCanvasBackgroundColor = theColor;
+		else
+			_myChart.getCanvas().setBackgroundColor(theColor);
+	}
+
+	
+	
 }
