@@ -106,7 +106,7 @@ public class PlottableWrapper implements IPropertySource
 
 	public boolean equals(Object arg0)
 	{
-		Plottable targetPlottable = null;
+		Editable targetPlottable = null;
 		boolean res = false;
 		if (arg0 instanceof PlottableWrapper)
 		{
@@ -290,7 +290,7 @@ public class PlottableWrapper implements IPropertySource
 		Layer parent = getTopLevelLayer();
 
 		// ok, create the action
-		PropertyChangeAction pca = new PropertyChangeAction(oldVal,value, thisProp, getPlottable(), parent, getLayers());
+		PropertyChangeAction pca = new PropertyChangeAction(oldVal,value, thisProp, getPlottable().getName(), parent, getLayers());
 		
 		// and sort it out with the history
 		CorePlugin.run(pca);
@@ -337,11 +337,11 @@ public class PlottableWrapper implements IPropertySource
 		public PropertyChangeAction(Object oldValue,
 				Object newValue,
 				DebriefProperty subject,
-				Plottable item,
+				String name,
 				Layer parentLayer,
 				Layers wholeLayers)
 		{
-			super(item.getName() + " " + subject.getDisplayName());
+			super(name + " " + subject.getDisplayName());
 			
 			this.addContext(CorePlugin.CMAP_CONTEXT);
 			

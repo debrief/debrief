@@ -18,7 +18,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.interfaces.*;
-import org.mwc.cmap.core.property_support.PlottableWrapper;
+import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 
@@ -29,28 +29,26 @@ import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.*;
 
-public abstract class CorePlotEditor extends EditorPart implements
-		IResourceProvider, IControllableViewport, ISelectionProvider, IPlotGUI
+public abstract class CorePlotEditor extends EditorPart implements IResourceProvider,
+		IControllableViewport, ISelectionProvider, IPlotGUI
 {
 
 	// //////////////////////////////
 	// member data
 	// //////////////////////////////
 
-	
-	
 	/**
 	 * the chart we store/manager
 	 */
 	protected SWTChart _myChart = null;
 
-
-	/** we may learn the background color of the canvas before it has loaded.
-	 * temporarily store the color here, and set the background color when
-	 * we load the canvas
+	/**
+	 * we may learn the background color of the canvas before it has loaded.
+	 * temporarily store the color here, and set the background color when we load
+	 * the canvas
 	 */
-	private Color _pendingCanvasBackgroundColor;	
-	
+	private Color _pendingCanvasBackgroundColor;
+
 	/**
 	 * the graphic data we know about
 	 */
@@ -158,8 +156,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 			}
 		};
 
-		_timeManager.addListener(_timeListener,
-				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		_timeManager.addListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 	}
 
 	public void dispose()
@@ -167,25 +164,65 @@ public abstract class CorePlotEditor extends EditorPart implements
 		super.dispose();
 
 		// stop listening to the time manager
-		_timeManager.removeListener(_timeListener,
-				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-		
+		_timeManager.removeListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 		// and clear the tracker
-		if(null != _myTracker)
+		if (null != _myTracker)
 			_myTracker = null;
+	}
+	
+	private static class WrappedCanvas implements Plottable
+	{
+		private SWTCanvas _myCanvas;
+
+		public WrappedCanvas(SWTCanvas canvas)
+		{
+			_myCanvas = canvas;
+		}
+
+		public String getName()
+		{
+			return _myCanvas.getName();
+		}
+
+		public boolean hasEditor()
+		{
+			return _myCanvas.hasEditor();
+		}
+
+		public EditorType getInfo()
+		{
+			return _myCanvas.getInfo();
+		}
+
+		public void paint(CanvasType dest)
+		{		}
+
+		public WorldArea getBounds()
+		{			return null;		}
+
+		public boolean getVisible()
+		{			return false;		}
+
+		public void setVisible(boolean val)
+		{		}
+
+		public double rangeFrom(WorldLocation other)
+		{			return 0;		}
+		
 	}
 
 	public void createPartControl(Composite parent)
 	{
 		// hey, create the chart
 		_myChart = createTheChart(parent);
-		
+
 		// set the chart color, if we have one
-		if(_pendingCanvasBackgroundColor != null)
+		if (_pendingCanvasBackgroundColor != null)
 		{
-			 _myChart.getCanvas().setBackgroundColor(_pendingCanvasBackgroundColor);
-			 // and promptly forget it
-			 _pendingCanvasBackgroundColor = null;
+			_myChart.getCanvas().setBackgroundColor(_pendingCanvasBackgroundColor);
+			// and promptly forget it
+			_pendingCanvasBackgroundColor = null;
 		}
 
 		// and update the projection, if we have one
@@ -210,16 +247,23 @@ public abstract class CorePlotEditor extends EditorPart implements
 			protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
 			{
 				System.out.println("opening editor for:" + res);
-				PlottableWrapper parentP = new PlottableWrapper(parentLayer, null,
-						getChart().getLayers());
-				PlottableWrapper wrapped = new PlottableWrapper(res, parentP,
-						getChart().getLayers());
+				PlottableWrapper parentP = new PlottableWrapper(parentLayer, null, getChart()
+						.getLayers());
+				PlottableWrapper wrapped = new PlottableWrapper(res, parentP, getChart()
+						.getLayers());
 				ISelection selected = new StructuredSelection(wrapped);
 				fireSelectionChanged(selected);
 			}
 
 			protected void handleItemNotFound(PlainProjection projection)
 			{
+				System.out.println("opening property editor for plot");
+				SWTCanvas can = (SWTCanvas) getChart().getCanvas();
+				EditableWrapper wrapped = new EditableWrapper(can,
+						getChart().getLayers());
+				ISelection sel = new StructuredSelection(wrapped);
+				fireSelectionChanged(sel);
+				
 			}
 		});
 
@@ -243,15 +287,13 @@ public abstract class CorePlotEditor extends EditorPart implements
 		// });
 
 		// and over-ride the undo button
-		IAction undoAction = new UndoActionHandler(getEditorSite(),
-				CorePlugin.CMAP_CONTEXT);
-		IAction redoAction = new RedoActionHandler(getEditorSite(),
-				CorePlugin.CMAP_CONTEXT);
+		IAction undoAction = new UndoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
+		IAction redoAction = new RedoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
 
-		getEditorSite().getActionBars().setGlobalActionHandler(
-				ActionFactory.UNDO.getId(), undoAction);
-		getEditorSite().getActionBars().setGlobalActionHandler(
-				ActionFactory.REDO.getId(), redoAction);
+		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.UNDO.getId(),
+				undoAction);
+		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.REDO.getId(),
+				redoAction);
 	}
 
 	/**
@@ -441,7 +483,7 @@ public abstract class CorePlotEditor extends EditorPart implements
 		}
 
 	}
-	
+
 	public SWTChart getChart()
 	{
 		return _myChart;
@@ -512,11 +554,9 @@ public abstract class CorePlotEditor extends EditorPart implements
 			if (_selectionListeners != null)
 			{
 				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
-				for (Iterator stepper = _selectionListeners.iterator(); stepper
-						.hasNext();)
+				for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
 				{
-					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
-							.next();
+					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
 					if (thisL != null)
 					{
 						thisL.selectionChanged(sEvent);
@@ -589,18 +629,15 @@ public abstract class CorePlotEditor extends EditorPart implements
 		return _myChart.getCanvas().getBackgroundColor();
 	}
 
-	
 	/**
 	 * @param theColor
 	 */
 	public void setBackgroundColor(Color theColor)
 	{
-		if(_myChart == null)
-				_pendingCanvasBackgroundColor = theColor;
+		if (_myChart == null)
+			_pendingCanvasBackgroundColor = theColor;
 		else
 			_myChart.getCanvas().setBackgroundColor(theColor);
 	}
 
-	
-	
 }

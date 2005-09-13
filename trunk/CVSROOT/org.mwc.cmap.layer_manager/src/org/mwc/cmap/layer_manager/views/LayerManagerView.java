@@ -164,7 +164,9 @@ public class LayerManagerView extends ViewPart
 				if (element instanceof PlottableWrapper)
 				{
 					PlottableWrapper pw = (PlottableWrapper) element;
-					res += pw.getPlottable().hashCode();
+					Plottable pl = pw.getPlottable();
+					if(pl != null)
+						res += pw.getPlottable().hashCode();
 				}
 				else
 					res = element.hashCode();
