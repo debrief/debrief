@@ -11,15 +11,15 @@ import org.eclipse.swt.widgets.*;
 
 import MWC.GenericData.*;
 
-public class WorldAccelerationHelper extends EditorHelper
+public class DurationHelper extends EditorHelper
 {
 
 	/** constructor..
 	 *
 	 */
-	public WorldAccelerationHelper()
+	public DurationHelper()
 	{
-		super(WorldAcceleration.class);
+		super(Duration.class);
 	}
 
 	/** create an instance of the cell editor suited to our data-type
@@ -29,12 +29,12 @@ public class WorldAccelerationHelper extends EditorHelper
 	 */
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new ValueWithUnitsCellEditor(parent, "Acceleration", "Units")
+		return new ValueWithUnitsCellEditor(parent, "Duration", "Units")
 		{
 			/** the world distance we're editing
 			 * 
 			 */
-			WorldAcceleration _myVal;
+			Duration _myVal;
 			
 			/**
 			 * @return
@@ -42,7 +42,7 @@ public class WorldAccelerationHelper extends EditorHelper
 			protected int getUnitsValue()
 			{
 		    // so, what are the preferred units?
-		    int theUnits = WorldAcceleration.selectUnitsFor(_myVal.getValueIn(WorldAcceleration.getSIUnits()));
+		    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
 		    return theUnits;
 			}
 
@@ -52,7 +52,7 @@ public class WorldAccelerationHelper extends EditorHelper
 			protected double getDoubleValue()
 			{
 		    // so, what are the preferred units?
-		    int theUnits = WorldAcceleration.selectUnitsFor(_myVal.getValueIn(WorldAcceleration.getSIUnits()));
+		    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
 
 		    double theValue = _myVal.getValueIn(theUnits);				
 				return theValue;
@@ -63,7 +63,7 @@ public class WorldAccelerationHelper extends EditorHelper
 			 */
 			protected String[] getTagsList()
 			{
-				return WorldAcceleration.UnitLabels;
+				return Duration.UnitLabels;
 			}
 			
 			/**
@@ -73,7 +73,7 @@ public class WorldAccelerationHelper extends EditorHelper
 			 */
 			protected Object createResultsObject(double dist, int units)
 			{
-				return new WorldAcceleration(dist, units);
+				return new Duration(dist, units);
 			}
 
 			/** convert the object to our data units
@@ -82,7 +82,7 @@ public class WorldAccelerationHelper extends EditorHelper
 			 */
 			protected void storeMe(Object value)
 			{
-				_myVal = (WorldAcceleration) value;
+				_myVal = (Duration) value;
 			}
 		};
 	}
