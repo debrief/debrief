@@ -5,7 +5,6 @@ package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 
@@ -21,11 +20,6 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor
 	 */
 	Combo _myCombo;
 	
-	/** just have the one of each listener, so we can easily remove them when the value gets updated
-	 * 
-	 */
-	private ModifyListener _modifyListener;
-	private SelectionListener _selectionListener;
 	
 	final private String _textTip;
 	final private String _comboTip;
@@ -41,37 +35,6 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor
 	{
 		return createControl(parent, _textTip, _comboTip);
 	}
-
-	private ModifyListener getModifyListener()
-	{
-		if(_modifyListener == null)
-		{
-			_modifyListener = new ModifyListener(){
-				public void modifyText(ModifyEvent e)
-				{
-					System.out.println("new text:" + _myText.getText());
-				}};
-		}
-		return _modifyListener;
-	}
-	
-	private SelectionListener getSelectionListener()
-	{
-		if(_selectionListener == null)
-		{
-			_selectionListener = new SelectionListener(){
-				public void widgetSelected(SelectionEvent e)
-				{
-					Combo combo = (Combo) e.getSource();
-					System.out.println("new val:" + combo.getSelectionIndex());
-				}
-				public void widgetDefaultSelected(SelectionEvent e)
-				{
-				}
-			};
-		}
-		return _selectionListener;
-	}
 	
 	protected Control createControl(Composite parent, String tipOne, String tipTwo)
 	{
@@ -86,11 +49,11 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor
 		holder.setLayout(rows);
 		
 		_myText = new Text(holder, SWT.BORDER);
-		_myText.addModifyListener(getModifyListener());
 		_myText.setTextLimit(7);
+		_myText.setToolTipText(tipOne);
 		_myCombo = new Combo(holder, SWT.DROP_DOWN);
-		_myCombo.addSelectionListener(getSelectionListener());
 		_myCombo.setItems(getTagsList());
+		_myCombo.setToolTipText(tipTwo);
 		
 		return holder;
 	}
