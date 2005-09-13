@@ -5,6 +5,7 @@ import java.beans.*;
 import java.util.*;
 
 import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.*;
@@ -246,7 +247,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 			protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
 			{
-				System.out.println("opening editor for:" + res);
+				CorePlugin.logError(Status.INFO, "Double-click processed, opening property editor for:" + res, null);
 				PlottableWrapper parentP = new PlottableWrapper(parentLayer, null, getChart()
 						.getLayers());
 				PlottableWrapper wrapped = new PlottableWrapper(res, parentP, getChart()
@@ -257,7 +258,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 			protected void handleItemNotFound(PlainProjection projection)
 			{
-				System.out.println("opening property editor for plot");
+				CorePlugin.logError(Status.INFO, "Double-clicked in backdrop.  Editing background color", null);
 				SWTCanvas can = (SWTCanvas) getChart().getCanvas();
 				EditableWrapper wrapped = new EditableWrapper(can,
 						getChart().getLayers());
@@ -272,19 +273,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		LineItem lineItem = CorePlugin.getStatusLine(this);
 		_myTracker = new CursorTracker(_myChart, lineItem);
 
-		//		
-		// Display.getDefault().asyncExec(new Runnable()
-		// {
-		// public void run()
-		// {
-		// IStatusLineManager mgr = getActionbar().getStatusLineManager();
-		// CursorTracker.LineItem item = new CursorTracker.LineItem("vv aa");
-		// mgr.add(item);
-		// mgr.update(true);
-		// item.update("bbb ccc");
-		// mgr.update(true);
-		// }
-		// });
 
 		// and over-ride the undo button
 		IAction undoAction = new UndoActionHandler(getEditorSite(), CorePlugin.CMAP_CONTEXT);
