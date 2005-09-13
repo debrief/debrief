@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.16  2005-08-31 15:03:38  Ian.Mayo
+// Revision 1.17  2005-09-13 13:46:25  Ian.Mayo
+// Better drag mode support
+//
+// Revision 1.16  2005/08/31 15:03:38  Ian.Mayo
 // Minor tidying
 //
 // Revision 1.15  2005/07/01 08:17:46  Ian.Mayo
@@ -84,6 +87,7 @@ public class SWTChart extends PlainChart
 	// member variables
 	// //////////////////////////////////////////////////////////
 
+
 	/**
 	 * 
 	 */
@@ -101,6 +105,15 @@ public class SWTChart extends PlainChart
 	 * is needed).
 	 */
 	private WorldArea _lastDataArea = null;
+
+	private final int JITTER = 3;
+
+	/**
+	 * track drag operations
+	 */
+	private Point _startPoint = null;
+
+	private PlotDragMode _myDragMode;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -169,8 +182,7 @@ public class SWTChart extends PlainChart
 		// setRubberBand(new MWC.GUI.RubberBanding.RubberbandRectangle());
 
 		// create the tooltip handler
-		_theCanvas.setTooltipHandler(new MWC.GUI.Canvas.BasicTooltipHandler(
-				theLayers));
+		_theCanvas.setTooltipHandler(new MWC.GUI.Canvas.BasicTooltipHandler(theLayers));
 
 	}
 
@@ -354,8 +366,7 @@ public class SWTChart extends PlainChart
 											GC newGC = new GC(image);
 
 											// wrap the GC into something we know how to plot to.
-											SWTCanvasAdapter ca = new SWTCanvasAdapter(dest
-													.getProjection());
+											SWTCanvasAdapter ca = new SWTCanvasAdapter(dest.getProjection());
 
 											// and store the GC
 											ca.startDraw(newGC);
@@ -401,8 +412,11 @@ public class SWTChart extends PlainChart
 
 	}
 
-	/**  Convenience method added, to allow child classes to override how we plot
-	 * non-background layers.  This was originally inserted to let us support snail trails
+	/**
+	 * Convenience method added, to allow child classes to override how we plot
+	 * non-background layers. This was originally inserted to let us support snail
+	 * trails
+	 * 
 	 * @param thisLayer
 	 * @param dest
 	 */
@@ -424,8 +438,8 @@ public class SWTChart extends PlainChart
 	{
 		ImageData id = template.getImageData();
 		id.transparentPixel = id.palette.getPixel(new RGB(255, 255, 255));
-		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(
-				Display.getCurrent(), id);
+		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(Display
+				.getCurrent(), id);
 		return image;
 	}
 
@@ -521,11 +535,8 @@ public class SWTChart extends PlainChart
 	{
 		super.mouseMoved(new java.awt.Point(e.x, e.y));
 
-		// todo: PRODUCE NEW MOUSE EVENT TRANSLATOR!!!
 		if (_startPoint == null)
 			return;
-		// if (_dragTracker != null)
-		// return;
 
 		// was this the right-hand button
 		if (e.button != 3)
@@ -535,10 +546,8 @@ public class SWTChart extends PlainChart
 			int deltaY = _startPoint.y - e.y;
 			if (Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
 				return;
-			Tracker _dragTracker = new Tracker((Composite) _theCanvas.getCanvas(),
-					SWT.RESIZE);
-			Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX,
-					deltaY);
+			Tracker _dragTracker = new Tracker((Composite) _theCanvas.getCanvas(), SWT.RESIZE);
+			Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX, deltaY);
 			_dragTracker.setRectangles(new Rectangle[] { rect });
 			boolean dragResult = _dragTracker.open();
 			if (dragResult)
@@ -547,30 +556,22 @@ public class SWTChart extends PlainChart
 				Rectangle res = rects[0];
 				// get world area
 				java.awt.Point tl = new java.awt.Point(res.x, res.y);
-				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y
-						+ res.height);
-				WorldLocation locA = new WorldLocation(_theCanvas.getProjection()
-						.toWorld(tl));
-				WorldLocation locB = new WorldLocation(_theCanvas.getProjection()
-						.toWorld(br));
+				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y + res.height);
+				WorldLocation locA = new WorldLocation(_theCanvas.getProjection().toWorld(tl));
+				WorldLocation locB = new WorldLocation(_theCanvas.getProjection().toWorld(br));
 				WorldArea area = new WorldArea(locA, locB);
 
 				_theCanvas.getProjection().setDataArea(area);
-				
+
 				super.getLayers().fireModified(null);
-				
+
 				_theCanvas.updateMe();
-				
 
 				_dragTracker = null;
 				_startPoint = null;
 			}
 		}
 	}
-
-	private final int JITTER = 3;
-
-	private Point _startPoint = null;
 
 	protected void doMouseUp(MouseEvent e)
 	{
@@ -587,8 +588,7 @@ public class SWTChart extends PlainChart
 					// get the world location
 					java.awt.Point jPoint = new java.awt.Point(e.x, e.y);
 					WorldLocation loc = getCanvas().getProjection().toWorld(jPoint);
-					_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(),
-							_theLayers);
+					_theLeftClickListener.CursorClicked(jPoint, loc, getCanvas(), _theLayers);
 				}
 			}
 		}
@@ -598,10 +598,9 @@ public class SWTChart extends PlainChart
 
 	protected void doMouseDown(MouseEvent e)
 	{
-		// if (_dragTracker == null)
-		// {
-		_startPoint = new Point(e.x, e.y);
-		// }
+		// was this the right-hand button?
+		if (e.button != 3)
+			_startPoint = new Point(e.x, e.y);
 	}
 
 	protected void doMouseDoubleClick(MouseEvent e)
@@ -631,4 +630,24 @@ public class SWTChart extends PlainChart
 			}
 		}
 	}
+	
+	final public void setDragMode(final PlotDragMode newMode)
+	{
+		_myDragMode = newMode;
+	}
+	
+	final public PlotDragMode getDragMode()
+	{
+		return _myDragMode;
+	}
+
+	/** embedded interface for classes that are able to handle drag events
+	 * 
+	 * @author ian.mayo
+	 *
+	 */
+	public static interface PlotDragMode
+	{
+		
+	}	
 }

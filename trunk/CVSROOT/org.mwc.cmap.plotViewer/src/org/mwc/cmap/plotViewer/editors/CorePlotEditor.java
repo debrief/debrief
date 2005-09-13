@@ -172,46 +172,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			_myTracker = null;
 	}
 	
-	private static class WrappedCanvas implements Plottable
-	{
-		private SWTCanvas _myCanvas;
-
-		public WrappedCanvas(SWTCanvas canvas)
-		{
-			_myCanvas = canvas;
-		}
-
-		public String getName()
-		{
-			return _myCanvas.getName();
-		}
-
-		public boolean hasEditor()
-		{
-			return _myCanvas.hasEditor();
-		}
-
-		public EditorType getInfo()
-		{
-			return _myCanvas.getInfo();
-		}
-
-		public void paint(CanvasType dest)
-		{		}
-
-		public WorldArea getBounds()
-		{			return null;		}
-
-		public boolean getVisible()
-		{			return false;		}
-
-		public void setVisible(boolean val)
-		{		}
-
-		public double rangeFrom(WorldLocation other)
-		{			return 0;		}
-		
-	}
 
 	public void createPartControl(Composite parent)
 	{
