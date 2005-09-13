@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
 
-import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.*;
 

@@ -9,7 +9,6 @@ import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.resource.ColorRegistry;
 import org.eclipse.jface.util.*;
 import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;

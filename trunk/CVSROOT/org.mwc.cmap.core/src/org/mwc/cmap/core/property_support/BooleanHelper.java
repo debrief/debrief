@@ -47,7 +47,6 @@ public class BooleanHelper extends EditorHelper
 		{
 			public String getText(Object element)
 			{
-				Boolean val = (Boolean) element;
 				return null;
 			}
 

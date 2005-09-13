@@ -1,11 +1,9 @@
 package org.mwc.cmap.core.preferences;
 
 import org.eclipse.jface.preference.*;
-import org.eclipse.jface.util.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 
-import MWC.GUI.ETOPO.ETOPO_2_Minute;
 import MWC.GUI.Tools.Palette.CreateTOPO;
 
 /**
