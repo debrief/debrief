@@ -86,10 +86,16 @@ public class DistanceWithUnitsHelper extends EditorHelper
 			System.out.println("creating new control...");
 			Composite holder = new Composite(parent, SWT.NONE);
 			RowLayout rows = new RowLayout();
+			rows.marginLeft = rows.marginRight = 0;
+			rows.marginTop = rows.marginBottom	 = 0;
+			rows.fill = false;
+			rows.spacing = 0;
+			rows.pack = false;
 			holder.setLayout(rows);
 			
 			_myText = new Text(holder, SWT.BORDER);
 			_myText.addModifyListener(getModifyListener());
+			_myText.setTextLimit(5);
 			_myCombo = new Combo(holder, SWT.DROP_DOWN);
 			_myCombo.addSelectionListener(getSelectionListener());
 			_myCombo.setItems(WorldDistanceWithUnits.UnitLabels);
@@ -105,24 +111,29 @@ public class DistanceWithUnitsHelper extends EditorHelper
 			return holder;
 		}
 
-		
-    public LayoutData getLayoutData() {
-      LayoutData layoutData = super.getLayoutData();
-      if ((_myCombo == null) || _myCombo.isDisposed())
-          layoutData.minimumWidth = 60;
-      else {
-          // make the comboBox 10 characters wide
-          GC gc = new GC(_myCombo);
-          layoutData.minimumWidth = (gc.getFontMetrics()
-                  .getAverageCharWidth() * 10) + 10;
-          gc.dispose();
-      }
-      return layoutData;
-  }
+//		
+//    public LayoutData getLayoutData() {
+//      LayoutData layoutData = super.getLayoutData();
+//      if ((_myCombo == null) || _myCombo.isDisposed())
+//          layoutData.minimumWidth = 60;
+//      else {
+//          // make the comboBox 10 characters wide
+//          GC gc = new GC(_myCombo);
+//          layoutData.minimumWidth = (gc.getFontMetrics()
+//                  .getAverageCharWidth() * 10) + 10;
+//          gc.dispose();
+//      }
+//      return layoutData;
+//  }
 		
 		protected Object doGetValue()
 		{
-			return _myVal;
+			String distTxt = _myText.getText();
+			double dist = new Double(distTxt).doubleValue();
+			int units = _myCombo.getSelectionIndex();
+			WorldDistanceWithUnits res = new WorldDistanceWithUnits(dist, units);
+			System.out.println("returning value of:" + res);
+			return res;
 		}
 
 		protected void doSetFocus()
@@ -133,7 +144,10 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		{
 			_myVal = (WorldDistanceWithUnits) value;
 			if(_myText != null)
-				_myText.setText(_myVal.toString());
+			{
+				_myText.setText("" + _myVal.getDistance());
+				_myCombo.select(WorldDistanceWithUnits.getUnitIndexFor(_myVal.getUnitsLabel()));
+			}
 			else
 				System.out.println("setting value, haven't created editor yet");
 		}
