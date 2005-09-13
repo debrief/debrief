@@ -6,7 +6,6 @@ package org.mwc.cmap.plotViewer.actions;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
-import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotDragMode;
 
 import MWC.GUI.PlainChart;
 import MWC.GUI.Tools.Action;
@@ -20,7 +19,7 @@ abstract public class CoreDragAction extends CoreEditorAction
 	 * 
 	 * @return
 	 */
-	abstract public SWTChart.PlotDragMode getDragMode();
+	abstract public SWTChart.PlotMouseDragger getDragMode();
 	
 	
 	final protected void run()
@@ -28,10 +27,10 @@ abstract public class CoreDragAction extends CoreEditorAction
 		// find out what the current dragger is
 		PlainChart chrs = getChart();
 		SWTChart myChart = (SWTChart) chrs;
-		SWTChart.PlotDragMode oldMode = myChart.getDragMode();
+		SWTChart.PlotMouseDragger oldMode = myChart.getDragMode();
 		
 		// create an instance of the new mode
-		SWTChart.PlotDragMode newMode = getDragMode();
+		SWTChart.PlotMouseDragger newMode = getDragMode();
 		
 		// create the action
 		CoreDragAction.SwitchModeAction theAction = new CoreDragAction.SwitchModeAction(newMode, oldMode, myChart);
@@ -59,15 +58,15 @@ abstract public class CoreDragAction extends CoreEditorAction
 		/** the mode we're switching to
 		 * 
 		 */
-		private SWTChart.PlotDragMode _newMode;
+		private SWTChart.PlotMouseDragger _newMode;
 		
 		/** the mode we're switching from
 		 * 
 		 */
-		private SWTChart.PlotDragMode _oldMode;
+		private SWTChart.PlotMouseDragger _oldMode;
 	
-		public SwitchModeAction(final SWTChart.PlotDragMode newMode,
-														final SWTChart.PlotDragMode oldMode,
+		public SwitchModeAction(final SWTChart.PlotMouseDragger newMode,
+														final SWTChart.PlotMouseDragger oldMode,
 														final SWTChart editor)
 		{
 			_editor = editor;

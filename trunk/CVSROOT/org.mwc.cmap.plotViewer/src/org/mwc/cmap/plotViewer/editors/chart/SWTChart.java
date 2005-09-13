@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.17  2005-09-13 13:46:25  Ian.Mayo
+// Revision 1.18  2005-09-13 15:43:25  Ian.Mayo
+// Try to get dragging modes working
+//
+// Revision 1.17  2005/09/13 13:46:25  Ian.Mayo
 // Better drag mode support
 //
 // Revision 1.16  2005/08/31 15:03:38  Ian.Mayo
@@ -62,12 +65,10 @@ import java.awt.*;
 import java.awt.Color;
 import java.util.HashMap;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
 
@@ -112,8 +113,13 @@ public class SWTChart extends PlainChart
 	 * track drag operations
 	 */
 	private Point _startPoint = null;
+	
+	/** the last point dragged over
+	 * 
+	 */
+	private Point _draggedPoint = null;
 
-	private PlotDragMode _myDragMode;
+	private PlotMouseDragger _myDragMode;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -541,35 +547,11 @@ public class SWTChart extends PlainChart
 		// was this the right-hand button
 		if (e.button != 3)
 		{
-
-			int deltaX = _startPoint.x - e.x;
-			int deltaY = _startPoint.y - e.y;
-			if (Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
-				return;
-			Tracker _dragTracker = new Tracker((Composite) _theCanvas.getCanvas(), SWT.RESIZE);
-			Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX, deltaY);
-			_dragTracker.setRectangles(new Rectangle[] { rect });
-			boolean dragResult = _dragTracker.open();
-			if (dragResult)
-			{
-				Rectangle[] rects = _dragTracker.getRectangles();
-				Rectangle res = rects[0];
-				// get world area
-				java.awt.Point tl = new java.awt.Point(res.x, res.y);
-				java.awt.Point br = new java.awt.Point(res.x + res.width, res.y + res.height);
-				WorldLocation locA = new WorldLocation(_theCanvas.getProjection().toWorld(tl));
-				WorldLocation locB = new WorldLocation(_theCanvas.getProjection().toWorld(br));
-				WorldArea area = new WorldArea(locA, locB);
-
-				_theCanvas.getProjection().setDataArea(area);
-
-				super.getLayers().fireModified(null);
-
-				_theCanvas.updateMe();
-
-				_dragTracker = null;
-				_startPoint = null;
-			}
+			_draggedPoint = new Point(e.x, e.y);
+			
+			// ok - pass the drag to our drag control
+			if(_myDragMode != null)
+				_myDragMode.doMouseMove(_draggedPoint, JITTER, super.getLayers());
 		}
 	}
 
@@ -579,9 +561,16 @@ public class SWTChart extends PlainChart
 		if (e.button != 3)
 		{
 			// ok. did we move at all?
-			Point thisP = new Point(e.x, e.y);
-			if (thisP.equals(_startPoint))
+			if(_draggedPoint != null)
 			{
+				// yes, process the drag
+				if(_myDragMode != null)
+					_myDragMode.doMouseUp(new Point(e.x, e.y));
+			}
+			else
+			{
+				// nope
+				
 				// hey, it was just a click - process it
 				if (_theLeftClickListener != null)
 				{
@@ -600,7 +589,14 @@ public class SWTChart extends PlainChart
 	{
 		// was this the right-hand button?
 		if (e.button != 3)
+		{
 			_startPoint = new Point(e.x, e.y);
+			_draggedPoint = null;
+
+			if(_myDragMode != null)				
+				_myDragMode.mouseDown(_startPoint, _theCanvas);
+			
+		}
 	}
 
 	protected void doMouseDoubleClick(MouseEvent e)
@@ -631,12 +627,15 @@ public class SWTChart extends PlainChart
 		}
 	}
 	
-	final public void setDragMode(final PlotDragMode newMode)
+	final public void setDragMode(final PlotMouseDragger newMode)
 	{
 		_myDragMode = newMode;
+		
+		// and reset the start point so we know where we are.
+		_startPoint = null;
 	}
 	
-	final public PlotDragMode getDragMode()
+	final public PlotMouseDragger getDragMode()
 	{
 		return _myDragMode;
 	}
@@ -646,8 +645,27 @@ public class SWTChart extends PlainChart
 	 * @author ian.mayo
 	 *
 	 */
-	public static interface PlotDragMode
+	abstract public static class PlotMouseDragger
 	{
+
+		/** handle the mouse being dragged
+		 * 
+		 * @param pt the new cursor location
+		 */
+		abstract public void doMouseMove(final Point pt, final int JITTER, final Layers theLayers);
+
+		/** handle the mouse drag finishing
+		 * 
+		 * @param pt the final cursor location
+		 */
+		abstract public void doMouseUp(Point point);
+
+		/** handle the mouse drag starting
+		 * 
+		 * @param pt the first cursor location
+		 * @param canvas the control it's dragging over
+		 */
+		abstract public void mouseDown(Point point, SWTCanvas canvas);
 		
 	}	
 }
