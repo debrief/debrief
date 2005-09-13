@@ -110,7 +110,34 @@
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorView/view"/>
                
+               
+         <action
+               class="org.mwc.cmap.plotViewer.actions.ZoomIn"
+               icon="icons/zoomin.gif"
+               id="org.mwc.debrief.core.ZoomIn"
+               label="Zoom &amp;In"
+               menubarPath="org.mwc.debrief.core.EditorView/view"
+               style="radio"
+               toolbarPath="org.mwc.debrief.core.EditorView/view"/>               
              
+               
+         <action
+               class="org.mwc.cmap.plotViewer.actions.Pan"
+               icon="icons/drag.gif"
+               id="org.mwc.debrief.core.Pan"
+               label="&amp;Pan"
+               menubarPath="org.mwc.debrief.core.EditorView/view"
+               style="radio"
+               toolbarPath="org.mwc.debrief.core.EditorView/view"/>                    
+               
+         <action
+               class="org.mwc.cmap.plotViewer.actions.RangeBearing"
+               icon="icons/rng_brg.gif"
+               id="org.mwc.debrief.core.RangeBearing"
+               label="Measure range &amp;bearing"
+               menubarPath="org.mwc.debrief.core.EditorView/view"
+               style="radio"
+               toolbarPath="org.mwc.debrief.core.EditorView/view"/>                 
          <action
                class="org.mwc.cmap.plotViewer.actions.Redraw"
                icon="icons/repaint.gif"
