@@ -23,11 +23,11 @@ public class FitToWindow extends CoreEditorAction
 //		theChart.rescale();
 //		redrawChart();
 
-		WorldArea oldArea = theChart.getDataArea();
+		WorldArea oldArea = new WorldArea(theChart.getCanvas().getProjection().getVisibleDataArea());
 		Action theAction = 	new MWC.GUI.Tools.Chart.FitToWin.FitToWinAction(theChart, oldArea);
 		
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
+		DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers());
 		
 		// and add it to the clipboard
 		CorePlugin.run(daw);

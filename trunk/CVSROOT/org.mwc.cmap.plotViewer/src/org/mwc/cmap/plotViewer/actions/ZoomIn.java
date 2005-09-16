@@ -5,12 +5,14 @@ package org.mwc.cmap.plotViewer.actions;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
-import MWC.GUI.Layers;
+import MWC.GUI.*;
+import MWC.GUI.Tools.Action;
 import MWC.GenericData.*;
 
 /**
@@ -24,6 +26,8 @@ public class ZoomIn extends CoreDragAction
 		Point _startPoint;
 
 		SWTCanvas _myCanvas;
+
+		private PlainChart _myChart;
 
 		public void doMouseMove(final Point pt, final int JITTER, final Layers theLayers)
 		{
@@ -49,28 +53,34 @@ public class ZoomIn extends CoreDragAction
 					WorldLocation locB = new WorldLocation(_myCanvas.getProjection().toWorld(br));
 					WorldArea area = new WorldArea(locA, locB);
 
-					_myCanvas.getProjection().setDataArea(area);
-
-					theLayers.fireModified(null);
-
-					_myCanvas.updateMe();
+					WorldArea oldArea = _myCanvas.getProjection().getDataArea();
+					Action theAction = 	new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(_myChart, oldArea, area);
+					
+					// and wrap it
+					DebriefActionWrapper daw = new DebriefActionWrapper(theAction, _myChart.getLayers());
+					
+					// and add it to the clipboard
+					CorePlugin.run(daw);
 
 					_dragTracker = null;
 					_startPoint = null;
+					_myChart = null;
+					_myCanvas = null;
 				}
 			}
 		}
 
-		public void doMouseUp(Point point)
+		public void doMouseUp(Point point, int keyState)
 		{
 			_startPoint = null;
 		}
 
-		public void mouseDown(Point point, SWTCanvas canvas)
+		public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart)
 		{
 			System.out.println("down:" + point);
 			_startPoint = point;
 			_myCanvas = canvas;
+			_myChart = theChart;
 		}
 
 	}

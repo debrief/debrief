@@ -24,7 +24,7 @@ public class ZoomOut extends CoreEditorAction
 				oldArea, 2.0);
 
 		// and wrap it
-		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
+		DebriefActionWrapper daw = new DebriefActionWrapper(theAction, theChart.getLayers());
 
 		// and add it to the clipboard
 		CorePlugin.run(daw);
