@@ -38,7 +38,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		Action res = getData(theChart);
 
 		// ok, now wrap the action
-		DebriefActionWrapper daw = new DebriefActionWrapper(res);
+		DebriefActionWrapper daw = new DebriefActionWrapper(res, theChart.getLayers());
 
 		// and add it to our buffer (which will execute it anyway)
 		CorePlugin.run(daw);
