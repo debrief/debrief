@@ -91,25 +91,7 @@
             <separator name="sep1"/>
             <groupMarker name="additions"/>
          </menu>
-         <action
-               class="org.mwc.cmap.plotViewer.actions.FitToWindow"
-               icon="icons/fit_to_win.gif"
-               id="org.mwc.debrief.core.FitToWindow"
-               label="&amp;Fit to window"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
-               style="push"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>
-               
-               
-         <action
-               class="org.mwc.cmap.plotViewer.actions.ZoomOut"
-               icon="icons/zoomout.gif"
-               id="org.mwc.debrief.core.ZoomOut"
-               label="Zoom &amp;Out"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
-               style="push"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>
-               
+
                
          <action
                class="org.mwc.cmap.plotViewer.actions.ZoomIn"
@@ -118,7 +100,9 @@
                label="Zoom &amp;In"
                menubarPath="org.mwc.debrief.core.EditorView/view"
                style="radio"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>               
+               state="true"
+               toolbarPath="org.mwc.debrief.core.EditorView/view"
+               />               
              
                
          <action
@@ -138,14 +122,34 @@
                menubarPath="org.mwc.debrief.core.EditorView/view"
                style="radio"
                toolbarPath="org.mwc.debrief.core.EditorView/view"/>                 
+
+         <action
+               class="org.mwc.cmap.plotViewer.actions.FitToWindow"
+               icon="icons/fit_to_win.gif"
+               id="org.mwc.debrief.core.FitToWindow"
+               label="&amp;Fit to window"
+               menubarPath="org.mwc.debrief.core.EditorView/additions"
+               style="push"
+               toolbarPath="org.mwc.debrief.core.EditorView/additions"/>
+               
+               
+         <action
+               class="org.mwc.cmap.plotViewer.actions.ZoomOut"
+               icon="icons/zoomout.gif"
+               id="org.mwc.debrief.core.ZoomOut"
+               label="Zoom &amp;Out"
+               menubarPath="org.mwc.debrief.core.EditorView/additions"
+               style="push"
+               toolbarPath="org.mwc.debrief.core.EditorView/additions"/>
+               
          <action
                class="org.mwc.cmap.plotViewer.actions.Redraw"
                icon="icons/repaint.gif"
                id="org.mwc.debrief.core.Redraw"
                label="&amp;Redraw"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
+               menubarPath="org.mwc.debrief.core.EditorView/additions"
                style="push"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>
+               toolbarPath="org.mwc.debrief.core.EditorView/additions"/>
 
 
          <action
