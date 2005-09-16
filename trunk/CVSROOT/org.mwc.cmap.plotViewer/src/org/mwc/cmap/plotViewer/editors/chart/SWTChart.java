@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.18  2005-09-13 15:43:25  Ian.Mayo
+// Revision 1.19  2005-09-16 10:11:37  Ian.Mayo
+// Reflect changed mouse event signature
+//
+// Revision 1.18  2005/09/13 15:43:25  Ian.Mayo
 // Try to get dragging modes working
 //
 // Revision 1.17  2005/09/13 13:46:25  Ian.Mayo
@@ -565,7 +568,7 @@ public class SWTChart extends PlainChart
 			{
 				// yes, process the drag
 				if(_myDragMode != null)
-					_myDragMode.doMouseUp(new Point(e.x, e.y));
+					_myDragMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
 			}
 			else
 			{
@@ -594,7 +597,7 @@ public class SWTChart extends PlainChart
 			_draggedPoint = null;
 
 			if(_myDragMode != null)				
-				_myDragMode.mouseDown(_startPoint, _theCanvas);
+				_myDragMode.mouseDown(_startPoint, _theCanvas, this);
 			
 		}
 	}
@@ -655,17 +658,17 @@ public class SWTChart extends PlainChart
 		abstract public void doMouseMove(final Point pt, final int JITTER, final Layers theLayers);
 
 		/** handle the mouse drag finishing
-		 * 
+		 * @param keyState TODO
 		 * @param pt the final cursor location
 		 */
-		abstract public void doMouseUp(Point point);
+		abstract public void doMouseUp(Point point, int keyState);
 
 		/** handle the mouse drag starting
-		 * 
-		 * @param pt the first cursor location
 		 * @param canvas the control it's dragging over
+		 * @param theChart TODO
+		 * @param pt the first cursor location
 		 */
-		abstract public void mouseDown(Point point, SWTCanvas canvas);
+		abstract public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart);
 		
 	}	
 }
