@@ -38,7 +38,6 @@ abstract public class ValueWithUnitsCellEditor extends CellEditor
 	
 	protected Control createControl(Composite parent, String tipOne, String tipTwo)
 	{
-		System.out.println("creating new control...");
 		Composite holder = new Composite(parent, SWT.NONE);
 		RowLayout rows = new RowLayout();
 		rows.marginLeft = rows.marginRight = 0;

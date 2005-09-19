@@ -77,7 +77,6 @@ public class ZoomIn extends CoreDragAction
 
 		public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart)
 		{
-			System.out.println("down:" + point);
 			_startPoint = point;
 			_myCanvas = canvas;
 			_myChart = theChart;
