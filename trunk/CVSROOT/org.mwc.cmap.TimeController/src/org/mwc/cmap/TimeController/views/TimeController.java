@@ -6,7 +6,6 @@ import java.util.*;
 
 import junit.framework.TestCase;
 
-import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -14,8 +13,7 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.TimeController.TimeControllerPlugin;
-import org.mwc.cmap.TimeController.preferences.PreferenceConstants;
+import org.mwc.cmap.TimeController.properties.StepperProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.painters.*;
@@ -37,9 +35,8 @@ import MWC.GenericData.*;
  * <p>
  */
 
-public class TimeController extends ViewPart
+public class TimeController extends ViewPart implements ISelectionProvider
 {
-
 	private PartMonitor _myPartMonitor;
 
 	final private PropertyChangeListener _temporalListener = new NewTimeListener();
@@ -66,6 +63,20 @@ public class TimeController extends ViewPart
 	 */
 	private Composite _wholePanel;
 
+	/** the people listening to us
+	 * 
+	 */
+	private Vector _selectionListeners;
+	
+	/** the thing we're currently displaying
+	 * 
+	 */
+	private ISelection _currentSelection;	
+	
+	final private StepperProperties _myStepperProperties = new StepperProperties();
+	
+
+	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -116,6 +127,23 @@ public class TimeController extends ViewPart
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
 				.getActivePage());
+		
+		// say that we're a selection provider
+		getSite().setSelectionProvider(this);
+		
+		// also, listen out for changes in the DTG formatter
+		_myStepperProperties.addPropertyChangeListener(new PropertyChangeListener(){
+
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				// right, see if the user is changing the DTG format
+				if(evt.getPropertyName().equals(StepperProperties.DTG_FORMAT_ID))
+				{
+					// ok, refresh the DTG
+					String newVal = getFormattedDate(_myTemporalDataset.getTime());
+					_timeLabel.setText(newVal);
+				}
+			}});
 
 	}
 
@@ -134,6 +162,11 @@ public class TimeController extends ViewPart
 	private ComboViewer _painterSelector;
 
 	protected LayerPainterManager _myLayerPainterManager;
+
+	/** when the user clicks on us, we set our properties as a selection.  Remember the set of properties
+	 * 
+	 */
+	private StructuredSelection _propsAsSelection = null;
 
 	private void buildInterface(Composite parent)
 	{
@@ -520,7 +553,15 @@ public class TimeController extends ViewPart
 	{
 		// todo: sort out where to place the focus
 		// viewer.getControl().setFocus();
+		System.out.println("received focus!!");
+		
+		// get the editable thingy
+		if(_propsAsSelection == null)
+			_propsAsSelection = new StructuredSelection(_myStepperProperties);
+		
+		fireSelectionChanged(_propsAsSelection);
 	}
+	
 
 	// //////////////////////////////
 	// temporal data management
@@ -567,9 +608,12 @@ public class TimeController extends ViewPart
 
 	private String getFormattedDate(HiResDate newDTG)
 	{
-		IPreferenceStore store = TimeControllerPlugin.getDefault()
-				.getPreferenceStore();
-		String dateFormat = store.getString(PreferenceConstants.P_STRING);
+		
+//		IPreferenceStore store = TimeControllerPlugin.getDefault()
+//				.getPreferenceStore();
+		String dateFormat = _myStepperProperties.getDTGFormat();
+			
+//			store.getString(PreferenceConstants.P_STRING);
 		String newVal = "n/a";
 		try
 		{
@@ -846,4 +890,54 @@ public class TimeController extends ViewPart
 			processClick(scale, fwd);
 		}
 	}
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		if (_selectionListeners == null)
+			_selectionListeners = new Vector(0, 1);
+
+		// see if we don't already contain it..
+		if (!_selectionListeners.contains(listener))
+			_selectionListeners.add(listener);	}
+
+	public ISelection getSelection()
+	{
+		return _currentSelection;
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionListeners.remove(listener);
+	}
+
+	public void setSelection(ISelection selection)
+	{
+		_currentSelection = selection;
+	}
+	
+
+	protected void fireSelectionChanged(ISelection sel)
+	{
+		// just double-check that we're not already processing this
+		if (sel != _currentSelection)
+		{
+			_currentSelection = sel;
+			if (_selectionListeners != null)
+			{
+				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
+				for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+				{
+					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+					if (thisL != null)
+					{
+						thisL.selectionChanged(sEvent);
+					}
+				}
+			}
+		}
+	}	
+	
+	///////////////////////////////////////////////////////////////////
+	// AND PROPERTY EDITORS FOR THE 
+	///////////////////////////////////////////////////////////////////
 }
