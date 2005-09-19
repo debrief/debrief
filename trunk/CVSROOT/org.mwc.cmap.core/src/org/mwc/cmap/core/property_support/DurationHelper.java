@@ -14,6 +14,75 @@ import MWC.GenericData.*;
 public class DurationHelper extends EditorHelper
 {
 
+	/** embedded cell editor for durations
+	 * 
+	 * @author ian.mayo
+	 *
+	 */
+	public static class DurationCellEditor extends ValueWithUnitsCellEditor
+	{
+		
+		public DurationCellEditor(Composite parent)
+		{
+			super(parent, "Duration", "Units");
+			// TODO Auto-generated constructor stub
+		}
+
+		/** the world distance we're editing
+		 * 
+		 */
+		Duration _myVal;
+		
+		/**
+		 * @return
+		 */
+		protected int getUnitsValue()
+		{
+	    // so, what are the preferred units?
+	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+	    return theUnits;
+		}
+
+		/**
+		 * @return
+		 */
+		protected double getDoubleValue()
+		{
+	    // so, what are the preferred units?
+	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+
+	    double theValue = _myVal.getValueIn(theUnits);				
+			return theValue;
+		}
+
+		/**
+		 * @return
+		 */
+		protected String[] getTagsList()
+		{
+			return Duration.UnitLabels;
+		}
+		
+		/**
+		 * @param dist the value typed in
+		 * @param units the units for the value
+		 * @return an object representing the new data value
+		 */
+		protected Object createResultsObject(double dist, int units)
+		{
+			return new Duration(dist, units);
+		}
+
+		/** convert the object to our data units
+		 * 
+		 * @param value
+		 */
+		protected void storeMe(Object value)
+		{
+			_myVal = (Duration) value;
+		}
+	}
+	
 	/** constructor..
 	 *
 	 */
@@ -29,62 +98,7 @@ public class DurationHelper extends EditorHelper
 	 */
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new ValueWithUnitsCellEditor(parent, "Duration", "Units")
-		{
-			/** the world distance we're editing
-			 * 
-			 */
-			Duration _myVal;
-			
-			/**
-			 * @return
-			 */
-			protected int getUnitsValue()
-			{
-		    // so, what are the preferred units?
-		    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
-		    return theUnits;
-			}
-
-			/**
-			 * @return
-			 */
-			protected double getDoubleValue()
-			{
-		    // so, what are the preferred units?
-		    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
-
-		    double theValue = _myVal.getValueIn(theUnits);				
-				return theValue;
-			}
-
-			/**
-			 * @return
-			 */
-			protected String[] getTagsList()
-			{
-				return Duration.UnitLabels;
-			}
-			
-			/**
-			 * @param dist the value typed in
-			 * @param units the units for the value
-			 * @return an object representing the new data value
-			 */
-			protected Object createResultsObject(double dist, int units)
-			{
-				return new Duration(dist, units);
-			}
-
-			/** convert the object to our data units
-			 * 
-			 * @param value
-			 */
-			protected void storeMe(Object value)
-			{
-				_myVal = (Duration) value;
-			}
-		};
+		return new DurationCellEditor(parent);
 	}
 
 	public ILabelProvider getLabelFor(Object currentValue)
