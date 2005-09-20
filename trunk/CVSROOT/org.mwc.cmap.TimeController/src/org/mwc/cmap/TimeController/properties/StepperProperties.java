@@ -8,9 +8,10 @@ import org.eclipse.ui.views.properties.*;
 import org.eclipse.ui.views.properties.PropertyDescriptor;
 import org.mwc.cmap.core.property_support.DurationHelper;
 
+import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
 
-public class StepperProperties extends PropertyChangeSupport implements IPropertySource2
+public class StepperProperties extends java.beans.PropertyChangeSupport implements IPropertySource2
 {
 
 	/**
@@ -38,7 +39,7 @@ public class StepperProperties extends PropertyChangeSupport implements IPropert
 	 */
 	private Integer _dtgFormat, _defaultFormat;
 
-	final static private String[] DTG_FORMAT_STRINGS = new String[]{"yyMMdd hhmmss", "hh:mm:ss", "ddhhmm.sss"}; 
+	static private String[] DTG_FORMAT_STRINGS; 
 
 	/**
 	 * the property names
@@ -80,6 +81,10 @@ public class StepperProperties extends PropertyChangeSupport implements IPropert
 		_largeStep = _defaultLargeStep = new Duration(10, Duration.MINUTES);
 		_autoInterval = _defaultAutoInterval = new Duration(1, Duration.SECONDS);
 		_dtgFormat = _defaultFormat = new Integer(0);
+		
+		// see if our tags need declaring
+		if(DTG_FORMAT_STRINGS == null)
+			DTG_FORMAT_STRINGS = DateFormatPropertyEditor.getTagList();
 
 	}
 
@@ -247,5 +252,15 @@ public class StepperProperties extends PropertyChangeSupport implements IPropert
 	public String getDTGFormat()
 	{
 		return DTG_FORMAT_STRINGS[_dtgFormat.intValue()];
+	}
+
+	public Duration getSmallStepSize()
+	{
+		return _smallStep;
+	}
+
+	public Duration getLargeStepSize()
+	{
+		return _largeStep;
 	}
 }

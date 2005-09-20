@@ -193,13 +193,13 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		LH.setLayout(lhGrid);
 		Button eBwd = new Button(LH, SWT.NONE);
 		eBwd.setText("<-");
-		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, 0));
+		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
 		Button lBwd = new Button(LH, SWT.NONE);
 		lBwd.setText("<<");
-		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, 10));
+		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(LH, SWT.NONE);
 		sBwd.setText("<");
-		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, 1));
+		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
 		_timeLabel = new Label(_btnPanel, SWT.NONE);
 		_timeLabel.setText("-------------------");
 		Composite RH = new Composite(_btnPanel, SWT.NONE);
@@ -208,15 +208,13 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		RH.setLayout(rhGrid);
 		Button sFwd = new Button(RH, SWT.NONE);
 		sFwd.setText(">");
-		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, 1));
+		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
 		Button lFwd = new Button(RH, SWT.NONE);
 		lFwd.setText(">>");
-		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, 10));
-		// lFwd.setImage(PlatformUI.getWorkbench().getSharedImages().getImage(
-		// ISharedImages.IMG_TOOL_FORWARD));
+		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
 		Button eFwd = new Button(RH, SWT.NONE);
 		eFwd.setText("->");
-		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, 0));
+		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
 		RowLayout otherBitsLayout = new RowLayout();
 		otherBitsLayout.type = SWT.HORIZONTAL;
@@ -313,17 +311,17 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	{
 		private boolean _fwd;
 
-		private int _scale;
+		private Boolean _large;
 
-		public TimeButtonSelectionListener(boolean fwd, int scale)
+		public TimeButtonSelectionListener(boolean fwd, Boolean large)
 		{
 			_fwd = fwd;
-			_scale = scale;
+			_large = large;
 		}
 
 		public void widgetSelected(SelectionEvent e)
 		{
-			processClick(_scale, _fwd);
+			processClick(_large, _fwd);
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
@@ -331,7 +329,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		}
 	}
 
-	private void processClick(int scale, boolean fwd)
+	private void processClick(Boolean large, boolean fwd)
 	{
 		// check that we have a current time (on initialisation some plots may not
 		// contain data)
@@ -344,7 +342,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			// right, special case for when user wants to go straight to the end - in
 			// which
 			// case there is a zero in the scale
-			if (scale == 0.0)
+			if (large == null)
 			{
 				// right, fwd or bwd
 				if (fwd)
@@ -354,9 +352,21 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			}
 			else
 			{
+				long size;
+				
 				// normal processing..
-				int size = scale * 1000 * 1000;
+				if(large.booleanValue())
+				{
+					// do large step
+					size = (long) _myStepperProperties.getSmallStepSize().getValueIn(Duration.MICROSECONDS);
+				}
+				else
+				{
+					// and the small size step
+					size = (long) _myStepperProperties.getLargeStepSize().getValueIn(Duration.MICROSECONDS);
+				}
 
+				// right, either move forwards or backwards.
 				if (fwd)
 					micros += size;
 				else
@@ -551,10 +561,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	 */
 	public void setFocus()
 	{
-		// todo: sort out where to place the focus
-		// viewer.getControl().setFocus();
-		System.out.println("received focus!!");
-		
 		// get the editable thingy
 		if(_propsAsSelection == null)
 			_propsAsSelection = new StructuredSelection(_myStepperProperties);
@@ -868,26 +874,20 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		{
 			int count = event.count;
 			boolean fwd;
-			int scale = 1;
+			Boolean large = new Boolean(false);
 
 			// is the control button down?
 			int keys = event.stateMask;
-			if ((keys & SWT.CONTROL) != 0)
-				scale *= 10;
-			else
-				scale *= 1;
 
 			if ((keys & SWT.SHIFT) != 0)
-				scale *= 60;
-			else
-				scale *= 1;
+				large = new Boolean(true);
 
 			if (count < 0)
 				fwd = true;
 			else
 				fwd = false;
 
-			processClick(scale, fwd);
+			processClick(large, fwd);
 		}
 	}
 
