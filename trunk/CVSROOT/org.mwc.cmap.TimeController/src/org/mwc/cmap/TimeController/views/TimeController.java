@@ -65,20 +65,18 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	 */
 	private Composite _wholePanel;
 
-	/** the people listening to us
-	 * 
+	/**
+	 * the people listening to us
 	 */
 	private Vector _selectionListeners;
-	
-	/** the thing we're currently displaying
-	 * 
-	 */
-	private ISelection _currentSelection;	
-	
-	final private StepperProperties _myStepperProperties = new StepperProperties();
-	
 
-	
+	/**
+	 * the thing we're currently displaying
+	 */
+	private ISelection _currentSelection;
+
+	final private StepperProperties _myStepperProperties = new StepperProperties();
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -105,7 +103,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			{
 				_tNowSlider.setIncrement(small);
 				_tNowSlider.setPageIncrement(large);
-				_tNowSlider.setThumb(drag);
+//				_tNowSlider.setThumb(drag);
 			}
 
 			public void setEnabled(boolean val)
@@ -127,25 +125,26 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		setupListeners();
 
 		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-				.getActivePage());
-		
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
+
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
-		
+
 		// also, listen out for changes in the DTG formatter
-		_myStepperProperties.addPropertyChangeListener(new PropertyChangeListener(){
+		_myStepperProperties.addPropertyChangeListener(new PropertyChangeListener()
+		{
 
 			public void propertyChange(PropertyChangeEvent evt)
 			{
 				// right, see if the user is changing the DTG format
-				if(evt.getPropertyName().equals(StepperProperties.DTG_FORMAT_ID))
+				if (evt.getPropertyName().equals(StepperProperties.DTG_FORMAT_ID))
 				{
 					// ok, refresh the DTG
 					String newVal = getFormattedDate(_myTemporalDataset.getTime());
 					_timeLabel.setText(newVal);
 				}
-			}});
+			}
+		});
 
 	}
 
@@ -159,14 +158,15 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	 * the slider control - remember it because we're always changing the limits,
 	 * etc
 	 */
-	private Slider _tNowSlider;
+	private Scale _tNowSlider;
 
-	private ComboViewer _painterSelector;
+//	private ComboViewer _painterSelector;
 
 	protected LayerPainterManager _myLayerPainterManager;
 
-	/** when the user clicks on us, we set our properties as a selection.  Remember the set of properties
-	 * 
+	/**
+	 * when the user clicks on us, we set our properties as a selection. Remember
+	 * the set of properties
 	 */
 	private StructuredSelection _propsAsSelection = null;
 
@@ -174,57 +174,71 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	{
 		// ok, draw our wonderful GUI.
 
+
 		_wholePanel = new Composite(parent, SWT.BORDER);
-		GridLayout onTop = new GridLayout();
+		
+		Layout onTop = new FillLayout(SWT.VERTICAL);
 		// onTop.type = SWT.VERTICAL;
-		onTop.numColumns = 1;
+//		onTop.numColumns = 1;
 		_wholePanel.setLayout(onTop);
 
 		// first create the button holder
-		Composite _btnPanelHolder = new Composite(_wholePanel, SWT.NONE);
-		_btnPanelHolder.setLayout(new FillLayout());
-		Composite _btnPanel = new Composite(_btnPanelHolder, SWT.NONE);
-
-		GridLayout grid = new GridLayout();
-		grid.numColumns = 7;
-		_btnPanel.setLayout(grid);
-		// put some bits in. First the BWD buttons
+		Composite _btnPanel = new Composite(_wholePanel, SWT.NONE);
+		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
+		btnFiller.marginHeight = 0;
+		_btnPanel.setLayout(btnFiller);
 		
+//		Composite _btnPanel = new Composite(_btnPanelHolder, SWT.NONE);
+//		GridLayout grid = new GridLayout();
+//		grid.numColumns = 7;
+//		_btnPanel.setLayout(grid);
+		// put some bits in. First the BWD buttons
+
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
-		eBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBegin.gif").createImage());		
+		eBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBegin.gif")
+				.createImage());
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
- 	  lBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRRewind.gif").createImage());		
+		lBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRRewind.gif")
+				.createImage());
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setText("<");
-		sBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBack.gif").createImage());		
+		sBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBack.gif")
+				.createImage());
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
-		
+
 		Button play = new Button(_btnPanel, SWT.NONE);
-		play.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif").createImage());		
-		
+		play.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif")
+				.createImage());
+
 		Button sFwd = new Button(_btnPanel, SWT.NONE);
-		sFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRForward.gif").createImage());		
+		sFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRForward.gif")
+				.createImage());
 		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
-		lFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRFastForward.gif").createImage());		
+		lFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRFastForward.gif")
+				.createImage());
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
 		Button eFwd = new Button(_btnPanel, SWT.NONE);
-		eFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCREnd.gif").createImage());		
+		eFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCREnd.gif")
+				.createImage());
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
 		// and the current time label
-		_timeLabel = new Label(_wholePanel, SWT.NONE);
-		_timeLabel.setText("----------");
-			_timeLabel.setFont(new Font(Display.getDefault(),"OCR A Extended",  12, SWT.NONE ));
-			_timeLabel.setForeground(new Color(Display.getDefault(), 33,255,22));
-			_timeLabel.setBackground(new Color(Display.getDefault(), 0,0,0));		
-		
-		
+		Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
+		FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
+		timeContainer.setLayout(timeFiller);
+		_timeLabel = new Label(timeContainer, SWT.NONE);
+		_timeLabel.setAlignment(SWT.CENTER);
+		_timeLabel.setText("--------------------------");
+		_timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended", 16, SWT.NONE));
+		_timeLabel.setForeground(new Color(Display.getDefault(), 33, 255, 22));
+		_timeLabel.setBackground(new Color(Display.getDefault(), 0, 0, 0));
+
 		// next create the time slider holder
-		_tNowSlider = new Slider(_wholePanel, SWT.NONE);
+		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
 		_tNowSlider.setMinimum(0);
 		_tNowSlider.setMaximum(100);
 		_tNowSlider.addSelectionListener(new SelectionListener()
@@ -232,8 +246,8 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			public void widgetSelected(SelectionEvent e)
 			{
 				int index = _tNowSlider.getSelection();
-				HiResDate newDTG = _slideManager.fromSliderUnits(index,
-						_myTemporalDataset.getPeriod().getStartDTG());
+				HiResDate newDTG = _slideManager.fromSliderUnits(index, _myTemporalDataset
+						.getPeriod().getStartDTG());
 				fireNewTime(newDTG);
 			}
 
@@ -243,24 +257,22 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		});
 
 		// lastly the painter cursor selector
-		_painterSelector = new ComboViewer(_wholePanel, SWT.READ_ONLY);
-		_painterSelector
-				.addSelectionChangedListener(new ISelectionChangedListener()
-				{
-					public void selectionChanged(SelectionChangedEvent event)
-					{
-						if (_myLayerPainterManager != null)
-						{
-							// ok, get what's selected
-							ISelection sel = _painterSelector.getSelection();
-							IStructuredSelection sel2 = (IStructuredSelection) sel;
-							TemporalLayerPainter newOne = (TemporalLayerPainter) sel2
-									.getFirstElement();
-							_myLayerPainterManager.setCurrent(newOne);
-						}
-
-					}
-				});
+//		_painterSelector = new ComboViewer(_wholePanel, SWT.READ_ONLY);
+//		_painterSelector.addSelectionChangedListener(new ISelectionChangedListener()
+//		{
+//			public void selectionChanged(SelectionChangedEvent event)
+//			{
+//				if (_myLayerPainterManager != null)
+//				{
+//					// ok, get what's selected
+//					ISelection sel = _painterSelector.getSelection();
+//					IStructuredSelection sel2 = (IStructuredSelection) sel;
+//					TemporalLayerPainter newOne = (TemporalLayerPainter) sel2.getFirstElement();
+//					_myLayerPainterManager.setCurrent(newOne);
+//				}
+//
+//			}
+//		});
 
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
@@ -289,19 +301,16 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		{
 			// see if it's the time or the period which
 			// has changed
-			if (event.getPropertyName().equals(
-					TimeProvider.TIME_CHANGED_PROPERTY_NAME))
+			if (event.getPropertyName().equals(TimeProvider.TIME_CHANGED_PROPERTY_NAME))
 			{
 				// ok, use the new time
 				HiResDate newDTG = (HiResDate) event.getNewValue();
 				timeUpdated(newDTG);
 			}
-			else if (event.getPropertyName().equals(
-					TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
+			else if (event.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
 			{
 				TimePeriod newPeriod = (TimePeriod) event.getNewValue();
-				_slideManager
-						.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
+				_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
 			}
 
 			// also double-check if it's time to enable our interface
@@ -355,17 +364,19 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			else
 			{
 				long size;
-				
+
 				// normal processing..
-				if(large.booleanValue())
+				if (large.booleanValue())
 				{
 					// do large step
-					size = (long) _myStepperProperties.getSmallStepSize().getValueIn(Duration.MICROSECONDS);
+					size = (long) _myStepperProperties.getLargeStepSize().getValueIn(
+							Duration.MICROSECONDS);
 				}
 				else
 				{
 					// and the small size step
-					size = (long) _myStepperProperties.getLargeStepSize().getValueIn(Duration.MICROSECONDS);
+					size = (long) _myStepperProperties.getSmallStepSize().getValueIn(
+							Duration.MICROSECONDS);
 				}
 
 				// right, either move forwards or backwards.
@@ -400,14 +411,12 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		// try to add ourselves to listen out for page changes
 		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
 
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						if (_myTemporalDataset != part)
 						{
@@ -424,8 +433,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 							TimePeriod firstDTG = _myTemporalDataset.getPeriod();
 							if (firstDTG != null)
 							{
-								_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG
-										.getEndDTG());
+								_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG.getEndDTG());
 							}
 
 							checkTimeEnabled();
@@ -435,8 +443,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// are we still listening?
 						if (_myTemporalDataset != null)
@@ -447,11 +454,10 @@ public class TimeController extends ViewPart implements ISelectionProvider
 						checkTimeEnabled();
 					}
 				});
-		_myPartMonitor.addPartListener(ControllableTime.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						ControllableTime ct = (ControllableTime) part;
@@ -463,48 +469,45 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						_controllableTime = null;
 						checkTimeEnabled();
 					}
 				});
-		_myPartMonitor.addPartListener(LayerPainterManager.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(LayerPainterManager.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						_myLayerPainterManager = (LayerPainterManager) part;
-						TemporalLayerPainter[] list = _myLayerPainterManager.getList();
+	//					TemporalLayerPainter[] list = _myLayerPainterManager.getList();
 
 						// clear the list
-						_painterSelector.getCombo().removeAll();
-
-						// add the items
-						for (int i = 0; i < list.length; i++)
-						{
-							TemporalLayerPainter painter = list[i];
-							_painterSelector.add(painter);
-						}
-						// and activate it
-						_painterSelector.getCombo().setEnabled(true);
-
-						// aaah, and select the first one
-						_painterSelector.getCombo().select(0);
+//						_painterSelector.getCombo().removeAll();
+//
+//						// add the items
+//						for (int i = 0; i < list.length; i++)
+//						{
+//							TemporalLayerPainter painter = list[i];
+//							_painterSelector.add(painter);
+//						}
+//						// and activate it
+//						_painterSelector.getCombo().setEnabled(true);
+//
+//						// aaah, and select the first one
+//						_painterSelector.getCombo().select(0);
 
 					}
 
 				});
-		_myPartMonitor.addPartListener(LayerPainterManager.class,
-				PartMonitor.CLOSED, new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(LayerPainterManager.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						_painterSelector.getCombo().setEnabled(false);
-						_myLayerPainterManager = null;
+//						_painterSelector.getCombo().setEnabled(false);
+//						_myLayerPainterManager = null;
 					}
 				});
 
@@ -564,12 +567,11 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	public void setFocus()
 	{
 		// get the editable thingy
-		if(_propsAsSelection == null)
+		if (_propsAsSelection == null)
 			_propsAsSelection = new StructuredSelection(_myStepperProperties);
-		
+
 		fireSelectionChanged(_propsAsSelection);
 	}
-	
 
 	// //////////////////////////////
 	// temporal data management
@@ -599,8 +601,8 @@ public class TimeController extends ViewPart implements ISelectionProvider
 						TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
 						if (dataPeriod != null)
 						{
-							int newIndex = _slideManager.toSliderUnits(newDTG, dataPeriod
-									.getStartDTG());
+							int newIndex = _slideManager
+									.toSliderUnits(newDTG, dataPeriod.getStartDTG());
 							_tNowSlider.setSelection(newIndex);
 						}
 					}
@@ -616,12 +618,12 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 	private String getFormattedDate(HiResDate newDTG)
 	{
-		
-//		IPreferenceStore store = TimeControllerPlugin.getDefault()
-//				.getPreferenceStore();
+
+		// IPreferenceStore store = TimeControllerPlugin.getDefault()
+		// .getPreferenceStore();
 		String dateFormat = _myStepperProperties.getDTGFormat();
-			
-//			store.getString(PreferenceConstants.P_STRING);
+
+		// store.getString(PreferenceConstants.P_STRING);
 		String newVal = "n/a";
 		try
 		{
@@ -900,7 +902,8 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 		// see if we don't already contain it..
 		if (!_selectionListeners.contains(listener))
-			_selectionListeners.add(listener);	}
+			_selectionListeners.add(listener);
+	}
 
 	public ISelection getSelection()
 	{
@@ -916,7 +919,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	{
 		_currentSelection = selection;
 	}
-	
 
 	protected void fireSelectionChanged(ISelection sel)
 	{
@@ -937,9 +939,9 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				}
 			}
 		}
-	}	
-	
-	///////////////////////////////////////////////////////////////////
-	// AND PROPERTY EDITORS FOR THE 
-	///////////////////////////////////////////////////////////////////
+	}
+
+	// /////////////////////////////////////////////////////////////////
+	// AND PROPERTY EDITORS FOR THE
+	// /////////////////////////////////////////////////////////////////
 }
