@@ -9,10 +9,12 @@ import junit.framework.TestCase;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.TimeController.properties.StepperProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -184,45 +186,45 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		Composite _btnPanel = new Composite(_btnPanelHolder, SWT.NONE);
 
 		GridLayout grid = new GridLayout();
-		grid.numColumns = 4;
+		grid.numColumns = 7;
 		_btnPanel.setLayout(grid);
 		// put some bits in. First the BWD buttons
-		Composite LH = new Composite(_btnPanel, SWT.NONE);
-		GridLayout lhGrid = new GridLayout();
-		lhGrid.numColumns = 3;
-		LH.setLayout(lhGrid);
-		Button eBwd = new Button(LH, SWT.NONE);
-		eBwd.setText("<-");
+		
+		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
-		Button lBwd = new Button(LH, SWT.NONE);
+		eBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBegin.gif").createImage());		
+		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
+ 	  lBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRRewind.gif").createImage());		
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
-		Button sBwd = new Button(LH, SWT.NONE);
+		Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setText("<");
+		sBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBack.gif").createImage());		
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
-		_timeLabel = new Label(_btnPanel, SWT.NONE);
-		_timeLabel.setText("-------------------");
-		Composite RH = new Composite(_btnPanel, SWT.NONE);
-		GridLayout rhGrid = new GridLayout();
-		rhGrid.numColumns = 3;
-		RH.setLayout(rhGrid);
-		Button sFwd = new Button(RH, SWT.NONE);
-		sFwd.setText(">");
+		
+		Button play = new Button(_btnPanel, SWT.NONE);
+		play.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif").createImage());		
+		
+		Button sFwd = new Button(_btnPanel, SWT.NONE);
+		sFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRForward.gif").createImage());		
 		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
-		Button lFwd = new Button(RH, SWT.NONE);
-		lFwd.setText(">>");
+		Button lFwd = new Button(_btnPanel, SWT.NONE);
+		lFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRFastForward.gif").createImage());		
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
-		Button eFwd = new Button(RH, SWT.NONE);
-		eFwd.setText("->");
+		Button eFwd = new Button(_btnPanel, SWT.NONE);
+		eFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCREnd.gif").createImage());		
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
-		RowLayout otherBitsLayout = new RowLayout();
-		otherBitsLayout.type = SWT.HORIZONTAL;
-		Composite otherBitsPanel = new Composite(_wholePanel, SWT.NONE);
-		otherBitsPanel.setLayout(otherBitsLayout);
-
+		// and the current time label
+		_timeLabel = new Label(_wholePanel, SWT.NONE);
+		_timeLabel.setText("----------");
+			_timeLabel.setFont(new Font(Display.getDefault(),"OCR A Extended",  12, SWT.NONE ));
+			_timeLabel.setForeground(new Color(Display.getDefault(), 33,255,22));
+			_timeLabel.setBackground(new Color(Display.getDefault(), 0,0,0));		
+		
+		
 		// next create the time slider holder
-		_tNowSlider = new Slider(otherBitsPanel, SWT.NONE);
+		_tNowSlider = new Slider(_wholePanel, SWT.NONE);
 		_tNowSlider.setMinimum(0);
 		_tNowSlider.setMaximum(100);
 		_tNowSlider.addSelectionListener(new SelectionListener()
@@ -241,7 +243,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		});
 
 		// lastly the painter cursor selector
-		_painterSelector = new ComboViewer(otherBitsPanel, SWT.READ_ONLY);
+		_painterSelector = new ComboViewer(_wholePanel, SWT.READ_ONLY);
 		_painterSelector
 				.addSelectionChangedListener(new ISelectionChangedListener()
 				{
@@ -874,13 +876,13 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		{
 			int count = event.count;
 			boolean fwd;
-			Boolean large = new Boolean(false);
+			Boolean large = new Boolean(true);
 
 			// is the control button down?
 			int keys = event.stateMask;
 
 			if ((keys & SWT.SHIFT) != 0)
-				large = new Boolean(true);
+				large = new Boolean(false);
 
 			if (count < 0)
 				fwd = true;
