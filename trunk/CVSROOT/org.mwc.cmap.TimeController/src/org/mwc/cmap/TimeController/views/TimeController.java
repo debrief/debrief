@@ -112,6 +112,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			{
 				_tNowSlider.setIncrement(small);
 				_tNowSlider.setPageIncrement(large);
+				System.out.println("setting time steps to small:" + small + " large:" + large);
 //				_tNowSlider.setThumb(drag);
 			}
 
