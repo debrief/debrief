@@ -142,8 +142,10 @@ public class StepperProperties extends java.beans.PropertyChangeSupport implemen
 			DTG_FORMAT.setAlwaysIncompatible(true);
 			DTG_FORMAT.setDescription("The format to use to display the DTG");
 
+			// hey, don't bother putting the DTG format in the properties window anymore - we've got it in the time-controller's
+			// drop-down menu
 			PROPERTY_DESCRIPTORS = new PropertyDescriptor[] { LARGE_STEP, SMALL_STEP,
-					AUTO_STEP, DTG_FORMAT };
+					AUTO_STEP};
 
 		}
 
