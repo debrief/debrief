@@ -6,11 +6,12 @@ import java.util.*;
 
 import junit.framework.TestCase;
 
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
@@ -20,6 +21,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.painters.*;
 
+import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
 
 /**
@@ -77,6 +79,13 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 	final private StepperProperties _myStepperProperties = new StepperProperties();
 
+
+	/** module to look after the limits of the slider
+	 * 
+	 */
+	SliderRangeManagement _slideManager = null;
+	
+	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -112,9 +121,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			}
 		};
 
-		// get the actions sorted
-		createActions();
-
 		// and fill in the interface
 		buildInterface(parent);
 
@@ -123,7 +129,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 		// and start listing for any part action
 		setupListeners();
-
+		
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 
@@ -148,21 +154,11 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 	}
 
-	private void createActions()
-	{
-	}
-
-	SliderRangeManagement _slideManager = null;
-
 	/**
 	 * the slider control - remember it because we're always changing the limits,
 	 * etc
 	 */
 	private Scale _tNowSlider;
-
-//	private ComboViewer _painterSelector;
-
-	protected LayerPainterManager _myLayerPainterManager;
 
 	/**
 	 * when the user clicks on us, we set our properties as a selection. Remember
@@ -170,16 +166,17 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	 */
 	private StructuredSelection _propsAsSelection = null;
 
+	
+	/** ok - put in our bits
+	 * 
+	 * @param parent
+	 */
 	private void buildInterface(Composite parent)
 	{
 		// ok, draw our wonderful GUI.
-
-
 		_wholePanel = new Composite(parent, SWT.BORDER);
 		
-		Layout onTop = new FillLayout(SWT.VERTICAL);
-		// onTop.type = SWT.VERTICAL;
-//		onTop.numColumns = 1;
+		FillLayout onTop = new FillLayout(SWT.VERTICAL);
 		_wholePanel.setLayout(onTop);
 
 		// first create the button holder
@@ -188,11 +185,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		btnFiller.marginHeight = 0;
 		_btnPanel.setLayout(btnFiller);
 		
-//		Composite _btnPanel = new Composite(_btnPanelHolder, SWT.NONE);
-//		GridLayout grid = new GridLayout();
-//		grid.numColumns = 7;
-//		_btnPanel.setLayout(grid);
-		// put some bits in. First the BWD buttons
 
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
@@ -256,23 +248,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			}
 		});
 
-		// lastly the painter cursor selector
-//		_painterSelector = new ComboViewer(_wholePanel, SWT.READ_ONLY);
-//		_painterSelector.addSelectionChangedListener(new ISelectionChangedListener()
-//		{
-//			public void selectionChanged(SelectionChangedEvent event)
-//			{
-//				if (_myLayerPainterManager != null)
-//				{
-//					// ok, get what's selected
-//					ISelection sel = _painterSelector.getSelection();
-//					IStructuredSelection sel2 = (IStructuredSelection) sel;
-//					TemporalLayerPainter newOne = (TemporalLayerPainter) sel2.getFirstElement();
-//					_myLayerPainterManager.setCurrent(newOne);
-//				}
-//
-//			}
-//		});
 
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
@@ -480,25 +455,11 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						_myLayerPainterManager = (LayerPainterManager) part;
-	//					TemporalLayerPainter[] list = _myLayerPainterManager.getList();
-
-						// clear the list
-//						_painterSelector.getCombo().removeAll();
-//
-//						// add the items
-//						for (int i = 0; i < list.length; i++)
-//						{
-//							TemporalLayerPainter painter = list[i];
-//							_painterSelector.add(painter);
-//						}
-//						// and activate it
-//						_painterSelector.getCombo().setEnabled(true);
-//
-//						// aaah, and select the first one
-//						_painterSelector.getCombo().select(0);
-
+						// ok, insert the painter mode actions, together with our standard ones
+						populateDropDownList((LayerPainterManager) part);
 					}
+
+
 
 				});
 		_myPartMonitor.addPartListener(LayerPainterManager.class, PartMonitor.CLOSED,
@@ -682,122 +643,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		return res.toString();
 	}
 
-	// //////////////////////////////
-	// slider scale management bits
-	// ////////////////////////////////
-	private abstract static class SliderRangeManagement
-	{
-
-		// only let slider work in micros if there is under a second of data
-		private final int TIME_SPAN_TO_USE_MICROS = 1000000;
-
-		private boolean _useMicros = false;
-
-		public abstract void setMinVal(int min);
-
-		public abstract void setMaxVal(int max);
-
-		public abstract void setTickSize(int small, int large, int drag);
-
-		public abstract void setEnabled(boolean val);
-
-		public void resetRange(HiResDate min, HiResDate max)
-		{
-			if ((min != null) && (max != null))
-			{
-				// yes - initialise the ranges
-				long range = max.getMicros() - min.getMicros();
-
-				if (range > 0)
-				{
-					// double-check the min value
-					setMinVal(0);
-
-					if (range < TIME_SPAN_TO_USE_MICROS)
-					{
-						setMaxVal((int) range);
-						setEnabled(true);
-						_useMicros = true;
-					}
-					else
-					{
-						long rangeMillis = range / 1000;
-						long rangeSecs = rangeMillis / 1000;
-						if (rangeMillis < Integer.MAX_VALUE)
-						{
-							// ok, we're going to run in millisecond resolution
-							setMaxVal((int) rangeSecs);
-							_useMicros = false;
-							setEnabled(true);
-						}
-						else
-						{
-							// hey, we must be running in units which are too large.
-							setEnabled(false);
-						}
-					}
-
-					// ok. just sort out the step size when the user clicks on the slider
-					int smallTick;
-					int largeTick;
-					int dragSize;
-					int NUM_MILLIS_FOR_STEP;
-					if (_useMicros)
-					{
-						dragSize = 500; // 500 microseconds
-						NUM_MILLIS_FOR_STEP = dragSize * 20; // 10 millis
-					}
-					else
-					{
-						dragSize = 1; // one second
-						NUM_MILLIS_FOR_STEP = dragSize * 60; // one minute
-					}
-					smallTick = NUM_MILLIS_FOR_STEP;
-					largeTick = smallTick * 10;
-
-					setTickSize(smallTick, largeTick, dragSize);
-
-					// ok, we've finished updating the form. back to normal processing
-					// _updatingForm = false;
-				}
-			}
-		}
-
-		public int toSliderUnits(HiResDate now, HiResDate startDTG)
-		{
-			int res = 0;
-			long offset = now.getMicros() - startDTG.getMicros();
-
-			if (!_useMicros)
-			{
-				offset /= 1000000;
-			}
-
-			res = (int) offset;
-
-			return res;
-
-		}
-
-		public HiResDate fromSliderUnits(int value, HiResDate startDTG)
-		{
-			long newValue = value;
-
-			if (!_useMicros)
-			{
-				newValue *= 1000000;
-			}
-
-			long newDate = startDTG.getMicros() + newValue;
-
-			return new HiResDate(0, newDate);
-		}
-	}
-
-	// //////////////////////////////
-	// testing
-	// //////////////////////////////
-
 	public static class TestTimeController extends TestCase
 	{
 		private int _min, _max, _smallTick, _largeTick, _dragSize;
@@ -878,13 +723,13 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		{
 			int count = event.count;
 			boolean fwd;
-			Boolean large = new Boolean(true);
+			Boolean large = new Boolean(false);
 
 			// is the control button down?
 			int keys = event.stateMask;
 
 			if ((keys & SWT.SHIFT) != 0)
-				large = new Boolean(false);
+				large = new Boolean(true);
 
 			if (count < 0)
 				fwd = true;
@@ -940,7 +785,76 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			}
 		}
 	}
+	
+	/** ok - put in the stepper mode buttons - and any others we think of.
+	 * 
+	 */
+	private void populateDropDownList(final LayerPainterManager myLayerPainterManager )
+	{
+		// clear the list
+		final IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
+		final IToolBarManager toolManager = getViewSite().getActionBars().getToolBarManager();		
+		
+		// ok, remove the existing items
+		menuManager.removeAll();
+		toolManager.removeAll();
+		
+		// ok, what are the painters we know about
+		TemporalLayerPainter[] list = myLayerPainterManager.getList();
 
+		// add the items
+		for (int i = 0; i < list.length; i++)
+		{
+			// ok, next painter
+			final TemporalLayerPainter painter = list[i];
+			
+			// create an action for it
+			Action thisOne = new Action(painter.toString(), Action.AS_RADIO_BUTTON)
+			{
+				public void runWithEvent(Event event)
+				{
+					myLayerPainterManager.setCurrent(painter);
+				}
+			};
+
+			// and store it on both menus
+			menuManager.add(thisOne);			
+			toolManager.add(thisOne);
+		}
+		
+		// ok, let's have a separator
+		menuManager.add(new Separator());
+		
+		// ok, second menu for the DTG formats
+		MenuManager formatMenu = new MenuManager("DTG Format");
+		
+		// and store it
+		menuManager.add(formatMenu);
+		
+		// and now the date formats
+		String[] formats = DateFormatPropertyEditor.getTagList();
+		for (int i = 0; i < formats.length; i++)
+		{
+			final String thisFormat = formats[i];
+			
+			// the properties manager is expecting the integer index of the new format, not the string value.
+			// so store it as an integer index
+			final Integer thisIndex = new Integer(i);
+			
+			// and create a new action to represent the change
+			Action newFormat = new Action(thisFormat, Action.AS_RADIO_BUTTON)
+			{
+				public void run()
+				{
+					super.run();
+					_myStepperProperties.setPropertyValue(StepperProperties.DTG_FORMAT_ID,thisIndex);
+				}
+				
+			};
+			formatMenu.add(newFormat);
+		}
+	}	
+	
 	// /////////////////////////////////////////////////////////////////
 	// AND PROPERTY EDITORS FOR THE
 	// /////////////////////////////////////////////////////////////////
