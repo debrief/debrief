@@ -6,7 +6,7 @@ package org.mwc.debrief.core.editors.painters;
 import java.awt.*;
 
 import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.*;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
@@ -57,9 +57,24 @@ public class PlainHighlighter implements TemporalLayerPainter
 				_areaCovered = thisR;
 			else
 				_areaCovered.add(thisR);
+			
+			boolean lineStyleOverridden = false;
+			
+			// hey, just see if this is an interpolated data item
+			if(watch instanceof PlainWrapper.InterpolatedData)
+			{
+				// make the line dotted
+				dest.setLineStyle(CanvasType.DOTTED);
+				
+				lineStyleOverridden = true;
+			}
 
 			// plot the rectangle
 			dest.drawRect(x, y, wid, ht);
+			
+			// and restore
+			if(lineStyleOverridden)
+				dest.setLineStyle(CanvasType.SOLID);
 		}
 		catch (IllegalStateException e)
 		{
