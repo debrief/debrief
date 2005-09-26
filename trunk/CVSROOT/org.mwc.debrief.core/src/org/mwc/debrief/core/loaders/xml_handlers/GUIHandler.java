@@ -10,13 +10,13 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 import java.awt.Color;
 import java.util.Vector;
 
+import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.interfaces.IPlotGUI;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.w3c.dom.Element;
 
-import Debrief.ReaderWriter.XML.GUI.BackgroundHandler;
-import Debrief.ReaderWriter.XML.GUI.ComponentHandler;
+import Debrief.ReaderWriter.XML.GUI.*;
 import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 
 abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -28,6 +28,10 @@ abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 	String _primaryTrack = null;
 
 	Vector _secondaryTracks = null;
+	
+
+  static private StepperHandler _myStepperHandler;
+  
 
 	public GUIHandler(final IPlotGUI plot)
 	{
@@ -68,10 +72,8 @@ abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 		});
 
 		// collate our list of exporters
-		// if(_myStepperHandler == null)
-		// _myStepperHandler = new StepperHandler();
-		//
-		// _myCreators.put("Stepper", _myStepperHandler);
+		 if(_myStepperHandler == null)
+		 _myStepperHandler = new StepperHandler();
 	}
 
 	public void elementClosed()
@@ -131,11 +133,15 @@ abstract public class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 		// try to export the other features
 
 		// check the stepper handler
-		// if(_myStepperHandler == null)
-		// _myStepperHandler = new StepperHandler();
-		// ComponentDetails stepperD = _myStepperHandler.exportThis(session);
-		// stepperD.exportTo("Stepper", gui, doc);
-		//
+		 if(_myStepperHandler == null)
+			 _myStepperHandler = new StepperHandler();
+		 
+		 // get the object representing the stepper
+		 TimeController _controller = null;
+		 
+		 ComponentDetails stepperD = _myStepperHandler.exportThis(_controller);
+		 stepperD.exportTo("Stepper", gui, doc);
+		
 
 		BackgroundHandler.exportThis(thePlot.getBackgroundColor(), gui, doc);
 
