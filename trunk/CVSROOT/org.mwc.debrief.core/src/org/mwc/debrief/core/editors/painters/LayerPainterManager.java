@@ -4,13 +4,13 @@
 package org.mwc.debrief.core.editors.painters;
 
 import java.beans.*;
-import java.util.Vector;
+import java.util.*;
 
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.debrief.core.editors.painters.highlighters.*;
 
 /**
  * @author ian.mayo
- *
  */
 public class LayerPainterManager extends PropertyChangeSupport
 {
@@ -19,18 +19,30 @@ public class LayerPainterManager extends PropertyChangeSupport
 	 */
 	private static final long serialVersionUID = 1L;
 
-	/** our list of painters
+	/**
+	 * our list of painters
+	 */
+	private Vector _myPainterList;
+	
+	/** our list of highlighters
 	 * 
 	 */
-	private Vector _myList;
+	private Vector _myHighlighterList;
 	
-	/** the current one
+	/**
+	 * the current one
 	 * 
 	 * @param dataProvider
 	 */
-	private TemporalLayerPainter _current = null;
+	private TemporalLayerPainter _currentPainter = null;
+	
+	/** and the highlighter
+	 * 
+	 */
+	private SWTPlotHighlighter _currentHighlighter = null;
 
-	/** constructor - to collate the list
+	/**
+	 * constructor - to collate the list
 	 * 
 	 * @param dataProvider
 	 */
@@ -39,44 +51,134 @@ public class LayerPainterManager extends PropertyChangeSupport
 		super(dataProvider);
 		
 		// and now build the painters
-		_myList = new Vector(0,1);
-		_myList.add(new PlainHighlighter());
-		_myList.add(new SnailHighlighter(dataProvider));
+		_myPainterList = new Vector(0,1);
+		_myPainterList.add(new PlainHighlighter());
+		_myPainterList.add(new SnailHighlighter(dataProvider));
 		
-		setCurrent((TemporalLayerPainter) _myList.firstElement());
+		setCurrentPainter((TemporalLayerPainter) _myPainterList.firstElement());
+		
+		// and the plot highlighters
+		_myHighlighterList = new Vector(0,1);
+		_myHighlighterList.add(new SWTPlotHighlighter.RectangleHighlight());
+		_myHighlighterList.add(new SWTSymbolHighlighter());
+		_myHighlighterList.add(new SWTRangeHighlighter());
+		
+		
+		
 	}
 
-	/** find out which is the currently selected painter
-	 * 
-	 * @return
-	 */
-	public TemporalLayerPainter getCurrent()
-	{
-		return _current;
-	}
 
-	/** get the list of painters
-	 * 
+	/**
+	 * get the list of painters
 	 */
 	public TemporalLayerPainter[] getList()
 	{
 		TemporalLayerPainter[] res = new TemporalLayerPainter[]{null};
-		return (TemporalLayerPainter[])_myList.toArray(res);
+		return (TemporalLayerPainter[])_myPainterList.toArray(res);
 	}
 	
-	/** allow changing of the current painter
+
+	/**
+	 * find out which is the currently selected painter
 	 * 
-	 * @param current the new one being selected
+	 * @return
+	 */
+	public TemporalLayerPainter getCurrentPainter()
+	{
+		return _currentPainter;
+	}	
+	
+	/**
+	 * allow changing of the current painter
+	 * 
+	 * @param current
+	 *          the new one being selected
 	 */	
-	public void setCurrent(TemporalLayerPainter current)
+	public void setCurrentPainter(TemporalLayerPainter current)
 	{
 		// store the old one
-		TemporalLayerPainter old = _current;
+		TemporalLayerPainter old = _currentPainter;
 		
 		// assign to the new one
-		_current = current;
+		_currentPainter = current;
 		
 		// inform anybody who wants to know
 		firePropertyChange("Changed", old, current);
 	}
+	
+
+	/**
+	 * decide which cursor to use (based on text string)
+	 * 
+	 * @param cursorName
+	 */
+	public void setCurrentPainter(String cursorName)
+	{
+		TemporalLayerPainter newCursor = null;
+		for (Iterator thisPainter = _myPainterList.iterator(); thisPainter.hasNext();)
+		{
+			TemporalLayerPainter thisP = (TemporalLayerPainter) thisPainter.next();
+			if(thisP.getName().equals(cursorName))
+			{
+				newCursor = thisP;
+				break;
+			}
+		}
+		
+		// cool. did we find one?
+		if(newCursor != null)
+			setCurrentPainter(newCursor);
+	}
+		
+
+	/**
+	 * find out which is the currently selected painter
+	 * 
+	 * @return
+	 */
+	public SWTPlotHighlighter getCurrentHighlighter()
+	{
+		return _currentHighlighter;
+	}	
+	
+	/**
+	 * allow changing of the current painter
+	 * 
+	 * @param current
+	 *          the new one being selected
+	 */	
+	public void setCurrentHighlighter(SWTPlotHighlighter current)
+	{
+		// store the old one
+		SWTPlotHighlighter old = _currentHighlighter;
+		
+		// assign to the new one
+		_currentHighlighter = current;
+		
+		// inform anybody who wants to know
+		firePropertyChange("Changed", old, current);
+	}	
+	
+	/**
+	 * decide which cursor to use (based on text string)
+	 * 
+	 * @param highlighterName
+	 */
+	public void setCurrentHighlighter(String highlighterName)
+	{
+		SWTPlotHighlighter newCursor = null;
+		for (Iterator thisPainter = _myPainterList.iterator(); thisPainter.hasNext();)
+		{
+			SWTPlotHighlighter thisP = (SWTPlotHighlighter) thisPainter.next();
+			if(thisP.getName().equals(highlighterName))
+			{
+				newCursor = thisP;
+				break;
+			}
+		}
+		
+		// cool. did we find one?
+		if(newCursor != null)
+			setCurrentHighlighter(newCursor);
+	}	
 }
