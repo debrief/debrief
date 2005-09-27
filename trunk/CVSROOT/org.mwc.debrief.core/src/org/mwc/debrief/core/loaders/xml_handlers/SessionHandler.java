@@ -39,7 +39,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 						view.setProjection(proj);
 					}
     		});
-    addHandler(new GUIHandler(plot)
+    addHandler(new SWTGUIHandler(plot)
     		{
 					public void assignTracks(String primaryTrack, Vector secondaryTracks)
 					{
@@ -129,7 +129,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     // now the GUI
     // do we have a gui?
     if(thePlot != null)
-    	GUIHandler.exportThis(thePlot, eSession, doc);
+    	SWTGUIHandler.exportThis(thePlot, eSession, doc);
 
     // send out the data
     parent.appendChild(eSession);
