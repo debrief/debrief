@@ -814,7 +814,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			{
 				public void runWithEvent(Event event)
 				{
-					myLayerPainterManager.setCurrent(painter);
+					myLayerPainterManager.setCurrentPainter(painter);
 				}
 			};
 
