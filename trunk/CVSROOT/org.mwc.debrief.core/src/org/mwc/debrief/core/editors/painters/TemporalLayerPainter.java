@@ -11,5 +11,17 @@ import MWC.GenericData.HiResDate;
  */
 public interface TemporalLayerPainter
 {
+	/** ok, get painting
+	 * 
+	 * @param theLayer
+	 * @param dest
+	 * @param dtg
+	 */
 	public void paintThisLayer(Layer theLayer, CanvasType dest, HiResDate dtg);
+	
+	/** retrieve it's name
+	 * 
+	 * @return the name of this painter
+	 */
+	public String getName();
 }
