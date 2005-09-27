@@ -42,6 +42,7 @@
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.debug.core"/>
+      <import plugin="org.mwc.cmap.TimeController"/>
       
    </requires>
    <extension-point id="DebriefPlotLoader" 
