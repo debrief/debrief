@@ -26,6 +26,8 @@ import MWC.GenericData.HiResDate;
 public class SnailHighlighter implements TemporalLayerPainter
 {
 
+	public final static String NAME = "Snail";
+	
 	// /////////////////////////////////////////////////
 	// nested interface for painters which can draw snail trail components
 	// /////////////////////////////////////////////////
@@ -83,7 +85,24 @@ public class SnailHighlighter implements TemporalLayerPainter
 		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
 		_mySnailPlotter.setVectorStretch(1);
 	}
-
+	
+	/** find out the stretch on the vector for snail plots
+	 * 
+	 * @return
+	 */
+	public double getVectorStretch()
+	{
+		return _mySnailPlotter.getVectorStretch();
+	}
+	
+	/** set the snail stretch factor
+	 * 
+	 */
+	public void setVectorStretch(double val)
+	{
+		_mySnailPlotter.setVectorStretch(val);
+	}
+	
 	/**
 	 * ok, paint this layer, adding highlights where applicable
 	 * 
@@ -202,7 +221,12 @@ public class SnailHighlighter implements TemporalLayerPainter
 
 	public String toString()
 	{
-		return "Snail";
+		return NAME;
+	}
+
+	public String getName()
+	{
+		return toString();
 	}
 	
 }
