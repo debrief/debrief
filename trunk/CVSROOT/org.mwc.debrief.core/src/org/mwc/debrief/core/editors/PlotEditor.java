@@ -389,7 +389,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			 */
 			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
 			{
-				_layerPainterManager.getCurrent().paintThisLayer(thisLayer, dest,
+				_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer, dest,
 						_timeManager.getTime());
 			}
 
