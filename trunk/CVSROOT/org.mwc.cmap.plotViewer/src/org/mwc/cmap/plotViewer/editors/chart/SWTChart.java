@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.19  2005-09-16 10:11:37  Ian.Mayo
+// Revision 1.20  2005-09-29 15:29:46  Ian.Mayo
+// Provide initial drag-mode (zoom)
+//
+// Revision 1.19  2005/09/16 10:11:37  Ian.Mayo
 // Reflect changed mouse event signature
 //
 // Revision 1.18  2005/09/13 15:43:25  Ian.Mayo
@@ -74,6 +77,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
 import MWC.GUI.*;
 import MWC.GenericData.*;
@@ -187,13 +191,14 @@ public class SWTChart extends PlainChart
 			}
 		});
 
-		// store the rubber band
-		// setRubberBand(new MWC.GUI.RubberBanding.RubberbandRectangle());
-
 		// create the tooltip handler
 		_theCanvas.setTooltipHandler(new MWC.GUI.Canvas.BasicTooltipHandler(theLayers));
 
+		// give us an initial zoom mode
+		_myDragMode = new ZoomIn.ZoomInMode();
+		
 	}
+	
 
 	/**
 	 * constructor, providing us with a set of layers to plot, together with a
