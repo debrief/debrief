@@ -44,7 +44,7 @@ public final class DebriefEclipseXMLReaderWriter extends MWC.Utilities.ReaderWri
                                final java.io.InputStream is,
                                Layers destination,
                                IControllableViewport view,
-                               IPlotGUI plot)
+                               PlotEditor plot)
   {
     // create the handler for this type of data
     final MWCXMLReader handler = new PlotHandler(fName, destination, view, plot);

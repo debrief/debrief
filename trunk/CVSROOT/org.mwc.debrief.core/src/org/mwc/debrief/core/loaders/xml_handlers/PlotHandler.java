@@ -19,7 +19,7 @@ import MWC.GUI.Layers;
 final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   public PlotHandler(String fileName, Layers destination, 
-  		IControllableViewport view, final IPlotGUI plot)
+  		IControllableViewport view, final PlotEditor plot)
   {
     // inform our parent what type of class we are
     super("plot");

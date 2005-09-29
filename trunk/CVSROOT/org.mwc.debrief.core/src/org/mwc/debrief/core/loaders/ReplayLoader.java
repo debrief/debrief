@@ -11,8 +11,8 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
+import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
@@ -78,7 +78,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
-public void loadFile(final CorePlotEditor thePlot, IEditorInput input)
+public void loadFile(final PlotEditor thePlot, IEditorInput input)
 	{
 		final String theFileName;
 		final String thePath;

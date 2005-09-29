@@ -14,6 +14,7 @@ import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
+import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
@@ -46,7 +47,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 * @param fileName
 	 */
 	public void doTheLoad(Layers destination, InputStream source,
-			String fileName, IControllableViewport view, IPlotGUI plot)
+			String fileName, IControllableViewport view, PlotEditor plot)
 	{
 		_myReader.importThis(fileName, source, destination, view, plot);
 	}
@@ -57,7 +58,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
-	public void loadFile(final CorePlotEditor thePlot, IEditorInput input)
+	public void loadFile(final PlotEditor thePlot, IEditorInput input)
 	{
 		if (input instanceof org.eclipse.ui.part.FileEditorInput)
 		{

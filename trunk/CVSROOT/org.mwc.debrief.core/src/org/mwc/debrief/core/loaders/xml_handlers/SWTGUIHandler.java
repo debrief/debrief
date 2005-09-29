@@ -10,16 +10,14 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 import java.awt.Color;
 import java.util.Vector;
 
-import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
-import org.mwc.cmap.core.interfaces.IPlotGUI;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.w3c.dom.Element;
 
 import Debrief.ReaderWriter.XML.GUI.*;
-import Debrief.ReaderWriter.XML.GUIHandler.*;
+import Debrief.ReaderWriter.XML.GUIHandler.ComponentDetails;
 
 abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
@@ -93,7 +91,10 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
 		// collate our list of exporters
 		if (_myStepperHandler == null)
+		{
 			_myStepperHandler = new StepperHandler();
+			_myCreators.put("Stepper", _myStepperHandler);
+		}
 	}
 
 	public void elementClosed()

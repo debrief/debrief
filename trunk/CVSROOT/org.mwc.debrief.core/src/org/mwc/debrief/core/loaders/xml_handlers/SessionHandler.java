@@ -26,7 +26,7 @@ import MWC.GenericData.WorldArea;
 public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   public SessionHandler(Layers _theLayers, 
-  		final IControllableViewport  view, IPlotGUI plot)
+  		final IControllableViewport  view, PlotEditor plot)
   {
     // inform our parent what type of class we are
     super("session");

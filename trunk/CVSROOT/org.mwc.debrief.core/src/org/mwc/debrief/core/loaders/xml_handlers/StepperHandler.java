@@ -13,8 +13,8 @@ import org.eclipse.core.runtime.Status;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.debrief.core.editors.painters.*;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 
-import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.XML.GUIHandler;
 import MWC.GenericData.*;
@@ -283,7 +283,9 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		
 
 		 // aah, there's the highlighter as well
-		 details.addProperty("Highlighter", painterMgr.getCurrentHighlighter().getName());
+		SWTPlotHighlighter highlighter = painterMgr.getCurrentHighlighter();
+		if(highlighter != null)
+			details.addProperty("Highlighter", highlighter.getName());
 		
 		// what's the time?
 		// Let's not bother with this for now...
