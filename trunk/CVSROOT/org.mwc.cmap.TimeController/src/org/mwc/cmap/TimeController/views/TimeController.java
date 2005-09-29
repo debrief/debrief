@@ -16,7 +16,6 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
-import org.mwc.cmap.TimeController.properties.StepperProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.painters.*;
@@ -77,15 +76,16 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	 */
 	private ISelection _currentSelection;
 
-	final private StepperProperties _myStepperProperties = new StepperProperties();
+	/**
+	 * and the preferences for time control
+	 */
+	private TimeControlProperties _myStepperProperties;
 
-
-	/** module to look after the limits of the slider
-	 * 
+	/**
+	 * module to look after the limits of the slider
 	 */
 	SliderRangeManagement _slideManager = null;
-	
-	
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -113,7 +113,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				_tNowSlider.setIncrement(small);
 				_tNowSlider.setPageIncrement(large);
 				System.out.println("setting time steps to small:" + small + " large:" + large);
-//				_tNowSlider.setThumb(drag);
+				// _tNowSlider.setThumb(drag);
 			}
 
 			public void setEnabled(boolean val)
@@ -130,28 +130,12 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 		// and start listing for any part action
 		setupListeners();
-		
+
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
-
-		// also, listen out for changes in the DTG formatter
-		_myStepperProperties.addPropertyChangeListener(new PropertyChangeListener()
-		{
-
-			public void propertyChange(PropertyChangeEvent evt)
-			{
-				// right, see if the user is changing the DTG format
-				if (evt.getPropertyName().equals(StepperProperties.DTG_FORMAT_ID))
-				{
-					// ok, refresh the DTG
-					String newVal = getFormattedDate(_myTemporalDataset.getTime());
-					_timeLabel.setText(newVal);
-				}
-			}
-		});
 
 	}
 
@@ -167,8 +151,10 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	 */
 	private StructuredSelection _propsAsSelection = null;
 
-	
-	/** ok - put in our bits
+	protected TimeControlPreferences _myTimePreferences;
+
+	/**
+	 * ok - put in our bits
 	 * 
 	 * @param parent
 	 */
@@ -176,7 +162,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 	{
 		// ok, draw our wonderful GUI.
 		_wholePanel = new Composite(parent, SWT.BORDER);
-		
+
 		FillLayout onTop = new FillLayout(SWT.VERTICAL);
 		_wholePanel.setLayout(onTop);
 
@@ -185,7 +171,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
 		btnFiller.marginHeight = 0;
 		_btnPanel.setLayout(btnFiller);
-		
 
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
@@ -248,7 +233,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			{
 			}
 		});
-
 
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
@@ -345,13 +329,13 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				if (large.booleanValue())
 				{
 					// do large step
-					size = (long) _myStepperProperties.getLargeStepSize().getValueIn(
+					size = (long) _myStepperProperties.getLargeStep().getValueIn(
 							Duration.MICROSECONDS);
 				}
 				else
 				{
 					// and the small size step
-					size = (long) _myStepperProperties.getSmallStepSize().getValueIn(
+					size = (long) _myStepperProperties.getSmallStep().getValueIn(
 							Duration.MICROSECONDS);
 				}
 
@@ -456,11 +440,10 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// ok, insert the painter mode actions, together with our standard ones
+						// ok, insert the painter mode actions, together with our standard
+						// ones
 						populateDropDownList((LayerPainterManager) part);
 					}
-
-
 
 				});
 		_myPartMonitor.addPartListener(LayerPainterManager.class, PartMonitor.CLOSED,
@@ -468,12 +451,57 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-//						_painterSelector.getCombo().setEnabled(false);
-//						_myLayerPainterManager = null;
+						// _painterSelector.getCombo().setEnabled(false);
+						// _myLayerPainterManager = null;
+					}
+				});
+		_myPartMonitor.addPartListener(TimeControlPreferences.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						System.out.println("new plot activated for: part");
+						_myStepperProperties = (TimeControlProperties) part;
+
+						if (_myDateFormatListener == null)
+							_myDateFormatListener = new PropertyChangeListener()
+							{
+
+								public void propertyChange(PropertyChangeEvent evt)
+								{
+									// right, see if the user is changing the DTG format
+									if (evt.getPropertyName().equals(TimeControlProperties.DTG_FORMAT_ID))
+									{
+										// ok, refresh the DTG
+										String newVal = getFormattedDate(_myTemporalDataset.getTime());
+										_timeLabel.setText(newVal);
+									}
+								}
+							};
+
+						// also, listen out for changes in the DTG formatter
+						_myStepperProperties.addPropertyChangeListener(_myDateFormatListener);
+
+					}
+				});
+
+		_myPartMonitor.addPartListener(TimeControlPreferences.class, PartMonitor.DEACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						System.out.println("new plot de-activated for: part");
+						if(part == _myStepperProperties)
+						{
+							_myStepperProperties.removePropertyChangeListener(_myDateFormatListener);
+							_myStepperProperties = null;
+						}
 					}
 				});
 
 	}
+
+	private PropertyChangeListener _myDateFormatListener = null;
 
 	/**
 	 * convenience method to make the panel enabled if we have a time controller
@@ -580,20 +608,22 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 	private String getFormattedDate(HiResDate newDTG)
 	{
-
-		// IPreferenceStore store = TimeControllerPlugin.getDefault()
-		// .getPreferenceStore();
-		String dateFormat = _myStepperProperties.getDTGFormat();
-
-		// store.getString(PreferenceConstants.P_STRING);
 		String newVal = "n/a";
-		try
+		// hmm, we may have heard about the new date before hearing about the
+		// plot's stepper properties. check they arrived
+		if (_myStepperProperties != null)
 		{
-			newVal = toStringHiRes(newDTG, dateFormat);
-		}
-		catch (IllegalArgumentException e)
-		{
-			System.err.println("Invalid date format in preferences");
+			String dateFormat = _myStepperProperties.getDTGFormat();
+
+			// store.getString(PreferenceConstants.P_STRING);
+			try
+			{
+				newVal = toStringHiRes(newDTG, dateFormat);
+			}
+			catch (IllegalArgumentException e)
+			{
+				System.err.println("Invalid date format in preferences");
+			}
 		}
 		return newVal;
 	}
@@ -786,20 +816,20 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			}
 		}
 	}
-	
-	/** ok - put in the stepper mode buttons - and any others we think of.
-	 * 
+
+	/**
+	 * ok - put in the stepper mode buttons - and any others we think of.
 	 */
-	private void populateDropDownList(final LayerPainterManager myLayerPainterManager )
+	private void populateDropDownList(final LayerPainterManager myLayerPainterManager)
 	{
 		// clear the list
 		final IMenuManager menuManager = getViewSite().getActionBars().getMenuManager();
-		final IToolBarManager toolManager = getViewSite().getActionBars().getToolBarManager();		
-		
+		final IToolBarManager toolManager = getViewSite().getActionBars().getToolBarManager();
+
 		// ok, remove the existing items
 		menuManager.removeAll();
 		toolManager.removeAll();
-		
+
 		// ok, what are the painters we know about
 		TemporalLayerPainter[] list = myLayerPainterManager.getList();
 
@@ -808,7 +838,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		{
 			// ok, next painter
 			final TemporalLayerPainter painter = list[i];
-			
+
 			// create an action for it
 			Action thisOne = new Action(painter.toString(), Action.AS_RADIO_BUTTON)
 			{
@@ -819,43 +849,45 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			};
 
 			// and store it on both menus
-			menuManager.add(thisOne);			
+			menuManager.add(thisOne);
 			toolManager.add(thisOne);
 		}
-		
+
 		// ok, let's have a separator
 		menuManager.add(new Separator());
-		
+
 		// ok, second menu for the DTG formats
 		MenuManager formatMenu = new MenuManager("DTG Format");
-		
+
 		// and store it
 		menuManager.add(formatMenu);
-		
+
 		// and now the date formats
 		String[] formats = DateFormatPropertyEditor.getTagList();
 		for (int i = 0; i < formats.length; i++)
 		{
 			final String thisFormat = formats[i];
-			
-			// the properties manager is expecting the integer index of the new format, not the string value.
+
+			// the properties manager is expecting the integer index of the new
+			// format, not the string value.
 			// so store it as an integer index
 			final Integer thisIndex = new Integer(i);
-			
+
 			// and create a new action to represent the change
 			Action newFormat = new Action(thisFormat, Action.AS_RADIO_BUTTON)
 			{
 				public void run()
 				{
 					super.run();
-					_myStepperProperties.setPropertyValue(StepperProperties.DTG_FORMAT_ID,thisIndex);
+					_myStepperProperties.setPropertyValue(TimeControlProperties.DTG_FORMAT_ID,
+							thisIndex);
 				}
-				
+
 			};
 			formatMenu.add(newFormat);
 		}
-	}	
-	
+	}
+
 	// /////////////////////////////////////////////////////////////////
 	// AND PROPERTY EDITORS FOR THE
 	// /////////////////////////////////////////////////////////////////
