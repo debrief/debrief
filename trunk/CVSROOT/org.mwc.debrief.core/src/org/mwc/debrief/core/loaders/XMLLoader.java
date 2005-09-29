@@ -19,6 +19,7 @@ import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.Layers;
+import MWC.Utilities.Errors.Trace;
 
 /**
  * @author ian.mayo
@@ -74,7 +75,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 			try
 			{
 				// stick it in a stream
-				final InputStream is = _theFile.getContents();
+				final InputStream is = _theFile.getContents(true);
 
 				// hmm, is there anything in the file?
 				int numAvailable = is.available();
@@ -140,7 +141,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 			catch (CoreException e)
 			{
 				CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
-						"Unable to open XML file for input:" + theName, e);
+						"Unable to open XML file for input:" + theName + " out of sync?", e);
 			}
 			catch (InvocationTargetException e)
 			{

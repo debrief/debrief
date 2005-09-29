@@ -99,9 +99,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			public void propertyChange(PropertyChangeEvent arg0)
 			{
-				System.out.println("new painter, redraw plot.");
 				// ok, trigger repaint of plot
-				getChart().update();
+				if(getChart() != null)
+					getChart().update();
 			}
 		});
 		
@@ -389,8 +389,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			 */
 			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
 			{
-				_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer, dest,
-						_timeManager.getTime());
+				// get the current time
+				HiResDate tNow = _timeManager.getTime();
+				
+				// do we know the time?
+				if(tNow != null)
+				{
+					// yes. cool, get plotting
+					_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer, dest,
+						tNow);
+				}
 			}
 
 		};
