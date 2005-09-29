@@ -637,11 +637,14 @@ public class ToteView extends ViewPart
 		if (!_tableViewer.getTable().isDisposed())
 		{
 			Display.getDefault().asyncExec(new Runnable(){
-
 				public void run()
 				{
-					_tableViewer.refresh(true);
-					_labelProvider.setDTG(newDTG);
+					// double-check that we haven't lost the table.
+					if(_tableViewer.getTable().isDisposed())
+					{
+						_tableViewer.refresh(true);
+						_labelProvider.setDTG(newDTG);
+					}
 				}});
 		}
 		else

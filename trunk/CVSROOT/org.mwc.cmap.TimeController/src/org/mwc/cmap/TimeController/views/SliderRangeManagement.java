@@ -27,6 +27,8 @@ abstract class SliderRangeManagement
 		{
 			// yes - initialise the ranges
 			long range = max.getMicros() - min.getMicros();
+			
+			int maxVal = 100;
 
 			if (range > 0)
 			{
@@ -35,7 +37,8 @@ abstract class SliderRangeManagement
 
 				if (range < TIME_SPAN_TO_USE_MICROS)
 				{
-					setMaxVal((int) range);
+					maxVal = (int) range;
+					setMaxVal(maxVal);
 					setEnabled(true);
 					_useMicros = true;
 				}
@@ -46,7 +49,8 @@ abstract class SliderRangeManagement
 					if (rangeMillis < Integer.MAX_VALUE)
 					{
 						// ok, we're going to run in millisecond resolution
-						setMaxVal((int) rangeSecs);
+						maxVal = (int) rangeSecs;
+						setMaxVal(maxVal);
 						_useMicros = false;
 						setEnabled(true);
 					}
@@ -74,6 +78,12 @@ abstract class SliderRangeManagement
 				}
 				smallTick = NUM_MILLIS_FOR_STEP;
 				largeTick = smallTick * 10;
+				
+				// hmm, try to trim down the size of the large ticks, we don't want too many do we?
+				while(largeTick < (maxVal/50))
+				{
+					largeTick *= 10;
+				}
 
 				setTickSize(smallTick, largeTick, dragSize);
 

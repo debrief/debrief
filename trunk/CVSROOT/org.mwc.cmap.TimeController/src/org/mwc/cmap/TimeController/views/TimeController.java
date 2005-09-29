@@ -849,6 +849,12 @@ public class TimeController extends ViewPart implements ISelectionProvider
 					myLayerPainterManager.setCurrentPainter(painter);
 				}
 			};
+			
+			// hmm, and see if this is our current painter
+			if(painter.getName().equals(myLayerPainterManager.getCurrentPainter().getName()))
+			{
+				thisOne.setChecked(true);
+			}
 
 			// and store it on both menus
 			menuManager.add(thisOne);
