@@ -1,4 +1,4 @@
-package org.mwc.cmap.TimeController.properties;
+package org.mwc.cmap.core.DataTypes.Temporal;
 
 import java.beans.*;
 
@@ -11,7 +11,7 @@ import org.mwc.cmap.core.property_support.DurationHelper;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
 
-public class StepperProperties extends java.beans.PropertyChangeSupport implements IPropertySource2
+public class TimeControlProperties extends java.beans.PropertyChangeSupport implements IPropertySource2, TimeControlPreferences
 {
 
 	/**
@@ -64,7 +64,7 @@ public class StepperProperties extends java.beans.PropertyChangeSupport implemen
 	private static PropertyDescriptor DTG_FORMAT = null;
 
 	private static PropertyDescriptor[] PROPERTY_DESCRIPTORS = null;
-
+	
 	// //////////////////////////////////////////////////////////////
 	// constructor
 	// ///////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ public class StepperProperties extends java.beans.PropertyChangeSupport implemen
 	/**
 	 * create/initialise our set of properties
 	 */
-	public StepperProperties()
+	public TimeControlProperties()
 	{
 		super(LARGE_STEP_ID);
 
@@ -256,6 +256,10 @@ public class StepperProperties extends java.beans.PropertyChangeSupport implemen
 		return DTG_FORMAT_STRINGS[_dtgFormat.intValue()];
 	}
 
+	//////////////////////////////////////////////////////
+	// AND ACCESSING THE PROPERTIES THEMSELVES
+	//////////////////////////////////////////////////////
+	
 	public Duration getSmallStepSize()
 	{
 		return _smallStep;
@@ -264,5 +268,51 @@ public class StepperProperties extends java.beans.PropertyChangeSupport implemen
 	public Duration getLargeStepSize()
 	{
 		return _largeStep;
+	}
+
+	public void setDTGFormat(String format)
+	{
+		int index = DateFormatPropertyEditor.getIndexOf(format);
+		
+		// ok, what's the index
+		if(index == DateFormatPropertyEditor.INVALID_INDEX)
+		{
+			// bugger, didn't find it.
+			index =  0;
+		}
+		
+		// ok, sorted.
+		_dtgFormat = new Integer(index); 
+	}
+
+	public Duration getSmallStep()
+	{
+		return _smallStep;
+	}
+
+	public Duration getLargeStep()
+	{
+		return _largeStep;
+	}
+
+	public void setSmallStep(Duration step)
+	{
+		_smallStep = step;
+		
+	}
+
+	public void setLargeStep(Duration step)
+	{
+		_largeStep = step;
+	}
+
+	public Duration getAutoInterval()
+	{
+		return _autoInterval;
+	}
+
+	public void setAutoInterval(Duration duration)
+	{
+		_autoInterval = duration;
 	}
 }
