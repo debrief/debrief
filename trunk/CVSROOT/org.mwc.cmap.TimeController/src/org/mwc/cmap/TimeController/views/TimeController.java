@@ -112,8 +112,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			{
 				_tNowSlider.setIncrement(small);
 				_tNowSlider.setPageIncrement(large);
-				System.out.println("setting time steps to small:" + small + " large:" + large);
-				// _tNowSlider.setThumb(drag);
 			}
 
 			public void setEnabled(boolean val)
@@ -460,27 +458,36 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						System.out.println("new plot activated for: part");
-						_myStepperProperties = (TimeControlProperties) part;
-
-						if (_myDateFormatListener == null)
-							_myDateFormatListener = new PropertyChangeListener()
+						// just check we're not already managing this plot
+						if (part != _myStepperProperties)
+						{
+							// ok, ignore the old one, if we have one
+							if (_myStepperProperties != null)
 							{
+								_myStepperProperties.removePropertyChangeListener(_myDateFormatListener);
+								_myStepperProperties = null;
+							}
 
-								public void propertyChange(PropertyChangeEvent evt)
+							_myStepperProperties = (TimeControlProperties) part;
+
+							if (_myDateFormatListener == null)
+								_myDateFormatListener = new PropertyChangeListener()
 								{
-									// right, see if the user is changing the DTG format
-									if (evt.getPropertyName().equals(TimeControlProperties.DTG_FORMAT_ID))
+									public void propertyChange(PropertyChangeEvent evt)
 									{
-										// ok, refresh the DTG
-										String newVal = getFormattedDate(_myTemporalDataset.getTime());
-										_timeLabel.setText(newVal);
+										// right, see if the user is changing the DTG format
+										if (evt.getPropertyName().equals(TimeControlProperties.DTG_FORMAT_ID))
+										{
+											// ok, refresh the DTG
+											String newVal = getFormattedDate(_myTemporalDataset.getTime());
+											_timeLabel.setText(newVal);
+										}
 									}
-								}
-							};
+								};
 
-						// also, listen out for changes in the DTG formatter
-						_myStepperProperties.addPropertyChangeListener(_myDateFormatListener);
+							// also, listen out for changes in the DTG formatter
+							_myStepperProperties.addPropertyChangeListener(_myDateFormatListener);
+						}
 
 					}
 				});
@@ -490,12 +497,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						System.out.println("new plot de-activated for: part");
-						if(part == _myStepperProperties)
-						{
-							_myStepperProperties.removePropertyChangeListener(_myDateFormatListener);
-							_myStepperProperties = null;
-						}
 					}
 				});
 
@@ -561,8 +562,9 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			_propsAsSelection = new StructuredSelection(_myStepperProperties);
 
 		fireSelectionChanged(_propsAsSelection);
+		
+		_propsAsSelection = null;
 	}
-
 	// //////////////////////////////
 	// temporal data management
 	// //////////////////////////////
