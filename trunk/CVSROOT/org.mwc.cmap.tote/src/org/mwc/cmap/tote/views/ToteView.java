@@ -3,16 +3,15 @@ package org.mwc.cmap.tote.views;
 import java.beans.*;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
@@ -641,15 +640,9 @@ public class ToteView extends ViewPart
 				public void run()
 				{
 					// double-check that we haven't lost the table.
-					if(_tableViewer.getTable().isDisposed())
+					if(!_tableViewer.getTable().isDisposed())
 					{
-						try{
 						_tableViewer.refresh(true);
-						}
-						catch(SWTException se)
-						{
-							CorePlugin.logError(Status.WARNING, "Unable to update table.  Suspect because app is closing", null);
-						}
 						_labelProvider.setDTG(newDTG);
 					}
 				}});
