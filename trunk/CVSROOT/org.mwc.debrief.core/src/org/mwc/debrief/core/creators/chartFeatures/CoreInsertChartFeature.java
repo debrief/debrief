@@ -47,7 +47,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 
 	}
 
-	public final Action getData(PlainChart theChart)
+	public Action getData(PlainChart theChart)
 	{
 		Action res = null;
 
