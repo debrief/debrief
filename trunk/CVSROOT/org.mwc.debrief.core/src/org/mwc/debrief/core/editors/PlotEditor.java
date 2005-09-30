@@ -494,7 +494,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			try
 			{
-				theFile.setContents(is, false, false, monitor);
+				theFile.setContents(is, true, false, monitor);
 
 				itWorked = true;
 			}
