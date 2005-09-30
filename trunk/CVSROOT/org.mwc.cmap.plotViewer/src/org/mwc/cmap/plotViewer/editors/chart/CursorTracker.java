@@ -2,11 +2,9 @@ package org.mwc.cmap.plotViewer.editors.chart;
 
 import java.awt.Point;
 
-import org.eclipse.jface.action.*;
+import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
-import org.eclipse.ui.part.*;
 import org.mwc.cmap.core.ui_support.LineItem;
 
 import MWC.GUI.*;
@@ -115,43 +113,43 @@ public class CursorTracker implements MouseMoveListener
 	/**
 	 * @return false if an exception occurs while initializing labels.
 	 */
-	private boolean initLabels()
-	{
-		Display.getDefault().asyncExec(new Runnable()
-		{
-			public void run()
-			{
-
-				IWorkbenchPartReference[] parts = PlatformUI.getWorkbench()
-						.getActiveWorkbenchWindow().getActivePage().getEditorReferences();
-				if (parts.length == 0)
-					parts = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-							.getActivePage().getViewReferences();
-
-				for (int i = 0; i < parts.length && _label == null; i++)
-				{
-					IWorkbenchPart activePart = parts[i].getPart(false);
-					if (activePart instanceof ViewPart)
-					{
-						ViewPart view = (ViewPart) activePart;
-						line = (StatusLineManager) view.getViewSite().getActionBars()
-								.getStatusLineManager();
-					}
-					else if (activePart instanceof EditorPart)
-					{
-						EditorPart view = (EditorPart) activePart;
-						line = view.getEditorSite().getActionBars().getStatusLineManager();
-					}
-					_label = new LineItem("CursorPosition.position"); //$NON-NLS-1$
-
-					line.add(new GroupMarker("CursorPosition.position")); //$NON-NLS-1$
-					line.add(_label);
-					line.update(true);
-				}
-
-			}
-		});
-		return true;
-	}
+//	private boolean initLabels()
+//	{
+//		Display.getDefault().asyncExec(new Runnable()
+//		{
+//			public void run()
+//			{
+//
+//				IWorkbenchPartReference[] parts = PlatformUI.getWorkbench()
+//						.getActiveWorkbenchWindow().getActivePage().getEditorReferences();
+//				if (parts.length == 0)
+//					parts = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+//							.getActivePage().getViewReferences();
+//
+//				for (int i = 0; i < parts.length && _label == null; i++)
+//				{
+//					IWorkbenchPart activePart = parts[i].getPart(false);
+//					if (activePart instanceof ViewPart)
+//					{
+//						ViewPart view = (ViewPart) activePart;
+//						line = (StatusLineManager) view.getViewSite().getActionBars()
+//								.getStatusLineManager();
+//					}
+//					else if (activePart instanceof EditorPart)
+//					{
+//						EditorPart view = (EditorPart) activePart;
+//						line = view.getEditorSite().getActionBars().getStatusLineManager();
+//					}
+//					_label = new LineItem("CursorPosition.position"); //$NON-NLS-1$
+//
+//					line.add(new GroupMarker("CursorPosition.position")); //$NON-NLS-1$
+//					line.add(_label);
+//					line.update(true);
+//				}
+//
+//			}
+//		});
+//		return true;
+//	}
 
 }

@@ -3,12 +3,9 @@
  */
 package org.mwc.debrief.core.interfaces;
 
-import org.eclipse.core.runtime.CoreException;
-import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.*;
 import org.eclipse.ui.IEditorInput;
 import org.mwc.cmap.core.interfaces.INamedItem;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 

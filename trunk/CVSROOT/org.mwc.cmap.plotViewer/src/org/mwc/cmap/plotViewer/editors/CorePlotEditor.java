@@ -226,13 +226,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 			protected void handleItemNotFound(PlainProjection projection)
 			{
-				CorePlugin.logError(Status.INFO, "Double-clicked in backdrop.  Editing background color", null);
-				SWTCanvas can = (SWTCanvas) getChart().getCanvas();
-				EditableWrapper wrapped = new EditableWrapper(can,
-						getChart().getLayers());
-				ISelection sel = new StructuredSelection(wrapped);
-				fireSelectionChanged(sel);
-				
+						putBackdropIntoProperties();
 			}
 		});
 
@@ -252,6 +246,19 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				redoAction);
 	}
 
+	/** place the chart in the properties window
+	 *
+	 */
+	private final void putBackdropIntoProperties()
+	{
+		SWTCanvas can = (SWTCanvas) getChart().getCanvas();
+		EditableWrapper wrapped = new EditableWrapper(can,
+				getChart().getLayers());
+		ISelection sel = new StructuredSelection(wrapped);
+		fireSelectionChanged(sel);
+
+	}
+	
 	/**
 	 * create the chart we're after
 	 * 
@@ -333,8 +340,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	public void setFocus()
 	{
-		// TODO Auto-generated method stub
-
+		// just put some kind of blank object into the properties window
+		putBackdropIntoProperties();
 	}
 
 	public Object getAdapter(Class adapter)

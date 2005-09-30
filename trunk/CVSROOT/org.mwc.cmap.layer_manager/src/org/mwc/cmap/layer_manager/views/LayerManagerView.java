@@ -133,7 +133,7 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setUseHashlookup(true);
 		drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
-		_treeViewer.setLabelProvider(new ViewLabelProvider(this));
+		_treeViewer.setLabelProvider(new ViewLabelProvider());
 		_treeViewer.setSorter(new NameSorter());
 		_treeViewer.setInput(getViewSite());
 		_treeViewer.setComparer(new IElementComparer()

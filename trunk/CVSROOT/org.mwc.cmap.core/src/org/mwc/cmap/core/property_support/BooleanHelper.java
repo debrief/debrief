@@ -23,7 +23,8 @@ public class BooleanHelper extends EditorHelper
 
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new CheckboxCellEditor(parent);
+		CellEditor res = new CheckboxCellEditor(parent);
+		return res; 
 	}
 
 	public boolean editsThis(Class target)

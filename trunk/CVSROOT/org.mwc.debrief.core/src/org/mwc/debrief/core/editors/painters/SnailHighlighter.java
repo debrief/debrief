@@ -40,9 +40,9 @@ public class SnailHighlighter implements TemporalLayerPainter
 		public boolean canPlot(Watchable wt);
 	}
 
-	private static Color _myColor = Color.white;
-
-	private static int _mySize = 5;
+//	private static Color _myColor = Color.white;
+//
+//	private static int _mySize = 5;
 
 	final TrackDataProvider _dataProvider;
 
@@ -190,7 +190,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 					}
 				}
 
-				final Rectangle rec = plotter.drawMe(projection, dest, list, watch,
+				plotter.drawMe(projection, dest, list, watch,
 						this, newDTG, backgroundColor);
 
 				// // add this to the list to be hidden at a later date

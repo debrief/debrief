@@ -11,15 +11,13 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.*;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.cmap.core.interfaces.*;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import MWC.GUI.Layers;
-import MWC.Utilities.Errors.Trace;
 
 /**
  * @author ian.mayo

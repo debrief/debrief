@@ -75,9 +75,9 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		String start_time = (String) details.properties.get("Toolbox_Start_Time");
 		if (start_time != null)
 		{
-			HiResDate startTime = null;
-			// get a date from this
-			startTime = DebriefFormatDateTime.parseThis(start_time);
+//			HiResDate startTime = null;
+//			// get a date from this
+//			startTime = DebriefFormatDateTime.parseThis(start_time);
 
 			// set the cursor
 			CorePlugin.logError(Status.WARNING, "Toolbox start not yet implemented", null);
@@ -88,10 +88,10 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		String end_time = (String) details.properties.get("Toolbox_End_Time");
 		if (end_time != null)
 		{
-			HiResDate endTime = null;
-
-			// get a date from this
-			endTime = DebriefFormatDateTime.parseThis(end_time);
+//			HiResDate endTime = null;
+//
+//			// get a date from this
+//			endTime = DebriefFormatDateTime.parseThis(end_time);
 
 			// set the cursor
 			CorePlugin.logError(Status.WARNING, "Toolbox end not yet implemented", null);
@@ -102,7 +102,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		if (tZero != null)
 		{
 			// get a date from this
-			HiResDate dt = DebriefFormatDateTime.parseThis(tZero);
+//			HiResDate dt = DebriefFormatDateTime.parseThis(tZero);
 
 			// set the cursor
 			// set the cursor
