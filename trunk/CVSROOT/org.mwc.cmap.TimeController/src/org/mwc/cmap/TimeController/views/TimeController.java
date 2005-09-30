@@ -35,7 +35,7 @@ import MWC.GenericData.*;
  * different labels and icons, if needed. Alternatively, a single label provider
  * can be shared between views in order to ensure that objects of the same type
  * are presented in the same way everywhere.
- * <p>
+ * <p> 
  */
 
 public class TimeController extends ViewPart implements ISelectionProvider
@@ -894,6 +894,9 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			};
 			formatMenu.add(newFormat);
 		}
+		
+		// ok - get the action bars to re-populate themselves, otherwise we don't see our changes
+		getViewSite().getActionBars().updateActionBars();		
 	}
 
 	// /////////////////////////////////////////////////////////////////
