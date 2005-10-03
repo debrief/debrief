@@ -270,20 +270,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
 
 		// did we find it?
-		if (narr != null)
-		{
-			// cool, cast to object
-			final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
+		// cool, cast to object
+		final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
 
-			// and put it into our narrative provider
-			_theNarrativeProvider = new NarrativeProvider()
+		// and put it into our narrative provider
+		_theNarrativeProvider = new NarrativeProvider()
+		{
+			public NarrativeWrapper getNarrative()
 			{
-				public NarrativeWrapper getNarrative()
-				{
-					return wrapper;
-				}
-			};
-		}
+				return wrapper;
+			}
+		};
 
 		// done - now we can process dirty calls again
 		stopIgnoringDirtyCalls();
