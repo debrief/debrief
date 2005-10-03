@@ -35,7 +35,7 @@ import MWC.GenericData.*;
  * different labels and icons, if needed. Alternatively, a single label provider
  * can be shared between views in order to ensure that objects of the same type
  * are presented in the same way everywhere.
- * <p> 
+ * <p>
  */
 
 public class TimeController extends ViewPart implements ISelectionProvider
@@ -398,6 +398,19 @@ public class TimeController extends ViewPart implements ISelectionProvider
 						}
 					}
 				});
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.DEACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						if (_myTemporalDataset == part)
+						{
+							// ok, stop listening to this object
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						}
+					}
+				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
@@ -408,6 +421,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 						{
 							_myTemporalDataset.removeListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							_myTemporalDataset = null;
 						}
 						checkTimeEnabled();
 					}
@@ -516,6 +530,7 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		{
 			if ((_controllableTime != null) && (_myTemporalDataset.getTime() != null))
 				enable = true;
+
 		}
 
 		final boolean finalEnabled = enable;
@@ -526,6 +541,12 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			{
 				if (!_wholePanel.isDisposed())
 				{
+					// aaah, if we're clearing the panel, set the text to "pending"
+					if (!finalEnabled)
+					{
+						_timeLabel.setText("-----");
+					}
+
 					_wholePanel.setEnabled(finalEnabled);
 				}
 			}
@@ -562,9 +583,10 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			_propsAsSelection = new StructuredSelection(_myStepperProperties);
 
 		fireSelectionChanged(_propsAsSelection);
-		
+
 		_propsAsSelection = null;
 	}
+
 	// //////////////////////////////
 	// temporal data management
 	// //////////////////////////////
@@ -590,12 +612,18 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 						_timeLabel.setText(newVal);
 
-						TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
-						if (dataPeriod != null)
+						// there's a (slim) chance that the temp dataset has already been
+						// cleared, or
+						// hasn't been caught yet. just check we still know about it
+						if (_myTemporalDataset != null)
 						{
-							int newIndex = _slideManager
-									.toSliderUnits(newDTG, dataPeriod.getStartDTG());
-							_tNowSlider.setSelection(newIndex);
+							TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
+							if (dataPeriod != null)
+							{
+								int newIndex = _slideManager.toSliderUnits(newDTG, dataPeriod
+										.getStartDTG());
+								_tNowSlider.setSelection(newIndex);
+							}
 						}
 					}
 				});
@@ -849,9 +877,9 @@ public class TimeController extends ViewPart implements ISelectionProvider
 					myLayerPainterManager.setCurrentPainter(painter);
 				}
 			};
-			
+
 			// hmm, and see if this is our current painter
-			if(painter.getName().equals(myLayerPainterManager.getCurrentPainter().getName()))
+			if (painter.getName().equals(myLayerPainterManager.getCurrentPainter().getName()))
 			{
 				thisOne.setChecked(true);
 			}
@@ -894,9 +922,10 @@ public class TimeController extends ViewPart implements ISelectionProvider
 			};
 			formatMenu.add(newFormat);
 		}
-		
-		// ok - get the action bars to re-populate themselves, otherwise we don't see our changes
-		getViewSite().getActionBars().updateActionBars();		
+
+		// ok - get the action bars to re-populate themselves, otherwise we don't
+		// see our changes
+		getViewSite().getActionBars().updateActionBars();
 	}
 
 	// /////////////////////////////////////////////////////////////////
