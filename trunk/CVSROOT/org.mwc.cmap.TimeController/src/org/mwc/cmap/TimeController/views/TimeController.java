@@ -371,6 +371,17 @@ public class TimeController extends ViewPart implements ISelectionProvider
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+							// implementation here.
+							TimeProvider thisTemporalDataset = (TimeProvider) part;
+							thisTemporalDataset.addListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+					}
+				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -380,8 +391,6 @@ public class TimeController extends ViewPart implements ISelectionProvider
 						{
 							// implementation here.
 							_myTemporalDataset = (TimeProvider) part;
-							_myTemporalDataset.addListener(_temporalListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 							// also configure for the current time
 							HiResDate newDTG = _myTemporalDataset.getTime();
@@ -398,34 +407,40 @@ public class TimeController extends ViewPart implements ISelectionProvider
 						}
 					}
 				});
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.DEACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						if (_myTemporalDataset == part)
-						{
-							// ok, stop listening to this object
-							_myTemporalDataset.removeListener(_temporalListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-						}
-					}
-				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// are we still listening?
-						if (_myTemporalDataset != null)
+						// ok, stop listening to this object
+						_myTemporalDataset.removeListener(_temporalListener,
+								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+						// was it our one?
+						if (_myTemporalDataset == part)
 						{
-							_myTemporalDataset.removeListener(_temporalListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 							_myTemporalDataset = null;
 						}
+						
+						// and sort out whether we should be active or not.
 						checkTimeEnabled();
 					}
 				});
+//		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+//				new PartMonitor.ICallback()
+//				{
+//					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+//					{
+//						// are we still listening?
+//						if (_myTemporalDataset != null)
+//						{
+//							_myTemporalDataset.removeListener(_temporalListener,
+//									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+//							_myTemporalDataset = null;
+//						}
+//						checkTimeEnabled();
+//					}
+//				});
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{

@@ -141,13 +141,11 @@ public class ToteView extends ViewPart
 		// try to add ourselves to listen out for page changes
 		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
 
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
-		_myPartMonitor.addPartListener(TrackManager.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						TrackManager provider = (TrackManager) part;
 
@@ -162,8 +160,7 @@ public class ToteView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						TrackManager provider = (TrackManager) part;
 
@@ -177,8 +174,7 @@ public class ToteView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
 						TrackManager provider = (TrackManager) part;
@@ -186,15 +182,14 @@ public class ToteView extends ViewPart
 						// is this our current provider?
 						if (_trackData == provider)
 							_trackData = null;
-						
+
 						redoTableAfterTrackChanges();
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// just check we're not already looking at it
 						if (part != _myTemporalDataset)
@@ -221,44 +216,23 @@ public class ToteView extends ViewPart
 						}
 					}
 				});
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.OPENED,
+
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.DEACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						_myTemporalDataset = (TimeProvider) part;
-						if (_temporalListener == null)
-						{
-							_temporalListener = new PropertyChangeListener()
-							{
-								public void propertyChange(PropertyChangeEvent event)
-								{
-									// ok, use the new time
-									HiResDate newDTG = (HiResDate) event.getNewValue();
-									timeUpdated(newDTG);
-								}
-							};
-						}
-						_myTemporalDataset.addListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-					}
-				});
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-						_myTemporalDataset.removeListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						// just check it's our dataset
+					//	if (part == _myTemporalDataset)
+					//	{
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+					//	}
 					}
 				});
 
 		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-				.getActivePage());
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 
 	}
 
@@ -326,8 +300,7 @@ public class ToteView extends ViewPart
 	 */
 	private static Table createTableWithColumns(Composite parent)
 	{
-		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL
-				| SWT.FULL_SELECTION);
+		Table table = new Table(parent, SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 		table.setLinesVisible(true);
 
@@ -383,8 +356,7 @@ public class ToteView extends ViewPart
 			public void runWithEvent(Event event)
 			{
 				// cool. sorted.
-				int index = findSelectedColumn(event.x, event.y, _tableViewer
-						.getTable());
+				int index = findSelectedColumn(event.x, event.y, _tableViewer.getTable());
 				if (index != -1)
 				{
 					System.out.println("removing col number:" + index);
@@ -392,8 +364,8 @@ public class ToteView extends ViewPart
 			}
 		};
 		_removeTrackAction.setToolTipText("Remove this track from the tote");
-		_removeTrackAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+		_removeTrackAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
 	}
 
@@ -491,7 +463,7 @@ public class ToteView extends ViewPart
 			public void runWithEvent(Event event)
 			{
 				// ok, is this the primary?
-				if(index == 1)
+				if (index == 1)
 				{
 					// yes, go for it
 					_trackData.primaryUpdated(null);
@@ -505,8 +477,8 @@ public class ToteView extends ViewPart
 			}
 		};
 		_removeTrackAction.setToolTipText("Remove this track from the tote");
-		_removeTrackAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+		_removeTrackAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
@@ -549,9 +521,10 @@ public class ToteView extends ViewPart
 
 			// ok - now update the content of our table
 			redoTableAfterTrackChanges();
-			
+
 			// lastly listen out for any future changes
-			part.addTrackDataListener(new TrackDataListener(){
+			part.addTrackDataListener(new TrackDataListener()
+			{
 
 				public void primaryUpdated(WatchableList primary)
 				{
@@ -563,7 +536,8 @@ public class ToteView extends ViewPart
 				{
 					// ok - now update the content of our table
 					redoTableAfterTrackChanges();
-				}});
+				}
+			});
 		}
 	}
 
@@ -579,12 +553,12 @@ public class ToteView extends ViewPart
 		_tableViewer.getTable().layout(true);
 
 		// hmm, check if we have any track data
-		if(_trackData == null)
+		if (_trackData == null)
 		{
 			// don't bother with any further processing.
 			return;
 		}
-		
+
 		// lastly color-code the columns
 		TableItem[] items = _tableViewer.getTable().getItems();
 
@@ -596,7 +570,7 @@ public class ToteView extends ViewPart
 			for (int j = 0; j < items.length; j++)
 			{
 				TableItem thisRow = items[j];
-//				thisRow.setBackground(1, thisCol);
+				// thisRow.setBackground(1, thisCol);
 				thisRow.setForeground(1, thisCol);
 			}
 		}
@@ -612,13 +586,13 @@ public class ToteView extends ViewPart
 				{
 					TableItem thisRow = items[j];
 					thisRow.setForeground(2 + i, thisCol);
-//					thisRow.setBackground(2 + i, thisCol);
+					// thisRow.setBackground(2 + i, thisCol);
 				}
 			}
 		}
-		
+
 		// lastly, fire a time-update to fill in the calcs
-		if(_myTemporalDataset != null)
+		if (_myTemporalDataset != null)
 		{
 			timeUpdated(_myTemporalDataset.getTime());
 		}
@@ -636,16 +610,18 @@ public class ToteView extends ViewPart
 	{
 		if (!_tableViewer.getTable().isDisposed())
 		{
-			Display.getDefault().asyncExec(new Runnable(){
+			Display.getDefault().asyncExec(new Runnable()
+			{
 				public void run()
 				{
 					// double-check that we haven't lost the table.
-					if(!_tableViewer.getTable().isDisposed())
+					if (!_tableViewer.getTable().isDisposed())
 					{
 						_tableViewer.refresh(true);
 						_labelProvider.setDTG(newDTG);
 					}
-				}});
+				}
+			});
 		}
 		else
 			System.out.println("not updating. table is disposed");
@@ -661,12 +637,11 @@ public class ToteView extends ViewPart
 	private void initialiseCalcLoaders()
 	{
 		// hey - sort out our plot readers
-		_loader = new CalculationLoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG,
-				PLUGIN_ID)
+		_loader = new CalculationLoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
 		{
 
-			public toteCalculation createInstance(
-					IConfigurationElement configElement, String label)
+			public toteCalculation createInstance(IConfigurationElement configElement,
+					String label)
 			{
 				// get the attributes
 				label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
@@ -676,8 +651,7 @@ public class ToteView extends ViewPart
 				toteCalculation res = null;
 
 				// create the instance
-				res = new CalculationLoaderManager.DeferredCalculation(configElement,
-						label, icon);
+				res = new CalculationLoaderManager.DeferredCalculation(configElement, label, icon);
 
 				// and return it.
 				return res;

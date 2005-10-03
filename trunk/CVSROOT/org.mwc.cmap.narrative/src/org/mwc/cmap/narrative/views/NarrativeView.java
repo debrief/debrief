@@ -206,6 +206,8 @@ public class NarrativeView extends ViewPart
 						}
 					}
 				});
+		
+		
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -233,30 +235,7 @@ public class NarrativeView extends ViewPart
 						}
 					}
 				});
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.OPENED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						// implementation here.
-						_myTemporalDataset = (TimeProvider) part;
-						if (_temporalListener == null)
-						{
-							_temporalListener = new PropertyChangeListener()
-							{
-								public void propertyChange(PropertyChangeEvent event)
-								{
-									// ok, use the new time
-									HiResDate newDTG = (HiResDate) event.getNewValue();
-									timeUpdated(newDTG);
-								}
-							};
-						}
-						_myTemporalDataset.addListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-					}
-				});
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.DEACTIVATED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
@@ -275,22 +254,14 @@ public class NarrativeView extends ViewPart
 						_controllableTime = ct;
 					}
 				});
-		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.OPENED,
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.DEACTIVATED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						ControllableTime ct = (ControllableTime) part;
-						_controllableTime = ct;
-					}
-				});
-		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						_controllableTime = null;
+						// no, don't bother clearing the controllable time when the plot is de-activated,
+						// - since with the highlight on the narrative, we want to be able to control the time still.
+						// _controllableTime = null;
 					}
 				});
 
