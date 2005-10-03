@@ -1,5 +1,6 @@
 package org.mwc.cmap.TimeController.views;
 
+import java.awt.event.ActionEvent;
 import java.beans.*;
 import java.text.*;
 import java.util.*;
@@ -7,6 +8,7 @@ import java.util.*;
 import junit.framework.TestCase;
 
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -22,6 +24,7 @@ import org.mwc.debrief.core.editors.painters.*;
 
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
+import MWC.Utilities.Timer.TimerListener;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -38,10 +41,16 @@ import MWC.GenericData.*;
  * <p>
  */
 
-public class TimeController extends ViewPart implements ISelectionProvider
+public class TimeController extends ViewPart implements ISelectionProvider, TimerListener
 {
 	private PartMonitor _myPartMonitor;
 
+
+  /**
+   * the automatic timer we are using
+   */
+  private MWC.Utilities.Timer.Timer _theTimer;
+  
 	final private PropertyChangeListener _temporalListener = new NewTimeListener();
 
 	/**
@@ -135,7 +144,15 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
 
+    /** the timer-related settings
+     */
+    _theTimer = new MWC.Utilities.Timer.Timer();
+    _theTimer.stop();
+    _theTimer.setDelay(1000);
+    _theTimer.addTimerListener(this);		
+		
 	}
+
 
 	/**
 	 * the slider control - remember it because we're always changing the limits,
@@ -185,9 +202,27 @@ public class TimeController extends ViewPart implements ISelectionProvider
 				.createImage());
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
 
-		Button play = new Button(_btnPanel, SWT.NONE);
+		final Button play = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
 		play.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif")
 				.createImage());
+		play.addSelectionListener(new SelectionAdapter(){
+			public void widgetSelected(SelectionEvent e)
+			{
+				boolean playing = play.getSelection();
+				ImageDescriptor thisD;
+				if(playing)
+				{
+					thisD = TimeControllerPlugin.getImageDescriptor("icons/VCRPause.gif");
+					startPlaying();
+				}
+				else
+				{
+					thisD = TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif");
+					stopPlaying();
+				}
+				play.setImage(thisD.createImage());
+			}				
+		});
 
 		Button sFwd = new Button(_btnPanel, SWT.NONE);
 		sFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRForward.gif")
@@ -253,6 +288,42 @@ public class TimeController extends ViewPart implements ISelectionProvider
 		});
 	}
 
+	protected void stopPlaying()
+	{
+    _theTimer.stop();		
+	}
+
+	/** ok, start auto-stepping forward through the serial
+	 *
+	 */
+	protected void startPlaying()
+	{
+    _theTimer.start();		
+	}
+
+
+	public void onTime(ActionEvent event)
+	{
+    // temporarily remove ourselves, to prevent being called twice
+    _theTimer.removeTimerListener(this);
+
+    // catch any exceptions raised here, it doesn't really
+    // matter if we miss a time step
+    try
+    {
+      // pass the step operation on to our parent
+      processClick(null, true);
+    }
+    catch (Exception e)
+    {
+      MWC.Utilities.Errors.Trace.trace(e);
+    }
+
+    // register ourselves as a time again
+    _theTimer.addTimerListener(this);
+	}
+
+	
 	private final class NewTimeListener implements PropertyChangeListener
 	{
 		public void propertyChange(PropertyChangeEvent event)
