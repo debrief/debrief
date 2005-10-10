@@ -341,7 +341,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	public void setFocus()
 	{
 		// just put some kind of blank object into the properties window
-		putBackdropIntoProperties();
+		// putBackdropIntoProperties();
 	}
 
 	public Object getAdapter(Class adapter)
