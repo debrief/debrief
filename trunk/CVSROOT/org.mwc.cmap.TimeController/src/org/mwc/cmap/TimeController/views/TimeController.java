@@ -7,6 +7,7 @@ import java.util.*;
 
 import junit.framework.TestCase;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
@@ -18,6 +19,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.painters.*;
@@ -45,12 +47,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 {
 	private PartMonitor _myPartMonitor;
 
+	/**
+	 * the automatic timer we are using
+	 */
+	private MWC.Utilities.Timer.Timer _theTimer;
 
-  /**
-   * the automatic timer we are using
-   */
-  private MWC.Utilities.Timer.Timer _theTimer;
-  
 	final private PropertyChangeListener _temporalListener = new NewTimeListener();
 
 	/**
@@ -144,15 +145,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
 
-    /** the timer-related settings
-     */
-    _theTimer = new MWC.Utilities.Timer.Timer();
-    _theTimer.stop();
-    _theTimer.setDelay(1000);
-    _theTimer.addTimerListener(this);		
-		
-	}
+		/**
+		 * the timer-related settings
+		 */
+		_theTimer = new MWC.Utilities.Timer.Timer();
+		_theTimer.stop();
+		_theTimer.setDelay(1000);
+		_theTimer.addTimerListener(this);
 
+	}
 
 	/**
 	 * the slider control - remember it because we're always changing the limits,
@@ -205,12 +206,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		final Button play = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
 		play.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif")
 				.createImage());
-		play.addSelectionListener(new SelectionAdapter(){
+		play.addSelectionListener(new SelectionAdapter()
+		{
 			public void widgetSelected(SelectionEvent e)
 			{
 				boolean playing = play.getSelection();
 				ImageDescriptor thisD;
-				if(playing)
+				if (playing)
 				{
 					thisD = TimeControllerPlugin.getImageDescriptor("icons/VCRPause.gif");
 					startPlaying();
@@ -221,7 +223,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					stopPlaying();
 				}
 				play.setImage(thisD.createImage());
-			}				
+			}
 		});
 
 		Button sFwd = new Button(_btnPanel, SWT.NONE);
@@ -290,40 +292,46 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	protected void stopPlaying()
 	{
-    _theTimer.stop();		
+		_theTimer.stop();
 	}
 
-	/** ok, start auto-stepping forward through the serial
-	 *
+	/**
+	 * ok, start auto-stepping forward through the serial
 	 */
 	protected void startPlaying()
 	{
-    _theTimer.start();		
-	}
+		// hey - set a practical minimum step size, 1/4 second is a fair start point
+		final long delayToUse = Math.max(_myStepperProperties.getAutoInterval().getMillis(), 250);
+		
+		// ok - make sure the time has the right time
+		_theTimer.setDelay(delayToUse);
 
+		_theTimer.start();
+	}
 
 	public void onTime(ActionEvent event)
 	{
-    // temporarily remove ourselves, to prevent being called twice
-    _theTimer.removeTimerListener(this);
 
-    // catch any exceptions raised here, it doesn't really
-    // matter if we miss a time step
-    try
-    {
-      // pass the step operation on to our parent
-      processClick(null, true);
-    }
-    catch (Exception e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
+		// temporarily remove ourselves, to prevent being called twice
+		_theTimer.removeTimerListener(this);
 
-    // register ourselves as a time again
-    _theTimer.addTimerListener(this);
+		// catch any exceptions raised here, it doesn't really
+		// matter if we miss a time step
+		try
+		{
+			// pass the step operation on to our parent
+			processClick(Boolean.FALSE, true);
+		}
+		catch (Exception e)
+		{
+			CorePlugin.logError(Status.ERROR, "Error on auto-time stepping", e);
+		}
+
+		// register ourselves as a time again
+		_theTimer.addTimerListener(this);
+
 	}
 
-	
 	private final class NewTimeListener implements PropertyChangeListener
 	{
 		public void propertyChange(PropertyChangeEvent event)
@@ -447,10 +455,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-							// implementation here.
-							TimeProvider thisTemporalDataset = (TimeProvider) part;
-							thisTemporalDataset.addListener(_temporalListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						// implementation here.
+						TimeProvider thisTemporalDataset = (TimeProvider) part;
+						thisTemporalDataset.addListener(_temporalListener,
+								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
@@ -492,26 +500,27 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						{
 							_myTemporalDataset = null;
 						}
-						
+
 						// and sort out whether we should be active or not.
 						checkTimeEnabled();
 					}
 				});
-//		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-//					{
-//						// are we still listening?
-//						if (_myTemporalDataset != null)
-//						{
-//							_myTemporalDataset.removeListener(_temporalListener,
-//									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-//							_myTemporalDataset = null;
-//						}
-//						checkTimeEnabled();
-//					}
-//				});
+		// _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+		// new PartMonitor.ICallback()
+		// {
+		// public void eventTriggered(String type, Object part, IWorkbenchPart
+		// parentPart)
+		// {
+		// // are we still listening?
+		// if (_myTemporalDataset != null)
+		// {
+		// _myTemporalDataset.removeListener(_temporalListener,
+		// TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+		// _myTemporalDataset = null;
+		// }
+		// checkTimeEnabled();
+		// }
+		// });
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
