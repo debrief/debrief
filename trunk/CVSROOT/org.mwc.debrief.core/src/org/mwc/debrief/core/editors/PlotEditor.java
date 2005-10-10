@@ -463,22 +463,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 	}
 
+	/** save our plot to the indicated location
+	 * 
+	 * @param destination where to save plot to
+	 * @param monitor somebody/something to be informed about progress
+	 */
 	private void doSaveTo(IFile destination, IProgressMonitor monitor)
 	{
 		boolean itWorked = false;
 
-		IFile theFile;
-		if (getEditorInput() instanceof IFileEditorInput)
-		{
-			theFile = ((IFileEditorInput) getEditorInput()).getFile();
-		}
-		else
-		{
-			// input is an IStorageEditorInput - somehow get file details..
-			theFile = null;
-		}
-
-		if (theFile != null)
+		if (destination != null)
 		{
 
 			// ok, now write to the file
@@ -491,7 +485,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			try
 			{
-				theFile.setContents(is, true, false, monitor);
+				destination.setContents(is, true, false, monitor);
 
 				itWorked = true;
 			}
