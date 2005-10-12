@@ -455,7 +455,7 @@ public class NarrativeView extends ViewPart
 			}
 
 		};
-		_setAsBookmarkAction.setText("Add");
+		_setAsBookmarkAction.setText("Add bookmark");
 
 	}
 
