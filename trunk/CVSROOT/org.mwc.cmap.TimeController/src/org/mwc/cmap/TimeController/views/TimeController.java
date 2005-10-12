@@ -7,8 +7,10 @@ import java.util.*;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.resources.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -16,7 +18,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.core.CorePlugin;
@@ -51,6 +53,12 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 * the automatic timer we are using
 	 */
 	private MWC.Utilities.Timer.Timer _theTimer;
+
+	/**
+	 * the editor the user is currently working with (assigned alongside the
+	 * time-provider object)
+	 */
+	protected IEditorPart _currentEditor;
 
 	final private PropertyChangeListener _temporalListener = new NewTimeListener();
 
@@ -95,6 +103,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 * module to look after the limits of the slider
 	 */
 	SliderRangeManagement _slideManager = null;
+
+	/**
+	 * the action which stores the current DTG as a bookmark
+	 */
+	private Action _setAsBookmarkAction;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -301,8 +314,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	protected void startPlaying()
 	{
 		// hey - set a practical minimum step size, 1/4 second is a fair start point
-		final long delayToUse = Math.max(_myStepperProperties.getAutoInterval().getMillis(), 250);
-		
+		final long delayToUse = Math.max(_myStepperProperties.getAutoInterval().getMillis(),
+				250);
+
 		// ok - make sure the time has the right time
 		_theTimer.setDelay(delayToUse);
 
@@ -456,9 +470,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// implementation here.
-						TimeProvider thisTemporalDataset = (TimeProvider) part;
-						thisTemporalDataset.addListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						// TimeProvider thisTemporalDataset = (TimeProvider) part;
+						// thisTemporalDataset.addListener(_temporalListener,
+						// TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
@@ -468,8 +482,17 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					{
 						if (_myTemporalDataset != part)
 						{
+							// ok, stop listening to the old one
+							if (_myTemporalDataset != null)
+								_myTemporalDataset.removeListener(_temporalListener,
+										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 							// implementation here.
 							_myTemporalDataset = (TimeProvider) part;
+
+							// and start listening to the new one
+							_myTemporalDataset.addListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 							// also configure for the current time
 							HiResDate newDTG = _myTemporalDataset.getTime();
@@ -483,7 +506,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							}
 
 							checkTimeEnabled();
+
+							// hmm, do we want to store this part?
+							_currentEditor = (IEditorPart) parentPart;
 						}
+
 					}
 				});
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
@@ -491,7 +518,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// ok, stop listening to this object
+						// ok, stop listening to this object (just in case we were, anyway).
 						_myTemporalDataset.removeListener(_temporalListener,
 								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
@@ -1018,9 +1045,62 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			formatMenu.add(newFormat);
 		}
 
+		// lastly the add-bookmark item
+		_setAsBookmarkAction = new Action("Add DTG as bookmark", Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(Event event)
+			{
+				addMarker();
+			}
+		};
+		menuManager.add(_setAsBookmarkAction);
+
 		// ok - get the action bars to re-populate themselves, otherwise we don't
 		// see our changes
 		getViewSite().getActionBars().updateActionBars();
+	}
+
+	protected void addMarker()
+	{
+		try
+		{
+			// right, do we have an editor with a file?
+			IEditorInput input = _currentEditor.getEditorInput();
+			if (input instanceof IFileEditorInput)
+			{
+				// aaah, and is there a file present?
+				IFileEditorInput ife = (IFileEditorInput) input;
+				IResource file = ife.getFile();
+				String currentText = _timeLabel.getText();
+				long tNow = _myTemporalDataset.getTime().getMicros();
+				if (file != null)
+				{
+					// yup, get the description
+					InputDialog inputD = new InputDialog(getViewSite().getShell(),
+							"Add bookmark at this DTG", "Enter description of this bookmark",
+							currentText, null);
+					inputD.open();
+
+					String content = inputD.getValue();
+					if (content != null)
+					{
+						IMarker marker = file.createMarker(IMarker.BOOKMARK);
+						Map attributes = new HashMap(4);
+						attributes.put(IMarker.MESSAGE, currentText + ":" + content);
+						attributes.put(IMarker.LOCATION, "plot title");
+						attributes.put(IMarker.LINE_NUMBER, "" + tNow);
+						attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
+						marker.setAttributes(attributes);
+					}
+				}
+
+			}
+		}
+		catch (CoreException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	// /////////////////////////////////////////////////////////////////
