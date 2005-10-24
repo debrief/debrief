@@ -1086,8 +1086,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					{
 						IMarker marker = file.createMarker(IMarker.BOOKMARK);
 						Map attributes = new HashMap(4);
-						attributes.put(IMarker.MESSAGE, currentText + ":" + content);
-						attributes.put(IMarker.LOCATION, "plot title");
+						attributes.put(IMarker.MESSAGE,  content);
+						attributes.put(IMarker.LOCATION, currentText);
 						attributes.put(IMarker.LINE_NUMBER, "" + tNow);
 						attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
 						marker.setAttributes(attributes);
