@@ -12,6 +12,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.PlottableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.layer_manager.Layer_managerPlugin;
 import org.mwc.cmap.layer_manager.views.support.*;
 
 import Debrief.Tools.Tote.WatchableList;
@@ -79,7 +80,19 @@ public class LayerManagerView extends ViewPart
 	 * highlighted entry
 	 */
 	private Action _followSelectionToggle;
+	
+	/** action to allow user to collapse all layer manager nodes
+	 * 
+	 */
+	private Action _collapseAllAction;
 
+	
+	/** action to allow user to expand all layer manager nodes
+	 * 
+	 */
+	private Action _expandAllAction;
+
+	
 	protected TrackManager _theTrackDataListener;
 
 	class NameSorter extends ViewerSorter
@@ -342,6 +355,9 @@ public class LayerManagerView extends ViewPart
 		manager.add(new Separator());
 		manager.add(_revealAction);
 		manager.add(_hideAction);
+		manager.add(new Separator());
+		manager.add(_expandAllAction);
+		manager.add(_collapseAllAction);
 	}
 
 	private void fillContextMenu(IMenuManager manager)
@@ -382,6 +398,37 @@ public class LayerManagerView extends ViewPart
 		_followSelectionToggle.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/follow_selection.gif"));
 
+		_collapseAllAction = new Action("Collapse all",
+				Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				// go for it.
+				_treeViewer.collapseAll();
+			}
+		};
+
+		_collapseAllAction.setText("Collapse all layers");
+		_collapseAllAction
+				.setToolTipText("Collapse all layers in the layer manager");
+    _collapseAllAction
+    .setImageDescriptor(Layer_managerPlugin.getImageDescriptor("icons/collapseall.gif"));
+		
+    _expandAllAction = new Action("Expand all",
+				Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				// go for it.
+				_treeViewer.expandAll();
+			}
+		};
+		_expandAllAction.setText("Expand all layers");
+		_expandAllAction
+				.setToolTipText("Expand all layers in the layer manager");
+		_expandAllAction.setImageDescriptor(Layer_managerPlugin.getImageDescriptor("icons/expandall.gif"));
+
+		
 		_makePrimary = new Action()
 		{
 			public void run()
