@@ -9,11 +9,65 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 
-import MWC.GenericData.*;
+import MWC.GUI.Properties.TimeIntervalPropertyEditor;
+import MWC.GenericData.Duration;
 
 public class DurationHelper extends EditorHelper
 {
+	
+	/** embedded cell editor for durations
+	 * 
+	 * @author ian.mayo
+	 *
+	 */
+	public static class TimeIntervalEditor extends ComboBoxCellEditor
+	{
+	
+		public TimeIntervalEditor(Composite parent)
+		{
+			super(parent, TimeIntervalPropertyEditor.getTagList());
+		}
 
+		/**
+		 * @return
+		 */
+		protected Object doGetValue()
+		{
+			Integer index = (Integer) super.doGetValue();
+			int res = TimeIntervalPropertyEditor.getValueList()[index.intValue()];
+			return new Duration(res, Duration.MILLISECONDS);
+		}
+
+		/**
+		 * @param value
+		 */
+		protected void doSetValue(Object value)
+		{
+			// ok - received duration, declare it
+			Duration dur = (Duration) value;
+			int millis = (int) dur.getValueIn(Duration.MILLISECONDS);
+			
+			
+	    int[] list = TimeIntervalPropertyEditor.getValueList();
+	    int res = 0;
+	    for (int i = 0; i < list.length; i++)
+	    {
+	      double v = list[i];
+	      if (v == millis)
+	      {
+	        res = i;
+	        break;
+	      }
+
+	    }
+	    
+			super.doSetValue(new Integer(res));
+		}
+		
+		
+		
+	}
+	
 	/** embedded cell editor for durations
 	 * 
 	 * @author ian.mayo
@@ -25,10 +79,9 @@ public class DurationHelper extends EditorHelper
 		public DurationCellEditor(Composite parent)
 		{
 			super(parent, "Duration", "Units");
-			// TODO Auto-generated constructor stub
 		}
 
-		/** the world distance we're editing
+		/** the time period we're editing
 		 * 
 		 */
 		Duration _myVal;
@@ -122,7 +175,6 @@ public class DurationHelper extends EditorHelper
 
 	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
-		// TODO create the editor
 		final Button myCheckbox = new Button(parent, SWT.CHECK);
 		myCheckbox.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e)
