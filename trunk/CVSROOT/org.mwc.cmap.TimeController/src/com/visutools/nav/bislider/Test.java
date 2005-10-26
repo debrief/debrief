@@ -106,7 +106,7 @@ public class Test {
       }
     });
     
-    final BiSlider BiSlider1 = new BiSlider(BiSlider.HSB);
+    final BiSlider BiSlider1 = new BiSlider(BiSlider.HSB, null);
     BiSlider1.setVisible(true);
     BiSlider1.setMinimumValue(-193);
     BiSlider1.setMaximumValue(227);
@@ -125,7 +125,7 @@ public class Test {
       }
     });
     
-    final BiSlider BiSlider2 = new BiSlider(BiSlider.RGB);
+    final BiSlider BiSlider2 = new BiSlider(BiSlider.RGB, null);
     BiSlider2.setToolTipText("No line to highlight the ticks here");
     BiSlider2.setMinimumValue(-5);
     BiSlider2.setMaximumValue(5);
@@ -190,7 +190,7 @@ public class Test {
       }
     });
     
-    final BiSlider BiSlider3 = new BiSlider(BiSlider.CENTRAL_BLACK);
+    final BiSlider BiSlider3 = new BiSlider(BiSlider.CENTRAL_BLACK, null);
     BiSlider3.setToolTipText("Use a gradient of color to highlight the segments");
     BiSlider3.setUniformSegment(true);
     BiSlider3.setVisible(true);
@@ -228,7 +228,7 @@ public class Test {
       }
     });
     
-    final BiSlider BiSlider4 = new BiSlider(BiSlider.RGB, false);
+    final BiSlider BiSlider4 = new BiSlider(BiSlider.RGB, null);
     BiSlider4.setToolTipText("Like a thermometer");
     BiSlider4.setUniformSegment(true);
     BiSlider4.setVisible(true);
@@ -252,7 +252,7 @@ public class Test {
       }
     });
     
-    final BiSlider BiSlider5 = new BiSlider(BiSlider.RGB, true);
+    final BiSlider BiSlider5 = new BiSlider(BiSlider.RGB, null);
     BiSlider5.setToolTipText("Like a sea-depth meter");
     BiSlider5.setUniformSegment(true);
     BiSlider5.setVisible(true);
@@ -306,7 +306,7 @@ public class Test {
     });
   
     
-    final BiSlider BiSlider6 = new BiSlider(BiSlider.CENTRAL_BLACK);
+    final BiSlider BiSlider6 = new BiSlider(BiSlider.CENTRAL_BLACK, null);
     BiSlider6.setToolTipText("When the background is a distribution histogram");
     BiSlider6.setUniformSegment(true);
     BiSlider6.setVisible(true);
