@@ -14,7 +14,7 @@ import javax.swing.plaf.basic.BasicBorders;
 import javax.swing.plaf.metal.DefaultMetalTheme;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 import javax.swing.plaf.metal.MetalTheme;
-import javax.swing.plaf.metal.OceanTheme;
+//import javax.swing.plaf.metal.OceanTheme;
 /**
  * 5 examples of BiSlider in a JFrame to see the widget at work.
  * <br><br>
@@ -65,7 +65,7 @@ public class Test {
   private static          float                                         LineX                           = 0f;
     
   private static MetalTheme [] metalThemes = {
-    new OceanTheme(),
+  // @@ IM  new OceanTheme(),
     new DefaultMetalTheme()
   };  
  

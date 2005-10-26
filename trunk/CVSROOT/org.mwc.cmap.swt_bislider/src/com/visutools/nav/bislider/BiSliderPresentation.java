@@ -913,17 +913,18 @@ implements Serializable, MouseListener, MouseMotionListener, ComponentListener {
     //System.out.println("UIManager.getLookAndFeel() = "+UIManager.getLookAndFeel().getName());
     //System.out.println("MetalLookAndFeel.getCurrentTheme() = "+MetalLookAndFeel.getCurrentTheme().getName());
     
-    if (UIManager.getLookAndFeel().getName().equals("Metal") && MetalLookAndFeel.getCurrentTheme().getName().equals("Ocean")) {
+//    if (UIManager.getLookAndFeel().getName().equals("Metal") && MetalLookAndFeel.getCurrentTheme().getName().equals("Ocean")) {
+    if (UIManager.getLookAndFeel().getName().equals("Metal") && false) {
       Color BackColor = null;
       Object SliderBackColor = UIManager.getLookAndFeel().getDefaults().get("Slider.gradient");
       if (SliderBackColor!=null && SliderBackColor instanceof List){
-        List<Object> GradientProperties = (List<Object>)SliderBackColor;
+        List GradientProperties = (List)SliderBackColor;
         Float Cut1 = (Float)GradientProperties.get(0);
         Float Cut2 = (Float)GradientProperties.get(1);
         Color Color1 = (Color)GradientProperties.get(2);
         Color Color2 = (Color)GradientProperties.get(3);
         Color Color3 = (Color)GradientProperties.get(4);
-        float Rem = 1f-Cut2-2*Cut1;
+        float Rem = 1f-Cut2.floatValue()-2*Cut1.floatValue();
         int x1 = up ? Thumb_Arg.xpoints[0] : Thumb_Arg.xpoints[6];
         int y1 = up ? Thumb_Arg.ypoints[0] : Thumb_Arg.ypoints[6];
         
@@ -934,30 +935,30 @@ implements Serializable, MouseListener, MouseMotionListener, ComponentListener {
         G2.setClip(Thumb_Arg);
         if (up) {
           GradientPaint GradientPaint1 = new GradientPaint(x1-7, y1, Color3, x1, y1+(int)(16f*Rem), Color1);
-          GradientPaint GradientPaint2 = new GradientPaint(x1, y1+(int)(16f*Rem), Color1, x1, y1+(int)(16f*(Rem+Cut1)), Color2);
-          GradientPaint GradientPaint3 = new GradientPaint(x1, y1+(int)(16f*(Rem+Cut1+Cut2)), Color2, x1, y1+16, Color3);
+          GradientPaint GradientPaint2 = new GradientPaint(x1, y1+(int)(16f*Rem), Color1, x1, y1+(int)(16f*(Rem+Cut1.floatValue())), Color2);
+          GradientPaint GradientPaint3 = new GradientPaint(x1, y1+(int)(16f*(Rem+Cut1.floatValue()+Cut2.floatValue())), Color2, x1, y1+16, Color3);
           
           G2.setPaint(GradientPaint1);
           G2.fillRect(x1-7, y1, 15, (int)(16f*Rem));
           G2.setPaint(GradientPaint2);
-          G2.fillRect(x1-7, y1+(int)(16f*Rem), 15, (int)(16f*Cut1)+1);
+          G2.fillRect(x1-7, y1+(int)(16f*Rem), 15, (int)(16f*Cut1.floatValue())+1);
           G2.setColor(Color2);
-          G2.fillRect(x1-7, y1+(int)(16f*(Rem+Cut1)), 15, (int)(16f*Cut2)+1);
+          G2.fillRect(x1-7, y1+(int)(16f*(Rem+Cut1.floatValue())), 15, (int)(16f*Cut2.floatValue())+1);
           G2.setPaint(GradientPaint3);
-          G2.fillRect(x1-7, y1+(int)(16f*(Rem+Cut1+Cut2)), 15, (int)(16f*Cut1)+1);
+          G2.fillRect(x1-7, y1+(int)(16f*(Rem+Cut1.floatValue()+Cut2.floatValue())), 15, (int)(16f*Cut1.floatValue())+1);
         } else {
           GradientPaint GradientPaint1 = new GradientPaint(x1-7, y1, Color3, x1, y1-(int)(16f*Rem), Color1);
-          GradientPaint GradientPaint2 = new GradientPaint(x1, y1-(int)(16f*Rem), Color1, x1, y1-(int)(16f*(Rem+Cut1)), Color2);
-          GradientPaint GradientPaint3 = new GradientPaint(x1, y1-(int)(16f*(Rem+Cut1+Cut2)), Color2, x1, y1-16, Color3);
+          GradientPaint GradientPaint2 = new GradientPaint(x1, y1-(int)(16f*Rem), Color1, x1, y1-(int)(16f*(Rem+Cut1.floatValue())), Color2);
+          GradientPaint GradientPaint3 = new GradientPaint(x1, y1-(int)(16f*(Rem+Cut1.floatValue()+Cut2.floatValue())), Color2, x1, y1-16, Color3);
           
           G2.setPaint(GradientPaint1);
           G2.fillRect(x1-7, y1-(int)(16f*Rem), 15, (int)(16f*Rem));
           G2.setPaint(GradientPaint2);
-          G2.fillRect(x1-7, y1-(int)(16f*(Rem+Cut1)), 15, (int)(16f*Cut1)+1);
+          G2.fillRect(x1-7, y1-(int)(16f*(Rem+Cut1.floatValue())), 15, (int)(16f*Cut1.floatValue())+1);
           G2.setColor(Color2);
-          G2.fillRect(x1-7, y1-(int)(16f*(Rem+Cut1+Cut2)), 15, (int)(16f*Cut2)+1);
+          G2.fillRect(x1-7, y1-(int)(16f*(Rem+Cut1.floatValue()+Cut2.floatValue())), 15, (int)(16f*Cut2.floatValue())+1);
           G2.setPaint(GradientPaint3);
-          G2.fillRect(x1-7, y1-16, 15, (int)(16f*Cut1)+1);
+          G2.fillRect(x1-7, y1-16, 15, (int)(16f*Cut1.floatValue())+1);
         }
         G2.setClip(Shape0);
       }
