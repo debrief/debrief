@@ -59,13 +59,13 @@ public class LayerManagerView extends ViewPart
 	 */
 	private Action _makeSecondary;
 
-	/** hide the selected item(s)
-	 * 
+	/**
+	 * hide the selected item(s)
 	 */
 	private Action _hideAction;
 
-	/** reveal the selected item(s)
-	 * 
+	/**
+	 * reveal the selected item(s)
 	 */
 	private Action _revealAction;
 
@@ -80,19 +80,17 @@ public class LayerManagerView extends ViewPart
 	 * highlighted entry
 	 */
 	private Action _followSelectionToggle;
-	
-	/** action to allow user to collapse all layer manager nodes
-	 * 
+
+	/**
+	 * action to allow user to collapse all layer manager nodes
 	 */
 	private Action _collapseAllAction;
 
-	
-	/** action to allow user to expand all layer manager nodes
-	 * 
+	/**
+	 * action to allow user to expand all layer manager nodes
 	 */
 	private Action _expandAllAction;
 
-	
 	protected TrackManager _theTrackDataListener;
 
 	class NameSorter extends ViewerSorter
@@ -141,8 +139,7 @@ public class LayerManagerView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL
-				| SWT.V_SCROLL);
+		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		_treeViewer.setUseHashlookup(true);
 		drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
@@ -178,7 +175,7 @@ public class LayerManagerView extends ViewPart
 				{
 					PlottableWrapper pw = (PlottableWrapper) element;
 					Plottable pl = pw.getPlottable();
-					if(pl != null)
+					if (pl != null)
 						res += pw.getPlottable().hashCode();
 				}
 				else
@@ -200,13 +197,11 @@ public class LayerManagerView extends ViewPart
 		contributeToActionBars();
 
 		// and setup the part monitoring
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						processNewLayers(part);
 					}
@@ -214,8 +209,7 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						processNewLayers(part);
 					}
@@ -223,8 +217,7 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// is this our set of layers?
 						if (part == _myLayers)
@@ -233,28 +226,26 @@ public class LayerManagerView extends ViewPart
 							clearLayerListener();
 
 							// and clear the tree
-							if(_treeViewer.getContentProvider() != null)
+							if (_treeViewer.getContentProvider() != null)
 								_treeViewer.setInput(null);
 						}
 					}
 
 				});
 
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						ISelectionProvider iS = (ISelectionProvider) part;
 						iS.addSelectionChangedListener(_selectionChangeListener);
 					}
 				});
-		_myPartMonitor.addPartListener(ISelectionProvider.class,
-				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.DEACTIVATED,
+				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						ISelectionProvider iS = (ISelectionProvider) part;
 						iS.removeSelectionChangedListener(_selectionChangeListener);
@@ -264,8 +255,7 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// cool, remember about it.
 						_theTrackDataListener = (TrackManager) part;
@@ -274,8 +264,7 @@ public class LayerManagerView extends ViewPart
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
 						// ok, ditch it.
 						_theTrackDataListener = null;
@@ -283,8 +272,7 @@ public class LayerManagerView extends ViewPart
 				});
 
 		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-				.getActivePage());
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 
 		// set ourselves as selection source
 		getSite().setSelectionProvider(_treeViewer);
@@ -387,8 +375,7 @@ public class LayerManagerView extends ViewPart
 	private void makeActions()
 	{
 
-		_followSelectionToggle = new Action("Jump to selection",
-				Action.AS_CHECK_BOX)
+		_followSelectionToggle = new Action("Jump to selection", Action.AS_CHECK_BOX)
 		{
 		};
 		_followSelectionToggle.setText("Follow selection");
@@ -398,8 +385,7 @@ public class LayerManagerView extends ViewPart
 		_followSelectionToggle.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/follow_selection.gif"));
 
-		_collapseAllAction = new Action("Collapse all",
-				Action.AS_PUSH_BUTTON)
+		_collapseAllAction = new Action("Collapse all", Action.AS_PUSH_BUTTON)
 		{
 			public void run()
 			{
@@ -409,13 +395,11 @@ public class LayerManagerView extends ViewPart
 		};
 
 		_collapseAllAction.setText("Collapse all layers");
-		_collapseAllAction
-				.setToolTipText("Collapse all layers in the layer manager");
-    _collapseAllAction
-    .setImageDescriptor(Layer_managerPlugin.getImageDescriptor("icons/collapseall.gif"));
-		
-    _expandAllAction = new Action("Expand all",
-				Action.AS_PUSH_BUTTON)
+		_collapseAllAction.setToolTipText("Collapse all layers in the layer manager");
+		_collapseAllAction.setImageDescriptor(Layer_managerPlugin
+				.getImageDescriptor("icons/collapseall.gif"));
+
+		_expandAllAction = new Action("Expand all", Action.AS_PUSH_BUTTON)
 		{
 			public void run()
 			{
@@ -424,11 +408,10 @@ public class LayerManagerView extends ViewPart
 			}
 		};
 		_expandAllAction.setText("Expand all layers");
-		_expandAllAction
-				.setToolTipText("Expand all layers in the layer manager");
-		_expandAllAction.setImageDescriptor(Layer_managerPlugin.getImageDescriptor("icons/expandall.gif"));
+		_expandAllAction.setToolTipText("Expand all layers in the layer manager");
+		_expandAllAction.setImageDescriptor(Layer_managerPlugin
+				.getImageDescriptor("icons/expandall.gif"));
 
-		
 		_makePrimary = new Action()
 		{
 			public void run()
@@ -479,8 +462,8 @@ public class LayerManagerView extends ViewPart
 		};
 		_makeSecondary.setText("Make Secondary");
 		_makeSecondary.setToolTipText("Add this item to the secondary tracks");
-		_makeSecondary.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		_makeSecondary.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
 
 		_hideAction = new Action()
 		{
@@ -497,9 +480,8 @@ public class LayerManagerView extends ViewPart
 		};
 		_hideAction.setText("Hide item");
 		_hideAction.setToolTipText("Stop selected items from being visible");
-		_hideAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJ_ELEMENT));
-		
+		_hideAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJ_ELEMENT));
 
 		_revealAction = new Action()
 		{
@@ -516,8 +498,8 @@ public class LayerManagerView extends ViewPart
 		};
 		_revealAction.setText("Refeal item");
 		_revealAction.setToolTipText("Reveal selected items");
-		_revealAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		_revealAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 	}
 
 	private void hookDoubleClickAction()
@@ -643,8 +625,9 @@ public class LayerManagerView extends ViewPart
 	 */
 	protected void handleReformattedLayer(Layer changedLayer)
 	{
-		// right - store this layer
-		_pendingLayers.add(changedLayer);
+		// right - store this layer (if we have one)
+		if (changedLayer != null)
+			_pendingLayers.add(changedLayer);
 
 		if (_alreadyDeferring)
 		{
@@ -708,44 +691,48 @@ public class LayerManagerView extends ViewPart
 
 			// and do the update
 			Object[] itemsToUpdate = newList.toArray();
-			_treeViewer
-					.update(itemsToUpdate, new String[] { VISIBILITY_COLUMN_NAME });
-		} catch (Exception e)
+			_treeViewer.update(itemsToUpdate, new String[] { VISIBILITY_COLUMN_NAME });
+		}
+		catch (Exception e)
 		{
 
-		} finally
+		}
+		finally
 		{
 			_alreadyDeferring = false;
 			_pendingLayers.clear();
 		}
 	}
 
-	private void processNewData(final Layers theData, final Plottable newItem, final Layer parentLayer)
+	private void processNewData(final Layers theData, final Plottable newItem,
+			final Layer parentLayer)
 	{
 		if (!_treeViewer.getTree().isDisposed())
 		{
-			Display.getDefault().asyncExec(new Runnable(){
+			Display.getDefault().asyncExec(new Runnable()
+			{
 				public void run()
 				{
 					// ok, fire the change in the UI thread
 					_treeViewer.setInput(theData);
-					
+
 					// hmm, do we know about the new item? If so, better select it
-					if(newItem != null)
+					if (newItem != null)
 					{
 						// wrap the plottable
-						PlottableWrapper parentWrapper = new PlottableWrapper(parentLayer, null, theData);
-						PlottableWrapper wrapped = new PlottableWrapper(newItem, parentWrapper,theData);
+						PlottableWrapper parentWrapper = new PlottableWrapper(parentLayer, null,
+								theData);
+						PlottableWrapper wrapped = new PlottableWrapper(newItem, parentWrapper,
+								theData);
 						ISelection selected = new StructuredSelection(wrapped);
-						
+
 						// and select it
 						plottableSelected(selected, wrapped);
-					}					
+					}
 				}
 			});
 		}
-		
-		
+
 	}
 
 	private static interface IOperateOn
@@ -761,8 +748,7 @@ public class LayerManagerView extends ViewPart
 	 */
 	private void applyOperationToSelection(IOperateOn operation)
 	{
-		IStructuredSelection selection = (IStructuredSelection) _treeViewer
-				.getSelection();
+		IStructuredSelection selection = (IStructuredSelection) _treeViewer.getSelection();
 		Iterator iterator = selection.iterator();
 		boolean madeChange = false;
 		Layer parentLayer = null;
