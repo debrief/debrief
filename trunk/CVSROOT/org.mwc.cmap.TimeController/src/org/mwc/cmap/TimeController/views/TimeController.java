@@ -1,9 +1,14 @@
 package org.mwc.cmap.TimeController.views;
 
-import java.awt.event.ActionEvent;
+import java.awt.Frame;
+import java.awt.event.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.*;
 import java.text.*;
 import java.util.*;
+
+import javax.swing.JPopupMenu;
 
 import junit.framework.TestCase;
 
@@ -25,6 +30,9 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.painters.*;
+
+import com.visutools.nav.bislider.BiSlider;
+import org.eclipse.swt.awt.*;
 
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
@@ -301,6 +309,30 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				_wholePanel.setFocus();
 			}
 		});
+		
+		
+		// try and put in a bi-slider
+		Composite sliderContainer = new Composite(_wholePanel, SWT.EMBEDDED);
+		java.awt.Frame sliderFrame = SWT_AWT.new_Frame(sliderContainer);
+		final BiSlider bi = new BiSlider();
+		sliderFrame.add(bi);
+		bi.setVisible(true);
+		bi.setMinimumValue(-193);
+		bi.setMaximumValue(227);
+		bi.setSegmentSize(20);
+		bi.setMinimumColor(java.awt.Color.GRAY);
+		bi.setMaximumColor(java.awt.Color.GRAY);
+		bi.setUnit("");
+		bi.setPrecise(true);
+    final JPopupMenu JPopupMenu1 = bi.createPopupMenu();
+    bi.addMouseListener(new MouseAdapter(){
+      public void mousePressed(MouseEvent MouseEvent_Arg){
+        if (MouseEvent_Arg.getButton()==MouseEvent.BUTTON3){
+          JPopupMenu1.show(bi, MouseEvent_Arg.getX(), MouseEvent_Arg.getY());
+        }
+      }
+    });		
+		
 	}
 
 	protected void stopPlaying()
