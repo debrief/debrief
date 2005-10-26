@@ -1,13 +1,11 @@
 package com.visutools.nav.bislider;
 
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.*;
-import java.text.*;
-import java.net.*;
+import java.awt.event.*;
+import java.io.Serializable;
+import java.text.DecimalFormat;
+
 import javax.swing.*;
-import javax.sound.sampled.*;
 
 
 /**
@@ -91,12 +89,6 @@ public class BiSlider
   protected               ColorisationSupport                           ColorisationSupport1            = new ColorisationSupport();
   protected               ContentPainterSupport                         ContentPainterSupport1          = new ContentPainterSupport();
 
-  // Some sounds to play if sounds are activated
-  protected               Clip                                          ClipClick                       = null;
-  protected               Clip                                          ClipClick2                      = null;
-  protected               Clip                                          ClipClickY                      = null;
-  protected               Clip                                          ClipFlip                        = null;
-
 
   // The 3 kinds of BiSlider.
   /**
@@ -143,43 +135,7 @@ public class BiSlider
     Pres = new BiSliderPresentation(this, ContentPainterSupport1); 
     Abstr.InterpolationMode = InterpolationMode_Arg;
 
-    ClassLoader ClassLoader1 = this.getClass().getClassLoader();
-    try {
-      URL URL1 = ClassLoader1.getResource("sounds/click.wav");
-      AudioInputStream AudioInputStream1 = AudioSystem.getAudioInputStream(URL1);
-      AudioFormat      AudioFormat1      = AudioInputStream1.getFormat();
-      DataLine.Info    DataLineInfo1     = new DataLine.Info(Clip.class, AudioFormat1,
-                                               ((int)AudioInputStream1.getFrameLength()*AudioFormat1.getFrameSize()));
-                       ClipClick         = (Clip) AudioSystem.getLine(DataLineInfo1);
-      ClipClick.open(AudioInputStream1);
-
-      URL1              = ClassLoader1.getResource("sounds/click2.wav");
-      AudioInputStream1 = AudioSystem.getAudioInputStream(URL1);
-      AudioFormat1      = AudioInputStream1.getFormat();
-      DataLineInfo1     = new DataLine.Info(Clip.class, AudioFormat1,
-                                           ((int)AudioInputStream1.getFrameLength()*AudioFormat1.getFrameSize()));
-      ClipClick2        = (Clip) AudioSystem.getLine(DataLineInfo1);
-      ClipClick2.open(AudioInputStream1);
-
-      URL1              = ClassLoader1.getResource("sounds/clicky.wav");
-      AudioInputStream1 = AudioSystem.getAudioInputStream(URL1);
-      AudioFormat1      = AudioInputStream1.getFormat();
-      DataLineInfo1     = new DataLine.Info(Clip.class, AudioFormat1,
-                                           ((int)AudioInputStream1.getFrameLength()*AudioFormat1.getFrameSize()));
-      ClipClickY        = (Clip) AudioSystem.getLine(DataLineInfo1);
-      ClipClickY.open(AudioInputStream1);
-
-      URL1              = ClassLoader1.getResource("sounds/flip.wav");
-      AudioInputStream1 = AudioSystem.getAudioInputStream(URL1);
-      AudioFormat1      = AudioInputStream1.getFormat();
-      DataLineInfo1     = new DataLine.Info(Clip.class, AudioFormat1,
-                                           ((int)AudioInputStream1.getFrameLength()*AudioFormat1.getFrameSize()));
-      ClipFlip          = (Clip) AudioSystem.getLine(DataLineInfo1);
-      ClipFlip.open(AudioInputStream1);
-    } catch (Exception Exception_Arg){
-      Exception_Arg.printStackTrace();
-    }
-
+ 
     try{
       /*URL URL1 = new URL("file:com/visutools/resources/sounds/BiSlider/click.wav");
       AudioInputStream AudioInputStream1 = AudioSystem.getAudioInputStream(URL1);
@@ -341,20 +297,6 @@ public class BiSlider
 
     if (Abstr != null && Pres != null && MinValue_Arg <= MaxValue_Arg &&
         MinValue_Arg <= Abstr.MaximumValue && MaxValue_Arg >= Abstr.MinimumValue) {
-      if (isSound() && ClipFlip!=null &&(int)((MaxValue_Arg-Abstr.MinimumValue)/Abstr.SegmentSize)!=
-                      (int)((Abstr.MaximumColoredValue-Abstr.MinimumValue)/Abstr.SegmentSize)
-                    &&(int)((MinValue_Arg-Abstr.MinimumValue)/Abstr.SegmentSize)!=
-                      (int)((Abstr.MinimumColoredValue-Abstr.MinimumValue)/Abstr.SegmentSize)) {
-        ClipFlip.setFramePosition(0);
-        ClipFlip.start();
-      }
-      else if (isSound() && ClipClick!=null && ((int)((MaxValue_Arg-Abstr.MinimumValue)/Abstr.SegmentSize)!=
-                      (int)((Abstr.MaximumColoredValue-Abstr.MinimumValue)/Abstr.SegmentSize)
-                    || (int)((MinValue_Arg-Abstr.MinimumValue)/Abstr.SegmentSize)!=
-                      (int)((Abstr.MinimumColoredValue-Abstr.MinimumValue)/Abstr.SegmentSize))) {
-        ClipClick.setFramePosition(0);
-        ClipClick.start();
-      }
 
       Abstr.MinimumColoredValue = MinValue_Arg;
       Abstr.MaximumColoredValue = MaxValue_Arg;
@@ -501,20 +443,12 @@ public class BiSlider
 
     if (Abstr.UniformSegment && ((long)SegmentSize_Arg) == SegmentSize_Arg) {
       int NewSegmentCount = Abstr.searchSegmentCount((int)((Abstr.MaximumValue - Abstr.MinimumValue)/SegmentSize_Arg));
-      if (isSound() && NewSegmentCount!=Abstr.SegmentCount) {
-        ClipClick2.setFramePosition(0);
-        ClipClick2.start();
-      }
       Abstr.SegmentCount = NewSegmentCount;
       Abstr.SegmentSize = (Abstr.MaximumValue - Abstr.MinimumValue)/Abstr.SegmentCount;
     }
     else if (Abstr.UniformSegment) {
       int NewSegmentCount = (int)Math.round((Abstr.MaximumValue - Abstr.MinimumValue)/SegmentSize_Arg);
       double NewSegmentSize = (Abstr.MaximumValue - Abstr.MinimumValue)/NewSegmentCount;
-      if (isSound() && NewSegmentCount!=Abstr.SegmentCount && (NewSegmentSize == (int)NewSegmentSize)) {
-        ClipClick2.setFramePosition(0);
-        ClipClick2.start();
-      }
       Abstr.SegmentCount = NewSegmentCount;
       Abstr.SegmentSize = (Abstr.MaximumValue - Abstr.MinimumValue)/Abstr.SegmentCount;
     }
@@ -714,7 +648,7 @@ public class BiSlider
    * @return   The Sound value
    */
   public boolean isSound() {
-    return Abstr.Sound;
+  	return false;
   }// isSound()
 
 
