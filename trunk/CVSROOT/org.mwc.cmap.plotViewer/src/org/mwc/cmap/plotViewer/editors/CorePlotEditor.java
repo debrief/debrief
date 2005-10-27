@@ -22,6 +22,7 @@ import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.operations.PlotOperations;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
@@ -109,6 +110,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	Label _myLabel;
 
 	private CursorTracker _myTracker;
+
 
 	// //////////////////////////////
 	// constructor
@@ -356,23 +358,23 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		}
 		else if (adapter == NarrativeProvider.class)
 		{
-			return _theNarrativeProvider;
+			res = _theNarrativeProvider;
 		}
 		else if (adapter == TimeProvider.class)
 		{
-			return _timeManager;
+			res = _timeManager;
 		}
 		else if (adapter == ISelectionProvider.class)
 		{
-			return this;
+			res = this;
 		}
 		else if (adapter == ControllableTime.class)
 		{
-			return _timeManager;
+			res = _timeManager;
 		}
 		else if (adapter == TimeControlPreferences.class)
 		{
-			return _timePreferences;
+			res = _timePreferences;
 		}
 		else if (adapter == IGotoMarker.class)
 		{
