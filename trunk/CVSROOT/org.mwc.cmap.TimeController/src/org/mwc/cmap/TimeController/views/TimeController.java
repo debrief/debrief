@@ -523,17 +523,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.OPENED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						// implementation here.
-						// TimeProvider thisTemporalDataset = (TimeProvider) part;
-						// thisTemporalDataset.addListener(_temporalListener,
-						// TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-					}
-				});
+
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
