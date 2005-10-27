@@ -436,8 +436,7 @@ public class LayerManagerView extends ViewPart
 		};
 		_makePrimary.setText("Make Primary");
 		_makePrimary.setToolTipText("Make this item the primary ");
-		_makePrimary.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_TOOL_NEW_WIZARD));
+		_makePrimary.setImageDescriptor(CorePlugin.getImageDescriptor("icons/primary.gif"));
 
 		_makeSecondary = new Action()
 		{
@@ -462,8 +461,7 @@ public class LayerManagerView extends ViewPart
 		};
 		_makeSecondary.setText("Make Secondary");
 		_makeSecondary.setToolTipText("Add this item to the secondary tracks");
-		_makeSecondary.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_FILE));
+		_makeSecondary.setImageDescriptor(CorePlugin.getImageDescriptor("icons/secondary.gif"));
 
 		_hideAction = new Action()
 		{
@@ -480,8 +478,7 @@ public class LayerManagerView extends ViewPart
 		};
 		_hideAction.setText("Hide item");
 		_hideAction.setToolTipText("Stop selected items from being visible");
-		_hideAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJ_ELEMENT));
+		_hideAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/hide.gif"));
 
 		_revealAction = new Action()
 		{
@@ -498,8 +495,7 @@ public class LayerManagerView extends ViewPart
 		};
 		_revealAction.setText("Refeal item");
 		_revealAction.setToolTipText("Reveal selected items");
-		_revealAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		_revealAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/reveal.gif"));
 	}
 
 	private void hookDoubleClickAction()
