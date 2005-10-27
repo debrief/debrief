@@ -20,6 +20,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
 import Debrief.Tools.Tote.*;
+import MWC.GenericData.*;
 import MWC.GenericData.HiResDate;
 
 /**
@@ -155,37 +156,19 @@ public class ToteView extends ViewPart
 					}
 				});
 
-		// unusually, we are also going to track the open event for narrative data
-		// so that we can start off with some data
-		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.OPENED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						TrackManager provider = (TrackManager) part;
-
-						// is this different to our current one?
-						if (provider != _trackData)
-							storeDetails(provider, parentPart);
-					}
-
-				});
-
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						TrackManager provider = (TrackManager) part;
-
-						// is this our current provider?
-						if (_trackData == provider)
+						if (part == _trackData)
+						{
 							_trackData = null;
-
-						redoTableAfterTrackChanges();
+							redoTableAfterTrackChanges();
+						}
 					}
 				});
+
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -194,7 +177,15 @@ public class ToteView extends ViewPart
 						// just check we're not already looking at it
 						if (part != _myTemporalDataset)
 						{
-							// implementation here.
+
+							// ok, stop listening to the old one
+							if (_myTemporalDataset != null)
+								_myTemporalDataset.removeListener(_temporalListener,
+										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+							// store the new one
+							_myTemporalDataset = (TimeProvider) part;
+
 							_myTemporalDataset = (TimeProvider) part;
 							if (_temporalListener == null)
 							{
@@ -217,17 +208,21 @@ public class ToteView extends ViewPart
 					}
 				});
 
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.DEACTIVATED,
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// just check it's our dataset
-					//	if (part == _myTemporalDataset)
-					//	{
-							_myTemporalDataset.removeListener(_temporalListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-					//	}
+						// ok, stop listening to this object (just in case we were, anyway).
+						_myTemporalDataset.removeListener(_temporalListener,
+								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+						// was it our one?
+						if (_myTemporalDataset == part)
+						{
+							_myTemporalDataset = null;
+						}
+
 					}
 				});
 
