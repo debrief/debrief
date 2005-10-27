@@ -1,14 +1,9 @@
 package org.mwc.cmap.TimeController.views;
 
-import java.awt.Frame;
-import java.awt.event.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ActionEvent;
 import java.beans.*;
 import java.text.*;
 import java.util.*;
-
-import javax.swing.JPopupMenu;
 
 import junit.framework.TestCase;
 
@@ -26,17 +21,20 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
+import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.painters.*;
 
-import com.visutools.nav.bislider.BiSlider;
-import org.eclipse.swt.awt.*;
-
+import Debrief.Tools.Tote.WatchableList;
+import MWC.GUI.*;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.Timer.TimerListener;
+
+import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -85,6 +83,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 * label showing the current time
 	 */
 	private Label _timeLabel;
+	
+	/** the set of layers we control through the range selector
+	 * 
+	 */
+	private Layers _myLayers;
 
 	/**
 	 * the parent object for the time controller. It is at this level that we
@@ -189,6 +192,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	private StructuredSelection _propsAsSelection = null;
 
 	protected TimeControlPreferences _myTimePreferences;
+
+	private DTGBiSlider _dtgRangeSlider;
 
 	/**
 	 * ok - put in our bits
@@ -311,28 +316,50 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		});
 		
 		
-		// try and put in a bi-slider
-		Composite sliderContainer = new Composite(_wholePanel, SWT.EMBEDDED);
-		java.awt.Frame sliderFrame = SWT_AWT.new_Frame(sliderContainer);
-		final BiSlider bi = new BiSlider();
-		sliderFrame.add(bi);
-		bi.setVisible(true);
-		bi.setMinimumValue(-193);
-		bi.setMaximumValue(227);
-		bi.setSegmentSize(20);
-		bi.setMinimumColor(java.awt.Color.GRAY);
-		bi.setMaximumColor(java.awt.Color.GRAY);
-		bi.setUnit("");
-		bi.setPrecise(true);
-    final JPopupMenu JPopupMenu1 = bi.createPopupMenu();
-    bi.addMouseListener(new MouseAdapter(){
-      public void mousePressed(MouseEvent MouseEvent_Arg){
-        if (MouseEvent_Arg.getButton()==MouseEvent.BUTTON3){
-          JPopupMenu1.show(bi, MouseEvent_Arg.getX(), MouseEvent_Arg.getY());
-        }
-      }
-    });		
-		
+		_dtgRangeSlider = new DTGBiSlider(_wholePanel, new FormatLong()
+				{
+					public String format(long val)
+					{
+						String res;
+						HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG().getMicros());
+						res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties.getDTGFormat());
+						return res;
+					}			
+				})
+		{
+
+			/**
+			 * @param start the newly selected stas
+			 * @param end
+			 */
+			public void rangeChanged(HiResDate start, HiResDate end)
+			{
+				// ok - filter the time period to this one.
+				
+				// do we have some data?
+				if(_myLayers != null)
+				{
+					Enumeration theLayers = _myLayers.elements();
+					
+					// cycle through the layers					
+					while(theLayers.hasMoreElements())
+					{
+						Layer thisLayer = (Layer) theLayers.nextElement();
+						
+						// is this a watchable list?
+						if(thisLayer instanceof WatchableList)
+						{
+						  // yes, filter it
+							WatchableList thisList = (WatchableList) thisLayer;
+							thisList.filterListTo(start, end);
+						}
+					}
+					
+					// cool, get the layers to repaint itself
+					_myLayers.fireReformatted(null);
+				}
+			}
+		};
 	}
 
 	protected void stopPlaying()
@@ -535,6 +562,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							if (firstDTG != null)
 							{
 								_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG.getEndDTG());
+								
+								// and our range selector
+								_dtgRangeSlider.updateOuterRanges(firstDTG);
+								
 							}
 
 							checkTimeEnabled();
@@ -580,6 +611,32 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// checkTimeEnabled();
 		// }
 		// });
+		
+		
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// implementation here.
+						Layers newLayers = (Layers) part;
+						if(newLayers != _myLayers)
+						{
+							_myLayers = newLayers;
+						}
+					}
+
+				});
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						if(part == _myLayers)
+							_myLayers = null;
+					}
+				});		
+		
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
