@@ -686,7 +686,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					{
 						// ok, insert the painter mode actions, together with our standard
 						// ones
-						populateDropDownList((LayerPainterManager) part);
+						populateDropDownList((LayerPainterManager) part); 
 					}
 
 				});
