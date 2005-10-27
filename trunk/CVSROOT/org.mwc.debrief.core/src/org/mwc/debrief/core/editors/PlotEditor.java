@@ -5,7 +5,7 @@ package org.mwc.debrief.core.editors;
 
 import java.beans.*;
 import java.io.*;
-import java.util.Enumeration;
+import java.util.*;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
@@ -16,10 +16,12 @@ import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.cmap.plotViewer.editors.operations.PlotOperations;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -68,6 +70,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * something to look after our layer painters
 	 */
 	private LayerPainterManager _layerPainterManager;
+	
+
+	private PlotOperations _myOperations;	
 
 	/**
 	 * constructor - quite simple really.
@@ -116,6 +121,34 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				  setPartName(inp.getName());
 				}
 			}});
+		
+		
+		_myOperations = new PlotOperations()
+		{
+			// just provide with our complete set of layers
+			public Object[] getTargets()
+			{
+				// ok, return our top level layers as objects
+				Vector res = new Vector(0,1);
+				for(int i=0;i<_myLayers.size();i++)
+				{
+					res.add(_myLayers.elementAt(i));
+				}
+				return res.toArray();
+			}
+
+			/** override performing the operation, since we'll do a screen update on completion
+			 */
+			public void performOperation(AnOperation operationName)
+			{
+				// make the actual change
+				super.performOperation(operationName);
+				
+				// and update the screen
+				getChart().update();
+				
+			}
+		};
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -123,7 +156,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		setSite(site);
 		setInput(input);
-
+		
 		// ok - declare and load the supplemental plugins which can load datafiles
 		initialiseFileLoaders();
 
@@ -354,6 +387,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			res = _layerPainterManager;
 		}
+		else if (adapter == ControllablePeriod.class)
+		{
+			res = _myOperations;
+		}
+		
 
 		// did we find anything?
 		if (res == null)

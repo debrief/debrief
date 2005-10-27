@@ -27,8 +27,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.painters.*;
 
-import Debrief.Tools.Tote.WatchableList;
-import MWC.GUI.*;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -80,12 +79,17 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	private ControllableTime _controllableTime;
 
 	/**
+	 * the "write" interface for indicating a selected time period
+	 */
+	private ControllablePeriod _controllablePeriod;
+
+	/**
 	 * label showing the current time
 	 */
 	private Label _timeLabel;
-	
-	/** the set of layers we control through the range selector
-	 * 
+
+	/**
+	 * the set of layers we control through the range selector
 	 */
 	private Layers _myLayers;
 
@@ -314,52 +318,43 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				_wholePanel.setFocus();
 			}
 		});
-		
-		
+
 		_dtgRangeSlider = new DTGBiSlider(_wholePanel, new FormatLong()
-				{
-					public String format(long val)
-					{
-						String res;
-						HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG().getMicros());
-						res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties.getDTGFormat());
-						return res;
-					}			
-				})
+		{
+			public String format(long val)
+			{
+				String res;
+				HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
+						.getMicros());
+				res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties
+						.getDTGFormat());
+				return res;
+			}
+		})
 		{
 
 			/**
-			 * @param start the newly selected stas
-			 * @param end
 			 */
-			public void rangeChanged(HiResDate start, HiResDate end)
+			public void rangeChanged(TimePeriod period)
 			{
-				// ok - filter the time period to this one.
-				
-				// do we have some data?
-				if(_myLayers != null)
-				{
-					Enumeration theLayers = _myLayers.elements();
-					
-					// cycle through the layers					
-					while(theLayers.hasMoreElements())
-					{
-						Layer thisLayer = (Layer) theLayers.nextElement();
-						
-						// is this a watchable list?
-						if(thisLayer instanceof WatchableList)
-						{
-						  // yes, filter it
-							WatchableList thisList = (WatchableList) thisLayer;
-							thisList.filterListTo(start, end);
-						}
-					}
-					
-					// cool, get the layers to repaint itself
-					_myLayers.fireReformatted(null);
-				}
+				// ok - fire range-changed event
+			  selectPeriod(period);
 			}
 		};
+	}
+
+	/** user has selected a time period, indicate it to the controllable
+	 * 
+	 * @param period
+	 */
+	protected void selectPeriod(TimePeriod period)
+	{
+		if(_controllablePeriod != null)
+		{
+			_controllablePeriod.setPeriod(period);
+			_controllablePeriod.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
+		}
+		
 	}
 
 	protected void stopPlaying()
@@ -562,10 +557,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							if (firstDTG != null)
 							{
 								_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG.getEndDTG());
-								
+
 								// and our range selector
 								_dtgRangeSlider.updateOuterRanges(firstDTG);
-								
+
 							}
 
 							checkTimeEnabled();
@@ -611,8 +606,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// checkTimeEnabled();
 		// }
 		// });
-		
-		
+
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -620,7 +614,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					{
 						// implementation here.
 						Layers newLayers = (Layers) part;
-						if(newLayers != _myLayers)
+						if (newLayers != _myLayers)
 						{
 							_myLayers = newLayers;
 						}
@@ -632,11 +626,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						if(part == _myLayers)
+						if (part == _myLayers)
 							_myLayers = null;
 					}
-				});		
-		
+				});
+
 		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -654,8 +648,35 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						_controllableTime = null;
+						if (part == _controllableTime)
+						{
+							_controllableTime = null;
+							checkTimeEnabled();
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(ControllablePeriod.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// implementation here.
+						ControllablePeriod ct = (ControllablePeriod) part;
+						_controllablePeriod = ct;
 						checkTimeEnabled();
+					}
+
+				});
+		_myPartMonitor.addPartListener(ControllablePeriod.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						if (part == _controllablePeriod)
+						{
+							_controllablePeriod = null;
+							checkTimeEnabled();
+						}
 					}
 				});
 		_myPartMonitor.addPartListener(LayerPainterManager.class, PartMonitor.ACTIVATED,
@@ -789,13 +810,17 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	public void setFocus()
 	{
-		// get the editable thingy
-		if (_propsAsSelection == null)
-			_propsAsSelection = new StructuredSelection(_myStepperProperties);
-
-		fireSelectionChanged(_propsAsSelection);
-
-		_propsAsSelection = null;
+		// do we have any data?
+		if(_myStepperProperties != null)
+		{
+			// get the editable thingy
+			if (_propsAsSelection == null)
+				_propsAsSelection = new StructuredSelection(_myStepperProperties);
+	
+			fireSelectionChanged(_propsAsSelection);
+	
+			_propsAsSelection = null;
+		}
 	}
 
 	// //////////////////////////////
@@ -1175,7 +1200,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					{
 						IMarker marker = file.createMarker(IMarker.BOOKMARK);
 						Map attributes = new HashMap(4);
-						attributes.put(IMarker.MESSAGE,  content);
+						attributes.put(IMarker.MESSAGE, content);
 						attributes.put(IMarker.LOCATION, currentText);
 						attributes.put(IMarker.LINE_NUMBER, "" + tNow);
 						attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
