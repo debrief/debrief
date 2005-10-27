@@ -5,6 +5,7 @@ import java.awt.event.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.core.property_support.ColorHelper;
 
 import MWC.GenericData.*;
 
@@ -48,7 +49,7 @@ public class DTGBiSlider extends Composite
 		_mySlider.setSegmentSize(10);
 		_mySlider.setMinimumColor(java.awt.Color.GRAY);
 		_mySlider.setMaximumColor(java.awt.Color.GRAY);
-		_mySlider.setBackground(java.awt.Color.LIGHT_GRAY);
+		_mySlider.setBackground(ColorHelper.convertColor(this.getBackground().getRGB()));
 		_mySlider.setUnit("");
 		_mySlider.setPrecise(true);		
 		

@@ -21,12 +21,12 @@ import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
-import org.mwc.cmap.plotViewer.editors.operations.PlotOperations;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
+import org.mwc.debrief.core.operations.PlotOperations;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.*;
@@ -139,13 +139,27 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			/** override performing the operation, since we'll do a screen update on completion
 			 */
-			public void performOperation(AnOperation operationName)
+			public Vector performOperation(AnOperation operationName)
 			{
 				// make the actual change
-				super.performOperation(operationName);
+				Vector res = super.performOperation(operationName);
 				
-				// and update the screen
-				getChart().update();
+				if(res != null)
+				{
+					if(res.size() != 0)
+					{
+						for (Iterator iter = res.iterator(); iter.hasNext();)
+						{
+							Layer  thisL = (Layer ) iter.next();
+							// and update the screen
+							_myLayers.fireReformatted(thisL);
+							
+						}
+					}
+				}
+				
+				return res;
+				
 				
 			}
 		};

@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
@@ -124,6 +124,19 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private Action _setAsBookmarkAction;
 
+
+	/**
+	 * when the user clicks on us, we set our properties as a selection. Remember
+	 * the set of properties
+	 */
+	private StructuredSelection _propsAsSelection = null;
+
+	protected TimeControlPreferences _myTimePreferences;
+
+	private DTGBiSlider _dtgRangeSlider;
+
+	private Action _filterToSelectionAction;	
+	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -189,15 +202,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private Scale _tNowSlider;
 
-	/**
-	 * when the user clicks on us, we set our properties as a selection. Remember
-	 * the set of properties
-	 */
-	private StructuredSelection _propsAsSelection = null;
-
-	protected TimeControlPreferences _myTimePreferences;
-
-	private DTGBiSlider _dtgRangeSlider;
 
 	/**
 	 * ok - put in our bits
@@ -319,20 +323,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			}
 		});
 
-		_dtgRangeSlider = new DTGBiSlider(_wholePanel, new FormatLong()
+		
+		_dtgRangeSlider = new DTGBiSlider(_wholePanel, new DateFormatter())
 		{
-			public String format(long val)
-			{
-				String res;
-				HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
-						.getMicros());
-				res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties
-						.getDTGFormat());
-				return res;
-			}
-		})
-		{
-
 			/**
 			 */
 			public void rangeChanged(TimePeriod period)
@@ -343,16 +336,28 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		};
 	}
 
+
 	/** user has selected a time period, indicate it to the controllable
 	 * 
 	 * @param period
 	 */
-	protected void selectPeriod(TimePeriod period)
+	protected void selectPeriod(final TimePeriod period)
 	{
 		if(_controllablePeriod != null)
 		{
-			_controllablePeriod.setPeriod(period);
-			_controllablePeriod.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
+
+			// updating the text items has to be done in the UI thread. make it so
+			Display.getDefault().asyncExec(new Runnable()
+			{
+				public void run()
+				{
+					_controllablePeriod.setPeriod(period);
+					
+					// are we set to filter?
+					if(_filterToSelectionAction.isChecked())
+						_controllablePeriod.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
+				}
+			});			
 		}
 		
 	}
@@ -1113,6 +1118,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					myLayerPainterManager.setCurrentPainter(painter);
 				}
 			};
+			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
+			thisOne.setImageDescriptor(org.mwc.debrief.core.CorePlugin.getImageDescriptor(descPath));
 
 			// hmm, and see if this is our current painter
 			if (painter.getName().equals(myLayerPainterManager.getCurrentPainter().getName()))
@@ -1127,6 +1134,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		// ok, let's have a separator
 		menuManager.add(new Separator());
+		toolManager.add(new Separator());
 
 		// ok, second menu for the DTG formats
 		MenuManager formatMenu = new MenuManager("DTG Format");
@@ -1168,6 +1176,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			}
 		};
 		menuManager.add(_setAsBookmarkAction);
+		
+		// lastly the add-bookmark item
+		_filterToSelectionAction = new Action("Filter data shown to selected time period", Action.AS_CHECK_BOX)
+		{
+			
+		};
+		_filterToSelectionAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin.getImageDescriptor("icons/filter_to_period.gif"));
+		menuManager.add(_filterToSelectionAction);		
+		toolManager.add(_filterToSelectionAction);
 
 		// ok - get the action bars to re-populate themselves, otherwise we don't
 		// see our changes
@@ -1220,4 +1237,23 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	// /////////////////////////////////////////////////////////////////
 	// AND PROPERTY EDITORS FOR THE
 	// /////////////////////////////////////////////////////////////////
+	
+	
+	/** utility class to format the longs managed by the time-slider as dates
+	 * 
+	 * @author ian.mayo
+	 *
+	 */
+	private class DateFormatter extends FormatLong
+	{
+		public String format(long val)
+		{
+			String res;
+			HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
+					.getMicros());
+			res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties
+					.getDTGFormat());
+			return res;
+		}		
+	}	
 }

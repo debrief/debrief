@@ -16,7 +16,7 @@ import MWC.GUI.Properties.BoundedInteger;
  * @author IAN MAYO
  * @version 1
  */
-public interface SWTPlotHighlighter extends Editable {
+public interface SWTPlotHighlighter extends Editable  {
 
 
 /** Draw a highlight around this watchable

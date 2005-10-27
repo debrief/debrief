@@ -167,9 +167,9 @@ public class LayerPainterManager extends PropertyChangeSupport
 	public void setCurrentHighlighter(String highlighterName)
 	{
 		SWTPlotHighlighter newCursor = null;
-		for (Iterator thisPainter = _myPainterList.iterator(); thisPainter.hasNext();)
+		for (Iterator thisHighlighter = _myHighlighterList.iterator(); thisHighlighter.hasNext();)
 		{
-			SWTPlotHighlighter thisP = (SWTPlotHighlighter) thisPainter.next();
+			SWTPlotHighlighter thisP = (SWTPlotHighlighter) thisHighlighter.next();
 			if(thisP.getName().equals(highlighterName))
 			{
 				newCursor = thisP;

@@ -22,7 +22,7 @@ import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.core.ui_support.LineItem;
 import org.mwc.cmap.plotViewer.editors.chart.*;
-import org.mwc.cmap.plotViewer.editors.operations.PlotOperations;
+
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
