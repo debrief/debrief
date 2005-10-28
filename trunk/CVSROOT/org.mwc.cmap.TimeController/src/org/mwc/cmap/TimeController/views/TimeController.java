@@ -124,7 +124,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private Action _setAsBookmarkAction;
 
-
 	/**
 	 * when the user clicks on us, we set our properties as a selection. Remember
 	 * the set of properties
@@ -135,8 +134,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	private DTGBiSlider _dtgRangeSlider;
 
-	private Action _filterToSelectionAction;	
-	
+	private Action _filterToSelectionAction;
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -201,7 +200,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 * etc
 	 */
 	private Scale _tNowSlider;
-
 
 	/**
 	 * ok - put in our bits
@@ -305,25 +303,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
-		/*
-		 * the next bit is a fudge (taken from "How to scroll a canvas" on Eclipse
-		 * newsgroups
-		 */
-		_wholePanel.addListener(SWT.MouseDown, new Listener()
-		{
 
-			public void handleEvent(Event event)
-			{
-				Control focus = event.display.getFocusControl();
-				while (focus != null)
-				{
-					focus = focus.getParent();
-				}
-				_wholePanel.setFocus();
-			}
-		});
-
-		
 		_dtgRangeSlider = new DTGBiSlider(_wholePanel, new DateFormatter())
 		{
 			/**
@@ -331,19 +311,19 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			public void rangeChanged(TimePeriod period)
 			{
 				// ok - fire range-changed event
-			  selectPeriod(period);
+				selectPeriod(period);
 			}
 		};
 	}
 
-
-	/** user has selected a time period, indicate it to the controllable
+	/**
+	 * user has selected a time period, indicate it to the controllable
 	 * 
 	 * @param period
 	 */
 	protected void selectPeriod(final TimePeriod period)
 	{
-		if(_controllablePeriod != null)
+		if (_controllablePeriod != null)
 		{
 
 			// updating the text items has to be done in the UI thread. make it so
@@ -352,14 +332,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				public void run()
 				{
 					_controllablePeriod.setPeriod(period);
-					
+
 					// are we set to filter?
-					if(_filterToSelectionAction.isChecked())
-						_controllablePeriod.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
+					if (_filterToSelectionAction.isChecked())
+						_controllablePeriod
+								.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
 				}
-			});			
+			});
 		}
-		
+
 	}
 
 	protected void stopPlaying()
@@ -523,7 +504,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 
-
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -545,6 +525,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 							// also configure for the current time
 							HiResDate newDTG = _myTemporalDataset.getTime();
+
 							timeUpdated(newDTG);
 
 							// and initialise the current time
@@ -681,7 +662,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					{
 						// ok, insert the painter mode actions, together with our standard
 						// ones
-						populateDropDownList((LayerPainterManager) part); 
+						populateDropDownList((LayerPainterManager) part);
 					}
 
 				});
@@ -803,18 +784,32 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	public void setFocus()
+	public void editMeInProperties()
 	{
 		// do we have any data?
-		if(_myStepperProperties != null)
+		if (_myStepperProperties != null)
 		{
 			// get the editable thingy
 			if (_propsAsSelection == null)
 				_propsAsSelection = new StructuredSelection(_myStepperProperties);
-	
-			fireSelectionChanged(_propsAsSelection);
-	
+
+			if (_selectionListeners != null)
+			{
+				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, _propsAsSelection);
+				for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+				{
+					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+					if (thisL != null)
+					{
+						thisL.selectionChanged(sEvent);
+					}
+				}
+			}
 			_propsAsSelection = null;
+		}
+		else
+		{
+			System.out.println("we haven't got any properties yet");
 		}
 	}
 
@@ -1044,7 +1039,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	public ISelection getSelection()
 	{
-		return _currentSelection;
+		return null;
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
@@ -1055,27 +1050,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	public void setSelection(ISelection selection)
 	{
 		_currentSelection = selection;
-	}
-
-	protected void fireSelectionChanged(ISelection sel)
-	{
-		// just double-check that we're not already processing this
-		if (sel != _currentSelection)
-		{
-			_currentSelection = sel;
-			if (_selectionListeners != null)
-			{
-				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
-				for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
-				{
-					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
-					if (thisL != null)
-					{
-						thisL.selectionChanged(sEvent);
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -1109,7 +1083,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				}
 			};
 			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
-			thisOne.setImageDescriptor(org.mwc.debrief.core.CorePlugin.getImageDescriptor(descPath));
+			thisOne.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+					.getImageDescriptor(descPath));
 
 			// hmm, and see if this is our current painter
 			if (painter.getName().equals(myLayerPainterManager.getCurrentPainter().getName()))
@@ -1166,15 +1141,31 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			}
 		};
 		menuManager.add(_setAsBookmarkAction);
-		
+
 		// lastly the add-bookmark item
-		_filterToSelectionAction = new Action("Filter data shown to selected time period", Action.AS_CHECK_BOX)
+		_filterToSelectionAction = new Action("Filter data shown to selected time period",
+				Action.AS_CHECK_BOX)
 		{
-			
+
 		};
-		_filterToSelectionAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin.getImageDescriptor("icons/filter_to_period.gif"));
-		menuManager.add(_filterToSelectionAction);		
+		_filterToSelectionAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+				.getImageDescriptor("icons/filter_to_period.gif"));
+		menuManager.add(_filterToSelectionAction);
 		toolManager.add(_filterToSelectionAction);
+
+		// and a properties editor
+		Action toolboxProperties = new Action("Properties...", Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(Event event)
+			{
+				editMeInProperties();
+			}
+		};
+		toolboxProperties.setToolTipText("Edit Time Controller properties");
+		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+				.getImageDescriptor("icons/properties.gif"));
+		menuManager.add(new Separator());
+		menuManager.add(toolboxProperties);
 
 		// ok - get the action bars to re-populate themselves, otherwise we don't
 		// see our changes
@@ -1227,12 +1218,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	// /////////////////////////////////////////////////////////////////
 	// AND PROPERTY EDITORS FOR THE
 	// /////////////////////////////////////////////////////////////////
-	
-	
-	/** utility class to format the longs managed by the time-slider as dates
+
+	/**
+	 * utility class to format the longs managed by the time-slider as dates
 	 * 
 	 * @author ian.mayo
-	 *
 	 */
 	private class DateFormatter extends FormatLong
 	{
@@ -1241,9 +1231,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			String res;
 			HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
 					.getMicros());
-			res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties
-					.getDTGFormat());
+			res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties.getDTGFormat());
 			return res;
-		}		
-	}	
+		}
+	}
+
+	public void setFocus()
+	{
+		// ok - put the cursor on the time sldier
+		 _tNowSlider.setFocus();
+
+	}
 }
