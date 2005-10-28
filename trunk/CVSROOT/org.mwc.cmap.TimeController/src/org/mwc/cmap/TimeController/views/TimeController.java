@@ -30,7 +30,7 @@ import org.mwc.debrief.core.editors.painters.*;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.*;
 import MWC.Utilities.Timer.TimerListener;
 
 import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
@@ -291,8 +291,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			public void widgetSelected(SelectionEvent e)
 			{
 				int index = _tNowSlider.getSelection();
-				HiResDate newDTG = _slideManager.fromSliderUnits(index, _myTemporalDataset
-						.getPeriod().getStartDTG());
+				HiResDate newDTG = _slideManager.fromSliderUnits(index);
 				fireNewTime(newDTG);
 			}
 
@@ -302,7 +301,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		});
 
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
-
 
 		_dtgRangeSlider = new DTGBiSlider(_wholePanel, new DateFormatter())
 		{
@@ -335,8 +333,34 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 					// are we set to filter?
 					if (_filterToSelectionAction.isChecked())
+					{
 						_controllablePeriod
 								.performOperation(ControllablePeriod.FILTER_TO_TIME_PERIOD);
+
+						// and trim down the range of our slider manager
+
+						// hey, what's the current dtg?
+//						HiResDate currentDTG = _slideManager.fromSliderUnits(_tNowSlider
+//								.getSelection());
+
+						// update the range of the slider
+						_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
+
+//						// do we need to move the slider back into a valid point?
+//						// hmm, was it too late?
+//						if (currentDTG.greaterThan(period.getEndDTG()))
+//						{
+//							_tNowSlider.setSelection(_tNowSlider.getMaximum());
+//						}
+//						else if (currentDTG.lessThan(period.getStartDTG()))
+//						{
+//							_tNowSlider.setSelection(_tNowSlider.getMinimum());
+//						}
+//						else
+//						{
+//							_tNowSlider.setSelection(_slideManager.toSliderUnits(currentDTG));
+//						}
+					}
 				}
 			});
 		}
@@ -529,13 +553,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							timeUpdated(newDTG);
 
 							// and initialise the current time
-							TimePeriod firstDTG = _myTemporalDataset.getPeriod();
-							if (firstDTG != null)
+							TimePeriod timeRange = _myTemporalDataset.getPeriod();
+							if (timeRange != null)
 							{
-								_slideManager.resetRange(firstDTG.getStartDTG(), firstDTG.getEndDTG());
+								_slideManager.resetRange(timeRange.getStartDTG(), timeRange.getEndDTG());
 
 								// and our range selector
-								_dtgRangeSlider.updateOuterRanges(firstDTG);
+								_dtgRangeSlider.updateOuterRanges(timeRange);
 
 							}
 
@@ -846,8 +870,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
 							if (dataPeriod != null)
 							{
-								int newIndex = _slideManager.toSliderUnits(newDTG, dataPeriod
-										.getStartDTG());
+								int newIndex = _slideManager.toSliderUnits(newDTG);
 								_tNowSlider.setSelection(newIndex);
 							}
 						}
@@ -981,11 +1004,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 			// ok, see how the transfer goes
 			HiResDate newToSlider = new HiResDate(0, 130);
-			int res = range.toSliderUnits(newToSlider, starter);
+			int res = range.toSliderUnits(newToSlider);
 			assertEquals("correct to slider units", 30, res);
 
 			// and backwards
-			newToSlider = range.fromSliderUnits(res, starter);
+			newToSlider = range.fromSliderUnits(res);
 			assertEquals("correct from slider units", 130, newToSlider.getMicros());
 
 			// right, now back to millis
@@ -1142,16 +1165,32 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		};
 		menuManager.add(_setAsBookmarkAction);
 
-		// lastly the add-bookmark item
-		_filterToSelectionAction = new Action("Filter data shown to selected time period",
-				Action.AS_CHECK_BOX)
+		// let user indicate whether we should be filtering to window
+		_filterToSelectionAction = new Action("Filter to time", Action.AS_CHECK_BOX)
 		{
 
 		};
 		_filterToSelectionAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin
 				.getImageDescriptor("icons/filter_to_period.gif"));
+		_filterToSelectionAction
+				.setToolTipText("Filter to time period on time-range slider update");
 		menuManager.add(_filterToSelectionAction);
 		toolManager.add(_filterToSelectionAction);
+
+		// // and the
+		// Action expandTimeSliders = new Action("Expand slider to full period",
+		// Action.AS_PUSH_BUTTON)
+		// {
+		// public void runWithEvent(Event event)
+		// {
+		// expandTimeSliderRangeToFull();
+		// }
+		// };
+		// expandTimeSliders.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+		// .getImageDescriptor("icons/expand_time_period.gif"));
+		// expandTimeSliders.setToolTipText("Expand time-slider to full period");
+		// menuManager.add(expandTimeSliders);
+		// toolManager.add(expandTimeSliders);
 
 		// and a properties editor
 		Action toolboxProperties = new Action("Properties...", Action.AS_PUSH_BUTTON)
@@ -1170,6 +1209,12 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// ok - get the action bars to re-populate themselves, otherwise we don't
 		// see our changes
 		getViewSite().getActionBars().updateActionBars();
+	}
+
+	protected void expandTimeSliderRangeToFull()
+	{
+		TimePeriod period = _myTemporalDataset.getPeriod();
+		_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
 	}
 
 	protected void addMarker()
@@ -1239,7 +1284,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	public void setFocus()
 	{
 		// ok - put the cursor on the time sldier
-		 _tNowSlider.setFocus();
+		_tNowSlider.setFocus();
 
 	}
 }

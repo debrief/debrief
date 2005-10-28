@@ -7,6 +7,11 @@ import MWC.GenericData.HiResDate;
 
 abstract class SliderRangeManagement
 {
+	
+	/** the start time - used as an offset
+	 * 
+	 */
+	private HiResDate _startTime;
 
 	// only let slider work in micros if there is under a second of data
 	private final int TIME_SPAN_TO_USE_MICROS = 1000000;
@@ -21,10 +26,14 @@ abstract class SliderRangeManagement
 
 	public abstract void setEnabled(boolean val);
 
+
 	public void resetRange(HiResDate min, HiResDate max)
 	{
 		if ((min != null) && (max != null))
 		{
+			// ok - store the start time
+			_startTime = min;
+			
 			// yes - initialise the ranges
 			long range = max.getMicros() - min.getMicros();
 			
@@ -85,18 +94,18 @@ abstract class SliderRangeManagement
 					largeTick *= 10;
 				}
 
-				setTickSize(smallTick, largeTick, dragSize);
-
+				setTickSize(smallTick, largeTick, dragSize);			
+				
 				// ok, we've finished updating the form. back to normal processing
 				// _updatingForm = false;
 			}
 		}
 	}
 
-	public int toSliderUnits(HiResDate now, HiResDate startDTG)
+	public int toSliderUnits(HiResDate now)
 	{
 		int res = 0;
-		long offset = now.getMicros() - startDTG.getMicros();
+		long offset = now.getMicros() - _startTime.getMicros();
 
 		if (!_useMicros)
 		{
@@ -109,7 +118,7 @@ abstract class SliderRangeManagement
 
 	}
 
-	public HiResDate fromSliderUnits(int value, HiResDate startDTG)
+	public HiResDate fromSliderUnits(int value)
 	{
 		long newValue = value;
 
@@ -118,7 +127,7 @@ abstract class SliderRangeManagement
 			newValue *= 1000000;
 		}
 
-		long newDate = startDTG.getMicros() + newValue;
+		long newDate = _startTime.getMicros() + newValue;
 
 		return new HiResDate(0, newDate);
 	}
