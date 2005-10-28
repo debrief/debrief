@@ -20,13 +20,17 @@ public class DTGHelper extends EditorHelper
 
 	protected static SimpleDateFormat _dateFormat;
 
-	protected static SimpleDateFormat _timeFormat;
+	protected static SimpleDateFormat _longTimeFormat;
+
+	protected static SimpleDateFormat _shortTimeFormat;
 
 	protected static SimpleDateFormat _fullFormat;
 
 	protected final static String DATE_FORMAT_DEFN = "dd/MMM/yyyy";
 
-	protected final static String TIME_FORMAT_DEFN = "hh:mm:ss";
+	protected final static String LONG_TIME_FORMAT_DEFN = "hh:mm:ss";
+
+	protected final static String SHORT_TIME_FORMAT_DEFN = "hh:mm";
 
 	protected final static String UNSET = "unset";
 
@@ -36,10 +40,12 @@ public class DTGHelper extends EditorHelper
 		{
 			_dateFormat = new SimpleDateFormat(DATE_FORMAT_DEFN);
 			_dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-			_timeFormat = new SimpleDateFormat(TIME_FORMAT_DEFN);
-			_timeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			_longTimeFormat = new SimpleDateFormat(LONG_TIME_FORMAT_DEFN);
+			_longTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+			_shortTimeFormat = new SimpleDateFormat(SHORT_TIME_FORMAT_DEFN);
+			_shortTimeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 			_fullFormat = new SimpleDateFormat(DATE_FORMAT_DEFN + "Z"
-					+ TIME_FORMAT_DEFN);
+					+ LONG_TIME_FORMAT_DEFN);
 			_fullFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 		}
 	}
@@ -86,7 +92,7 @@ public class DTGHelper extends EditorHelper
 			{
 				_originalVal = new HiResDate(dtg);
 				_date = _dateFormat.format(dtg.getDate());
-				_time = _timeFormat.format(dtg.getDate());
+				_time = _longTimeFormat.format(dtg.getDate());
 			}
 			
 			_originalDate = new String( _date);
@@ -134,13 +140,38 @@ public class DTGHelper extends EditorHelper
 			HiResDate res = _originalVal;
 			try
 			{
+				long millis = 0;
+				
 				// see if they have been set yet
-				if ((!_date.equals(UNSET)) && (!_time.equals(UNSET)))
+				if(!_date.equals(UNSET))
 				{
 					Date date = _dateFormat.parse(_date);
-					Date time = _timeFormat.parse(_time);
-					res = new HiResDate(date.getTime() + time.getTime(), 0);
+					millis += date.getTime();
 				}
+				
+				if(!_time.equals(UNSET))
+				{
+					// first try with the long format
+					Date time = null;
+					
+					try
+					{
+						time = _longTimeFormat.parse(_time);
+					}
+					catch (ParseException e)
+					{
+						time = _shortTimeFormat.parse(_time);
+					}
+					
+					if(time != null)
+						millis += time.getTime();
+				}
+				
+				if(millis != 0)
+				{
+					res = new HiResDate(millis, 0);
+				}
+				
 			} catch (ParseException e)
 			{
 				// fall back on the original value
