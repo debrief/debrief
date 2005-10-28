@@ -30,6 +30,11 @@ public class DTGBiSlider extends Composite
 	 */
 	HiResDate _maxVal;
 	
+	/** the step size we apply to the slider (the size of the smallest increment, in millis)
+	 * 
+	 */
+	long _stepSize = 1000 * 60;
+	
 	/** constructor - get things going
 	 * 
 	 * @param parent
@@ -77,11 +82,13 @@ public class DTGBiSlider extends Composite
 		long microRange = _maxVal.getMicros() - _minVal.getMicros();
 		long milliRange = microRange / 1000;
 		
+		long workingRange = milliRange / _stepSize;
+		
 		_mySlider.setMinimumValue(0);
-		_mySlider.setMaximumValue(milliRange);
+		_mySlider.setMaximumValue(workingRange);
 		
 		// try for hours
-		_mySlider.setSegmentSize(1000 * 60 * 15);
+		_mySlider.setSegmentSize(60);
 	}
 	
 	
@@ -108,8 +115,16 @@ public class DTGBiSlider extends Composite
 	 */
 	protected void outputValues()
 	{
-		HiResDate lowDTG = new HiResDate((long) _mySlider.getMinimumColoredValue(), _minVal.getMicros());
-		HiResDate highDTG = new HiResDate((long) _mySlider.getMaximumColoredValue(), _minVal.getMicros());
+		// get how many micros it is
+		
+		long minVal = (long) _mySlider.getMinimumColoredValue();
+		minVal *= _stepSize;
+		
+		long maxVal = (long) _mySlider.getMaximumColoredValue();
+		maxVal *= _stepSize;
+		
+		HiResDate lowDTG = new HiResDate((long) minVal, _minVal.getMicros());
+		HiResDate highDTG = new HiResDate((long) maxVal, _minVal.getMicros());
 		
 		rangeChanged(new TimePeriod.BaseTimePeriod(lowDTG, highDTG));
 	}
@@ -119,5 +134,23 @@ public class DTGBiSlider extends Composite
 		// ok, anybody can over-ride this call if they want to - to inform
 		// themselves what's happening
 	}
+
+	/**
+	 * @return Returns the _stepSize.
+	 */
+	public long getStepSize()
+	{
+		return _stepSize;
+	}
+
+	/**
+	 * @param size The _stepSize to set.
+	 */
+	public void setStepSize(long size)
+	{
+		_stepSize = size;
+	}
+	
+	
 	
 }

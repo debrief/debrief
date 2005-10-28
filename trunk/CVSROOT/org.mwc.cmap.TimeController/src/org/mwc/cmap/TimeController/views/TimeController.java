@@ -105,11 +105,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	private Vector _selectionListeners;
 
 	/**
-	 * the thing we're currently displaying
-	 */
-	private ISelection _currentSelection;
-
-	/**
 	 * and the preferences for time control
 	 */
 	private TimeControlProperties _myStepperProperties;
@@ -201,6 +196,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private Scale _tNowSlider;
 
+	/** the play button, obviously.
+	 * 
+	 */
+	private Button _playButton;
+
 	/**
 	 * ok - put in our bits
 	 * 
@@ -235,14 +235,14 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				.createImage());
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
 
-		final Button play = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-		play.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif")
+		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
+		_playButton.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif")
 				.createImage());
-		play.addSelectionListener(new SelectionAdapter()
+		_playButton.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
 			{
-				boolean playing = play.getSelection();
+				boolean playing = _playButton.getSelection();
 				ImageDescriptor thisD;
 				if (playing)
 				{
@@ -254,7 +254,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					thisD = TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif");
 					stopPlaying();
 				}
-				play.setImage(thisD.createImage());
+				_playButton.setImage(thisD.createImage());
 			}
 		});
 
@@ -340,26 +340,33 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						// and trim down the range of our slider manager
 
 						// hey, what's the current dtg?
-//						HiResDate currentDTG = _slideManager.fromSliderUnits(_tNowSlider
-//								.getSelection());
+						HiResDate currentDTG = _slideManager.fromSliderUnits(_tNowSlider
+								.getSelection());
 
 						// update the range of the slider
 						_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
 
-//						// do we need to move the slider back into a valid point?
-//						// hmm, was it too late?
-//						if (currentDTG.greaterThan(period.getEndDTG()))
-//						{
-//							_tNowSlider.setSelection(_tNowSlider.getMaximum());
-//						}
-//						else if (currentDTG.lessThan(period.getStartDTG()))
-//						{
-//							_tNowSlider.setSelection(_tNowSlider.getMinimum());
-//						}
-//						else
-//						{
-//							_tNowSlider.setSelection(_slideManager.toSliderUnits(currentDTG));
-//						}
+						// do we need to move the slider back into a valid point?
+						// hmm, was it too late?
+						HiResDate trimmedDTG = null;
+						if (currentDTG.greaterThan(period.getEndDTG()))
+						{
+							trimmedDTG = period.getEndDTG();
+						}
+						else if (currentDTG.lessThan(period.getStartDTG()))
+						{
+							trimmedDTG = period.getStartDTG();
+						}
+						else
+						{
+							_tNowSlider.setSelection(_slideManager.toSliderUnits(currentDTG));
+						}
+						
+						// did we have to move them?
+						if(trimmedDTG != null)
+						{
+							fireNewTime(trimmedDTG);							
+						}
 					}
 				}
 			});
@@ -515,9 +522,20 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		}
 	}
 
+	private boolean _firingNewTime = false;
+	
 	private void fireNewTime(HiResDate dtg)
 	{
-		_controllableTime.setTime(this, dtg);
+		if(!_firingNewTime)
+		{
+			_firingNewTime = true;
+			_controllableTime.setTime(this, dtg);
+			_firingNewTime = false;
+		}
+		else
+		{
+			System.out.print(".");
+		}
 	}
 
 	private void setupListeners()
@@ -537,8 +555,24 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						{
 							// ok, stop listening to the old one
 							if (_myTemporalDataset != null)
+							{
+								// right, we were looking at something, and now we're not.
+								
+								// stop playing (if we were)
+								if(_theTimer.isRunning())
+								{
+									// un-depress the play button
+									_playButton.setSelection(false);
+									
+									// and tell the button's listeners (which will stop the timer and update the image)
+									_playButton.notifyListeners(SWT.Selection, new Event());
+								}
+								
+								
+								// stop listening to that dataset
 								_myTemporalDataset.removeListener(_temporalListener,
 										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							}
 
 							// implementation here.
 							_myTemporalDataset = (TimeProvider) part;
@@ -727,6 +761,18 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 											// ok, refresh the DTG
 											String newVal = getFormattedDate(_myTemporalDataset.getTime());
 											_timeLabel.setText(newVal);
+											
+											// hmm, also set the bi-slider to repaint so we get fresh labels
+											_dtgRangeSlider.update();
+										}
+										else if (evt.getPropertyName().equals(TimeControlProperties.STEP_INTERVAL_ID))
+										{
+											// hey, if we're stepping, we'd better change the size of the time step
+											if(_theTimer.isRunning())
+											{												
+												Duration theDelay = (Duration) evt.getNewValue();
+												_theTimer.setDelay((long)theDelay.getValueIn(Duration.MILLISECONDS));
+											}
 										}
 									}
 								};
@@ -1072,7 +1118,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	public void setSelection(ISelection selection)
 	{
-		_currentSelection = selection;
 	}
 
 	/**
@@ -1155,7 +1200,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			formatMenu.add(newFormat);
 		}
 
-		// lastly the add-bookmark item
+		// now the add-bookmark item
 		_setAsBookmarkAction = new Action("Add DTG as bookmark", Action.AS_PUSH_BUTTON)
 		{
 			public void runWithEvent(Event event)
@@ -1163,6 +1208,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				addMarker();
 			}
 		};
+		_setAsBookmarkAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+				.getImageDescriptor("icons/bkmrk_nav.gif"));
+		_setAsBookmarkAction.setToolTipText("Add this DTG to the list of bookmarks");
 		menuManager.add(_setAsBookmarkAction);
 
 		// let user indicate whether we should be filtering to window
@@ -1274,6 +1322,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		public String format(long val)
 		{
 			String res;
+			val *= _dtgRangeSlider.getStepSize();
 			HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
 					.getMicros());
 			res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties.getDTGFormat());
