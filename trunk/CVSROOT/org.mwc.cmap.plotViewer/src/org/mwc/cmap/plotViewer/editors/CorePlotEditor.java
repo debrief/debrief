@@ -387,7 +387,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 					{
 						// right, convert to DTG
 						HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
-						_timeManager.setTime(this, tNow);
+						_timeManager.setTime(this, tNow, true);
 					}
 				}
 

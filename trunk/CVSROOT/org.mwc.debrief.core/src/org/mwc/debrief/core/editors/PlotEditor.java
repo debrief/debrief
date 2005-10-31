@@ -310,7 +310,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			super._timeManager.setPeriod(this, timePeriod);
 
 			// also give it a current DTG
-			super._timeManager.setTime(this, timePeriod.getStartDTG());
+			super._timeManager.setTime(this, timePeriod.getStartDTG(), false);
 		}
 
 		// so, do we have any narrative data?

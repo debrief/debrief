@@ -118,7 +118,7 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 			// did we find a valid dtg?
 			if (dtg != null)
 			{
-				timeController.setTime(this, dtg);
+				timeController.setTime(this, dtg, false);
 			}
 		}
 

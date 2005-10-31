@@ -511,7 +511,7 @@ public class NarrativeView extends ViewPart
 				if (_controllingTimeToggle.isChecked())
 				{
 					NarrativeWrapper.NarrativeEntry ne = getCurrentEntry();
-					_controllableTime.setTime(this, ne.getDTG());
+					_controllableTime.setTime(this, ne.getDTG(), true);
 				}
 			}
 

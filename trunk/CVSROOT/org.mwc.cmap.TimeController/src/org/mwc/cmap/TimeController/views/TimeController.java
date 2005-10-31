@@ -529,12 +529,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		if(!_firingNewTime)
 		{
 			_firingNewTime = true;
-			_controllableTime.setTime(this, dtg);
+			_controllableTime.setTime(this, dtg, true);
 			_firingNewTime = false;
-		}
-		else
-		{
-			System.out.print(".");
 		}
 	}
 

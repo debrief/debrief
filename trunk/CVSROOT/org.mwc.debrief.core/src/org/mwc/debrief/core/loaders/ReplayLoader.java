@@ -153,7 +153,7 @@ public void loadFile(final PlotEditor thePlot, IEditorInput input)
 						theLayers.suspendFiringExtended(false);
 
 						// and trigger an update ourselves
-						theLayers.fireExtended();
+				//		theLayers.fireExtended();
 					}
 				}
 			});

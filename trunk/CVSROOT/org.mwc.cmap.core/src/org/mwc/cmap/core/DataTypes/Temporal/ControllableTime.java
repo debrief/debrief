@@ -19,7 +19,8 @@ public interface ControllableTime {
 	 * provided largely so that triggering object can ignore time 
 	 * changes it originally created
 	 * @param newDate - the new DTG to use
+	 * @param fireUpdate - whether to fire the update to any listeners.  This should normally be true, but may be false when originally loading the data
 	 */
-	public void setTime(Object origin, HiResDate newDate);
+	public void setTime(Object origin, HiResDate newDate, boolean fireUpdate);
 	
 }
