@@ -125,8 +125,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private StructuredSelection _propsAsSelection = null;
 
-	protected TimeControlPreferences _myTimePreferences;
-
 	private DTGBiSlider _dtgRangeSlider;
 
 	private Action _filterToSelectionAction;
@@ -196,8 +194,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private Scale _tNowSlider;
 
-	/** the play button, obviously.
-	 * 
+	/**
+	 * the play button, obviously.
 	 */
 	private Button _playButton;
 
@@ -346,6 +344,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						// update the range of the slider
 						_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
 
+						// hey - remember the updated time range (largely so that we can
+						// restore from file later on)
+						_myStepperProperties.setSliderStartTime(period.getStartDTG());
+						_myStepperProperties.setSliderEndTime(period.getEndDTG());
+
 						// do we need to move the slider back into a valid point?
 						// hmm, was it too late?
 						HiResDate trimmedDTG = null;
@@ -361,11 +364,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						{
 							_tNowSlider.setSelection(_slideManager.toSliderUnits(currentDTG));
 						}
-						
+
 						// did we have to move them?
-						if(trimmedDTG != null)
+						if (trimmedDTG != null)
 						{
-							fireNewTime(trimmedDTG);							
+							fireNewTime(trimmedDTG);
 						}
 					}
 				}
@@ -432,6 +435,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			else if (event.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
 			{
 				TimePeriod newPeriod = (TimePeriod) event.getNewValue();
+				System.out.println("heard about new time period!");
 				_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
 			}
 
@@ -523,10 +527,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	}
 
 	private boolean _firingNewTime = false;
-	
+
 	private void fireNewTime(HiResDate dtg)
 	{
-		if(!_firingNewTime)
+		if (!_firingNewTime)
 		{
 			_firingNewTime = true;
 			_controllableTime.setTime(this, dtg, true);
@@ -553,18 +557,18 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							if (_myTemporalDataset != null)
 							{
 								// right, we were looking at something, and now we're not.
-								
+
 								// stop playing (if we were)
-								if(_theTimer.isRunning())
+								if (_theTimer.isRunning())
 								{
 									// un-depress the play button
 									_playButton.setSelection(false);
-									
-									// and tell the button's listeners (which will stop the timer and update the image)
+
+									// and tell the button's listeners (which will stop the timer
+									// and update the image)
 									_playButton.notifyListeners(SWT.Selection, new Event());
 								}
-								
-								
+
 								// stop listening to that dataset
 								_myTemporalDataset.removeListener(_temporalListener,
 										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -586,11 +590,12 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							TimePeriod timeRange = _myTemporalDataset.getPeriod();
 							if (timeRange != null)
 							{
+								// don't update the slider here, take it's value from the
+								// TimeControlPreferences
 								_slideManager.resetRange(timeRange.getStartDTG(), timeRange.getEndDTG());
 
 								// and our range selector
 								_dtgRangeSlider.updateOuterRanges(timeRange);
-
 							}
 
 							checkTimeEnabled();
@@ -609,7 +614,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						// was it our one?
 						if (_myTemporalDataset == part)
 						{
-							// ok, stop listening to this object (just in case we were, anyway).
+							// ok, stop listening to this object (just in case we were,
+							// anyway).
 							_myTemporalDataset.removeListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
@@ -757,17 +763,21 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 											// ok, refresh the DTG
 											String newVal = getFormattedDate(_myTemporalDataset.getTime());
 											_timeLabel.setText(newVal);
-											
-											// hmm, also set the bi-slider to repaint so we get fresh labels
+
+											// hmm, also set the bi-slider to repaint so we get fresh
+											// labels
 											_dtgRangeSlider.update();
 										}
-										else if (evt.getPropertyName().equals(TimeControlProperties.STEP_INTERVAL_ID))
+										else if (evt.getPropertyName().equals(
+												TimeControlProperties.STEP_INTERVAL_ID))
 										{
-											// hey, if we're stepping, we'd better change the size of the time step
-											if(_theTimer.isRunning())
-											{												
+											// hey, if we're stepping, we'd better change the size of
+											// the time step
+											if (_theTimer.isRunning())
+											{
 												Duration theDelay = (Duration) evt.getNewValue();
-												_theTimer.setDelay((long)theDelay.getValueIn(Duration.MILLISECONDS));
+												_theTimer.setDelay((long) theDelay
+														.getValueIn(Duration.MILLISECONDS));
 											}
 										}
 									}
@@ -775,6 +785,69 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 							// also, listen out for changes in the DTG formatter
 							_myStepperProperties.addPropertyChangeListener(_myDateFormatListener);
+
+							// and update the slider ranges
+							// do we have start/stop times?
+							HiResDate startDTG = _myStepperProperties.getSliderStartTime();
+							if (startDTG != null)
+							{
+								// cool - update the slider to our data settings
+								
+								// aaah, first check that the time period isn't greater than our data period
+								TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
+								HiResDate startTime, endTime;
+								startTime = _myStepperProperties.getSliderStartTime();
+								endTime = _myStepperProperties.getSliderEndTime();
+
+								// trim slider start time
+								if(startTime.lessThan(dataPeriod.getStartDTG()))
+									startTime = dataPeriod.getStartDTG();
+								else if(startTime.greaterThan(dataPeriod.getEndDTG()))
+								  startTime = dataPeriod.getEndDTG();
+								
+								// trim slider end time
+								if(endTime.lessThan(dataPeriod.getStartDTG()))
+									endTime = dataPeriod.getStartDTG();
+								else if(endTime.greaterThan(dataPeriod.getEndDTG()))
+									endTime = dataPeriod.getEndDTG();
+								
+								_slideManager.resetRange(startTime, endTime);
+
+								// right, trim the DTG to the current slider settings
+								HiResDate tNow = _myTemporalDataset.getTime();
+								HiResDate tNew = null;
+								if (tNow != null)
+								{
+									TimePeriod sliderPeriod = new TimePeriod.BaseTimePeriod(
+											_myStepperProperties.getSliderStartTime(), _myStepperProperties
+													.getSliderEndTime());
+									if (!sliderPeriod.contains(tNow))
+									{
+										if (tNow.lessThan(_myStepperProperties.getSliderStartTime()))
+											tNew = _myStepperProperties.getSliderStartTime();
+										else
+											tNew = _myStepperProperties.getSliderEndTime();
+									}
+									
+									if(tNew != null)
+										_controllableTime.setTime(this, tNew, false);
+									
+								}
+
+								// and set the time again - the slider has probably forgotten
+								// it.
+								timeUpdated(_myTemporalDataset.getTime());
+
+							}
+							else
+							{
+								// we don't have an existing period - reset it from the data
+								// provided
+								TimePeriod period = _myTemporalDataset.getPeriod();
+								if (period != null)
+									_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
+							}
+
 						}
 
 					}
@@ -1266,7 +1339,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			formatMenu.add(newFormat);
 		}
 	}
-	
+
 	/**
 	 * @param menuManager
 	 */
@@ -1279,15 +1352,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		menuManager.add(formatMenu);
 
 		// and now the date formats
-		Object[][] stepSizes = {{"1 sec", new Long(1000)},
-				                    {"1 min",new Long(60 * 1000)},
-				                    {"15 min",new Long(15 * 60 * 1000)},
-				                    {"1 hour",new Long(60 * 60 * 1000)},
-				                    };
-		
-		for(int i=0;i<stepSizes.length;i++)
+		Object[][] stepSizes = { { "1 sec", new Long(1000) },
+				{ "1 min", new Long(60 * 1000) }, { "15 min", new Long(15 * 60 * 1000) },
+				{ "1 hour", new Long(60 * 60 * 1000) }, };
+
+		for (int i = 0; i < stepSizes.length; i++)
 		{
-			
+
 			final String sizeLabel = (String) stepSizes[i][0];
 			final Long thisSize = (Long) stepSizes[i][1];
 
@@ -1298,7 +1369,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				{
 					super.run();
 					_dtgRangeSlider.setStepSize(thisSize.longValue());
-					
+
 					// ok, update the ranges of the slider
 					_dtgRangeSlider.updateOuterRanges(_myTemporalDataset.getPeriod());
 				}
@@ -1306,7 +1377,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			};
 			formatMenu.add(newFormat);
 		}
-	}	
+	}
 
 	protected void expandTimeSliderRangeToFull()
 	{

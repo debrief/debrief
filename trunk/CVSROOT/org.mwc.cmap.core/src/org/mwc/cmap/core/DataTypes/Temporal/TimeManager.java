@@ -6,6 +6,9 @@ package org.mwc.cmap.core.DataTypes.Temporal;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 
+import org.eclipse.core.runtime.Status;
+import org.mwc.cmap.core.CorePlugin;
+
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 
@@ -45,7 +48,7 @@ public class TimeManager implements ControllableTime, TimeProvider
 			{
 				// bugger. it's outside the time period
 				// throw a wobbly
-				throw new RuntimeException("Invalid time provided");
+				CorePlugin.logError(Status.ERROR, "New time outside data period", null);
 			}
 		}
 

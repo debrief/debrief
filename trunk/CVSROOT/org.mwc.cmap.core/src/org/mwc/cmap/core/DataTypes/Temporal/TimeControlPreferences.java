@@ -1,6 +1,6 @@
 package org.mwc.cmap.core.DataTypes.Temporal;
 
-import MWC.GenericData.Duration;
+import MWC.GenericData.*;
 
 /** interface for object that stores time preferences
  * 
@@ -54,5 +54,25 @@ public interface TimeControlPreferences
 	 * 
 	 */
 	public void setAutoInterval(Duration duration);
+	
+	/** get the slider start time (not necessarily the same as the time period for the data)
+	 * 
+	 */
+	public HiResDate getSliderStartTime();
+
+	/** get the slider end time (not necessarily the same as the time period for the data)
+	 * 
+	 */
+	public HiResDate getSliderEndTime();
+	
+	/** set the slider start time (not necessarily the same as the time period for the data)
+	 * 
+	 */
+	public void setSliderStartTime(HiResDate dtg);
+	
+	/** set the slider end time (not necessarily the same as the time period for the data)
+	 * 
+	 */
+	public void setSliderEndTime(HiResDate dtg);
 
 }
