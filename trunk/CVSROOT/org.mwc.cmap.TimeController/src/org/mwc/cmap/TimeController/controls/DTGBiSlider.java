@@ -87,8 +87,8 @@ public class DTGBiSlider extends Composite
 		_mySlider.setMinimumValue(0);
 		_mySlider.setMaximumValue(workingRange);
 		
-		// try for hours
-		_mySlider.setSegmentSize(workingRange / 10);
+		// try for units of 10 * the current step
+		_mySlider.setSegmentSize(10);
 	}
 	
 	
@@ -136,7 +136,7 @@ public class DTGBiSlider extends Composite
 	}
 
 	/**
-	 * @return Returns the _stepSize.
+	 * @return Returns the _stepSize (millis)
 	 */
 	public long getStepSize()
 	{
@@ -144,7 +144,7 @@ public class DTGBiSlider extends Composite
 	}
 
 	/**
-	 * @param size The _stepSize to set.
+	 * @param size The _stepSize to set (millis)
 	 */
 	public void setStepSize(long size)
 	{
