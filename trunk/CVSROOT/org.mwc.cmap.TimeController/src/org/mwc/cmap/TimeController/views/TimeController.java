@@ -212,8 +212,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		FillLayout onTop = new FillLayout(SWT.VERTICAL);
 		_wholePanel.setLayout(onTop);
 
+		Composite doublePanel = new Composite(_wholePanel, SWT.NONE);
+		FillLayout timeBox = new FillLayout(SWT.VERTICAL);		
+		doublePanel.setLayout(timeBox );		
+		
+		
 		// first create the button holder
-		Composite _btnPanel = new Composite(_wholePanel, SWT.NONE);
+		Composite _btnPanel = new Composite(doublePanel, SWT.NONE);
 		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
 		btnFiller.marginHeight = 0;
 		_btnPanel.setLayout(btnFiller);
@@ -269,8 +274,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				.createImage());
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
+
+		
+		
 		// and the current time label
-		Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
+		Composite timeContainer = new Composite(doublePanel, SWT.NONE);
 		FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
 		timeContainer.setLayout(timeFiller);
 		_timeLabel = new Label(timeContainer, SWT.NONE);
