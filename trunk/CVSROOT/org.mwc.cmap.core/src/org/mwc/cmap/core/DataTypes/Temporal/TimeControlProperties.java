@@ -8,7 +8,7 @@ import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.property_support.DurationHelper;
 
 import MWC.GUI.Properties.*;
-import MWC.GenericData.Duration;
+import MWC.GenericData.*;
 
 public class TimeControlProperties extends java.beans.PropertyChangeSupport implements
 		IPropertySource2, TimeControlPreferences
@@ -41,16 +41,23 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 
 	static private String[] DTG_FORMAT_STRINGS;
 
+	/** and the slider limits (which may be different to the period of the data
+	 * 
+	 */
+	private HiResDate _sliderStart, _sliderEnd;
+	
 	/**
 	 * the property names
 	 */
-	public static String LARGE_STEP_ID = "Large Step";
+	final public static String LARGE_STEP_ID = "Large Step";
 
-	public static String SMALL_STEP_ID = "Small Step";
+	final public static String SMALL_STEP_ID = "Small Step";
 
-	public static String STEP_INTERVAL_ID = "Step Interval";
+	final public static String STEP_INTERVAL_ID = "Step Interval";
 
-	public static String DTG_FORMAT_ID = "DTG Format";
+	final public static String DTG_FORMAT_ID = "DTG Format";
+	
+	final public static String SLIDER_LIMITS_ID = "Slider limits";
 
 	/**
 	 * static instances of our properties
@@ -344,5 +351,40 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 	public void setAutoInterval(Duration duration)
 	{
 		_autoInterval = duration;
+	}
+
+	public HiResDate getSliderStartTime()
+	{
+		return _sliderStart;
+	}
+
+	public HiResDate getSliderEndTime()
+	{
+		return _sliderEnd;
+	}
+
+	public void setSliderStartTime(HiResDate dtg)
+	{
+		// take a copy, to start with
+		HiResDate oldDTG = dtg;
+		
+		// update the value
+		_sliderStart = dtg;
+		
+		// and fire the update
+		firePropertyChange(SLIDER_LIMITS_ID, oldDTG, _sliderStart);
+		
+	}
+
+	public void setSliderEndTime(HiResDate dtg)
+	{
+		// take a copy, to start with
+		HiResDate oldDTG = dtg;
+		
+		// update the value
+		_sliderEnd = dtg;
+		
+		// and fire the update
+		firePropertyChange(SLIDER_LIMITS_ID, oldDTG, _sliderEnd);
 	}
 }
