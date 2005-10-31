@@ -1169,36 +1169,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		menuManager.add(new Separator());
 		toolManager.add(new Separator());
 
-		// ok, second menu for the DTG formats
-		MenuManager formatMenu = new MenuManager("DTG Format");
+		// add the list of DTG formats for the DTG slider
+		addDateFormats(menuManager);
 
-		// and store it
-		menuManager.add(formatMenu);
-
-		// and now the date formats
-		String[] formats = DateFormatPropertyEditor.getTagList();
-		for (int i = 0; i < formats.length; i++)
-		{
-			final String thisFormat = formats[i];
-
-			// the properties manager is expecting the integer index of the new
-			// format, not the string value.
-			// so store it as an integer index
-			final Integer thisIndex = new Integer(i);
-
-			// and create a new action to represent the change
-			Action newFormat = new Action(thisFormat, Action.AS_RADIO_BUTTON)
-			{
-				public void run()
-				{
-					super.run();
-					_myStepperProperties.setPropertyValue(TimeControlProperties.DTG_FORMAT_ID,
-							thisIndex);
-				}
-
-			};
-			formatMenu.add(newFormat);
-		}
+		// add the list of DTG formats for the DTG slider
+		addSliderResolution(menuManager);
 
 		// now the add-bookmark item
 		_setAsBookmarkAction = new Action("Add DTG as bookmark", Action.AS_PUSH_BUTTON)
@@ -1258,6 +1233,84 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// see our changes
 		getViewSite().getActionBars().updateActionBars();
 	}
+
+	/**
+	 * @param menuManager
+	 */
+	private void addDateFormats(final IMenuManager menuManager)
+	{
+		// ok, second menu for the DTG formats
+		MenuManager formatMenu = new MenuManager("DTG Format");
+
+		// and store it
+		menuManager.add(formatMenu);
+
+		// and now the date formats
+		String[] formats = DateFormatPropertyEditor.getTagList();
+		for (int i = 0; i < formats.length; i++)
+		{
+			final String thisFormat = formats[i];
+
+			// the properties manager is expecting the integer index of the new
+			// format, not the string value.
+			// so store it as an integer index
+			final Integer thisIndex = new Integer(i);
+
+			// and create a new action to represent the change
+			Action newFormat = new Action(thisFormat, Action.AS_RADIO_BUTTON)
+			{
+				public void run()
+				{
+					super.run();
+					_myStepperProperties.setPropertyValue(TimeControlProperties.DTG_FORMAT_ID,
+							thisIndex);
+				}
+
+			};
+			formatMenu.add(newFormat);
+		}
+	}
+	
+	/**
+	 * @param menuManager
+	 */
+	private void addSliderResolution(final IMenuManager menuManager)
+	{
+		// ok, second menu for the DTG formats
+		MenuManager formatMenu = new MenuManager("Range selector resolution");
+
+		// and store it
+		menuManager.add(formatMenu);
+
+		// and now the date formats
+		Object[][] stepSizes = {{"1 sec", new Long(1000)},
+				                    {"1 min",new Long(60 * 1000)},
+				                    {"15 min",new Long(15 * 60 * 1000)},
+				                    {"1 hour",new Long(60 * 60 * 1000)},
+				                    };
+		
+		for(int i=0;i<stepSizes.length;i++)
+		{
+			
+			final String sizeLabel = (String) stepSizes[i][0];
+			final Long thisSize = (Long) stepSizes[i][1];
+
+			// and create a new action to represent the change
+			Action newFormat = new Action(sizeLabel, Action.AS_RADIO_BUTTON)
+			{
+				public void run()
+				{
+					super.run();
+					_dtgRangeSlider.setStepSize(thisSize.longValue());
+					
+					// ok, update the ranges of the slider
+					_dtgRangeSlider.updateOuterRanges(_myTemporalDataset.getPeriod());
+				}
+
+			};
+			formatMenu.add(newFormat);
+		}
+	}	
 
 	protected void expandTimeSliderRangeToFull()
 	{
