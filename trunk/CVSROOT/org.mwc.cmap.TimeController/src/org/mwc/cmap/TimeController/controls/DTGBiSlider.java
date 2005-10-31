@@ -88,7 +88,7 @@ public class DTGBiSlider extends Composite
 		_mySlider.setMaximumValue(workingRange);
 		
 		// try for hours
-		_mySlider.setSegmentSize(60);
+		_mySlider.setSegmentSize(workingRange / 10);
 	}
 	
 	
