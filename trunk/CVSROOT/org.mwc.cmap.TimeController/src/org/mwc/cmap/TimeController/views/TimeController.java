@@ -610,13 +610,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// ok, stop listening to this object (just in case we were, anyway).
-						_myTemporalDataset.removeListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
 						// was it our one?
 						if (_myTemporalDataset == part)
 						{
+							// ok, stop listening to this object (just in case we were, anyway).
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 							_myTemporalDataset = null;
 						}
 
