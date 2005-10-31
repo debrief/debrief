@@ -75,26 +75,25 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		String start_time = (String) details.properties.get("Toolbox_Start_Time");
 		if (start_time != null)
 		{
-//			HiResDate startTime = null;
-//			// get a date from this
-//			startTime = DebriefFormatDateTime.parseThis(start_time);
+			HiResDate startTime = null;
+			// get a date from this
+			startTime = DebriefFormatDateTime.parseThis(start_time);
 
 			// set the cursor
-			CorePlugin.logError(Status.WARNING, "Toolbox start not yet implemented", null);
-//			_analysisView.getTote().getStepper().setToolboxStartTime(startTime);
+			timePrefs.setSliderStartTime(startTime);
 		}
 
 		// ////////////////////////////////////////////////////////////
 		String end_time = (String) details.properties.get("Toolbox_End_Time");
 		if (end_time != null)
 		{
-//			HiResDate endTime = null;
-//
-//			// get a date from this
-//			endTime = DebriefFormatDateTime.parseThis(end_time);
+			HiResDate endTime = null;
+
+			// get a date from this
+			endTime = DebriefFormatDateTime.parseThis(end_time);
 
 			// set the cursor
-			CorePlugin.logError(Status.WARNING, "Toolbox end not yet implemented", null);
+			timePrefs.setSliderEndTime(endTime);
 		}
 
 		// ////////////////////////////////////////////////////////////
@@ -289,14 +288,14 @@ public final class StepperHandler implements SWTGUIHandler.ComponentCreator
 		
 		// what's the time?
 		// Let's not bother with this for now...
-//		HiResDate theStartTime = controller.getToolboxStartTime();
-//		if (theStartTime != null)
-//			details.addProperty("Toolbox_Start_Time", DebriefFormatDateTime
-//					.toStringHiRes(theStartTime));
-//		HiResDate theEndTime = controller.getToolboxEndTime();
-//		if (theEndTime != null)
-//			details.addProperty("Toolbox_End_Time", DebriefFormatDateTime
-//					.toStringHiRes(theEndTime));
+		HiResDate theStartTime = controller.getSliderStartTime();
+		if (theStartTime != null)
+			details.addProperty("Toolbox_Start_Time", DebriefFormatDateTime
+					.toStringHiRes(theStartTime));
+		HiResDate theEndTime = controller.getSliderEndTime();
+		if (theEndTime != null)
+			details.addProperty("Toolbox_End_Time", DebriefFormatDateTime
+					.toStringHiRes(theEndTime));
 
 		return details;
 	}
