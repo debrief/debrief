@@ -346,6 +346,7 @@
            introId="org.mwc.debrief.core.intro">
         <presentation home-page-id="root"  standby-page-id="root">
            <implementation
+                 style="css/shared.css"
                  kind="swt"
                  />
         </presentation>
