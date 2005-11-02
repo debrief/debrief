@@ -213,10 +213,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		_wholePanel.setLayout(onTop);
 
 		Composite doublePanel = new Composite(_wholePanel, SWT.NONE);
-		FillLayout timeBox = new FillLayout(SWT.VERTICAL);		
-		doublePanel.setLayout(timeBox );		
-		
-		
+		FillLayout timeBox = new FillLayout(SWT.VERTICAL);
+		doublePanel.setLayout(timeBox);
+
 		// first create the button holder
 		Composite _btnPanel = new Composite(doublePanel, SWT.NONE);
 		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
@@ -274,9 +273,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				.createImage());
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
-
-		
-		
 		// and the current time label
 		Composite timeContainer = new Composite(doublePanel, SWT.NONE);
 		FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
@@ -800,25 +796,26 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							if (startDTG != null)
 							{
 								// cool - update the slider to our data settings
-								
-								// aaah, first check that the time period isn't greater than our data period
+
+								// aaah, first check that the time period isn't greater than our
+								// data period
 								TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
 								HiResDate startTime, endTime;
 								startTime = _myStepperProperties.getSliderStartTime();
 								endTime = _myStepperProperties.getSliderEndTime();
 
 								// trim slider start time
-								if(startTime.lessThan(dataPeriod.getStartDTG()))
+								if (startTime.lessThan(dataPeriod.getStartDTG()))
 									startTime = dataPeriod.getStartDTG();
-								else if(startTime.greaterThan(dataPeriod.getEndDTG()))
-								  startTime = dataPeriod.getEndDTG();
-								
+								else if (startTime.greaterThan(dataPeriod.getEndDTG()))
+									startTime = dataPeriod.getEndDTG();
+
 								// trim slider end time
-								if(endTime.lessThan(dataPeriod.getStartDTG()))
+								if (endTime.lessThan(dataPeriod.getStartDTG()))
 									endTime = dataPeriod.getStartDTG();
-								else if(endTime.greaterThan(dataPeriod.getEndDTG()))
+								else if (endTime.greaterThan(dataPeriod.getEndDTG()))
 									endTime = dataPeriod.getEndDTG();
-								
+
 								_slideManager.resetRange(startTime, endTime);
 
 								// right, trim the DTG to the current slider settings
@@ -836,10 +833,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 										else
 											tNew = _myStepperProperties.getSliderEndTime();
 									}
-									
-									if(tNew != null)
+
+									if (tNew != null)
 										_controllableTime.setTime(this, tNew, false);
-									
+
 								}
 
 								// and set the time again - the slider has probably forgotten
@@ -851,9 +848,14 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							{
 								// we don't have an existing period - reset it from the data
 								// provided
-								TimePeriod period = _myTemporalDataset.getPeriod();
-								if (period != null)
-									_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
+
+								// do we have a dataset even?
+								if (_myTemporalDataset != null)
+								{
+									TimePeriod period = _myTemporalDataset.getPeriod();
+									if (period != null)
+										_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
+								}
 							}
 
 						}
@@ -1449,11 +1451,17 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	{
 		public String format(long val)
 		{
-			String res;
+			String res = "";
 			val *= _dtgRangeSlider.getStepSize();
-			HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
-					.getMicros());
-			res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties.getDTGFormat());
+
+			// have we got some data?
+			if (_myTemporalDataset != null)
+			{
+				HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
+						.getMicros());
+				res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties
+						.getDTGFormat());
+			}
 			return res;
 		}
 	}
