@@ -5,5 +5,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/xmlParserAPIs.jar"/>
+	<classpathentry kind="src" path="intro"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
