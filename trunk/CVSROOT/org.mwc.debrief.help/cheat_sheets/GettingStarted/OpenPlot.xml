@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<cheatsheet title="Creating a new plot in Debrief">
+	<intro >
+		<description>
+			This tutorial will lead you through loading an existing file into Debrief.		
+		</description>
+	</intro>
+	<item title="Check your workspace">
+		<description>
+			Debrief requires working files to be contained in a Workspace.  [link to Workspace guidance in Help]
+		</description>
+	</item>
+	<item title="Copy plot into Workspace">
+		<description>
+			Debrief requires working files to be contained in a Workspace.  [link to Workspace guidance in Help]
+		</description>
+	</item>
+	<item title="Double-click on Plot">
+		<description>
+			Debrief requires working files to be contained in a Workspace.  [link to Workspace guidance in Help]
+		</description>
+	</item>
+</cheatsheet>

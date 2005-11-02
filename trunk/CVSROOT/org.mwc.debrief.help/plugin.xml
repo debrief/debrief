@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.help.toc">
+      <toc
+            file="toc.xml"
+            primary="true">
+      </toc>
+      <toc
+            file="tocconcepts.xml">
+      </toc>
+      <toc
+            file="tocgettingstarted.xml">
+      </toc>
+      <toc
+            file="tocreference.xml">
+      </toc>
+      <toc
+            file="tocsamples.xml">
+      </toc>
+      <toc
+            file="toctasks.xml">
+      </toc>
+   </extension>
+   <extension
+         point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+      <category
+            id="org.mwc.debrief.help.cheat_general"
+            name="Debrief General"/>
+      <category
+            id="org.mwc.debrief.help.cheat_started"
+            name="Getting started"/>
+      <cheatsheet
+            category="org.mwc.debrief.help.cheat_started"
+            contentFile="cheat_sheets/GettingStarted/CreatePlot.xml"
+            id="org.mwc.debrief.help.create_plot"
+            name="Creating a new plot"/>
+      <cheatsheet
+            category="org.mwc.debrief.help.cheat_started"
+            contentFile="cheat_sheets/GettingStarted/OpenPlot.xml"
+            id="org.mwc.debrief.help.open_plot"
+            name="Opening an existing plot"/>
+   </extension>
+
+</plugin>

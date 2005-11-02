@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8" ?> 
+<cheatsheet title="Creating a new plot in Debrief">
+	<intro  >
+		<description>
+			This tutorial will lead you through creating a new, blank plot in Debrief.
+		</description>
+	</intro>
+	<item title="Check your workspace">
+		<description>
+			Debrief requires working files to be contained in a Workspace.  [link to Workspace guidance in Help]
+		</description>
+	</item>
+	<item title="Create new plot">
+		<description>
+			Debrief requires working files to be contained in a Workspace.  [link to Workspace guidance in Help]
+		</description>
+	</item>
+	<item title="Add background data">
+		<description>
+			Debrief requires working files to be contained in a Workspace.  [link to Workspace guidance in Help]
+		</description>
+	</item>
+</cheatsheet>
