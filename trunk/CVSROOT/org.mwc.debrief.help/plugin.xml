@@ -28,10 +28,12 @@
          point="org.eclipse.ui.cheatsheets.cheatSheetContent">
       <category
             id="org.mwc.debrief.help.cheat_general"
-            name="Debrief General"/>
+            name="General"
+            parentCategory="org.mwc.debrief.help.cheats"/>
       <category
             id="org.mwc.debrief.help.cheat_started"
-            name="Getting started"/>
+            name="Getting started"
+            parentCategory="org.mwc.debrief.help.cheats"/>
       <cheatsheet
             category="org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/CreatePlot.xml"
@@ -42,6 +44,42 @@
             contentFile="cheat_sheets/GettingStarted/OpenPlot.xml"
             id="org.mwc.debrief.help.open_plot"
             name="Opening an existing plot"/>
+      <category
+            id="org.mwc.debrief.help.cheats"
+            name="Debrief"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
+            id="org.mwc.debrief.help.cheat_viewing"
+            name="Viewing plots"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
+            id="org.mwc.debrief.help.cheat_formatting"
+            name="Formatting plots"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
+            id="org.mwc.debrief.help.cheat_analysing"
+            name="Analysing Exercises"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
+            id="org.mwc.debrief.help.cheat_sensor"
+            name="Sensor data"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
+            id="org.mwc.debrief.help.cheat_TMA"
+            name="TMA data"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
+            id="org.mwc.debrief.help.cheat_buoys"
+            name="Buoyfields"
+            parentCategory="org.mwc.debrief.help.cheats"/>                                    
+      <category
+            id="org.mwc.debrief.help.cheat_narratives"
+            name="Narratives"
+            parentCategory="org.mwc.debrief.help.cheats"/>                                    
+      <category
+            id="org.mwc.debrief.help.cheat_maintaining"
+            name="Maintaining Debrief"
+            parentCategory="org.mwc.debrief.help.cheats"/>                                    
    </extension>
 
 </plugin>

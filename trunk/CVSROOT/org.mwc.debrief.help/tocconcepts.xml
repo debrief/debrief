@@ -2,10 +2,23 @@
 <?NLS TYPE="org.eclipse.help.toc"?>
 
 <toc label="Concepts" link_to="toc.xml#concepts"> 
-	<topic label="Main Topic"  href="html/concepts/maintopic.html"> 
-		<topic label="Sub Topic" href="html/concepts/subtopic.html" /> 
+	<topic label="General"> 
+		<topic label="Keeping up to date with Debrief" href="html/concepts/up_to_date.html" /> 
 	</topic>
-	<topic label="Main Topic 2">
-		<topic label="Sub Topic 2" href="html/concepts/subtopic2.html" /> 
+	<topic label="Getting started">
+		<topic label="The Debrief User Interface" href="html/concepts/gui.html" /> 
+		<topic label="Workspaces" href="html/concepts/workspaces.html" /> 
+		<topic label="Projects" href="html/concepts/projects.html" /> 
+	</topic> 
+	<topic label="Viewing plots">
+		<topic label="Debrief projections" href="html/concepts/projections.html" /> 
+		<topic label="Measuring range and bearing" href="html/concepts/range_bearing.html" /> 
+		<topic label="Narrative data" href="html/concepts/narratives.html" /> 
+	</topic> 
+	<topic label="Analysing exercises">
+		<topic label="Primary and Secondary tracks" href="html/concepts/pri_sec_tracks.html" /> 
+		<topic label="Bookmarks" href="html/concepts/bookmarks.html" /> 
+		<topic label="Plot-locking" href="html/concepts/plot_locking.html" /> 
+		<topic label="T-Zero times" href="html/concepts/t_zero times.html" /> 
 	</topic> 
 </toc>
