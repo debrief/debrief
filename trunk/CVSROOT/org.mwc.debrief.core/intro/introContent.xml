@@ -70,7 +70,7 @@ ROOT - STANDBY
 OVERVIEW
 -->
 	<page style="css/overview/overview.css" alt-style="css/overview/swt.properties" id="overview" style-id="page">
-		<title style-id="intro-header">An overview of Debrief</title>
+		<title style-id="intro-header">Welcome to Debrief NG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<group id="navigation-links" filteredFrom="swt">
 			<group id="page-links">
@@ -118,7 +118,7 @@ OVERVIEW
 TUTORIALS
 -->
 	<page style="css/tutorials/tutorials.css" alt-style="css/tutorials/swt.properties" id="tutorials" style-id="page">
-		<title style-id="intro-header">Debrief tutorials</title>
+		<title style-id="intro-header">Welcome to Debrief NG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
@@ -148,7 +148,7 @@ TUTORIALS
 SAMPLES
 -->
 	<page style="css/samples/samples.css" alt-style="css/samples/swt.properties" id="samples" style-id="page">
-		<title style-id="intro-header">Sample Debrief plots</title>
+		<title style-id="intro-header">Welcome to Debrief NG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
@@ -162,7 +162,7 @@ SAMPLES
 WHAT's NEW
 -->
 	<page style="css/whatsnew/whatsnew.css" alt-style="css/whatsnew/swt.properties" id="news" style-id="page">
-		<title style-id="intro-header">What's new in Debrief</title>
+		<title style-id="intro-header">Welcome to Debrief NG</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
@@ -174,7 +174,7 @@ WHAT's NEW
 					<text>Find out about the new features in this release</text>
 				</link>
 				<link label="Change log" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/whatsNew/platform_whatsnew.html" id="platform-noteworthy" style-id="noteworthy-link">
-					<text>Read the nitty-gritty of what files have changed, & why</text>
+					<text>Read the nitty-gritty of what files have changed, &amp; why</text>
 				</link>
 			</group>
 			<group id="news-links" label="General">
