@@ -1,10 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<introContent>
+<introContent xmlns:n="org.eclipse.ui.cheatsheets" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
 	<!-- 
 
 -->
 	<page alt-style="css/root_swt.properties" style="css/root.css" id="root" style-id="page">
 		<title style-id="intro-header">Welcome to Debrief NG (root)</title>
+		<group id="Welcome guidance">
+			<link url="http://org.eclipse.ui.intro/switchToLaunchBar" label="Get started" id="workbench">
+				<img id="workbench_img" style-id="content-img" src="css/graphics/icons/etool/wb48.gif" alt="Go to Debrief">
+                </img>
+				<text>Start using Debrief</text>
+			</link>
+		</group>
 		<group id="links-background">
 			<group id="page-links">
 				<anchor id="beginAnchor"/>
@@ -124,12 +131,20 @@
             </group>
 			<text style-id="page-title" id="page-title" filteredFrom="html">TUTORIALS</text>
 			<text style-id="page-description" id="page-description">Learn how to be productive using Debrief by completing tutorials that will guide you along the way.</text>
-			<group id="overview-links">
+			<group id="overview-links" label="Getting Started">
 				<link label="Creating a new plot" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.create_plot" id="create_new_plot">
 					<text>Learn how to create a blank plot, ready to import exercise data</text>
 				</link>
 				<link label="Opening an existing plot" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.open_plot" id="open_existing_plot">
 					<text>Learn how to load an existing plot into Debrief</text>
+				</link>
+			</group>
+			<group id="overview-links" label="Solving Problems">
+				<link label="Viewing the error log" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.create_plot" id="create_new_plot">
+					<text>Learn how to find and open the Debrief error log</text>
+				</link>
+				<link label="Reporting a bug" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.open_plot" id="open_existing_plot">
+					<text>Learn how to report Debrief-relatedproblems</text>
 				</link>
 			</group>
 		</group>
