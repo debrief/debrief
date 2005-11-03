@@ -13,7 +13,7 @@
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="page" minOccurs="1" maxOccurs="unbounded"/>
+				<xsd:element ref="page" maxOccurs="unbounded"/>
 				<xsd:element ref="group" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="extensionContent" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:sequence>
@@ -39,7 +39,7 @@ The subelements used in a dynamic page are as follows: A &lt;b&gt;group&lt;/b&gt
 				<xsd:element ref="img" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="html" minOccurs="0" maxOccurs="unbounded"/>
-				<xsd:element ref="title" minOccurs="0" maxOccurs="1"/>
+				<xsd:element ref="title" minOccurs="0"/>
 				<xsd:element ref="anchor" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="contentProvider" minOccurs="0" maxOccurs="unbounded"/>
 			</xsd:choice>
@@ -82,10 +82,8 @@ Since 3.1, styles can also be a comma separated list of styles. These styles wil
 				</xsd:annotation>
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:string">
-						<xsd:enumeration value="swt">
-                  </xsd:enumeration>
-						<xsd:enumeration value="html">
-                  </xsd:enumeration>
+						<xsd:enumeration value="swt"/>
+						<xsd:enumeration value="html"/>
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
@@ -122,7 +120,7 @@ Since 3.1, if the content of the external file is XHTML 1.0, then the page is re
          </xsd:documentation>
 		</xsd:annotation>
 		<xsd:complexType>
-			<xsd:choice maxOccurs="unbounded">
+			<xsd:choice maxOccurs="unbounded" minOccurs="0">
 				<xsd:element ref="group" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="link" minOccurs="0" maxOccurs="unbounded"/>
 				<xsd:element ref="text" minOccurs="0" maxOccurs="unbounded"/>
@@ -161,10 +159,8 @@ Since 3.1, if the content of the external file is XHTML 1.0, then the page is re
 				</xsd:annotation>
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:string">
-						<xsd:enumeration value="swt">
-                  </xsd:enumeration>
-						<xsd:enumeration value="html">
-                  </xsd:enumeration>
+						<xsd:enumeration value="swt"/>
+						<xsd:enumeration value="html"/>
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
@@ -221,10 +217,8 @@ This markup is only to be used with an HTML based intro part implementation. It 
 						</xsd:annotation>
 						<xsd:simpleType>
 							<xsd:restriction base="xsd:string">
-								<xsd:enumeration value="swt">
-                  </xsd:enumeration>
-								<xsd:enumeration value="html">
-                  </xsd:enumeration>
+								<xsd:enumeration value="swt"/>
+								<xsd:enumeration value="html"/>
 							</xsd:restriction>
 						</xsd:simpleType>
 					</xsd:attribute>
@@ -240,8 +234,8 @@ This markup is only to be used with an HTML based intro part implementation. It 
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="text" minOccurs="0" maxOccurs="1"/>
-				<xsd:element ref="img" minOccurs="0" maxOccurs="1"/>
+				<xsd:element ref="img" minOccurs="0"/>
+				<xsd:element ref="text" minOccurs="0"/>
 			</xsd:sequence>
 			<xsd:attribute name="id" type="xsd:string">
 				<xsd:annotation>
@@ -360,10 +354,8 @@ will process the message parameter as &quot;This is a message&quot;.&lt;br&gt;
 				</xsd:annotation>
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:string">
-						<xsd:enumeration value="swt">
-                  </xsd:enumeration>
-						<xsd:enumeration value="html">
-                  </xsd:enumeration>
+						<xsd:enumeration value="swt"/>
+						<xsd:enumeration value="html"/>
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
@@ -401,10 +393,8 @@ If multiple paragraphs are needed, then the text can be divided into multiple se
 						</xsd:annotation>
 						<xsd:simpleType>
 							<xsd:restriction base="xsd:string">
-								<xsd:enumeration value="swt">
-                  </xsd:enumeration>
-								<xsd:enumeration value="html">
-                  </xsd:enumeration>
+								<xsd:enumeration value="swt"/>
+								<xsd:enumeration value="html"/>
 							</xsd:restriction>
 						</xsd:simpleType>
 					</xsd:attribute>
@@ -457,10 +447,8 @@ If multiple paragraphs are needed, then the text can be divided into multiple se
 						</xsd:annotation>
 						<xsd:simpleType>
 							<xsd:restriction base="xsd:string">
-								<xsd:enumeration value="swt">
-                  </xsd:enumeration>
-								<xsd:enumeration value="html">
-                  </xsd:enumeration>
+								<xsd:enumeration value="swt"/>
+								<xsd:enumeration value="html"/>
 							</xsd:restriction>
 						</xsd:simpleType>
 					</xsd:attribute>
@@ -505,10 +493,8 @@ Inclusion allows for including an html snippet directly from a file into the dyn
 				</xsd:annotation>
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:string">
-						<xsd:enumeration value="inline">
-                  </xsd:enumeration>
-						<xsd:enumeration value="embed">
-                  </xsd:enumeration>
+						<xsd:enumeration value="inline"/>
+						<xsd:enumeration value="embed"/>
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
@@ -527,10 +513,8 @@ Inclusion allows for including an html snippet directly from a file into the dyn
 				</xsd:annotation>
 				<xsd:simpleType>
 					<xsd:restriction base="xsd:string">
-						<xsd:enumeration value="swt">
-                  </xsd:enumeration>
-						<xsd:enumeration value="html">
-                  </xsd:enumeration>
+						<xsd:enumeration value="swt"/>
+						<xsd:enumeration value="html"/>
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
@@ -647,7 +631,7 @@ Another difference between the tags is that the html tag is only supported for t
 		</xsd:annotation>
 		<xsd:complexType>
 			<xsd:all>
-				<xsd:element ref="text" minOccurs="0" maxOccurs="1"/>
+				<xsd:element ref="text" minOccurs="0"/>
 			</xsd:all>
 			<xsd:attribute name="id" type="xsd:string" use="required">
 				<xsd:annotation>
