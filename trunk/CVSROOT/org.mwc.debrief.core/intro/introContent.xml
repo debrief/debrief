@@ -1,16 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
-<introContent xmlns:n="org.eclipse.ui.cheatsheets" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<introContent xmlns:n="org.eclipse.ui.intro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="org.eclipse.ui.intro IntroContent.xsd">
 	<!-- 
-
+ROOT - NORMAL
 -->
 	<page alt-style="css/root_swt.properties" style="css/root.css" id="root" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG (root)</title>
+		<title style-id="intro-header">Welcome to Debrief NG</title>
 		<group id="Welcome guidance">
-			<link url="http://org.eclipse.ui.intro/switchToLaunchBar" label="Get started" id="workbench">
-				<img id="workbench_img" style-id="content-img" src="css/graphics/icons/etool/wb48.gif" alt="Go to Debrief">
-                </img>
-				<text>Start using Debrief</text>
-			</link>
+		   <text>Welcome to Debrief, the maritime analysis application from the Royal Navy's Maritime Warfare Centre.</text>
 		</group>
 		<group id="links-background">
 			<group id="page-links">
@@ -47,10 +43,10 @@
 		</group>
 	</page>
 	<!-- 
-
+ROOT - STANDBY
 -->
 	<page alt-style="css/standby_swt.properties" style="css/standby_root.css" id="standby" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG (standby presentation)</title>
+		<title style-id="intro-header">Welcome to Debrief NG</title>
 		<group id="links-background">
 			<group id="page-links">
 				<anchor id="beginAnchor"/>
@@ -71,14 +67,13 @@
 		</group>
 	</page>
 	<!--
-
+OVERVIEW
 -->
 	<page style="css/overview/overview.css" alt-style="css/overview/swt.properties" id="overview" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<title style-id="intro-header">An overview of Debrief</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<group id="navigation-links" filteredFrom="swt">
 			<group id="page-links">
-				<anchor id="navigationBegin"/>
 				<link label="Overview" url="http://org.eclipse.ui.intro/showPage?id=overview" id="overview" style-id="left">
 					<text>Find out what Debrief is all about</text>
 				</link>
@@ -104,26 +99,26 @@
 			<group id="content-header" label="OVERVIEW" filteredFrom="swt">
             </group>
 			<text style-id="page-title" id="page-title" filteredFrom="html">OVERVIEW</text>
-			<text style-id="page-description" id="page-description">Debrief is a piece of software used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at Debrief NG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
+			<text style-id="page-description" id="page-description">Debrief is a software application used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at Debrief NG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
 			<group id="overview-links">
 				<anchor id="beginAnchor"/>
-				<link label="Workbench basics" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/gettingStarted/intro/overview.htm&amp;embedTarget=page-content" id="basics">
-					<text>Learn about basic Eclipse workbench concepts</text>
+				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/gettingStarted/intro/overview.htm&amp;embedTarget=page-content" id="basics">
+					<text>Where Debrief came from</text>
 				</link>
-				<link label="Team support" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="team">
-					<text>Find out how to collaborate with other developers</text>
+				<link label="Getting data into Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="team">
+					<text>Find out how to get your data into Debrief</text>
 				</link>
-				<anchor id="jdtAnchor"/>
-				<anchor id="pdeAnchor"/>
-				<anchor id="endAnchor"/>
+				<link label="Getting support for Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="team">
+					<text>What to do if you have any problems with Debrief</text>
+				</link>
 			</group>
 		</group>
 	</page>
 	<!-- 
-
+TUTORIALS
 -->
 	<page style="css/tutorials/tutorials.css" alt-style="css/tutorials/swt.properties" id="tutorials" style-id="page">
-		<title style-id="intro-header">Welcome to Eclipse 3.1</title>
+		<title style-id="intro-header">Debrief tutorials</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
@@ -150,54 +145,47 @@
 		</group>
 	</page>
 	<!-- 
-
+SAMPLES
 -->
 	<page style="css/samples/samples.css" alt-style="css/samples/swt.properties" id="samples" style-id="page">
-		<title style-id="intro-header">Welcome to Eclipse 3.1</title>
+		<title style-id="intro-header">Sample Debrief plots</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
 			<group id="content-header" label="SAMPLES" filteredFrom="swt">
             </group>
 			<text style-id="page-title" id="page-title" filteredFrom="html">SAMPLES</text>
-			<text style-id="page-description" id="page-description">Explore Eclipse by installing prefabricated samples (may require Internet connection).</text>
-			<anchor id="beginAnchor"/>
-			<anchor id="jdtAnchor"/>
-			<anchor id="pdeAnchor"/>
-			<anchor id="endAnchor"/>
+			<text style-id="page-description" id="page-description">Get to know your way around Debrief by viewing some sample Debrief plots</text>
 		</group>
 	</page>
 	<!-- 
-
+WHAT's NEW
 -->
 	<page style="css/whatsnew/whatsnew.css" alt-style="css/whatsnew/swt.properties" id="news" style-id="page">
-		<title style-id="intro-header">Welcome to Eclipse 3.1</title>
+		<title style-id="intro-header">What's new in Debrief</title>
 		<group id="curve-image" filteredFrom="swt"/>
 		<include path="overview/navigation-links"/>
 		<group id="page-content">
 			<group id="content-header" label="WHAT'S NEW" filteredFrom="swt">
             </group>
 			<text style-id="page-title" id="page-title" filteredFrom="html">WHAT'S NEW</text>
-			<anchor id="beginAnchor"/>
 			<group id="noteworthy-links" label="New and Noteworthy">
-				<link label="Eclipse Platform" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/whatsNew/platform_whatsnew.html" id="platform-noteworthy" style-id="noteworthy-link">
-					<text>Find out about the major new features in this release</text>
+				<link label="New features" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/whatsNew/platform_whatsnew.html" id="platform-noteworthy" style-id="noteworthy-link">
+					<text>Find out about the new features in this release</text>
 				</link>
-				<anchor id="jdtAnchor"/>
-				<anchor id="pdeAnchor"/>
-				<anchor id="generalAnchor"/>
+				<link label="Change log" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/whatsNew/platform_whatsnew.html" id="platform-noteworthy" style-id="noteworthy-link">
+					<text>Read the nitty-gritty of what files have changed, & why</text>
+				</link>
 			</group>
 			<group id="news-links" label="General">
 				<anchor id="linksBeginAnchor"/>
 				<link label="New Updates" url="http://org.eclipse.ui.intro/runAction?pluginId=org.eclipse.platform&amp;class=org.eclipse.platform.internal.LaunchUpdateIntroAction" id="updates">
 					<text>Get the latest updates from Eclipse.org</text>
 				</link>
-				<link label="Eclipse community" url="http://www.eclipse.org" id="eclipse">
+				<link label="Debrief community" url="http://www.eclipse.org" id="eclipse">
 					<text>Join the community, read articles and news on Eclipse.org</text>
 				</link>
-				<anchor id="linksAnchor"/>
 			</group>
-			<anchor id="endAnchor"/>
 		</group>
 	</page>
 </introContent>
