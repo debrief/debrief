@@ -6,7 +6,7 @@ ROOT - NORMAL
 	<page alt-style="css/root_swt.properties" style="css/root.css" id="root" style-id="page">
 		<title style-id="intro-header">Welcome to Debrief NG</title>
 		<group id="Welcome guidance">
-		   <text>Welcome to Debrief, the maritime analysis application from the Royal Navy's Maritime Warfare Centre.</text>
+			<text>Welcome to Debrief, the maritime analysis application from the Royal Navy's Maritime Warfare Centre.</text>
 		</group>
 		<group id="links-background">
 			<group id="page-links">
@@ -102,13 +102,13 @@ OVERVIEW
 			<text style-id="page-description" id="page-description">Debrief is a software application used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at Debrief NG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
 			<group id="overview-links">
 				<anchor id="beginAnchor"/>
-				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/gettingStarted/intro/overview.htm&amp;embedTarget=page-content" id="basics">
+				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/gettingStarted/intro/overview.htm&amp;embedTarget=page-content" id="history">
 					<text>Where Debrief came from</text>
 				</link>
-				<link label="Getting data into Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="team">
+				<link label="Getting data into Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="data">
 					<text>Find out how to get your data into Debrief</text>
 				</link>
-				<link label="Getting support for Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="team">
+				<link label="Getting support for Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="support">
 					<text>What to do if you have any problems with Debrief</text>
 				</link>
 			</group>
@@ -135,10 +135,10 @@ TUTORIALS
 				</link>
 			</group>
 			<group id="overview-links" label="Solving Problems">
-				<link label="Viewing the error log" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.create_plot" id="create_new_plot">
+				<link label="Viewing the error log" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.create_plot" id="view_log">
 					<text>Learn how to find and open the Debrief error log</text>
 				</link>
-				<link label="Reporting a bug" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.open_plot" id="open_existing_plot">
+				<link label="Reporting a bug" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.open_plot" id="report_bug">
 					<text>Learn how to report Debrief-relatedproblems</text>
 				</link>
 			</group>
