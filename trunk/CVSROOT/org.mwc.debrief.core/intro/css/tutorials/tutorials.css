@@ -33,6 +33,17 @@ body {
 	vertical-align : top;
 }
 
+
+#tutorials-link a { 
+	width : 370px;
+	text-align : left; 
+	margin-left : 5px;
+	margin-right : 5px;
+	margin-top : 5px;
+	margin-bottom : -20px;
+	vertical-align : top;
+}
+
 .tutorials-group > .tutorials-link {
 	float : left;
 	height : 150px;
@@ -75,3 +86,9 @@ p #group-description {
 }
 
 .tutorials-link:hover { border-right : 0px; }
+
+a#create_new_plot img { background-image : url(../graphics/icons/obj48/wbbasics_obj.gif); }
+a#create_new_plot:hover img { background-image : url(../graphics/icons/obj48/wbbasicshov_obj.gif); }
+
+a#open_existing_plot img { background-image : url(../graphics/icons/obj48/teamsup_obj.gif); }
+a#open_existing_plot:hover img { background-image : url(../graphics/icons/obj48/teamsuphov_obj.gif); }

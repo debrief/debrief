@@ -89,3 +89,6 @@ a#basics:hover img { background-image : url(../graphics/icons/obj48/wbbasicshov_
 a#team img { background-image : url(../graphics/icons/obj48/teamsup_obj.gif); }
 a#team:hover img { background-image : url(../graphics/icons/obj48/teamsuphov_obj.gif); }
 
+a#support img { background-image : url(../graphics/icons/obj48/teamsup_obj.gif); }
+a#support:hover img { background-image : url(../graphics/icons/obj48/teamsuphov_obj.gif); }
+
