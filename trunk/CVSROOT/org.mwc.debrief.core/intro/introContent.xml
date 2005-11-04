@@ -102,7 +102,7 @@ OVERVIEW
 			<text style-id="page-description" id="page-description">Debrief is a software application used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at Debrief NG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
 			<group id="overview-links">
 				<anchor id="beginAnchor"/>
-				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/gettingStarted/intro/overview.htm&amp;embedTarget=page-content" id="history">
+				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/reference/history.html&amp;embedTarget=page-content" id="history">
 					<text>Where Debrief came from</text>
 				</link>
 				<link label="Getting data into Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="data">
@@ -180,10 +180,10 @@ WHAT's NEW
 			<group id="news-links" label="General">
 				<anchor id="linksBeginAnchor"/>
 				<link label="New Updates" url="http://org.eclipse.ui.intro/runAction?pluginId=org.eclipse.platform&amp;class=org.eclipse.platform.internal.LaunchUpdateIntroAction" id="updates">
-					<text>Get the latest updates from Eclipse.org</text>
+					<text>Get the latest Debrief updates online</text>
 				</link>
-				<link label="Debrief community" url="http://www.eclipse.org" id="eclipse">
-					<text>Join the community, read articles and news on Eclipse.org</text>
+				<link label="Debrief community" url="http://www.debrief.info" id="eclipse">
+					<text>Join the community, read articles and news at www.debrief.info</text>
 				</link>
 			</group>
 		</group>
