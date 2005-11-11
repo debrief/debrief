@@ -6,32 +6,43 @@ package org.mwc.cmap.core.property_support;
 import java.text.DecimalFormat;
 
 import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.CellEditor.LayoutData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
-import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.*;
 
 public class BoundedIntegerHelper extends EditorHelper
 {
 
+	
 	private static class SliderEditor extends CellEditor
 	{
 
 		Composite _myControl = null;
-		private Label _myLabel;
-		private Slider _theSlider;
+		protected Label _myLabel;
+		protected Slider _theSlider;
 		
 		public SliderEditor(Composite parent)
 		{
 			super(parent, SWT.NONE);
 		}
 		
+		/**
+		 * @return
+		 */
+		public LayoutData getLayoutData()
+		{
+			CellEditor.LayoutData res =  super.getLayoutData();
+			res.grabHorizontal = true;
+			return res;
+		}
+
 		protected Control createControl(Composite parent)
 		{
-
 	    Font font = parent.getFont();
       Color bg = parent.getBackground();
 
@@ -40,18 +51,28 @@ public class BoundedIntegerHelper extends EditorHelper
       _myControl.setBackground(bg);
       
 			
-//			_myControl = new Composite(parent, SWT.NONE);
-			RowLayout rl = new RowLayout();
-			rl.wrap = false;
-			rl.type = SWT.HORIZONTAL;
-			rl.marginHeight = 0;
-			rl.marginWidth = 0;
+//			RowLayout rl = new RowLayout();
+//			rl.wrap = false;
+//			rl.type = SWT.HORIZONTAL;
+//			rl.marginHeight = 0;
+//			rl.marginWidth = 0;
+      GridLayout rl = new GridLayout(2, false);
+      rl.marginHeight = 0;
+      rl.verticalSpacing = 0;
+
 			_myControl.setLayout(rl);
 //			
 			_myLabel = new Label(_myControl, SWT.NONE);
 			_myLabel.setText("000");
 			_myLabel.setBackground(bg);
+			GridData labelGrid = new GridData();
+			labelGrid.widthHint = 40;
+			_myLabel.setLayoutData(new GridData(GridData.BEGINNING));
+			
 			_theSlider = new Slider(_myControl, SWT.NONE);
+			_theSlider.setLayoutData(new GridData(GridData.END,GridData.END, true ,false ));
+			GridData sliderGrid = new GridData();
+			sliderGrid.grabExcessHorizontalSpace = true;
 			_theSlider.addSelectionListener(new SelectionListener(){
 
 				public void widgetSelected(SelectionEvent e)
@@ -87,7 +108,7 @@ public class BoundedIntegerHelper extends EditorHelper
 
 		DecimalFormat _df  = null;
 		
-		private String formatMe(int value)
+		protected String formatMe(int value)
 		{
 			if(_df == null)
 				_df = new DecimalFormat("000");
@@ -116,6 +137,15 @@ public class BoundedIntegerHelper extends EditorHelper
 	public BoundedIntegerHelper()
 	{
 		super(BoundedInteger.class);
+	}
+	
+	/** provide better constructor - so child implementations can pass target class
+	 * back up the chain
+	 * @param targetClass
+	 */
+	public BoundedIntegerHelper(Class targetClass)
+	{
+		super(targetClass);
 	}
 
 	public CellEditor getCellEditorFor(Composite parent)
@@ -148,4 +178,77 @@ public class BoundedIntegerHelper extends EditorHelper
 		return label1;
 	}
 
+	
+
+	public static class SteppingBoundedIntegerHelper extends BoundedIntegerHelper
+	{
+		public SteppingBoundedIntegerHelper()
+		{
+			super(SteppingBoundedInteger.class);
+		}
+		
+		public CellEditor getCellEditorFor(Composite parent)
+		{
+			return new SteppingSliderEditor(parent);
+		}
+		
+
+		public ILabelProvider getLabelFor(Object currentValue)
+		{
+			ILabelProvider label1 = new LabelProvider()
+			{
+				public String getText(Object element)
+				{
+					SteppingBoundedInteger rgb = (SteppingBoundedInteger) element;
+					String res = "" + rgb.getCurrent();
+					return res;
+				}
+
+			};
+			return label1;
+		}		
+	}
+	
+	////////////////////////////////////////////////////////
+	// and now for stepping bounded integer support
+	///////////////////////////////////////////////////////
+	
+	private static class SteppingSliderEditor extends SliderEditor
+	{
+
+		public SteppingSliderEditor(Composite parent)
+		{
+			super(parent);
+		}
+	
+
+		protected Object doGetValue()
+		{
+			Object res = null;
+			if(_theSlider != null) 
+			{
+				res = new SteppingBoundedInteger(_theSlider.getSelection(), _theSlider.getMinimum(), _theSlider.getMaximum(), _theSlider.getIncrement());
+			}
+			return res;
+		}
+		
+		protected void doSetValue(Object value)
+		{
+			
+			// TODO Auto-generated method stub
+			SteppingBoundedInteger curr = (SteppingBoundedInteger) value;
+			if(_myLabel != null) 
+				_myLabel.setText(formatMe(curr.getCurrent()));
+			if(_theSlider != null)
+			{
+				_theSlider.setMinimum(curr.getMin());
+				_theSlider.setMaximum(curr.getMax());
+				_theSlider.setSelection(curr.getCurrent());
+				_theSlider.setIncrement(curr.getStep());
+				_theSlider.setThumb(1);
+			}
+		}		
+	}
+		
+	
 }

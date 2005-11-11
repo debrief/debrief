@@ -107,6 +107,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			_myHelperList = new Vector(0, 1);
 			_myHelperList.add(new ColorHelper(_theControl));
 			_myHelperList.add(new BoundedIntegerHelper());
+			_myHelperList.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
 			_myHelperList.add(new EditorHelper(String.class)
 			{
 
@@ -152,6 +153,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			_myHelperList.add(new DistanceWithUnitsHelper());
 			_myHelperList.add(new WorldSpeedHelper());
 			_myHelperList.add(new WorldAccelerationHelper());
+			_myHelperList.add(new WorldDistanceHelper());
 			_myHelperList.add(new DurationHelper());
 
 		}
