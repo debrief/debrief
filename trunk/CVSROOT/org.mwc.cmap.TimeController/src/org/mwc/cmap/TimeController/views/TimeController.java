@@ -793,7 +793,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							// and update the slider ranges
 							// do we have start/stop times?
 							HiResDate startDTG = _myStepperProperties.getSliderStartTime();
-							if (startDTG != null)
+							if ((startDTG != null) && (_myTemporalDataset  != null))
 							{
 								// cool - update the slider to our data settings
 
