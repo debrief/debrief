@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.17  2005-09-08 11:01:41  Ian.Mayo
+// Revision 1.18  2005-11-14 10:28:24  Ian.Mayo
+// Double-check everything is there before we start plotting
+//
+// Revision 1.17  2005/09/08 11:01:41  Ian.Mayo
 // Makeing more robust when plotting fails through disposed GC
 //
 // Revision 1.16  2005/08/31 15:02:23  Ian.Mayo
@@ -332,7 +335,10 @@ public final void updateMe()
 			Display.getDefault().asyncExec(new Runnable(){
 				public void run()
 				{
-					_myCanvas.redraw();
+					if(!_myCanvas.isDisposed())
+					{
+						_myCanvas.redraw();
+					}
 				}
 				
 			});
