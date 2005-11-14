@@ -6,7 +6,6 @@ package org.mwc.cmap.core.property_support;
 import java.text.DecimalFormat;
 
 import org.eclipse.jface.viewers.*;
-import org.eclipse.jface.viewers.CellEditor.LayoutData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -56,23 +55,23 @@ public class BoundedIntegerHelper extends EditorHelper
 //			rl.type = SWT.HORIZONTAL;
 //			rl.marginHeight = 0;
 //			rl.marginWidth = 0;
-      GridLayout rl = new GridLayout(2, false);
+      GridLayout rl = new GridLayout();
+      rl.marginWidth = 0;
       rl.marginHeight = 0;
-      rl.verticalSpacing = 0;
+      rl.numColumns = 8;
 
 			_myControl.setLayout(rl);
 //			
 			_myLabel = new Label(_myControl, SWT.NONE);
 			_myLabel.setText("000");
 			_myLabel.setBackground(bg);
-			GridData labelGrid = new GridData();
-			labelGrid.widthHint = 40;
-			_myLabel.setLayoutData(new GridData(GridData.BEGINNING));
+			GridData gd1 = new GridData(GridData.FILL_HORIZONTAL);
+			_myLabel.setLayoutData(gd1);
 			
 			_theSlider = new Slider(_myControl, SWT.NONE);
-			_theSlider.setLayoutData(new GridData(GridData.END,GridData.END, true ,false ));
-			GridData sliderGrid = new GridData();
-			sliderGrid.grabExcessHorizontalSpace = true;
+			GridData gd2 = new GridData(GridData.FILL_HORIZONTAL);
+			gd2.horizontalSpan = 7;
+			_theSlider.setLayoutData(gd2);
 			_theSlider.addSelectionListener(new SelectionListener(){
 
 				public void widgetSelected(SelectionEvent e)
