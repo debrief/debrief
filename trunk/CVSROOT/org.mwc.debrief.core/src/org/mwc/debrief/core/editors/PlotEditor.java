@@ -13,7 +13,6 @@ import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.SaveAsDialog;
-import org.eclipse.ui.internal.editors.text.JavaFileEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
@@ -33,6 +32,7 @@ import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
+import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GenericData.*;
 
 /**
@@ -350,8 +350,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 //			 = new
 //			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
 //			 IFile theFile = (IFile) localF.getAdapter(IFile.class);
-			 IEditorInput theInput = new JavaFileEditorInput(newFile);
-			 this.loadThisFile(theInput);
+
+//			IEditorInput theInput = new JavaFileEditorInput(newFile);
+//			 this.loadThisFile(theInput);
+			DialogFactory.showMessage("Load plot", "Sorry, plots must be loaded from a project");
 
 		}
 
