@@ -1447,7 +1447,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 * 
 	 * @author ian.mayo
 	 */
-	private class DateFormatter extends FormatLong
+	private class DateFormatter extends DTGBiSlider.FormatLong
 	{
 		public String format(long val)
 		{
