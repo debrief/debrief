@@ -1,16 +1,17 @@
 package org.mwc.cmap.TimeController.controls;
 
-import java.awt.event.*;
-
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
-import org.mwc.cmap.core.property_support.ColorHelper;
 
 import MWC.GenericData.*;
+import MWC.Utilities.TextFormatting.FullFormatDateTime;
 
-import com.visutools.nav.bislider.BiSlider;
-import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
+import com.borlander.rac353542.bislider.*;
+
+//import com.visutools.nav.bislider.BiSlider;
+//import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
 
 public class DTGBiSlider extends Composite
 {
@@ -34,6 +35,12 @@ public class DTGBiSlider extends Composite
 	 * 
 	 */
 	long _stepSize = 1000 * 60;
+
+	private BiSliderUIModelImpl _sliderUI;
+
+	private BiSliderDataModelImpl _sliderData;
+	
+	private BiSliderLabelProvider _labelProvider;
 	
 	/** constructor - get things going
 	 * 
@@ -43,33 +50,70 @@ public class DTGBiSlider extends Composite
 	public DTGBiSlider(Composite parent, FormatLong formatter)
 	{
 		super(parent, SWT.EMBEDDED);
-		
-		// ok, insert our fresh new control
-		java.awt.Frame sliderFrame = SWT_AWT.new_Frame(this);
-		_mySlider = new BiSlider(formatter);
-		sliderFrame.add(_mySlider);
-		_mySlider.setVisible(true);
-		_mySlider.setMinimumValue(0);
-		_mySlider.setMaximumValue(100);
-		_mySlider.setSegmentSize(10);
-		_mySlider.setMinimumColor(java.awt.Color.GRAY);
-		_mySlider.setMaximumColor(java.awt.Color.GRAY);
-		_mySlider.setBackground(ColorHelper.convertColor(this.getBackground().getRGB()));
-		_mySlider.setUnit("");
-		_mySlider.setPrecise(true);		
-		
-		// listen out for mouse release - so we can get updated values
-		_mySlider.addMouseListener(new MouseAdapter(){
 
-			/**
-			 * @param e
-			 */
-			public void mouseReleased(MouseEvent e)
+		_labelProvider = new BiSliderLabelProvider(){
+
+			public String getLabel(double value)
 			{
-				outputValues();
+				long time = (long) value;
+				String res = FullFormatDateTime.toString(time);
+				return res;
+			}};
+			
+		_sliderData = new BiSliderDataModelImpl();
+		_sliderUI = new BiSliderUIModelImpl(){
+			public RGB getMaximumRGB()
+			{
+				return new RGB(55, 55, 55);
+			}
+
+			public RGB getMinimumRGB()
+			{
+				return new RGB(55,55,55);
 			}
 			
-		});
+		};
+		
+		
+		// ok, insert our fresh new control
+		_mySlider = new BiSlider(parent, SWT.NONE, _sliderData, _sliderUI)
+		{
+			public BiSliderLabelProvider getLabelProvider()
+			{
+				return _labelProvider;
+			}
+			
+		};
+		
+		_sliderData.setTotalRange(0, 100);
+		_sliderData.setSegmentLength(10);
+		
+//		_mySlider.setMinimumValue(0);
+//		_mySlider.setMaximumValue(100);
+//		_mySlider.setSegmentSize(10);
+//		_mySlider.setMinimumColor(java.awt.Color.GRAY);
+//		_mySlider.setMaximumColor(java.awt.Color.GRAY);
+//		_mySlider.setBackground(ColorHelper.convertColor(this.getBackground().getRGB()));
+//		_mySlider.setUnit("");
+//		_mySlider.setPrecise(true);		
+
+		_mySlider.setVisible(true);
+		
+		// listen out for mouse release - so we can get updated values
+//		_sliderData.addListener(new BiSliderDataModel.Listener(){
+//
+//			public void dataModelChanged(BiSliderDataModel dataModel)
+//			{
+//				outputValues();
+//			}});
+
+
+		// and catch the mouse-release event
+		_mySlider.addMouseListener(new MouseAdapter(){
+			public void mouseUp(MouseEvent e)
+			{
+				outputValues();
+			}});
 		
 		
 	}
@@ -84,11 +128,12 @@ public class DTGBiSlider extends Composite
 		
 		long workingRange = milliRange / _stepSize;
 		
-		_mySlider.setMinimumValue(0);
-		_mySlider.setMaximumValue(workingRange);
+		_sliderData.setTotalRange(0, workingRange);
+//		_mySlider.setMinimumValue(0);
+//		_mySlider.setMaximumValue(workingRange);
 		
 		// try for units of 10 * the current step
-		_mySlider.setSegmentSize(10);
+		_sliderData.setSegmentLength(1);
 	}
 	
 	
@@ -101,7 +146,8 @@ public class DTGBiSlider extends Composite
 		super.update();
 		
 		// and get the widget to repaint
-		_mySlider.repaint();
+		_mySlider.update();
+		//repaint();
 	}
 
 	public void updateSelectedRanges(HiResDate minSelectedDate, HiResDate maxSelectedDate)
@@ -117,10 +163,10 @@ public class DTGBiSlider extends Composite
 	{
 		// get how many micros it is
 		
-		long minVal = (long) _mySlider.getMinimumColoredValue();
+		long minVal = (long) _mySlider.getDataModel().getUserMinimum();
 		minVal *= _stepSize;
 		
-		long maxVal = (long) _mySlider.getMaximumColoredValue();
+		long maxVal = (long) _mySlider.getDataModel().getUserMaximum();// getMaximumColoredValue();
 		maxVal *= _stepSize;
 		
 		HiResDate lowDTG = new HiResDate((long) minVal, _minVal.getMicros());
@@ -151,6 +197,16 @@ public class DTGBiSlider extends Composite
 		_stepSize = size;
 	}
 	
-	
+
+	//////////////////////////////////////////////////////
+	// utility class that returns a string from a long value
+	//////////////////////////////////////////////////////
+	public static class FormatLong
+	{
+		public String format(long val)
+		{
+			return "" + val;
+		}
+	}	
 	
 }
