@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
@@ -30,24 +30,11 @@ import org.mwc.debrief.core.editors.painters.*;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.*;
 import MWC.Utilities.Timer.TimerListener;
 
-import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
-
 /**
- * This sample class demonstrates how to plug-in a new workbench view. The view
- * shows data obtained from the model. The sample creates a dummy model on the
- * fly, but a real implementation would connect to the model available either in
- * this or another plug-in (e.g. the workspace). The view is connected to the
- * model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be
- * presented in the view. Each view can present the same model objects using
- * different labels and icons, if needed. Alternatively, a single label provider
- * can be shared between views in order to ensure that objects of the same type
- * are presented in the same way everywhere.
- * <p>
+ * View performing time management:  show current time, allow control of time, allow selection of time periods
+ * 
  */
 
 public class TimeController extends ViewPart implements ISelectionProvider, TimerListener
@@ -65,6 +52,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	protected IEditorPart _currentEditor;
 
+	/** listen out for new times
+	 * 
+	 */
 	final private PropertyChangeListener _temporalListener = new NewTimeListener();
 
 	/**
@@ -125,9 +115,27 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private StructuredSelection _propsAsSelection = null;
 
+	/** our fancy time range selector
+	 * 
+	 */
 	private DTGBiSlider _dtgRangeSlider;
 
+	/** whether the user wants to trim to time period after bislider change
+	 * 
+	 */
 	private Action _filterToSelectionAction;
+
+
+	/**
+	 * the slider control - remember it because we're always changing the limits,
+	 * etc
+	 */
+	private Scale _tNowSlider;
+
+	/**
+	 * the play button, obviously.
+	 */
+	private Button _playButton;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -187,17 +195,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		_theTimer.addTimerListener(this);
 
 	}
-
-	/**
-	 * the slider control - remember it because we're always changing the limits,
-	 * etc
-	 */
-	private Scale _tNowSlider;
-
-	/**
-	 * the play button, obviously.
-	 */
-	private Button _playButton;
 
 	/**
 	 * ok - put in our bits
@@ -304,16 +301,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
-		_dtgRangeSlider = new DTGBiSlider(_wholePanel, new DateFormatter())
-		{
-			/**
-			 */
-			public void rangeChanged(TimePeriod period)
-			{
-				// ok - fire range-changed event
-				selectPeriod(period);
-			}
-		};
+		_dtgRangeSlider = new DTGBiSlider(_wholePanel);
 	}
 
 	/**
@@ -448,27 +436,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		}
 	}
 
-	private class TimeButtonSelectionListener implements SelectionListener
-	{
-		private boolean _fwd;
-
-		private Boolean _large;
-
-		public TimeButtonSelectionListener(boolean fwd, Boolean large)
-		{
-			_fwd = fwd;
-			_large = large;
-		}
-
-		public void widgetSelected(SelectionEvent e)
-		{
-			processClick(_large, _fwd);
-		}
-
-		public void widgetDefaultSelected(SelectionEvent e)
-		{
-		}
-	}
 
 	private void processClick(Boolean large, boolean fwd)
 	{
@@ -1438,33 +1405,36 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	}
 
+	/** convenience class to help us manage the fwd/bwd step buttons
+	 * 
+	 * @author Ian.Mayo
+	 *
+	 */
+	private class TimeButtonSelectionListener implements SelectionListener
+	{
+		private boolean _fwd;
+
+		private Boolean _large;
+
+		public TimeButtonSelectionListener(boolean fwd, Boolean large)
+		{
+			_fwd = fwd;
+			_large = large;
+		}
+
+		public void widgetSelected(SelectionEvent e)
+		{
+			processClick(_large, _fwd);
+		}
+
+		public void widgetDefaultSelected(SelectionEvent e)
+		{
+		}
+	}
+	
 	// /////////////////////////////////////////////////////////////////
 	// AND PROPERTY EDITORS FOR THE
 	// /////////////////////////////////////////////////////////////////
-
-	/**
-	 * utility class to format the longs managed by the time-slider as dates
-	 * 
-	 * @author ian.mayo
-	 */
-	private class DateFormatter extends DTGBiSlider.FormatLong
-	{
-		public String format(long val)
-		{
-			String res = "";
-			val *= _dtgRangeSlider.getStepSize();
-
-			// have we got some data?
-			if (_myTemporalDataset != null)
-			{
-				HiResDate dtg = new HiResDate(val, _myTemporalDataset.getPeriod().getStartDTG()
-						.getMicros());
-				res = DebriefFormatDateTime.toStringHiRes(dtg, _myStepperProperties
-						.getDTGFormat());
-			}
-			return res;
-		}
-	}
 
 	public void setFocus()
 	{

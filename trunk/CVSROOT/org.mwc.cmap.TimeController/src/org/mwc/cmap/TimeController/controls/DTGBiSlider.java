@@ -1,177 +1,155 @@
 package org.mwc.cmap.TimeController.controls;
 
-import org.eclipse.swt.SWT;
+import java.util.*;
+
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Composite;
 
 import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.FullFormatDateTime;
+import MWC.Utilities.TextFormatting.*;
 
 import com.borlander.rac353542.bislider.*;
+import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
+import com.borlander.rac353542.bislider.cdata.CalendarDateSuite.CalendarDateModel;
 
-//import com.visutools.nav.bislider.BiSlider;
-//import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
-
-public class DTGBiSlider extends Composite
+public class DTGBiSlider
 {
 
-	/** our slider control
-	 * 
+	/**
+	 * our slider control
 	 */
 	BiSlider _mySlider;
-	
-	/** the minimum value
-	 * 
+
+	/**
+	 * the minimum value
 	 */
 	HiResDate _minVal;
-	
-	/** and the maximum value
-	 * 
+
+	/**
+	 * and the maximum value
 	 */
 	HiResDate _maxVal;
-	
-	/** the step size we apply to the slider (the size of the smallest increment, in millis)
-	 * 
+
+	/**
+	 * the step size we apply to the slider (the size of the smallest increment,
+	 * in millis)
 	 */
 	long _stepSize = 1000 * 60;
 
-	private BiSliderUIModelImpl _sliderUI;
+	private CalendarDateModel _dateModel;
 
-	private BiSliderDataModelImpl _sliderData;
-	
-	private BiSliderLabelProvider _labelProvider;
-	
-	/** constructor - get things going
+	private DefaultBiSliderUIModel _uiModel;
+
+	/**
+	 * constructor - get things going
 	 * 
 	 * @param parent
 	 * @param style
 	 */
-	public DTGBiSlider(Composite parent, FormatLong formatter)
+	public DTGBiSlider(Composite parentControl)
 	{
-		super(parent, SWT.EMBEDDED);
 
-		_labelProvider = new BiSliderLabelProvider(){
+		// sort out some demo dates
+		final Calendar calendar = Calendar.getInstance();
+		final long nowMillis = System.currentTimeMillis();
+		calendar.setTimeInMillis(nowMillis);
+		calendar.add(Calendar.YEAR, -1);
+		Date yearAgo = calendar.getTime();
+
+		calendar.setTimeInMillis(nowMillis);
+		calendar.add(Calendar.MONTH, -3);
+		Date threeMonthesAgo = calendar.getTime();
+
+		calendar.setTimeInMillis(nowMillis);
+		calendar.add(Calendar.MONTH, +4);
+		Date fourMonthesFromNow = calendar.getTime();
+
+		calendar.setTimeInMillis(nowMillis);
+		calendar.add(Calendar.YEAR, +1);
+		Date yearFromNow = calendar.getTime();
+
+		// sort out the data model
+		CalendarDateSuite suite = new CalendarDateSuite();
+		_dateModel = suite.createDataModel(yearAgo,
+				yearFromNow, threeMonthesAgo, fourMonthesFromNow);
+
+		// sort out the UI model
+		_uiModel = (DefaultBiSliderUIModel) suite.createUIModel();
+
+		// great, now it's ready for the actual BiSlider control
+		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel,
+				_uiModel);
+
+		// update the UI labels
+		_uiModel.setLabelProvider(new BiSliderLabelProvider()
+		{
 
 			public String getLabel(double value)
 			{
-				long time = (long) value;
-				String res = FullFormatDateTime.toString(time);
+				// ok, convert to date
+				long millis = (long) value;
+				String res = FormatRNDateTime.toString(millis);
 				return res;
-			}};
-			
-		_sliderData = new BiSliderDataModelImpl();
-		_sliderUI = new BiSliderUIModelImpl(){
-			public RGB getMaximumRGB()
-			{
-				return new RGB(55, 55, 55);
 			}
-
-			public RGB getMinimumRGB()
-			{
-				return new RGB(55,55,55);
-			}
-			
-		};
-		
-		
-		// ok, insert our fresh new control
-		_mySlider = new BiSlider(parent, SWT.NONE, _sliderData, _sliderUI)
-		{
-			public BiSliderLabelProvider getLabelProvider()
-			{
-				return _labelProvider;
-			}
-			
-		};
-		
-		_sliderData.setTotalRange(0, 100);
-		_sliderData.setSegmentLength(10);
-		
-//		_mySlider.setMinimumValue(0);
-//		_mySlider.setMaximumValue(100);
-//		_mySlider.setSegmentSize(10);
-//		_mySlider.setMinimumColor(java.awt.Color.GRAY);
-//		_mySlider.setMaximumColor(java.awt.Color.GRAY);
-//		_mySlider.setBackground(ColorHelper.convertColor(this.getBackground().getRGB()));
-//		_mySlider.setUnit("");
-//		_mySlider.setPrecise(true);		
-
-		_mySlider.setVisible(true);
-		
-		// listen out for mouse release - so we can get updated values
-//		_sliderData.addListener(new BiSliderDataModel.Listener(){
-//
-//			public void dataModelChanged(BiSliderDataModel dataModel)
-//			{
-//				outputValues();
-//			}});
-
+		});
+		_uiModel.setHasLabelsBelowOrRight(true);
 
 		// and catch the mouse-release event
-		_mySlider.addMouseListener(new MouseAdapter(){
+		_mySlider.addMouseListener(new MouseAdapter()
+		{
 			public void mouseUp(MouseEvent e)
 			{
 				outputValues();
-			}});
-		
-		
+			}
+		});
+
 	}
-	
+
+	public Composite getControl()
+	{
+		return _mySlider;
+	}
+
 	public void updateOuterRanges(TimePeriod period)
 	{
 		_minVal = period.getStartDTG();
 		_maxVal = period.getEndDTG();
-		
-		long microRange = _maxVal.getMicros() - _minVal.getMicros();
-		long milliRange = microRange / 1000;
-		
-		long workingRange = milliRange / _stepSize;
-		
-		_sliderData.setTotalRange(0, workingRange);
-//		_mySlider.setMinimumValue(0);
-//		_mySlider.setMaximumValue(workingRange);
-		
+
+		Date firstDate = _minVal.getDate();
+		Date lastDate = _maxVal.getDate();
+		_dateModel.setTotalRange(firstDate, lastDate);
+
 		// try for units of 10 * the current step
-		_sliderData.setSegmentLength(1);
+		_dateModel.setSegmentCount(10);
 	}
-	
-	
-	
-	/** outside object has requested repaint get on with it..
-	 * 
+
+	/**
+	 * outside object has requested repaint get on with it..
 	 */
 	public void update()
 	{
-		super.update();
-		
+		// super.update();
+
 		// and get the widget to repaint
 		_mySlider.update();
-		//repaint();
+		// repaint();
 	}
 
 	public void updateSelectedRanges(HiResDate minSelectedDate, HiResDate maxSelectedDate)
 	{
-		
+
 	}
 
-	/** ok fire data-changed event
-	 * 
-	 *
+	/**
+	 * ok fire data-changed event
 	 */
 	protected void outputValues()
 	{
-		// get how many micros it is
-		
-		long minVal = (long) _mySlider.getDataModel().getUserMinimum();
-		minVal *= _stepSize;
-		
-		long maxVal = (long) _mySlider.getDataModel().getUserMaximum();// getMaximumColoredValue();
-		maxVal *= _stepSize;
-		
-		HiResDate lowDTG = new HiResDate((long) minVal, _minVal.getMicros());
-		HiResDate highDTG = new HiResDate((long) maxVal, _minVal.getMicros());
-		
+		// ok - determine the times
+		HiResDate lowDTG = new HiResDate(_dateModel.getUserMinimumDate());
+		HiResDate highDTG = new HiResDate(_dateModel.getUserMaximumDate());
+
+		// and send out the update
 		rangeChanged(new TimePeriod.BaseTimePeriod(lowDTG, highDTG));
 	}
 
@@ -190,23 +168,12 @@ public class DTGBiSlider extends Composite
 	}
 
 	/**
-	 * @param size The _stepSize to set (millis)
+	 * @param size
+	 *          The _stepSize to set (millis)
 	 */
 	public void setStepSize(long size)
 	{
 		_stepSize = size;
 	}
-	
 
-	//////////////////////////////////////////////////////
-	// utility class that returns a string from a long value
-	//////////////////////////////////////////////////////
-	public static class FormatLong
-	{
-		public String format(long val)
-		{
-			return "" + val;
-		}
-	}	
-	
 }
