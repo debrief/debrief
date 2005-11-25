@@ -84,22 +84,27 @@ public class CalendarDateSuite {
 
         public Object double2object(double value) {
             myCalendar.setTimeInMillis(Math.round(value));
-        //    setToMidnight();
+//            setToMidnight();
             return myCalendar.getTime();
         }
 
         public double object2double(Object object) {
             myCalendar.setTime((Date) object);
-         //   setToMidnight();
+//            setToMidnight();
             return myCalendar.getTimeInMillis();
         }
 
-        private void setToMidnight() {
-            myCalendar.set(Calendar.HOUR, 0);
-            myCalendar.set(Calendar.AM_PM, Calendar.AM);
-            myCalendar.set(Calendar.MINUTE, 0);
-            myCalendar.set(Calendar.SECOND, 0);
-            myCalendar.set(Calendar.MILLISECOND, 0);
+//        private void setToMidnight() {
+//            myCalendar.set(Calendar.HOUR, 0);
+//            myCalendar.set(Calendar.AM_PM, Calendar.AM);
+//            myCalendar.set(Calendar.MINUTE, 0);
+//            myCalendar.set(Calendar.SECOND, 0);
+//            myCalendar.set(Calendar.MILLISECOND, 0);
+//        }
+        
+        public double getPrecision() {
+            return 1000 * 30;
+//            return 1000 * 60 * 60 * 24;
         }
     };
 }
