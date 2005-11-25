@@ -1,12 +1,14 @@
 package com.borlander.rac353542.bislider;
 
 import java.util.LinkedList;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
+import org.eclipse.swt.widgets.Display;
 
 public class DefaultBiSliderUIModel implements BiSliderUIModel {
     private static final RGB DEFAULT_FOREGROUND = new RGB(0, 0, 0);
-    private static final RGB DEFAULT_MIN_RGB = new RGB(0, 255, 0);
-    private static final RGB DEFAULT_MAX_RGB = new RGB(0, 0, 255);
+    private static final RGB DEFAULT_MIN_RGB = Display.getDefault().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND).getRGB();
+    private static final RGB DEFAULT_MAX_RGB = DEFAULT_MIN_RGB;
     private static final RGB DEFAULT_BLANK_RGB = new RGB(255, 255, 255);
     private static final int DEFAULT_LABEL_INSETS = 40;
     private static final int DEFAULT_NON_LABEL_INSETS = 20;
@@ -31,7 +33,7 @@ public class DefaultBiSliderUIModel implements BiSliderUIModel {
     
     public DefaultBiSliderUIModel(){
         setHasLabelsAboveOrLeft(true);
-        setContentsDataProvider(BiSliderContentsDataProvider.NORMAL_DISTRIBUTION);
+        setContentsDataProvider(BiSliderContentsDataProvider.FILL);
         setColorInterpolation(new ColorInterpolation.INTERPOLATE_HSB());
         setLabelProvider(BiSliderLabelProvider.TO_STRING);
         

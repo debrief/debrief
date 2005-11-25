@@ -46,6 +46,14 @@ class Segmenter implements Disposable {
         return new SegmentsArrayAsEnumeration(mySegments);
     }
     
+    public ColoredSegment getSegment(double value){
+        value = Math.max(value, myCachedTotalMin);
+        value = Math.min(value, myCachedTotalMax);
+        double segmentSize = myDataModel.getSegmentLength();
+        int index = (int)Math.floor((value - myCachedTotalMin) / segmentSize);
+        return mySegments[index];
+    }
+    
     public ColoredSegmentEnumeration segments(double minValue, double maxValue){
         minValue = Math.max(minValue, myCachedTotalMin);
         maxValue = Math.min(maxValue, myCachedTotalMax);

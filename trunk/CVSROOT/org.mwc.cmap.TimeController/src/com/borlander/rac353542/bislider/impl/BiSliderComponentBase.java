@@ -60,7 +60,7 @@ abstract class BiSliderComponentBase implements Disposable {
     }
 
     protected final Rectangle getDrawArea(){
-        return getMapper().getScreenBounds();
+        return getMapper().getDrawArea();
     }
 
     private BiSliderLabelProvider getLabelProvider(){

@@ -2,20 +2,44 @@ package com.borlander.rac353542.bislider;
 
 import org.eclipse.swt.graphics.RGB;
 
+/**
+ * Represents the abstract algorithm of color interpolation, that is computing
+ * the Color for some intermediate value of some range. At any moment of time
+ * each interpolation works in terms of some "context" consisting of range of
+ * double inputs and the predefined color values at the range boundaries..
+ */
 public abstract class ColorInterpolation {
+
     private double myMaxValue;
     private double myMinValue;
     private RGB myMinRGB;
     private RGB myMaxRGB;
     private boolean myIsTrivial;
 
+    /**
+     * Actual computing method.
+     * 
+     * @param rate
+     *            the normalized double value (from 0.0 to 1.0) representing the
+     *            position of input in context range.
+     */
     protected abstract RGB computeRGB(double rate);
-    
-    public boolean isSameInterpolationMode(ColorInterpolation other){
+
+    public boolean isSameInterpolationMode(ColorInterpolation other) {
         return other != null && this.getClass().equals(other.getClass());
     }
 
-    public final RGB interpolateRGB(double value) {
+    /**
+     * Default implementation normalizes the input value into [0.0 1.0] range
+     * and delegates actual computing to <code>computeRGB</code>.
+     * 
+     * @param value
+     *            the value which should be interpolated
+     * 
+     * @return the color for specified value computed by some class-sepcififc
+     *         algorithm in terms of the previously set interpolation context.
+     */
+    public RGB interpolateRGB(double value) {
         if (myIsTrivial) {
             return myMinRGB;
         }
@@ -23,6 +47,11 @@ public abstract class ColorInterpolation {
         return computeRGB(rate);
     }
 
+    /**
+     * Sets the context of interpolation. It is guaranteed that any subsequent
+     * requests for <code>interpolateRGB()</code> will have parameter that
+     * <code>minValue &lt;= parameter &lt;= maxValue</code>.
+     */
     public void setContext(RGB minRGB, RGB maxRGB, double minValue, double maxValue) {
         if (minValue == maxValue) {
             throw new IllegalArgumentException("I can not accept zero range");
@@ -61,6 +90,10 @@ public abstract class ColorInterpolation {
         return new RGB((int) red, (int) green, (int) blue);
     }
 
+    /**
+     * Predefined implementation which interpolates colors using separate linear
+     * interpolation for red, green and blue bands.
+     */
     public static class INTERPOLATE_RGB extends ColorInterpolation {
 
         protected RGB computeRGB(double rate) {
@@ -73,6 +106,10 @@ public abstract class ColorInterpolation {
         }
     }
 
+    /**
+     * Predefined implementation which interpolates colors using separate linear
+     * interpolation for hue, saturation and brightness bands.
+     */
     public static class INTERPOLATE_HSB extends ColorInterpolation {
 
         protected RGB computeRGB(double rate) {
@@ -87,25 +124,36 @@ public abstract class ColorInterpolation {
         }
     }
 
-    public static class INTERPOLATE_CENTRAL_BLACK extends ColorInterpolation {
+    /**
+     * Predefined implementation which interpolates colors in such way that the
+     * central value is always has predefined color. By default, this central
+     * color is selected to be black, however, any other value is also allowed.
+     */
+    public static class INTERPOLATE_CENTRAL extends ColorInterpolation {
 
-        private static final RGB BLACK = new RGB(0, 0, 0);
         private final ColorInterpolation myLeftInterpolation;
         private final ColorInterpolation myRightInterpolation;
+        private final RGB myColorAtCenter;
+        private static final RGB DEFAULT_CENTER_VALUE = new RGB(0, 0, 0);
 
-        public INTERPOLATE_CENTRAL_BLACK() {
+        public INTERPOLATE_CENTRAL() {
+            this(DEFAULT_CENTER_VALUE);
+        }
+
+        public INTERPOLATE_CENTRAL(RGB colorAtCenter) {
+            myColorAtCenter = colorAtCenter;
             myLeftInterpolation = new INTERPOLATE_RGB();
             myRightInterpolation = new INTERPOLATE_RGB();
         }
 
         public void setContext(RGB minRGB, RGB maxRGB, double minValue, double maxValue) {
             super.setContext(minRGB, maxRGB, minValue, maxValue);
-            myLeftInterpolation.setContext(minRGB, BLACK, 0, 0.5);
-            myRightInterpolation.setContext(minRGB, BLACK, 0.5, 1);
+            myLeftInterpolation.setContext(minRGB, myColorAtCenter, 0, 0.5);
+            myRightInterpolation.setContext(maxRGB, myColorAtCenter, 0, 0.5);
         }
 
         protected RGB computeRGB(double rate) {
-            return rate <= 0.5 ? myLeftInterpolation.interpolateRGB(rate) : myRightInterpolation.interpolateRGB(rate);
+            return rate <= 0.5 ? myLeftInterpolation.interpolateRGB(rate) : myRightInterpolation.interpolateRGB(1 - rate);
         }
     }
 }

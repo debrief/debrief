@@ -79,6 +79,10 @@ public class LongDataSuite {
             Long longValue = (Long) object;
             return longValue.doubleValue();
         }
+        
+        public double getPrecision() {
+            return 1;
+        }
     };
     
 }

@@ -5,6 +5,10 @@ import org.eclipse.swt.graphics.Rectangle;
 
 abstract class Axis {
     public abstract int get(Point point);
+    public abstract int getNormal(Point point);
+    public abstract void set(Point point, int value);
+    public abstract void setNormal(Point point, int value);
+    
     public abstract double getAsDouble(Point point);
     public abstract int getMin(Rectangle rectangle);
     public abstract int getMax(Rectangle rectangle);
@@ -41,6 +45,18 @@ abstract class Axis {
 
         public int get(Point point) {
             return point.x;
+        }
+        
+        public void set(Point point, int value) {
+            point.x = value;
+        }
+        
+        public void setNormal(Point point, int value) {
+            point.y = value;
+        }
+        
+        public int getNormal(Point point) {
+            return point.y;
         }
 
         public int getMax(Rectangle rectangle) {
@@ -92,7 +108,19 @@ abstract class Axis {
         public int get(Point point) {
             return point.y;
         }
+        
+        public int getNormal(Point point) {
+            return point.x;
+        }
 
+        public void set(Point point, int value) {
+            point.y = value;
+        }
+        
+        public void setNormal(Point point, int value) {
+            point.x = value;
+        }
+        
         public int getMax(Rectangle rectangle) {
             return rectangle.y + rectangle.height;
         }

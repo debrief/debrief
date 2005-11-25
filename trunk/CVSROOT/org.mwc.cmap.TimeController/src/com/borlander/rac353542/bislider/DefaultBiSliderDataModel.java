@@ -4,6 +4,7 @@ import java.util.LinkedList;
 
 public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     private static final int DEFAULT_SEGMENTS_COUNT = 25;
+    private final double myPrecision;
     private double myTotalMinimum;
     private double myTotalMaximum;
     private double myUserMinimum = Double.NEGATIVE_INFINITY;
@@ -13,13 +14,22 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     private Listener[] myListenersArray;
 
     public DefaultBiSliderDataModel() {
-        this(0, 100);
+        this(0);
     }
-
-    public DefaultBiSliderDataModel(double totalMin, double totalMax) {
+    
+    public DefaultBiSliderDataModel(double precision) {
+        this(0, 100, precision);
+    }
+    
+    public DefaultBiSliderDataModel(double totalMin, double totalMax, double precision) {
         myListeners = new LinkedList();
+        myPrecision = precision;
         setTotalRange(totalMin, totalMax);
         setSegmentCount(DEFAULT_SEGMENTS_COUNT);
+    }
+    
+    public double getPrecision() {
+        return myPrecision;
     }
     
     public void addListener(Listener listener) {
@@ -111,6 +121,21 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
             fireChanged();
         }
     }
+    
+    public void setUserRange(double userMin, double userMax) {
+        if (userMin > userMax){
+            double temp = userMin;
+            userMin = userMax;
+            userMax = temp;
+        }
+        userMin = checkTotalRange(userMin);
+        userMax = checkTotalRange(userMax);
+        if (userMax != myUserMaximum || userMin != myUserMinimum){
+            myUserMaximum = userMax;
+            myUserMinimum = userMin;
+            fireChanged();
+        }
+    }
 
     private void fireChanged() {
         if (!myListeners.isEmpty()) {
@@ -138,6 +163,11 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
         myListenersArray = (Listener[]) myListeners.toArray(myListenersArray);
         return myListenersArray;
     }
-
+    
+    private double checkTotalRange(double value){
+        value = Math.min(value, myTotalMaximum);
+        value = Math.max(value, myTotalMinimum);
+        return value;
+    }
 
 }

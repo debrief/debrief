@@ -6,6 +6,7 @@ public class DataObjectDataModel extends DefaultBiSliderDataModel {
     private final DataObjectMapper myMapper;
 
     public DataObjectDataModel(DataObjectMapper mapper){
+        super(mapper.getPrecision());
         myMapper = mapper;
     }
     
@@ -38,9 +39,7 @@ public class DataObjectDataModel extends DefaultBiSliderDataModel {
     }
     
     protected void setTotalObjectRange(Object minimumDataObject, Object maximumDataObject){
-    	double rngStart  = myMapper.object2double(minimumDataObject);
-    	double rngEnd = myMapper.object2double(maximumDataObject);
-        this.setTotalRange(rngStart, rngEnd );
+        this.setTotalRange(myMapper.object2double(minimumDataObject), myMapper.object2double(maximumDataObject));
     }
     
 }

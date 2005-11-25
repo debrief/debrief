@@ -13,20 +13,22 @@ class BiSliderContents extends BiSliderComponentBase implements Disposable {
     private Segmenter mySegmenter;
     private BiSliderUIModel.Listener myConfigListener;
 
-    public BiSliderContents(BiSliderImpl biSlider) {
+    public BiSliderContents(BiSliderImpl biSlider, Segmenter segmenter) {
         super(biSlider);
-        mySegmenter = new Segmenter(getDataModel(), getUIModel());
+        mySegmenter = segmenter;
         reloadConfig();
+        myConfigListener = new BiSliderUIModel.Listener(){
+            public void uiModelChanged(BiSliderUIModel uiModel) {
+                reloadConfig();
+            }
+        };
+        getUIModel().addListener(myConfigListener);
     }
 
     public void freeResources() {
         if (myConfigListener != null){
             getUIModel().removeListener(myConfigListener);
             myConfigListener = null;
-        }
-        if (mySegmenter != null) {
-            mySegmenter.freeResources();
-            mySegmenter = null;
         }
         if (mySegmentForeground != null) {
             mySegmentForeground.freeResources();

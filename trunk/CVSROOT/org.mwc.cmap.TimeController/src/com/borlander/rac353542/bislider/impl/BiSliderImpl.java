@@ -3,6 +3,8 @@ package com.borlander.rac353542.bislider.impl;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.PaintEvent;
 import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
@@ -11,15 +13,13 @@ import org.eclipse.swt.widgets.Composite;
 import com.borlander.rac353542.bislider.BiSlider;
 import com.borlander.rac353542.bislider.BiSliderDataModel;
 import com.borlander.rac353542.bislider.BiSliderUIModel;
-import com.borlander.rac353542.bislider.DefaultBiSliderDataModel;
-import com.borlander.rac353542.bislider.DefaultBiSliderUIModel;
 
 /**
  * Actual BiLsider implementation.
  * <p>
  * Intentionally package local
  */
-class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Listener, BiSliderUIModel.Listener {
+class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Listener, BiSliderUIModel.Listener{
     private final BiSliderDataModel.Writable myDataModel;
     private final BiSliderUIModel myUiModel;
     private final CoordinateMapper myMapper;
@@ -29,10 +29,8 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
     private BiSliderOutline myOutline;
     private Rectangle myCachedClientArea;
     private Rectangle myCachedDrawArea;
-
-    public BiSliderImpl(Composite parent, int style) {
-        this(parent, style, new DefaultBiSliderDataModel(), new DefaultBiSliderUIModel());
-    }
+    private Segmenter mySegmenter;
+    private UserRangePanner myUserRangePanner;
 
     public BiSliderImpl(Composite parent, int style, BiSliderDataModel.Writable dataModel, BiSliderUIModel uiModel) {
         super(parent, style | SWT.DOUBLE_BUFFERED);
@@ -40,10 +38,13 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
         myDataModel = dataModel;
         myUiModel = uiModel;
         myMapper = new CoordinateMapperImpl(myUiModel.isVertical());
-        myMaxPointer = new BiSliderPointer(this, true);
-        myMinPointer = new BiSliderPointer(this, false);
-        myContents = new BiSliderContents(this);
+        mySegmenter = new Segmenter(myDataModel, myUiModel);
+        myMaxPointer = new BiSliderPointer(this, true, mySegmenter);
+        myMinPointer = new BiSliderPointer(this, false, mySegmenter);
+        
+        myContents = new BiSliderContents(this, mySegmenter);
         myOutline = new BiSliderOutline(this);
+        myUserRangePanner = new UserRangePanner(this, myMinPointer, myMaxPointer);
         dataModel.addListener(this);
         uiModel.addListener(this);
         addDisposeListener(new DisposeListener() {
@@ -56,6 +57,22 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
 
             public void paintControl(PaintEvent e) {
                 BiSliderImpl.this.paintBiSlider(e.gc);
+            }
+        });
+        addMouseListener(new SegmentSelector(this, mySegmenter));
+        addMouseListener(new MouseAdapter() {
+
+            public void mouseDown(MouseEvent e) {
+                boolean isFocusControl = isFocusControl();
+                if (!isFocusControl) {
+                    if (myMaxPointer != null) {
+                        myMaxPointer.disposeFineTuneAdjuster(true);
+                    }
+                    if (myMinPointer != null) {
+                        myMinPointer.disposeFineTuneAdjuster(true);
+                    }
+                    setFocus();
+                }
             }
         });
     }
@@ -77,6 +94,14 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
         if (myMinPointer != null) {
             myMinPointer.freeResources();
             myMinPointer = null;
+        }
+        if (mySegmenter != null) {
+            mySegmenter.freeResources();
+            mySegmenter = null;
+        }
+        if (myUserRangePanner != null) {
+            myUserRangePanner.freeResources();
+            myUserRangePanner = null;
         }
     }
 
@@ -101,13 +126,21 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
         return myMapper;
     }
 
+    /**
+     * @return <code>true</code> if given point is inside one of pointers.
+     */
+    boolean isInsidePointer(int pointX, int pointY) {
+        return (myMaxPointer != null && myMaxPointer.isInsideArea(pointX, pointY)) || 
+                (myMinPointer != null && myMinPointer.isInsideArea(pointX, pointY));
+    }
+
     public BiSliderDataModel.Writable getWritableDataModel() {
         return myDataModel;
     }
 
     private void paintBiSlider(GC gc) {
         Rectangle drawArea = getDrawArea();
-        myMapper.setContext(myDataModel, drawArea);
+        myMapper.setContext(myDataModel, drawArea, getClientArea());
         myContents.paintContents(gc);
         myMinPointer.paintPointer(gc);
         myMaxPointer.paintPointer(gc);
@@ -130,7 +163,6 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
         int height = clientArea.height;
         int labelInsets = myUiModel.getLabelInsets();
         int nonLabelInsets = myUiModel.getNonLabelInsets();
-        
         // allocate space for labels but only if there is enough space
         if (myUiModel.isVertical()) {
             if (myUiModel.hasLabelsAboveOrLeft() && width > labelInsets) {
@@ -165,4 +197,5 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
         }
         return new Rectangle(x, y, width, height);
     }
+    
 }

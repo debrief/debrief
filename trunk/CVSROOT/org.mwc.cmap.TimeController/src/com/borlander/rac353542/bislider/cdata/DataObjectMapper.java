@@ -1,6 +1,5 @@
 package com.borlander.rac353542.bislider.cdata;
 
-
 /**
  * Internally BiSlider works with double data values. This interface extends
  * this default behavior with ability to work with any other data objects,
@@ -32,4 +31,17 @@ public interface DataObjectMapper {
      * @return never return <code>null</code>
      */
     public Object double2object(double value);
+
+    /**
+     * Returns the precision of this mapping.
+     * 
+     * For any data domain object <code>obj</code>, the following should be
+     * <code>true</code>:
+     * 
+     * <code>
+     * (obj != double2object(object2double(obj) + getPrecision())) && 
+     * (obj != double2object(object2double(obj) - getPrecision()))
+     * </code>
+     */
+    public double getPrecision();
 }
