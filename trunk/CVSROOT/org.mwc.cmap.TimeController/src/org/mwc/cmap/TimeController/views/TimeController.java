@@ -16,7 +16,7 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
@@ -33,7 +33,7 @@ import MWC.GenericData.*;
 import MWC.Utilities.Timer.TimerListener;
 
 /**
- * View performing time management:  show current time, allow control of time, allow selection of time periods. good stuff.
+ * View performing time management:  show current time, allow control of time, allow selection of time periods
  * 
  */
 
@@ -206,15 +206,17 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// ok, draw our wonderful GUI.
 		_wholePanel = new Composite(parent, SWT.BORDER);
 
-		FillLayout onTop = new FillLayout(SWT.VERTICAL);
+		GridLayout onTop = new GridLayout();
+		onTop.horizontalSpacing = 0;
+		onTop.verticalSpacing = 0;
+		onTop.marginHeight = 0;
+		onTop.marginWidth = 0;
 		_wholePanel.setLayout(onTop);
 
-		Composite doublePanel = new Composite(_wholePanel, SWT.NONE);
-		FillLayout timeBox = new FillLayout(SWT.VERTICAL);
-		doublePanel.setLayout(timeBox);
-
 		// first create the button holder
-		Composite _btnPanel = new Composite(doublePanel, SWT.NONE);
+		Composite _btnPanel = new Composite(_wholePanel, SWT.NONE);
+		GridData btnGrid = new GridData(GridData.FILL_HORIZONTAL);
+		_btnPanel.setLayoutData(btnGrid);
 		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
 		btnFiller.marginHeight = 0;
 		_btnPanel.setLayout(btnFiller);
@@ -271,10 +273,17 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
 		// and the current time label
-		Composite timeContainer = new Composite(doublePanel, SWT.NONE);
-		FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
-		timeContainer.setLayout(timeFiller);
-		_timeLabel = new Label(timeContainer, SWT.NONE);
+//		Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
+//		GridData timeGrid = new GridData(GridData.FILL_HORIZONTAL);
+//		timeContainer.setLayoutData(timeGrid);
+//		
+//		FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
+//		timeContainer.setLayout(timeFiller);
+		
+		
+		_timeLabel = new Label(_wholePanel, SWT.NONE);
+	GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
+	_timeLabel.setLayoutData(labelGrid);
 		_timeLabel.setAlignment(SWT.CENTER);
 		_timeLabel.setText("--------------------------");
 		_timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended", 16, SWT.NONE));
@@ -283,6 +292,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		// next create the time slider holder
 		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
+		GridData sliderGrid = new GridData(GridData.FILL_HORIZONTAL);
+		_tNowSlider.setLayoutData(sliderGrid);		
 		_tNowSlider.setMinimum(0);
 		_tNowSlider.setMaximum(100);
 		_tNowSlider.addSelectionListener(new SelectionListener()
@@ -302,6 +313,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
 		_dtgRangeSlider = new DTGBiSlider(_wholePanel);
+		GridData biGrid = new GridData(GridData.FILL_BOTH);
+		_dtgRangeSlider.getControl().setLayoutData(biGrid);				
 	}
 
 	/**
