@@ -61,8 +61,13 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Dis
         return myDrawer == null ? null : myDrawer.getAreaGate();
     }
     
+    public void dragStarted() {
+        getWritableDataModel().startCompositeUpdate();
+    }
+    
     public void dragFinished() {
         setShowValueLabel(false);
+        getWritableDataModel().finishCompositeUpdate();
         getBiSlider().redraw();
     }
     

@@ -17,6 +17,7 @@ class DragSupport implements MouseListener, MouseMoveListener {
     private Point myStartPoint;
 
     public static interface DragListener {
+        public void dragStarted();
         public void mouseDragged(MouseEvent e, Point startPoint);
         public void dragFinished();
     }
@@ -53,7 +54,10 @@ class DragSupport implements MouseListener, MouseMoveListener {
         if (!myMayBeDragging) {
             return;
         }
-        myIsDragging = myIsDragging || !isCloseEnough(e);
+        if (!myIsDragging && isCloseEnough(e)){
+            myDragListener.dragStarted();
+            myIsDragging = true;
+        }
         if (myIsDragging) {
             myDragListener.mouseDragged(e, myStartPoint);
         }
@@ -62,7 +66,7 @@ class DragSupport implements MouseListener, MouseMoveListener {
     public void mouseDoubleClick(MouseEvent e) {
         draggingStop();
     }
-
+    
     private void draggingStop() {
         if (myIsDragging){
             myDragListener.dragFinished();

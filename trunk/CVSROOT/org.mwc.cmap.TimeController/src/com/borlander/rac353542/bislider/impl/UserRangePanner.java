@@ -23,7 +23,12 @@ class UserRangePanner implements DragSupport.DragListener, Disposable {
     
     public void dragFinished() {
         setShowValueLabels(false);
+        myBiSlider.getWritableDataModel().finishCompositeUpdate();
         myBiSlider.redraw();
+    }
+    
+    public void dragStarted() {
+        myBiSlider.getWritableDataModel().startCompositeUpdate();
     }
     
     public void freeResources() {

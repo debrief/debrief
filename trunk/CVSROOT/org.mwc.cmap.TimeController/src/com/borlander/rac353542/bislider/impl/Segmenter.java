@@ -22,7 +22,7 @@ class Segmenter implements Disposable {
         updateInterpolation();
         computeSegments();
         myDataModelListener = new BiSliderDataModel.Listener(){
-            public void dataModelChanged(BiSliderDataModel model) {
+            public void dataModelChanged(BiSliderDataModel model, boolean moreChangesExpectedInNearFuture) {
                 onExternalChanges();
             }
         };
