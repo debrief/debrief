@@ -82,7 +82,7 @@ public interface BiSliderDataModel {
 
     public static interface Listener {
 
-        public void dataModelChanged(BiSliderDataModel dataModel);
+        public void dataModelChanged(BiSliderDataModel dataModel, boolean moreChangesExpectedInNearFuture);
     }
 
     /**
@@ -107,5 +107,9 @@ public interface BiSliderDataModel {
         public void setUserMaximum(double userMaximum);
 
         public void setSegmentCount(int segmentsCount);
+        
+        public void startCompositeUpdate();
+        
+        public void finishCompositeUpdate();
     }
 }

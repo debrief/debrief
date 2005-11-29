@@ -35,6 +35,21 @@ public class Snippet {
         simple.setText("All defaults");
         simple.setLayout(new FillLayout());
         BiSlider simpleSlider = BiSliderFactory.getInstance().createBiSlider(simple);
+        
+        /*
+        simpleSlider.getDataModel().addListener(new BiSliderDataModel.Listener() {
+            private boolean myInCompositeUpdate;
+            
+            public void dataModelChanged(BiSliderDataModel dataModel, boolean moreChangesExpectedInNearFuture) {
+                if (moreChangesExpectedInNearFuture && myInCompositeUpdate){
+                    return;
+                }
+                myInCompositeUpdate = moreChangesExpectedInNearFuture;
+                System.err.println("dataModelChanges: isComposite: " + moreChangesExpectedInNearFuture);
+            }
+        });
+        */
+        
         DefaultBiSliderUIModel uiConfig = (DefaultBiSliderUIModel) simpleSlider.getUIModel();
         uiConfig.setHasLabelsAboveOrLeft(true);
         uiConfig.setHasLabelsBelowOrRight(true);

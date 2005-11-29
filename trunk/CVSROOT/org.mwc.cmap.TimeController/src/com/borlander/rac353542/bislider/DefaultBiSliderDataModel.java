@@ -12,6 +12,7 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     private int mySegmentCount;
     private final LinkedList myListeners;
     private Listener[] myListenersArray;
+    private int myCompositeUpdateCounter;
 
     public DefaultBiSliderDataModel() {
         this(0);
@@ -145,8 +146,23 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
                 if (next == null){
                     break;
                 }
-                next.dataModelChanged(this);
+                next.dataModelChanged(this, myCompositeUpdateCounter > 0);
             }
+        }
+    }
+    
+    public void startCompositeUpdate() {
+        myCompositeUpdateCounter++;
+    }
+    
+    public void finishCompositeUpdate() {
+        if (myCompositeUpdateCounter <= 0){
+            throw new IllegalStateException("Finish update without start update");
+        }
+        if (--myCompositeUpdateCounter == 0){
+            //nothing changed since last notification. However, we have to 
+            //send last notification with moreChangesExpected = false
+            fireChanged();
         }
     }
 
