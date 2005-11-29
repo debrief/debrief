@@ -81,7 +81,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 
 	final static long serialVersionUID = 6420110040552724883L;
 
-	protected BiSlider Ctrl = null;
+	protected SwingBiSlider Ctrl = null;
 
 	protected JComponent JComponent1 = null;
 
@@ -211,7 +211,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	 * @param Ctrl_Arg
 	 *          Description of the Parameter
 	 */
-	public BiSliderPresentation(BiSlider Ctrl_Arg, ContentPainterSupport ContentPainterSupport_Arg,
+	public BiSliderPresentation(SwingBiSlider Ctrl_Arg, ContentPainterSupport ContentPainterSupport_Arg,
 			FormatLong formatter)
 	{
 		this.Ctrl = Ctrl_Arg;
