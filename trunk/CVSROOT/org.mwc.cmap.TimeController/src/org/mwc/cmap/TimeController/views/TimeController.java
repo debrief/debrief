@@ -33,7 +33,7 @@ import MWC.GenericData.*;
 import MWC.Utilities.Timer.TimerListener;
 
 /**
- * View performing time management:  show current time, allow control of time, allow selection of time periods
+ * View performing time management:  show current time, allow control of time, allow selection of time periods. good stuff.
  * 
  */
 
