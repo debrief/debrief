@@ -104,9 +104,11 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
             myUserRangePanner = null;
         }
     }
-
-    public void dataModelChanged(BiSliderDataModel dataModel) {
+    
+    public void dataModelChanged(BiSliderDataModel dataModel, boolean moreChangesExpectedInNearFuture) {
+        // reload in any case to provide visual feedback immediately
         reloadChanges();
+        
     }
 
     public void uiModelChanged(BiSliderUIModel uiModel) {
