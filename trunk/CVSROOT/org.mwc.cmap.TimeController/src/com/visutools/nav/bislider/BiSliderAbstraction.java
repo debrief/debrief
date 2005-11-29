@@ -81,7 +81,7 @@ public class BiSliderAbstraction implements Serializable {
   /**
    * Description of the Field
    */
-  public int InterpolationMode = BiSlider.CENTRAL_BLACK;
+  public int InterpolationMode = SwingBiSlider.CENTRAL_BLACK;
 
 
 
@@ -175,7 +175,7 @@ public class BiSliderAbstraction implements Serializable {
       ColorTable[i - Mini][3] = i;
 
       Color  NewColor  = MinimumColor;
-      if (InterpolationMode == BiSlider.RGB) {
+      if (InterpolationMode == SwingBiSlider.RGB) {
         float  dR  = ((MaximumColor.getRed() - MinimumColor.getRed()) * Portion);
         float  dG  = ((MaximumColor.getGreen() - MinimumColor.getGreen()) * Portion);
         float  dB  = ((MaximumColor.getBlue() - MinimumColor.getBlue()) * Portion);
@@ -188,7 +188,7 @@ public class BiSliderAbstraction implements Serializable {
           IllegalArgumentException_Arg.printStackTrace();
         }
       }
-      else if (InterpolationMode == BiSlider.HSB) {
+      else if (InterpolationMode == SwingBiSlider.HSB) {
         float  hsb0[]  = Color.RGBtoHSB(MinimumColor.getRed(), MinimumColor.getGreen(), MinimumColor.getBlue(), null);
         float  hsb1[]  = Color.RGBtoHSB(MaximumColor.getRed(), MaximumColor.getGreen(), MaximumColor.getBlue(), null);
 
@@ -206,7 +206,7 @@ public class BiSliderAbstraction implements Serializable {
           hsb0[1] + ds * i,
           hsb0[2] + db * i);
       }
-      else if (InterpolationMode == BiSlider.CENTRAL_BLACK) {
+      else if (InterpolationMode == SwingBiSlider.CENTRAL_BLACK) {
         Portion = 2f / SegmentCount;
         float  dR1  = ((MaximumColor.getRed() - Color.BLACK.getRed()) * Portion);
         float  dG1  = ((MaximumColor.getGreen() - Color.BLACK.getGreen()) * Portion);
