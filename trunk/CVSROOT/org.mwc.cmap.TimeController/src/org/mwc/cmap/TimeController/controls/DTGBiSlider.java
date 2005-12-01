@@ -2,11 +2,10 @@ package org.mwc.cmap.TimeController.controls;
 
 import java.util.*;
 
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.Composite;
 
 import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.*;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 import com.borlander.rac353542.bislider.*;
 import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
@@ -70,20 +69,23 @@ public class DTGBiSlider
 
 		// sort out the data model
 		CalendarDateSuite suite = new CalendarDateSuite();
-		_dateModel = suite.createDataModel(yearAgo,
-				yearFromNow, threeMonthesAgo, fourMonthesFromNow);
+		_dateModel = suite.createDataModel(yearAgo, yearFromNow, threeMonthesAgo,
+				fourMonthesFromNow);
 
 		// sort out the UI model
 		_uiModel = (DefaultBiSliderUIModel) suite.createUIModel();
 
-		// great, now it's ready for the actual BiSlider control
-		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel,
-				_uiModel);
-
+		// do a bit of ui fiddling
+		_uiModel.setHasLabelsAboveOrLeft(true);
+		_uiModel.setHasLabelsBelowOrRight(false);
+		
+		_uiModel.setLabelInsets(70);
+		_uiModel.setNonLabelInsets(20);
+		
+		
 		// update the UI labels
 		_uiModel.setLabelProvider(new BiSliderLabelProvider()
 		{
-
 			public String getLabel(double value)
 			{
 				// ok, convert to date
@@ -92,16 +94,37 @@ public class DTGBiSlider
 				return res;
 			}
 		});
-		_uiModel.setHasLabelsBelowOrRight(true);
 
-		// and catch the mouse-release event
-		_mySlider.addMouseListener(new MouseAdapter()
+		// now some date fiddling
+		_dateModel.addListener(new BiSliderDataModel.Listener()
 		{
-			public void mouseUp(MouseEvent e)
+			private boolean myInCompositeUpdate;
+
+			public void dataModelChanged(BiSliderDataModel dataModel,
+					boolean moreChangesExpectedInNearFuture)
 			{
-				outputValues();
+				// see if we're already procesing something
+				if (moreChangesExpectedInNearFuture && myInCompositeUpdate)
+				{
+					return;
+				}
+				
+				// nope, get on with it
+				myInCompositeUpdate = moreChangesExpectedInNearFuture;
+				
+				// is this a "drop" event
+				if (!moreChangesExpectedInNearFuture)
+				{
+					// yes, fire changed event
+					outputValues();
+				}
 			}
-		});
+		});		
+		
+		// great, now it's ready for the actual BiSlider control
+		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel,
+				_uiModel);
+
 
 	}
 
