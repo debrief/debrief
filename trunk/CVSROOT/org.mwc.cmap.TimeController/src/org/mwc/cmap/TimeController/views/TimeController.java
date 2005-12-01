@@ -312,7 +312,16 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
-		_dtgRangeSlider = new DTGBiSlider(_wholePanel);
+		_dtgRangeSlider = new DTGBiSlider(_wholePanel)
+		{
+			public void rangeChanged(TimePeriod period)
+			{
+				super.rangeChanged(period);
+				
+				selectPeriod(period);
+			}
+			
+		};
 		GridData biGrid = new GridData(GridData.FILL_BOTH);
 		_dtgRangeSlider.getControl().setLayoutData(biGrid);				
 	}
