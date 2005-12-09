@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.18  2005-11-14 10:28:24  Ian.Mayo
+// Revision 1.19  2005-12-09 14:54:37  Ian.Mayo
+// Add right-click property editing
+//
+// Revision 1.18  2005/11/14 10:28:24  Ian.Mayo
 // Double-check everything is there before we start plotting
 //
 // Revision 1.17  2005/09/08 11:01:41  Ian.Mayo
@@ -72,9 +75,9 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.ColorHelper;
+import org.mwc.cmap.core.property_support.*;
 
-import MWC.GUI.CanvasType;
+import MWC.GUI.*;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -154,10 +157,10 @@ public class SWTCanvas extends SWTCanvasAdapter
 					// cool, right-had button. process it
 					MenuManager mmgr = new MenuManager();
 					Point display = Display.getCurrent().getCursorLocation();
-					Point control = _myCanvas.toControl(display);
+					Point scrPoint = _myCanvas.toControl(display);
 					WorldLocation targetLoc = getProjection().toWorld(
-							new java.awt.Point(control.x, control.y));
-					fillContextMenu(mmgr, targetLoc);
+							new java.awt.Point(scrPoint.x, scrPoint.y));
+					fillContextMenu(mmgr, scrPoint, targetLoc);
 					Menu thisM = mmgr.createContextMenu(_myCanvas);
 					thisM.setVisible(true);
 				}
@@ -170,8 +173,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * ok - insert the right-hand button related items
 	 * 
 	 * @param mmgr
+	 * @param scrPoint 
 	 */
-	protected void fillContextMenu(MenuManager mmgr, WorldLocation loc)
+	protected void fillContextMenu(MenuManager mmgr, Point scrPoint, WorldLocation loc)
 	{
 		// right, we create the actions afresh each time here. We can't
 		// automatically calculate it.
@@ -199,6 +203,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 		};
 
 		mmgr.add(_copyLocation);
+		
+
+		
 	}
 
 	// ////////////////////////////////////////////////////

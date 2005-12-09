@@ -10,7 +10,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.part.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
-import org.mwc.cmap.core.property_support.PlottableWrapper;
+import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.Layer_managerPlugin;
 import org.mwc.cmap.layer_manager.views.support.*;
@@ -139,6 +139,7 @@ public class LayerManagerView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
+		
 		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		_treeViewer.setUseHashlookup(true);
 		drillDownAdapter = new DrillDownAdapter(_treeViewer);
@@ -355,10 +356,24 @@ public class LayerManagerView extends ViewPart
 		manager.add(_hideAction);
 		manager.add(_revealAction);
 		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
+
+		// drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
 		manager.add(new Separator(IWorkbenchActionConstants.MB_ADDITIONS));
 
+		// hey, sort out the data-specific items
+		// build up a list of menu items
+
+		// get the selected item
+		IStructuredSelection sel = (IStructuredSelection) _treeViewer.getSelection();
+		if (sel.size() == 1)
+		{
+			Object first = sel.getFirstElement();
+			PlottableWrapper pw = (PlottableWrapper) first;		
+			
+			// ok, populate the list
+			RightClickSupport.getDropdownListFor(manager, pw.getPlottable().getInfo(), pw.getTopLevelLayer(), _myLayers);
+		}
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
@@ -461,7 +476,8 @@ public class LayerManagerView extends ViewPart
 		};
 		_makeSecondary.setText("Make Secondary");
 		_makeSecondary.setToolTipText("Add this item to the secondary tracks");
-		_makeSecondary.setImageDescriptor(CorePlugin.getImageDescriptor("icons/secondary.gif"));
+		_makeSecondary.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/secondary.gif"));
 
 		_hideAction = new Action()
 		{

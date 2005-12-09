@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.20  2005-09-29 15:29:46  Ian.Mayo
+// Revision 1.21  2005-12-09 14:54:38  Ian.Mayo
+// Add right-click property editing
+//
+// Revision 1.20  2005/09/29 15:29:46  Ian.Mayo
 // Provide initial drag-mode (zoom)
 //
 // Revision 1.19  2005/09/16 10:11:37  Ian.Mayo
@@ -69,17 +72,22 @@ package org.mwc.cmap.plotViewer.editors.chart;
 
 import java.awt.*;
 import java.awt.Color;
-import java.util.HashMap;
+import java.util.*;
 
+import org.eclipse.jface.action.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
+import Debrief.Wrappers.*;
 import MWC.GUI.*;
+import MWC.GUI.Tools.Chart.*;
+import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
 import MWC.GenericData.*;
 
 /**
@@ -243,7 +251,101 @@ public class SWTChart extends PlainChart
 	 */
 	public SWTCanvas createCanvas(Composite parent)
 	{
-		return new SWTCanvas(parent);
+		return new SWTCanvas(parent)
+		{
+			private static final long serialVersionUID = 1L;
+
+			protected void fillContextMenu(MenuManager mmgr, Point scrPoint, WorldLocation loc)
+			{
+				// let the parent do it's stuff
+				super.fillContextMenu(mmgr, scrPoint, loc);
+
+				// ok, get a handle to our layers
+				Layers theData = getLayers();
+				double layerDist = -1;
+			
+		
+				// find the nearest editable item
+				ObjectConstruct vals = new ObjectConstruct();
+				int num = theData.size();
+				for (int i = 0; i < num; i++)
+				{
+					Layer thisL = theData.elementAt(i);
+					if (thisL.getVisible())
+					{
+						// find the nearest items, this method call will recursively pass down
+						// through
+						// the layers
+						RightClickEdit.findNearest(thisL, loc, vals);
+
+						if ((layerDist == -1) || (vals.distance < layerDist))
+						{
+							layerDist = vals.distance;
+						}
+
+					}
+				}				
+				
+
+				Plottable res = vals.object;
+				Layer theParent = vals.parent;
+				double dist = vals.distance;
+				Vector noPoints = vals.rangeIndependent;				
+				
+		    // see if this is in our dbl-click range
+		    if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y),
+		    											loc,
+		                          dist,
+		                          getProjection()))
+		    {
+		      // do nothing, we're all happy
+		    }
+		    else
+		    {
+		      res = null;
+		    }
+
+		    // have we found something editable?
+		    if (res != null)
+		    {
+		      // so get the editor
+		      Editable.EditorType e = res.getInfo();
+		      if (e != null)
+		      {
+						RightClickSupport.getDropdownListFor(mmgr, res.getInfo(), theParent, getLayers());			
+						
+						// hmm, is it a fix.  if it is, also flash up the track
+						if(res instanceof FixWrapper)
+						{
+							// get the parent track
+							FixWrapper fix = (FixWrapper) res;
+							TrackWrapper parent = fix.getTrackWrapper();
+							RightClickSupport.getDropdownListFor(mmgr, parent.getInfo(), theParent, getLayers());			
+						}
+		      }
+		    }
+		    else
+		    {
+		      // not found anything useful,
+		      // so edit just the projection
+					RightClickSupport.getDropdownListFor(mmgr, getProjection().getInfo(), null, getLayers());
+					
+					// also see if there are any other non-position-related items
+					if(noPoints != null)
+					{
+						// stick in a separator
+						mmgr.add(new Separator());
+						
+						for (Iterator iter = noPoints.iterator(); iter.hasNext();)
+						{
+							Plottable pl = (Plottable) iter.next();
+							RightClickSupport.getDropdownListFor(mmgr, pl.getInfo(), null, getLayers());
+						}
+					}
+		    }
+			}
+			
+		};
 	}
 
 	/**
