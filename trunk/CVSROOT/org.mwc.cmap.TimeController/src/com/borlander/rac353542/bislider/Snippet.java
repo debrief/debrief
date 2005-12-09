@@ -9,6 +9,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Shell;
+
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
+
 import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
 import com.borlander.rac353542.bislider.cdata.DataObjectLabelProvider;
 import com.borlander.rac353542.bislider.cdata.LongDataSuite.LongDataModel;
@@ -106,19 +109,30 @@ public class Snippet {
         DataObjectLabelProvider customLabelProvider = new DataObjectLabelProvider(model.getMapper()){
             private final Date todayMidnight = (Date)CalendarDateSuite.CALENDAR_DATE.double2object(nowMillis);
 
-            public String getLabel(Object dataObject) {
-                Date date = (Date)dataObject;
-                long deltaMillis = date.getTime() - todayMidnight.getTime();
-                long deltaInDays = deltaMillis / (1000L * 60 * 60 * 24);
-                if (deltaInDays == 0){
-                    return "Today";
-                }
-                if (deltaInDays > 0){
-                    return "+" + String.valueOf(deltaInDays) + " days" ;
-                } else {
-                    return String.valueOf(deltaInDays) + " days" ;    
-                }
-            }
+         
+
+       			public String getLabel(Object value)
+      			{
+      				// ok, convert to date
+      				Date theDate = (Date) value;
+      				
+      				String res = FormatRNDateTime.toString(theDate.getTime());
+      				return res;
+      			}            
+            
+//            public String getLabel2(Object dataObject) {
+//                Date date = (Date)dataObject;
+//                long deltaMillis = date.getTime() - todayMidnight.getTime();
+//                long deltaInDays = deltaMillis / (1000L * 60 * 60 * 24);
+//                if (deltaInDays == 0){
+//                    return "Today";
+//                }
+//                if (deltaInDays > 0){
+//                    return "+" + String.valueOf(deltaInDays) + " days" ;
+//                } else {
+//                    return String.valueOf(deltaInDays) + " days" ;    
+//                }
+//            }
         };
         
         uiConfig.setLabelProvider(customLabelProvider);
