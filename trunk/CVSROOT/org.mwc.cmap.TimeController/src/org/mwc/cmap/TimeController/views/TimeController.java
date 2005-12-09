@@ -33,8 +33,8 @@ import MWC.GenericData.*;
 import MWC.Utilities.Timer.TimerListener;
 
 /**
- * View performing time management:  show current time, allow control of time, allow selection of time periods
- * 
+ * View performing time management: show current time, allow control of time,
+ * allow selection of time periods
  */
 
 public class TimeController extends ViewPart implements ISelectionProvider, TimerListener
@@ -52,8 +52,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	protected IEditorPart _currentEditor;
 
-	/** listen out for new times
-	 * 
+	/**
+	 * listen out for new times
 	 */
 	final private PropertyChangeListener _temporalListener = new NewTimeListener();
 
@@ -115,16 +115,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private StructuredSelection _propsAsSelection = null;
 
-	/** our fancy time range selector
-	 * 
+	/**
+	 * our fancy time range selector
 	 */
 	private DTGBiSlider _dtgRangeSlider;
 
-	/** whether the user wants to trim to time period after bislider change
-	 * 
+	/**
+	 * whether the user wants to trim to time period after bislider change
 	 */
 	private Action _filterToSelectionAction;
-
 
 	/**
 	 * the slider control - remember it because we're always changing the limits,
@@ -273,17 +272,16 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 
 		// and the current time label
-//		Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
-//		GridData timeGrid = new GridData(GridData.FILL_HORIZONTAL);
-//		timeContainer.setLayoutData(timeGrid);
-//		
-//		FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
-//		timeContainer.setLayout(timeFiller);
-		
-		
+		// Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
+		// GridData timeGrid = new GridData(GridData.FILL_HORIZONTAL);
+		// timeContainer.setLayoutData(timeGrid);
+		//		
+		// FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
+		// timeContainer.setLayout(timeFiller);
+
 		_timeLabel = new Label(_wholePanel, SWT.NONE);
-	GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
-	_timeLabel.setLayoutData(labelGrid);
+		GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
+		_timeLabel.setLayoutData(labelGrid);
 		_timeLabel.setAlignment(SWT.CENTER);
 		_timeLabel.setText("--------------------------");
 		_timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended", 16, SWT.NONE));
@@ -293,7 +291,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// next create the time slider holder
 		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
 		GridData sliderGrid = new GridData(GridData.FILL_HORIZONTAL);
-		_tNowSlider.setLayoutData(sliderGrid);		
+		_tNowSlider.setLayoutData(sliderGrid);
 		_tNowSlider.setMinimum(0);
 		_tNowSlider.setMaximum(100);
 		_tNowSlider.addSelectionListener(new SelectionListener()
@@ -301,7 +299,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			public void widgetSelected(SelectionEvent e)
 			{
 				int index = _tNowSlider.getSelection();
-				HiResDate newDTG = _slideManager.fromSliderUnits(index);
+				HiResDate newDTG = _slideManager.fromSliderUnits(index, _dtgRangeSlider.getStepSize());
 				fireNewTime(newDTG);
 			}
 
@@ -317,13 +315,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			public void rangeChanged(TimePeriod period)
 			{
 				super.rangeChanged(period);
-				
+
 				selectPeriod(period);
 			}
-			
+
 		};
 		GridData biGrid = new GridData(GridData.FILL_BOTH);
-		_dtgRangeSlider.getControl().setLayoutData(biGrid);				
+		_dtgRangeSlider.getControl().setLayoutData(biGrid);
 	}
 
 	/**
@@ -353,7 +351,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 						// hey, what's the current dtg?
 						HiResDate currentDTG = _slideManager.fromSliderUnits(_tNowSlider
-								.getSelection());
+								.getSelection(), _dtgRangeSlider.getStepSize());
 
 						// update the range of the slider
 						_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
@@ -457,7 +455,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			checkTimeEnabled();
 		}
 	}
-
 
 	private void processClick(Boolean large, boolean fwd)
 	{
@@ -782,7 +779,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 							// and update the slider ranges
 							// do we have start/stop times?
 							HiResDate startDTG = _myStepperProperties.getSliderStartTime();
-							if ((startDTG != null) && (_myTemporalDataset  != null))
+							if ((startDTG != null) && (_myTemporalDataset != null))
 							{
 								// cool - update the slider to our data settings
 
@@ -1122,12 +1119,18 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			assertEquals("correct to slider units", 30, res);
 
 			// and backwards
-			newToSlider = range.fromSliderUnits(res);
+			newToSlider = range.fromSliderUnits(res, 1000);
 			assertEquals("correct from slider units", 130, newToSlider.getMicros());
 
 			// right, now back to millis
-			Date starterD = new Date(2005, 3, 3, 12, 1, 1);
-			Date enderD = new Date(2005, 3, 12, 12, 1, 1);
+			Calendar cal = new GregorianCalendar();
+
+			cal.set(2005, 3, 3, 12, 1, 1);
+			Date starterD = cal.getTime();
+
+			cal.set(2005, 3, 12, 12, 1, 1);
+			Date enderD = cal.getTime();
+
 			starter = new HiResDate(starterD.getTime());
 			ender = new HiResDate(enderD.getTime());
 			range.resetRange(starter, ender);
@@ -1177,6 +1180,16 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	public ISelection getSelection()
 	{
 		return null;
+	}
+
+	/**
+	 * accessor to the slider (used for testing the view)
+	 * 
+	 * @return the slider control
+	 */
+	public DTGBiSlider getSlider()
+	{
+		return _dtgRangeSlider;
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
@@ -1241,7 +1254,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		addDateFormats(menuManager);
 
 		// add the list of DTG formats for the DTG slider
-		addSliderResolution(menuManager);
+		addBiSliderResolution(menuManager);
 
 		// now the add-bookmark item
 		_setAsBookmarkAction = new Action("Add DTG as bookmark", Action.AS_PUSH_BUTTON)
@@ -1342,7 +1355,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	/**
 	 * @param menuManager
 	 */
-	private void addSliderResolution(final IMenuManager menuManager)
+	private void addBiSliderResolution(final IMenuManager menuManager)
 	{
 		// ok, second menu for the DTG formats
 		MenuManager formatMenu = new MenuManager("Range selector resolution");
@@ -1427,10 +1440,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	}
 
-	/** convenience class to help us manage the fwd/bwd step buttons
+	/**
+	 * convenience class to help us manage the fwd/bwd step buttons
 	 * 
 	 * @author Ian.Mayo
-	 *
 	 */
 	private class TimeButtonSelectionListener implements SelectionListener
 	{
@@ -1453,7 +1466,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		{
 		}
 	}
-	
+
 	// /////////////////////////////////////////////////////////////////
 	// AND PROPERTY EDITORS FOR THE
 	// /////////////////////////////////////////////////////////////////
@@ -1463,5 +1476,18 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// ok - put the cursor on the time sldier
 		_tNowSlider.setFocus();
 
+	}
+
+	/**
+	 * @param memento
+	 */
+	public void saveState(IMemento memento)
+	{
+		// TODO Auto-generated method stub
+		super.saveState(memento);
+
+		// ok, store me bits
+		
+		// first the 
 	}
 }
