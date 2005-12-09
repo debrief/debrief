@@ -20,7 +20,6 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
 import Debrief.Tools.Tote.*;
-import MWC.GenericData.*;
 import MWC.GenericData.HiResDate;
 
 /**
