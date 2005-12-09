@@ -1,5 +1,6 @@
 package org.mwc.cmap.core;
 
+import java.awt.Color;
 import java.util.*;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -78,6 +79,10 @@ public class CorePlugin extends AbstractUIPlugin
 		super();
 		plugin = this;
 		
+
+    // store our color property editor
+    java.beans.PropertyEditorManager.registerEditor(Color.class,
+                      MWC.GUI.Properties.ColorPropertyEditor.class);		
 	}
 
 	/**
