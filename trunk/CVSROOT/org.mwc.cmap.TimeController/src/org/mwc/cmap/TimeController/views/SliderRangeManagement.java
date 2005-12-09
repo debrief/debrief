@@ -118,14 +118,24 @@ abstract class SliderRangeManagement
 
 	}
 
-	public HiResDate fromSliderUnits(int value)
+	public HiResDate fromSliderUnits(int value, long sliderResolution)
 	{
 		long newValue = value;
 
-		if (!_useMicros)
+		// convert the resolution to micros
+		sliderResolution *= 1000;
+
+		if (_useMicros)
 		{
+		}
+		else
+		{
+			// convert reading to microseconds
 			newValue *= 1000000;
 		}
+		
+		// and trim the resulting value
+		newValue = (newValue / sliderResolution) * sliderResolution;
 
 		long newDate = _startTime.getMicros() + newValue;
 
