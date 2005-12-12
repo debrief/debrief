@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.21  2005-12-09 14:54:38  Ian.Mayo
+// Revision 1.22  2005-12-12 09:07:14  Ian.Mayo
+// Minor tidying to comments
+//
+// Revision 1.21  2005/12/09 14:54:38  Ian.Mayo
 // Add right-click property editing
 //
 // Revision 1.20  2005/09/29 15:29:46  Ian.Mayo
@@ -262,8 +265,7 @@ public class SWTChart extends PlainChart
 
 				// ok, get a handle to our layers
 				Layers theData = getLayers();
-				double layerDist = -1;
-			
+				double layerDist = -1;			
 		
 				// find the nearest editable item
 				ObjectConstruct vals = new ObjectConstruct();
@@ -282,11 +284,11 @@ public class SWTChart extends PlainChart
 						{
 							layerDist = vals.distance;
 						}
-
 					}
 				}				
 				
 
+				// ok, now retrieve the values produced by the range-finding algorithm
 				Plottable res = vals.object;
 				Layer theParent = vals.parent;
 				double dist = vals.distance;
