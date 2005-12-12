@@ -15,7 +15,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.Layer_managerPlugin;
 import org.mwc.cmap.layer_manager.views.support.*;
 
-import Debrief.Tools.Tote.WatchableList;
+import Debrief.Tools.Tote.*;
 import MWC.GUI.*;
 
 /**
@@ -95,6 +95,22 @@ public class LayerManagerView extends ViewPart
 
 	class NameSorter extends ViewerSorter
 	{
+		public int compare(Viewer viewer, Object e1, Object e2)
+		{
+			int res = 0;
+			PlottableWrapper p1 = (PlottableWrapper) e1;
+			PlottableWrapper p2 = (PlottableWrapper) e2;
+			if ((p1.getPlottable() instanceof Comparable) && (p2.getPlottable() instanceof Comparable))
+			{
+				Comparable w1 = (Comparable) p1.getPlottable();
+				Comparable w2 = (Comparable) p2.getPlottable();
+				res = w1.compareTo(w2);
+			}
+			else
+				res = super.compare(viewer, e1, e2);
+
+			return res;
+		}
 	}
 
 	public void dispose()
@@ -139,7 +155,7 @@ public class LayerManagerView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		
+
 		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		_treeViewer.setUseHashlookup(true);
 		drillDownAdapter = new DrillDownAdapter(_treeViewer);
@@ -369,10 +385,11 @@ public class LayerManagerView extends ViewPart
 		if (sel.size() == 1)
 		{
 			Object first = sel.getFirstElement();
-			PlottableWrapper pw = (PlottableWrapper) first;		
-			
+			PlottableWrapper pw = (PlottableWrapper) first;
+
 			// ok, populate the list
-			RightClickSupport.getDropdownListFor(manager, pw.getPlottable().getInfo(), pw.getTopLevelLayer(), _myLayers);
+			RightClickSupport.getDropdownListFor(manager, pw.getPlottable().getInfo(), pw
+					.getTopLevelLayer(), _myLayers);
 		}
 	}
 
