@@ -133,11 +133,12 @@ abstract class SliderRangeManagement
 			// convert reading to microseconds
 			newValue *= 1000000;
 		}
+
+		// re-apply the offset
+		long newDate = _startTime.getMicros() + newValue;
 		
 		// and trim the resulting value
-		newValue = (newValue / sliderResolution) * sliderResolution;
-
-		long newDate = _startTime.getMicros() + newValue;
+		newDate = (newDate / sliderResolution) * sliderResolution;
 
 		return new HiResDate(0, newDate);
 	}
