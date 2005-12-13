@@ -169,7 +169,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			throws PartInitException
 	{
 		setSite(site);
-		setInput(input);
+		setInputWithNotify(input);
 		
 		// ok - declare and load the supplemental plugins which can load datafiles
 		initialiseFileLoaders();
@@ -343,7 +343,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		for (int i = 0; i < fileNames.length; i++)
 		{
 			final String thisFilename = fileNames[i];
-			File newFile = new java.io.File(thisFilename);
+//			File newFile = new java.io.File(thisFilename);
 			// File thisFile = new File(thisFilename);
 			System.out.println("should be loading:" + thisFilename);
 //			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
@@ -612,8 +612,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			
 			// also make this new file our input
 			IFileEditorInput newInput = new FileEditorInput(file);
-			setInput(newInput);
-			firePropertyChange(PROP_INPUT);			
+			setInputWithNotify(newInput);
 		}
 
 		_plotIsDirty = false;
