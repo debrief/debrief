@@ -4,9 +4,8 @@ import org.eclipse.swt.events.DisposeEvent;
 import org.eclipse.swt.events.DisposeListener;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.graphics.Rectangle;
-import com.borlander.rac353542.bislider.BiSliderDataModel;
-import com.borlander.rac353542.bislider.BiSliderLabelProvider;
-import com.borlander.rac353542.bislider.BiSliderUIModel;
+
+import com.borlander.rac353542.bislider.*;
 
 abstract class BiSliderComponentBase implements Disposable {
     private final BiSliderImpl myBiSlider;

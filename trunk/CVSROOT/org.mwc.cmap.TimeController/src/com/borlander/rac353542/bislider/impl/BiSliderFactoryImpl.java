@@ -2,10 +2,8 @@ package com.borlander.rac353542.bislider.impl;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
-import com.borlander.rac353542.bislider.BiSlider;
-import com.borlander.rac353542.bislider.BiSliderDataModel;
-import com.borlander.rac353542.bislider.BiSliderFactory;
-import com.borlander.rac353542.bislider.BiSliderUIModel;
+
+import com.borlander.rac353542.bislider.*;
 
 /**
  * The gate allowing to separate API and implementation of BiSlider. It should
