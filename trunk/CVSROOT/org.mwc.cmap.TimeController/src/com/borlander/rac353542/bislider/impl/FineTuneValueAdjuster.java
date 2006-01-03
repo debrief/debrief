@@ -15,13 +15,13 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Scale;
-import com.borlander.rac353542.bislider.BiSliderDataModel;
-import com.borlander.rac353542.bislider.BiSliderLabelProvider;
+
+import com.borlander.rac353542.bislider.*;
 
 public class FineTuneValueAdjuster {
 
     private static final int MAX_ADJUSTMENT_STEPS = 100;
-    private static final int MIN_ADJUSTMENT_STEPS = 0;//3;
+    private static final int MIN_ADJUSTMENT_STEPS = 3;
     private final BiSliderImpl myBiSlider;
     private final BiSliderDataModel myDataModel;
     private final boolean myIsForMinimumPointer;
