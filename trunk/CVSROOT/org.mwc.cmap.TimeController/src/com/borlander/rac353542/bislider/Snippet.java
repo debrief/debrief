@@ -12,8 +12,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
-import com.borlander.rac353542.bislider.cdata.DataObjectLabelProvider;
+import com.borlander.rac353542.bislider.cdata.*;
 import com.borlander.rac353542.bislider.cdata.LongDataSuite.LongDataModel;
 
 public class Snippet {
@@ -31,7 +30,7 @@ public class Snippet {
     }
 
     private static void decorateShell(Shell shell) {
-        shell.setText("Bi-Slider demo");
+        shell.setText("Bi-Slider demo (543)");
         shell.setLayout (new FillLayout (SWT.VERTICAL));
 
         Group simple = new Group(shell, SWT.NONE);
@@ -52,6 +51,8 @@ public class Snippet {
             }
         });
         */
+        
+        simpleSlider.getWritableDataModel().setSegmentLength(30);
         
         DefaultBiSliderUIModel uiConfig = (DefaultBiSliderUIModel) simpleSlider.getUIModel();
         uiConfig.setHasLabelsAboveOrLeft(true);
@@ -109,8 +110,6 @@ public class Snippet {
         DataObjectLabelProvider customLabelProvider = new DataObjectLabelProvider(model.getMapper()){
             private final Date todayMidnight = (Date)CalendarDateSuite.CALENDAR_DATE.double2object(nowMillis);
 
-         
-
        			public String getLabel(Object value)
       			{
       				// ok, convert to date
@@ -118,9 +117,9 @@ public class Snippet {
       				
       				String res = FormatRNDateTime.toString(theDate.getTime());
       				return res;
-      			}            
-            
-//            public String getLabel2(Object dataObject) {
+      			}           
+//       			
+//            public String getLabel(Object dataObject) {
 //                Date date = (Date)dataObject;
 //                long deltaMillis = date.getTime() - todayMidnight.getTime();
 //                long deltaInDays = deltaMillis / (1000L * 60 * 60 * 24);
@@ -150,7 +149,12 @@ public class Snippet {
         uiConfig.setLabelInsets(80);
         uiConfig.setVerticalLabels(true);
         uiConfig.setHasLabelsAboveOrLeft(false);
-        uiConfig.setHasLabelsBelowOrRight(true);
+        uiConfig.setHasLabelsBelowOrRight(true);        
+//        
+//        uiConfig.setLabelInsets(SWT.DEFAULT);
+//        uiConfig.setVerticalLabels(true);
+//        uiConfig.setHasLabelsAboveOrLeft(true);
+//        uiConfig.setHasLabelsBelowOrRight(true);
 
         return result; 
     }
