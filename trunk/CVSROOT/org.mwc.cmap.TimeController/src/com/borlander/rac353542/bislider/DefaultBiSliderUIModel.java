@@ -147,7 +147,7 @@ public class DefaultBiSliderUIModel implements BiSliderUIModel {
     }
     
     public void setLabelInsets(int labelInsets) {
-        labelInsets = Math.max(labelInsets, 0);
+        labelInsets = Math.max(labelInsets, SWT.DEFAULT);
         if (myLabelInsets != labelInsets){
             myLabelInsets = labelInsets;
             fireChanged();
