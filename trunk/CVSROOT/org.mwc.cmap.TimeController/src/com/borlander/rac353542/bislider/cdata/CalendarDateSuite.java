@@ -3,8 +3,8 @@ package com.borlander.rac353542.bislider.cdata;
 import java.text.DateFormat;
 import java.util.Calendar;
 import java.util.Date;
-import com.borlander.rac353542.bislider.BiSliderUIModel;
-import com.borlander.rac353542.bislider.DefaultBiSliderUIModel;
+
+import com.borlander.rac353542.bislider.*;
 
 /**
  * Single pack of objects required to instantiate BiSlider working with custom
@@ -80,20 +80,48 @@ public class CalendarDateSuite {
      */
     public static DataObjectMapper CALENDAR_DATE = new DataObjectMapper() {
 
-        private final Calendar myCalendar = Calendar.getInstance();
 
-        public Object double2object(double value) {
-            myCalendar.setTimeInMillis(Math.round(value));
+      private final Calendar myCalendar = Calendar.getInstance();
+
+      public Object double2object(double value) {
+          myCalendar.setTimeInMillis(Math.round(value));
+//          setToMidnight();
+          return myCalendar.getTime();
+      }
+
+      public double object2double(Object object) {
+          myCalendar.setTime((Date) object);
+//          setToMidnight();
+          return myCalendar.getTimeInMillis();
+      }
+
+//      private void setToMidnight() {
+//          myCalendar.set(Calendar.HOUR, 0);
+//          myCalendar.set(Calendar.AM_PM, Calendar.AM);
+//          myCalendar.set(Calendar.MINUTE, 0);
+//          myCalendar.set(Calendar.SECOND, 0);
+//          myCalendar.set(Calendar.MILLISECOND, 0);
+//      }
+      
+      public double getPrecision() {
+          return 1000 * 30;
+//          return 1000 * 60 * 60 * 24;
+      }    	
+    	
+//        private final Calendar myCalendar = Calendar.getInstance();
+//
+//        public Object double2object(double value) {
+//            myCalendar.setTimeInMillis(Math.round(value));
 //            setToMidnight();
-            return myCalendar.getTime();
-        }
-
-        public double object2double(Object object) {
-            myCalendar.setTime((Date) object);
+//            return myCalendar.getTime();
+//        }
+//
+//        public double object2double(Object object) {
+//            myCalendar.setTime((Date) object);
 //            setToMidnight();
-            return myCalendar.getTimeInMillis();
-        }
-
+//            return myCalendar.getTimeInMillis();
+//        }
+//
 //        private void setToMidnight() {
 //            myCalendar.set(Calendar.HOUR, 0);
 //            myCalendar.set(Calendar.AM_PM, Calendar.AM);
@@ -101,10 +129,9 @@ public class CalendarDateSuite {
 //            myCalendar.set(Calendar.SECOND, 0);
 //            myCalendar.set(Calendar.MILLISECOND, 0);
 //        }
-        
-        public double getPrecision() {
-            return 1000 * 30;
+//        
+//        public double getPrecision() {
 //            return 1000 * 60 * 60 * 24;
-        }
+//        }
     };
 }
