@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.22  2005-12-12 09:07:14  Ian.Mayo
+// Revision 1.23  2006-01-03 14:03:33  Ian.Mayo
+// Better right-click support
+//
+// Revision 1.22  2005/12/12 09:07:14  Ian.Mayo
 // Minor tidying to comments
 //
 // Revision 1.21  2005/12/09 14:54:38  Ian.Mayo
@@ -314,7 +317,9 @@ public class SWTChart extends PlainChart
 		      Editable.EditorType e = res.getInfo();
 		      if (e != null)
 		      {
-						RightClickSupport.getDropdownListFor(mmgr, res.getInfo(), theParent, getLayers());			
+						RightClickSupport.getDropdownListFor(mmgr, new Editable[]{res}, 
+								new Layer[]{theParent},
+								new Layer[]{theParent}, getLayers(), false);			
 						
 						// hmm, is it a fix.  if it is, also flash up the track
 						if(res instanceof FixWrapper)
@@ -322,7 +327,9 @@ public class SWTChart extends PlainChart
 							// get the parent track
 							FixWrapper fix = (FixWrapper) res;
 							TrackWrapper parent = fix.getTrackWrapper();
-							RightClickSupport.getDropdownListFor(mmgr, parent.getInfo(), theParent, getLayers());			
+							RightClickSupport.getDropdownListFor(mmgr, new Editable[]{parent}, 
+									new Layer[]{theParent},
+									new Layer[]{theParent}, getLayers(), true);			
 						}
 		      }
 		    }
@@ -330,7 +337,7 @@ public class SWTChart extends PlainChart
 		    {
 		      // not found anything useful,
 		      // so edit just the projection
-					RightClickSupport.getDropdownListFor(mmgr, getProjection().getInfo(), null, getLayers());
+					RightClickSupport.getDropdownListFor(mmgr, new Editable[]{getProjection()}, null, null, getLayers(), true);
 					
 					// also see if there are any other non-position-related items
 					if(noPoints != null)
@@ -341,7 +348,7 @@ public class SWTChart extends PlainChart
 						for (Iterator iter = noPoints.iterator(); iter.hasNext();)
 						{
 							Plottable pl = (Plottable) iter.next();
-							RightClickSupport.getDropdownListFor(mmgr, pl.getInfo(), null, getLayers());
+							RightClickSupport.getDropdownListFor(mmgr, new Editable[]{pl}, null, null, getLayers(), true);
 						}
 					}
 		    }
