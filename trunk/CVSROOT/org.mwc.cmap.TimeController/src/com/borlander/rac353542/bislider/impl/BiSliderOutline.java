@@ -6,21 +6,22 @@ import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.graphics.Transform;
 import org.eclipse.swt.widgets.Display;
-import com.borlander.rac353542.bislider.BiSliderDataModel;
-import com.borlander.rac353542.bislider.BiSliderUIModel;
+
+import com.borlander.rac353542.bislider.*;
 
 class BiSliderOutline extends BiSliderComponentBase {
-    private static final int LABEL_GAP_NORMAL = 5;
+    private static final int LABEL_GAP_NORMAL = LabelSupport.LABEL_GAP_NORMAL;
     private ColorDescriptor myForeground;
-    private Font myBoldFont;
     private final Point myTempPoint = new Point(0, 0);
     private BiSliderUIModel.Listener myConfigListener;
     private Transform myCachedOriginalTransform;
     private Transform myCachedRotatedTransform;
     private final float[] myTempTransformMatrix;
+	private final LabelSupport myLabelSupport;
 
-    public BiSliderOutline(BiSliderImpl biSlider) {
+    public BiSliderOutline(BiSliderImpl biSlider, LabelSupport labelSupport) {
         super(biSlider);
+		myLabelSupport = labelSupport;
         reloadConfig();
         myConfigListener = new BiSliderUIModel.Listener(){
             public void uiModelChanged(BiSliderUIModel uiModel) {
@@ -52,11 +53,7 @@ class BiSliderOutline extends BiSliderComponentBase {
     }
 
     private void drawLabels(GC gc, boolean anchorAtMinEdge) {
-        int ticksCount = getDataModel().getSegmentsCount();
-        if (ticksCount < 2) {
-            // at least should be start and first label
-            return;
-        }
+    	double segmentSize = getDataModel().getSegmentLength();
         BiSliderDataModel dataModel = getDataModel();
         double totalMin = dataModel.getTotalMinimum();
         double totalMax = dataModel.getTotalMaximum();
@@ -64,15 +61,14 @@ class BiSliderOutline extends BiSliderComponentBase {
         // always draw the first and last tick
         // draw other ticks only if they are not overlapped
         Font oldFont = gc.getFont();
-        gc.setFont(getLabelFont(gc));
+        gc.setFont(myLabelSupport.getLabelFont(gc));
         Rectangle previousLabelBounds = drawLabelAndUpdateConstraints(gc, 0.0, totalMin, anchorAtMinEdge, null, null);
         Rectangle lastTextBounds = drawLabelAndUpdateConstraints(gc, 1.0, totalMax, anchorAtMinEdge,
                 // WRONG! WILL CHANGE BOUNDS: previousLabelBounds
                 null, null);
         
-        for (int i = 1; i < ticksCount; i++) {
-            double nextLabelRate = ((double) i) / ticksCount;
-            double nextLabelValue = totalMin + totalDelta * nextLabelRate;
+        for (double nextLabelValue = totalMin + segmentSize; nextLabelValue < totalMax; nextLabelValue += segmentSize){
+            double nextLabelRate = (nextLabelValue - totalMin) / totalDelta;
             drawLabelAndUpdateConstraints(gc, nextLabelRate, nextLabelValue, anchorAtMinEdge, previousLabelBounds, lastTextBounds);
         }
         gc.setFont(oldFont);
@@ -94,7 +90,7 @@ class BiSliderOutline extends BiSliderComponentBase {
         if (label == null) {
             return null;
         }
-        Point textSize = getTextSize(gc, label);
+        Point textSize = myLabelSupport.getTextSize(gc, label);
         Point basePoint = getMapper().value2pixel(value, anchorAtMinEdge);
         Point adjustment = getLabelAdjustmentX(anchorAtMinEdge, textSize, rate);
         int adjustedX = basePoint.x + adjustment.x;
@@ -116,16 +112,6 @@ class BiSliderOutline extends BiSliderComponentBase {
         leftConstraint.width = textSize.x + 5;
         leftConstraint.height = textSize.y + 5;
         return leftConstraint;
-    }
-
-    private Point getTextSize(GC gc, String label) {
-        Point result = gc.stringExtent(label);
-        if (getUIModel().isVerticalLabels()){
-            int temp = result.x;
-            result.x = result.y;
-            result.y = temp;
-        }
-        return result;
     }
 
     private Point getLabelAdjustmentX(boolean atMinimumEdge, Point textSize, double valueRate) {
@@ -176,13 +162,6 @@ class BiSliderOutline extends BiSliderComponentBase {
         return anchorAtMinEdge ? -90 : 90;
     }
 
-    private Font getLabelFont(GC gc) {
-        if (myBoldFont == null) {
-            myBoldFont = Util.deriveBold(gc.getFont());
-        }
-        return myBoldFont;
-    }
-
     public void freeResources() {
         if (myConfigListener != null){
             getUIModel().removeListener(myConfigListener);
@@ -191,10 +170,6 @@ class BiSliderOutline extends BiSliderComponentBase {
         if (myForeground != null) {
             myForeground.freeResources();
             myForeground = null;
-        }
-        if (myBoldFont != null) {
-            myBoldFont.dispose();
-            myBoldFont = null;
         }
         if (myCachedOriginalTransform != null){
             safeDispose(myCachedOriginalTransform);

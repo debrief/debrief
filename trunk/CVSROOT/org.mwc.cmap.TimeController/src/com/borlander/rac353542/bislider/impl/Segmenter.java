@@ -1,8 +1,6 @@
 package com.borlander.rac353542.bislider.impl;
 
-import com.borlander.rac353542.bislider.BiSliderDataModel;
-import com.borlander.rac353542.bislider.BiSliderUIModel;
-import com.borlander.rac353542.bislider.ColorInterpolation;
+import com.borlander.rac353542.bislider.*;
 
 class Segmenter implements Disposable {
     private final BiSliderDataModel myDataModel;
@@ -51,6 +49,7 @@ class Segmenter implements Disposable {
         value = Math.min(value, myCachedTotalMax);
         double segmentSize = myDataModel.getSegmentLength();
         int index = (int)Math.floor((value - myCachedTotalMin) / segmentSize);
+        index = Math.min(index, mySegments.length - 1);
         return mySegments[index];
     }
     
@@ -66,7 +65,7 @@ class Segmenter implements Disposable {
     
     private void computeSegments() {
         double segmentSize = myDataModel.getSegmentLength();
-        int segmentsCount = myDataModel.getSegmentsCount();
+        int segmentsCount = (int)Math.ceil(myDataModel.getTotalDelta() / segmentSize);
         mySegments = new ColoredSegment[segmentsCount];
         double nextSegmentStart = myDataModel.getTotalMinimum();
         for (int i = 0; i < segmentsCount; i++, nextSegmentStart += segmentSize){
