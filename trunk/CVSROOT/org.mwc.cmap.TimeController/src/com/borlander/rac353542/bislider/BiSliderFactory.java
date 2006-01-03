@@ -2,8 +2,8 @@ package com.borlander.rac353542.bislider;
 
 import java.util.Date;
 import org.eclipse.swt.widgets.Composite;
-import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
-import com.borlander.rac353542.bislider.cdata.LongDataSuite;
+
+import com.borlander.rac353542.bislider.cdata.*;
 import com.borlander.rac353542.bislider.impl.BiSliderFactoryImpl;
 
 /**
