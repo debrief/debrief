@@ -382,14 +382,37 @@ public class LayerManagerView extends ViewPart
 
 		// get the selected item
 		IStructuredSelection sel = (IStructuredSelection) _treeViewer.getSelection();
-		if (sel.size() == 1)
+		if (sel.size() >= 1)
 		{
-			Object first = sel.getFirstElement();
-			PlottableWrapper pw = (PlottableWrapper) first;
-
-			// ok, populate the list
-			RightClickSupport.getDropdownListFor(manager, pw.getPlottable().getInfo(), pw
-					.getTopLevelLayer(), _myLayers);
+			// create some lists to store our selected items
+			Editable [] eList = new Editable[sel.size()];
+			Layer[] parentLayers = new Layer[sel.size()];
+			Layer[] updateLayers = new Layer[sel.size()];
+			
+			// right, now populate them
+			Object[] oList = sel.toArray();
+			for (int i = 0; i < oList.length; i++)
+			{
+				PlottableWrapper wrapper = (PlottableWrapper) oList[i];
+				eList[i] = wrapper.getPlottable();	
+				
+				// sort out the parent layer
+				PlottableWrapper theParent = wrapper.getParent();
+				
+				// hmm, did we find one?
+				if(theParent != null)
+					// yes, store it
+					parentLayers[i] = (Layer) wrapper.getParent().getPlottable();
+				else
+					// nope - store a null
+					parentLayers[i] = null;
+				
+				updateLayers[i] = wrapper.getTopLevelLayer();
+ 			}
+ 
+			// ok, sort out what we can do with all of this...
+			RightClickSupport.getDropdownListFor(manager, eList, updateLayers, parentLayers,
+					_myLayers, false);
 		}
 	}
 
