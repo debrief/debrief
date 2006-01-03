@@ -108,7 +108,7 @@ public class Snippet {
         uiConfig.setLabelInsets(65);
         
         DataObjectLabelProvider customLabelProvider = new DataObjectLabelProvider(model.getMapper()){
-            private final Date todayMidnight = (Date)CalendarDateSuite.CALENDAR_DATE.double2object(nowMillis);
+//            private final Date todayMidnight = (Date)CalendarDateSuite.CALENDAR_DATE.double2object(nowMillis);
 
        			public String getLabel(Object value)
       			{
