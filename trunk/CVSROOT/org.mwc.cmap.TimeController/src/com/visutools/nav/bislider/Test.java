@@ -1,19 +1,14 @@
 package com.visutools.nav.bislider;
 import java.awt.*;
 import java.awt.event.*;
-import javax.swing.*;
 import java.io.*;
-import java.text.NumberFormat;
-import java.util.*;
-import javax.swing.border.Border;
-import javax.swing.border.CompoundBorder;
-import javax.swing.border.LineBorder;
-import javax.swing.plaf.BorderUIResource;
-import javax.swing.plaf.ColorUIResource;
+import java.util.Properties;
+
+import javax.swing.*;
+import javax.swing.border.*;
+import javax.swing.plaf.*;
 import javax.swing.plaf.basic.BasicBorders;
-import javax.swing.plaf.metal.DefaultMetalTheme;
-import javax.swing.plaf.metal.MetalLookAndFeel;
-import javax.swing.plaf.metal.MetalTheme;
+import javax.swing.plaf.metal.*;
 //import javax.swing.plaf.metal.OceanTheme;
 /**
  * 5 examples of BiSlider in a JFrame to see the widget at work.
@@ -63,11 +58,6 @@ public class Test {
   // all the properties of the application (parameters)
   private static          Properties                                    BiSliderProperties              = new Properties();
   private static          float                                         LineX                           = 0f;
-    
-  private static MetalTheme [] metalThemes = {
-  // @@ IM  new OceanTheme(),
-    new DefaultMetalTheme()
-  };  
  
   
   public static void main(String[] Args) {   
@@ -145,7 +135,6 @@ public class Test {
       public void paint(ContentPainterEvent ContentPainterEvent_Arg){
         Graphics2D Graphics2 = (Graphics2D)ContentPainterEvent_Arg.getGraphics();
         Rectangle Rect1 = ContentPainterEvent_Arg.getRectangle();
-        Rectangle Rect2 = ContentPainterEvent_Arg.getBoundingRectangle();
         if (ContentPainterEvent_Arg.getColor()!=null) {
           Graphics2.setColor(ContentPainterEvent_Arg.getColor());
           Graphics2.setPaint(new GradientPaint(Rect1.x, Rect1.y, ContentPainterEvent_Arg.getColor(),
@@ -273,7 +262,6 @@ public class Test {
     BiSlider5.addContentPainterListener(new ContentPainterListener() {
       public void paint(ContentPainterEvent ContentPainterEvent_Arg){
         Graphics2D Graphics2 = (Graphics2D)ContentPainterEvent_Arg.getGraphics();
-        Rectangle Rect1 = ContentPainterEvent_Arg.getRectangle();
         Rectangle Rect2 = ContentPainterEvent_Arg.getBoundingRectangle();
         double Rand = Math.abs(Math.cos(Math.PI*(Rect2.x+Rect2.width/2) / BiSlider5.getWidth()));
         //Rand = (double)(Rect2.x+Rect2.width/2) / BiSlider6.getWidth();
@@ -322,7 +310,6 @@ public class Test {
     BiSlider6.addContentPainterListener(new ContentPainterListener() {
       public void paint(ContentPainterEvent ContentPainterEvent_Arg){
         Graphics2D Graphics2 = (Graphics2D)ContentPainterEvent_Arg.getGraphics();
-        Rectangle Rect1 = ContentPainterEvent_Arg.getRectangle();
         Rectangle Rect2 = ContentPainterEvent_Arg.getBoundingRectangle();
         double Rand = Math.abs(Math.cos(Math.PI*(Rect2.x+Rect2.width/2) / BiSlider6.getWidth()));
         //Rand = (double)(Rect2.x+Rect2.width/2) / BiSlider6.getWidth();
@@ -423,10 +410,6 @@ public class Test {
     JSlider1.setMajorTickSpacing(10);
     JSlider1.setMinorTickSpacing(1);
     JPanel1.add(JSlider1);
-   JTextArea JTextArea5 = new  JTextArea(
-      "/ Thumbs are now PLaF (metal and ocean) since v1.4.1\n"+
-      "/ JSlider added to visually see the difference.\n"
-      );
     JTextArea4.setEditable(false);
     JPanel1.add(JTextArea4);    
         
@@ -440,7 +423,11 @@ public class Test {
     
     //boolean FirstMetal = true;
     class PLaFAction extends AbstractAction {
-      private String LnFClassName;
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			private String LnFClassName;
       private String Title;
       
       public PLaFAction (String LnFClassName_Arg, String Title_Arg){
@@ -503,7 +490,6 @@ public class Test {
 
               private final ColorUIResource secondary2 = new ColorUIResource(204, 204, 204);
               private final ColorUIResource secondary3 = new ColorUIResource(255, 255, 255);
-              private final ColorUIResource controlHighlight = new ColorUIResource(102,102,102);
 
               protected ColorUIResource getPrimary1() { return primary1; } 
               protected ColorUIResource getPrimary2() { return primary2; }

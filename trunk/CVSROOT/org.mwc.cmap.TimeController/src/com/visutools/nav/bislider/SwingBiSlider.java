@@ -76,7 +76,7 @@ import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
  * @version   1.4.1
  */
 
-public class BiSlider extends JComponent implements Serializable
+public class SwingBiSlider extends JComponent implements Serializable
 {
 	//---------- MODIFIERS|-------------------- Type|----------------------------------------------- Name = Init value
 	protected final static javax.swing.text.html.parser.ParserDelegator MAXIMUM_VARIABLE_SIZE_FOR_NAME = null;
@@ -116,7 +116,7 @@ public class BiSlider extends JComponent implements Serializable
 	/**
 	 * Constructor with HSB interpolation by default.
 	 */
-	public BiSlider(FormatLong formatter)
+	public SwingBiSlider(FormatLong formatter)
 	{
 		this(HSB, formatter);
 	} // Constructor
@@ -126,7 +126,7 @@ public class BiSlider extends JComponent implements Serializable
 	 *
 	 * @param InterpolationMode_Arg  how the bean is supposed interpolate colors between the 2 edges.
 	 */
-public BiSlider(int InterpolationMode_Arg, FormatLong formatter) {
+public SwingBiSlider(int InterpolationMode_Arg, FormatLong formatter) {
     super();
     setDoubleBuffered(false);
 
@@ -398,7 +398,6 @@ public BiSlider(int InterpolationMode_Arg, FormatLong formatter) {
 		{
 			int NewSegmentCount = (int) Math.round((Abstr.MaximumValue - Abstr.MinimumValue)
 					/ SegmentSize_Arg);
-			double NewSegmentSize = (Abstr.MaximumValue - Abstr.MinimumValue) / NewSegmentCount;
 			Abstr.SegmentCount = NewSegmentCount;
 			Abstr.SegmentSize = (Abstr.MaximumValue - Abstr.MinimumValue) / Abstr.SegmentCount;
 		}
@@ -798,29 +797,29 @@ public BiSlider(int InterpolationMode_Arg, FormatLong formatter) {
 	 **/
 	public JPopupMenu createPopupMenu()
 	{
-		final BiSlider Myself = this;
+		final SwingBiSlider Myself = this;
 		ButtonGroup ButtonGroup1 = new ButtonGroup();
 
 		JPopupMenu JPopupMenu1 = new JPopupMenu("BiSlider");
 		JMenuItem JMenuItem1 = new JRadioButtonMenuItem("RGB",
-				getInterpolationMode() == BiSlider.RGB);
+				getInterpolationMode() == SwingBiSlider.RGB);
 		JMenuItem1.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ActionEvent_Arg)
 			{
-				setInterpolationMode(BiSlider.RGB);
+				setInterpolationMode(SwingBiSlider.RGB);
 				repaint();
 			}
 		});
 		ButtonGroup1.add(JMenuItem1);
 		JPopupMenu1.add(JMenuItem1);
 
-		JMenuItem1 = new JRadioButtonMenuItem("HSB", getInterpolationMode() == BiSlider.HSB);
+		JMenuItem1 = new JRadioButtonMenuItem("HSB", getInterpolationMode() == SwingBiSlider.HSB);
 		JMenuItem1.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ActionEvent_Arg)
 			{
-				setInterpolationMode(BiSlider.HSB);
+				setInterpolationMode(SwingBiSlider.HSB);
 				repaint();
 			}
 		});
@@ -828,12 +827,12 @@ public BiSlider(int InterpolationMode_Arg, FormatLong formatter) {
 		JPopupMenu1.add(JMenuItem1);
 
 		JMenuItem1 = new JRadioButtonMenuItem("CENTRAL",
-				getInterpolationMode() == BiSlider.CENTRAL_BLACK);
+				getInterpolationMode() == SwingBiSlider.CENTRAL_BLACK);
 		JMenuItem1.addActionListener(new ActionListener()
 		{
 			public void actionPerformed(ActionEvent ActionEvent_Arg)
 			{
-				setInterpolationMode(BiSlider.CENTRAL_BLACK);
+				setInterpolationMode(SwingBiSlider.CENTRAL_BLACK);
 				repaint();
 			}
 		});

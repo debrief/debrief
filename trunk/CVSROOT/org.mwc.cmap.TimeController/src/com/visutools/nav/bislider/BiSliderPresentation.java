@@ -21,7 +21,6 @@ import java.awt.SystemColor;
 import javax.swing.*;
 import javax.swing.event.*;
 import java.io.*;
-import java.text.*;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Vector;
@@ -345,10 +344,8 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 
 			public void insertUpdate(DocumentEvent DocumentEvent_Arg)
 			{
-				String Text = JTextFieldMin.getText();
 				try
 				{
-					double Val = Double.parseDouble(Text);
 					JTextFieldMin.setBackground(Color.WHITE);
 				}
 				catch (NumberFormatException NumberFormatException_Arg)
@@ -359,10 +356,8 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 
 			public void removeUpdate(DocumentEvent DocumentEvent_Arg)
 			{
-				String Text = JTextFieldMin.getText();
 				try
 				{
-					double Val = Double.parseDouble(Text);
 					JTextFieldMin.setBackground(Color.WHITE);
 				}
 				catch (NumberFormatException NumberFormatException_Arg)
@@ -401,10 +396,8 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 
 			public void insertUpdate(DocumentEvent DocumentEvent_Arg)
 			{
-				String Text = JTextFieldMax.getText();
 				try
 				{
-					double Val = Double.parseDouble(Text);
 					JTextFieldMax.setBackground(Color.WHITE);
 				}
 				catch (NumberFormatException NumberFormatException_Arg)
@@ -415,10 +408,8 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 
 			public void removeUpdate(DocumentEvent DocumentEvent_Arg)
 			{
-				String Text = JTextFieldMax.getText();
 				try
 				{
-					double Val = Double.parseDouble(Text);
 					JTextFieldMax.setBackground(Color.WHITE);
 				}
 				catch (NumberFormatException NumberFormatException_Arg)
@@ -903,7 +894,6 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 				}
 				else
 				{
-					Shape ShapeClip = Graphics2.getClip();
 					Color Color0 = Graphics2.getColor();
 					Graphics2.setClip(NewClip);
 					Graphics2.clip(RectClip);
@@ -1101,16 +1091,6 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	}// paintThumb()
 
 	// Parameters of the widget
-	final private static int PADDING_TOP_BOTTOM = 20;
-
-	final private static int BTN_NONE = 0;
-
-	final private static int BTN_UP = 1;
-
-	final private static int BTN_MID = 2;
-
-	final private static int BTN_DOWN = 3;
-
 	/**
 	 * Paints shadowed dots on the given <tt>Graphics</tt> objects. The
 	 * coordinates of the points must be given in arrays.
@@ -1740,9 +1720,6 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 		} // Drag the left triangle aligned on graduation
 		else if (Dragging == SHIFT_LEFT_RULER)
 		{
-			double Size = (float) (Ctrl.getMaximumColoredValue() - Ctrl
-					.getMinimumColoredValue());
-
 			if (MouseX - DeplBef > RightValue)
 			{
 				Ctrl.setColoredValues(Ctrl.getMaximumColoredValue(), Ctrl
@@ -1809,8 +1786,6 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 		} // Drag the right triangle aligned on graduation
 		else if (Dragging == SHIFT_RIGHT_RULER)
 		{
-			double Size = (float) (Ctrl.getMaximumColoredValue() - Ctrl
-					.getMinimumColoredValue());
 
 			if (MouseX + DeplAft < LeftValue)
 			{
