@@ -2,11 +2,12 @@ package org.mwc.cmap.core.property_support;
 
 import java.beans.*;
 import java.lang.reflect.Method;
-import java.util.Enumeration;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.*;
+import org.eclipse.swt.dnd.Clipboard;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.operations.*;
 
 import MWC.GUI.*;
 import MWC.GUI.Editable.EditorType;
@@ -16,16 +17,21 @@ public class RightClickSupport
 
 	/**
 	 * @param manager
+	 * @param hideClipboardOperations
+	 *          TODO
 	 * @param pw
 	 */
-	static public void getDropdownListFor(IMenuManager manager, EditorType editor, Layer topLevelLayer, Layers theLayers)
+	static public void getDropdownListFor(IMenuManager manager, Editable[] editables,
+			Layer[] topLevelLayers, Layer[] parentLayers, Layers theLayers,
+			boolean hideClipboardOperations)
 	{
-//		Plottable p = pw2.getPlottable();
-//		Layer topLevelLayer = pw2.getTopLevelLayer();
-		
+
+		if (editables.length == 0)
+			return;
+
 		// and now the editable bits
-		Editable p = (Editable) editor.getData();
-//		EditorType ed = p.getInfo();
+		Editable p = editables[0];
+		EditorType editor = p.getInfo();
 
 		MenuManager subMenu = null;
 
@@ -39,7 +45,8 @@ public class RightClickSupport
 			if (supportsBooleanEditor(thisP))
 			{
 				// generate boolean editors in the sub-menu
-				subMenu = generateBooleanEditorFor(manager, subMenu, thisP, p, theLayers, topLevelLayer);
+				subMenu = generateBooleanEditorFor(manager, subMenu, thisP, p, theLayers,
+						topLevelLayers[0]);
 			}
 			else
 			{
@@ -47,21 +54,43 @@ public class RightClickSupport
 				if (supportsListEditor(thisP))
 				{
 					// generate boolean editors in the sub-menu
-					subMenu = generateListEditorFor(manager, subMenu, thisP, p, theLayers, topLevelLayer);
+					subMenu = generateListEditorFor(manager, subMenu, thisP, p, theLayers,
+							topLevelLayers[0]);
 				}
 			}
 
 		}
-		
-		// that's this item done.  Now see if there are any child elements
-		if(p instanceof Layer)
+
+		// that's this item done. Now see if there are any child elements
+		// if ((p instanceof Layer)&& (!hideClipboardOperations))
+		// {
+		// Layer thisL = (Layer) p;
+		// Enumeration enumer = thisL.elements();
+		// while (enumer.hasMoreElements())
+		// {
+		// Plottable pl = (Plottable) enumer.nextElement();
+		// getDropdownListFor(subMenu, pl.getInfo(), topLevelLayer, theLayers,
+		// true);
+		// }
+		// }
+
+		Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
+
+		// see if we're still looking at the parent element (we only show clipboard
+		// operations for item clicked on)
+		if (!hideClipboardOperations)
 		{
-			Layer thisL = (Layer) p;
-			Enumeration enumer = thisL.elements();
-			while(enumer.hasMoreElements())
+			// hey, also see if we're going to do a cut/paste
+			RightClickCutCopyAdaptor.getDropdownListFor(manager, editables, topLevelLayers,
+					topLevelLayers, theLayers, theClipboard);
+
+			// what about paste?
+			// - we can only paste into a single destination, so only allow this if
+			// there's just one selected
+			if (editables.length == 1)
 			{
-				Plottable pl = (Plottable) enumer.nextElement();
-				getDropdownListFor(subMenu, pl.getInfo(), topLevelLayer, theLayers);
+				RightClickPasteAdaptor.getDropdownListFor(manager, editor, topLevelLayers[0],
+						topLevelLayers[0], theLayers, theClipboard);
 			}
 		}
 	}
@@ -145,8 +174,9 @@ public class RightClickSupport
 		return res;
 	}
 
-	static private MenuManager generateBooleanEditorFor(final IMenuManager manager, MenuManager subMenu,
-			final PropertyDescriptor thisP, final Editable p, final Layers theLayers, final Layer topLevelLayer)
+	static private MenuManager generateBooleanEditorFor(final IMenuManager manager,
+			MenuManager subMenu, final PropertyDescriptor thisP, final Editable p,
+			final Layers theLayers, final Layer topLevelLayer)
 	{
 		boolean currentVal = false;
 
@@ -172,7 +202,7 @@ public class RightClickSupport
 					Method setter = thisP.getWriteMethod();
 					Object args[] = { new Boolean(isChecked()) };
 					setter.invoke(p, args);
-					
+
 					// and update the update
 					theLayers.fireReformatted(topLevelLayer);
 				}
@@ -197,8 +227,9 @@ public class RightClickSupport
 		return subMenu;
 	}
 
-	static private MenuManager generateListEditorFor(IMenuManager manager, MenuManager subMenu,
-			final PropertyDescriptor thisP, final Editable p, final Layers theLayers, final Layer topLevelLayer)
+	static private MenuManager generateListEditorFor(IMenuManager manager,
+			MenuManager subMenu, final PropertyDescriptor thisP, final Editable p,
+			final Layers theLayers, final Layer topLevelLayer)
 	{
 
 		// find out the type of the editor
@@ -258,8 +289,8 @@ public class RightClickSupport
 			for (int j = 0; j < tags.length; j++)
 			{
 				final String thisTag = tags[j];
-			  pe.setAsText(thisTag);
-			  final Object thisValue = pe.getValue();
+				pe.setAsText(thisTag);
+				final Object thisValue = pe.getValue();
 
 				// create the item
 				IAction thisA = new Action(thisTag, IAction.AS_RADIO_BUTTON)
@@ -268,12 +299,12 @@ public class RightClickSupport
 					{
 						try
 						{
-							Method setter = thisP.getWriteMethod();							
+							Method setter = thisP.getWriteMethod();
 							Object args[] = { thisValue };
 							setter.invoke(p, args);
-							
+
 							// and update the update
-							theLayers.fireReformatted(topLevelLayer);							
+							theLayers.fireReformatted(topLevelLayer);
 						}
 						catch (Exception e)
 						{
@@ -281,11 +312,11 @@ public class RightClickSupport
 									+ thisP, e);
 						}
 					};
-					
+
 				};
-				
+
 				// is this the current one?
-				if(thisTag.equals(currentValue))
+				if (thisTag.equals(currentValue))
 				{
 					thisA.setChecked(true);
 				}
@@ -301,13 +332,12 @@ public class RightClickSupport
 				subMenu = new MenuManager("Edit " + p.getName());
 				manager.add(subMenu);
 			}
-			
-			subMenu.add(thisChoice);			
+
+			subMenu.add(thisChoice);
 
 		}
 
 		return subMenu;
 	}
-
 
 }
