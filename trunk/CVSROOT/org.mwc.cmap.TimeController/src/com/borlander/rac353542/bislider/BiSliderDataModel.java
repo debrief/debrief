@@ -44,16 +44,9 @@ public interface BiSliderDataModel {
     public double getUserDelta();
 
     /**
-     * Convenience method. Fully equivalent to the
-     * <code>getTotalDelta() / getSegmentsCount()</code>
+     * @return the length of single segment
      */
     public double getSegmentLength();
-
-    /**
-     * @return the number of segments. Single segment is preferrably labeled,
-     *         may be simply selected by user by simple double-click.
-     */
-    public int getSegmentsCount();
 
     /**
      * Specifies precision of this data model.
@@ -107,6 +100,8 @@ public interface BiSliderDataModel {
         public void setUserMaximum(double userMaximum);
 
         public void setSegmentCount(int segmentsCount);
+        
+        public void setSegmentLength(double segmentLength);
         
         public void startCompositeUpdate();
         
