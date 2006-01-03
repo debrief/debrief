@@ -9,10 +9,12 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     private double myTotalMaximum;
     private double myUserMinimum = Double.NEGATIVE_INFINITY;
     private double myUserMaximum = Double.POSITIVE_INFINITY;
-    private int mySegmentCount;
     private final LinkedList myListeners;
     private Listener[] myListenersArray;
     private int myCompositeUpdateCounter;
+    
+    private double mySegmentLength;
+    private int mySegmentsCount;
 
     public DefaultBiSliderDataModel() {
         this(0);
@@ -70,13 +72,16 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     }
 
     public double getSegmentLength() {
-        return getTotalDelta() / getSegmentsCount();
+    	if (mySegmentLength <= 0){
+    		if (mySegmentsCount <= 0){
+    			throw new IllegalStateException();
+    		}
+    		return getTotalDelta() / mySegmentsCount;
+    	} else {
+    		return mySegmentLength;
+    	}
     }
     
-    public int getSegmentsCount() {
-        return mySegmentCount;
-    }
-
     public void setUserMinimum(double userMinimum) {
         userMinimum = Math.min(userMinimum, myUserMaximum);
         userMinimum = Math.max(userMinimum, myTotalMinimum);
@@ -112,14 +117,26 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
             fireChanged();
         }
     }
+    
+    public void setSegmentLength(double segmentLength){
+    	if (segmentLength > getTotalDelta()){
+    		segmentLength = getTotalDelta();
+    	}
+    	if (mySegmentLength != segmentLength){
+    		mySegmentLength = segmentLength;
+    		mySegmentsCount = -1;
+    		fireChanged();
+    	}
+    }
 
     public void setSegmentCount(int segmentsCount) {
         if (segmentsCount < 1){
             segmentsCount = 1;
         }
-        if (mySegmentCount != segmentsCount){
-            mySegmentCount = segmentsCount;
-            fireChanged();
+        if (mySegmentsCount != segmentsCount){
+        	mySegmentsCount = segmentsCount;
+        	mySegmentLength = -1;
+        	fireChanged();
         }
     }
     
