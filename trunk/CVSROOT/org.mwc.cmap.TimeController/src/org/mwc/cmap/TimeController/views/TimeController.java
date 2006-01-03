@@ -136,15 +136,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private Button _playButton;
 
-
 	private PropertyChangeListener _myDateFormatListener = null;
 
-	/** name of property storing slider step size, used for saving state
-	 * 
+	/**
+	 * name of property storing slider step size, used for saving state
 	 */
 	private final String SLIDER_STEP_SIZE = "SLIDER_STEP_SIZE";
 
-	
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -308,7 +306,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			public void widgetSelected(SelectionEvent e)
 			{
 				int index = _tNowSlider.getSelection();
-				HiResDate newDTG = _slideManager.fromSliderUnits(index, _dtgRangeSlider.getStepSize());
+				HiResDate newDTG = _slideManager.fromSliderUnits(index, _dtgRangeSlider
+						.getStepSize());
 				fireNewTime(newDTG);
 			}
 
@@ -329,11 +328,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			}
 
 		};
-		if(_defaultSliderResolution != null)
-			 _dtgRangeSlider.setStepSize(_defaultSliderResolution.intValue());
-		
+		if (_defaultSliderResolution != null)
+			_dtgRangeSlider.setStepSize(_defaultSliderResolution.intValue());
+
 		// hmm, do we have a default step size for the slider?
-		
+
 		GridData biGrid = new GridData(GridData.FILL_BOTH);
 		_dtgRangeSlider.getControl().setLayoutData(biGrid);
 	}
@@ -532,9 +531,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	private boolean _firingNewTime = false;
 
-	/** any default size to use for the slider threshold (read in as part
-	 *  of the 'init' operation before we actually create the slider) 
-	 * 
+	/**
+	 * any default size to use for the slider threshold (read in as part of the
+	 * 'init' operation before we actually create the slider)
 	 */
 	private Integer _defaultSliderResolution;
 
@@ -878,6 +877,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				});
 
 	}
+
 	/**
 	 * convenience method to make the panel enabled if we have a time controller
 	 * and a valid time
@@ -1362,10 +1362,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					super.run();
 					_myStepperProperties.setPropertyValue(TimeControlProperties.DTG_FORMAT_ID,
 							thisIndex);
-										
-					// todo: we need to tell the plot that it's changed - fake this by firing a quick formatting change
+
+					// todo: we need to tell the plot that it's changed - fake this by
+					// firing a quick formatting change
 					_myLayers.fireReformatted(null);
-					
+
 				}
 
 			};
@@ -1507,11 +1508,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		super.saveState(memento);
 
-		//// ok, store me bits
+		// // ok, store me bits
 		// start off with the time step
-		memento.putInteger(SLIDER_STEP_SIZE ,(int)_dtgRangeSlider.getStepSize());
-		
-		// first the 
+		memento.putInteger(SLIDER_STEP_SIZE, (int) _dtgRangeSlider.getStepSize());
+
+		// first the
 	}
 
 	/**
@@ -1523,12 +1524,16 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	{
 
 		super.init(site, memento);
-		
-		// try the slider step size
-		Integer stepSize = memento.getInteger(SLIDER_STEP_SIZE);
-		if(stepSize != null)
+
+		if (memento != null)
 		{
-			_defaultSliderResolution = stepSize;
+
+			// try the slider step size
+			Integer stepSize = memento.getInteger(SLIDER_STEP_SIZE);
+			if (stepSize != null)
+			{
+				_defaultSliderResolution = stepSize;
+			}
 		}
 	}
 }
