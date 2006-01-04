@@ -3,6 +3,7 @@ package org.mwc.cmap.layer_manager.views;
 import java.util.*;
 
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
@@ -48,6 +49,11 @@ public class LayerManagerView extends ViewPart
 	private MyTreeViewer _treeViewer;
 
 	private DrillDownAdapter drillDownAdapter;
+
+	/**
+	 * create a new top-level layer
+	 */
+	private Action _createLayer;
 
 	/**
 	 * make the current item the primary track
@@ -100,7 +106,8 @@ public class LayerManagerView extends ViewPart
 			int res = 0;
 			PlottableWrapper p1 = (PlottableWrapper) e1;
 			PlottableWrapper p2 = (PlottableWrapper) e2;
-			if ((p1.getPlottable() instanceof Comparable) && (p2.getPlottable() instanceof Comparable))
+			if ((p1.getPlottable() instanceof Comparable)
+					&& (p2.getPlottable() instanceof Comparable))
 			{
 				Comparable w1 = (Comparable) p1.getPlottable();
 				Comparable w2 = (Comparable) p2.getPlottable();
@@ -311,10 +318,69 @@ public class LayerManagerView extends ViewPart
 						plottableSelected(sel, pw);
 					}
 				}
-
 			}
 		};
 
+		// also listen out ourselves to any changes, so we can update the button
+		// enablement
+		_treeViewer.addSelectionChangedListener(new ISelectionChangedListener()
+		{
+
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+				ISelection isel = event.getSelection();
+				if (isel instanceof StructuredSelection)
+				{
+					StructuredSelection ss = (StructuredSelection) isel;
+					_makePrimary.setEnabled(isValidPrimary(ss));
+					_makeSecondary.setEnabled(isValidSecondary(ss));
+				}
+			}
+
+		});
+
+	}
+
+	/**
+	 * find out if the selection is valid for setting as primary
+	 * 
+	 * @param ss
+	 * @return
+	 */
+	protected static boolean isValidPrimary(StructuredSelection ss)
+	{
+		boolean res = false;
+		if (ss.size() == 1)
+		{
+			PlottableWrapper pw = (PlottableWrapper) ss.getFirstElement();
+			Plottable pl = pw.getPlottable();
+			if (pl instanceof WatchableList)
+			{
+				res = true;
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * find out if the selection is valid for setting as primary
+	 * 
+	 * @param ss
+	 * @return
+	 */
+	protected static boolean isValidSecondary(StructuredSelection ss)
+	{
+		boolean res = false;
+		if (ss.size() >= 1)
+		{
+			PlottableWrapper pw = (PlottableWrapper) ss.getFirstElement();
+			Plottable pl = pw.getPlottable();
+			if (pl instanceof WatchableList)
+			{
+				res = true;
+			}
+		}
+		return res;
 	}
 
 	private void formatTree(Tree tree)
@@ -363,15 +429,32 @@ public class LayerManagerView extends ViewPart
 		manager.add(new Separator());
 		manager.add(_expandAllAction);
 		manager.add(_collapseAllAction);
+		manager.add(new Separator());
+		manager.add(_createLayer);
 	}
 
 	private void fillContextMenu(IMenuManager manager)
 	{
-		manager.add(_makePrimary);
-		manager.add(_makeSecondary);
-		manager.add(_hideAction);
-		manager.add(_revealAction);
-		manager.add(new Separator());
+		// get the selected item
+		StructuredSelection sel = (StructuredSelection) _treeViewer.getSelection();
+
+		// right, we only worry about primary, secondary, hide, reveal if something
+		// is selected
+		if (sel.size() > 0)
+		{
+			// ok, allow hide/reveal
+			manager.add(_hideAction);
+			manager.add(_revealAction);
+
+			// have a look at the data-types to sort out whether to primary/secondary
+			if (isValidPrimary(sel))
+				manager.add(_makePrimary);
+			if (isValidSecondary(sel))
+				manager.add(_makeSecondary);
+
+			// now stick in the separator anyway
+			manager.add(new Separator());
+		}
 
 		// drillDownAdapter.addNavigationActions(manager);
 		// Other plug-ins can contribute there actions here
@@ -380,40 +463,36 @@ public class LayerManagerView extends ViewPart
 		// hey, sort out the data-specific items
 		// build up a list of menu items
 
-		// get the selected item
-		IStructuredSelection sel = (IStructuredSelection) _treeViewer.getSelection();
-		if (sel.size() >= 1)
+		// create some lists to store our selected items
+		Editable[] eList = new Editable[sel.size()];
+		Layer[] parentLayers = new Layer[sel.size()];
+		Layer[] updateLayers = new Layer[sel.size()];
+
+		// right, now populate them
+		Object[] oList = sel.toArray();
+		for (int i = 0; i < oList.length; i++)
 		{
-			// create some lists to store our selected items
-			Editable [] eList = new Editable[sel.size()];
-			Layer[] parentLayers = new Layer[sel.size()];
-			Layer[] updateLayers = new Layer[sel.size()];
-			
-			// right, now populate them
-			Object[] oList = sel.toArray();
-			for (int i = 0; i < oList.length; i++)
-			{
-				PlottableWrapper wrapper = (PlottableWrapper) oList[i];
-				eList[i] = wrapper.getPlottable();	
-				
-				// sort out the parent layer
-				PlottableWrapper theParent = wrapper.getParent();
-				
-				// hmm, did we find one?
-				if(theParent != null)
-					// yes, store it
-					parentLayers[i] = (Layer) wrapper.getParent().getPlottable();
-				else
-					// nope - store a null
-					parentLayers[i] = null;
-				
-				updateLayers[i] = wrapper.getTopLevelLayer();
- 			}
- 
-			// ok, sort out what we can do with all of this...
-			RightClickSupport.getDropdownListFor(manager, eList, updateLayers, parentLayers,
-					_myLayers, false);
+			PlottableWrapper wrapper = (PlottableWrapper) oList[i];
+			eList[i] = wrapper.getPlottable();
+
+			// sort out the parent layer
+			PlottableWrapper theParent = wrapper.getParent();
+
+			// hmm, did we find one?
+			if (theParent != null)
+				// yes, store it
+				parentLayers[i] = (Layer) wrapper.getParent().getPlottable();
+			else
+				// nope - store a null
+				parentLayers[i] = null;
+
+			updateLayers[i] = wrapper.getTopLevelLayer();
 		}
+
+		// ok, sort out what we can do with all of this...
+		RightClickSupport.getDropdownListFor(manager, eList, updateLayers, parentLayers,
+				_myLayers, false);
+
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
@@ -466,6 +545,35 @@ public class LayerManagerView extends ViewPart
 		_expandAllAction.setToolTipText("Expand all layers in the layer manager");
 		_expandAllAction.setImageDescriptor(Layer_managerPlugin
 				.getImageDescriptor("icons/expandall.gif"));
+
+		_createLayer = new Action()
+		{
+			public void run()
+			{
+				// ask the user
+				InputDialog id = new InputDialog(null, "Create new layer", "Layer name:", "",
+						null);
+				int res = id.open();
+
+				// was ok pressed?
+				if (res == InputDialog.OK)
+				{
+					// yup, create the layer
+					String newName = id.getValue();
+
+					// yes, create the layer
+					BaseLayer bl = new BaseLayer();
+					bl.setName(newName);
+
+					// and add it
+					_myLayers.addThisLayer(bl);
+				}
+			}
+		};
+		_createLayer.setText("Create layer");
+		_createLayer.setToolTipText("Create a new top-level layer");
+		_createLayer.setImageDescriptor(Layer_managerPlugin
+				.getImageDescriptor("icons/new_layer.gif"));
 
 		_makePrimary = new Action()
 		{
@@ -867,6 +975,7 @@ public class LayerManagerView extends ViewPart
 	{
 		if (_followSelectionToggle.isChecked())
 			_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
+
 	}
 
 }
