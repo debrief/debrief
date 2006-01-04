@@ -7,7 +7,6 @@ import org.eclipse.swt.dnd.Clipboard;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
 import MWC.GUI.*;
-import MWC.GUI.Editable.EditorType;
 
 public class RightClickPasteAdaptor
 {
@@ -20,10 +19,9 @@ public class RightClickPasteAdaptor
 	// constructor
 	// ////////////////////////////////
 
-static public void getDropdownListFor(IMenuManager manager, EditorType editor,
-			Layer updateLayer, Layer parentLayer, Layers theLayers, Clipboard _clipboard)
+static public void getDropdownListFor(IMenuManager manager, Editable destination,
+			Layer[] updateLayer, Layer[] parentLayer, Layers theLayers, Clipboard _clipboard)
 	{
-		Editable destination = (Editable) editor.getData();
 		
 	  // is the plottable a layer
     if ((destination instanceof MWC.GUI.Layer) || (destination == null))
@@ -48,13 +46,13 @@ static public void getDropdownListFor(IMenuManager manager, EditorType editor,
               if (theData instanceof MWC.GUI.Layer)
               {
 
-//                MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
+                MWC.GUI.Layer clipLayer = (MWC.GUI.Layer) theData;
 
                 // create the menu items
-//                paster = new PasteLayer(clipLayer,
-//                                        _clipboard,
-//                                        (Layer) destination,
-//                                        theLayers);
+                paster = new PasteLayer(clipLayer,
+                                        _clipboard,
+                                        (Layer) destination,
+                                        theLayers);
               }
               else
               {
@@ -237,52 +235,64 @@ static public void getDropdownListFor(IMenuManager manager, EditorType editor,
 		return res;
 	}
 
-//	public static class PasteLayer extends PasteItem
-//	{
-//
-//		public PasteLayer(Layer data, Clipboard clipboard, Layer theDestination,
-//			 Layers theLayers)
-//		{
-//			super(new Editable[]{data}, clipboard, theDestination, theLayers);
-//		}
-//
-//		public String toString()
-//		{
-//			String res = "Paste ";
-//			if(_data.length>1)
-//				res += _data.length + " layers from Clipboard";
-//			else
-//				res += _data[0].getName();
-//			return res;
-//		}
-//
-//		public void undo()
-//		{
-//			// remove the item from it's new parent
-//			// do we have a destination layer?
-////			if (super._theDestination != null)
-////			{
-////				// add it to this layer
-////				_theDestination.removeElement(_data);
-////				_theLayers.fireModified(_theDestination);
-////			}
-////			else
-////			{
-////				// just remove it from the top level
-////				_theLayers.removeThisLayer((Layer) _data);
-////				_theLayers.fireModified((Layer) _data);
-////			}
-//
-//		}
-//
-//		public void execute()
-//		{
-//			// do we have a destination layer?
+	public static class PasteLayer extends PasteItem
+	{
+
+		public PasteLayer(Layer data, Clipboard clipboard, Layer theDestination,
+			 Layers theLayers)
+		{
+			super(new Editable[]{data}, clipboard, theDestination, theLayers);
+		}
+
+		public String toString()
+		{
+			String res = "";
+			if(_data.length>1)
+				res += _data.length + " layers from Clipboard";
+			else
+				res += _data[0].getName();
+			return res;
+		}
+
+		public void undo()
+		{
+			// remove the item from it's new parent
+			// do we have a destination layer?
 //			if (super._theDestination != null)
+//			{
 //				// add it to this layer
-//				_theDestination.add(_data);
+//				_theDestination.removeElement(_data);
+//				_theLayers.fireModified(_theDestination);
+//			}
 //			else
 //			{
+//				// just remove it from the top level
+//				_theLayers.removeThisLayer((Layer) _data);
+//				_theLayers.fireModified((Layer) _data);
+//			}
+
+		}
+
+		public void execute()
+		{
+			// do we have a destination layer?
+			if (super._theDestination != null)
+			{
+				// extract the layer
+				Layer newLayer = (Layer) _data[0];
+				
+				// add it to the top level
+				_theDestination.add(newLayer);
+			}
+			else
+			{
+				// extract the layer
+				Layer newLayer = (Layer) _data[0];
+				
+				// add it to the top level
+				_theLayers.addThisLayer(newLayer);
+			}
+//			
 //				// see if there is already a track of this name at the top level
 //				if (_theLayers.findLayer(_data.getName()) == null)
 //				{
@@ -330,11 +340,11 @@ static public void getDropdownListFor(IMenuManager manager, EditorType editor,
 //					_theLayers.addThisLayerDoNotResize((Layer) _data);
 //				}
 //			}
-//
-//			_theLayers.fireModified(null);
-//
-//		}
-//
-//	}
+
+			_theLayers.fireModified(null);
+
+		}
+
+	}
 
 }

@@ -26,40 +26,53 @@ public class RightClickSupport
 			boolean hideClipboardOperations)
 	{
 
-		if (editables.length == 0)
-			return;
+//		if (editables.length == 0)
+//			return;
 
+		
+		// sort out the top level layer, if we have one
+		Layer theTopLayer = null;
+		if(topLevelLayers != null)
+			if(topLevelLayers.length > 0)
+				theTopLayer = topLevelLayers[0];		
+		
 		// and now the editable bits
-		Editable p = editables[0];
-		EditorType editor = p.getInfo();
-
-		MenuManager subMenu = null;
-
-		// and now the parameters
-		PropertyDescriptor[] pd = editor.getPropertyDescriptors();
-		for (int i = 0; i < pd.length; i++)
+		Editable p = null;
+		if(editables.length > 0)
 		{
-			PropertyDescriptor thisP = pd[i];
+			p = editables[0];		
+			EditorType editor = p.getInfo();
+			MenuManager subMenu = null;
 
-			// start off with the booleans
-			if (supportsBooleanEditor(thisP))
+			// and now the parameters
+			PropertyDescriptor[] pd = editor.getPropertyDescriptors();
+			for (int i = 0; i < pd.length; i++)
 			{
-				// generate boolean editors in the sub-menu
-				subMenu = generateBooleanEditorFor(manager, subMenu, thisP, p, theLayers,
-						topLevelLayers[0]);
-			}
-			else
-			{
-				// now the drop-down lists
-				if (supportsListEditor(thisP))
+				PropertyDescriptor thisP = pd[i];
+
+
+				// start off with the booleans
+				if (supportsBooleanEditor(thisP))
 				{
 					// generate boolean editors in the sub-menu
-					subMenu = generateListEditorFor(manager, subMenu, thisP, p, theLayers,
-							topLevelLayers[0]);
+					subMenu = generateBooleanEditorFor(manager, subMenu, thisP, p, theLayers,
+							theTopLayer);
 				}
-			}
+				else
+				{
+					// now the drop-down lists
+					if (supportsListEditor(thisP))
+					{
+						// generate boolean editors in the sub-menu
+						subMenu = generateListEditorFor(manager, subMenu, thisP, p, theLayers,
+								theTopLayer);
+					}
+				}
 
+			}			
 		}
+
+	
 
 		// that's this item done. Now see if there are any child elements
 		// if ((p instanceof Layer)&& (!hideClipboardOperations))
@@ -87,11 +100,16 @@ public class RightClickSupport
 			// what about paste?
 			// - we can only paste into a single destination, so only allow this if
 			// there's just one selected
-			if (editables.length == 1)
-			{
-				RightClickPasteAdaptor.getDropdownListFor(manager, editor, topLevelLayers[0],
-						topLevelLayers[0], theLayers, theClipboard);
-			}
+		//	if (editables.length == 1)
+		//	{
+				Editable selectedItem = null;
+				if(editables.length == 1)
+				{
+					selectedItem = editables[0];
+				}
+				RightClickPasteAdaptor.getDropdownListFor(manager, selectedItem, topLevelLayers,
+						topLevelLayers, theLayers, theClipboard);
+	//		}
 		}
 	}
 

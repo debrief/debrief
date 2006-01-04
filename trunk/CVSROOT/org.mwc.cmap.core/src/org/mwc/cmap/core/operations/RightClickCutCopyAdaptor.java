@@ -148,6 +148,10 @@ public class RightClickCutCopyAdaptor
 	static public void getDropdownListFor(IMenuManager manager, Editable[] editables,
 			Layer[] updateLayers, Layer[] parentLayers, Layers theLayers, Clipboard _clipboard)
 	{
+		// do we have any editables?
+		if(editables.length == 0)
+			return;
+		
 		// get the editable item
 		Editable data = editables[0];
 
