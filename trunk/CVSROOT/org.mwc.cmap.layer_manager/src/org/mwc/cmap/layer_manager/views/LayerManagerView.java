@@ -2,6 +2,9 @@ package org.mwc.cmap.layer_manager.views;
 
 import java.util.*;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.*;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.*;
@@ -20,18 +23,7 @@ import Debrief.Tools.Tote.*;
 import MWC.GUI.*;
 
 /**
- * This sample class demonstrates how to plug-in a new workbench view. The view
- * shows data obtained from the model. The sample creates a dummy model on the
- * fly, but a real implementation would connect to the model available either in
- * this or another plug-in (e.g. the workspace). The view is connected to the
- * model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be
- * presented in the view. Each view can present the same model objects using
- * different labels and icons, if needed. Alternatively, a single label provider
- * can be shared between views in order to ensure that objects of the same type
- * are presented in the same way everywhere.
- * <p>
+ * provide a tree of items on the plot.
  */
 
 public class LayerManagerView extends ViewPart
@@ -98,6 +90,139 @@ public class LayerManagerView extends ViewPart
 	private Action _expandAllAction;
 
 	protected TrackManager _theTrackDataListener;
+
+	/**
+	 * class that embodies applying an operation to a series of selected points.
+	 * the series of points are remembered, so that they can be undone/redone
+	 * 
+	 * @author ian.mayo
+	 */
+	private static final class SelectionOperation extends AbstractOperation
+	{
+		/**
+		 * the selected items
+		 */
+		StructuredSelection _theSelection;
+
+		/**
+		 * what we are going to execute
+		 */
+		private IOperateOn _execute;
+
+		/**
+		 * what we are going to undo
+		 */
+		private IOperateOn _undo;
+
+		/**
+		 * what we are going to redo
+		 */
+		private IOperateOn _redo;
+
+		/**
+		 * who is giving us the selection
+		 */
+		private ISelectionProvider _provider;
+
+		/**
+		 * who we fire the update to
+		 */
+		private Layers _destination;
+
+		/**
+		 * define our operation
+		 * 
+		 * @param label
+		 *          what to label it
+		 * @param execute
+		 *          the operation to execute
+		 * @param undo
+		 *          how to do an undo
+		 * @param redo
+		 *          how to do a redo
+		 * @param provider
+		 *          who is going to provide the selection
+		 * @param destination
+		 *          what to update on completion
+		 */
+
+		private SelectionOperation(String label, IOperateOn execute, IOperateOn undo,
+				IOperateOn redo, ISelectionProvider provider, Layers destination)
+		{
+			super(label);
+
+			// get remembering
+			_provider = provider;
+			_execute = execute;
+			_undo = undo;
+			_redo = redo;
+			_destination = destination;
+
+			// put in the global context, for some reason
+			addContext(CorePlugin.CMAP_CONTEXT);
+		}
+
+		/**
+		 * ok, do the operation
+		 */
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			// ok, take a copy of the selection - for our undo/redo operations
+			_theSelection = (StructuredSelection) _provider.getSelection();
+
+			// cool, go for it
+			applyOperation(_execute, _theSelection, _destination);
+
+			return Status.OK_STATUS;
+		}
+
+		/**
+		 * ok, redo the operation
+		 */
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			applyOperation(_redo, _theSelection, _destination);
+			return Status.OK_STATUS;
+		}
+
+		/**
+		 * ok, undo the operation
+		 */
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			applyOperation(_undo, _theSelection, _destination);
+			return Status.OK_STATUS;
+		}
+
+		/**
+		 * @return
+		 */
+		public boolean canExecute()
+		{
+			return _execute != null;
+		}
+
+		/**
+		 * @return
+		 */
+		public boolean canRedo()
+		{
+			return _redo != null;
+		}
+
+		/**
+		 * @return
+		 */
+		public boolean canUndo()
+		{
+			return _undo != null;
+		}
+
+	}
 
 	class NameSorter extends ViewerSorter
 	{
@@ -579,7 +704,7 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				applyOperationToSelection(new IOperateOn()
+				AbstractOperation doIt = new SelectionOperation("Make primary", new IOperateOn()
 				{
 					public void doItTo(Plottable item)
 					{
@@ -593,6 +718,40 @@ public class LayerManagerView extends ViewPart
 								_theTrackDataListener.primaryUpdated(list);
 						}
 					}
+				}, new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						// is it a watchable-list?
+						if (item instanceof WatchableList)
+						{
+							// make it the primary
+							if (_theTrackDataListener != null)
+								_theTrackDataListener.primaryUpdated(null);
+						}
+					}
+				}, new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						// is it a watchable-list?
+						if (item instanceof WatchableList)
+						{
+							WatchableList list = (WatchableList) item;
+
+							// make it the primary
+							if (_theTrackDataListener != null)
+								_theTrackDataListener.primaryUpdated(list);
+						}
+					}
+				}, _treeViewer, _myLayers);
+				CorePlugin.run(doIt);
+
+				applyOperationToSelection(new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+					}
 				});
 
 			}
@@ -605,21 +764,53 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				applyOperationToSelection(new IOperateOn()
-				{
-					public void doItTo(Plottable item)
-					{
-						// is it a watchable-list?
-						if (item instanceof WatchableList)
-						{
-							WatchableList list = (WatchableList) item;
 
-							// make it the primary
-							if (_theTrackDataListener != null)
-								_theTrackDataListener.addSecondary(list);
-						}
-					}
-				});
+				AbstractOperation doIt = new SelectionOperation("Make secondary",
+						new IOperateOn()
+						{
+							public void doItTo(Plottable item)
+							{
+								// is it a watchable-list?
+								if (item instanceof WatchableList)
+								{
+									WatchableList list = (WatchableList) item;
+
+									// make it the primary
+									if (_theTrackDataListener != null)
+										_theTrackDataListener.addSecondary(list);
+								}
+							}
+						}, new IOperateOn()
+						{
+							public void doItTo(Plottable item)
+							{
+								// is it a watchable-list?
+								if (item instanceof WatchableList)
+								{
+									WatchableList list = (WatchableList) item;
+
+									// make it the primary
+									if (_theTrackDataListener != null)
+										_theTrackDataListener.removeSecondary(list);
+								}
+							}
+						}, new IOperateOn()
+						{
+							public void doItTo(Plottable item)
+							{
+								// is it a watchable-list?
+								if (item instanceof WatchableList)
+								{
+									WatchableList list = (WatchableList) item;
+
+									// make it the primary
+									if (_theTrackDataListener != null)
+										_theTrackDataListener.addSecondary(list);
+								}
+							}
+						}, _treeViewer, _myLayers);
+				CorePlugin.run(doIt);
+
 			}
 		};
 		_makeSecondary.setText("Make Secondary");
@@ -631,13 +822,26 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				applyOperationToSelection(new IOperateOn()
+				AbstractOperation doIt = new SelectionOperation("Hide item", new IOperateOn()
 				{
 					public void doItTo(Plottable item)
 					{
 						item.setVisible(false);
 					}
-				});
+				}, new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						item.setVisible(true);
+					}
+				}, new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						item.setVisible(false);
+					}
+				}, _treeViewer, _myLayers);
+				CorePlugin.run(doIt);
 			}
 		};
 		_hideAction.setText("Hide item");
@@ -648,13 +852,26 @@ public class LayerManagerView extends ViewPart
 		{
 			public void run()
 			{
-				applyOperationToSelection(new IOperateOn()
+				AbstractOperation doIt = new SelectionOperation("reveal item", new IOperateOn()
 				{
 					public void doItTo(Plottable item)
 					{
 						item.setVisible(true);
 					}
-				});
+				}, new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						item.setVisible(false);
+					}
+				}, new IOperateOn()
+				{
+					public void doItTo(Plottable item)
+					{
+						item.setVisible(true);
+					}
+				}, _treeViewer, _myLayers);
+				CorePlugin.run(doIt);
 			}
 		};
 		_revealAction.setText("Refeal item");
@@ -900,15 +1117,10 @@ public class LayerManagerView extends ViewPart
 		public void doItTo(Plottable item);
 	}
 
-	/**
-	 * user has double-clicked on an item. process.
-	 * 
-	 * @param operation
-	 *          TODO
-	 */
-	private void applyOperationToSelection(IOperateOn operation)
+	private static void applyOperation(IOperateOn operation,
+			IStructuredSelection selection, Layers myLayers)
 	{
-		IStructuredSelection selection = (IStructuredSelection) _treeViewer.getSelection();
+
 		Iterator iterator = selection.iterator();
 		boolean madeChange = false;
 		Layer parentLayer = null;
@@ -956,19 +1168,32 @@ public class LayerManagerView extends ViewPart
 			if (multiLayer)
 			{
 				// ok - update all layers
-				triggerChartUpdate(null);
+				triggerChartUpdate(null, myLayers);
 			}
 			else
 			{
 				// ok - just update the one layer
-				triggerChartUpdate(parentLayer);
+				triggerChartUpdate(parentLayer, myLayers);
 			}
 		}
 	}
 
-	private void triggerChartUpdate(Layer changedLayer)
+	/**
+	 * user has double-clicked on an item. process.
+	 * 
+	 * @param operation
+	 *          TODO
+	 */
+	private void applyOperationToSelection(IOperateOn operation)
 	{
-		_myLayers.fireReformatted(changedLayer);
+		IStructuredSelection selection = (IStructuredSelection) _treeViewer.getSelection();
+		applyOperation(operation, selection, _myLayers);
+
+	}
+
+	private static void triggerChartUpdate(Layer changedLayer, Layers myLayers)
+	{
+		myLayers.fireReformatted(changedLayer);
 	}
 
 	public void plottableSelected(ISelection sel, PlottableWrapper pw)

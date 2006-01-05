@@ -2,6 +2,9 @@ package org.mwc.cmap.core.operations;
 
 import java.io.*;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.dnd.*;
@@ -149,9 +152,9 @@ public class RightClickCutCopyAdaptor
 			Layer[] updateLayers, Layer[] parentLayers, Layers theLayers, Clipboard _clipboard)
 	{
 		// do we have any editables?
-		if(editables.length == 0)
+		if (editables.length == 0)
 			return;
-		
+
 		// get the editable item
 		Editable data = editables[0];
 
@@ -167,25 +170,26 @@ public class RightClickCutCopyAdaptor
 		{
 
 			// is this a layer
-//			if (updateLayer instanceof MWC.GUI.Layers)
-//			{
-//				// create the Actions
-//				// cutter = new CutLayer(data, _clipboard, updateLayer, theLayers,
-//				// updateLayer);
-//			}
-//			else if (updateLayer == null)
-//			{
-//				// create the Actions
-//				// cutter = new CutLayer(data, _clipboard, (Layer) data, theLayers,
-//				// updateLayer);
-//			}
-//			else
+			// if (updateLayer instanceof MWC.GUI.Layers)
+			// {
+			// // create the Actions
+			// // cutter = new CutLayer(data, _clipboard, updateLayer, theLayers,
+			// // updateLayer);
+			// }
+			// else if (updateLayer == null)
+			// {
+			// // create the Actions
+			// // cutter = new CutLayer(data, _clipboard, (Layer) data, theLayers,
+			// // updateLayer);
+			// }
+			// else
 			{
 				// first the cut action
 				cutter = new CutItem(editables, _clipboard, parentLayers, theLayers, updateLayers);
-				
+
 				// now the copy action
-				copier = new CopyItem(editables, _clipboard, parentLayers, theLayers, updateLayers);
+				copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
+						updateLayers);
 
 			}
 			// create the menu items
@@ -219,14 +223,14 @@ public class RightClickCutCopyAdaptor
 
 		protected Layer[] _theParent;
 
-		// protected Transferable _oldData;
-
 		protected Layers _theLayers;
+		
+		protected Object _oldContents;
 
 		protected Layer[] _updateLayer;
 
-		public CutItem(Editable[] data, Clipboard clipboard, Layer[] theParent, Layers theLayers,
-				Layer[] updateLayer)
+		public CutItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
+				Layers theLayers, Layer[] updateLayer)
 		{
 			// remember parameters
 			_data = data;
@@ -239,102 +243,170 @@ public class RightClickCutCopyAdaptor
 			super.setText("Cut " + toString());
 		}
 
+		// remember what used to be on the clipboard
+		protected void rememberPreviousContents()
+		{
+			// copy in the new data
+			EditableTransfer transfer = EditableTransfer.getInstance();
+			_oldContents =  _myClipboard.getContents(transfer);
+		}
+		
+
+		// restore the previous contents of the clipboard
+		protected void restorePreviousContents()
+		{
+			// copy in the new data
+			EditableTransfer transfer = EditableTransfer.getInstance();
+			_myClipboard.setContents(new Object[] { _oldContents }, new Transfer[] { transfer });					
+			
+			// and forget what we're holding
+			_oldContents = null;
+		}
+		
 		/**
 		 * 
 		 */
 		public void run()
 		{
-			super.run();
+			AbstractOperation myOperation = new AbstractOperation(getText())
+			{
+				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					doCut();
+					return Status.OK_STATUS;
+				}
 
-			// ok, go for it
-			execute();
+			
+				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					doCut();
+					return Status.OK_STATUS;
+				}
+
+				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					// ok, place our items back in their layers
+
+					boolean multipleLayersModified = false;
+					Layer lastLayerModified = null;
+
+					for (int i = 0; i < _data.length; i++)
+					{
+						Editable thisE = _data[i];
+						Layer parentLayer = _theParent[i];
+
+						// is the parent the data object itself?
+						if (parentLayer == thisE)
+						{
+							// no, it must be the top layers object
+							_theLayers.addThisLayer((Layer) thisE);
+
+							// so, we know we've got to remove items from multiple layers
+							multipleLayersModified = true;
+						}
+						else
+						{
+							// remove the new data from it's parent
+							parentLayer.add(thisE);
+
+							// let's see if we're editing multiple layers
+							if (!multipleLayersModified)
+							{
+								if (lastLayerModified == null)
+									lastLayerModified = parentLayer;
+								else
+								{
+									if (lastLayerModified != parentLayer)
+										multipleLayersModified = true;
+								}
+							}
+						}
+
+					}
+					
+					// and fire an update
+					if (multipleLayersModified)
+						_theLayers.fireExtended();
+					else
+						_theLayers.fireExtended(null, lastLayerModified);
+					
+					// and restore the previous contents
+					restorePreviousContents();
+
+					return Status.OK_STATUS;
+				}
+				
+				/** the cut operation is common for execute and redo operations - so factor it out to here...
+				 * 
+				 */
+				private void doCut()
+				{
+					boolean multipleLayersModified = false;
+					Layer lastLayerModified = null;
+
+					// remember the previous contents
+					rememberPreviousContents();
+					
+					// copy in the new data
+					EditableTransfer transfer = EditableTransfer.getInstance();
+					_myClipboard.setContents(new Object[] { _data }, new Transfer[] { transfer });
+
+					for (int i = 0; i < _data.length; i++)
+					{
+						Editable thisE = _data[i];
+						Layer parentLayer = _theParent[i];
+
+						// is the parent the data object itself?
+						if (parentLayer == thisE)
+						{
+							// no, it must be the top layers object
+							_theLayers.removeThisLayer((Layer) thisE);
+
+							// so, we know we've got to remove items from multiple layers
+							multipleLayersModified = true;
+						}
+						else
+						{
+							// remove the new data from it's parent
+							parentLayer.removeElement(thisE);
+
+							// let's see if we're editing multiple layers
+							if (!multipleLayersModified)
+							{
+								if (lastLayerModified == null)
+									lastLayerModified = parentLayer;
+								else
+								{
+									if (lastLayerModified != parentLayer)
+										multipleLayersModified = true;
+								}
+							}
+						}
+					}
+
+					if (multipleLayersModified)
+						_theLayers.fireExtended();
+					else
+						_theLayers.fireExtended(null, lastLayerModified);
+				}
+				
+			};
+			// put in the global context, for some reason
+			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			CorePlugin.run(myOperation);
 		}
 
 		public String toString()
 		{
 			String res = "";
-			if(_data.length>1)
+			if (_data.length > 1)
 				res += _data.length + " selected items";
 			else
 				res += _data[0].getName();
 			return res;
-		}
-
-		public void undo()
-		{
-//			restoreOldData();
-//
-//			// is the parent the data object itself?
-//			if (_theParent == _data)
-//			{
-//				_theLayers.addThisLayer((Layer) _data);
-//			}
-//			else
-//			{
-//				// put the data item back into it's layer
-//				_theParent.add(_data);
-//			}
-//
-//			doUpdate();
-		}
-
-		public void execute()
-		{
-			//
-			storeOld();
-
-			// copy in the new data
-			EditableTransfer transfer = EditableTransfer.getInstance();
-			_myClipboard.setContents(new Object[] { _data }, new Transfer[] { transfer });
-
-				for (int i = 0; i < _data.length; i++)
-				{
-					Editable thisE= _data[i];
-					Layer parentLayer = _theParent[i];
-					
-					// is the parent the data object itself?
-					if (parentLayer == thisE)
-					{
-						// no, it must be the top layers object
-						_theLayers.removeThisLayer((Layer) thisE);
-					}
-					else
-					{
-						// remove the new data from it's parent
-						parentLayer.removeElement(thisE);
-					}				
-					
-				}
-		
-			// fire updates
-			doUpdate();
-
-			// and put ourselves on the
-			doUndoBuffer();
-		}
-
-		protected void doUndoBuffer()
-		{
-			// _theBuffer.add(this);
-		}
-
-		protected void storeOld()
-		{
-			// get the old data
-			// _oldData = _myClipboard.getContents(this);
-		}
-
-		protected void doUpdate()
-		{
-			//
-			_theLayers.fireExtended();
-
-		}
-
-		protected void restoreOldData()
-		{
-			// put the old data item back on the clipboard
-			// _myClipboard.setContents(_oldData, this);
 		}
 
 	}
@@ -352,29 +424,81 @@ public class RightClickCutCopyAdaptor
 			super.setText(toString());
 		}
 
-
 		public String toString()
 		{
 			String res = "Copy ";
-			if(_data.length>1)
+			if (_data.length > 1)
 				res += _data.length + " selected items";
 			else
 				res += _data[0].getName();
 			return res;
 		}
 
-
-		public void undo()
+		
+		public void run()
 		{
-			// trigger the refresh
-			doUpdate();
+			AbstractOperation myOperation = new AbstractOperation(getText())
+			{
+				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					
+					// we stick a pointer to the ACTUAL item on the clipboard - we
+					// clone this item when we do a PASTE, so that multiple paste
+					// operations can be performed
+					
+					doCopy();
+
+					return Status.OK_STATUS;
+				}
+
+				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					
+					doCopy();
+
+					return Status.OK_STATUS;
+				}
+
+
+
+				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+						throws ExecutionException
+				{
+					// just restore the previous clipboard contents
+					restorePreviousContents();
+
+					return Status.OK_STATUS;
+				}
+				
+				/** the Copy bit is common to execute and redo methods - so factor it out to here...
+				 * 
+				 */
+				private void doCopy()
+				{
+					// remember the old contents
+					rememberPreviousContents();
+					
+					// we stick a pointer to the ACTUAL item on the clipboard - we
+					// clone this item when we do a PASTE, so that multiple paste
+					// operations can be performed
+					
+					// copy in the new data
+					EditableTransfer transfer = EditableTransfer.getInstance();
+					_myClipboard.setContents(new Object[] { _data }, new Transfer[] { transfer });
+				}				
+			};
+			// put in the global context, for some reason
+			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
+			CorePlugin.run(myOperation);			
 		}
 
 		public void execute()
 		{
 
 			// store the old data
-			storeOld();
+//			storeOld();
 
 			// we stick a pointer to the ACTUAL item on the clipboard - we
 			// clone this item when we do a PASTE, so that multiple paste

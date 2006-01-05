@@ -37,14 +37,7 @@ public class DebriefActionWrapper extends AbstractOperation
 	 */
 	public DebriefActionWrapper(Action theAction)
 	{
-		super(theAction.toString());
-		
-		_myLayers = null;
-		
-		// put in the global context, for some reason
-		super.addContext(CorePlugin.CMAP_CONTEXT);
-		
-		_myAction = theAction;
+		this(theAction, null);
 	}	
 	//////////////////////////////////////////////////////////////
 	// eclipse action bits
