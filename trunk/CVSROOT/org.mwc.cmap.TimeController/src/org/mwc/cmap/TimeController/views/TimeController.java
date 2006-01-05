@@ -219,6 +219,80 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		onTop.marginWidth = 0;
 		_wholePanel.setLayout(onTop);
 
+		// stick in the long list of VCR buttons
+		createVCRbuttons();
+
+		// and the current time label
+		// Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
+		// GridData timeGrid = new GridData(GridData.FILL_HORIZONTAL);
+		// timeContainer.setLayoutData(timeGrid);
+		//		
+		// FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
+		// timeContainer.setLayout(timeFiller);
+
+		_timeLabel = new Label(_wholePanel, SWT.NONE);
+		GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
+		_timeLabel.setLayoutData(labelGrid);
+		_timeLabel.setAlignment(SWT.CENTER);
+		_timeLabel.setText("--------------------------");
+		// _timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended", 16,
+		// SWT.NONE));
+		_timeLabel.setFont(new Font(Display.getDefault(), "Arial", 16, SWT.NONE));
+		_timeLabel.setForeground(new Color(Display.getDefault(), 33, 255, 22));
+		_timeLabel.setBackground(new Color(Display.getDefault(), 0, 0, 0));
+
+		// next create the time slider holder
+		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
+		GridData sliderGrid = new GridData(GridData.FILL_HORIZONTAL);
+		_tNowSlider.setLayoutData(sliderGrid);
+		_tNowSlider.setMinimum(0);
+		_tNowSlider.setMaximum(100);
+		_tNowSlider.addSelectionListener(new SelectionListener()
+		{
+			public void widgetSelected(SelectionEvent e)
+			{
+				if (!_alreadyProcessingChange)
+				{
+					_alreadyProcessingChange = true;
+					int index = _tNowSlider.getSelection();
+					HiResDate newDTG = _slideManager.fromSliderUnits(index, _dtgRangeSlider
+							.getStepSize());
+					fireNewTime(newDTG);
+					_alreadyProcessingChange = false;
+				}
+			}
+
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+		});
+
+		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
+
+		_dtgRangeSlider = new DTGBiSlider(_wholePanel)
+		{
+			public void rangeChanged(TimePeriod period)
+			{
+				super.rangeChanged(period);
+
+				selectPeriod(period);
+			}
+
+		};
+		if (_defaultSliderResolution != null)
+			_dtgRangeSlider.setStepSize(_defaultSliderResolution.intValue());
+
+		// hmm, do we have a default step size for the slider?
+
+		GridData biGrid = new GridData(GridData.FILL_BOTH);
+		_dtgRangeSlider.getControl().setLayoutData(biGrid);
+	}
+
+	/**
+	 * 
+	 */
+	private void createVCRbuttons()
+	{
 		// first create the button holder
 		Composite _btnPanel = new Composite(_wholePanel, SWT.NONE);
 		GridData btnGrid = new GridData(GridData.FILL_HORIZONTAL);
@@ -277,65 +351,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		eFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCREnd.gif")
 				.createImage());
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
-
-		// and the current time label
-		// Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
-		// GridData timeGrid = new GridData(GridData.FILL_HORIZONTAL);
-		// timeContainer.setLayoutData(timeGrid);
-		//		
-		// FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
-		// timeContainer.setLayout(timeFiller);
-
-		_timeLabel = new Label(_wholePanel, SWT.NONE);
-		GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
-		_timeLabel.setLayoutData(labelGrid);
-		_timeLabel.setAlignment(SWT.CENTER);
-		_timeLabel.setText("--------------------------");
-		_timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended", 16, SWT.NONE));
-		_timeLabel.setForeground(new Color(Display.getDefault(), 33, 255, 22));
-		_timeLabel.setBackground(new Color(Display.getDefault(), 0, 0, 0));
-
-		// next create the time slider holder
-		_tNowSlider = new Scale(_wholePanel, SWT.NONE);
-		GridData sliderGrid = new GridData(GridData.FILL_HORIZONTAL);
-		_tNowSlider.setLayoutData(sliderGrid);
-		_tNowSlider.setMinimum(0);
-		_tNowSlider.setMaximum(100);
-		_tNowSlider.addSelectionListener(new SelectionListener()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				int index = _tNowSlider.getSelection();
-				HiResDate newDTG = _slideManager.fromSliderUnits(index, _dtgRangeSlider
-						.getStepSize());
-				fireNewTime(newDTG);
-			}
-
-			public void widgetDefaultSelected(SelectionEvent e)
-			{
-			}
-		});
-
-		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
-
-		_dtgRangeSlider = new DTGBiSlider(_wholePanel)
-		{
-			public void rangeChanged(TimePeriod period)
-			{
-				super.rangeChanged(period);
-
-				selectPeriod(period);
-			}
-
-		};
-		if (_defaultSliderResolution != null)
-			_dtgRangeSlider.setStepSize(_defaultSliderResolution.intValue());
-
-		// hmm, do we have a default step size for the slider?
-
-		GridData biGrid = new GridData(GridData.FILL_BOTH);
-		_dtgRangeSlider.getControl().setLayoutData(biGrid);
 	}
+
+	boolean _alreadyProcessingChange = false;
 
 	/**
 	 * user has selected a time period, indicate it to the controllable
@@ -387,7 +405,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						}
 						else
 						{
-							_tNowSlider.setSelection(_slideManager.toSliderUnits(currentDTG));
+							if (!_alreadyProcessingChange)
+								_tNowSlider.setSelection(_slideManager.toSliderUnits(currentDTG));
 						}
 
 						// did we have to move them?
@@ -975,6 +994,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private void timeUpdated(final HiResDate newDTG)
 	{
+
 		if (newDTG != null)
 		{
 			if (!_timeLabel.isDisposed())
@@ -990,16 +1010,20 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 						_timeLabel.setText(newVal);
 
-						// there's a (slim) chance that the temp dataset has already been
-						// cleared, or
-						// hasn't been caught yet. just check we still know about it
-						if (_myTemporalDataset != null)
+						if (!_alreadyProcessingChange)
 						{
-							TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
-							if (dataPeriod != null)
+
+							// there's a (slim) chance that the temp dataset has already been
+							// cleared, or
+							// hasn't been caught yet. just check we still know about it
+							if (_myTemporalDataset != null)
 							{
-								int newIndex = _slideManager.toSliderUnits(newDTG);
-								_tNowSlider.setSelection(newIndex);
+								TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
+								if (dataPeriod != null)
+								{
+									int newIndex = _slideManager.toSliderUnits(newDTG);
+									_tNowSlider.setSelection(newIndex);
+								}
 							}
 						}
 					}
