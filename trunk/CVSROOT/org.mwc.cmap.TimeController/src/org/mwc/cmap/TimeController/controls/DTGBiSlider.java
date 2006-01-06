@@ -71,6 +71,8 @@ public class DTGBiSlider
 		CalendarDateSuite suite = new CalendarDateSuite();
 		_dateModel = suite.createDataModel(yearAgo, yearFromNow, threeMonthesAgo,
 				fourMonthesFromNow);
+//		_dateModel.setSegmentCount(3);
+//		_dateModel.setSegmentLength(1000* 60 * 60);
 
 		// sort out the UI model
 		_uiModel = (DefaultBiSliderUIModel) suite.createUIModel();
@@ -79,7 +81,7 @@ public class DTGBiSlider
 		_uiModel.setHasLabelsAboveOrLeft(true);
 		_uiModel.setHasLabelsBelowOrRight(false);
 		
-		_uiModel.setLabelInsets(70);
+		_uiModel.setLabelInsets(50);
 		_uiModel.setNonLabelInsets(20);
 		
 		
@@ -90,7 +92,7 @@ public class DTGBiSlider
 			{
 				// ok, convert to date
 				long millis = (long) value;
-				String res = FormatRNDateTime.toString(millis);
+				String res = FormatRNDateTime.toMediumString(millis);
 				return res;
 			}
 		});
@@ -124,8 +126,6 @@ public class DTGBiSlider
 		// great, now it's ready for the actual BiSlider control
 		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel,
 				_uiModel);
-
-
 	}
 
 	public Composite getControl()
@@ -143,7 +143,7 @@ public class DTGBiSlider
 		_dateModel.setTotalRange(firstDate, lastDate);
 
 		// try for units of 10 * the current step
-		_dateModel.setSegmentCount(10);
+//		_dateModel.setSegmentCount(10);
 	}
 
 	/**
@@ -199,4 +199,8 @@ public class DTGBiSlider
 		_stepSize = size;
 	}
 
+	public void setSegmentSize(long size)
+	{
+		_dateModel.setSegmentLength(size);
+	}
 }
