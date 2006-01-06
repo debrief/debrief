@@ -1,9 +1,6 @@
 package com.borlander.rac353542.bislider.impl;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.FontData;
-import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
 class Util {
@@ -27,6 +24,7 @@ class Util {
             return new Font(Display.getCurrent(), fontData);
         }
         FontData theOnly = fontData[0];
-        return new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.BOLD);
+//        return new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.BOLD);
+        return new Font(Display.getCurrent(), theOnly.getName(), 8, theOnly.getStyle());
     }
 }
