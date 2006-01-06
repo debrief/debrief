@@ -81,7 +81,7 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Dis
     }
     
     public Point getPointerBasePoint(){
-        return getMapper().value2pixel(getDataModelUserValue(), !myMinNotMax);        
+        return getMapper().value2pixel(getDataModelUserValue(), myMinNotMax);        
     }
 
     public void paintPointer(GC gc) {
