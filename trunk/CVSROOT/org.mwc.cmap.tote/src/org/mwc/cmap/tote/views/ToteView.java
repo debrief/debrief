@@ -3,7 +3,7 @@ package org.mwc.cmap.tote.views;
 import java.beans.*;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -12,6 +12,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
@@ -212,14 +213,24 @@ public class ToteView extends ViewPart
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// ok, stop listening to this object (just in case we were, anyway).
-						_myTemporalDataset.removeListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-						// was it our one?
-						if (_myTemporalDataset == part)
+						if (_myTemporalDataset != null)
 						{
-							_myTemporalDataset = null;
+							// ok, stop listening to this object (just in case we were,
+							// anyway).
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+							// was it our one?
+							if (_myTemporalDataset == part)
+							{
+								_myTemporalDataset = null;
+							}
+						}
+						else
+						{
+							CorePlugin.logError(Status.WARNING,
+									"Temporal dataset has already been removed whilst closing ToteView",
+									null);
 						}
 
 					}
