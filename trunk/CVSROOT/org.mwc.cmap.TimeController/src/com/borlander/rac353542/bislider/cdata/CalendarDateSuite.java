@@ -14,6 +14,12 @@ import com.borlander.rac353542.bislider.*;
 public class CalendarDateSuite {
     private static final DateFormat ourDateFormat = DateFormat.getDateInstance();
 
+    /** utility object used for converting between dates & millis
+     * 
+     */
+    private static final Calendar _myCalendar = Calendar.getInstance();
+
+    
     public CalendarDateModel createDataModel(Date totalMin, Date totalMax, Date userMin, Date userMax) {
         CalendarDateModel result = new CalendarDateModel();
         result.setTotalRange(totalMin, totalMax);
@@ -72,8 +78,21 @@ public class CalendarDateSuite {
         }
 
         public void setTotalRange(Date minimum, Date maximum) {
+        		// right, update the min & max values
             setTotalObjectRange(minimum, maximum);
+            
+            // ok, we now know the step size.  trim the start/end times to these values
+            // ok, sort out the size of segments to use
             rescaleSegments(maximum.getTime() - minimum.getTime());
+            long scaleStep = (long)getSegmentLength();
+            
+            // work out the start-time trimmed to our segment size (so the time-slider starts
+            // on a whole figure
+            _myCalendar.setTimeInMillis((minimum.getTime() / scaleStep) * scaleStep);
+            
+            // and send out another update...
+            setTotalObjectRange(_myCalendar.getTime(), maximum);
+            
         }
         
 
@@ -88,14 +107,16 @@ public class CalendarDateSuite {
 
           // find the range we are working in
           int counter = 0;
-          while ((counter < _limits.length) &&
+          while ((counter < _limits.length - 1) &&
             (timeRange > _limits[counter].upper_limit))
           {
             counter++;
           }    	
           
+          // cool, which is the respective step size
           scaleStep = _limits[counter].increment;
           
+          // ok, update the GUI
           setSegmentLength(scaleStep);
         }
         
@@ -157,59 +178,20 @@ public class CalendarDateSuite {
      */
     public static DataObjectMapper CALENDAR_DATE = new DataObjectMapper() {
 
-
-      private final Calendar myCalendar = Calendar.getInstance();
-
       public Object double2object(double value) {
-          myCalendar.setTimeInMillis(Math.round(value));
-//          setToMidnight();
-          return myCalendar.getTime();
+          _myCalendar.setTimeInMillis(Math.round(value));
+          return _myCalendar.getTime();
       }
 
       public double object2double(Object object) {
-          myCalendar.setTime((Date) object);
-//          setToMidnight();
-          return myCalendar.getTimeInMillis();
+          _myCalendar.setTime((Date) object);
+          return _myCalendar.getTimeInMillis();
       }
 
-//      private void setToMidnight() {
-//          myCalendar.set(Calendar.HOUR, 0);
-//          myCalendar.set(Calendar.AM_PM, Calendar.AM);
-//          myCalendar.set(Calendar.MINUTE, 0);
-//          myCalendar.set(Calendar.SECOND, 0);
-//          myCalendar.set(Calendar.MILLISECOND, 0);
-//      }
-      
       public double getPrecision() {
           return 1000 * 30;
-//          return 1000 * 60 * 60 * 24;
       }    	
     	
-//        private final Calendar myCalendar = Calendar.getInstance();
-//
-//        public Object double2object(double value) {
-//            myCalendar.setTimeInMillis(Math.round(value));
-//            setToMidnight();
-//            return myCalendar.getTime();
-//        }
-//
-//        public double object2double(Object object) {
-//            myCalendar.setTime((Date) object);
-//            setToMidnight();
-//            return myCalendar.getTimeInMillis();
-//        }
-//
-//        private void setToMidnight() {
-//            myCalendar.set(Calendar.HOUR, 0);
-//            myCalendar.set(Calendar.AM_PM, Calendar.AM);
-//            myCalendar.set(Calendar.MINUTE, 0);
-//            myCalendar.set(Calendar.SECOND, 0);
-//            myCalendar.set(Calendar.MILLISECOND, 0);
-//        }
-//        
-//        public double getPrecision() {
-//            return 1000 * 60 * 60 * 24;
-//        }
     };
     
 }
