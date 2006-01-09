@@ -43,7 +43,6 @@ public class RightClickPasteAdaptor
 				{
 					// extract the plottable
 					Editable[] theDataList = (Editable[]) tr;
-					Editable theData = theDataList[0];
 					PasteItem paster = null;
 
 					// see if all of the selected items are layers - or not
