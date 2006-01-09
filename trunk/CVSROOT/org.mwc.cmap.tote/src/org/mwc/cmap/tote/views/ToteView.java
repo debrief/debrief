@@ -106,7 +106,6 @@ public class ToteView extends ViewPart
 	private CalculationLoaderManager _loader;
 
 	private ToteLabelProvider _labelProvider;
-
 	/**
 	 * The constructor.
 	 */
@@ -127,8 +126,9 @@ public class ToteView extends ViewPart
 		_tableViewer = new TableViewer(createTableWithColumns(parent));
 		_content = new ToteContentProvider();
 		_tableViewer.setContentProvider(_content);
-		_labelProvider = new ToteLabelProvider();
+		_labelProvider = new ToteLabelProvider(parent.getFont());
 		_tableViewer.setLabelProvider(_labelProvider);
+		
 		_tableViewer.setInput(this);
 		// _tableViewer.setSorter(new NameSorter());
 
@@ -686,13 +686,40 @@ public class ToteView extends ViewPart
 		}
 	}
 
-	public class ToteLabelProvider implements ITableLabelProvider
+
+	public class ToteLabelProvider implements ITableLabelProvider, ITableFontProvider
 	{
 		/**
 		 * the DTG we're updating for.
 		 */
 		private HiResDate _theDTG;
 
+		/** remember the fonts we're going to use
+		 * Start off with the font for secondary tracks
+		 */
+		private final Font secondaryFont;
+		
+		/** and now the font for the primary track
+		 * 
+		 */
+		private final Font primaryFont;
+		
+		/** constructor - base the primary /secondary fonts on the supplied font
+		 * 
+		 * @param coreFont the font to base ourselves upon
+		 */
+		public ToteLabelProvider(Font coreFont)
+		{
+			// ok, just take a copy for the sec font
+			secondaryFont = coreFont;
+			
+			// but now generate a changed font for the primary
+      FontData[] fontData = secondaryFont.getFontData();
+      FontData theOnly = fontData[0];      
+      primaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.BOLD);
+			
+		}		
+		
 		/**
 		 * store the new DTG (ready for our updates)
 		 * 
@@ -708,6 +735,19 @@ public class ToteView extends ViewPart
 			return null;
 		}
 
+		
+		public Font getFont(Object element, int columnIndex)
+		{
+			final Font res;
+			// hmm, is it in Col 0 (calc title), or Col 1 (primary track)
+			if(columnIndex <= 1)
+				res = primaryFont;
+			else
+				res = secondaryFont;
+			
+			return res;
+		}
+		
 		public String getColumnText(Object element, int columnIndex)
 		{
 			String res = null;
@@ -793,6 +833,7 @@ public class ToteView extends ViewPart
 		public void removeListener(ILabelProviderListener listener)
 		{
 		}
+
 
 	}
 
