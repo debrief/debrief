@@ -18,7 +18,7 @@ public class PreferenceInitializer extends AbstractPreferenceInitializer {
 	public void initializeDefaultPreferences() {
 		IPreferenceStore store = TimeControllerPlugin.getDefault()
 				.getPreferenceStore();
-		store.setDefault(PreferenceConstants.P_STRING,"hh:mm:ss");
+		store.setDefault(PreferenceConstants.P_STRING,"HH:mm:ss");
 	}
 
 }
