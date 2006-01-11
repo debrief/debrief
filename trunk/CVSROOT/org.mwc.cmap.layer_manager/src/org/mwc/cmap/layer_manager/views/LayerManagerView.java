@@ -91,6 +91,12 @@ public class LayerManagerView extends ViewPart
 
 	protected TrackManager _theTrackDataListener;
 
+	
+	/** whether we are already ignoring firing messages
+	 * 
+	 */
+	private static boolean _alreadyDeferring = false;	
+
 	/**
 	 * class that embodies applying an operation to a series of selected points.
 	 * the series of points are remembered, so that they can be undone/redone
@@ -965,8 +971,6 @@ public class LayerManagerView extends ViewPart
 			}
 		}
 	}
-
-	private static boolean _alreadyDeferring = false;
 
 	private static Set _pendingLayers = new TreeSet(new Comparator()
 	{
