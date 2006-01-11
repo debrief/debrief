@@ -3,7 +3,9 @@ package org.mwc.debrief.core;
 import org.eclipse.ui.plugin.*;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
+import org.mwc.debrief.core.ContextOperations.*;
 import org.osgi.framework.BundleContext;
 import java.util.*;
 
@@ -30,7 +32,14 @@ public class CorePlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		
+		// sort out export to WMF
 		ExportWMF.init(org.mwc.cmap.core.CorePlugin.getToolParent());
+		
+		// also provide some extra functionality to the right-click editor
+		RightClickSupport.addRightClickGenerator(new GenerateTrack());
+		RightClickSupport.addRightClickGenerator(new InterpolateTrack());
+		
+		
 		
 	}
 
