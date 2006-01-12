@@ -3,14 +3,9 @@
  */
 package org.mwc.cmap.core.DataTypes.Temporal;
 
-import java.beans.PropertyChangeListener;
-import java.beans.PropertyChangeSupport;
+import java.beans.*;
 
-import org.eclipse.core.runtime.Status;
-import org.mwc.cmap.core.CorePlugin;
-
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.TimePeriod;
+import MWC.GenericData.*;
 
 /**
  * @author ian.mayo
@@ -41,17 +36,6 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 */
 	public void setTime(Object origin, HiResDate newDate, boolean fireUpdate)
 	{
-		// are we managing our own time period?
-		if (_timePeriod != null)
-		{
-			if (!_timePeriod.contains(newDate))
-			{
-				// bugger. it's outside the time period
-				// throw a wobbly
-				CorePlugin.logError(Status.ERROR, "New time outside data period", null);
-			}
-		}
-
 		// ok. remember the old time (if we have one)
 		HiResDate oldTime = null;
 		if (_currentTime != null)
