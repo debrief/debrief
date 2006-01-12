@@ -1,14 +1,12 @@
 package org.mwc.cmap.core.operations;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.*;
 import org.eclipse.core.runtime.*;
-import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.Layers;
 import MWC.GUI.Tools.Action;
 
-public class DebriefActionWrapper extends AbstractOperation
+public class DebriefActionWrapper extends CMAPOperation
 {
 
 	final private Action _myAction;
@@ -24,10 +22,7 @@ public class DebriefActionWrapper extends AbstractOperation
 		super(theAction.toString());
 		
 		_myLayers = theLayers;
-		
-		// put in the global context, for some reason
-		super.addContext(CorePlugin.CMAP_CONTEXT);
-		
+
 		_myAction = theAction;
 	}
 	
