@@ -7,7 +7,7 @@ import java.awt.Color;
 import java.util.*;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.*;
+import org.eclipse.core.commands.operations.IUndoableOperation;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
 import org.mwc.cmap.core.CorePlugin;
@@ -16,7 +16,6 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 
 import Debrief.Wrappers.*;
 import MWC.GUI.*;
-import MWC.GUI.Editable.editableTesterSupport;
 import MWC.GUI.Shapes.*;
 import MWC.GenericData.*;
 import MWC.TacticalData.*;

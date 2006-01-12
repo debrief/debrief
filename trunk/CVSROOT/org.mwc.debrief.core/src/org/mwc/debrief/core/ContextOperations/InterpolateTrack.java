@@ -17,7 +17,9 @@ import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
 import MWC.GUI.*;
 import MWC.GUI.Properties.TimeStepPropertyEditor;
-import MWC.GenericData.HiResDate;
+import MWC.GenericData.*;
+import MWC.TacticalData.*;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * @author ian.mayo
@@ -153,11 +155,14 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 				}
 			}
 
-			// right, now add the fixes
-			for (Iterator iter = _newFixes.iterator(); iter.hasNext();)
+			if(_newFixes != null)
 			{
-				FixWrapper fix = (FixWrapper) iter.next();
-				_track.add(fix);
+				// right, now add the fixes
+				for (Iterator iter = _newFixes.iterator(); iter.hasNext();)
+				{
+					FixWrapper fix = (FixWrapper) iter.next();
+					_track.add(fix);
+				}
 			}
 
 			// ok, switch off interpolation
@@ -189,4 +194,60 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		}
 	}
 
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val)
+		{
+			super(val);
+		}
+
+		public final void testInterpolate()
+		{
+			Layers theLayers = new Layers();
+			TrackWrapper track = new TrackWrapper();
+			Track trk = new Track();
+			track.setTrack(trk);
+			track.setName("Trk");
+			theLayers.addThisLayer(track);
+			
+			for(int i=0;i<3;i++)
+			{
+				WorldLocation thisLoc = new WorldLocation(0,i,'N',0,0,'W', 0);
+				Calendar cal = Calendar.getInstance();
+				cal.setTimeInMillis(0);
+				cal.set(2005, 6, 6, 12, i * 5,0);			
+				Fix newFix = new Fix(new HiResDate(cal.getTime()), thisLoc, 0, 0);
+			
+				FixWrapper sw = new FixWrapper(newFix);
+				track.add(sw);
+			}
+			
+			// ok, now do the interpolation
+			InterpolateTrackOperation ct = new InterpolateTrackOperation("convert it", theLayers, track,
+					"1 min", 60 * 1000 * 1000);
+			
+			// check we're starting with the right number of items
+			assertEquals("starting with right number", 3, track.numFixes());
+			
+			
+			try
+			{
+				ct.execute(null, null);
+			}
+			catch (ExecutionException e)
+			{
+				fail("Exception thrown");
+			}
+			
+			 // check we've got the right number of fixes
+			assertEquals("right num of fixes generated", track.numFixes(), 11);
+
+		}
+	}	
 }
