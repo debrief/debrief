@@ -19,7 +19,6 @@ import MWC.GUI.*;
 import MWC.GUI.Properties.TimeStepPropertyEditor;
 import MWC.GenericData.*;
 import MWC.TacticalData.*;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * @author ian.mayo

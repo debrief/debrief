@@ -312,11 +312,11 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 		int index = DateFormatPropertyEditor.getIndexOf(format);
 
 		// ok, what's the index
-		if (index == DateFormatPropertyEditor.INVALID_INDEX)
-		{
-			// bugger, didn't find it.
-			index = 0;
-		}
+//		if (index == DateFormatPropertyEditor.INVALID_INDEX)
+//		{
+//			// bugger, didn't find it.
+//			index = 0;
+//		}
 
 		// ok, sorted.
 		_dtgFormat = new Integer(index);
