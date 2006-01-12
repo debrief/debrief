@@ -143,7 +143,9 @@ public class CalendarDateSuite {
               new Label_Limit(ONE_HOUR * 8,            ONE_HOUR),         // 5
               new Label_Limit(ONE_HOUR * 13,            ONE_HOUR * 2),         // 6
               new Label_Limit(ONE_HOUR * 72,            ONE_HOUR * 12),       // 7
-              new Label_Limit(ONE_DAY * 15,            ONE_DAY)               // 8
+              new Label_Limit(ONE_DAY * 15,            ONE_DAY),               // 8
+              new Label_Limit(ONE_DAY * 15,            ONE_DAY * 30),               // 8
+              new Label_Limit(ONE_DAY * 32,            ONE_DAY * 60)               // 8
           		};
 
           // and now store the array in our local variable
