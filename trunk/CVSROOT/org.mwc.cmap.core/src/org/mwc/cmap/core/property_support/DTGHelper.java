@@ -28,9 +28,9 @@ public class DTGHelper extends EditorHelper
 
 	protected final static String DATE_FORMAT_DEFN = "dd/MMM/yyyy";
 
-	protected final static String LONG_TIME_FORMAT_DEFN = "hh:mm:ss";
+	protected final static String LONG_TIME_FORMAT_DEFN = "HH:mm:ss";
 
-	protected final static String SHORT_TIME_FORMAT_DEFN = "hh:mm";
+	protected final static String SHORT_TIME_FORMAT_DEFN = "HH:mm";
 
 	protected final static String UNSET = "unset";
 
