@@ -2,8 +2,11 @@ package org.mwc.cmap.core.property_support;
 
 import java.beans.*;
 import java.lang.reflect.Method;
+import java.util.*;
 
-import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.dnd.Clipboard;
 import org.mwc.cmap.core.CorePlugin;
@@ -16,6 +19,25 @@ public class RightClickSupport
 {
 
 	/**
+	 * list of actions to be added to context-menu on right-click
+	 */
+	private static Vector _additionalRightClickItems = null;
+
+	/**
+	 * add a right-click generator item to the list we manage
+	 * 
+	 * @param generator
+	 *          the generator to add...
+	 */
+	public static void addRightClickGenerator(RightClickContextItemGenerator generator)
+	{
+		if (_additionalRightClickItems == null)
+			_additionalRightClickItems = new Vector(1, 1);
+
+		_additionalRightClickItems.add(generator);
+	}
+
+	/**
 	 * @param manager
 	 * @param hideClipboardOperations
 	 *          TODO
@@ -26,21 +48,17 @@ public class RightClickSupport
 			boolean hideClipboardOperations)
 	{
 
-//		if (editables.length == 0)
-//			return;
-
-		
 		// sort out the top level layer, if we have one
 		Layer theTopLayer = null;
-		if(topLevelLayers != null)
-			if(topLevelLayers.length > 0)
-				theTopLayer = topLevelLayers[0];		
-		
+		if (topLevelLayers != null)
+			if (topLevelLayers.length > 0)
+				theTopLayer = topLevelLayers[0];
+
 		// and now the editable bits
 		Editable p = null;
-		if(editables.length > 0)
+		if (editables.length > 0)
 		{
-			p = editables[0];		
+			p = editables[0];
 			EditorType editor = p.getInfo();
 			MenuManager subMenu = null;
 
@@ -49,7 +67,6 @@ public class RightClickSupport
 			for (int i = 0; i < pd.length; i++)
 			{
 				PropertyDescriptor thisP = pd[i];
-
 
 				// start off with the booleans
 				if (supportsBooleanEditor(thisP))
@@ -69,23 +86,8 @@ public class RightClickSupport
 					}
 				}
 
-			}			
+			}
 		}
-
-	
-
-		// that's this item done. Now see if there are any child elements
-		// if ((p instanceof Layer)&& (!hideClipboardOperations))
-		// {
-		// Layer thisL = (Layer) p;
-		// Enumeration enumer = thisL.elements();
-		// while (enumer.hasMoreElements())
-		// {
-		// Plottable pl = (Plottable) enumer.nextElement();
-		// getDropdownListFor(subMenu, pl.getInfo(), topLevelLayer, theLayers,
-		// true);
-		// }
-		// }
 
 		Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
 
@@ -98,18 +100,24 @@ public class RightClickSupport
 					topLevelLayers, theLayers, theClipboard);
 
 			// what about paste?
-			// - we can only paste into a single destination, so only allow this if
-			// there's just one selected
-		//	if (editables.length == 1)
-		//	{
-				Editable selectedItem = null;
-				if(editables.length == 1)
-				{
-					selectedItem = editables[0];
-				}
-				RightClickPasteAdaptor.getDropdownListFor(manager, selectedItem, topLevelLayers,
-						topLevelLayers, theLayers, theClipboard);
-	//		}
+			Editable selectedItem = null;
+			if (editables.length == 1)
+			{
+				selectedItem = editables[0];
+			}
+			RightClickPasteAdaptor.getDropdownListFor(manager, selectedItem, topLevelLayers,
+					topLevelLayers, theLayers, theClipboard);
+		}
+
+		// hmm, do we have any right-click generators?
+		if (_additionalRightClickItems != null)
+		{
+			for (Iterator thisItem = _additionalRightClickItems.iterator(); thisItem.hasNext();)
+			{
+				RightClickContextItemGenerator thisGen = (RightClickContextItemGenerator) thisItem
+						.next();
+				thisGen.generate(manager, theLayers, topLevelLayers, editables);
+			}
 		}
 	}
 
@@ -196,19 +204,19 @@ public class RightClickSupport
 			MenuManager subMenu, final PropertyDescriptor thisP, final Editable p,
 			final Layers theLayers, final Layer topLevelLayer)
 	{
-		boolean currentVal = false;
 
-		// get the current value
+		boolean currentVal = false;
+		final Method getter = thisP.getReadMethod();
+		final Method setter = thisP.getWriteMethod();
 		try
 		{
-			Method getter = thisP.getReadMethod();
-			Object val = getter.invoke(p, null);
-			currentVal = ((Boolean) val).booleanValue();
+			final Boolean valNow = (Boolean) getter.invoke(p, null);
+			currentVal = valNow.booleanValue();
 		}
 		catch (Exception e)
 		{
-			CorePlugin
-					.logError(IStatus.INFO, "While generating boolean editor for:" + thisP, e);
+			CorePlugin.logError(Status.ERROR,
+					"Failed to retrieve old value for:" + p.getName(), e);
 		}
 
 		IAction changeThis = new Action(thisP.getDisplayName(), IAction.AS_CHECK_BOX)
@@ -217,12 +225,10 @@ public class RightClickSupport
 			{
 				try
 				{
-					Method setter = thisP.getWriteMethod();
-					Object args[] = { new Boolean(isChecked()) };
-					setter.invoke(p, args);
+					ListPropertyAction la = new ListPropertyAction(thisP.getDisplayName(), p,
+							getter, setter, new Boolean(isChecked()), theLayers, topLevelLayer);
 
-					// and update the update
-					theLayers.fireReformatted(topLevelLayer);
+					CorePlugin.run(la);
 				}
 				catch (Exception e)
 				{
@@ -286,7 +292,7 @@ public class RightClickSupport
 			MenuManager thisChoice = new MenuManager(thisP.getDisplayName());
 
 			// sort out the setter details
-			Method getter = thisP.getReadMethod();
+			final Method getter = thisP.getReadMethod();
 
 			// get the current value
 			Object val = null;
@@ -318,11 +324,13 @@ public class RightClickSupport
 						try
 						{
 							Method setter = thisP.getWriteMethod();
-							Object args[] = { thisValue };
-							setter.invoke(p, args);
 
-							// and update the update
-							theLayers.fireReformatted(topLevelLayer);
+							// ok, place the change in the action
+							ListPropertyAction la = new ListPropertyAction(thisP.getDisplayName(), p,
+									getter, setter, thisValue, theLayers, topLevelLayer);
+
+							// and add it to the history
+							CorePlugin.run(la);
 						}
 						catch (Exception e)
 						{
@@ -358,4 +366,129 @@ public class RightClickSupport
 		return subMenu;
 	}
 
+	/**
+	 * template provide by support units that want to add items to the right-click
+	 * menu when something is selected
+	 * 
+	 * @author ian.mayo
+	 */
+	public static interface RightClickContextItemGenerator
+	{
+		public void generate(IMenuManager parent, Layers theLayers, Layer[] parentLayers,
+				Editable[] subjects);
+	}
+
+	/**
+	 * embedded class to store a property change in an action
+	 * 
+	 * @author ian.mayo
+	 */
+	private static class ListPropertyAction extends AbstractOperation
+	{
+		private Object _oldValue;
+
+		private final Method _setter;
+
+		private final Layers _layers;
+
+		private final Layer _parentLayer;
+
+		private final Editable _subject;
+
+		private final Object _newValue;
+
+		public ListPropertyAction(final String propertyName, final Editable subject,
+				final Method getter, final Method setter, final Object newValue,
+				final Layers layers, final Layer parentLayer)
+		{
+			super(propertyName + " for " + subject.getName());
+
+			_setter = setter;
+			_layers = layers;
+			_parentLayer = parentLayer;
+			_subject = subject;
+			_newValue = newValue;
+
+			try
+			{
+				_oldValue = getter.invoke(subject, null);
+			}
+			catch (Exception e)
+			{
+				CorePlugin.logError(Status.ERROR, "Failed to retrieve old value for:"
+						+ _subject.getName(), e);
+			}
+
+			// put in the global context, for some reason
+			super.addContext(CorePlugin.CMAP_CONTEXT);
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			IStatus res = Status.OK_STATUS;
+			try
+			{
+				_setter.invoke(_subject, new Object[] { _newValue });
+			}
+			catch (Exception e)
+			{
+				CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
+						+ _subject.getName(), e);
+				res = null;
+			}
+
+			// and tell everybody
+			fireUpdate();
+			return res;
+		}
+
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			IStatus res = Status.OK_STATUS;
+			try
+			{
+				_setter.invoke(_subject, new Object[] { _newValue });
+			}
+			catch (Exception e)
+			{
+				CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
+						+ _subject.getName(), e);
+				res = null;
+			}
+
+			// and tell everybody
+			fireUpdate();
+
+			return res;
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			IStatus res = Status.OK_STATUS;
+			try
+			{
+				_setter.invoke(_subject, new Object[] { _oldValue });
+			}
+			catch (Exception e)
+			{
+				CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
+						+ _subject.getName(), e);
+				res = null;
+			}
+
+			// and tell everybody
+			fireUpdate();
+
+			return res;
+		}
+
+		private void fireUpdate()
+		{
+			_layers.fireModified(_parentLayer);
+		}
+
+	}
 }
