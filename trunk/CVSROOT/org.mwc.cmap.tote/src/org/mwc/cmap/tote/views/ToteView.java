@@ -3,7 +3,7 @@ package org.mwc.cmap.tote.views;
 import java.beans.*;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.IConfigurationElement;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -12,7 +12,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
@@ -226,13 +225,6 @@ public class ToteView extends ViewPart
 								_myTemporalDataset = null;
 							}
 						}
-						else
-						{
-							CorePlugin.logError(Status.WARNING,
-									"Temporal dataset has already been removed whilst closing ToteView",
-									null);
-						}
-
 					}
 				});
 
