@@ -7,9 +7,9 @@ import MWC.GenericData.HiResDate;
 
 abstract class SliderRangeManagement
 {
-	
-	/** the start time - used as an offset
-	 * 
+
+	/**
+	 * the start time - used as an offset
 	 */
 	private HiResDate _startTime;
 
@@ -26,17 +26,16 @@ abstract class SliderRangeManagement
 
 	public abstract void setEnabled(boolean val);
 
-
 	public void resetRange(HiResDate min, HiResDate max)
 	{
 		if ((min != null) && (max != null))
 		{
 			// ok - store the start time
 			_startTime = min;
-			
+
 			// yes - initialise the ranges
 			long range = max.getMicros() - min.getMicros();
-			
+
 			int maxVal = 100;
 
 			if (range > 0)
@@ -87,15 +86,16 @@ abstract class SliderRangeManagement
 				}
 				smallTick = NUM_MILLIS_FOR_STEP;
 				largeTick = smallTick * 10;
-				
-				// hmm, try to trim down the size of the large ticks, we don't want too many do we?
-				while(largeTick < (maxVal/50))
+
+				// hmm, try to trim down the size of the large ticks, we don't want too
+				// many do we?
+				while (largeTick < (maxVal / 50))
 				{
 					largeTick *= 10;
 				}
 
-				setTickSize(smallTick, largeTick, dragSize);			
-				
+				setTickSize(smallTick, largeTick, dragSize);
+
 				// ok, we've finished updating the form. back to normal processing
 				// _updatingForm = false;
 			}
@@ -104,16 +104,21 @@ abstract class SliderRangeManagement
 
 	public int toSliderUnits(HiResDate now)
 	{
-		int res = 0;
-		long offset = now.getMicros() - _startTime.getMicros();
-
-		if (!_useMicros)
+		int res = -1;
+		
+		// do we know our start time?
+		if (_startTime != null)
 		{
-			offset /= 1000000;
+			long offset = now.getMicros() - _startTime.getMicros();
+
+			if (!_useMicros)
+			{
+				offset /= 1000000;
+			}
+
+			res = (int) offset;
 		}
-
-		res = (int) offset;
-
+		
 		return res;
 
 	}
@@ -136,7 +141,7 @@ abstract class SliderRangeManagement
 
 		// re-apply the offset
 		long newDate = _startTime.getMicros() + newValue;
-		
+
 		// and trim the resulting value
 		newDate = (newDate / sliderResolution) * sliderResolution;
 
