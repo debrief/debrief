@@ -987,24 +987,25 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	// //////////////////////////////
 	// temporal data management
 	// //////////////////////////////
-
+	
 	/**
 	 * the data we are looking at has updated. If we're set to follow that time,
 	 * update ourselves
 	 */
 	private void timeUpdated(final HiResDate newDTG)
 	{
-
 		if (newDTG != null)
 		{
 			if (!_timeLabel.isDisposed())
 			{
-
 				// updating the text items has to be done in the UI thread. make it so
-				Display.getDefault().asyncExec(new Runnable()
+				// note - we use 'syncExec'. When we were using asyncExec, we would have a back-log 
+				// of events waiting to fire.
+				
+				Runnable nextEvent = new Runnable()
 				{
 					public void run()
-					{
+					{					
 						// display the correct time.
 						String newVal = getFormattedDate(newDTG);
 
@@ -1022,12 +1023,20 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 								if (dataPeriod != null)
 								{
 									int newIndex = _slideManager.toSliderUnits(newDTG);
-									_tNowSlider.setSelection(newIndex);
+									// did we find a valid time?
+									if(newIndex != -1)
+									{
+										// yes, go for it.
+										_tNowSlider.setSelection(newIndex);
+									}
 								}
 							}
 						}
 					}
-				});
+				};
+				
+				Display.getDefault().syncExec(nextEvent);
+
 			}
 		}
 		else
@@ -1410,8 +1419,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		menuManager.add(formatMenu);
 
 		// and now the date formats
-		Object[][] stepSizes = { { "1 sec", new Long(1000) },
-				{ "1 min", new Long(60 * 1000) }, { "15 min", new Long(15 * 60 * 1000) },
+		Object[][] stepSizes = { 
+				{ "1 sec", new Long(1000) },
+				{ "1 min", new Long(60 * 1000) }, 
+				{ "5 min", new Long(5 * 60 * 1000) },
+				{ "15 min", new Long(15 * 60 * 1000) },
 				{ "1 hour", new Long(60 * 60 * 1000) }, };
 
 		for (int i = 0; i < stepSizes.length; i++)
