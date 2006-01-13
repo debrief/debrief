@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.23  2006-01-03 14:03:33  Ian.Mayo
+// Revision 1.24  2006-01-13 15:22:25  Ian.Mayo
+// Minor refactoring, plus make sure we get the layers in sorted order (background & buffered before tracks)
+//
+// Revision 1.23  2006/01/03 14:03:33  Ian.Mayo
 // Better right-click support
 //
 // Revision 1.22  2005/12/12 09:07:14  Ian.Mayo
@@ -249,112 +252,16 @@ public class SWTChart extends PlainChart
 		super.canvasResized();
 	}
 
+	
 	/**
 	 * over-rideable member function which allows us to over-ride the canvas which
 	 * gets used.
 	 * 
 	 * @return the Canvas to use
 	 */
-	public SWTCanvas createCanvas(Composite parent)
+	public final SWTCanvas createCanvas(Composite parent)
 	{
-		return new SWTCanvas(parent)
-		{
-			private static final long serialVersionUID = 1L;
-
-			protected void fillContextMenu(MenuManager mmgr, Point scrPoint, WorldLocation loc)
-			{
-				// let the parent do it's stuff
-				super.fillContextMenu(mmgr, scrPoint, loc);
-
-				// ok, get a handle to our layers
-				Layers theData = getLayers();
-				double layerDist = -1;			
-		
-				// find the nearest editable item
-				ObjectConstruct vals = new ObjectConstruct();
-				int num = theData.size();
-				for (int i = 0; i < num; i++)
-				{
-					Layer thisL = theData.elementAt(i);
-					if (thisL.getVisible())
-					{
-						// find the nearest items, this method call will recursively pass down
-						// through
-						// the layers
-						RightClickEdit.findNearest(thisL, loc, vals);
-
-						if ((layerDist == -1) || (vals.distance < layerDist))
-						{
-							layerDist = vals.distance;
-						}
-					}
-				}				
-				
-
-				// ok, now retrieve the values produced by the range-finding algorithm
-				Plottable res = vals.object;
-				Layer theParent = vals.parent;
-				double dist = vals.distance;
-				Vector noPoints = vals.rangeIndependent;				
-				
-		    // see if this is in our dbl-click range
-		    if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y),
-		    											loc,
-		                          dist,
-		                          getProjection()))
-		    {
-		      // do nothing, we're all happy
-		    }
-		    else
-		    {
-		      res = null;
-		    }
-
-		    // have we found something editable?
-		    if (res != null)
-		    {
-		      // so get the editor
-		      Editable.EditorType e = res.getInfo();
-		      if (e != null)
-		      {
-						RightClickSupport.getDropdownListFor(mmgr, new Editable[]{res}, 
-								new Layer[]{theParent},
-								new Layer[]{theParent}, getLayers(), false);			
-						
-						// hmm, is it a fix.  if it is, also flash up the track
-						if(res instanceof FixWrapper)
-						{
-							// get the parent track
-							FixWrapper fix = (FixWrapper) res;
-							TrackWrapper parent = fix.getTrackWrapper();
-							RightClickSupport.getDropdownListFor(mmgr, new Editable[]{parent}, 
-									new Layer[]{theParent},
-									new Layer[]{theParent}, getLayers(), true);			
-						}
-		      }
-		    }
-		    else
-		    {
-		      // not found anything useful,
-		      // so edit just the projection
-					RightClickSupport.getDropdownListFor(mmgr, new Editable[]{getProjection()}, null, null, getLayers(), true);
-					
-					// also see if there are any other non-position-related items
-					if(noPoints != null)
-					{
-						// stick in a separator
-						mmgr.add(new Separator());
-						
-						for (Iterator iter = noPoints.iterator(); iter.hasNext();)
-						{
-							Plottable pl = (Plottable) iter.next();
-							RightClickSupport.getDropdownListFor(mmgr, new Editable[]{pl}, null, null, getLayers(), true);
-						}
-					}
-		    }
-			}
-			
-		};
+		return new CustomisedSWTCanvas(parent);
 	}
 
 	/**
@@ -448,16 +355,18 @@ public class SWTChart extends PlainChart
 				paintBackground(dest);
 
 				// ok, pass through the layers, repainting any which need it
-				final int len = _theLayers.size();
-				for (int i = 0; i < len; i++)
+				Enumeration numer = _theLayers.sortedElements();
+				while (numer.hasMoreElements())
 				{
-					final Layer thisLayer = _theLayers.elementAt(i);
+					final Layer thisLayer = (Layer) numer.nextElement();
 
 					boolean isAlreadyPlotted = false;
 
 					// just check if this layer is visible
 					if (thisLayer.getVisible())
 					{
+//						System.out.println("painting:" + thisLayer.getName());
+						
 						if (doubleBufferPlot())
 						{
 							// check we're plotting to a SwingCanvas, because we don't
@@ -786,5 +695,115 @@ public class SWTChart extends PlainChart
 		 */
 		abstract public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart);
 		
-	}	
+	}
+	
+
+	/** customised SWTCanvas class that supports our right-click editing
+	 * 
+	 * @author ian.mayo
+	 *
+	 */
+	private class CustomisedSWTCanvas extends SWTCanvas
+	{
+		private static final long serialVersionUID = 1L;
+
+		public CustomisedSWTCanvas(Composite parent)
+		{
+			super(parent);
+		}
+		
+		protected void fillContextMenu(MenuManager mmgr, Point scrPoint, WorldLocation loc)
+		{
+			// let the parent do it's stuff
+			super.fillContextMenu(mmgr, scrPoint, loc);
+
+			// ok, get a handle to our layers
+			Layers theData = getLayers();
+			double layerDist = -1;			
+	
+			// find the nearest editable item
+			ObjectConstruct vals = new ObjectConstruct();
+			int num = theData.size();
+			for (int i = 0; i < num; i++)
+			{
+				Layer thisL = theData.elementAt(i);
+				if (thisL.getVisible())
+				{
+					// find the nearest items, this method call will recursively pass down
+					// through
+					// the layers
+					RightClickEdit.findNearest(thisL, loc, vals);
+
+					if ((layerDist == -1) || (vals.distance < layerDist))
+					{
+						layerDist = vals.distance;
+					}
+				}
+			}				
+			
+
+			// ok, now retrieve the values produced by the range-finding algorithm
+			Plottable res = vals.object;
+			Layer theParent = vals.parent;
+			double dist = vals.distance;
+			Vector noPoints = vals.rangeIndependent;				
+			
+	    // see if this is in our dbl-click range
+	    if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y),
+	    											loc,
+	                          dist,
+	                          getProjection()))
+	    {
+	      // do nothing, we're all happy
+	    }
+	    else
+	    {
+	      res = null;
+	    }
+
+	    // have we found something editable?
+	    if (res != null)
+	    {
+	      // so get the editor
+	      Editable.EditorType e = res.getInfo();
+	      if (e != null)
+	      {
+					RightClickSupport.getDropdownListFor(mmgr, new Editable[]{res}, 
+							new Layer[]{theParent},
+							new Layer[]{theParent}, getLayers(), false);			
+					
+					// hmm, is it a fix.  if it is, also flash up the track
+					if(res instanceof FixWrapper)
+					{
+						// get the parent track
+						FixWrapper fix = (FixWrapper) res;
+						TrackWrapper parent = fix.getTrackWrapper();
+						RightClickSupport.getDropdownListFor(mmgr, new Editable[]{parent}, 
+								new Layer[]{theParent},
+								new Layer[]{theParent}, getLayers(), true);			
+					}
+	      }
+	    }
+	    else
+	    {
+	      // not found anything useful,
+	      // so edit just the projection
+				RightClickSupport.getDropdownListFor(mmgr, new Editable[]{getProjection()}, null, null, getLayers(), true);
+				
+				// also see if there are any other non-position-related items
+				if(noPoints != null)
+				{
+					// stick in a separator
+					mmgr.add(new Separator());
+					
+					for (Iterator iter = noPoints.iterator(); iter.hasNext();)
+					{
+						Plottable pl = (Plottable) iter.next();
+						RightClickSupport.getDropdownListFor(mmgr, new Editable[]{pl}, null, null, getLayers(), true);
+					}
+				}
+	    }
+		}
+	}
+		
 }
