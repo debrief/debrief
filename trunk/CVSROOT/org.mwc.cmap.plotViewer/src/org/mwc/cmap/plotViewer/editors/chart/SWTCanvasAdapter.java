@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.14  2005-09-13 10:58:53  Ian.Mayo
+// Revision 1.15  2006-01-17 10:28:13  Ian.Mayo
+// Better error management
+//
+// Revision 1.14  2005/09/13 10:58:53  Ian.Mayo
 // Make plot background color editable
 //
 // Revision 1.13  2005/09/08 11:01:42  Ian.Mayo
@@ -227,6 +230,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			catch (RuntimeException e)
 			{
 				CorePlugin.logError(Status.INFO, "Graphics library not found", e);
+				System.err.println("GDIplus graphics library not found");
 				_gdiAvailable = false;
 			}
 		}
