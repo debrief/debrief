@@ -20,6 +20,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
 import Debrief.Tools.Tote.*;
+import Debrief.Wrappers.FixWrapper;
 import MWC.GenericData.HiResDate;
 
 /**
@@ -614,8 +615,8 @@ public class ToteView extends ViewPart
 					// double-check that we haven't lost the table.
 					if (!_tableViewer.getTable().isDisposed())
 					{
-						_tableViewer.refresh(true);
 						_labelProvider.setDTG(newDTG);
+						_tableViewer.refresh(true);
 					}
 				}
 			});
@@ -689,12 +690,22 @@ public class ToteView extends ViewPart
 		/** remember the fonts we're going to use
 		 * Start off with the font for secondary tracks
 		 */
-		private final Font secondaryFont;
+		private final Font _secondaryFont;
 		
 		/** and now the font for the primary track
 		 * 
 		 */
-		private final Font primaryFont;
+		private final Font _primaryFont;
+		
+		/** and the font for interpolated data-sets
+		 * 
+		 */
+		private final Font _interpolatedSecondaryFont;
+		
+		/** and the font for interpolated data-sets
+		 * 
+		 */
+		private final Font _interpolatedPrimaryFont;
 		
 		/** constructor - base the primary /secondary fonts on the supplied font
 		 * 
@@ -703,12 +714,14 @@ public class ToteView extends ViewPart
 		public ToteLabelProvider(Font coreFont)
 		{
 			// ok, just take a copy for the sec font
-			secondaryFont = coreFont;
+			_secondaryFont = coreFont;
 			
 			// but now generate a changed font for the primary
-      FontData[] fontData = secondaryFont.getFontData();
+      FontData[] fontData = _secondaryFont.getFontData();
       FontData theOnly = fontData[0];      
-      primaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.BOLD);
+      _primaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.BOLD);
+      _interpolatedSecondaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.ITALIC);
+      _interpolatedPrimaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.ITALIC | SWT.BOLD);
 			
 		}		
 		
@@ -731,11 +744,80 @@ public class ToteView extends ViewPart
 		public Font getFont(Object element, int columnIndex)
 		{
 			final Font res;
-			// hmm, is it in Col 0 (calc title), or Col 1 (primary track)
-			if(columnIndex <= 1)
-				res = primaryFont;
+			
+			boolean isPrimary = false;
+			boolean isInterpolated = false;
+			
+			// is this already sorted?
+			if (_theDTG != null)
+			{
+				if (_trackData != null)
+				{
+					WatchableList _thePrimary = _trackData.getPrimaryTrack();
+					WatchableList[] secLists = _trackData.getSecondaryTracks();
+
+					
+					// get the data for the right col
+					if(columnIndex == 0)
+					{
+						// ignore, we just use the primary font anyway
+						isPrimary = true;
+					}
+					else if(columnIndex == 1)
+					{
+						// check that we've got a primary
+						if (_thePrimary != null)
+						{
+							isPrimary = true;
+							// so, we the calculations have been added to the tote list
+							// in order going across the page
+
+							// get the primary ready,
+							Watchable[] list = _thePrimary.getNearestTo(_theDTG);
+							Watchable pw = null;
+							if (list.length > 0)
+								pw = list[0];
+							if(pw instanceof FixWrapper.InterpolatedFixWrapper)
+								isInterpolated = true;
+						}
+					}
+					else
+					{
+						if (secLists != null)
+						{
+							if (columnIndex - 2 < secLists.length)
+							{
+								// prepare the list of secondary watchables
+								WatchableList wList = secLists[columnIndex - 2];
+								Watchable[] list = wList.getNearestTo(_theDTG);
+
+								Watchable nearest = null;								
+								if (list.length > 0)
+								{
+									nearest = list[0];
+									if(nearest instanceof FixWrapper.InterpolatedFixWrapper)
+										isInterpolated = true;
+								}
+							}
+						}						
+					}
+				}
+			}
+			
+			if(isPrimary)
+			{
+				if(isInterpolated)
+					res = _interpolatedPrimaryFont;
+				else
+					res = _primaryFont;
+			}
 			else
-				res = secondaryFont;
+			{
+				if(isInterpolated)
+					res = _interpolatedSecondaryFont;
+				else
+					res = _secondaryFont;
+			}
 			
 			return res;
 		}
