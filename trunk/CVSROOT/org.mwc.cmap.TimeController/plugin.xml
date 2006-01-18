@@ -8,20 +8,20 @@
    class="org.mwc.cmap.TimeController.TimeControllerPlugin">
 
    <runtime>
-      <library name="TimeController.jar"/>
+      <library name="TimeController.jar">
+         <export name="org.mwc.cmap.TimeController.views.*"/>
+      </library>
    </runtime>
 
    <requires>
       <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.ui.editors"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.mwc.cmap.core"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.mwc.cmap.legacy"/>
       <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.mwc.debrief.core"/>
+      <import plugin="org.eclipse.ui.views"/>
    </requires>
 
   <extension
