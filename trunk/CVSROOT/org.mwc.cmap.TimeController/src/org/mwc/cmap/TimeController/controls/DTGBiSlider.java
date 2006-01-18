@@ -203,4 +203,16 @@ public class DTGBiSlider
 	{
 		_dateModel.setSegmentLength(size);
 	}
+	
+	/** the currently indicated time period (or null for no selection)
+	 * 
+	 * @return
+	 */
+	public TimePeriod getPeriod()
+	{
+		TimePeriod res = new TimePeriod.BaseTimePeriod(new HiResDate(_dateModel.getUserMinimumDate()), 
+				new HiResDate(_dateModel.getUserMaximumDate()));
+		
+		return res;
+	}
 }

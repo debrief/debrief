@@ -1572,4 +1572,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			}
 		}
 	}
+
+	/** provide the currently selected period
+	 * 
+	 * @return
+	 */
+	public TimePeriod getPeriod()
+	{
+		return getSlider().getPeriod();
+	}
 }
