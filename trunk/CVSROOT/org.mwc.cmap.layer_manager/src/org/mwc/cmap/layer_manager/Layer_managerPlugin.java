@@ -2,6 +2,8 @@ package org.mwc.cmap.layer_manager;
 
 import org.eclipse.ui.plugin.*;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.xyplot.XYPlotGeneratorButtons;
 import org.osgi.framework.BundleContext;
 import java.util.*;
 
@@ -27,6 +29,11 @@ public class Layer_managerPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		
+		
+		// also fire up the xy-plotter item
+		RightClickSupport.addRightClickGenerator(new XYPlotGeneratorButtons());		
+		
 	}
 
 	/**
