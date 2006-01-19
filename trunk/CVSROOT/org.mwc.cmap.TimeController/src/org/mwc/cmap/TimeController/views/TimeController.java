@@ -303,21 +303,21 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
-		eBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBegin.gif")
+		eBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_beginning.png")
 				.createImage());
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
-		lBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRRewind.gif")
+		lBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_rewind.png")
 				.createImage());
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setText("<");
-		sBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRBack.gif")
+		sBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_back.png")
 				.createImage());
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
 
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-		_playButton.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif")
+		_playButton.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_play.png")
 				.createImage());
 		_playButton.addSelectionListener(new SelectionAdapter()
 		{
@@ -327,12 +327,12 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				ImageDescriptor thisD;
 				if (playing)
 				{
-					thisD = TimeControllerPlugin.getImageDescriptor("icons/VCRPause.gif");
+					thisD = TimeControllerPlugin.getImageDescriptor("icons/media_pause.png");
 					startPlaying();
 				}
 				else
 				{
-					thisD = TimeControllerPlugin.getImageDescriptor("icons/VCRPlay.gif");
+					thisD = TimeControllerPlugin.getImageDescriptor("icons/media_play.png");
 					stopPlaying();
 				}
 				_playButton.setImage(thisD.createImage());
@@ -340,15 +340,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		});
 
 		Button sFwd = new Button(_btnPanel, SWT.NONE);
-		sFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRForward.gif")
+		sFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_forward.png")
 				.createImage());
 		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
-		lFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCRFastForward.gif")
+		lFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_fast_forward.png")
 				.createImage());
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
 		Button eFwd = new Button(_btnPanel, SWT.NONE);
-		eFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/VCREnd.gif")
+		eFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_end.png")
 				.createImage());
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 	}
