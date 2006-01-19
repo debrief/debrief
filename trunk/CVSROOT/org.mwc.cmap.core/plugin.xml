@@ -11,6 +11,9 @@
       <library name="cmap_core.jar">
          <export name="*"/>
       </library>
+      <library name="libs/WMFWriter.jar">
+         <export name="*"/>
+      </library>
    </runtime>
 
    <requires>
