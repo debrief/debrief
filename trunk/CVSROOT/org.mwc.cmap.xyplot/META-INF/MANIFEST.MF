@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Xyplot Plug-in
+Bundle-SymbolicName: org.mwc.cmap.xyplot; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.cmap.xyplot.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.core,
+ org.mwc.cmap.legacy,
+ org.mwc.debrief.legacy,
+ org.mwc.cmap.TimeController
+Eclipse-LazyStart: false
+Export-Package: org.mwc.cmap.xyplot,
+ org.mwc.cmap.xyplot.views
