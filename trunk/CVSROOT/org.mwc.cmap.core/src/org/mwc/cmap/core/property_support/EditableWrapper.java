@@ -299,7 +299,10 @@ public class EditableWrapper implements IPropertySource
 				_property.setValue(_newValue);
 
 				// fire the reformatted event for the parent layer
-				_wholeLayers.fireReformatted(null);
+				// - note, we may not have the layers object if this editable isn't a plot object
+				//   (it could be an xy plot)
+				if(_wholeLayers != null)
+					_wholeLayers.fireReformatted(null);
 
 			return Status.OK_STATUS;
 		}
