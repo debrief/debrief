@@ -457,42 +457,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		return res;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#createPartControl(org.eclipse.swt.widgets.Composite)
-	 */
-	public void createPartControl(Composite parent)
-	{
-		super.createPartControl(parent);
-
-		// super.getChart().getCanvas().addPainter(new CanvasType.PaintListener()
-		// {
-		//
-		// public void paintMe(CanvasType dest)
-		// {
-		// // ok - get the highlighter to draw itself
-		// PlainHighlighter.update(_timeManager.getTime(), _myLayers, dest,
-		// _timeManager.getTime());
-		// }
-		//
-		// public WorldArea getDataArea()
-		// {
-		// return null;
-		// }
-		//
-		// public void resizedEvent(PlainProjection theProj, Dimension
-		// newScreenArea)
-		// {
-		// }
-		//
-		// public String getName()
-		// {
-		// return null;
-		// }
-		// });
-
-	}
 
 	/**
 	 * @see org.eclipse.ui.IEditorPart#doSave(IProgressMonitor)
