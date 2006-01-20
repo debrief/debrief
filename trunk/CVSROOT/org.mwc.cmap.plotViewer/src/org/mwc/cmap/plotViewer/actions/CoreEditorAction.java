@@ -6,6 +6,7 @@ package org.mwc.cmap.plotViewer.actions;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.ui.*;
 import org.eclipse.ui.IEditorActionDelegate;
 import org.eclipse.ui.IEditorPart;
 import org.mwc.cmap.core.CorePlugin;
@@ -44,14 +45,31 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 
 	}
 	
+	private CorePlotEditor getEditor()
+	{
+		// do we know our editor?
+		if(_myEditor == null)
+		{
+			// nope, better generate it
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = win.getActivePage();
+			IEditorPart editor = page.getActiveEditor();
+			setActiveEditor(null, editor);
+		}
+		
+		// ok, give it a go.
+		return _myEditor;
+	}
+	
 	protected CorePlotEditor getPlot()
 	{
-		return _myEditor;
+		return getEditor();
 	}
 	
 	protected PlainChart getChart()
 	{
-		return _myEditor.getChart();
+		return getEditor().getChart();
 	}
 	
 	protected void redrawChart()
