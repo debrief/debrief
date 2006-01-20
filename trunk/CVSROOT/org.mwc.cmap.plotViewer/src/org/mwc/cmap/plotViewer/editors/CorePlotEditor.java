@@ -6,11 +6,11 @@ import java.util.*;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.SubActionBars2;
+import org.eclipse.ui.*;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.operations.*;
@@ -21,8 +21,8 @@ import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.core.ui_support.LineItem;
+import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.chart.*;
-
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
@@ -246,6 +246,22 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				undoAction);
 		getEditorSite().getActionBars().setGlobalActionHandler(ActionFactory.REDO.getId(),
 				redoAction);
+		
+		// put in the plot-copy support
+
+    IAction _copyClipboardAction = new Action()
+		{
+			public void runWithEvent(Event event)
+			{
+				ExportWMF ew = new ExportWMF(true, false);
+				ew.run(null);
+			}
+		};	
+		
+		IActionBars actionBars= getEditorSite().getActionBars();
+		actionBars.setGlobalActionHandler(
+				ActionFactory.COPY.getId(),
+				_copyClipboardAction);			
 	}
 
 	/** place the chart in the properties window
