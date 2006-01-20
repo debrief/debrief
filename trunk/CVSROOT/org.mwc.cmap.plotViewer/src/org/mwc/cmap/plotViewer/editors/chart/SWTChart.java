@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.24  2006-01-13 15:22:25  Ian.Mayo
+// Revision 1.25  2006-01-20 14:10:29  Ian.Mayo
+// Tidier plotting of background (ready for metafile plotting)
+//
+// Revision 1.24  2006/01/13 15:22:25  Ian.Mayo
 // Minor refactoring, plus make sure we get the layers in sorted order (background & buffered before tracks)
 //
 // Revision 1.23  2006/01/03 14:03:33  Ian.Mayo
@@ -95,6 +98,7 @@ import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
 import Debrief.Wrappers.*;
 import MWC.GUI.*;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.*;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
 import MWC.GenericData.*;
@@ -111,7 +115,6 @@ public class SWTChart extends PlainChart
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
-
 
 	/**
 	 * 
@@ -137,9 +140,9 @@ public class SWTChart extends PlainChart
 	 * track drag operations
 	 */
 	private Point _startPoint = null;
-	
-	/** the last point dragged over
-	 * 
+
+	/**
+	 * the last point dragged over
 	 */
 	private Point _draggedPoint = null;
 
@@ -213,9 +216,8 @@ public class SWTChart extends PlainChart
 
 		// give us an initial zoom mode
 		_myDragMode = new ZoomIn.ZoomInMode();
-		
+
 	}
-	
 
 	/**
 	 * constructor, providing us with a set of layers to plot, together with a
@@ -252,7 +254,6 @@ public class SWTChart extends PlainChart
 		super.canvasResized();
 	}
 
-	
 	/**
 	 * over-rideable member function which allows us to over-ride the canvas which
 	 * gets used.
@@ -365,8 +366,8 @@ public class SWTChart extends PlainChart
 					// just check if this layer is visible
 					if (thisLayer.getVisible())
 					{
-//						System.out.println("painting:" + thisLayer.getName());
-						
+						// System.out.println("painting:" + thisLayer.getName());
+
 						if (doubleBufferPlot())
 						{
 							// check we're plotting to a SwingCanvas, because we don't
@@ -497,28 +498,14 @@ public class SWTChart extends PlainChart
 		// fill the background, to start with
 		final Dimension sz = _theCanvas.getSize();
 
-		final Color theCol = dest.getBackgroundColor();
-		dest.setBackgroundColor(theCol);
-		// dest.setColor(java.awt.Color.black);
-		// dest.setBackgroundColor(Color.black);
-		dest.fillRect(0, 0, sz.width, sz.height);
+		// right, don't fill in the background if we're not painting to the screen
+		if (dest instanceof SWTCanvas)
+		{
+			final Color theCol = dest.getBackgroundColor();
+			dest.setBackgroundColor(theCol);
+			dest.fillRect(0, 0, sz.width, sz.height);
+		}
 
-		// // do we have an image?
-		// if (_ourImage != null)
-		// {
-		// // find the coords
-		// final int imgWidth = _ourImage.getWidth(getPanel());
-		// final int imgHeight = _ourImage.getHeight(getPanel());
-		//
-		// // find the point to paint at
-		// final Point thePt = new Point((int) dest.getSize().getWidth() - imgWidth
-		// - 3,
-		// (int) dest.getSize().getHeight() - imgHeight - 3);
-		//
-		// // paint in our logo
-		// dest.drawImage(_ourImage, thePt.x, thePt.y, imgWidth, imgHeight,
-		// getPanel());
-		// }
 	}
 
 	// ////////////////////////////////////////////////////////
@@ -576,9 +563,9 @@ public class SWTChart extends PlainChart
 		if (e.button != 3)
 		{
 			_draggedPoint = new Point(e.x, e.y);
-			
+
 			// ok - pass the drag to our drag control
-			if(_myDragMode != null)
+			if (_myDragMode != null)
 				_myDragMode.doMouseMove(_draggedPoint, JITTER, super.getLayers());
 		}
 	}
@@ -589,16 +576,16 @@ public class SWTChart extends PlainChart
 		if (e.button != 3)
 		{
 			// ok. did we move at all?
-			if(_draggedPoint != null)
+			if (_draggedPoint != null)
 			{
 				// yes, process the drag
-				if(_myDragMode != null)
+				if (_myDragMode != null)
 					_myDragMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
 			}
 			else
 			{
 				// nope
-				
+
 				// hey, it was just a click - process it
 				if (_theLeftClickListener != null)
 				{
@@ -621,9 +608,9 @@ public class SWTChart extends PlainChart
 			_startPoint = new Point(e.x, e.y);
 			_draggedPoint = null;
 
-			if(_myDragMode != null)				
+			if (_myDragMode != null)
 				_myDragMode.mouseDown(_startPoint, _theCanvas, this);
-			
+
 		}
 	}
 
@@ -654,54 +641,65 @@ public class SWTChart extends PlainChart
 			}
 		}
 	}
-	
+
 	final public void setDragMode(final PlotMouseDragger newMode)
 	{
 		_myDragMode = newMode;
-		
+
 		// and reset the start point so we know where we are.
 		_startPoint = null;
 	}
-	
+
 	final public PlotMouseDragger getDragMode()
 	{
 		return _myDragMode;
 	}
 
-	/** embedded interface for classes that are able to handle drag events
+	/**
+	 * embedded interface for classes that are able to handle drag events
 	 * 
 	 * @author ian.mayo
-	 *
 	 */
 	abstract public static class PlotMouseDragger
 	{
 
-		/** handle the mouse being dragged
+		/**
+		 * handle the mouse being dragged
 		 * 
-		 * @param pt the new cursor location
+		 * @param pt
+		 *          the new cursor location
 		 */
-		abstract public void doMouseMove(final Point pt, final int JITTER, final Layers theLayers);
+		abstract public void doMouseMove(final Point pt, final int JITTER,
+				final Layers theLayers);
 
-		/** handle the mouse drag finishing
-		 * @param keyState TODO
-		 * @param pt the final cursor location
+		/**
+		 * handle the mouse drag finishing
+		 * 
+		 * @param keyState
+		 *          TODO
+		 * @param pt
+		 *          the final cursor location
 		 */
 		abstract public void doMouseUp(Point point, int keyState);
 
-		/** handle the mouse drag starting
-		 * @param canvas the control it's dragging over
-		 * @param theChart TODO
-		 * @param pt the first cursor location
+		/**
+		 * handle the mouse drag starting
+		 * 
+		 * @param canvas
+		 *          the control it's dragging over
+		 * @param theChart
+		 *          TODO
+		 * @param pt
+		 *          the first cursor location
 		 */
 		abstract public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart);
-		
-	}
-	
 
-	/** customised SWTCanvas class that supports our right-click editing
+	}
+
+	/**
+	 * customised SWTCanvas class that supports our right-click editing
 	 * 
 	 * @author ian.mayo
-	 *
 	 */
 	private class CustomisedSWTCanvas extends SWTCanvas
 	{
@@ -711,7 +709,7 @@ public class SWTChart extends PlainChart
 		{
 			super(parent);
 		}
-		
+
 		protected void fillContextMenu(MenuManager mmgr, Point scrPoint, WorldLocation loc)
 		{
 			// let the parent do it's stuff
@@ -719,8 +717,8 @@ public class SWTChart extends PlainChart
 
 			// ok, get a handle to our layers
 			Layers theData = getLayers();
-			double layerDist = -1;			
-	
+			double layerDist = -1;
+
 			// find the nearest editable item
 			ObjectConstruct vals = new ObjectConstruct();
 			int num = theData.size();
@@ -739,71 +737,68 @@ public class SWTChart extends PlainChart
 						layerDist = vals.distance;
 					}
 				}
-			}				
-			
+			}
 
 			// ok, now retrieve the values produced by the range-finding algorithm
 			Plottable res = vals.object;
 			Layer theParent = vals.parent;
 			double dist = vals.distance;
-			Vector noPoints = vals.rangeIndependent;				
-			
-	    // see if this is in our dbl-click range
-	    if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y),
-	    											loc,
-	                          dist,
-	                          getProjection()))
-	    {
-	      // do nothing, we're all happy
-	    }
-	    else
-	    {
-	      res = null;
-	    }
+			Vector noPoints = vals.rangeIndependent;
 
-	    // have we found something editable?
-	    if (res != null)
-	    {
-	      // so get the editor
-	      Editable.EditorType e = res.getInfo();
-	      if (e != null)
-	      {
-					RightClickSupport.getDropdownListFor(mmgr, new Editable[]{res}, 
-							new Layer[]{theParent},
-							new Layer[]{theParent}, getLayers(), false);			
-					
-					// hmm, is it a fix.  if it is, also flash up the track
-					if(res instanceof FixWrapper)
+			// see if this is in our dbl-click range
+			if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y), loc, dist,
+					getProjection()))
+			{
+				// do nothing, we're all happy
+			}
+			else
+			{
+				res = null;
+			}
+
+			// have we found something editable?
+			if (res != null)
+			{
+				// so get the editor
+				Editable.EditorType e = res.getInfo();
+				if (e != null)
+				{
+					RightClickSupport.getDropdownListFor(mmgr, new Editable[] { res },
+							new Layer[] { theParent }, new Layer[] { theParent }, getLayers(), false);
+
+					// hmm, is it a fix. if it is, also flash up the track
+					if (res instanceof FixWrapper)
 					{
 						// get the parent track
 						FixWrapper fix = (FixWrapper) res;
 						TrackWrapper parent = fix.getTrackWrapper();
-						RightClickSupport.getDropdownListFor(mmgr, new Editable[]{parent}, 
-								new Layer[]{theParent},
-								new Layer[]{theParent}, getLayers(), true);			
+						RightClickSupport.getDropdownListFor(mmgr, new Editable[] { parent },
+								new Layer[] { theParent }, new Layer[] { theParent }, getLayers(), true);
 					}
-	      }
-	    }
-	    else
-	    {
-	      // not found anything useful,
-	      // so edit just the projection
-				RightClickSupport.getDropdownListFor(mmgr, new Editable[]{getProjection()}, null, null, getLayers(), true);
-				
+				}
+			}
+			else
+			{
+				// not found anything useful,
+				// so edit just the projection
+				RightClickSupport.getDropdownListFor(mmgr, new Editable[] { getProjection() },
+						null, null, getLayers(), true);
+
 				// also see if there are any other non-position-related items
-				if(noPoints != null)
+				if (noPoints != null)
 				{
 					// stick in a separator
 					mmgr.add(new Separator());
-					
+
 					for (Iterator iter = noPoints.iterator(); iter.hasNext();)
 					{
 						Plottable pl = (Plottable) iter.next();
-						RightClickSupport.getDropdownListFor(mmgr, new Editable[]{pl}, null, null, getLayers(), true);
+						RightClickSupport.getDropdownListFor(mmgr, new Editable[] { pl }, null, null,
+								getLayers(), true);
 					}
 				}
-	    }
+			}
 		}
 	}
-		
+
 }
