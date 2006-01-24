@@ -1,6 +1,6 @@
 package org.mwc.cmap.xyplot;
 
-import java.util.Vector;
+import java.util.*;
 
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -19,7 +19,6 @@ import Debrief.Tools.Tote.Calculations.*;
 import MWC.GUI.*;
 import MWC.GUI.ptplot.jfreeChart.Utils.ModifiedVerticalNumberAxis;
 import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.*;
 
 import com.jrefinery.chart.*;
 import com.jrefinery.data.AbstractDataset;
@@ -31,21 +30,17 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 {
 
 	/**
-	 * the theshold at which we decide a heading is passing through zero degrees
-	 */
-	// private final static double COURSE_THRESHOLD = 250;
-	//
-	/**
 	 * the operations we provide
 	 */
 	private Vector _theOperations;
 
-	/**
-	 * store a local copy of the line separator
+	/** remember past selections from the drop-down list
+	 * 
 	 */
-	// private final String _theSeparator = System.getProperties().getProperty(
-	// "line.separator");
-	/**
+	private static HashMap _pastSelections;
+	
+	
+	/** constructor - just initialise ourselves
 	 * 
 	 */
 	public XYPlotGeneratorButtons()
@@ -117,6 +112,9 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new relBearingCalc(), theFormatter,
 					true));
 		}
+		
+		if(_pastSelections == null)
+			_pastSelections = new HashMap();
 	}
 
 	private ShowTimeVariablePlot2.CalculationHolder getChoice()
@@ -140,6 +138,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		if (selection == 0)
 		{
 			res = (ShowTimeVariablePlot2.CalculationHolder) dialog._result;
+			
+			// right, remember what was selected
+			_pastSelections.put(choices[0], new Integer(dialog._resultIndex));
+			
 		}
 		else
 		{
@@ -155,6 +157,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		private Object[] _choices;
 
 		private Object _result;
+		
+		private int _resultIndex;
 
 		private String _message;
 
@@ -187,9 +191,30 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				{
 					int selItem = theOps.getSelectionIndex();
 					_result = _choices[selItem];
+					_resultIndex = selItem;
 				}
 			});
 			theOps.setItems(_titles);
+			
+			// right, have we asked for this one before?
+			Object lastAnswer = _pastSelections.get(_titles[0]);
+			if(lastAnswer != null)
+			{
+				// re-select it then
+				Integer lastInt = (Integer) lastAnswer;
+				theOps.select(lastInt.intValue());
+			}
+			else
+			{
+				// just select the first one
+				theOps.select(0);
+			}
+			
+			// ok - just store the current one, in case the user just 'accepts' it.
+			int selItem = theOps.getSelectionIndex();
+			_result = _choices[selItem];
+			_resultIndex = selItem;
+			
 			return holder;
 		}
 	}
@@ -260,10 +285,6 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 					startTime = period.getStartDTG();
 					endTime = period.getEndDTG();
 					
-					System.out.println("Start:" + DebriefFormatDateTime.toStringHiRes(startTime,"yyyy MMM dd hh:mm") + 
-							" End:" + DebriefFormatDateTime.toStringHiRes(endTime,"yyyy MMM dd hh:mm"));
-					
-					
 					if((startTime.greaterThan(endTime))|| (startTime.equals(endTime)))
 					{
 						String title = "XY Plot";
@@ -305,10 +326,6 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 						// if it's relative, we use the primary track name in the title
 						theTitle = thePrimary.getName() + " " + theTitle;
 					}
-					
-					// and open the view (with it's data)
-					System.out.println("plotting:" + theTitle);
-					
 					
 					// and the plot itself
 					String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
@@ -368,6 +385,9 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			if (selection == 0)
 			{
 				res = (WatchableList) sel._result;
+				
+				// right, remember what was selected
+				_pastSelections.put(labels[0], new Integer(sel._resultIndex));
 			}
 		}
 		else
