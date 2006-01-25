@@ -12,7 +12,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import com.pietjonas.wmfwriter2d.ClipboardCopy;
 
 import MWC.GUI.*;
-import MWC.GUI.Canvas.*;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.WriteMetafile;
 
 /**
@@ -21,6 +21,36 @@ import MWC.GUI.Tools.Chart.WriteMetafile;
 public class ExportWMF extends CoreEditorAction
 {
 	public static ToolParent _theParent = null;
+
+	/**
+	 * whether to put the image on the clipboard
+	 */
+	private boolean _writeToClipboard = false;
+
+	/**
+	 * whether to put the image into the working export directory
+	 */
+	private boolean _writeToFile = false;
+
+	/**
+	 * @param toClipboard
+	 * @param toFile
+	 */
+	public ExportWMF()
+	{
+		this(false, true);
+	}
+	
+	/**
+	 * @param toClipboard
+	 * @param toFile
+	 */
+	public ExportWMF(boolean toClipboard, boolean toFile)
+	{
+		super();
+		_writeToClipboard = toClipboard;
+		_writeToFile = toFile;
+	}
 
 	/**
 	 * ok, store who the parent is for the operation
@@ -45,7 +75,7 @@ public class ExportWMF extends CoreEditorAction
 			return;
 		}
 
-		WriteMetafile write = new WriteMetafile(_theParent, theChart, theChart.getLayers())
+		WriteMetafile write = new WriteMetafile(_theParent, theChart, _writeToFile)
 		{
 
 			/**
@@ -60,32 +90,35 @@ public class ExportWMF extends CoreEditorAction
 		};
 		write.execute();
 
-		// try to get the filename
-		String fName = MetafileCanvas.getLastFileName();
-
-		if (fName != null)
+		// ok, do we want to write it to the clipboard?
+		if (_writeToClipboard)
 		{
-			// create the clipboard
+			// try to get the filename
+			String fName = MetafileCanvas.getLastFileName();
 
-			// try to copy the wmf to the clipboard
-			try
+			if (fName != null)
 			{
-				// get the dimensions
-				Dimension dim = MetafileCanvas.getLastScreenSize();
-				
-				ClipboardCopy cc = new ClipboardCopy();
-				 cc.copyWithPixelSize(fName, dim.width, dim.height, false);
-				// cc.copyWithPixelSize(fName, 6000, 4000, false);
+				// create the clipboard
 
+				// try to copy the wmf to the clipboard
+				try
+				{
+					// get the dimensions
+					Dimension dim = MetafileCanvas.getLastScreenSize();
+
+					ClipboardCopy cc = new ClipboardCopy();
+					cc.copyWithPixelSize(fName, dim.width, dim.height, false);
+
+				}
+				catch (Exception e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
-			catch (Exception e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+			else
+				System.err.println("Target filename missing");
 		}
-		else
-			System.err.println("Target filename missing");
 	}
 
 }
