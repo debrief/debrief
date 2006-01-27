@@ -21,6 +21,12 @@
    <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.4.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.4">
       <category name="cmap_features"/>
    </feature>
+   <feature url="features/org.mwc.cmap.xyplot.feature_1.0.0.jar" id="org.mwc.cmap.xyplot.feature" version="1.0.0">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.debrief.help.feature_1.0.0.jar" id="org.mwc.debrief.help.feature" version="1.0.0">
+      <category name="cmap_features"/>
+   </feature>
    <category-def name="cmap_features" label="CMAP">
       <description>
          Core Maritime Analysis Platform
