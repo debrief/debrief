@@ -1,7 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin>
+<plugin
+   id="org.mwc.cmap.xyplot"
+   name="Time-Variable plot"
+   version="1.0.2"
+   provider-name="MWC"
+   class="org.mwc.cmap.xyplot.XYPlotPlugin">
 
+   <runtime>
+      <library name="XYPlot.jar">
+         <export name="*"/>
+      </library>
+   </runtime>
+
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.mwc.cmap.TimeController"/>
+      <import plugin="org.eclipse.ui.views"/>
+   </requires>
    <extension
          point="org.eclipse.ui.views">
       <view
