@@ -44,6 +44,9 @@
       <import plugin="org.eclipse.pde"/>
       <import plugin="org.eclipse.platform"/>
       <import plugin="org.eclipse.rcp"/>
+      <import plugin="org.eclipse.ui.browser"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
+      <import plugin="org.eclipse.ui.intro"/>
       
    </requires>
    <extension-point id="DebriefPlotLoader" 
