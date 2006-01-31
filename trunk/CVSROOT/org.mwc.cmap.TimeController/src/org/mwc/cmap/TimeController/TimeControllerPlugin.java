@@ -1,5 +1,6 @@
 package org.mwc.cmap.TimeController;
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.ui.plugin.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.osgi.framework.BundleContext;
@@ -80,5 +81,19 @@ public class TimeControllerPlugin extends AbstractUIPlugin {
 	 */
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.TimeController", path);
+	}
+	
+	/** hey, not just the descriptor, return the actual image
+	 * 
+	 */
+	public static Image getImage(String path)
+	{
+		Image res = null;
+		ImageDescriptor desk = getImageDescriptor(path);
+		if(desk != null)
+			res = desk.createImage();
+		
+		return res;
+		
 	}
 }

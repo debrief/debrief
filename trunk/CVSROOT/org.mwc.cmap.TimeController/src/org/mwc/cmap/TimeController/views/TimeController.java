@@ -303,22 +303,21 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
-		eBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_beginning.png")
-				.createImage());
+		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
-		lBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_rewind.png")
-				.createImage());
+		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png")
+			);
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setText("<");
-		sBwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_back.png")
-				.createImage());
+		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png")
+			);
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
 
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-		_playButton.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_play.png")
-				.createImage());
+		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png")
+				);
 		_playButton.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -340,16 +339,16 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		});
 
 		Button sFwd = new Button(_btnPanel, SWT.NONE);
-		sFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_forward.png")
-				.createImage());
+		sFwd.setImage(TimeControllerPlugin.getImage("icons/media_forward.png")
+				);
 		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
-		lFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_fast_forward.png")
-				.createImage());
+		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png")
+				);
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
 		Button eFwd = new Button(_btnPanel, SWT.NONE);
-		eFwd.setImage(TimeControllerPlugin.getImageDescriptor("icons/media_end.png")
-				.createImage());
+		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png")
+				);
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 	}
 
