@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?pde version="3.1"?>
+
+<product name="Debrief" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="false">
+
+   <aboutInfo>
+      <image path="/org.mwc.debrief.core/icons/new_logo2.gif"/>
+      <text>
+         Welcome to Debrief NG, from the Maritime Warfare Centre
+      </text>
+   </aboutInfo>
+
+   <configIni use="default"/>
+
+   <launcherArgs>
+   </launcherArgs>
+
+   <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
+
+
+   <launcher name="debriefNG">
+      <solaris/>
+      <win useIco="false">
+         <bmp/>
+      </win>
+   </launcher>
+
+   <intro introId="org.mwc.debrief.core.intro"/>
+
+   <plugins>
+      <plugin id="com.ibm.icu"/>
+      <plugin id="org.apache.lucene"/>
+      <plugin id="org.eclipse.ant.core"/>
+      <plugin id="org.eclipse.core.commands"/>
+      <plugin id="org.eclipse.core.contenttype"/>
+      <plugin id="org.eclipse.core.expressions"/>
+      <plugin id="org.eclipse.core.filesystem"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86"/>
+      <plugin id="org.eclipse.core.jobs"/>
+      <plugin id="org.eclipse.core.resources"/>
+      <plugin id="org.eclipse.core.resources.compatibility"/>
+      <plugin id="org.eclipse.core.resources.win32"/>
+      <plugin id="org.eclipse.core.runtime"/>
+      <plugin id="org.eclipse.core.runtime.compatibility"/>
+      <plugin id="org.eclipse.core.variables"/>
+      <plugin id="org.eclipse.equinox.common"/>
+      <plugin id="org.eclipse.equinox.preferences"/>
+      <plugin id="org.eclipse.equinox.registry"/>
+      <plugin id="org.eclipse.help"/>
+      <plugin id="org.eclipse.help.appserver"/>
+      <plugin id="org.eclipse.help.base"/>
+      <plugin id="org.eclipse.jface"/>
+      <plugin id="org.eclipse.osgi"/>
+      <plugin id="org.eclipse.swt"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86"/>
+      <plugin id="org.eclipse.ui"/>
+      <plugin id="org.eclipse.ui.browser"/>
+      <plugin id="org.eclipse.ui.cheatsheets"/>
+      <plugin id="org.eclipse.ui.console"/>
+      <plugin id="org.eclipse.ui.editors"/>
+      <plugin id="org.eclipse.ui.externaltools"/>
+      <plugin id="org.eclipse.ui.forms"/>
+      <plugin id="org.eclipse.ui.ide"/>
+      <plugin id="org.eclipse.ui.intro"/>
+      <plugin id="org.eclipse.ui.navigator"/>
+      <plugin id="org.eclipse.ui.navigator.resources"/>
+      <plugin id="org.eclipse.ui.presentations.r21"/>
+      <plugin id="org.eclipse.ui.views"/>
+      <plugin id="org.eclipse.ui.win32"/>
+      <plugin id="org.eclipse.ui.workbench"/>
+      <plugin id="org.eclipse.ui.workbench.compatibility"/>
+      <plugin id="org.eclipse.ui.workbench.texteditor"/>
+      <plugin id="org.eclipse.update.configurator"/>
+      <plugin id="org.eclipse.update.core"/>
+      <plugin id="org.eclipse.update.core.win32"/>
+      <plugin id="org.eclipse.update.ui"/>
+      <plugin id="org.junit"/>
+      <plugin id="org.mwc.cmap.TimeController"/>
+      <plugin id="org.mwc.cmap.core"/>
+      <plugin id="org.mwc.cmap.layer_manager"/>
+      <plugin id="org.mwc.cmap.legacy"/>
+      <plugin id="org.mwc.cmap.narrative"/>
+      <plugin id="org.mwc.cmap.plotViewer"/>
+      <plugin id="org.mwc.cmap.tests"/>
+      <plugin id="org.mwc.cmap.tote"/>
+      <plugin id="org.mwc.cmap.xyplot"/>
+      <plugin id="org.mwc.debrief.core"/>
+      <plugin id="org.mwc.debrief.help"/>
+      <plugin id="org.mwc.debrief.legacy"/>
+   </plugins>
+
+   <features>
+      <feature id="org.mwc.cmap.TimeController.feature" version="1.0.4"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.8"/>
+      <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.2"/>
+      <feature id="org.mwc.cmap.narrative.feature" version="1.0.1"/>
+      <feature id="org.mwc.cmap.plotviewer.feature" version="1.0.4"/>
+      <feature id="org.mwc.cmap.tote.feature" version="1.0.3"/>
+      <feature id="org.mwc.debrief.feature" version="1.0.9"/>
+   </features>
+
+</product>
