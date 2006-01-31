@@ -16,7 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
-import org.mwc.cmap.xyplot.Activator;
+import org.mwc.cmap.xyplot.XYPlotPlugin;
 
 import Debrief.GUI.Tote.StepControl;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2.formattingOperation;
@@ -492,7 +492,7 @@ public class XYPlotView extends ViewPart
 		};
 		_exportToWMF.setText("Export to WMF");
 		_exportToWMF.setToolTipText("Produce a WMF file of the graph");
-		_exportToWMF.setImageDescriptor(Activator
+		_exportToWMF.setImageDescriptor(XYPlotPlugin
 				.getImageDescriptor("icons/photo_scenery.png"));
 
 		_exportToClipboard = new Action()
