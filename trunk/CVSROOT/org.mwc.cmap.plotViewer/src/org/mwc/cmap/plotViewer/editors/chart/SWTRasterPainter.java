@@ -3,12 +3,18 @@
  */
 package org.mwc.cmap.plotViewer.editors.chart;
 
+import java.awt.Toolkit;
+import java.awt.image.MemoryImageSource;
+
+import javax.swing.JButton;
+
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Chart.Painters.SpatialRasterPainter;
-import MWC.GUI.Chart.Painters.SpatialRasterPainter.PainterComponent;
+import MWC.GUI.Chart.Painters.SpatialRasterPainter.*;
 
 /**
  * SWT-specific raster painter component - to handle SWT-type images
@@ -27,6 +33,8 @@ public class SWTRasterPainter extends PainterComponent
 	 * buffer
 	 */
 	private int[][] _depthData;
+
+	private int[] _metafileBuffer;
 
 	/**
 	 * convert the color
@@ -55,6 +63,10 @@ public class SWTRasterPainter extends PainterComponent
 		{
 			PaletteData palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
 			_myImageBuffer = new ImageData(width, height, 24, palette);
+			
+			// also create a buffer for generating a metafile - so that we 
+			// write metafiles all the quicker.
+			_metafileBuffer = new int[width * height];
 
 			// also create the double bugger
 			_depthData = new int[width][height];
@@ -71,14 +83,29 @@ public class SWTRasterPainter extends PainterComponent
 	protected void paintTheImage(final CanvasType dest, final int width,
 			final int height)
 	{
-		// cast the canvas - so that we can do an SWT draw image operation
-		SWTCanvasAdapter canvas = (SWTCanvasAdapter) dest;
+		if(dest instanceof SWTCanvasAdapter)
+		{			
+			// cast the canvas - so that we can do an SWT draw image operation
+			SWTCanvasAdapter canvas = (SWTCanvasAdapter) dest;
 
-		// create our new image
-		Image image = new Image(Display.getCurrent(), _myImageBuffer);
+			// create our new image
+			Image image = new Image(Display.getCurrent(), _myImageBuffer);
 
-		// and draw it to the canvas
-		canvas.drawImage(image, 0, 0, width, height);
+			// and draw it to the canvas
+			canvas.drawImage(image, 0, 0, width, height);
+		}
+		else if(dest instanceof MetafileCanvas)
+		{
+			// cast the canvas - so that we can do an SWT draw image operation
+			MetafileCanvas canvas = (MetafileCanvas) dest;
+			
+			final MemoryImageSource mis = new MemoryImageSource(width, height,
+					_metafileBuffer, 0, width);
+			final java.awt.Image im = Toolkit.getDefaultToolkit().createImage(mis);
+
+			// ok, actually draw the image
+			canvas.drawImage(im, 0, 0, width, height, new JButton());		
+		}
 	}
 
 	/**
@@ -93,7 +120,7 @@ public class SWTRasterPainter extends PainterComponent
 			final int x_coord, final int y_coord)
 	{
 		// put this depth datum into our depths list
-		_depthData[x_coord][y_coord] = thisValue;
+		_depthData[x_coord][y_coord] = thisValue;			
 	}
 
 	/**
@@ -107,8 +134,20 @@ public class SWTRasterPainter extends PainterComponent
 	 * @param max_height
 	 */
 	protected void updatePixelColors(SpatialRasterPainter parent,
-			final int width, final int height, int min_height, int max_height)
+			final int width, final int height, int min_height, int max_height, CanvasType dest)
 	{
+		ColorConverter theConverter;
+		
+		// decide which color converter to use.
+		if(dest instanceof MetafileCanvas)
+		{
+			theConverter = new SwingColorConverter();
+		}
+		else
+		{
+			theConverter = this;
+		}
+		
 		// do a second pass to set the actual colours
 		for (int i = 0; i < height; i++)
 			for (int j = 0; j < width; j++)
@@ -117,10 +156,13 @@ public class SWTRasterPainter extends PainterComponent
 				int thisD = _depthData[j][i];
 				
 				// convert the color
-				int thisCol = parent.getColor(thisD, min_height, max_height, this);
+				int thisCol = parent.getColor(thisD, min_height, max_height, theConverter);
 				
 				// and place into the image
 				_myImageBuffer.setPixel(j, i, thisCol);
+				
+				final int idx = i * width + j;				
+				_metafileBuffer[idx] = thisCol;
 			}
 	}
 
