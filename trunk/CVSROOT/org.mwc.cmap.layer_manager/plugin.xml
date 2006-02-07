@@ -6,7 +6,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Layer Manager"
-            icon="icons/sample.gif"
+            icon="icons/ch_callees_002.gif"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.layer_manager.views.LayerManagerView"
             id="org.mwc.cmap.layer_manager.views.LayerManagerView">
