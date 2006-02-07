@@ -8,6 +8,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.dnd.*;
+import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.*;
@@ -241,6 +242,9 @@ public class RightClickCutCopyAdaptor
 
 			// formatting
 			super.setText("Cut " + toString());
+			
+			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
+			
 		}
 
 		// remember what used to be on the clipboard
@@ -422,6 +426,9 @@ public class RightClickCutCopyAdaptor
 			super(data, clipboard, theParent, theLayers, updateLayer);
 
 			super.setText(toString());
+			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+			
+			
 		}
 
 		public String toString()

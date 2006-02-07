@@ -7,6 +7,7 @@ import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
@@ -122,6 +123,8 @@ public class RightClickPasteAdaptor
 
 			// formatting
 			super.setText("Paste " + toString());
+			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_PASTE));
+			
 		}
 
 		/**
