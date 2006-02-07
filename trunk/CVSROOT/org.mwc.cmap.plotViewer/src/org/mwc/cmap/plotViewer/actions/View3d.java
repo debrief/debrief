@@ -8,7 +8,6 @@ import org.mwc.cmap.core.CorePlugin;
 
 import Debrief.Tools.Operations.View3dPlot;
 import MWC.GUI.*;
-import MWC.Utilities.Errors.Trace;
 
 /**
  * @author ian.mayo
