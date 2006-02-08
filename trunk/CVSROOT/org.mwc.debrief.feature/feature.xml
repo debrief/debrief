@@ -21,7 +21,7 @@ files
 
    <license>
       GNU LESSER GENERAL PUBLIC LICENSE
-		       Version 2.1, February 1999
+         Version 2.1, February 1999
 
  Copyright (C) 1991, 1999 Free Software Foundation, Inc.
      59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -32,7 +32,7 @@ files
  as the successor of the GNU Library Public License, version 2, hence
  the version number 2.1.]
 
-			    Preamble
+       Preamble
 
   The licenses for most software are designed to take away your
 freedom to share and change it.  By contrast, the GNU General Public
@@ -134,7 +134,7 @@ modification follow.  Pay close attention to the difference between a
 former contains code derived from the library, whereas the latter must
 be combined with the library in order to run.
 
-		  GNU LESSER GENERAL PUBLIC LICENSE
+    GNU LESSER GENERAL PUBLIC LICENSE
    TERMS AND CONDITIONS FOR COPYING, DISTRIBUTION AND MODIFICATION
 
   0. This License Agreement applies to any software library or other
@@ -454,7 +454,7 @@ decision will be guided by the two goals of preserving the free status
 of all derivatives of our free software and of promoting the sharing
 and reuse of software generally.
 
-			    NO WARRANTY
+       NO WARRANTY
 
   15. BECAUSE THE LIBRARY IS LICENSED FREE OF CHARGE, THERE IS NO
 WARRANTY FOR THE LIBRARY, TO THE EXTENT PERMITTED BY APPLICABLE LAW.
@@ -477,7 +477,7 @@ FAILURE OF THE LIBRARY TO OPERATE WITH ANY OTHER SOFTWARE), EVEN IF
 SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
-		     END OF TERMS AND CONDITIONS
+       END OF TERMS AND CONDITIONS
 
            How to Apply These Terms to Your New Libraries
 
@@ -524,32 +524,26 @@ necessary.  Here is a sample; alter the names:
 That&apos;s all there is to it!
    </license>
 
+   <url>
+      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+   </url>
+
    <requires>
-      <import plugin="org.mwc.cmap.core" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.mwc.cmap.plotViewer" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.mwc.cmap.legacy" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.resources" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.help" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.filesystem"/>
+      <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.views" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.update.configurator" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.update.core" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.update.ui" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.expressions" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.1.0" match="compatible"/>
+      <import plugin="org.mwc.cmap.core" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.plotViewer" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.legacy" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
+      <import plugin="org.mwc.debrief.legacy"/>
    </requires>
-
-   <plugin
-         id="org.mwc.debrief.core"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
-
-   <plugin
-         id="org.mwc.debrief.legacy"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"/>
 
    <plugin
          id="org.eclipse.ui.ide"
@@ -577,5 +571,11 @@ That&apos;s all there is to it!
          install-size="0"
          version="0.0.0"
          unpack="false"/>
+
+   <plugin
+         id="org.mwc.debrief.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>
