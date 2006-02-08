@@ -1,27 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.mwc.cmap.narrative"
-   name="Narrative Viewer"
-   version="1.0.2"
-   provider-name="MWC"
-   class="org.mwc.cmap.narrative.NarrativePlugin">
+<plugin>
 
-   <runtime>
-      <library name="NarrativeViewer.jar"/>
-   </runtime>
-
-   <requires>
-      <import plugin="org.eclipse.ui"/>
-      <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.mwc.cmap.legacy"/>
-      <import plugin="org.mwc.cmap.core"/>
-      <import plugin="org.mwc.debrief.legacy"/>
-      <import plugin="org.eclipse.core.resources"/>
-      <import plugin="org.eclipse.ui.ide"/>
-   </requires>
-
-   <extension
+     <extension
          point="org.eclipse.ui.views">
       <view
             name="Narrative Viewer"
