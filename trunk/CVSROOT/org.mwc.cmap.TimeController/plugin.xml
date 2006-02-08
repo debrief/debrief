@@ -28,7 +28,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Time Controller"
-            icon="icons/sample.gif"
+            icon="icons/TrafficGreen.gif"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.TimeController.views.TimeController"
             id="org.mwc.cmap.TimeController.views.TimeController">

@@ -6,9 +6,9 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="true"
-            category="org.mwc.debrief.core.DebriefCategory"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.xyplot.views.XYPlotView"
-            icon="icons/sample.gif"
+            icon="icons/document_chart.png"
             id="org.mwc.cmap.xyplot.views.XYPlotView"
             name="XY Plot">
       </view>
