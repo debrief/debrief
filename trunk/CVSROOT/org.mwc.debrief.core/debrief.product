@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.1"?>
 
-<product name="Debrief" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="false">
+<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.help.base.infocenterApplication" useFeatures="true">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/new_logo2.gif"/>
@@ -13,9 +13,12 @@
    <configIni use="default"/>
 
    <launcherArgs>
+      <vmArgs>-vmargs -Xms40m -Xmx256m</vmArgs>
+      <vmArgsWin>-Djava.library.path=.;</vmArgsWin>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
+
 
    <launcher name="debriefNG">
       <solaris/>
@@ -122,19 +125,15 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.jdt" version="3.1.0"/>
-      <feature id="org.eclipse.pde" version="3.1.0"/>
-      <feature id="org.eclipse.platform" version="3.1.0"/>
-      <feature id="org.eclipse.rcp" version="3.1.0"/>
-      <feature id="org.eclipse.sdk" version="3.1.0"/>
-      <feature id="org.mwc.cmap.TimeController.feature" version="1.0.4"/>
-      <feature id="org.mwc.cmap.feature" version="1.0.8"/>
-      <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.2"/>
-      <feature id="org.mwc.cmap.narrative.feature" version="1.0.1"/>
-      <feature id="org.mwc.cmap.plotviewer.feature" version="1.0.4"/>
+      <feature id="org.mwc.cmap.TimeController.feature" version="1.0.3"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.9"/>
+      <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.3"/>
+      <feature id="org.mwc.cmap.narrative.feature" version="1.0.2"/>
+      <feature id="org.mwc.cmap.plotviewer.feature" version="1.0.5"/>
+      <feature id="org.mwc.cmap.static_resources.feature" version="1.0.0"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.3"/>
-      <feature id="org.mwc.cmap.xyplot.feature" version="1.0.1"/>
-      <feature id="org.mwc.debrief.feature" version="1.0.9"/>
+      <feature id="org.mwc.cmap.xyplot.feature" version="1.0.3"/>
+      <feature id="org.mwc.debrief.feature" version="1.0.8"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.0"/>
    </features>
 
