@@ -278,6 +278,15 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 					// right, we need the time controller if we're going to get the times
 					String timeId = "org.mwc.cmap.TimeController.views.TimeController";
 					IViewReference timeRef = page.findViewReference(timeId);
+					
+					if(timeRef == null)
+					{
+						String title = "XY Plot";
+						String message = "Time Controller is not open. Please open time-controller and select a time period";
+						MessageDialog.openError(Display.getCurrent().getActiveShell(), title, message);
+						return;
+					}
+					
 					TimeController timer = (TimeController) timeRef.getView(true);
 					
 					// that's it, now get the data
@@ -355,6 +364,9 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 			}
 		};
+
+		// ok - set the image descriptor
+		viewPlot.setImageDescriptor(XYPlotPlugin.getImageDescriptor("icons/document_chart.png"));
 
 		parent.add(new Separator());
 		parent.add(viewPlot);
