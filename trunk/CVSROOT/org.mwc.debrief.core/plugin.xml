@@ -18,7 +18,7 @@
       <editor
             name="Debrief Plot Editor"
             extensions="xml,rep"
-            icon="icons/sample.gif"
+            icon="icons/debrief_icon.gif"
             class="org.mwc.debrief.core.editors.PlotEditor"
             id="org.mwc.debrief.core.editors.PlotEditor">
       </editor>
@@ -40,13 +40,7 @@
       <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.ide"/>
-      <import plugin="org.eclipse.jdt.core"/>
-      <import plugin="org.eclipse.pde"/>
-      <import plugin="org.eclipse.platform"/>
-      <import plugin="org.eclipse.rcp"/>
-      <import plugin="org.eclipse.ui.browser"/>
       <import plugin="org.eclipse.ui.cheatsheets"/>
-      <import plugin="org.eclipse.ui.intro"/>
       
    </requires>
    <extension-point id="DebriefPlotLoader" 
@@ -329,7 +323,7 @@
         point="org.eclipse.core.runtime.products">
      <product
            application="org.eclipse.ui.ide.workbench"
-           name="Debrief">
+           name="DebriefNG">
         <property
               name="aboutImage"
               value="icons/new_logo2.gif"/>
@@ -373,16 +367,17 @@
 		id="org.eclipse.platform.cheatsheet"
 		class="org.eclipse.platform.internal.CheatSheetStandbyContent"
 		pluginId="org.eclipse.platform"/>
+  </extension>
+  <extension
+        point="org.eclipse.ui.perspectives">
+     <perspective
+           class="org.mwc.debrief.core.DebriefPerspectiveFactory"
+           icon="icons/debrief_icon.gif"
+           id="org.mwc.debrief.core.Perspective"
+           name="Tactical Analysis"/>
+  </extension>
+  <extension
+        point="org.eclipse.core.contenttype.contentTypes">
   </extension>  
   
-<extension point="org.eclipse.ui.perspectiveExtensions">
-  <perspectiveExtension 
-	targetID="org.eclipse.ui.resourcePerspective">
-	<actionSet id="org.eclipse.jdt.debug.ui.JDTDebugActionSet"/>
-    	<view id="org.eclipse.jdt.debug.ui.DisplayView" 
-        	relative="org.eclipse.debug.ui.ExpressionView" 
-    		relationship="stack"/>	
-         	<viewShortcut id="org.eclipse.jdt.debug.ui.DisplayView"/>
-  </perspectiveExtension> 
-</extension>  
 </plugin>
