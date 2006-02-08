@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.25  2006-01-20 14:10:29  Ian.Mayo
+// Revision 1.26  2006-02-08 09:32:22  Ian.Mayo
+// Eclipse tidying
+//
+// Revision 1.25  2006/01/20 14:10:29  Ian.Mayo
 // Tidier plotting of background (ready for metafile plotting)
 //
 // Revision 1.24  2006/01/13 15:22:25  Ian.Mayo
@@ -93,12 +96,11 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
 import Debrief.Wrappers.*;
 import MWC.GUI.*;
-import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Tools.Chart.*;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
 import MWC.GenericData.*;
