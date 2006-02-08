@@ -11,7 +11,22 @@
 	  <target name="upload" description="upload updated files to td submarines directory" depends="clean">
 	  	 <copy todir="${destDir}" preservelastmodified="yes" >
 	  	    <fileset dir="${srcDir}"/>
-	  	  </copy>	  	
-	  	
+	  	  </copy>	  		  	
 	  </target>	
+	
+  <target name="empty_test_dir" description="clear the output directory" depends="">
+  	<delete dir="d://debriefNG/DebriefNG" />
+  </target>	
+
+  <target name="clean_test_dir" description="clear the output directory" depends="">
+  	<delete >
+  	    <fileset dir="d://debriefNG/DebriefNG" includes="**/*mwc*.*"/>
+  	</delete>
+  </target>	
+
+  <target name="unzip_test_dir" description="unzip product into output directory" depends="">
+  	<unzip src="d://debriefNG.zip" dest="d://debriefNG"/>
+  </target>	
+	
+	
 </project>
