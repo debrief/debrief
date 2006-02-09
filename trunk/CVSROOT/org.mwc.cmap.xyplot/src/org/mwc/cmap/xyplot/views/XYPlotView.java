@@ -19,10 +19,11 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.xyplot.XYPlotPlugin;
 
 import Debrief.GUI.Tote.StepControl;
-import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2.formattingOperation;
+import MWC.Algorithms.Plotting.formattingOperation;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.ptplot.jfreeChart.*;
+import MWC.GUI.ptplot.jfreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GUI.ptplot.jfreeChart.Utils.*;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -31,6 +32,8 @@ import com.jrefinery.chart.*;
 import com.jrefinery.chart.tooltips.*;
 import com.jrefinery.data.AbstractDataset;
 import com.pietjonas.wmfwriter2d.ClipboardCopy;
+import com.thoughtworks.xstream.XStream;
+import com.thoughtworks.xstream.io.xml.DomDriver;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -49,6 +52,64 @@ import com.pietjonas.wmfwriter2d.ClipboardCopy;
 
 public class XYPlotView extends ViewPart
 {
+
+	// //////////////////////////////////////////////////
+	// data we store between sessions
+	// //////////////////////////////////////////////////
+
+	/**
+	 * data-type names
+	 */
+	private final String TITLE = "XYPlot_Title";
+
+	private final String UNITS = "XYPlot_Units";
+
+	private final String FORMATTER = "XYPlot_Formatter";
+
+	private final String DATA = "XYPlot_Data";
+
+	private static interface PLOT_ATTRIBUTES
+	{
+		final String AxisFont = "AxisFont";
+
+		final String TickFont = "TickFont";
+
+		final String TitleFont = "TitleFont";
+
+		final String LineWidth = "LineWidth";
+
+		final String Title = "Title";
+
+		final String X_Title = "X_Title";
+
+		final String Y_Title = "Y_Title";
+
+		final String DateUnits = "DateUnits";
+
+		final String RelativeTimes = "RelativeTimes";
+
+		final String ShowSymbols = "ShowSymbols";
+	}
+
+	/**
+	 * title of plot
+	 */
+	private String _myTitle = "Empty";
+
+	/**
+	 * the name of the units on the y axis
+	 */
+	private String _myUnits;
+
+	/**
+	 * how to format the data
+	 */
+	private formattingOperation _theFormatter;
+
+	/**
+	 * the data we're storing
+	 */
+	private AbstractDataset _dataset;
 
 	private final class SelectionHelper implements ISelectionProvider
 	{
@@ -107,8 +168,6 @@ public class XYPlotView extends ViewPart
 	 */
 	private Action _exportToClipboard;
 
-	private String _myTitle = "Empty";
-
 	/**
 	 * the Swing control we insert the plot into
 	 */
@@ -142,6 +201,11 @@ public class XYPlotView extends ViewPart
 	private Action _editMyProperties;
 
 	/**
+	 * store the plot information when we're reloading a plot in a fresh session
+	 */
+	private IMemento _myMemento = null;
+
+	/**
 	 * The constructor.
 	 */
 	public XYPlotView()
@@ -163,12 +227,21 @@ public class XYPlotView extends ViewPart
 	public void showPlot(String title, AbstractDataset dataset, String units,
 			formattingOperation theFormatter)
 	{
+		// right, store the incoming data, so we can save it when/if
+		// Eclipse closes with this view still open
 		_myTitle = title;
+		_myUnits = units;
+		_theFormatter = theFormatter;
+		_dataset = dataset;
+
 		// ok, update the plot.
 		this.setPartName(_myTitle);
 
-		// ok, fill in the plot
-		fillThePlot(title, units, theFormatter, dataset);
+		if (dataset != null)
+		{
+			// ok, fill in the plot
+			fillThePlot(title, units, theFormatter, dataset);
+		}
 	}
 
 	/**
@@ -199,6 +272,74 @@ public class XYPlotView extends ViewPart
 		_selectionHelper = new SelectionHelper();
 		getSite().setSelectionProvider(_selectionHelper);
 
+		// hey, have we got our data?
+		if (_myMemento != null)
+		{
+			// yup, better restore it then.
+			restorePreviousPlot();
+		}
+
+	}
+
+	/** we're restoring a previous plot. retrieve the data from the memento, and stick 
+	 * it back into the plot
+	 * 
+	 */
+	private void restorePreviousPlot()
+	{
+		// retrieve the obvious stuff
+		_myTitle = _myMemento.getString(TITLE);
+		_myUnits = _myMemento.getString(UNITS);
+
+		// get our special streaming library ready
+		XStream xs = new XStream(new DomDriver());
+
+		// formatter first
+		String theFormatterStr = _myMemento.getString(FORMATTER);
+
+		// hey, do we have a formatter?
+		if (theFormatterStr != null)
+			_theFormatter = (formattingOperation) xs.fromXML(theFormatterStr);
+
+		// and the data
+		String dataStr = _myMemento.getString(DATA);
+		_dataset = (AbstractDataset) xs.fromXML(dataStr);
+
+		// right, that's the essential bits, now open the plot
+		showPlot(_myTitle, _dataset, _myUnits, _theFormatter);
+
+		// right the plot's done, put back in our fancy formatting bits
+		String str;
+		str = _myMemento.getString(PLOT_ATTRIBUTES.AxisFont);
+		if(str != null)
+			_thePlotArea.setAxisFont((Font) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.TickFont);
+		if(str != null)
+			_thePlotArea.setTickFont((Font) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.TitleFont);
+		if(str != null)
+			_thePlotArea.setTitleFont((Font) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
+		if(str != null)
+			_thePlotArea.setDataLineWidth((Integer) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
+		if(str != null)
+			_thePlotArea.setTitle((String) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.X_Title);
+		if(str != null)
+			_thePlotArea.setX_AxisTitle((String) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.Y_Title);
+		if(str != null)
+			_thePlotArea.setY_AxisTitle((String) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.DateUnits);
+		if(str != null)
+			_thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
+		if(str != null)
+			_thePlotArea.setRelativeTimes((Boolean) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.ShowSymbols);
+		if(str != null)
+			_thePlotArea.setShowSymbols((Boolean) xs.fromXML(str));
 	}
 
 	private void fillThePlot(String title, String units, formattingOperation theFormatter,
@@ -437,7 +578,7 @@ public class XYPlotView extends ViewPart
 		manager.add(new Separator());
 		manager.add(_exportToWMF);
 		manager.add(_exportToClipboard);
-		manager.add(_editMyProperties);		
+		manager.add(_editMyProperties);
 	}
 
 	private void fillContextMenu(IMenuManager manager)
@@ -544,4 +685,99 @@ public class XYPlotView extends ViewPart
 			System.out.println("we haven't got any properties yet");
 		}
 	}
+
+	/**
+	 * right, load ourselves from the supplied dataset
+	 * 
+	 * @param site
+	 * @param memento
+	 * @throws PartInitException
+	 */
+	public void init(IViewSite site, IMemento memento) throws PartInitException
+	{
+		// let our parent go for it first
+		super.init(site, memento);
+
+		// is there any data waiting? We get an empty memento if this is a fresh
+		// view
+		if (memento != null)
+		{
+			_myMemento = memento;
+		}
+	}
+
+	/**
+	 * right - store ourselves into the supplied memento object
+	 * 
+	 * @param memento
+	 */
+	public void saveState(IMemento memento)
+	{
+		// let our parent go for it first
+		super.saveState(memento);
+
+		memento.putString(TITLE, _myTitle);
+		memento.putString(UNITS, _myUnits);
+
+		XStream xs = new XStream(new DomDriver());
+		String str;
+
+		// String str = xs.toXML(_theFormatter);
+		if (_theFormatter != null)
+		{
+			str = xs.toXML(_theFormatter);
+			memento.putString(FORMATTER, str);
+		}
+
+		str = xs.toXML(_dataset);
+		memento.putString(DATA, str);
+
+		// now the other plot bits
+		str = xs.toXML(_thePlotArea.getAxisFont());
+		memento.putString(PLOT_ATTRIBUTES.AxisFont, str);
+		str = xs.toXML(_thePlotArea.getTickFont());
+		memento.putString(PLOT_ATTRIBUTES.TickFont, str);
+		str = xs.toXML(_thePlotArea.getTitleFont());
+		memento.putString(PLOT_ATTRIBUTES.TitleFont, str);
+		str = xs.toXML(_thePlotArea.getDataLineWidth());
+		memento.putString(PLOT_ATTRIBUTES.LineWidth, str);
+		str = xs.toXML(_thePlotArea.getTitle());
+		memento.putString(PLOT_ATTRIBUTES.Title, str);
+		str = xs.toXML(_thePlotArea.getX_AxisTitle());
+		memento.putString(PLOT_ATTRIBUTES.X_Title, str);
+		str = xs.toXML(_thePlotArea.getY_AxisTitle());
+		memento.putString(PLOT_ATTRIBUTES.Y_Title, str);
+		str = xs.toXML(_thePlotArea.getDateTickUnits());
+		memento.putString(PLOT_ATTRIBUTES.DateUnits, str);
+		str = xs.toXML(_thePlotArea.getRelativeTimes());
+		memento.putString(PLOT_ATTRIBUTES.RelativeTimes, str);
+		str = xs.toXML(_thePlotArea.isShowSymbols());
+		memento.putString(PLOT_ATTRIBUTES.ShowSymbols, str);
+		
+	}
+
+	public static class StringHolder
+	{
+		private String _myString;
+
+		public StringHolder()
+		{
+		};
+
+		public StringHolder(String theString)
+		{
+			_myString = theString;
+		}
+
+		public String get_myString()
+		{
+			return _myString;
+		}
+
+		public void set_myString(String string)
+		{
+			_myString = string;
+		};
+	}
+
 }
