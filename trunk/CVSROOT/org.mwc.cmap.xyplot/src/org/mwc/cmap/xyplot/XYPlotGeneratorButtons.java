@@ -10,14 +10,15 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.TimeController.views.TimeController;
+import org.mwc.cmap.core.DataTypes.*;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 
-import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2;
+import Debrief.Tools.FilterOperations.*;
 import Debrief.Tools.Tote.*;
 import Debrief.Tools.Tote.Calculations.*;
+import MWC.Algorithms.Plotting.*;
 import MWC.GUI.*;
-import MWC.GUI.ptplot.jfreeChart.Utils.ModifiedVerticalNumberAxis;
 import MWC.GenericData.*;
 
 import com.jrefinery.chart.*;
@@ -34,14 +35,13 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 	 */
 	private Vector _theOperations;
 
-	/** remember past selections from the drop-down list
-	 * 
+	/**
+	 * remember past selections from the drop-down list
 	 */
 	private static HashMap _pastSelections;
-	
-	
-	/** constructor - just initialise ourselves
-	 * 
+
+	/**
+	 * constructor - just initialise ourselves
 	 */
 	public XYPlotGeneratorButtons()
 	{
@@ -51,69 +51,36 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		{
 
 			_theOperations = new Vector(0, 1);
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new depthCalc(),
-					new ShowTimeVariablePlot2.formattingOperation()
-					{
-						public void format(final XYPlot thePlot)
-						{
-							VerticalNumberAxis theAxis = (ModifiedVerticalNumberAxis) thePlot
-									.getVerticalAxis();
-							theAxis.setInverted(true);
-						}
-					}, false));
-
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new courseCalc(),
-					new ShowTimeVariablePlot2.formattingOperation()
-					{
-						public void format(final XYPlot thePlot)
-						{
-							VerticalNumberAxis theAxis = (ModifiedVerticalNumberAxis) thePlot
-									.getVerticalAxis();
-							theAxis.setRange(0, 360);
-						}
-					}, false));
-
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new speedCalc(), null, false));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new rangeCalc(), null, true));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new bearingCalc(), null, true));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new bearingRateCalc(),
-					new ShowTimeVariablePlot2.formattingOperation()
-					{
-						public void format(final XYPlot thePlot)
-						{
-							VerticalNumberAxis theAxis = (ModifiedVerticalNumberAxis) thePlot
-									.getVerticalAxis();
-							theAxis.setRange(-180, +180);
-							theAxis.setLabel("(Left)    " + theAxis.getLabel() + "     (Right)");
-						}
-					}, true));
+			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+					new depthCalc(), new DepthFormatter(), false));
+			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+					new courseCalc(), new CourseFormatter(), false));
+			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+					new speedCalc(), null, false));
+			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+					new rangeCalc(), null, true));
+			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+					new bearingCalc(), null, true));
+			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+					new bearingRateCalc(), new BearingRateFormatter(), true));
 
 			// provide extra formatting to the y-axis if we're plotting in uk format
 			// (-180...+180).
 			// but not for US format
-			ShowTimeVariablePlot2.formattingOperation theFormatter = null;
+			formattingOperation theFormatter = null;
 			if (relBearingCalc.useUKFormat())
 			{
-				theFormatter = new ShowTimeVariablePlot2.formattingOperation()
-				{
-					public void format(final XYPlot thePlot)
-					{
-						VerticalNumberAxis theAxis = (ModifiedVerticalNumberAxis) thePlot
-								.getVerticalAxis();
-						theAxis.setRange(-180, +180);
-						theAxis.setLabel("(Red)    " + theAxis.getLabel() + "     (Green)");
-					}
-				};
+				theFormatter = new RelBearingFormatter();
 			}
 			else
 				theFormatter = null;
 
 			// and add the relative bearing calcuation
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(new relBearingCalc(), theFormatter,
-					true));
+			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+					new relBearingCalc(), theFormatter, true));
 		}
-		
-		if(_pastSelections == null)
+
+		if (_pastSelections == null)
 			_pastSelections = new HashMap();
 	}
 
@@ -125,7 +92,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		Object[] results = new Object[_theOperations.size()];
 		for (int i = 0; i < _theOperations.size(); i++)
 		{
-			ShowTimeVariablePlot2.CalculationHolder thisC = (ShowTimeVariablePlot2.CalculationHolder) _theOperations.elementAt(i);
+			ShowTimeVariablePlot2.CalculationHolder thisC = (ShowTimeVariablePlot2.CalculationHolder) _theOperations
+					.elementAt(i);
 			choices[i] = thisC.toString();
 			results[i] = thisC;
 		}
@@ -138,10 +106,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		if (selection == 0)
 		{
 			res = (ShowTimeVariablePlot2.CalculationHolder) dialog._result;
-			
+
 			// right, remember what was selected
 			_pastSelections.put(choices[0], new Integer(dialog._resultIndex));
-			
+
 		}
 		else
 		{
@@ -157,7 +125,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		private Object[] _choices;
 
 		private Object _result;
-		
+
 		private int _resultIndex;
 
 		private String _message;
@@ -195,10 +163,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				}
 			});
 			theOps.setItems(_titles);
-			
+
 			// right, have we asked for this one before?
 			Object lastAnswer = _pastSelections.get(_titles[0]);
-			if(lastAnswer != null)
+			if (lastAnswer != null)
 			{
 				// re-select it then
 				Integer lastInt = (Integer) lastAnswer;
@@ -209,17 +177,15 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				// just select the first one
 				theOps.select(0);
 			}
-			
+
 			// ok - just store the current one, in case the user just 'accepts' it.
 			int selItem = theOps.getSelectionIndex();
 			_result = _choices[selItem];
 			_resultIndex = selItem;
-			
+
 			return holder;
 		}
 	}
-
-
 
 	/**
 	 * add items to the popup menu (if suitable tracks are selected)
@@ -250,7 +216,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				duffItemFound = true;
 		}
 
-		if ((subjects.length > 1) && ( duffItemFound))
+		if ((subjects.length > 1) && (duffItemFound))
 		{
 			String txt = "Sorry, not all items are suitable data-sources for an xy plot";
 			MessageDialog
@@ -262,46 +228,46 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		{
 			public void run()
 			{
-	
+
 				IWorkbench wb = PlatformUI.getWorkbench();
 				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 				IWorkbenchPage page = win.getActivePage();
 
-
 				// get ready for the start/end times
 				HiResDate startTime, endTime;
-				
-				
+
 				try
 				{
 
 					// right, we need the time controller if we're going to get the times
 					String timeId = "org.mwc.cmap.TimeController.views.TimeController";
 					IViewReference timeRef = page.findViewReference(timeId);
-					
-					if(timeRef == null)
+
+					if (timeRef == null)
 					{
 						String title = "XY Plot";
 						String message = "Time Controller is not open. Please open time-controller and select a time period";
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), title, message);
+						MessageDialog
+								.openError(Display.getCurrent().getActiveShell(), title, message);
 						return;
 					}
-					
+
 					TimeController timer = (TimeController) timeRef.getView(true);
-					
+
 					// that's it, now get the data
-					TimePeriod period  = timer.getPeriod();
+					TimePeriod period = timer.getPeriod();
 					startTime = period.getStartDTG();
 					endTime = period.getEndDTG();
-					
-					if((startTime.greaterThan(endTime))|| (startTime.equals(endTime)))
+
+					if ((startTime.greaterThan(endTime)) || (startTime.equals(endTime)))
 					{
 						String title = "XY Plot";
 						String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
-						MessageDialog.openError(Display.getCurrent().getActiveShell(), title, message);
+						MessageDialog
+								.openError(Display.getCurrent().getActiveShell(), title, message);
 						return;
 					}
-					
+
 					// ok, sort out what we're plotting
 					// find out what the user wants to view
 					ShowTimeVariablePlot2.CalculationHolder theHolder = getChoice();
@@ -335,27 +301,28 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 						// if it's relative, we use the primary track name in the title
 						theTitle = thePrimary.getName() + " " + theTitle;
 					}
-					
+
 					// and the plot itself
 					String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
 					page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
 
 					// put our subjects into a vector
-					Vector theTracks = new Vector(0,1);
+					Vector theTracks = new Vector(0, 1);
 					for (int i = 0; i < subjects.length; i++)
 					{
 						Editable thisS = subjects[i];
 						theTracks.add(thisS);
 					}
-					
+
 					// right, now for the data
-					AbstractDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary,
-							theHolder, theTracks, startTime, endTime, null);
-					
+					AbstractDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary, theHolder,
+							theTracks, startTime, endTime, null);
+
 					// ok, try to retrieve the view
 					IViewReference plotRef = page.findViewReference(plotId, theTitle);
 					XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-					plotter.showPlot(theTitle, ds, myOperation.toString() + " (" +  myOperation.getUnits() + ")", theHolder._theFormatter);
+					plotter.showPlot(theTitle, ds, myOperation.toString() + " ("
+							+ myOperation.getUnits() + ")", theHolder._theFormatter);
 				}
 				catch (PartInitException e)
 				{
@@ -366,7 +333,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		};
 
 		// ok - set the image descriptor
-		viewPlot.setImageDescriptor(XYPlotPlugin.getImageDescriptor("icons/document_chart.png"));
+		viewPlot.setImageDescriptor(XYPlotPlugin
+				.getImageDescriptor("icons/document_chart.png"));
 
 		parent.add(new Separator());
 		parent.add(viewPlot);
@@ -397,7 +365,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			if (selection == 0)
 			{
 				res = (WatchableList) sel._result;
-				
+
 				// right, remember what was selected
 				_pastSelections.put(labels[0], new Integer(sel._resultIndex));
 			}
