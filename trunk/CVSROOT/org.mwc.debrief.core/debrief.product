@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.1"?>
 
-<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.help.base.infocenterApplication" useFeatures="true">
+<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="true">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/new_logo2.gif"/>
@@ -13,12 +13,12 @@
    <configIni use="default"/>
 
    <launcherArgs>
-      <vmArgs>-vmargs -Xms40m -Xmx256m</vmArgs>
+      <programArgs>-perspective org.mwc.debrief.core.Perspective</programArgs>
+      <vmArgs>-Xms40m -Xmx256m</vmArgs>
       <vmArgsWin>-Djava.library.path=.;</vmArgsWin>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
-
 
    <launcher name="debriefNG">
       <solaris/>
@@ -62,6 +62,7 @@
       <plugin id="org.eclipse.help.ui"/>
       <plugin id="org.eclipse.help.webapp"/>
       <plugin id="org.eclipse.jdt.core"/>
+      <plugin id="org.eclipse.jdt.core.manipulation"/>
       <plugin id="org.eclipse.jdt.debug"/>
       <plugin id="org.eclipse.jdt.debug.ui"/>
       <plugin id="org.eclipse.jdt.junit"/>
@@ -86,6 +87,7 @@
       <plugin id="org.eclipse.swt"/>
       <plugin id="org.eclipse.swt.win32.win32.x86"/>
       <plugin id="org.eclipse.team.core"/>
+      <plugin id="org.eclipse.team.ui"/>
       <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.tomcat"/>
       <plugin id="org.eclipse.ui"/>
