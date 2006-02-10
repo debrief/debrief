@@ -321,7 +321,7 @@ public class XYPlotView extends ViewPart
 			_thePlotArea.setTitleFont((Font) xs.fromXML(str));
 		str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
 		if(str != null)
-			_thePlotArea.setDataLineWidth((Integer) xs.fromXML(str));
+			_thePlotArea.setDataLineWidth(((Integer) xs.fromXML(str)).intValue());
 		str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
 		if(str != null)
 			_thePlotArea.setTitle((String) xs.fromXML(str));
@@ -336,10 +336,10 @@ public class XYPlotView extends ViewPart
 			_thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
 		str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
 		if(str != null)
-			_thePlotArea.setRelativeTimes((Boolean) xs.fromXML(str));
+			_thePlotArea.setRelativeTimes(((Boolean) xs.fromXML(str)).booleanValue());
 		str = _myMemento.getString(PLOT_ATTRIBUTES.ShowSymbols);
 		if(str != null)
-			_thePlotArea.setShowSymbols((Boolean) xs.fromXML(str));
+			_thePlotArea.setShowSymbols(((Boolean) xs.fromXML(str)).booleanValue());
 	}
 
 	private void fillThePlot(String title, String units, formattingOperation theFormatter,
@@ -739,7 +739,7 @@ public class XYPlotView extends ViewPart
 		memento.putString(PLOT_ATTRIBUTES.TickFont, str);
 		str = xs.toXML(_thePlotArea.getTitleFont());
 		memento.putString(PLOT_ATTRIBUTES.TitleFont, str);
-		str = xs.toXML(_thePlotArea.getDataLineWidth());
+		str = xs.toXML(new Integer(_thePlotArea.getDataLineWidth()));
 		memento.putString(PLOT_ATTRIBUTES.LineWidth, str);
 		str = xs.toXML(_thePlotArea.getTitle());
 		memento.putString(PLOT_ATTRIBUTES.Title, str);
@@ -749,9 +749,9 @@ public class XYPlotView extends ViewPart
 		memento.putString(PLOT_ATTRIBUTES.Y_Title, str);
 		str = xs.toXML(_thePlotArea.getDateTickUnits());
 		memento.putString(PLOT_ATTRIBUTES.DateUnits, str);
-		str = xs.toXML(_thePlotArea.getRelativeTimes());
+		str = xs.toXML(new Boolean(_thePlotArea.getRelativeTimes()));
 		memento.putString(PLOT_ATTRIBUTES.RelativeTimes, str);
-		str = xs.toXML(_thePlotArea.isShowSymbols());
+		str = xs.toXML(new Boolean(_thePlotArea.isShowSymbols()));
 		memento.putString(PLOT_ATTRIBUTES.ShowSymbols, str);
 		
 	}
