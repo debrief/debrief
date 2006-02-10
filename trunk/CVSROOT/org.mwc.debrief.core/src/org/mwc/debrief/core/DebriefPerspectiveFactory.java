@@ -55,6 +55,10 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
 		
+		// hey - try to add the 'new plot' to the New menu
+		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
+		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
+		
 	}
 
 	
