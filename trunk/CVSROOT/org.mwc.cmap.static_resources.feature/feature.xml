@@ -657,6 +657,10 @@ Ty Coon, President of Vice
 That&apos;s all there is to it!
    </license>
 
+   <url>
+      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+   </url>
+
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
@@ -666,10 +670,7 @@ That&apos;s all there is to it!
          id="org.mwc.cmap.static_resources"
          download-size="0"
          install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-   <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
-   </url>
+         unpack="true"
+         version="0.0.0"/>
 
 </feature>
