@@ -26,24 +26,25 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
-		topLeft.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
 		IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f,
 				"topLeft");
 		midLeft.addView(CorePlugin.TOTE);
-		midLeft.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
 			"midLeft");
-		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
-		bottomLeft.addView(CorePlugin.TOTE);
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
+		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
 		
 		// bottom: placeholder for the xyplot
-		layout.addPlaceholder(CorePlugin.XY_PLOT + ":*", IPageLayout.BOTTOM, 0.7f, editorArea);
+		IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
+		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
+		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
+		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
+		bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
 		
 		
 		// and our view shortcuts
@@ -51,7 +52,8 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.NARRATIVES);
 		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
 		layout.addShowViewShortcut(CorePlugin.TOTE);
-		
+
+		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
 		
