@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.1"?>
 
-<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="true">
+<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="false">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/new_logo2.gif"/>
@@ -30,17 +30,12 @@
    <intro introId="org.mwc.debrief.core.intro"/>
 
    <plugins>
-      <plugin id="com.ibm.icu"/>
       <plugin id="org.apache.ant"/>
       <plugin id="org.apache.lucene"/>
       <plugin id="org.eclipse.ant.core"/>
-      <plugin id="org.eclipse.ant.ui"/>
-      <plugin id="org.eclipse.compare"/>
-      <plugin id="org.eclipse.core.boot"/>
       <plugin id="org.eclipse.core.commands"/>
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.expressions"/>
-      <plugin id="org.eclipse.core.filebuffers"/>
       <plugin id="org.eclipse.core.filesystem"/>
       <plugin id="org.eclipse.core.filesystem.win32.x86"/>
       <plugin id="org.eclipse.core.jobs"/>
@@ -50,66 +45,33 @@
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.variables"/>
-      <plugin id="org.eclipse.debug.core"/>
-      <plugin id="org.eclipse.debug.ui"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
       <plugin id="org.eclipse.equinox.registry"/>
-      <plugin id="org.eclipse.faqs"/>
       <plugin id="org.eclipse.help"/>
       <plugin id="org.eclipse.help.appserver"/>
       <plugin id="org.eclipse.help.base"/>
       <plugin id="org.eclipse.help.ui"/>
       <plugin id="org.eclipse.help.webapp"/>
-      <plugin id="org.eclipse.jdt.core"/>
-      <plugin id="org.eclipse.jdt.core.manipulation"/>
-      <plugin id="org.eclipse.jdt.debug"/>
-      <plugin id="org.eclipse.jdt.debug.ui"/>
-      <plugin id="org.eclipse.jdt.junit"/>
-      <plugin id="org.eclipse.jdt.junit.runtime"/>
-      <plugin id="org.eclipse.jdt.launching"/>
-      <plugin id="org.eclipse.jdt.ui"/>
       <plugin id="org.eclipse.jface"/>
-      <plugin id="org.eclipse.jface.text"/>
-      <plugin id="org.eclipse.ltk.core.refactoring"/>
-      <plugin id="org.eclipse.ltk.ui.refactoring"/>
       <plugin id="org.eclipse.osgi"/>
-      <plugin id="org.eclipse.osgi.services"/>
-      <plugin id="org.eclipse.osgi.util"/>
-      <plugin id="org.eclipse.pde"/>
-      <plugin id="org.eclipse.pde.build"/>
-      <plugin id="org.eclipse.pde.core"/>
-      <plugin id="org.eclipse.pde.runtime"/>
-      <plugin id="org.eclipse.pde.ui"/>
       <plugin id="org.eclipse.platform"/>
-      <plugin id="org.eclipse.rcp"/>
-      <plugin id="org.eclipse.search"/>
       <plugin id="org.eclipse.swt"/>
       <plugin id="org.eclipse.swt.win32.win32.x86"/>
-      <plugin id="org.eclipse.team.core"/>
-      <plugin id="org.eclipse.team.ui"/>
-      <plugin id="org.eclipse.text"/>
       <plugin id="org.eclipse.tomcat"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.browser"/>
       <plugin id="org.eclipse.ui.cheatsheets"/>
-      <plugin id="org.eclipse.ui.console"/>
-      <plugin id="org.eclipse.ui.editors"/>
-      <plugin id="org.eclipse.ui.externaltools"/>
       <plugin id="org.eclipse.ui.forms"/>
       <plugin id="org.eclipse.ui.ide"/>
       <plugin id="org.eclipse.ui.intro"/>
-      <plugin id="org.eclipse.ui.navigator"/>
-      <plugin id="org.eclipse.ui.navigator.resources"/>
-      <plugin id="org.eclipse.ui.presentations.r21"/>
       <plugin id="org.eclipse.ui.views"/>
       <plugin id="org.eclipse.ui.win32"/>
       <plugin id="org.eclipse.ui.workbench"/>
-      <plugin id="org.eclipse.ui.workbench.compatibility"/>
-      <plugin id="org.eclipse.ui.workbench.texteditor"/>
       <plugin id="org.eclipse.update.configurator"/>
       <plugin id="org.eclipse.update.core"/>
       <plugin id="org.eclipse.update.core.win32"/>
+      <plugin id="org.eclipse.update.scheduler"/>
       <plugin id="org.eclipse.update.ui"/>
       <plugin id="org.junit"/>
       <plugin id="org.mwc.cmap.TimeController"/>
@@ -118,6 +80,7 @@
       <plugin id="org.mwc.cmap.legacy"/>
       <plugin id="org.mwc.cmap.narrative"/>
       <plugin id="org.mwc.cmap.plotViewer"/>
+      <plugin id="org.mwc.cmap.static_resources"/>
       <plugin id="org.mwc.cmap.tests"/>
       <plugin id="org.mwc.cmap.tote"/>
       <plugin id="org.mwc.cmap.xyplot"/>
