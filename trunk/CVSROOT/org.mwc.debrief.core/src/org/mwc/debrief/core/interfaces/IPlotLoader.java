@@ -3,6 +3,8 @@
  */
 package org.mwc.debrief.core.interfaces;
 
+import java.io.InputStream;
+
 import org.eclipse.core.runtime.*;
 import org.eclipse.ui.IEditorInput;
 import org.mwc.cmap.core.interfaces.INamedItem;
@@ -19,9 +21,10 @@ public interface IPlotLoader extends INamedItem
 	/** load the supplied editor input into the plot
 	 * 
 	 * @param thePlot the plot destination
-	 * @param input the file source
+	 * @param inputStream the file source
+	 * @param fileName TODO
 	 */
-	public void loadFile(PlotEditor thePlot, IEditorInput input);
+	public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName);
 
 	
 	/** test whether this loader can load the suppled input source
@@ -104,7 +107,7 @@ public interface IPlotLoader extends INamedItem
 		}
 		
 
-		public void loadFile(PlotEditor thePlot, IEditorInput input)
+		public void loadFile(PlotEditor thePlot, InputStream inputStream, String fileName)
 		{
 			if(_myLoader == null)
 			{
@@ -130,7 +133,7 @@ public interface IPlotLoader extends INamedItem
 			if(_myLoader != null)
 			{
 				// we either had it already, or we're trying to load it now. go for it
-				_myLoader.loadFile(thePlot, input);
+				_myLoader.loadFile(thePlot, inputStream, fileName);
 			}
 			else
 			{

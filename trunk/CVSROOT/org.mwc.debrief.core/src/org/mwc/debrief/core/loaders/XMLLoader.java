@@ -57,26 +57,24 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
-	public void loadFile(final PlotEditor thePlot, IEditorInput input)
+	public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
 	{
-		if (input instanceof org.eclipse.ui.part.FileEditorInput)
-		{
-			org.eclipse.ui.part.FileEditorInput ife = (org.eclipse.ui.part.FileEditorInput) input;
-			final IFile _theFile = ife.getFile();
-			String theName = _theFile.getName();
-
-			final String thePath = _theFile.getFullPath().toOSString();
-			CorePlugin.logError(Status.INFO, "About to load XML file:" + theName,
-					null);
+//		if (inputStream instanceof org.eclipse.ui.part.FileEditorInput)
+//		{
+//			org.eclipse.ui.part.FileEditorInput ife = (org.eclipse.ui.part.FileEditorInput) inputStream;
+//			final IFile _theFile = ife.getFile();
+//			String theName = _theFile.getName();
+//
+//			final String thePath = _theFile.getFullPath().toOSString();
+//			CorePlugin.logError(Status.INFO, "About to load XML file:" + theName,
+//					null);
 			final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 			try
 			{
-				// stick it in a stream
-				final InputStream is = _theFile.getContents(true);
 
 				// hmm, is there anything in the file?
-				int numAvailable = is.available();
+				int numAvailable = inputStream.available();
 				if (numAvailable > 0)
 				{
 
@@ -93,14 +91,14 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 							try
 							{
 								CorePlugin.logError(Status.INFO, "about to start loading:"
-										+ thePath, null);
+										+ fileName, null);
 
 								// ok - get loading going
 
-								doTheLoad(theLayers, is, thePath, thePlot, thePlot);
+								doTheLoad(theLayers, inputStream, fileName, thePlot, thePlot);
 
 								CorePlugin.logError(Status.INFO,
-										"completed loading:" + thePath, null);
+										"completed loading:" + fileName, null);
 
 								// and inform the plot editor
 								thePlot.loadingComplete(this);
@@ -112,7 +110,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 							{
 								e.printStackTrace();
 								CorePlugin.logError(Status.ERROR, "Problem loading datafile:"
-										+ thePath, e);
+										+ fileName, e);
 							}
 							finally
 							{
@@ -130,17 +128,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 				}
 
 			}
-
-			catch (IOException e)
-			{
-				CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
-						"Unable to do valid file check for:" + theName, e);
-			}
-			catch (CoreException e)
-			{
-				CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
-						"Unable to open XML file for input:" + theName + " out of sync?", e);
-			}
 			catch (InvocationTargetException e)
 			{
 				// TODO Auto-generated catch block
@@ -151,10 +138,15 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			catch (IOException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 			finally
 			{
 			}
-		}
+	//	}
 		// ok, load the data...
 		CorePlugin.logError(Status.INFO, "Successfully loaded XML file", null);
 	}

@@ -9,7 +9,6 @@ import java.lang.reflect.InvocationTargetException;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.*;
-import org.eclipse.ui.part.FileEditorInput;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
@@ -78,33 +77,9 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
 	 *      org.eclipse.ui.IEditorInput)
 	 */
-public void loadFile(final PlotEditor thePlot, IEditorInput input)
+public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
 	{
-		final String theFileName;
-		final String thePath;
-		
-		if(input instanceof FileEditorInput)
-		{
-			FileEditorInput iff = (FileEditorInput) input;
-			theFileName = iff.getName();
-			thePath =  iff.getPath().toOSString();
-		}	
-		else if(input instanceof IPathEditorInput)
-		{
-			IPathEditorInput ip = (IPathEditorInput) input;
-			theFileName = ip.getName();
-			thePath = ip.getPath().toOSString();
-		}
-		else
-		{
-			CorePlugin.logError(Status.ERROR, "Failed to recognise file type of:" + input.getName(),
-					null);
-			
-			theFileName = null;
-			thePath = null;
-			
-			return;
-		}
+
 
 // org.eclipse.ui.part.FileEditorInput ife =
 // (org.eclipse.ui.part.FileEditorInput) input;
@@ -114,15 +89,12 @@ public void loadFile(final PlotEditor thePlot, IEditorInput input)
 // final String thePath = _theFile.getFullPath().toOSString();
 // IPath iPath = _theFile.getFullPath();
 
-		CorePlugin.logError(Status.INFO, "About to load REPLAY file:" + theFileName,
+		CorePlugin.logError(Status.INFO, "About to load REPLAY file:" + fileName,
 				null);
 		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 		try
 		{
-			// stick it in a stream
-			final InputStream is = new FileInputStream(thePath);
-
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IProgressService ps = wb.getProgressService();
 			ps.busyCursorWhile(new IRunnableWithProgress()
@@ -136,7 +108,7 @@ public void loadFile(final PlotEditor thePlot, IEditorInput input)
 					try
 					{
 						// ok - get loading going
-						doTheLoad(thePath, theFileName, theLayers, is);
+						doTheLoad(fileName, fileName, theLayers, inputStream);
 						
 						// and inform the plot editor
 						thePlot.loadingComplete(this);
@@ -144,7 +116,7 @@ public void loadFile(final PlotEditor thePlot, IEditorInput input)
 					catch (RuntimeException e)
 					{
 						e.printStackTrace();
-						CorePlugin.logError(Status.ERROR, "Problem loading datafile:" + theFileName, e);
+						CorePlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
 					}
 					finally
 					{
@@ -157,11 +129,6 @@ public void loadFile(final PlotEditor thePlot, IEditorInput input)
 					}
 				}
 			});
-		}
-		catch (FileNotFoundException e)
-		{
-			CorePlugin.logError(org.eclipse.core.runtime.Status.ERROR,
-					"Unable to open REP file for input:" + theFileName, e);
 		}
 		catch (InvocationTargetException e)
 		{

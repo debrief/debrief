@@ -19,6 +19,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
+import org.mwc.cmap.plotViewer.actions.FitToWindow;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
@@ -187,8 +188,42 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	private void loadThisFile(IEditorInput input)
 	{
+		try
+		{
+			IFileEditorInput ife = (IFileEditorInput) input;
+			InputStream is = ife.getFile().getContents();
+			loadThisStream(is, input.getName());
+		}
+		catch (CoreException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * @param input
+	 *          the file to insert
+	 */
+	private void loadThisFile(String filePath)
+	{
+		try
+		{
+			FileInputStream ifs = new FileInputStream(filePath);
+			loadThisStream(ifs, filePath);
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+		
+	
+	private void loadThisStream(InputStream is, String fileName)
+	{
 		// right, see if any of them will do our edit
-		IPlotLoader[] loaders = _loader.findLoadersFor(input.getName());
+		IPlotLoader[] loaders = _loader.findLoadersFor(fileName);
 		// did we find any?
 		if (loaders.length > 0)
 		{
@@ -201,7 +236,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 					// get it to load. Just in case it's an asychronous load operation, we
 					// rely on it calling us back (loadingComplete)
-					thisLoader.loadFile(this, input);
+					thisLoader.loadFile(this, is, fileName);
 				}
 			}
 			catch (RuntimeException e)
@@ -343,9 +378,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		for (int i = 0; i < fileNames.length; i++)
 		{
 			final String thisFilename = fileNames[i];
+			System.out.println("should be loading:" + thisFilename);
+			loadThisFile(thisFilename);
+			
 //			File newFile = new java.io.File(thisFilename);
 			// File thisFile = new File(thisFilename);
-			System.out.println("should be loading:" + thisFilename);
 //			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
 //			 = new
 //			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
@@ -353,11 +390,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 //			IEditorInput theInput = new JavaFileEditorInput(newFile);
 //			 this.loadThisFile(theInput);
-			DialogFactory.showMessage("Load plot", "Sorry, plots must be loaded from a project");
+//			DialogFactory.showMessage("Load plot", "Sorry, plots must be loaded from a project");
 
 		}
 
-		// ok, get loading.
+		// ok, we're probably done - fire the update
+		this._myLayers.fireExtended();
+		
+		// and resize to make sure we're showing all the data
+		this._myChart.rescale();
 	
 
  }
