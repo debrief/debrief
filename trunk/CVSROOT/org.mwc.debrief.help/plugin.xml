@@ -79,6 +79,11 @@
             contentFile="cheat_sheets/GettingStarted/OpenPlot.xml"
             id="org.mwc.debrief.help.open_plot"
             name="Opening an existing plot"/>                                       
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            contentFile="cheat_sheets/GettingStarted/FindingYourData.xml"
+            id="org.mwc.debrief.help.existing_data"
+            name="Linking to existing datafiles"/>                                       
    </extension>
 
 
