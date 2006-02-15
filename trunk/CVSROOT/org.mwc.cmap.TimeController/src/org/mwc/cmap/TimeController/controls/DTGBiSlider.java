@@ -142,8 +142,6 @@ public class DTGBiSlider
 		Date lastDate = _maxVal.getDate();
 		_dateModel.setTotalRange(firstDate, lastDate);
 
-		// try for units of 10 * the current step
-//		_dateModel.setSegmentCount(10);
 	}
 
 	/**
@@ -160,6 +158,11 @@ public class DTGBiSlider
 
 	public void updateSelectedRanges(HiResDate minSelectedDate, HiResDate maxSelectedDate)
 	{
+
+		Date firstDate = minSelectedDate.getDate();
+		Date lastDate = maxSelectedDate.getDate();
+		_dateModel.setUserMinimum(firstDate);
+		_dateModel.setUserMaximum(lastDate);
 
 	}
 

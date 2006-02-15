@@ -30,6 +30,7 @@ import org.mwc.debrief.core.editors.painters.*;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.Timer.TimerListener;
 
 /**
@@ -478,7 +479,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			else if (event.getPropertyName().equals(TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
 			{
 				TimePeriod newPeriod = (TimePeriod) event.getNewValue();
-				System.out.println("heard about new time period!");
 				_slideManager.resetRange(newPeriod.getStartDTG(), newPeriod.getEndDTG());
 			}
 
@@ -603,7 +603,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 							// implementation here.
 							_myTemporalDataset = (TimeProvider) part;
-
+							
 							// and start listening to the new one
 							_myTemporalDataset.addListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -621,8 +621,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 								// TimeControlPreferences
 								_slideManager.resetRange(timeRange.getStartDTG(), timeRange.getEndDTG());
 
-								// and our range selector
+								// and our range selector - first the outer ranges
 								_dtgRangeSlider.updateOuterRanges(timeRange);
+								
+								// and now the slider positions
+								_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(), timeRange.getEndDTG());
 							}
 
 							checkTimeEnabled();
@@ -908,7 +911,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		{
 			if ((_controllableTime != null) && (_myTemporalDataset.getTime() != null))
 				enable = true;
-
 		}
 
 		final boolean finalEnabled = enable;
@@ -920,7 +922,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				if (!_wholePanel.isDisposed())
 				{
 					// aaah, if we're clearing the panel, set the text to "pending"
-					if (!finalEnabled)
+					if (_myTemporalDataset == null)
 					{
 						_timeLabel.setText("-----");
 					}
