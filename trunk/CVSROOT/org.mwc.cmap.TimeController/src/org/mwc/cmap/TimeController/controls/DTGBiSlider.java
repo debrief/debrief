@@ -158,12 +158,10 @@ public class DTGBiSlider
 
 	public void updateSelectedRanges(HiResDate minSelectedDate, HiResDate maxSelectedDate)
 	{
-
 		Date firstDate = minSelectedDate.getDate();
 		Date lastDate = maxSelectedDate.getDate();
 		_dateModel.setUserMinimum(firstDate);
 		_dateModel.setUserMaximum(lastDate);
-
 	}
 
 	/**
