@@ -126,6 +126,7 @@ public class DTGBiSlider
 		// great, now it's ready for the actual BiSlider control
 		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel,
 				_uiModel);
+		
 	}
 
 	public Composite getControl()
