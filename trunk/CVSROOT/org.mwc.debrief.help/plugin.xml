@@ -84,6 +84,11 @@
             contentFile="cheat_sheets/GettingStarted/FindingYourData.xml"
             id="org.mwc.debrief.help.existing_data"
             name="Linking to existing datafiles"/>                                       
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            contentFile="cheat_sheets/GettingStarted/GenerateProject.xml"
+            id="org.mwc.debrief.help.generate_project"
+            name="Generating a project"/>                                       
    </extension>
 
 
