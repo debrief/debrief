@@ -30,7 +30,6 @@ import org.mwc.debrief.core.editors.painters.*;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import MWC.Utilities.Timer.TimerListener;
 
 /**
@@ -307,18 +306,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
-		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png")
-			);
+		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setText("<");
-		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png")
-			);
+		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
 
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
-		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png")
-				);
+		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
 		_playButton.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -340,16 +336,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		});
 
 		Button sFwd = new Button(_btnPanel, SWT.NONE);
-		sFwd.setImage(TimeControllerPlugin.getImage("icons/media_forward.png")
-				);
+		sFwd.setImage(TimeControllerPlugin.getImage("icons/media_forward.png"));
 		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
-		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png")
-				);
+		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
 		Button eFwd = new Button(_btnPanel, SWT.NONE);
-		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png")
-				);
+		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 	}
 
@@ -536,7 +529,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			HiResDate newDTG = new HiResDate(0, micros);
 
 			// find the extent of the current dataset
-			TimePeriod timeP = _myTemporalDataset.getPeriod();
+			// TimePeriod timeP = _myTemporalDataset.getPeriod();
+
+			TimePeriod timeP = new TimePeriod.BaseTimePeriod(_myStepperProperties
+					.getSliderStartTime(), _myStepperProperties.getSliderEndTime());
 
 			// do we represent a valid time?
 			if (timeP.contains(newDTG))
@@ -603,7 +599,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 							// implementation here.
 							_myTemporalDataset = (TimeProvider) part;
-							
+
 							// and start listening to the new one
 							_myTemporalDataset.addListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
@@ -623,9 +619,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 								// and our range selector - first the outer ranges
 								_dtgRangeSlider.updateOuterRanges(timeRange);
-								
+
 								// and now the slider positions
-								_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(), timeRange.getEndDTG());
+								_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(), timeRange
+										.getEndDTG());
 							}
 
 							checkTimeEnabled();
@@ -988,7 +985,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	// //////////////////////////////
 	// temporal data management
 	// //////////////////////////////
-	
+
 	/**
 	 * the data we are looking at has updated. If we're set to follow that time,
 	 * update ourselves
@@ -1000,13 +997,14 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			if (!_timeLabel.isDisposed())
 			{
 				// updating the text items has to be done in the UI thread. make it so
-				// note - we use 'syncExec'. When we were using asyncExec, we would have a back-log 
+				// note - we use 'syncExec'. When we were using asyncExec, we would have
+				// a back-log
 				// of events waiting to fire.
-				
+
 				Runnable nextEvent = new Runnable()
 				{
 					public void run()
-					{					
+					{
 						// display the correct time.
 						String newVal = getFormattedDate(newDTG);
 
@@ -1025,7 +1023,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 								{
 									int newIndex = _slideManager.toSliderUnits(newDTG);
 									// did we find a valid time?
-									if(newIndex != -1)
+									if (newIndex != -1)
 									{
 										// yes, go for it.
 										_tNowSlider.setSelection(newIndex);
@@ -1035,7 +1033,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						}
 					}
 				};
-				
+
 				Display.getDefault().syncExec(nextEvent);
 
 			}
@@ -1327,8 +1325,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		};
 		_filterToSelectionAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin
 				.getImageDescriptor("icons/filter_to_period.gif"));
-		_filterToSelectionAction
-				.setToolTipText("Filter to time period on time-range slider update");
+		_filterToSelectionAction.setToolTipText("Filter plot data to selected time period");
 		menuManager.add(_filterToSelectionAction);
 		toolManager.add(_filterToSelectionAction);
 
@@ -1414,18 +1411,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	private void addBiSliderResolution(final IMenuManager menuManager)
 	{
 		// ok, second menu for the DTG formats
-		MenuManager formatMenu = new MenuManager("Range selector resolution");
+		MenuManager formatMenu = new MenuManager("Time slider increment");
 
 		// and store it
 		menuManager.add(formatMenu);
 
 		// and now the date formats
-		Object[][] stepSizes = { 
-				{ "1 sec", new Long(1000) },
-				{ "1 min", new Long(60 * 1000) }, 
-				{ "5 min", new Long(5 * 60 * 1000) },
-				{ "15 min", new Long(15 * 60 * 1000) },
-				{ "1 hour", new Long(60 * 60 * 1000) }, };
+		Object[][] stepSizes = { { "1 sec", new Long(1000) },
+				{ "1 min", new Long(60 * 1000) }, { "5 min", new Long(5 * 60 * 1000) },
+				{ "15 min", new Long(15 * 60 * 1000) }, { "1 hour", new Long(60 * 60 * 1000) }, };
 
 		for (int i = 0; i < stepSizes.length; i++)
 		{
@@ -1574,7 +1568,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		}
 	}
 
-	/** provide the currently selected period
+	/**
+	 * provide the currently selected period
 	 * 
 	 * @return
 	 */
