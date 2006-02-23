@@ -6,7 +6,6 @@ package org.mwc.debrief.core.loaders;
 import java.io.*;
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.resources.IFile;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.*;
