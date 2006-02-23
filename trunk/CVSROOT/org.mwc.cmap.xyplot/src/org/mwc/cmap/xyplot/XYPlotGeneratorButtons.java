@@ -218,126 +218,133 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 		if ((subjects.length > 1) && (duffItemFound))
 		{
-			String txt = "Sorry, not all items are suitable data-sources for an xy plot";
-			MessageDialog
-					.openInformation(Display.getCurrent().getActiveShell(), "XY Plot", txt);
-			return;
-		}
-
-		Action viewPlot = new Action("View XY plot")
-		{
-			public void run()
+			if (duffItemFound)
 			{
-
-				IWorkbench wb = PlatformUI.getWorkbench();
-				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-				IWorkbenchPage page = win.getActivePage();
-
-				// get ready for the start/end times
-				HiResDate startTime, endTime;
-
-				try
-				{
-
-					// right, we need the time controller if we're going to get the times
-					String timeId = "org.mwc.cmap.TimeController.views.TimeController";
-					IViewReference timeRef = page.findViewReference(timeId);
-
-					if (timeRef == null)
-					{
-						String title = "XY Plot";
-						String message = "Time Controller is not open. Please open time-controller and select a time period";
-						MessageDialog
-								.openError(Display.getCurrent().getActiveShell(), title, message);
-						return;
-					}
-
-					TimeController timer = (TimeController) timeRef.getView(true);
-
-					// that's it, now get the data
-					TimePeriod period = timer.getPeriod();
-					startTime = period.getStartDTG();
-					endTime = period.getEndDTG();
-
-					if ((startTime.greaterThan(endTime)) || (startTime.equals(endTime)))
-					{
-						String title = "XY Plot";
-						String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
-						MessageDialog
-								.openError(Display.getCurrent().getActiveShell(), title, message);
-						return;
-					}
-
-					// ok, sort out what we're plotting
-					// find out what the user wants to view
-					ShowTimeVariablePlot2.CalculationHolder theHolder = getChoice();
-					// retrieve the necessary input data
-					toteCalculation myOperation = theHolder._theCalc;
-
-					// did it work?
-					if (theHolder == null)
-						return;
-
-					// who is the primary?
-					// declare the primary track (even though we may end up not using it)
-					WatchableList thePrimary = null;
-
-					// is this a relative calculation?
-					if (theHolder._isRelative)
-					{
-						// retrieve the necessary input data
-						thePrimary = getPrimary(subjects);
-					}
-
-					// ////////////////////////////////////////////////
-					// sort out the title
-					// ////////////////////////////////////////////////
-					// get the title to use
-					String theTitle = myOperation.getTitle() + " vs Time plot";
-
-					// is this a relative operation
-					if (theHolder.isARelativeCalculation())
-					{
-						// if it's relative, we use the primary track name in the title
-						theTitle = thePrimary.getName() + " " + theTitle;
-					}
-
-					// and the plot itself
-					String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
-					page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
-
-					// put our subjects into a vector
-					Vector theTracks = new Vector(0, 1);
-					for (int i = 0; i < subjects.length; i++)
-					{
-						Editable thisS = subjects[i];
-						theTracks.add(thisS);
-					}
-
-					// right, now for the data
-					AbstractDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary, theHolder,
-							theTracks, startTime, endTime, null);
-
-					// ok, try to retrieve the view
-					IViewReference plotRef = page.findViewReference(plotId, theTitle);
-					XYPlotView plotter = (XYPlotView) plotRef.getView(true);
-					plotter.showPlot(theTitle, ds, myOperation.toString() + " ("
-							+ myOperation.getUnits() + ")", theHolder._theFormatter);
-				}
-				catch (PartInitException e)
-				{
-					e.printStackTrace();
-				}
-
+				String txt = "Sorry, not all items are suitable data-sources for an xy plot";
+				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "XY Plot",
+						txt);
+				return;
 			}
-		};
+			else
+			{
+				Action viewPlot = new Action("View XY plot")
+				{
+					public void run()
+					{
 
-		// ok - set the image descriptor
-		viewPlot.setImageDescriptor(XYPlotPlugin
-				.getImageDescriptor("icons/document_chart.png"));
+						IWorkbench wb = PlatformUI.getWorkbench();
+						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+						IWorkbenchPage page = win.getActivePage();
 
-		parent.add(new Separator());
-		parent.add(viewPlot);
+						// get ready for the start/end times
+						HiResDate startTime, endTime;
+
+						try
+						{
+
+							// right, we need the time controller if we're going to get the
+							// times
+							String timeId = "org.mwc.cmap.TimeController.views.TimeController";
+							IViewReference timeRef = page.findViewReference(timeId);
+
+							if (timeRef == null)
+							{
+								String title = "XY Plot";
+								String message = "Time Controller is not open. Please open time-controller and select a time period";
+								MessageDialog.openError(Display.getCurrent().getActiveShell(), title,
+										message);
+								return;
+							}
+
+							TimeController timer = (TimeController) timeRef.getView(true);
+
+							// that's it, now get the data
+							TimePeriod period = timer.getPeriod();
+							startTime = period.getStartDTG();
+							endTime = period.getEndDTG();
+
+							if ((startTime.greaterThan(endTime)) || (startTime.equals(endTime)))
+							{
+								String title = "XY Plot";
+								String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
+								MessageDialog.openError(Display.getCurrent().getActiveShell(), title,
+										message);
+								return;
+							}
+
+							// ok, sort out what we're plotting
+							// find out what the user wants to view
+							ShowTimeVariablePlot2.CalculationHolder theHolder = getChoice();
+							// retrieve the necessary input data
+							toteCalculation myOperation = theHolder._theCalc;
+
+							// did it work?
+							if (theHolder == null)
+								return;
+
+							// who is the primary?
+							// declare the primary track (even though we may end up not using
+							// it)
+							WatchableList thePrimary = null;
+
+							// is this a relative calculation?
+							if (theHolder._isRelative)
+							{
+								// retrieve the necessary input data
+								thePrimary = getPrimary(subjects);
+							}
+
+							// ////////////////////////////////////////////////
+							// sort out the title
+							// ////////////////////////////////////////////////
+							// get the title to use
+							String theTitle = myOperation.getTitle() + " vs Time plot";
+
+							// is this a relative operation
+							if (theHolder.isARelativeCalculation())
+							{
+								// if it's relative, we use the primary track name in the title
+								theTitle = thePrimary.getName() + " " + theTitle;
+							}
+
+							// and the plot itself
+							String plotId = "org.mwc.cmap.xyplot.views.XYPlotView";
+							page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
+
+							// put our subjects into a vector
+							Vector theTracks = new Vector(0, 1);
+							for (int i = 0; i < subjects.length; i++)
+							{
+								Editable thisS = subjects[i];
+								theTracks.add(thisS);
+							}
+
+							// right, now for the data
+							AbstractDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary,
+									theHolder, theTracks, startTime, endTime, null);
+
+							// ok, try to retrieve the view
+							IViewReference plotRef = page.findViewReference(plotId, theTitle);
+							XYPlotView plotter = (XYPlotView) plotRef.getView(true);
+							plotter.showPlot(theTitle, ds, myOperation.toString() + " ("
+									+ myOperation.getUnits() + ")", theHolder._theFormatter);
+						}
+						catch (PartInitException e)
+						{
+							e.printStackTrace();
+						}
+
+					}
+				};
+
+				// ok - set the image descriptor
+				viewPlot.setImageDescriptor(XYPlotPlugin
+						.getImageDescriptor("icons/document_chart.png"));
+
+				parent.add(new Separator());
+				parent.add(viewPlot);
+			}
+		}
 
 	}
 
