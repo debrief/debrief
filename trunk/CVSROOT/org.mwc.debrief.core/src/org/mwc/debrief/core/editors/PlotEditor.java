@@ -10,6 +10,7 @@ import java.util.*;
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.dialogs.IMessageProvider;
+import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.SaveAsDialog;
@@ -19,7 +20,6 @@ import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
-import org.mwc.cmap.plotViewer.actions.FitToWindow;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.CorePlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
@@ -33,7 +33,6 @@ import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
-import MWC.GUI.Dialogs.DialogFactory;
 import MWC.GenericData.*;
 
 /**
@@ -471,6 +470,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		SWTChart res = new SWTChart(_myLayers, parent)
 		{
 
+			public void chartFireSelectionChanged(ISelection sel)
+			{
+				// TODO Auto-generated method stub
+				fireSelectionChanged(sel);
+			};
+			
 			/**
 			 * 
 			 */
