@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.26  2006-02-08 09:32:22  Ian.Mayo
+// Revision 1.27  2006-02-23 11:48:31  Ian.Mayo
+// Become selection provider
+//
+// Revision 1.26  2006/02/08 09:32:22  Ian.Mayo
 // Eclipse tidying
 //
 // Revision 1.25  2006/01/20 14:10:29  Ian.Mayo
@@ -90,13 +93,14 @@ import java.awt.Color;
 import java.util.*;
 
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
-import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
 import Debrief.Wrappers.*;
@@ -111,7 +115,7 @@ import MWC.GenericData.*;
  * class. This is configured by setting the listeners to the chart/panel to be
  * the listener functions defined in the parent.
  */
-public class SWTChart extends PlainChart
+public abstract class SWTChart extends PlainChart implements ISelectionProvider
 {
 
 	// ///////////////////////////////////////////////////////////
@@ -264,8 +268,20 @@ public class SWTChart extends PlainChart
 	 */
 	public final SWTCanvas createCanvas(Composite parent)
 	{
-		return new CustomisedSWTCanvas(parent);
+		return new CustomisedSWTCanvas(parent){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void parentFireSelectionChanged(ISelection selected)
+			{
+				chartFireSelectionChanged(selected);
+			}};
 	}
+
+	public abstract void chartFireSelectionChanged(ISelection sel);
 
 	/**
 	 * get the size of the canvas.
@@ -311,7 +327,7 @@ public class SWTChart extends PlainChart
 	{
 		if (changedLayer == null)
 		{
-			_theCanvas.updateMe();
+			update();
 		}
 		else
 		{
@@ -703,7 +719,7 @@ public class SWTChart extends PlainChart
 	 * 
 	 * @author ian.mayo
 	 */
-	private class CustomisedSWTCanvas extends SWTCanvas
+	private abstract class CustomisedSWTCanvas extends SWTCanvas
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -767,7 +783,7 @@ public class SWTChart extends PlainChart
 				{
 					RightClickSupport.getDropdownListFor(mmgr, new Editable[] { res },
 							new Layer[] { theParent }, new Layer[] { theParent }, getLayers(), false);
-
+					
 					// hmm, is it a fix. if it is, also flash up the track
 					if (res instanceof FixWrapper)
 					{
@@ -783,6 +799,7 @@ public class SWTChart extends PlainChart
 			{
 				// not found anything useful,
 				// so edit just the projection
+
 				RightClickSupport.getDropdownListFor(mmgr, new Editable[] { getProjection() },
 						null, null, getLayers(), true);
 
@@ -794,13 +811,71 @@ public class SWTChart extends PlainChart
 
 					for (Iterator iter = noPoints.iterator(); iter.hasNext();)
 					{
-						Plottable pl = (Plottable) iter.next();
+						final Plottable pl = (Plottable) iter.next();
 						RightClickSupport.getDropdownListFor(mmgr, new Editable[] { pl }, null, null,
 								getLayers(), true);
+						
+						// ok, is it editable
+						if(pl.getInfo() != null)
+						{
+							// ok, also insert an "Edit..." item
+							Action editThis = new Action("Edit " + pl.getName() + " ...")
+							{
+								public void run()
+								{
+									// ok, wrap the editab
+									EditableWrapper pw = new EditableWrapper(pl, getLayers());
+									ISelection selected = new StructuredSelection(pw);
+									parentFireSelectionChanged(selected);
+								}						
+							};
+							
+							mmgr.add(editThis);
+							// hey, stick in another separator
+							mmgr.add(new Separator());
+						}
 					}
 				}
 			}
+
+			Action editProjection = new Action("Edit Projection")
+			{
+				public void run()
+				{
+					EditableWrapper wrapped = new EditableWrapper(getProjection(), getLayers());
+					ISelection selected = new StructuredSelection(wrapped);
+					parentFireSelectionChanged(selected);
+				}
+
+			};
+			mmgr.add(editProjection);
+
 		}
+		public abstract void parentFireSelectionChanged(ISelection selected);
+	}
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public ISelection getSelection()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void setSelection(ISelection selection)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }

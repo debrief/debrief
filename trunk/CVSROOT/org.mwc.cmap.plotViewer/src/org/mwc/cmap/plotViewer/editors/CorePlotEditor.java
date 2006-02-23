@@ -285,7 +285,18 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_myLayers, parent);
+		SWTChart res = new SWTChart(_myLayers, parent){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void chartFireSelectionChanged(ISelection sel)
+			{
+				// TODO Auto-generated method stub
+				fireSelectionChanged(sel);
+			}};
 		return res;
 	}
 
@@ -530,7 +541,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		_currentSelection = selection;
 	}
 
-	protected void fireSelectionChanged(ISelection sel)
+	public void fireSelectionChanged(ISelection sel)
 	{
 		// just double-check that we're not already processing this
 		if (sel != _currentSelection)
