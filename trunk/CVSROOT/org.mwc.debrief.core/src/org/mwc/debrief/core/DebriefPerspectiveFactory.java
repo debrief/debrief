@@ -44,7 +44,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		bottomPanel.addPlaceholder(CorePlugin.XY_PLOT + ":*");
 		bottomPanel.addPlaceholder(IPageLayout.ID_BOOKMARKS);
 		bottomPanel.addPlaceholder(IPageLayout.ID_TASK_LIST);
-		bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
+//		bottomPanel.addPlaceholder(CorePlugin.NARRATIVES);
 		
 		
 		// and our view shortcuts
