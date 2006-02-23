@@ -242,7 +242,7 @@ public class RightClickSupport
 		// is our sub-menu already created?
 		if (subMenu == null)
 		{
-			subMenu = new MenuManager("Edit " + p.getName());
+			subMenu = new MenuManager(p.getName());
 			manager.add(subMenu);
 		}
 
@@ -355,7 +355,7 @@ public class RightClickSupport
 			// is our sub-menu already created?
 			if (subMenu == null)
 			{
-				subMenu = new MenuManager("Edit " + p.getName());
+				subMenu = new MenuManager(p.getName());
 				manager.add(subMenu);
 			}
 
