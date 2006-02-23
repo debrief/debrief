@@ -4,10 +4,7 @@
 ROOT - NORMAL
 -->
 	<page alt-style="css/root_swt.properties" style="css/root.css" id="root" style-id="page">
-		<title style-id="intro-header">Welcome to Debrief NG</title>
-		<group id="Welcome guidance">
-			<text>Welcome to Debrief, the maritime analysis application from the Royal Navy's Maritime Warfare Centre.</text>
-		</group>
+		<title style-id="intro-header">Welcome to Debrief NG, from the Maritime Warfare Centre</title>
 		<group id="links-background">
 			<group id="page-links">
 				<anchor id="beginAnchor"/>
@@ -19,7 +16,7 @@ ROOT - NORMAL
 				<link label="Tutorials" url="http://org.eclipse.ui.intro/showPage?id=tutorials" id="tutorials" style-id="left">
 					<img id="tutorials_img" style-id="content-img" src="css/graphics/icons/etool/tutorials72.gif" alt="Tutorials">
                     </img>
-					<text>Let us guide you through Debrief end-to-end tutorials</text>
+					<text>Let us guide you through getting started with Debrief</text>
 				</link>
 				<link label="Samples" url="http://org.eclipse.ui.intro/showPage?id=samples" id="samples" style-id="right">
 					<img id="samples_img" style-id="content-img" src="css/graphics/icons/etool/samples72.gif" alt="Samples">
@@ -100,6 +97,7 @@ OVERVIEW
             </group>
 			<text style-id="page-title" id="page-title" filteredFrom="html">OVERVIEW</text>
 			<text style-id="page-description" id="page-description">Debrief is a software application used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at Debrief NG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
+			<text style-id="page-description" id="first-steps">If you want to get your hands dirty with Debrief open the [Tutorials] tab, and load some data.  If you want to learn more about Debrief look into one of the other tabs.</text>
 			<group id="overview-links">
 				<anchor id="beginAnchor"/>
 				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/reference/history.html&amp;embedTarget=page-content" id="history">
