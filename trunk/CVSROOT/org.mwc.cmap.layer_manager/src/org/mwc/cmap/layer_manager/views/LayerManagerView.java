@@ -3,7 +3,7 @@ package org.mwc.cmap.layer_manager.views;
 import java.util.*;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.*;
+import org.eclipse.core.commands.operations.AbstractOperation;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -19,7 +19,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.Layer_managerPlugin;
 import org.mwc.cmap.layer_manager.views.support.*;
 
-import Debrief.Tools.Tote.*;
+import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.*;
 
 /**

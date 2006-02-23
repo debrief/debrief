@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.19  2005-12-09 14:54:37  Ian.Mayo
+// Revision 1.20  2006-02-23 11:49:07  Ian.Mayo
+// Tidying
+//
+// Revision 1.19  2005/12/09 14:54:37  Ian.Mayo
 // Add right-click property editing
 //
 // Revision 1.18  2005/11/14 10:28:24  Ian.Mayo
@@ -75,9 +78,9 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.ColorHelper;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -203,7 +206,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 		};
 
 		mmgr.add(_copyLocation);
-		
 
 		
 	}
