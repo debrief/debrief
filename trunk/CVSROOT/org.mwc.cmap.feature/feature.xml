@@ -2,11 +2,13 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.9"
+      version="1.0.11"
       provider-name="MWC">
 
    <description>
-      [1.0.9] Preps for RC1
+      [1.0.11] Include x-stream library (for xy-plot)
+[1.0.10] Include Debrief legacy content
+[1.0.9] Preps for RC1
 [1.0.8] Property editing
 [1.0.7] Better support for primary/secondary tracks
 [1.0.6] Add more libs
@@ -525,11 +527,11 @@ necessary.  Here is a sample; alter the names:
 That&apos;s all there is to it!
    </license>
 
+   <url>
+      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+   </url>
+
    <requires>
-      <import plugin="org.mwc.debrief.legacy" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.help" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.jface" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.workbench" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.runtime.compatibility" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.core.expressions" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.core.filesystem" version="1.0.0" match="compatible"/>
@@ -541,6 +543,10 @@ That&apos;s all there is to it!
       <import plugin="org.eclipse.osgi" version="3.1.0" match="compatible"/>
       <import plugin="org.eclipse.jdt.junit.runtime" version="3.2.0" match="compatible"/>
       <import plugin="org.eclipse.core.runtime" version="3.1.0" match="compatible"/>
+      <import plugin="org.eclipse.help" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.jface" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.workbench" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.cheatsheets"/>
    </requires>
 
    <plugin
@@ -609,8 +615,17 @@ That&apos;s all there is to it!
          version="0.0.0"
          fragment="true"
          unpack="false"/>
-   <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
-   </url>
+
+   <plugin
+         id="org.mwc.debrief.legacy"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.eclipse.jdt.junit.runtime"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
 
 </feature>
