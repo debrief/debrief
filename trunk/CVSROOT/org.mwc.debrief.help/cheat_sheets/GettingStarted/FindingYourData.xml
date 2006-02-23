@@ -7,10 +7,7 @@
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.</description>
 	</item>
 	<item title="Check you have a workspace">
-		<description>Before you can link in existing data, you need to define a project for your work.  This is a parent folder within which your links are stored.  If your Navigator window is empty, you must follow the "Generate a project" cheat-sheet (press the green triangle below).</description>
-	<action	pluginId="org.eclipse.ui.cheatsheets"
-			class="org.eclipse.ui.cheatsheets.OpenCheatSheetAction"
-			param1="org.mwc.debrief.help.generate_project"/>
+		<description>Before you can link in existing data, you need to define a project for your work.  This is a parent folder within which your links are stored.  If your Navigator window is empty, you must follow the "Generate a project" cheat-sheet click on 'Return to Welcome', above.</description>
 	</item>
 	<item title="Add a new Folder">
 		<description>Right-click in the Navigator view, and select 'Folder' from the 'New' sub-menu.  The New Folder wizard will open.
