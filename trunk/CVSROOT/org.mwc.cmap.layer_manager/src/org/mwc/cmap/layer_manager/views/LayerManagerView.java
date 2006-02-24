@@ -91,11 +91,10 @@ public class LayerManagerView extends ViewPart
 
 	protected TrackManager _theTrackDataListener;
 
-	
-	/** whether we are already ignoring firing messages
-	 * 
+	/**
+	 * whether we are already ignoring firing messages
 	 */
-	private static boolean _alreadyDeferring = false;	
+	private static boolean _alreadyDeferring = false;
 
 	/**
 	 * class that embodies applying an operation to a series of selected points.
@@ -463,7 +462,11 @@ public class LayerManagerView extends ViewPart
 				if (isel instanceof StructuredSelection)
 				{
 					StructuredSelection ss = (StructuredSelection) isel;
+
+					// right, see if this is an item we can make primary
 					_makePrimary.setEnabled(isValidPrimary(ss));
+
+					// and see if we can make it a secondary
 					_makeSecondary.setEnabled(isValidSecondary(ss));
 				}
 			}
@@ -478,17 +481,21 @@ public class LayerManagerView extends ViewPart
 	 * @param ss
 	 * @return
 	 */
-	protected static boolean isValidPrimary(StructuredSelection ss)
+	protected boolean isValidPrimary(StructuredSelection ss)
 	{
 		boolean res = false;
 		if (ss.size() == 1)
 		{
 			PlottableWrapper pw = (PlottableWrapper) ss.getFirstElement();
 			Plottable pl = pw.getPlottable();
+
+			// hey, first see if it's even a candidate
 			if (pl instanceof WatchableList)
-			{
-				res = true;
-			}
+				// now see if it's already the primary
+				if (pl != _theTrackDataListener.getPrimaryTrack())
+				{
+					res = true;
+				}
 		}
 		return res;
 	}
@@ -499,7 +506,7 @@ public class LayerManagerView extends ViewPart
 	 * @param ss
 	 * @return
 	 */
-	protected static boolean isValidSecondary(StructuredSelection ss)
+	protected boolean isValidSecondary(StructuredSelection ss)
 	{
 		boolean res = false;
 		if (ss.size() >= 1)
@@ -508,7 +515,20 @@ public class LayerManagerView extends ViewPart
 			Plottable pl = pw.getPlottable();
 			if (pl instanceof WatchableList)
 			{
+				// hey, it's a maybe.  
 				res = true;
+				
+				// ok, it's a candidate.  now see if it's already one of the secondaries
+				WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
+				for (int i = 0; i < secs.length; i++)
+				{
+					WatchableList thisList = secs[i];
+					if(thisList == pl)
+					{
+						res = false;
+						break;
+					}
+				}
 			}
 		}
 		return res;
@@ -721,7 +741,7 @@ public class LayerManagerView extends ViewPart
 
 							// make it the primary
 							if (_theTrackDataListener != null)
-								_theTrackDataListener.primaryUpdated(list);
+								_theTrackDataListener.setPrimary(list);
 						}
 					}
 				}, new IOperateOn()
@@ -733,7 +753,7 @@ public class LayerManagerView extends ViewPart
 						{
 							// make it the primary
 							if (_theTrackDataListener != null)
-								_theTrackDataListener.primaryUpdated(null);
+								_theTrackDataListener.setPrimary(null);
 						}
 					}
 				}, new IOperateOn()
@@ -747,7 +767,7 @@ public class LayerManagerView extends ViewPart
 
 							// make it the primary
 							if (_theTrackDataListener != null)
-								_theTrackDataListener.primaryUpdated(list);
+								_theTrackDataListener.setPrimary(list);
 						}
 					}
 				}, _treeViewer, _myLayers);
@@ -765,6 +785,7 @@ public class LayerManagerView extends ViewPart
 		_makePrimary.setText("Make Primary");
 		_makePrimary.setToolTipText("Make this item the primary ");
 		_makePrimary.setImageDescriptor(CorePlugin.getImageDescriptor("icons/primary.gif"));
+		_makePrimary.setEnabled(false);
 
 		_makeSecondary = new Action()
 		{
@@ -823,6 +844,7 @@ public class LayerManagerView extends ViewPart
 		_makeSecondary.setToolTipText("Add this item to the secondary tracks");
 		_makeSecondary.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/secondary.gif"));
+		_makeSecondary.setEnabled(false);
 
 		_hideAction = new Action()
 		{
