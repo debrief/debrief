@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.layer_manager.feature"
       label="org.mwc.cmap.layer_manager.feature"
-      version="1.0.3"
+      version="1.0.4"
       provider-name="MWC">
 
    <description>
-      [1.0.3] Preps for RC1
+      [1.0.4] Context-sensitive primary &amp; secondary buttons
+[1.0.3] Preps for RC1
 [1.0.1]  Provide management of primary/secondary tracks
    </description>
 
@@ -519,6 +520,10 @@ necessary.  Here is a sample; alter the names:
 That&apos;s all there is to it!
    </license>
 
+   <url>
+      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+   </url>
+
    <requires>
       <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.core.runtime" version="0.0.0" match="greaterOrEqual"/>
@@ -534,8 +539,5 @@ That&apos;s all there is to it!
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-   <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
-   </url>
 
 </feature>
