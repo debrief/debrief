@@ -25,6 +25,7 @@ import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.*;
 
 import MWC.GUI.Layers;
@@ -222,14 +223,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// stick in the long list of VCR buttons
 		createVCRbuttons();
 
-		// and the current time label
-		// Composite timeContainer = new Composite(_wholePanel, SWT.NONE);
-		// GridData timeGrid = new GridData(GridData.FILL_HORIZONTAL);
-		// timeContainer.setLayoutData(timeGrid);
-		//		
-		// FillLayout timeFiller = new FillLayout(SWT.HORIZONTAL);
-		// timeContainer.setLayout(timeFiller);
-
 		_timeLabel = new Label(_wholePanel, SWT.NONE);
 		GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
 		_timeLabel.setLayoutData(labelGrid);
@@ -266,8 +259,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			{
 			}
 		});
-
-		_wholePanel.addListener(SWT.MouseWheel, new WheelMovedEvent());
+		_tNowSlider.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
 		_dtgRangeSlider = new DTGBiSlider(_wholePanel)
 		{
@@ -1197,22 +1189,39 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	{
 		public void handleEvent(Event event)
 		{
-			int count = event.count;
-			boolean fwd;
-			Boolean large = new Boolean(false);
-
-			// is the control button down?
+			// find out what keys are pressed
 			int keys = event.stateMask;
 
-			if ((keys & SWT.SHIFT) != 0)
-				large = new Boolean(true);
-
-			if (count < 0)
-				fwd = true;
+			// is is the control button?
+			if ((keys & SWT.CTRL) != 0)
+			{
+				final double zoomFactor;
+				// decide if we're going in or out
+				if(event.count > 0)
+					zoomFactor = 0.9;
+				else
+					zoomFactor = 1.1;
+				
+				// and request the zoom
+				doZoom(zoomFactor);				
+			}
 			else
-				fwd = false;
+			{
+				// right, we're not zooming, we must be time-stepping
+				int count = event.count;
+				boolean fwd;
+				Boolean large = new Boolean(false);
 
-			processClick(large, fwd);
+				if ((keys & SWT.SHIFT) != 0)
+					large = new Boolean(true);
+
+				if (count < 0)
+					fwd = true;
+				else
+					fwd = false;
+
+				processClick(large, fwd);
+			}
 		}
 	}
 
@@ -1224,6 +1233,22 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// see if we don't already contain it..
 		if (!_selectionListeners.contains(listener))
 			_selectionListeners.add(listener);
+	}
+
+	/** zoom the plot (in response to a control-mouse drag)
+	 * 
+	 * @param zoomFactor
+	 */
+	public void doZoom(double zoomFactor)
+	{
+		// ok, get the plot, and do some zooming
+		if(_currentEditor instanceof PlotEditor)
+		{
+			PlotEditor plot = (PlotEditor) _currentEditor;
+			plot.getChart().getCanvas().getProjection().zoom(zoomFactor);
+			plot.getChart().update();
+		}
+
 	}
 
 	public ISelection getSelection()
