@@ -10,8 +10,8 @@ import MWC.TacticalData.Track;
 /**
  * embedded class which manages the primary & secondary tracks
  */
-public class TrackManager implements TrackDataProvider,
-		TrackDataProvider.TrackDataListener
+public class TrackManager implements TrackDataProvider // ,
+																												// TrackDataProvider.TrackDataListener
 {
 
 	private WatchableList _thePrimary;
@@ -82,7 +82,18 @@ public class TrackManager implements TrackDataProvider,
 		return _theSecondaries;
 	}
 
-	public void primaryUpdated(WatchableList primary)
+	public void setPrimary(WatchableList primary)
+	{
+		// ok - set it as the primary
+		setPrimaryImpl(primary);
+
+		// now remove it as a secondary
+		removeSecondaryImpl(primary);
+
+		fireTracksChanged();
+	}
+
+	private void setPrimaryImpl(WatchableList primary)
 	{
 		_thePrimary = primary;
 
@@ -93,7 +104,7 @@ public class TrackManager implements TrackDataProvider,
 			while (iter.hasNext())
 			{
 				TrackDataListener list = (TrackDataListener) iter.next();
-				list.primaryUpdated(primary);
+				list.tracksUpdated(_thePrimary, _theSecondaries);
 			}
 		}
 	}
@@ -103,10 +114,10 @@ public class TrackManager implements TrackDataProvider,
 		_theSecondaries = secondaries;
 
 		// and inform the listeners
-		fireSecondariesChanged();
+		fireTracksChanged();
 	}
 
-	private void fireSecondariesChanged()
+	private void fireTracksChanged()
 	{
 		if (_myListeners != null)
 		{
@@ -114,12 +125,24 @@ public class TrackManager implements TrackDataProvider,
 			while (iter.hasNext())
 			{
 				TrackDataListener list = (TrackDataListener) iter.next();
-				list.secondariesUpdated(_theSecondaries);
+				list.tracksUpdated(_thePrimary, _theSecondaries);
 			}
 		}
 	}
 
 	public void addSecondary(WatchableList secondary)
+	{
+		// right, insert this as a secondary track
+		addSecondaryImpl(secondary);
+
+		// was it the primary?
+		if (secondary == _thePrimary)
+			setPrimaryImpl(null);
+
+		fireTracksChanged();
+	}
+
+	private void addSecondaryImpl(WatchableList secondary)
 	{
 		// store the new list
 		Vector newList = new Vector(1, 1);
@@ -138,9 +161,6 @@ public class TrackManager implements TrackDataProvider,
 
 		WatchableList[] demo = new WatchableList[] { null };
 		_theSecondaries = (WatchableList[]) newList.toArray(demo);
-
-		// and inform the listeners
-		fireSecondariesChanged();
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -236,6 +256,14 @@ public class TrackManager implements TrackDataProvider,
 	 */
 	public void removeSecondary(WatchableList thisSec)
 	{
+		removeSecondaryImpl(thisSec);
+
+		// and now fire updates
+		fireTracksChanged();
+	}
+
+	private void removeSecondaryImpl(WatchableList thisSec)
+	{
 		// store the new list
 		Vector newList = new Vector(1, 1);
 
@@ -264,7 +292,5 @@ public class TrackManager implements TrackDataProvider,
 		else
 			_theSecondaries = new WatchableList[0];
 
-		// and inform the listeners
-		fireSecondariesChanged();
 	}
 }

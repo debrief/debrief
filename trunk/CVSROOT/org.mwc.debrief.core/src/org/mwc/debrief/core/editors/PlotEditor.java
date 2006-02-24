@@ -88,12 +88,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// dirty once they've updated
 		_trackDataProvider.addTrackDataListener(new TrackDataListener()
 		{
-			public void primaryUpdated(WatchableList primary)
-			{
-				fireDirty();
-			}
-
-			public void secondariesUpdated(WatchableList[] secondaries)
+			public void tracksUpdated(WatchableList primary, WatchableList[] secondaries)
 			{
 				fireDirty();
 			}
