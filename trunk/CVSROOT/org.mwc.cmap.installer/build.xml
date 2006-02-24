@@ -1,32 +1,121 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.mwc.cmap.installer" default="upload" basedir=".">
-	  <property name="destDir" value="l://TD Submarines Info/PlanetMayo/Debrief/eclipse/updates" description="the destination for the updates"/>
-	  <property name="srcDir" value="D://Dev/Eclipse2/org.mwc.cmap.installer" description="where the updated install-sets are located"/>
+	<property name="zipUploadDir" value="l://TD Submarines Info/PlanetMayo/Debrief/eclipse" description="the destination for the zip file" />
+	<property name="updateUploadDir" value="${zipUploadDir}/updates" description="the destination for the updates" />
+	<property name="archiveUploadDir" value="${zipUploadDir}/old" description="the destination for the updates" />
+	<property name="srcDir" value="D://Dev/Eclipse2/org.mwc.cmap.installer" description="where the updated install-sets are located" />
+	<property name="destDir" value="D://DebriefNG" description="where the updated install-sets are located" />
+	<property name="rootDir" value="D://Dev\Eclipse2/org.mwc.cmap.static_resources/root_installs" description="where the updated install-sets are located" />
 
-	  <target name="clean" description="clear the output directory" depends="">
-	  	<delete dir="${destDir}/features" />
-	  	<delete dir="${destDir}/plugins" />
-	  </target>	
+	<!-- and the cvs-logging related ones -->
+  <property name="debriefNGDir" value="d://dev/eclipse2/deploy"/>
+  <property name="sourceDir" value="d://dev/eclipse2"/>
+	<property name="buildCVSLogDir" value="${debriefNGDir}/cvs"/>
 	
-	  <target name="upload" description="upload updated files to td submarines directory" depends="clean">
-	  	 <copy todir="${destDir}" preservelastmodified="yes" >
-	  	    <fileset dir="${srcDir}"/>
-	  	  </copy>	  		  	
-	  </target>	
 	
-  <target name="empty_test_dir" description="clear the output directory" depends="">
-  	<delete dir="d://debriefNG/DebriefNG" />
-  </target>	
+	<target name="clean" description="clear the output directory" depends="">
+		<delete dir="${updateUploadDir}/features" />
+		<delete dir="${updateUploadDir}/plugins" />
+	</target>
 
-  <target name="clean_test_dir" description="clear the output directory" depends="">
-  	<delete >
-  	    <fileset dir="d://debriefNG/DebriefNG" includes="**/*mwc*.*"/>
-  	</delete>
-  </target>	
+	<target name="upload" description="upload updated files to td submarines directory" depends="clean">
+		<copy todir="${updateUploadDir}" preservelastmodified="yes">
+			<fileset dir="${srcDir}" />
+		</copy>
+	</target>
 
-  <target name="unzip_test_dir" description="unzip product into output directory" depends="">
-  	<unzip src="d://debriefNG.zip" dest="d://debriefNG"/>
-  </target>	
+	<target name="empty_dist_dir" description="clear the output directory" depends="">
+		<delete dir="${destDir}" />
+	</target>
+
+	<target name="clean_test_dir" description="clean the output directory" depends="">
+		<delete>
+			<fileset dir="${destDir}" includes="**/*mwc*.*" />
+		</delete>
+	</target>
+
+	<target name="unzip_test_dir" description="unzip product into output directory" depends="">
+		<unzip src="d:\\DebriefNG.zip" dest="d://" />
+	</target>
+	
+	<target name="fill_in_bits" description="insert missing files" depends="">
+		<copy todir="${destDir}" preservelastmodified="yes">
+			<fileset dir="${rootDir}" excludes="*cvs*" />
+		</copy>			
+	</target>
+
+	<target name="collate_dist" description="insert missing bits into dist">
+		<!-- get a name for the new dist -->
+		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />		
+		<property name="destZip" value="d:/${dist-title}.zip" description="the target file" />
+	  <tstamp>
+	    <format property="TODAY_UK" pattern="yyyy_MM_dd_hh_mm" locale="en"/>
+	  </tstamp>		
+		<property name="archiveDestZipFile" value="${dist-title}_${TODAY_UK}.zip" description="the target file" />
+
+		<!-- clean the target dist -->
+		<echo message="clearing 'build' directory"/>
+		<antcall target="empty_dist_dir" />
+
+		<!-- unpack the new dist -->
+		<echo message="unpacking auto-build into build directory"/>
+		<antcall target="unzip_test_dir" />
+
+		<!-- add the other root elements -->
+		<echo message="copying in other bits needed for dist"/>
+		<antcall target="fill_in_bits" />
+
+
+		<!-- repack the whole dist -->
+		<echo message="collating new dist zip:d:/${dist-title}.zip"/>
+		<zip destfile="${destZip}" basedir = "${destDir}" />
+		
+		<!-- ok - copy the dist to td-subs -->
+		<echo message="copying dist to td-subs"/>
+		<copy file="${destZip}" toDir="${zipUploadDir}" />
+		
+		<!-- now save an archived version of the zip in a legacy folder -->
+		<move file="${destZip}" tofile="${archiveUploadDir}/${archiveDestZipFile}" />
+		
+	</target>
+
+	<target name="produce_cvs_log" description="produce the cvs change logs">
+
+	    <!-- clear the output directory -->
+	    <delete dir="${buildCVSLogDir}"/>
+
+	    <!-- create the output directory if we have to -->
+	    <mkdir dir="${buildCVSLogDir}"/>
+	    <mkdir dir="${buildCVSLogDir}/statcvs"/>
+	    <mkdir dir="${buildCVSLogDir}/statcvs/short"/>
+	    <mkdir dir="${buildCVSLogDir}/statcvs/long"/>
+
+	    <!-- produce the CVS log -->
+	    <cvs quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
+	      <commandline>
+	        <argument line="log "/>
+	      </commandline>
+	    </cvs>
+		</target>
+		<target name="do_log">
+
+	    <!-- and produce the output -->
+	    <java dir="${sourceDir}" jar="d:/dev/debrief/contribs/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
+	      <jvmarg line="-mx128m"/>
+	      <arg line=" -output-dir D:\Dev\eclipse2\deploy\cvs\statcvs\short
+	            -title 'Debrief CVS Statistics'
+	            -suite D:\Dev\debrief\tools/statcvs_template/single_page_suite.xml
+	            D:\Dev\eclipse2\deploy\cvs/statcvs.log"/>
+	    </java>
+
+	    <java dir="${sourceDir}" jar="d:/dev/debrief/contribs/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
+	      <jvmarg line="-mx128m"/>
+	      <arg line=" -output-dir D:\Dev\eclipse2\deploy\cvs\statcvs\long
+	            -title 'Debrief CVS Statistics'
+	            -suite D:\Dev\debrief\tools/statcvs_template/suite.xml
+	            D:\Dev\eclipse2\deploy\cvs/statcvs.log"/>
+	    </java>
+	  </target>
 	
 	
 </project>
