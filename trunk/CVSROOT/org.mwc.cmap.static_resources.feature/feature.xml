@@ -2,11 +2,14 @@
 <feature
       id="org.mwc.cmap.static_resources.feature"
       label="org.mwc.cmap.static_resources.feature"
-      version="1.0.0"
+      version="1.0.1"
       provider-name="MWC">
 
    <description>
-      Static data used in Debrief-type projects (Etopo, World Outline, Jre installation)
+      [1.0.1]  Start exporting world &amp; etopo datasets
+
+Static data used in Debrief-type projects (Etopo, World Outline,
+Jre installation)
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -670,7 +673,6 @@ That&apos;s all there is to it!
          id="org.mwc.cmap.static_resources"
          download-size="0"
          install-size="0"
-         unpack="true"
          version="0.0.0"/>
 
 </feature>
