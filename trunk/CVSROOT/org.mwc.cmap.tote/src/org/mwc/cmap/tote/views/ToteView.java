@@ -106,6 +106,7 @@ public class ToteView extends ViewPart
 	private CalculationLoaderManager _loader;
 
 	private ToteLabelProvider _labelProvider;
+
 	/**
 	 * The constructor.
 	 */
@@ -128,7 +129,7 @@ public class ToteView extends ViewPart
 		_tableViewer.setContentProvider(_content);
 		_labelProvider = new ToteLabelProvider(parent.getFont());
 		_tableViewer.setLabelProvider(_labelProvider);
-		
+
 		_tableViewer.setInput(this);
 		// _tableViewer.setSorter(new NameSorter());
 
@@ -264,32 +265,36 @@ public class ToteView extends ViewPart
 
 		// first sort out the primary track column
 		WatchableList priTrack = _trackData.getPrimaryTrack();
+		// if (priTrack != null)
+		// {
+
+		layout.addColumnData(new ColumnWeightData(10, true));
+		TableColumn pri = new TableColumn(tbl, SWT.NONE);
+
 		if (priTrack != null)
-		{
-
-			layout.addColumnData(new ColumnWeightData(10, true));
-			TableColumn pri = new TableColumn(tbl, SWT.NONE);
 			pri.setText(priTrack.getName());
+		else
+			pri.setText("n/a");
 
-			// and now the secondary track columns
-			WatchableList[] secTracks = _trackData.getSecondaryTracks();
+		// and now the secondary track columns
+		WatchableList[] secTracks = _trackData.getSecondaryTracks();
 
-			if (secTracks != null)
+		if (secTracks != null)
+		{
+			for (int i = 0; i < secTracks.length; i++)
 			{
-				for (int i = 0; i < secTracks.length; i++)
-				{
-					WatchableList secTrack = secTracks[i];
-					layout.addColumnData(new ColumnWeightData(10, true));
-					TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-					thisSec.setText(secTrack.getName());
-				}
+				WatchableList secTrack = secTracks[i];
+				layout.addColumnData(new ColumnWeightData(10, true));
+				TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+				thisSec.setText(secTrack.getName());
 			}
-
-			// and the units column
-			layout.addColumnData(new ColumnWeightData(5, true));
-			TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-			thisSec.setText("Units");
 		}
+
+		// and the units column
+		layout.addColumnData(new ColumnWeightData(5, true));
+		TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+		thisSec.setText("Units");
+		// }
 	}
 
 	/**
@@ -464,7 +469,7 @@ public class ToteView extends ViewPart
 				if (index == 1)
 				{
 					// yes, go for it
-					_trackData.primaryUpdated(null);
+					_trackData.setPrimary(null);
 				}
 				else
 				{
@@ -523,14 +528,7 @@ public class ToteView extends ViewPart
 			// lastly listen out for any future changes
 			part.addTrackDataListener(new TrackDataListener()
 			{
-
-				public void primaryUpdated(WatchableList primary)
-				{
-					// ok - now update the content of our table
-					redoTableAfterTrackChanges();
-				}
-
-				public void secondariesUpdated(WatchableList[] secondaries)
+				public void tracksUpdated(WatchableList primary, WatchableList[] secondaries)
 				{
 					// ok - now update the content of our table
 					redoTableAfterTrackChanges();
@@ -544,11 +542,17 @@ public class ToteView extends ViewPart
 	 */
 	private void redoTableAfterTrackChanges()
 	{
+		// suspend updates
+		_tableViewer.getTable().setRedraw(false);
+
 		// and update the table column layout
 		updateTableLayout();
 
 		// and fire the update
 		_tableViewer.getTable().layout(true);
+		
+		Color greyCol = ColorHelper.getColor(new java.awt.Color(225, 225, 220));		
+		_tableViewer.getTable().setBackground(greyCol);
 
 		// hmm, check if we have any track data
 		if (_trackData == null)
@@ -559,19 +563,7 @@ public class ToteView extends ViewPart
 
 		// lastly color-code the columns
 		TableItem[] items = _tableViewer.getTable().getItems();
-
 		Color thisCol = null;
-		WatchableList pri = _trackData.getPrimaryTrack();
-		if (pri != null)
-		{
-			thisCol = ColorHelper.getColor(pri.getColor());
-			for (int j = 0; j < items.length; j++)
-			{
-				TableItem thisRow = items[j];
-				// thisRow.setBackground(1, thisCol);
-				thisRow.setForeground(1, thisCol);
-			}
-		}
 
 		WatchableList[] secs = _trackData.getSecondaryTracks();
 		if (secs != null)
@@ -584,8 +576,23 @@ public class ToteView extends ViewPart
 				{
 					TableItem thisRow = items[j];
 					thisRow.setForeground(2 + i, thisCol);
-					// thisRow.setBackground(2 + i, thisCol);
+					Color whiteCol = ColorHelper.getColor(new java.awt.Color(255, 255, 255));
+					thisRow.setBackground(2 + i, whiteCol);
 				}
+			}
+		}
+
+		WatchableList pri = _trackData.getPrimaryTrack();
+		if (pri != null)
+		{
+			thisCol = ColorHelper.getColor(pri.getColor());
+			for (int j = 0; j < items.length; j++)
+			{
+				TableItem thisRow = items[j];
+				thisRow.setForeground(1, thisCol);
+				 Color lightCol = ColorHelper.getColor(new java.awt.Color(240, 240,
+				 245));
+				 thisRow.setBackground(1, lightCol);
 			}
 		}
 
@@ -594,6 +601,9 @@ public class ToteView extends ViewPart
 		{
 			timeUpdated(_myTemporalDataset.getTime());
 		}
+
+		// resume updates
+		_tableViewer.getTable().setRedraw(true);
 	}
 
 	// //////////////////////////////
@@ -679,7 +689,6 @@ public class ToteView extends ViewPart
 		}
 	}
 
-
 	public class ToteLabelProvider implements ITableLabelProvider, ITableFontProvider
 	{
 		/**
@@ -687,44 +696,50 @@ public class ToteView extends ViewPart
 		 */
 		private HiResDate _theDTG;
 
-		/** remember the fonts we're going to use
-		 * Start off with the font for secondary tracks
+		/**
+		 * remember the fonts we're going to use Start off with the font for
+		 * secondary tracks
 		 */
 		private final Font _secondaryFont;
-		
-		/** and now the font for the primary track
-		 * 
+
+		/**
+		 * and now the font for the primary track
 		 */
 		private final Font _primaryFont;
-		
-		/** and the font for interpolated data-sets
-		 * 
+
+		/**
+		 * and the font for interpolated data-sets
 		 */
 		private final Font _interpolatedSecondaryFont;
-		
-		/** and the font for interpolated data-sets
-		 * 
+
+		/**
+		 * and the font for interpolated data-sets
 		 */
 		private final Font _interpolatedPrimaryFont;
-		
-		/** constructor - base the primary /secondary fonts on the supplied font
+
+		/**
+		 * constructor - base the primary /secondary fonts on the supplied font
 		 * 
-		 * @param coreFont the font to base ourselves upon
+		 * @param coreFont
+		 *          the font to base ourselves upon
 		 */
 		public ToteLabelProvider(Font coreFont)
 		{
 			// ok, just take a copy for the sec font
 			_secondaryFont = coreFont;
-			
+
 			// but now generate a changed font for the primary
-      FontData[] fontData = _secondaryFont.getFontData();
-      FontData theOnly = fontData[0];      
-      _primaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.BOLD);
-      _interpolatedSecondaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.ITALIC);
-      _interpolatedPrimaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly.getHeight(), theOnly.getStyle() | SWT.ITALIC | SWT.BOLD);
-			
-		}		
-		
+			FontData[] fontData = _secondaryFont.getFontData();
+			FontData theOnly = fontData[0];
+			_primaryFont = new Font(Display.getCurrent(), theOnly.getName(), theOnly
+					.getHeight(), theOnly.getStyle() | SWT.BOLD);
+			_interpolatedSecondaryFont = new Font(Display.getCurrent(), theOnly.getName(),
+					theOnly.getHeight(), theOnly.getStyle() | SWT.ITALIC);
+			_interpolatedPrimaryFont = new Font(Display.getCurrent(), theOnly.getName(),
+					theOnly.getHeight(), theOnly.getStyle() | SWT.ITALIC | SWT.BOLD);
+
+		}
+
 		/**
 		 * store the new DTG (ready for our updates)
 		 * 
@@ -740,14 +755,13 @@ public class ToteView extends ViewPart
 			return null;
 		}
 
-		
 		public Font getFont(Object element, int columnIndex)
 		{
 			final Font res;
-			
+
 			boolean isPrimary = false;
 			boolean isInterpolated = false;
-			
+
 			// is this already sorted?
 			if (_theDTG != null)
 			{
@@ -756,14 +770,13 @@ public class ToteView extends ViewPart
 					WatchableList _thePrimary = _trackData.getPrimaryTrack();
 					WatchableList[] secLists = _trackData.getSecondaryTracks();
 
-					
 					// get the data for the right col
-					if(columnIndex == 0)
+					if (columnIndex == 0)
 					{
 						// ignore, we just use the primary font anyway
 						isPrimary = true;
 					}
-					else if(columnIndex == 1)
+					else if (columnIndex == 1)
 					{
 						// check that we've got a primary
 						if (_thePrimary != null)
@@ -777,7 +790,7 @@ public class ToteView extends ViewPart
 							Watchable pw = null;
 							if (list.length > 0)
 								pw = list[0];
-							if(pw instanceof FixWrapper.InterpolatedFixWrapper)
+							if (pw instanceof FixWrapper.InterpolatedFixWrapper)
 								isInterpolated = true;
 						}
 					}
@@ -791,37 +804,37 @@ public class ToteView extends ViewPart
 								WatchableList wList = secLists[columnIndex - 2];
 								Watchable[] list = wList.getNearestTo(_theDTG);
 
-								Watchable nearest = null;								
+								Watchable nearest = null;
 								if (list.length > 0)
 								{
 									nearest = list[0];
-									if(nearest instanceof FixWrapper.InterpolatedFixWrapper)
+									if (nearest instanceof FixWrapper.InterpolatedFixWrapper)
 										isInterpolated = true;
 								}
 							}
-						}						
+						}
 					}
 				}
 			}
-			
-			if(isPrimary)
+
+			if (isPrimary)
 			{
-				if(isInterpolated)
+				if (isInterpolated)
 					res = _interpolatedPrimaryFont;
 				else
 					res = _primaryFont;
 			}
 			else
 			{
-				if(isInterpolated)
+				if (isInterpolated)
 					res = _interpolatedSecondaryFont;
 				else
 					res = _secondaryFont;
 			}
-			
+
 			return res;
 		}
-		
+
 		public String getColumnText(Object element, int columnIndex)
 		{
 			String res = null;
@@ -907,7 +920,6 @@ public class ToteView extends ViewPart
 		public void removeListener(ILabelProviderListener listener)
 		{
 		}
-
 
 	}
 
