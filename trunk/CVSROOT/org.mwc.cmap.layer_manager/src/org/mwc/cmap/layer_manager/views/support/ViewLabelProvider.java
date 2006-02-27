@@ -17,15 +17,27 @@ import MWC.GUI.VPF.FeaturePainter;
 public class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
 {
 
+	/** image to indicate that item is visible
+	 * 
+	 */
+	Image visImage = null;
+	
+	/** image to indicate that item isn't visible (would you believe...)
+	 * 
+	 */
+	Image nonVisImage = null;
+	
 	/**
 	 * 
 	 */
-//	private final LayerManagerView _myLabelProvider;
 
 	/**
 	 */
 	public ViewLabelProvider()
 	{
+			// ok, retrieve the images from our own registry
+			visImage = CorePlugin.getImageFromRegistry("reveal.gif");
+			nonVisImage = CorePlugin.getImageFromRegistry("hide.gif");
 	}
 
 	public String getText(Object obj)
@@ -74,11 +86,25 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 
 	public Image getColumnImage(Object element, int columnIndex)
 	{
-		Image res;
+		Image res = null;
 		if (columnIndex == 0)
 			res = getImage(element);
-		else
-			res = null;
+		else if(columnIndex == 1)
+		{
+			// hey - don't bother with this bit - just use the text-marker
+			
+//			// sort out the visibility
+//			PlottableWrapper pw = (PlottableWrapper) element;
+//			Editable ed = pw.getPlottable();
+//			if (ed instanceof Plottable)
+//			{
+//				Plottable pl = (Plottable) ed;
+//				if (pl.getVisible())
+//					res = visImage;
+//				else
+//					res = nonVisImage;
+//			}
+		}
 
 		return res;
 	}
