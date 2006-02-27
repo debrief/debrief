@@ -85,7 +85,7 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 
 	public String getColumnText(Object element, int columnIndex)
 	{
-		String res = "n";
+		String res = "N";
 		if (columnIndex == 0)
 			res = getText(element);
 		else
@@ -97,9 +97,9 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 			{
 				Plottable pl = (Plottable) ed;
 				if (pl.getVisible())
-					res = "y";
+					res = "Y";
 				else
-					res = "n";
+					res = "N";
 			}
 		}
 
