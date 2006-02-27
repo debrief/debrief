@@ -551,7 +551,7 @@ public class ToteView extends ViewPart
 		// and fire the update
 		_tableViewer.getTable().layout(true);
 		
-		Color greyCol = ColorHelper.getColor(new java.awt.Color(225, 225, 220));		
+		Color greyCol = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND  );// ColorHelper.getColor(new java.awt.Color(225, 225, 220));		
 		_tableViewer.getTable().setBackground(greyCol);
 
 		// hmm, check if we have any track data
