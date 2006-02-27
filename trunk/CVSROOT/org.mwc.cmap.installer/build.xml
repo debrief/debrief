@@ -97,8 +97,12 @@
 	      </commandline>
 	    </cvs>
 		</target>
+	
 		<target name="do_log">
 
+			<!-- do we export the bits? -->
+			<antcall target="produce_cvs_log"></antcall>
+			
 	    <!-- and produce the output -->
 	    <java dir="${sourceDir}" jar="d:/dev/debrief/contribs/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
 	      <jvmarg line="-mx128m"/>
