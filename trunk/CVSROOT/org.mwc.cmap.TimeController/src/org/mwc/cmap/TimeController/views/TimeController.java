@@ -144,6 +144,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private final String SLIDER_STEP_SIZE = "SLIDER_STEP_SIZE";
 
+	/** make the forward button visible at a class level so that we can
+	 * fire it in testing
+	 */
+	private Button _forwardButton;
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -327,9 +332,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			}
 		});
 
-		Button sFwd = new Button(_btnPanel, SWT.NONE);
-		sFwd.setImage(TimeControllerPlugin.getImage("icons/media_forward.png"));
-		sFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
+	  _forwardButton = new Button(_btnPanel, SWT.NONE);
+		_forwardButton.setImage(TimeControllerPlugin.getImage("icons/media_forward.png"));
+		_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
 		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
@@ -1261,9 +1266,14 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 * 
 	 * @return the slider control
 	 */
-	public DTGBiSlider getSlider()
+	public DTGBiSlider getPeriodSlider()
 	{
 		return _dtgRangeSlider;
+	}
+	
+	public Scale getTimeSlider()
+	{
+		return _tNowSlider;
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
@@ -1600,6 +1610,42 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	public TimePeriod getPeriod()
 	{
-		return getSlider().getPeriod();
+		return getPeriodSlider().getPeriod();
+	}
+	
+	/** provide some support for external testing
+	 */
+	public void doTests()
+	{
+		// check we have some data
+		TestCase.assertNotNull("check we have time to control",_controllableTime);
+		TestCase.assertNotNull("check we have time provider",_myTemporalDataset);
+		TestCase.assertNotNull("check we have period to control",_controllablePeriod);
+		
+		HiResDate tDemanded = new HiResDate(0, 818748000000000L);
+		// note - time equates to: 120600:00
+		
+		// ok, try stepping forward.  get the current time
+		HiResDate tNow = _myTemporalDataset.getTime();
+		
+		// step forward one
+		Event ev = new Event();
+		_forwardButton.notifyListeners(SWT.Selection, ev);
+		
+		// find the new time
+		HiResDate tNew = _myTemporalDataset.getTime();
+		
+		TestCase.assertNotSame("time has changed", "" + tNew.getMicros(), "" + tNow.getMicros());
+
+		// ok, go back to the demanded time (in case we loaded the plot with a different saved time)
+		_controllableTime.setTime(new Integer(111), tDemanded, true);
+		
+		// have a look at the date
+		String timeStr = _timeLabel.getText();
+				
+		// check it's what we're expecting
+		TestCase.assertEquals("time is correct", timeStr, "120600:00");
+		
+
 	}
 }
