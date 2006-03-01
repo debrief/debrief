@@ -3,15 +3,18 @@
 	<property name="zipUploadDir" value="l://TD Submarines Info/PlanetMayo/Debrief/eclipse" description="the destination for the zip file" />
 	<property name="updateUploadDir" value="${zipUploadDir}/updates" description="the destination for the updates" />
 	<property name="archiveUploadDir" value="${zipUploadDir}/old" description="the destination for the updates" />
-	<property name="srcDir" value="D://Dev/Eclipse2/org.mwc.cmap.installer" description="where the updated install-sets are located" />
-	<property name="destDir" value="D://DebriefNG" description="where the updated install-sets are located" />
-	<property name="rootDir" value="D://Dev\Eclipse2/org.mwc.cmap.static_resources/root_installs" description="where the updated install-sets are located" />
+	<property name="srcDir" value="./" description="where the updated install-sets are located" />
+	<property name="rootDir" value="../org.mwc.cmap.static_resources/root_installs" description="where the updated install-sets are located" />
+	<property name="deployDir" value="../deploy" description="where we start building the output set" />
+	<property name="destDir" value="${deployDir}/DebriefNG" description="where the updated install-sets are located" />
 
 	<!-- and the cvs-logging related ones -->
-  <property name="debriefNGDir" value="d://dev/eclipse2/deploy"/>
-  <property name="sourceDir" value="d://dev/eclipse2"/>
-	<property name="buildCVSLogDir" value="${debriefNGDir}/cvs"/>
-	
+	<property name="contribDir" value="../contribs" />
+	<property name="sourceDir" value="../" description="top level directory within which all our sources are stored" />
+	<property name="buildCVSLogDir" value="${deployDir}/cvs" />
+
+	<!-- and the docbook/help related bits -->
+	<property name="helpDir" value="../org.mwc.debrief.help" />
 	
 	<target name="clean" description="clear the output directory" depends="">
 		<delete dir="${updateUploadDir}/features" />
@@ -28,98 +31,135 @@
 		<delete dir="${destDir}" />
 	</target>
 
-	<target name="clean_test_dir" description="clean the output directory" depends="">
-		<delete>
-			<fileset dir="${destDir}" includes="**/*mwc*.*" />
-		</delete>
+	<target name="unzip_dist" description="unzip the dist into a folder structure" depends="">
+		<unzip src="${destDir}\DebriefNG.zip" dest="${destDir}">
+		</unzip>
 	</target>
 
-	<target name="unzip_test_dir" description="unzip product into output directory" depends="">
-		<unzip src="d:\\DebriefNG.zip" dest="d://" />
-	</target>
-	
+
 	<target name="fill_in_bits" description="insert missing files" depends="">
 		<copy todir="${destDir}" preservelastmodified="yes">
 			<fileset dir="${rootDir}" excludes="*cvs*" />
-		</copy>			
+		</copy>
 	</target>
 
 	<target name="collate_dist" description="insert missing bits into dist">
 		<!-- get a name for the new dist -->
-		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />		
+		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />
 		<property name="destZip" value="d:/${dist-title}.zip" description="the target file" />
-	  <tstamp>
-	    <format property="TODAY_UK" pattern="yyyy_MM_dd_hh_mm" locale="en"/>
-	  </tstamp>		
+		<tstamp>
+			<format property="TODAY_UK" pattern="yyyy_MM_dd_hh_mm" locale="en" />
+		</tstamp>
 		<property name="archiveDestZipFile" value="${dist-title}_${TODAY_UK}.zip" description="the target file" />
 
 		<!-- clean the target dist -->
-		<echo message="clearing 'build' directory"/>
+		<echo message="clearing 'build' directory" />
 		<antcall target="empty_dist_dir" />
 
 		<!-- unpack the new dist -->
-		<echo message="unpacking auto-build into build directory"/>
+		<echo message="unpacking auto-build into build directory" />
 		<antcall target="unzip_test_dir" />
 
 		<!-- add the other root elements -->
-		<echo message="copying in other bits needed for dist"/>
+		<echo message="copying in other bits needed for dist" />
 		<antcall target="fill_in_bits" />
 
 
 		<!-- repack the whole dist -->
-		<echo message="collating new dist zip:d:/${dist-title}.zip"/>
-		<zip destfile="${destZip}" basedir = "${destDir}" />
-		
+		<echo message="collating new dist zip:d:/${dist-title}.zip" />
+		<zip destfile="${destZip}" basedir="${destDir}" />
+
 		<!-- ok - copy the dist to td-subs -->
-		<echo message="copying dist to td-subs"/>
+		<echo message="copying dist to td-subs" />
 		<copy file="${destZip}" toDir="${zipUploadDir}" />
-		
+
 		<!-- now save an archived version of the zip in a legacy folder -->
 		<move file="${destZip}" tofile="${archiveUploadDir}/${archiveDestZipFile}" />
-		
+
 	</target>
 
-	<target name="produce_cvs_log" description="produce the cvs change logs">
+	<target name="log1_produce" description="produce the cvs change logs">
 
-	    <!-- clear the output directory -->
-	    <delete dir="${buildCVSLogDir}"/>
+		<!-- clear the output directory -->
+		<delete dir="${buildCVSLogDir}" />
 
-	    <!-- create the output directory if we have to -->
-	    <mkdir dir="${buildCVSLogDir}"/>
-	    <mkdir dir="${buildCVSLogDir}/statcvs"/>
-	    <mkdir dir="${buildCVSLogDir}/statcvs/short"/>
-	    <mkdir dir="${buildCVSLogDir}/statcvs/long"/>
+		<!-- create the output directory if we have to -->
+		<mkdir dir="${buildCVSLogDir}" />
+		<mkdir dir="${buildCVSLogDir}/statcvs" />
 
-	    <!-- produce the CVS log -->
-	    <cvs quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
-	      <commandline>
-	        <argument line="log "/>
-	      </commandline>
-	    </cvs>
-		</target>
-	
-		<target name="do_log">
+		<!-- produce the CVS log -->
+		<cvs quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
+			<commandline>
+				<argument line="log " />
+			</commandline>
+		</cvs>
+	</target>
 
-			<!-- do we export the bits? -->
-			<antcall target="produce_cvs_log"></antcall>
-			
-	    <!-- and produce the output -->
-	    <java dir="${sourceDir}" jar="d:/dev/debrief/contribs/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
-	      <jvmarg line="-mx128m"/>
-	      <arg line=" -output-dir D:\Dev\eclipse2\deploy\cvs\statcvs\short
-	            -title 'Debrief CVS Statistics'
-	            -suite D:\Dev\debrief\tools/statcvs_template/single_page_suite.xml
-	            D:\Dev\eclipse2\deploy\cvs/statcvs.log"/>
-	    </java>
 
-	    <java dir="${sourceDir}" jar="d:/dev/debrief/contribs/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
-	      <jvmarg line="-mx128m"/>
-	      <arg line=" -output-dir D:\Dev\eclipse2\deploy\cvs\statcvs\long
-	            -title 'Debrief CVS Statistics'
-	            -suite D:\Dev\debrief\tools/statcvs_template/suite.xml
-	            D:\Dev\eclipse2\deploy\cvs/statcvs.log"/>
-	    </java>
-	  </target>
-	
-	
+
+
+	<target name="log2_format" description="use the stylesheet tidier">
+		<antcall target="cvs_stat_formatter">
+			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/short" />
+			<param name="cvs_stat_stylesheet" value="org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
+			<param name="cvs_stat_outputTitle" value="Abbreviated change statistics" />
+		</antcall>
+
+		<antcall target="cvs_stat_formatter">
+			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/long" />
+			<param name="cvs_stat_stylesheet" value="org.mwc.cmap.installer/statcvs_template/suite.xml" />
+			<param name="cvs_stat_outputTitle" value="Verbose change statistics" />
+		</antcall>
+
+	</target>
+
+
+	<target name="log3_copy" description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
+		<copy todir="..\org.mwc.debrief.help\html\history">
+			<fileset dir="${buildCVSLogDir}" />
+		</copy>
+	</target>
+
+	<target name="cvs_log" description="do the steps to produce a cvs log">
+		<antcall id="log1_produce" />
+		<antcall id="log2_format" />
+		<antcall id="log3_copy" />
+	</target>
+
+
+	<target name="docbook_to_eclipse">
+		<!-- eclipse output -->
+		<delete dir="${helpDir}\bin\eclipse" />
+		<mkdir dir="${helpDir}\bin\eclipse" />
+		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDir}\bin\eclipse" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/new2.xml" />
+			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
+		</java>
+	</target>
+
+
+	<!--
+	######################################################################################
+	##	utility tasks
+	######################################################################################
+	  -->
+
+	<target name="cvs_stat_formatter" description="use the stylesheet tidier">
+		<!-- ok, delete the output directory -->
+		<delete dir="${cvs_stat_outputDir}" />
+
+		<!-- and create it afresh -->
+		<mkdir dir="${cvs_stat_outputDir}" />
+
+		<!-- and produce the output -->
+		<java dir="${sourceDir}" jar="${contribDir}/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
+			<jvmarg line="-mx128m" />
+			<arg line=" -output-dir ${cvs_stat_outputDir}
+	            -title '${cvs_stat_outputTitle}'
+	            -suite ${cvs_stat_stylesheet}
+				deploy/cvs/statcvs.log" />
+		</java>
+	</target>
+
+
 </project>
