@@ -92,11 +92,11 @@
       <feature id="org.eclipse.platform" version="3.2.0.v20060215-6arkIf-1sI"/>
       <feature id="org.eclipse.rcp" version="3.2.0.v20060210-3BlARRhN5X"/>
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.3"/>
-      <feature id="org.mwc.cmap.feature" version="1.0.10"/>
-      <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.3"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.11"/>
+      <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.4"/>
       <feature id="org.mwc.cmap.narrative.feature" version="1.0.2"/>
       <feature id="org.mwc.cmap.plotviewer.feature" version="1.0.5"/>
-      <feature id="org.mwc.cmap.static_resources.feature" version="1.0.0"/>
+      <feature id="org.mwc.cmap.static_resources.feature" version="1.0.2"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.3"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.3"/>
       <feature id="org.mwc.debrief.feature" version="1.0.8"/>
