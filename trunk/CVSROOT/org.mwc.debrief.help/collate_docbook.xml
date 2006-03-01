@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.mwc.debrief.help" default="docbook_to_eclipse" basedir=".">
+
+	<!-- and the docbook/help related bits -->
+	<property name="contribDir" value="../contribs" />
+	<property name="helpDir" value="./" />
+	<property name="helpDest" value="${helpDir}\html\legacy" />
+
+	<target name="clear_output" description="ditch the existing output files">
+		<delete dir="${helpDest}" />
+	</target>
+	
+	<target name="docbook_to_eclipse" description="Generate html from docbook">
+		<!-- clear the output directories -->
+		<antcall target="clear_output"></antcall>
+		
+		<!-- generate the output -->
+		<mkdir dir="${helpDest}" />
+
+		<!-- generate the HTML -->
+		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/ng_help.xml" />
+			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
+		</java>
+		
+		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
+		  into the top-level of the docbook output directories -->
+		<copy todir="${helpDest}\" preservelastmodified="yes">
+			<fileset dir="${helpDest}\html\legacy" />
+		</copy>
+		<!-- and delete the duff directory (to stop us getting confused... -->
+		<delete dir="${helpDest}\html\legacy" />
+		
+		
+		<!-- also copy the images to the target directory -->
+		<copy todir="${helpDest}\figures" preservelastmodified="yes">
+			<fileset dir="${helpDir}\docbook/figures" />
+		</copy>
+		<copy todir="${helpDest}\images" preservelastmodified="yes">
+			<fileset dir="${helpDir}\docbook/images" />
+		</copy>
+		<!-- and the stylesheet -->
+		<copy todir="${helpDest}" preservelastmodified="yes">
+			<fileset file="${helpDir}\docbook/header.css" />
+		</copy>
+		
+	</target>
+
+</project>
