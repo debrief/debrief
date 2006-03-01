@@ -12,9 +12,6 @@
 	<property name="contribDir" value="../contribs" />
 	<property name="sourceDir" value="../" description="top level directory within which all our sources are stored" />
 	<property name="buildCVSLogDir" value="${deployDir}/cvs" />
-
-	<!-- and the docbook/help related bits -->
-	<property name="helpDir" value="../org.mwc.debrief.help" />
 	
 	<target name="clean" description="clear the output directory" depends="">
 		<delete dir="${updateUploadDir}/features" />
@@ -125,18 +122,6 @@
 		<antcall id="log2_format" />
 		<antcall id="log3_copy" />
 	</target>
-
-
-	<target name="docbook_to_eclipse">
-		<!-- eclipse output -->
-		<delete dir="${helpDir}\bin\eclipse" />
-		<mkdir dir="${helpDir}\bin\eclipse" />
-		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDir}\bin\eclipse" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
-			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/new2.xml" />
-			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
-		</java>
-	</target>
-
 
 	<!--
 	######################################################################################
