@@ -2,12 +2,11 @@
 <feature
       id="org.mwc.cmap.static_resources.feature"
       label="org.mwc.cmap.static_resources.feature"
-      version="1.0.1"
+      version="1.0.2"
       provider-name="MWC">
 
    <description>
-      [1.0.1]  Start exporting world &amp; etopo datasets
-
+      [1.0.2]  Start exporting world &amp; etopo datasets
 Static data used in Debrief-type projects (Etopo, World Outline,
 Jre installation)
    </description>
@@ -595,6 +594,7 @@ PURPOSE.  THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE OF
 THE
 LIBRARY IS WITH YOU.  SHOULD THE LIBRARY PROVE DEFECTIVE, YOU
 ASSUME
+
 THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
 16. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO
 IN
