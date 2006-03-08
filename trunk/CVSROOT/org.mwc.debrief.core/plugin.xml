@@ -290,17 +290,6 @@
                menubarPath="file/additions"
                style="push" />                 
 
-         <action
-               class="org.mwc.cmap.plotViewer.actions.View3d"
-               icon="icons/view3d.gif"
-               id="org.mwc.debrief.core.View3d"
-               label="&amp;View 3d"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
-               style="radio"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>                    
-              
-
-
       </editorContribution>
    </extension>
    
