@@ -59,6 +59,11 @@
 </formalpara> </abstract> 
 <revhistory> 
 <revision> 
+<revnumber>2.0</revnumber> <date>1st March 2006</date> 
+<authorinitials>IM</authorinitials> 
+<revremark>Start transition to Debrief NG</revremark> 
+</revision>
+<revision> 
 <revnumber>1.7</revnumber> <date>10th July 2004</date> 
 <authorinitials>IM</authorinitials> 
 <revremark>Include track-shifting</revremark> 
@@ -105,12 +110,13 @@ pages to DocBook format, together with full review by SMTAC OA.
 </revision> 
 </revhistory> 
 <copyright> 
-<year>2000, 2001, 2002, 2003, 2004</year> 
-<holder>PlanetMayo Ltd. Permission is granted to copy, distribute
-and/or modify this document under the terms of the GNU Free
-Documentation License, Version 1.1 or any later version published by
-the Free Software Foundation. A copy of the license is included in
-the section entitled "GNU Free Documentation License". </holder> 
+<year>2000, 2001, 2002, 2003, 2004, 2005, 2006</year> 
+<holder>Maritime Warfare Centre Ltd. Permission is granted to copy,
+distribute and/or modify this document under the terms of the GNU
+Free Documentation License, Version 1.1 or any later version
+published by the Free Software Foundation. A copy of the license is
+included in the section entitled "GNU Free Documentation License".
+</holder> 
 </copyright> 
 </bookinfo> 
 <preface id="intro"> 
@@ -118,7 +124,7 @@ the section entitled "GNU Free Documentation License". </holder>
 <sect1 id="intro_welcome"> 
 <title>Welcome</title> 
 <para>Welcome to the documentation for
-        <application>Debrief</application>.
+        <application>Debrief NG</application>.
         <application>Debrief</application> has been produced by the Maritime Warfare Centre in Portsmouth UK, to support the analysis and reporting of maritime tactical exercises.
       </para> 
 <para>In December 2000 the Maritime Warfare Centre decided to give
@@ -279,7 +285,7 @@ The wider national/international use of
           <link linkend="nuwc_address">NUWC</link> of an algorithm and code suitable for shifting tracks.  NUWC developed a set of experimental classes used to perform
           <link linkend="track_shifting">track-shifting</link>.  The algorithms used in these classes was taken and modified to complement the Debrief look and feel, and to provide greater useability resulting in the track-shifting editor included in Debrief 2002.
         </para> 
-<para>Through 2003 and 2004 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new featueres.  Additionally this support contract was used to deliver Debrief 2003; including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs.</para> 
+<para>Through 2003,4,5,6 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new featueres.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accomodate ad-hoc analysis tools).</para> 
 </sect2> 
 </sect1> 
 <sect1 id="users"> 
@@ -519,14 +525,14 @@ Naval Undersea Warfare Center (NUWC)
 <!-- ********************************************************************** -->
 <!-- ********************************************************************** -->
 <part id="tutorial"> 
-<title>Tutorial</title> 
+<title>Getting started</title> 
 <partintro> 
 <para>This tutorial will lead you through
         <application>Debrief</application> right from the installation through to more advanced topics such as creating custom sets of layers for annotation fresh plots.
       </para> 
 </partintro> 
 <chapter id="get_start"> 
-<title>Getting started</title> 
+<title>First steps</title> 
 <sect1 id="pre_install_debrief"> 
 <title>Before installing Debrief</title> 
 <sect2> 
@@ -4691,9 +4697,9 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
 </sect1> 
 </chapter> 
 <chapter id="sensor_data"> 
-<title>Loading sensor data</title> 
+<title>Analysing sensor data</title> 
 <sect1> 
-<title>Introduction to sensor data</title> 
+<title>Sensor data</title> 
 <sect2> 
 <title>Introduction</title> 
 <para>As useful as it would appear it is only in the update to
@@ -4986,7 +4992,7 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
 </sect1> 
 </chapter> 
 <chapter id="tma_data"> 
-<title>Loading TMA solution data</title> 
+<title>TMA solution data</title> 
 <sect1> 
 <title>Introduction to TMA data</title> 
 <sect2> 
