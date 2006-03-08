@@ -4,6 +4,7 @@
 	<!-- and the cvs-logging related ones -->
 	<property name="contribDir" value="../contribs" />
 	<property name="sourceDir" value="../" description="top level directory within which all our sources are stored" />
+	<property name="deployDir" value="../deploy" description="where we start building the output set" />
 	<property name="buildCVSLogDir" value="${deployDir}/cvs" />	
 	
 	<!-- and the docbook/help related bits -->
@@ -97,9 +98,40 @@
 		<copy todir="${helpDest}" preservelastmodified="yes">
 			<fileset file="${helpDir}\docbook/header.css" />
 		</copy>
+
+		<!-- try to insert our additional section content -->
+		
+		
+		<!-- and move the generated toc back to the top level -->
+		<move file="${helpDest}\toc.xml" todir="${helpDest}"/>
 		
 	</target>
 
+	<target name="insert_txt">
+		<property name="dupFile" value="${helpDest}\toc2.xml" />
+
+		<!-- make sure the target file is gone -->
+		<delete file="${dupFile}"/>
+		
+		<!-- create a fresh copy -->
+		<copy file="${helpDest}\toc.xml" tofile="${dupFile}"/>
+		
+		<!-- try the change -->
+		<replace file="${dupFile}">
+			<replacetoken>label="Getting started"</replacetoken>
+			  <replacevalue>
+			  	label="History">&lt;topic label="Short" href="\html\history\statcvs\short\index.html"/&gt;
+			  	&lt;topic label="Verbose" href="\html\history\statcvs\long\index.html"/&gt;&lt;/topic&gt;
+			  	&lt;topic label="Getting started" </replacevalue>
+		</replace>
+		
+	</target>
+	
+	<!-- now, how do we tie the two together? -->
+	
+	<target name="insert_history_link" description="place a link from the help-guidance to the change history">
+	</target>
+	
 	<!--
 	######################################################################################
 	##	utility tasks
