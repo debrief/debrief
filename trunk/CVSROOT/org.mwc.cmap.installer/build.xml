@@ -8,11 +8,7 @@
 	<property name="deployDir" value="../deploy" description="where we start building the output set" />
 	<property name="destDir" value="${deployDir}/DebriefNG" description="where the updated install-sets are located" />
 
-	<!-- and the cvs-logging related ones -->
-	<property name="contribDir" value="../contribs" />
-	<property name="sourceDir" value="../" description="top level directory within which all our sources are stored" />
-	<property name="buildCVSLogDir" value="${deployDir}/cvs" />
-	
+
 	<target name="clean" description="clear the output directory" depends="">
 		<delete dir="${updateUploadDir}/features" />
 		<delete dir="${updateUploadDir}/plugins" />
@@ -55,7 +51,7 @@
 
 		<!-- unpack the new dist -->
 		<echo message="unpacking auto-build into build directory" />
-		<antcall target="unzip_test_dir" />
+		<antcall target="unzip_dist" />
 
 		<!-- add the other root elements -->
 		<echo message="copying in other bits needed for dist" />
@@ -75,76 +71,7 @@
 
 	</target>
 
-	<target name="log1_produce" description="produce the cvs change logs">
 
-		<!-- clear the output directory -->
-		<delete dir="${buildCVSLogDir}" />
-
-		<!-- create the output directory if we have to -->
-		<mkdir dir="${buildCVSLogDir}" />
-		<mkdir dir="${buildCVSLogDir}/statcvs" />
-
-		<!-- produce the CVS log -->
-		<cvs quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
-			<commandline>
-				<argument line="log " />
-			</commandline>
-		</cvs>
-	</target>
-
-
-
-
-	<target name="log2_format" description="use the stylesheet tidier">
-		<antcall target="cvs_stat_formatter">
-			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/short" />
-			<param name="cvs_stat_stylesheet" value="org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
-			<param name="cvs_stat_outputTitle" value="Abbreviated change statistics" />
-		</antcall>
-
-		<antcall target="cvs_stat_formatter">
-			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/long" />
-			<param name="cvs_stat_stylesheet" value="org.mwc.cmap.installer/statcvs_template/suite.xml" />
-			<param name="cvs_stat_outputTitle" value="Verbose change statistics" />
-		</antcall>
-
-	</target>
-
-
-	<target name="log3_copy" description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
-		<copy todir="..\org.mwc.debrief.help\html\history">
-			<fileset dir="${buildCVSLogDir}" />
-		</copy>
-	</target>
-
-	<target name="cvs_log" description="do the steps to produce a cvs log">
-		<antcall id="log1_produce" />
-		<antcall id="log2_format" />
-		<antcall id="log3_copy" />
-	</target>
-
-	<!--
-	######################################################################################
-	##	utility tasks
-	######################################################################################
-	  -->
-
-	<target name="cvs_stat_formatter" description="use the stylesheet tidier">
-		<!-- ok, delete the output directory -->
-		<delete dir="${cvs_stat_outputDir}" />
-
-		<!-- and create it afresh -->
-		<mkdir dir="${cvs_stat_outputDir}" />
-
-		<!-- and produce the output -->
-		<java dir="${sourceDir}" jar="${contribDir}/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
-			<jvmarg line="-mx128m" />
-			<arg line=" -output-dir ${cvs_stat_outputDir}
-	            -title '${cvs_stat_outputTitle}'
-	            -suite ${cvs_stat_stylesheet}
-				deploy/cvs/statcvs.log" />
-		</java>
-	</target>
 
 
 </project>
