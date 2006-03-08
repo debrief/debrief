@@ -57,6 +57,10 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 					CorePlugin.logError(Status.INFO, "Replay loader - counted:" + lines
 							+ " lines", null);
 				}
+				catch (FileNotFoundException fe)
+				{
+					CorePlugin.logError(Status.INFO, "Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.", fe);
+				}
 				catch (IOException e)
 				{
 					CorePlugin.logError(Status.ERROR,
