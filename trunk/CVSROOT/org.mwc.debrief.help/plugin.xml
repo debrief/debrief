@@ -5,12 +5,8 @@
    <extension
          point="org.eclipse.help.toc">
       <toc
-            extradir="/html/legacy"
-            file="html/legacy/toc.xml"
+            file="html/legacy/toc2.xml"
             primary="true">
-      </toc>
-      <toc
-            file="tocconcepts.xml">
       </toc>
       <toc
             file="tocgettingstarted.xml">
