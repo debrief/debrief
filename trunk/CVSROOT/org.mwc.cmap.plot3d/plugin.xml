@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.0"?>
+<plugin>
+
+     <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.cmap.plot3d.views.Plot3dView"
+            icon="icons/document_chart.png"
+            id="org.mwc.cmap.plot3d.views.Plot3dView"
+            name="3d Plot">
+      </view>
+   </extension>
+
+   <extension
+         id="org.mwc.debrief.core.editors.DebriefActions"
+         name="DebriefActions"
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="org.mwc.debrief.core.editors.PlotEditorActions"
+            targetID="org.mwc.debrief.core.editors.PlotEditor">
+            
+         <action
+               class="org.mwc.cmap.plot3d.actions.View3d"
+               icon="icons/view3d.gif"
+               id="org.mwc.cmap.new_3d_plot"
+               label="&amp;View 3d (new)"
+               menubarPath="org.mwc.debrief.core.EditorView/view"
+               style="push"
+               toolbarPath="org.mwc.debrief.core.EditorView/view"/>                    
+                              
+
+
+      </editorContribution>
+   </extension>
+
+</plugin>
