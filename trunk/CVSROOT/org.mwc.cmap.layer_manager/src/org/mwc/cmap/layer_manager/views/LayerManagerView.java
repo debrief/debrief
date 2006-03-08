@@ -515,18 +515,21 @@ public class LayerManagerView extends ViewPart
 			Plottable pl = pw.getPlottable();
 			if (pl instanceof WatchableList)
 			{
-				// hey, it's a maybe.  
+				// hey, it's a maybe.
 				res = true;
-				
-				// ok, it's a candidate.  now see if it's already one of the secondaries
+
+				// ok, it's a candidate. now see if it's already one of the secondaries
 				WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
-				for (int i = 0; i < secs.length; i++)
+				if (secs != null)
 				{
-					WatchableList thisList = secs[i];
-					if(thisList == pl)
+					for (int i = 0; i < secs.length; i++)
 					{
-						res = false;
-						break;
+						WatchableList thisList = secs[i];
+						if (thisList == pl)
+						{
+							res = false;
+							break;
+						}
 					}
 				}
 			}
