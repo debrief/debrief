@@ -297,6 +297,11 @@ public class EditableWrapper implements IPropertySource
 		{
 				// get the value, if it worked
 				_property.setValue(_newValue);
+				
+				// ok, and tell any listeners that want to know
+				// - the only listener I can think of is the Java3d properties viewer
+				_property._subject.getInfo().fireChanged(_property.getValue(), _property.getDisplayName(),
+						_oldValue, _newValue );
 
 				// fire the reformatted event for the parent layer
 				// - note, we may not have the layers object if this editable isn't a plot object
@@ -316,6 +321,10 @@ public class EditableWrapper implements IPropertySource
 		{
 			// get the value, if it worked
 			_property.setValue(_oldValue);
+			
+			// ok, and tell any listeners that want to know...
+			_property._subject.getInfo().fireChanged(_property.getValue(), _property.getDisplayName(),
+					_newValue, _oldValue );
 
 			// fire the reformatted event for the parent layer
 			_wholeLayers.fireReformatted(null);
