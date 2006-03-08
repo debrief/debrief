@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.4">
+      version="1.0.6">
 
    <description>
-      [1.0.4] More tidying of open existing plot
+      [1.0.6] Update legacy help to NG
+[1.0.5] Import legacy help guidance
+[1.0.4] More tidying of open existing plot
 [1.0.3] Tidy open existing plot
 [1.0.2] Tidy intro cheat-sheets
 [1.0.1] Ready for RC1
