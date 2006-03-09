@@ -2,7 +2,8 @@
 <feature
       id="org.mwc.cmap.narrative.feature"
       label="org.mwc.cmap.narrative.feature"
-      version="1.0.2">
+      version="1.0.2"
+      provider-name="MWC">
 
    <description>
       [1.0.2] Preps for RC1
