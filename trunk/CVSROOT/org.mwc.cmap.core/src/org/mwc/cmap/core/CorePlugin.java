@@ -32,6 +32,7 @@ public class CorePlugin extends AbstractUIPlugin
 	
 	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
 	public static final String NARRATIVES = "org.mwc.cmap.narrative.views.NarrativeView";
+	public static final String PLOT_3d = "org.mwc.cmap.plot3d.views.Plot3dView";
 	public static final String TOTE = "org.mwc.cmap.tote.views.ToteView";
 	public static final String TIME_CONTROLLER = "org.mwc.cmap.TimeController.views.TimeController";
 	public static final String XY_PLOT = "org.mwc.cmap.xyplot.views.XYPlotView";
