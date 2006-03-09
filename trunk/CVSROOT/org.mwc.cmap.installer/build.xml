@@ -8,6 +8,9 @@
 	<property name="deployDir" value="../deploy" description="where we start building the output set" />
 	<property name="destDir" value="${deployDir}/DebriefNG" description="where the updated install-sets are located" />
 
+  <!-- path to the installer (exec command won't take relative path reference -->
+  <property name="advancedInstallerPath" value="d:\dev\debrief\contribs\advancedinstaller\"/>
+	
 
 	<target name="clean" description="clear the output directory" depends="">
 		<delete dir="${updateUploadDir}/features" />
@@ -35,6 +38,14 @@
 			<fileset dir="${rootDir}" excludes="*cvs*" />
 		</copy>
 	</target>
+	
+	<!-- try to make the builders -->
+	<target name="build_installer" description="create the installation file" depends="">
+  <exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
+    <arg line="/build ng_installer_settings.aip"/>
+  </exec>		
+	</target>
+	
 
 	<target name="collate_dist" description="insert missing bits into dist">
 		<!-- get a name for the new dist -->
@@ -61,6 +72,11 @@
 		<!-- repack the whole dist -->
 		<echo message="collating new dist zip:d:/${dist-title}.zip" />
 		<zip destfile="${destZip}" basedir="${destDir}" />
+		
+		<!-- do the installer -->
+		<echo message="creating single-file installer" />
+		<antcall target="build_installer" />		
+	  	
 
 		<!-- ok - copy the dist to td-subs -->
 		<echo message="copying dist to td-subs" />
