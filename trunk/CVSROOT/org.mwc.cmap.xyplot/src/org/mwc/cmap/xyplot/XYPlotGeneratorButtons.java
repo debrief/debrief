@@ -10,18 +10,16 @@ import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.TimeController.views.TimeController;
-import org.mwc.cmap.core.DataTypes.*;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 
-import Debrief.Tools.FilterOperations.*;
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2;
 import Debrief.Tools.Tote.*;
 import Debrief.Tools.Tote.Calculations.*;
 import MWC.Algorithms.Plotting.*;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
-import com.jrefinery.chart.*;
 import com.jrefinery.data.AbstractDataset;
 
 /**
