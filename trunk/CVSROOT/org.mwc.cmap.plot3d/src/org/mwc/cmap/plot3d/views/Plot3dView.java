@@ -257,11 +257,22 @@ public class Plot3dView extends ViewPart
 
 	private static class TimeControllerWrapper implements StepperController
 	{
+		/** right, which time provider are we managing?
+		 * 
+		 */
 		private TimeProvider _prov;
+		
+		/** hmm, keep track of the wrapped listeners. we need to remember the 
+		 * wrapped instance so we can implement the 'remove' action
+		 */
+		private HashMap _listeners;
 
+		
 		public TimeControllerWrapper(TimeProvider prov)
 		{
 			_prov = prov;
+			
+			_listeners = new HashMap();
 		}
 
 		public void addStepperListener(final StepperListener listener)
@@ -276,11 +287,23 @@ public class Plot3dView extends ViewPart
 				}
 			};
 
+			// remember that listener before we go & forget it
+			_listeners.put(listener, pcl);
+
+			// and tell the timer about our new listener
 			_prov.addListener(pcl, TimeManager.TIME_CHANGED_PROPERTY_NAME);
+			
 		}
 
 		public void removeStepperListener(StepperListener listener)
 		{
+			PropertyChangeListener list = (PropertyChangeListener) _listeners.get(listener);
+			
+			// remove it from our list
+			_listeners.remove(listener);
+			
+			// and from the timer manager			
+			_prov.removeListener(list, TimeManager.TIME_CHANGED_PROPERTY_NAME);
 		}
 
 		public void doStep(boolean forward, boolean large_step)

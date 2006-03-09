@@ -11,7 +11,6 @@ import org.mwc.cmap.plot3d.views.Plot3dView;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
-import Debrief.Tools.Operations.View3dPlot;
 import MWC.GUI.*;
 
 /**
