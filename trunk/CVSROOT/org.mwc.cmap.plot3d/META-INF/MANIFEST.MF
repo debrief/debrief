@@ -16,6 +16,3 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.ui.views,
  org.mwc.cmap.plotViewer
 Eclipse-LazyStart: false
-Export-Package: org.mwc.cmap.plot3d,
- org.mwc.cmap.plot3d.actions,
- org.mwc.cmap.plot3d.views
