@@ -25,7 +25,7 @@
          <action
                class="org.mwc.cmap.plot3d.actions.View3d"
                icon="icons/view3d.gif"
-               id="org.mwc.cmap.new_3d_plot"
+               id="org.mwc.cmap.plot3d.actions.View3d"
                label="&amp;View 3d (new)"
                menubarPath="org.mwc.debrief.core.EditorView/view"
                style="push"
