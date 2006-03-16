@@ -35,6 +35,7 @@ public class View3d extends CoreEditorAction
 	 */
 	protected void run()
 	{
+		CorePlugin.logError(Status.INFO, "Starting to open 3d view", null);
 		
 		try{
 		final PlainChart theChart = getChart();
@@ -42,15 +43,20 @@ public class View3d extends CoreEditorAction
 //		View3dPlot plotter = new View3dPlot(_theParent, null, theLayers, null);		
 //		plotter.execute();
 		
+		CorePlugin.logError(Status.INFO, "Found source data", null);
 	
 
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
 
+			CorePlugin.logError(Status.INFO, "Found page", null);
+			
 			// ok, get the editor = we want some time control
 			CorePlotEditor cpe = (CorePlotEditor) page.getActiveEditor();
 			TimeProvider timer = (TimeProvider) cpe.getAdapter(TimeProvider.class);
+			
+			CorePlugin.logError(Status.INFO, "Found plot editor & time provider", null);
 			
 			// get ready for the start/end times
 //			HiResDate startTime, endTime;
@@ -68,7 +74,10 @@ public class View3d extends CoreEditorAction
 				String plotId = "org.mwc.cmap.plot3d.views.Plot3dView";
 				page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
 
-//				// put our subjects into a vector
+				CorePlugin.logError(Status.INFO, "Show view called", null);
+				
+
+				//				// put our subjects into a vector
 //				Vector theTracks = new Vector(0, 1);
 //				for (int i = 0; i < subjects.length; i++)
 //				{
@@ -83,7 +92,12 @@ public class View3d extends CoreEditorAction
 				// ok, try to retrieve the view
 				IViewReference plotRef = page.findViewReference(plotId, theTitle);
 				Plot3dView ourPlot = (Plot3dView) plotRef.getView(true);
+
+				CorePlugin.logError(Status.INFO, "Found plot, about to call show plot", null);
+				
 				ourPlot.showPlot(theTitle, theLayers, timer);
+				
+				CorePlugin.logError(Status.INFO, "Show plot called", null);
 			}
 			catch (PartInitException e)
 			{

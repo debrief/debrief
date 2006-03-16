@@ -187,6 +187,8 @@ public class Plot3dView extends ViewPart
 		_myTitle = title;
 		_myLayers = theData;
 
+		CorePlugin.logError(Status.INFO, "in show-plot method", null);
+		
 		// wrap the timer
 		_myTimer = new TimeControllerWrapper(timer);
 
@@ -197,6 +199,8 @@ public class Plot3dView extends ViewPart
 		// prepare the bathy data
 		BathyProvider _bathyProvider = new ETOPO_2_Minute(CreateTOPO.getETOPOPath());
 
+		CorePlugin.logError(Status.INFO, "found bathy data", null);
+		
 		try
 		{
 			_myWorld = new MouseWheelWorldHolder(null, _myTimer, _myLayers, _bathyProvider,
@@ -244,15 +248,23 @@ public class Plot3dView extends ViewPart
 							le);
 		}
 
+		CorePlugin.logError(Status.INFO, "about to call data-extended", null);
+		
 		doDataExtended(_myLayers, _myWorld);
 
+		CorePlugin.logError(Status.INFO, "about to call world-finished", null);
+		
 		// add the buoyfields
 
 		// done
 		_myWorld.finish();
 
+		CorePlugin.logError(Status.INFO, "about to put 3d control into panel", null);
+
 		// put it in the holder.
 		_plotControl.add(_myWorld, BorderLayout.CENTER);
+
+		CorePlugin.logError(Status.INFO, "3d control placed into panel", null);
 	}
 
 	private static class TimeControllerWrapper implements StepperController
