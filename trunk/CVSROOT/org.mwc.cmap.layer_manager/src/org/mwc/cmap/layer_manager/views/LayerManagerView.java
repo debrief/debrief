@@ -905,7 +905,7 @@ public class LayerManagerView extends ViewPart
 				CorePlugin.run(doIt);
 			}
 		};
-		_revealAction.setText("Refeal item");
+		_revealAction.setText("Reveal item");
 		_revealAction.setToolTipText("Reveal selected items");
 		_revealAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/reveal.gif"));
 	}
