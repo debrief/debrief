@@ -36,8 +36,8 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 	public ViewLabelProvider()
 	{
 			// ok, retrieve the images from our own registry
-			visImage = CorePlugin.getImageFromRegistry("reveal.gif");
-			nonVisImage = CorePlugin.getImageFromRegistry("hide.gif");
+			visImage = CorePlugin.getImageFromRegistry("check2.png");
+			nonVisImage = CorePlugin.getImageFromRegistry("blank_check.png");
 	}
 
 	public String getText(Object obj)
@@ -93,29 +93,6 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 		{
 			// hey - don't bother with this bit - just use the text-marker
 			
-//			// sort out the visibility
-//			PlottableWrapper pw = (PlottableWrapper) element;
-//			Editable ed = pw.getPlottable();
-//			if (ed instanceof Plottable)
-//			{
-//				Plottable pl = (Plottable) ed;
-//				if (pl.getVisible())
-//					res = visImage;
-//				else
-//					res = nonVisImage;
-//			}
-		}
-
-		return res;
-	}
-
-	public String getColumnText(Object element, int columnIndex)
-	{
-		String res = "N";
-		if (columnIndex == 0)
-			res = getText(element);
-		else
-		{
 			// sort out the visibility
 			PlottableWrapper pw = (PlottableWrapper) element;
 			Editable ed = pw.getPlottable();
@@ -123,11 +100,34 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 			{
 				Plottable pl = (Plottable) ed;
 				if (pl.getVisible())
-					res = "Y";
+					res = visImage;
 				else
-					res = "N";
+					res = nonVisImage;
 			}
 		}
+
+		return res;
+	}
+
+	public String getColumnText(Object element, int columnIndex)
+	{
+		String res = null;
+		if (columnIndex == 0)
+			res = getText(element);
+//		else
+//		{
+//			// sort out the visibility
+//			PlottableWrapper pw = (PlottableWrapper) element;
+//			Editable ed = pw.getPlottable();
+//			if (ed instanceof Plottable)
+//			{
+//				Plottable pl = (Plottable) ed;
+//				if (pl.getVisible())
+//					res = "Y";
+//				else
+//					res = "N";
+//			}
+//		}
 
 		return res;
 	}
