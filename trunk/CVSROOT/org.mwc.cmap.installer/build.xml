@@ -6,10 +6,10 @@
 	<property name="srcDir" value="./" description="where the updated install-sets are located" />
 	<property name="rootDir" value="../org.mwc.cmap.static_resources/root_installs" description="where the updated install-sets are located" />
 	<property name="deployDir" value="../deploy" description="where we start building the output set" />
-	<property name="destDir" value="${deployDir}/DebriefNG" description="where the updated install-sets are located" />
+	<property name="destDir" value="${deployDir}" description="where the updated install-sets are located" />
 
   <!-- path to the installer (exec command won't take relative path reference -->
-  <property name="advancedInstallerPath" value="d:\dev\debrief\contribs\advancedinstaller\"/>
+  <property name="advancedInstallerPath" value="d:\dev\eclipse2\contribs\advancedinstaller\"/>
 	
 
 	<target name="clean" description="clear the output directory" depends="">
@@ -24,7 +24,7 @@
 	</target>
 
 	<target name="empty_dist_dir" description="clear the output directory" depends="">
-		<delete dir="${destDir}" />
+		<delete dir="${destDir}\DebriefNG" />
 	</target>
 
 	<target name="unzip_dist" description="unzip the dist into a folder structure" depends="">
@@ -34,7 +34,7 @@
 
 
 	<target name="fill_in_bits" description="insert missing files" depends="">
-		<copy todir="${destDir}" preservelastmodified="yes">
+		<copy todir="${destDir}\DebriefNG" preservelastmodified="yes">
 			<fileset dir="${rootDir}" excludes="*cvs*" />
 		</copy>
 	</target>
@@ -50,7 +50,7 @@
 	<target name="collate_dist" description="insert missing bits into dist">
 		<!-- get a name for the new dist -->
 		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />
-		<property name="destZip" value="d:/${dist-title}.zip" description="the target file" />
+		<property name="destZip" value="${destDir}/${dist-title}.zip" description="the target file" />
 		<tstamp>
 			<format property="TODAY_UK" pattern="yyyy_MM_dd_hh_mm" locale="en" />
 		</tstamp>
@@ -71,11 +71,11 @@
 
 		<!-- repack the whole dist -->
 		<echo message="collating new dist zip:d:/${dist-title}.zip" />
-		<zip destfile="${destZip}" basedir="${destDir}" />
+		<zip destfile="${destZip}" basedir="${destDir}/DebriefNG" />
 		
 		<!-- do the installer -->
 		<echo message="creating single-file installer" />
-		<antcall target="build_installer" />		
+	<!--	<antcall target="build_installer" />		 -->
 	  	
 
 		<!-- ok - copy the dist to td-subs -->
