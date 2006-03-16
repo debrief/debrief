@@ -93,7 +93,15 @@
             <groupMarker name="additions"/>
          </menu>
 
-               
+                              
+         <action
+               class="org.mwc.cmap.plotViewer.actions.ZoomOut"
+               icon="icons/zoomout.gif"
+               id="org.mwc.debrief.core.ZoomOut"
+               label="Zoom &amp;Out"
+               menubarPath="org.mwc.debrief.core.EditorView/view"
+               style="push"
+               toolbarPath="org.mwc.debrief.core.EditorView/view"/>
          <action
                class="org.mwc.cmap.plotViewer.actions.ZoomIn"
                icon="icons/zoomin.gif"
@@ -133,15 +141,7 @@
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorView/additions"/>
                
-               
-         <action
-               class="org.mwc.cmap.plotViewer.actions.ZoomOut"
-               icon="icons/zoomout.gif"
-               id="org.mwc.debrief.core.ZoomOut"
-               label="Zoom &amp;Out"
-               menubarPath="org.mwc.debrief.core.EditorView/additions"
-               style="push"
-               toolbarPath="org.mwc.debrief.core.EditorView/additions"/>
+
                
          <action
                class="org.mwc.cmap.plotViewer.actions.Redraw"
@@ -214,14 +214,6 @@
                toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
              
 
-         <action
-               class="org.mwc.debrief.core.creators.shapes.InsertEllipse"
-               icon="icons/ellipse.gif"
-               id="org.mwc.debrief.core.creators.shapes.InsertEllipse"
-               label="&amp;Ellipse"
-               menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-               style="push"
-               toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
 
          <action
                class="org.mwc.debrief.core.creators.shapes.InsertRectangle"
