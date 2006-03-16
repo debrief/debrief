@@ -1064,6 +1064,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		return newVal;
 	}
 
+	private static SimpleDateFormat _myFormat = null;
+	private static String _myFormatString = null;
+	
 	public static String toStringHiRes(HiResDate time, String pattern)
 			throws IllegalArgumentException
 	{
@@ -1075,9 +1078,27 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 		java.util.Date theTime = new java.util.Date(micros / 1000);
 
-		SimpleDateFormat selectedFormat = new SimpleDateFormat(pattern);
-		selectedFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
-		res.append(selectedFormat.format(theTime));
+		// do we already know about a date format?
+		if(_myFormatString != null)
+		{
+			// right, see if it's what we're after
+			if(_myFormatString != pattern)
+			{
+				// nope, it's not what we're after.  ditch gash
+				_myFormatString = null;
+				_myFormat = null;
+			}
+		}
+		
+		// so, we either don't have a format yet, or we did have, and now we want to forget it...
+		if(_myFormat == null)
+		{
+			_myFormatString = pattern;
+			_myFormat = new SimpleDateFormat(pattern);
+			_myFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+		}
+
+		res.append(_myFormat.format(theTime));
 
 		DecimalFormat microsFormat = new DecimalFormat("000000");
 		DecimalFormat millisFormat = new DecimalFormat("000");
