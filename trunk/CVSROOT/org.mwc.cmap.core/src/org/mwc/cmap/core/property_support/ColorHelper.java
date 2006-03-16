@@ -4,6 +4,7 @@
 package org.mwc.cmap.core.property_support;
 
 import java.awt.Color;
+import java.util.HashMap;
 
 import org.eclipse.jface.preference.ColorSelector;
 import org.eclipse.jface.resource.ColorRegistry;
@@ -17,6 +18,11 @@ import org.mwc.cmap.core.CorePlugin;
 public class ColorHelper extends EditorHelper
 {
 	// Control _parentControl;
+
+	// also keep a local hashmap of colours. we need to generate a string to get a
+	// color using
+	// the SWT color-registry. we'll keep our own local list instead...
+	private static HashMap _myColorList = new HashMap();
 
 	public ColorHelper(Control parentControl)
 	{
@@ -57,27 +63,37 @@ public class ColorHelper extends EditorHelper
 	public static org.eclipse.swt.graphics.Color getColor(java.awt.Color javaCol)
 	{
 
-		// check we have our registry
-		if (_colRegistry == null)
-			_colRegistry = new ColorRegistry();
+		// see if we have it in our own private list
+		org.eclipse.swt.graphics.Color thisCol = (org.eclipse.swt.graphics.Color) _myColorList
+				.get(javaCol);
 
-		final String colName = javaCol.toString();
-
-		// retrieve the color
-		org.eclipse.swt.graphics.Color thisCol = _colRegistry.get(colName);
-
-		// ok. do we have the color?
 		if (thisCol == null)
 		{
-			// bugger, we'll have to create it
-			RGB newData = new RGB(javaCol.getRed(), javaCol.getGreen(), javaCol
-					.getBlue());
-			_colRegistry.put(colName, newData);
 
-			// and try to retrieve it again
+			// check we have our registry
+			if (_colRegistry == null)
+				_colRegistry = new ColorRegistry();
+
+			String colName = "" + javaCol.getRGB();
+
+			// retrieve the color
 			thisCol = _colRegistry.get(colName);
-		}
 
+			// ok. do we have the color?
+			if (thisCol == null)
+			{
+				// bugger, we'll have to create it
+				RGB newData = new RGB(javaCol.getRed(), javaCol.getGreen(), javaCol.getBlue());
+				_colRegistry.put(colName, newData);
+
+				// and try to retrieve it again
+				thisCol = _colRegistry.get(colName);
+			}
+
+			// ok, if we found it, try to store it locally
+			if (thisCol != null)
+				_myColorList.put(javaCol, thisCol);
+		}
 		return thisCol;
 	}
 
@@ -168,7 +184,7 @@ public class ColorHelper extends EditorHelper
 
 		public ColorLabelProvider()
 		{
-			
+
 		}
 
 		/**
@@ -177,24 +193,24 @@ public class ColorHelper extends EditorHelper
 		 */
 		public Image getImage(Object element)
 		{
-//			RGB rgCol = (RGB) element;
-//			ImageData theD = createColorImage(rgCol);
-//			Image theI = new Image(Display.getDefault(), theD);
-//			return theI;
-			
+			// RGB rgCol = (RGB) element;
+			// ImageData theD = createColorImage(rgCol);
+			// Image theI = new Image(Display.getDefault(), theD);
+			// return theI;
+
 			String imageKey = "vpf.gif";
 			imageKey = ISharedImages.IMG_OBJ_FOLDER;
 
 			Image theImage = PlatformUI.getWorkbench().getSharedImages().getImage(imageKey);
-			
-			if(theImage == null)
+
+			if (theImage == null)
 			{
 				// ok, try to get the image from our own registry
 				theImage = CorePlugin.getImageFromRegistry(imageKey);
 			}
-			
-			return theImage; 			
-			
+
+			return theImage;
+
 		}
 
 		/**
@@ -205,10 +221,9 @@ public class ColorHelper extends EditorHelper
 		{
 			return super.getText(element);
 		}
-		
-		
+
 	}
-	
+
 	public static class ColorsListProvider extends ArrayContentProvider
 	{
 		/**
@@ -217,33 +232,34 @@ public class ColorHelper extends EditorHelper
 		 */
 		public Object[] getElements(Object inputElement)
 		{
-			RGB[] cols = new RGB[]{new RGB(255,0,0), new RGB(0,255,0), new RGB(0,0,255)};
+			RGB[] cols = new RGB[] { new RGB(255, 0, 0), new RGB(0, 255, 0), new RGB(0, 0, 255) };
 			return cols;
 		}
-		
+
 	}
-	
+
 	/**
 	 * @param parent
 	 * @param property
 	 * @return
 	 */
-	public Control getEditorControlFor(Composite parent,
-			final DebriefProperty property)
+	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
 
 		final ColorSelector sel = new ColorSelector(parent);
-		sel.addListener(new IPropertyChangeListener(){
+		sel.addListener(new IPropertyChangeListener()
+		{
 			public void propertyChange(PropertyChangeEvent event)
 			{
 				RGB theCol = sel.getColorValue();
 				property.setValue(theCol);
-			}});
-		
+			}
+		});
+
 		// try to set the default color
 		RGB current = (RGB) property.getValue();
 		sel.setColorValue(current);
-		
+
 		return sel.getButton();
 
 	}
