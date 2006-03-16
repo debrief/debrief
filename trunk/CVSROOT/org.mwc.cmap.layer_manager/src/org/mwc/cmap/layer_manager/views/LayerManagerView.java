@@ -275,6 +275,11 @@ public class LayerManagerView extends ViewPart
 
 	private static class MyTreeViewer extends TreeViewer
 	{
+		public MyTreeViewer(Tree parent)
+		{
+			super(parent);
+		}
+
 		public MyTreeViewer(Composite parent, int style)
 		{
 			super(parent, style);
@@ -293,7 +298,34 @@ public class LayerManagerView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 
-		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		
+//
+//    =================================
+//    NOTE: the following block of commented out code shows tick-boxes by the 
+//		Tree myTree = new Tree(parent, SWT.CHECK | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+//
+//		// listen out for selection events
+//		myTree.addListener(SWT.Selection, new Listener()
+//		{
+//			public void handleEvent(Event event)
+//			{
+//				if (event.detail == SWT.CHECK)
+//				{
+//					TreeItem ti = (TreeItem) event.item;
+//					boolean isChecked = ti.getChecked();
+//					PlottableWrapper pw = (PlottableWrapper) ti.getData();
+//					if (pw != null)
+//					{
+//						pw.getPlottable().setVisible(isChecked);
+//						Layer parent = pw.getTopLevelLayer();
+//						_myLayers.fireModified(parent);
+//					}
+//				}
+//			}
+//		});
+//		_treeViewer = new MyTreeViewer(myTree);
+
+		 _treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		_treeViewer.setUseHashlookup(true);
 		drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
@@ -302,7 +334,6 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setInput(getViewSite());
 		_treeViewer.setComparer(new IElementComparer()
 		{
-
 			public boolean equals(Object a, Object b)
 			{
 				// do our special case for comparing plottables
@@ -876,7 +907,7 @@ public class LayerManagerView extends ViewPart
 			}
 		};
 		_hideAction.setText("Hide item");
-		_hideAction.setToolTipText("Stop selected items from being visible");
+		_hideAction.setToolTipText("Hide selected items");
 		_hideAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/hide.gif"));
 
 		_revealAction = new Action()
