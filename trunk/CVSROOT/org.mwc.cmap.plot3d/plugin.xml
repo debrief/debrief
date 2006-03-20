@@ -19,8 +19,7 @@
          name="DebriefActions"
          point="org.eclipse.ui.actionSets">
      <actionSet id="org.mwc.cmap.plot3d" label="Debrief 3D actions">
-            
-         <action
+           <action
                class="org.mwc.cmap.plot3d.actions.View3d"
                icon="icons/view3d.gif"
                id="org.mwc.cmap.plot3d.actions.View3d"
@@ -28,9 +27,6 @@
                menubarPath="org.mwc.debrief.core.EditorView/additions"
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorView/additions"/>                    
-                              
-
-
       </actionSet>
    </extension>
 
