@@ -5,10 +5,10 @@ package org.mwc.cmap.plotViewer.actions;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
-import org.eclipse.ui.IEditorActionDelegate;
-import org.eclipse.ui.IEditorPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
@@ -17,7 +17,8 @@ import MWC.GUI.PlainChart;
 /**
  * @author ian.mayo
  */
-abstract public class CoreEditorAction implements IEditorActionDelegate
+abstract public class CoreEditorAction implements IEditorActionDelegate,
+		IWorkbenchWindowActionDelegate
 {
 
 	protected CorePlotEditor _myEditor = null;
@@ -30,9 +31,9 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 	 */
 	public void setActiveEditor(IAction action, IEditorPart targetEditor)
 	{
-		if(targetEditor == null)
+		if (targetEditor == null)
 			return;
-		
+
 		if (targetEditor instanceof CorePlotEditor)
 		{
 			_myEditor = (CorePlotEditor) targetEditor;
@@ -44,11 +45,12 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 		}
 
 	}
-	
+
 	private CorePlotEditor getEditor()
 	{
+		_myEditor = null;
 		// do we know our editor?
-		if(_myEditor == null)
+		if (_myEditor == null)
 		{
 			// nope, better generate it
 			IWorkbench wb = PlatformUI.getWorkbench();
@@ -57,21 +59,25 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 			IEditorPart editor = page.getActiveEditor();
 			setActiveEditor(null, editor);
 		}
-		
+
 		// ok, give it a go.
 		return _myEditor;
 	}
-	
+
 	protected CorePlotEditor getPlot()
 	{
 		return getEditor();
 	}
-	
+
 	protected PlainChart getChart()
 	{
-		return getEditor().getChart();
+		PlainChart res = null;
+		CorePlotEditor editor = getEditor();
+		if(editor != null)
+			res = editor.getChart();
+		return res;
 	}
-	
+
 	protected void redrawChart()
 	{
 		getChart().getCanvas().updateMe();
@@ -82,14 +88,26 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 	 * 
 	 * @see org.eclipse.ui.IActionDelegate#run(org.eclipse.jface.action.IAction)
 	 */
-	public void run(IAction action)
+	public final void run(IAction action)
 	{
-		run();
+		// check we're looking at our type of editor
+		PlainChart chrt = getChart();
+		if (chrt == null)
+		{
+		  // report to user that they do need to have a plot editor open...
+		//	System.err.println("wrong type of editor");
+			MessageDialog.openWarning( Display.getCurrent().getActiveShell(), "Debrief action", "Please select a Debrief plot before performing this action");
+		}
+		else
+		{
+			execute();
+		}
 	}
 
-	/** perform our operation
+	/**
+	 * perform our operation
 	 */
-	abstract protected void run();
+	abstract protected void execute();
 
 	/*
 	 * (non-Javadoc)
@@ -101,6 +119,17 @@ abstract public class CoreEditorAction implements IEditorActionDelegate
 	{
 		// TODO Auto-generated method stub
 
+	}
+
+	public void dispose()
+	{
+		// TODO Auto-generated method stub
+
+	}
+
+	public void init(IWorkbenchWindow window)
+	{
+		// TODO Auto-generated method stub
 	}
 
 }
