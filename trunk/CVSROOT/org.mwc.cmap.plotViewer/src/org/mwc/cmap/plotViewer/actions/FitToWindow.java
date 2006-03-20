@@ -4,6 +4,7 @@
 package org.mwc.cmap.plotViewer.actions;
 
 
+import org.eclipse.ui.IWorkbenchWindow;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 
@@ -17,11 +18,9 @@ import MWC.GenericData.WorldArea;
  */
 public class FitToWindow extends CoreEditorAction
 {
-	protected void run()
+	protected void execute()
 	{
 		PlainChart theChart = getChart();
-//		theChart.rescale();
-//		redrawChart();
 
 		WorldArea oldArea = new WorldArea(theChart.getCanvas().getProjection().getVisibleDataArea());
 		Action theAction = 	new MWC.GUI.Tools.Chart.FitToWin.FitToWinAction(theChart, oldArea);
@@ -33,5 +32,6 @@ public class FitToWindow extends CoreEditorAction
 		CorePlugin.run(daw);
 	
 	}
+
 	
 }

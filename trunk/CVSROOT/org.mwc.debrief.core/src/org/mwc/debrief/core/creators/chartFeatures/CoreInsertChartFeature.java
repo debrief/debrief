@@ -31,7 +31,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	/**
 	 * and execute..
 	 */
-	protected void run()
+	protected void execute()
 	{
 		final PlainChart theChart = getChart();
 

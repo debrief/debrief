@@ -15,7 +15,7 @@ import MWC.GenericData.WorldArea;
  */
 public class ZoomOut extends CoreEditorAction
 {
-	protected void run()
+	protected void execute()
 	{
 		PlainChart theChart = getChart();
 

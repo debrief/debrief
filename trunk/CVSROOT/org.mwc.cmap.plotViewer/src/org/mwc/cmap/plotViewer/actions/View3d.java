@@ -29,7 +29,7 @@ public class View3d extends CoreEditorAction
 	/**
 	 * and execute..
 	 */
-	protected void run()
+	protected void execute()
 	{
 		
 		try{

@@ -22,7 +22,7 @@ abstract public class CoreDragAction extends CoreEditorAction
 	abstract public SWTChart.PlotMouseDragger getDragMode();
 	
 	
-	final protected void run()
+	final protected void execute()
 	{
 		// find out what the current dragger is
 		PlainChart chrs = getChart();

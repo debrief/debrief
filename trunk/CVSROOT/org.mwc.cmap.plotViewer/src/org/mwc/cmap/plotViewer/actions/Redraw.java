@@ -10,7 +10,7 @@ package org.mwc.cmap.plotViewer.actions;
  */
 public class Redraw extends CoreEditorAction
 {
-	protected void run()
+	protected void execute()
 	{
 		redrawChart();
 
