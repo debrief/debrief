@@ -33,7 +33,7 @@ public class View3d extends CoreEditorAction
 	/**
 	 * and execute..
 	 */
-	protected void run()
+	protected void execute()
 	{
 		CorePlugin.logError(Status.INFO, "Starting to open 3d view", null);
 		
