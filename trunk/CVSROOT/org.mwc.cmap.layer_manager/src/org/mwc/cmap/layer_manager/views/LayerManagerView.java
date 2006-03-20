@@ -687,8 +687,8 @@ public class LayerManagerView extends ViewPart
 		manager.add(_makeSecondary);
 		manager.add(_hideAction);
 		manager.add(_revealAction);
-		manager.add(new Separator());
-		drillDownAdapter.addNavigationActions(manager);
+	//	manager.add(new Separator());
+	//	drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions()
