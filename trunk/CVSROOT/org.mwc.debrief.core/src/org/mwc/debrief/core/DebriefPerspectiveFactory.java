@@ -63,6 +63,11 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
 		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
 		
+		// ok - make sure the debrief action sets are visible
+		layout.addActionSet("org.mwc.debrief.core");
+		layout.addActionSet("org.mwc.cmap.plot3d");
+		
+		
 	}
 
 	
