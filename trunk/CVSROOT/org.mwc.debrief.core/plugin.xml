@@ -61,14 +61,12 @@
             extensions="xml"
             name="Debrief XML Loader"/>
    </extension>
-   <extension
-         id="org.mwc.debrief.core.editors.DebriefActions"
-         name="DebriefActions"
-         point="org.eclipse.ui.editorActions">
-      <editorContribution
-            id="org.mwc.debrief.core.editors.PlotEditorActions"
-            targetID="org.mwc.debrief.core.editors.PlotEditor">
-         <menu
+   
+     
+
+<extension point = "org.eclipse.ui.actionSets">    
+<actionSet id="org.mwc.debrief.core" label="Debrief Actions">
+ <menu
                id="org.mwc.debrief.core.EditorView"
                label="&amp;View"
                path="additions">
@@ -78,7 +76,7 @@
          </menu>         
          <menu
                id="org.mwc.debrief.core.EditorShapes"
-               label="&amp;Shapes"
+               label="&amp;Drawing"
                path="additions">
             <groupMarker name="shapes"/>
             <separator name="sep1"/>
@@ -86,14 +84,13 @@
          </menu>
          <menu
                id="org.mwc.debrief.core.EditorFeatures"
-               label="&amp;Features"
+               label="&amp;Chart Features"
                path="additions">
             <groupMarker name="features"/>
             <separator name="sep1"/>
             <groupMarker name="additions"/>
          </menu>
 
-                              
          <action
                class="org.mwc.cmap.plotViewer.actions.ZoomOut"
                icon="icons/zoomout.gif"
@@ -111,7 +108,8 @@
                style="radio"
                state="true"
                toolbarPath="org.mwc.debrief.core.EditorView/view"
-               />               
+               />       
+
              
                
          <action
@@ -280,7 +278,44 @@
                id="org.mwc.debrief.core.ExportWMF"
                label="&amp;Export WMF"
                menubarPath="file/additions"
-               style="push" />                 
+               style="push" />      
+</actionSet></extension>
+   
+   
+   <extension
+         id="org.mwc.debrief.core.editors.DebriefActions"
+         name="DebriefActions"
+         point="org.eclipse.ui.editorActions">
+      <editorContribution
+            id="org.mwc.debrief.core.editors.PlotEditorActions"
+            targetID="org.mwc.debrief.core.editors.PlotEditor">
+         <menu
+               id="org.mwc.debrief.core.EditorView"
+               label="&amp;View"
+               path="additions">
+            <groupMarker name="view"/>
+            <separator name="sep1"/>
+            <groupMarker name="additions"/>
+         </menu>         
+         <menu
+               id="org.mwc.debrief.core.EditorShapes"
+               label="&amp;Drawing"
+               path="additions">
+            <groupMarker name="shapes"/>
+            <separator name="sep1"/>
+            <groupMarker name="additions"/>
+         </menu>
+         <menu
+               id="org.mwc.debrief.core.EditorFeatures"
+               label="&amp;Chart Features"
+               path="additions">
+            <groupMarker name="features"/>
+            <separator name="sep1"/>
+            <groupMarker name="additions"/>
+         </menu>
+
+                              
+                   
 
       </editorContribution>
    </extension>
