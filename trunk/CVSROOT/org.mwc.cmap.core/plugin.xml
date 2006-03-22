@@ -39,6 +39,11 @@
            name="CMAP"/>
   </extension>
   <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer class="org.mwc.cmap.core.preferences.CMAPPreferenceInitializer"/>
+  </extension>
+  
+  <extension
         point="org.eclipse.ui.preferencePages">
      <page
            class="org.mwc.cmap.core.preferences.VPFPrefsPage"
