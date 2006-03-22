@@ -4,7 +4,6 @@
 package org.mwc.cmap.plotViewer.actions;
 
 
-import org.eclipse.ui.IWorkbenchWindow;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 
