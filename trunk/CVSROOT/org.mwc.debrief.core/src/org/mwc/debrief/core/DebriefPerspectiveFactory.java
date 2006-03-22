@@ -22,7 +22,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		String editorArea = layout.getEditorArea();
 
 		// Top left: Resource Navigator view and Bookmarks view placeholder
-		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.35f,
+		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f,
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(CorePlugin.TIME_CONTROLLER);
