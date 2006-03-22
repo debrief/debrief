@@ -271,7 +271,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 						trackColor = line.getColor();
 					
 					HiResDate dtg = sw.getStartDTG();
-					WorldLocation loc = line.getLineStart();
+					WorldLocation loc = line.getLine_Start();
 					Fix newFix = new Fix(dtg, loc, 0, 0);
 					FixWrapper fw = new FixWrapper(newFix);
 					
@@ -342,8 +342,8 @@ public class GenerateTrack implements RightClickContextItemGenerator
 					long theDate2 = 20000000 + i * 61000;
 					
 					ShapeWrapper sw = new ShapeWrapper("shape:" + i, ls, Color.red, new HiResDate(theDate1));
-					sw.setTimeStart(new HiResDate(theDate1));
-					sw.setTime_End(new HiResDate(theDate2));
+					sw.setTime_Start(new HiResDate(theDate1));
+					sw.setTimeEnd(new HiResDate(theDate2));
 					holder.add(sw);
 				}
 
