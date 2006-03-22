@@ -1,6 +1,5 @@
 package org.mwc.cmap.core.preferences;
 
-import org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer;
 import org.eclipse.jface.preference.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
@@ -97,23 +96,6 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 	{
 		public static final String RNG_UNITS = MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY;
 		public static final String REL_BEARING_FORMAT = relBearingCalc.REL_BEARING_FORMAT;
-	}
-
-	public static class CMAPPreferenceInitializer extends
-			AbstractPreferenceInitializer
-	{
-
-		/*
-		 * (non-Javadoc)
-		 * 
-		 * @see org.eclipse.core.runtime.preferences.AbstractPreferenceInitializer#initializeDefaultPreferences()
-		 */
-		public void initializeDefaultPreferences()
-		{
-			IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
-			store.setDefault(PreferenceConstants.REL_BEARING_FORMAT, relBearingCalc.UK_REL_BEARING_FORMAT);
-		}
-
 	}
 
 }
