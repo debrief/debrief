@@ -40,7 +40,9 @@ public class LayerManagerView extends ViewPart
 
 	private MyTreeViewer _treeViewer;
 
+	/* don't bother with the drill-down adapter. we've removed it to save space in the local toolbar
 	private DrillDownAdapter drillDownAdapter;
+	*/
 
 	/**
 	 * create a new top-level layer
@@ -327,7 +329,7 @@ public class LayerManagerView extends ViewPart
 
 		 _treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		_treeViewer.setUseHashlookup(true);
-		drillDownAdapter = new DrillDownAdapter(_treeViewer);
+//		drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
 		_treeViewer.setLabelProvider(new ViewLabelProvider());
 		_treeViewer.setSorter(new NameSorter());
