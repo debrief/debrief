@@ -110,6 +110,10 @@ public class ExportWMF extends CoreEditorAction
 					cc.copyWithPixelSize(fName, dim.width, dim.height, false);
 
 				}
+				catch(UnsatisfiedLinkError le)
+				{
+					CorePlugin.logError(Status.ERROR,"Failed to find clipboard dll", le);
+				}
 				catch (Exception e)
 				{
 					// TODO Auto-generated catch block
