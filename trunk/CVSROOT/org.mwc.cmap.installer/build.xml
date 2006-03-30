@@ -85,6 +85,8 @@
 		<!-- now save an archived version of the zip in a legacy folder -->
 		<move file="${destZip}" tofile="${archiveUploadDir}/${archiveDestZipFile}" />
 
+		<echo message="All copied.  Dist complete" />
+
 	</target>
 
 
