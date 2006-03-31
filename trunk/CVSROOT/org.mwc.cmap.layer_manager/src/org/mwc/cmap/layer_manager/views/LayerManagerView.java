@@ -40,9 +40,10 @@ public class LayerManagerView extends ViewPart
 
 	private MyTreeViewer _treeViewer;
 
-	/* don't bother with the drill-down adapter. we've removed it to save space in the local toolbar
-	private DrillDownAdapter drillDownAdapter;
-	*/
+	/*
+	 * don't bother with the drill-down adapter. we've removed it to save space in
+	 * the local toolbar private DrillDownAdapter drillDownAdapter;
+	 */
 
 	/**
 	 * create a new top-level layer
@@ -300,36 +301,36 @@ public class LayerManagerView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 
-		
-//
-//    =================================
-//    NOTE: the following block of commented out code shows tick-boxes by the 
-//		Tree myTree = new Tree(parent, SWT.CHECK | SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-//
-//		// listen out for selection events
-//		myTree.addListener(SWT.Selection, new Listener()
-//		{
-//			public void handleEvent(Event event)
-//			{
-//				if (event.detail == SWT.CHECK)
-//				{
-//					TreeItem ti = (TreeItem) event.item;
-//					boolean isChecked = ti.getChecked();
-//					PlottableWrapper pw = (PlottableWrapper) ti.getData();
-//					if (pw != null)
-//					{
-//						pw.getPlottable().setVisible(isChecked);
-//						Layer parent = pw.getTopLevelLayer();
-//						_myLayers.fireModified(parent);
-//					}
-//				}
-//			}
-//		});
-//		_treeViewer = new MyTreeViewer(myTree);
+		//
+		// =================================
+		// NOTE: the following block of commented out code shows tick-boxes by the
+		// Tree myTree = new Tree(parent, SWT.CHECK | SWT.MULTI | SWT.H_SCROLL |
+		// SWT.V_SCROLL);
+		//
+		// // listen out for selection events
+		// myTree.addListener(SWT.Selection, new Listener()
+		// {
+		// public void handleEvent(Event event)
+		// {
+		// if (event.detail == SWT.CHECK)
+		// {
+		// TreeItem ti = (TreeItem) event.item;
+		// boolean isChecked = ti.getChecked();
+		// PlottableWrapper pw = (PlottableWrapper) ti.getData();
+		// if (pw != null)
+		// {
+		// pw.getPlottable().setVisible(isChecked);
+		// Layer parent = pw.getTopLevelLayer();
+		// _myLayers.fireModified(parent);
+		// }
+		// }
+		// }
+		// });
+		// _treeViewer = new MyTreeViewer(myTree);
 
-		 _treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
+		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		_treeViewer.setUseHashlookup(true);
-//		drillDownAdapter = new DrillDownAdapter(_treeViewer);
+		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
 		_treeViewer.setLabelProvider(new ViewLabelProvider());
 		_treeViewer.setSorter(new NameSorter());
@@ -524,10 +525,14 @@ public class LayerManagerView extends ViewPart
 
 			// hey, first see if it's even a candidate
 			if (pl instanceof WatchableList)
-				// now see if it's already the primary
-				if (pl != _theTrackDataListener.getPrimaryTrack())
+				// do we have a track data listener?
+				if (_theTrackDataListener != null)
 				{
-					res = true;
+					// now see if it's already the primary
+					if (pl != _theTrackDataListener.getPrimaryTrack())
+					{
+						res = true;
+					}
 				}
 		}
 		return res;
@@ -689,8 +694,8 @@ public class LayerManagerView extends ViewPart
 		manager.add(_makeSecondary);
 		manager.add(_hideAction);
 		manager.add(_revealAction);
-	//	manager.add(new Separator());
-	//	drillDownAdapter.addNavigationActions(manager);
+		// manager.add(new Separator());
+		// drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions()
