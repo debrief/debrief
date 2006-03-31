@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.16  2006-03-23 15:22:01  Ian.Mayo
+// Revision 1.17  2006-03-31 14:30:14  Ian.Mayo
+// Correct silly typo preventing arcs getting plotted
+//
+// Revision 1.16  2006/03/23 15:22:01  Ian.Mayo
 // Cache local colour & line width, so we don't have to retrieve them from operating system
 //
 // Revision 1.15  2006/01/17 10:28:13  Ian.Mayo
@@ -743,7 +746,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 		if (_theDest != null)
 		{
-			if (_theDest.isDisposed())
+			if (!_theDest.isDisposed())
 				_theDest.drawArc(x, y, width, height, startAngle, arcAngle);
 		}
 	}
