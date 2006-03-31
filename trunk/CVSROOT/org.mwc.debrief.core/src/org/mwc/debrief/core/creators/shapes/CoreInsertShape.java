@@ -71,7 +71,7 @@ abstract public class CoreInsertShape extends CoreEditorAction
 
 			// and now wrap the shape
 			ShapeWrapper theWrapper = new ShapeWrapper("New " + getShapeName(), shape,
-					Color.red, null);
+					PlainShape.DEFAULT_COLOR, null);
 
 			// lastly, get the data
 			Layers theData = theChart.getLayers();
