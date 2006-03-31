@@ -214,7 +214,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				duffItemFound = true;
 		}
 
-		if ((subjects.length > 1) && (duffItemFound))
+		if ((candidates.size() >= 1))
 		{
 			if (duffItemFound)
 			{
