@@ -12,8 +12,9 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.property_support.WorldDistanceHelper.WorldDistanceWithUnitsCellEditor;
 
-import MWC.GenericData.WorldLocation;
+import MWC.GenericData.*;
 import MWC.Utilities.TextFormatting.*;
 
 public class LatLongHelper extends EditorHelper
@@ -108,6 +109,8 @@ public class LatLongHelper extends EditorHelper
 
 		private String _longHem;
 
+		private WorldDistance _depth;
+
 		/**
 		 * the original values
 		 */
@@ -127,6 +130,8 @@ public class LatLongHelper extends EditorHelper
 		private String _origLongSec;
 
 		private String _origLongHem;
+
+		private WorldDistance _origDepth;
 
 		private WorldLocation _originalLocation;
 
@@ -148,6 +153,8 @@ public class LatLongHelper extends EditorHelper
 		public static String ID_LONG_SEC = "LONG_SEC";
 
 		public static String ID_LONG_HEM = "LONG_HEM";
+
+		public static String ID_DEPTH = "DEPTH";
 
 		protected static IPropertyDescriptor[] descriptors;
 
@@ -173,13 +180,20 @@ public class LatLongHelper extends EditorHelper
 					new CategorisedDescriptor(ID_LAT_DEG, "1. Lat Degrees", "Lat"),
 					new CategorisedDescriptor(ID_LAT_MIN, "2. Lat Minutes", "Lat"),
 					new CategorisedDescriptor(ID_LAT_SEC, "3. Lat Seconds", "Lat"),
-					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "4. Lat Hemisphere",
-							_latCats),
+					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "4. Lat Hemisphere", _latCats),
 					new CategorisedDescriptor(ID_LONG_DEG, "5. Long Degrees", "Long"),
 					new CategorisedDescriptor(ID_LONG_MIN, "6. Long Minutes", "Long"),
 					new CategorisedDescriptor(ID_LONG_SEC, "7. Long Seconds", "Long"),
-					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "8. Long Hemisphere",
-							_longCats) };
+					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "8. Long Hemisphere", _longCats),
+					new CategorisedDescriptor(ID_DEPTH, "9. Depth", "Depth")
+					{
+						public CellEditor createPropertyEditor(Composite parent)
+						{
+							return new WorldDistanceWithUnitsCellEditor(parent);
+						}
+					},
+
+			};
 		}
 
 		public LatLongPropertySource(WorldLocation location)
@@ -200,6 +214,9 @@ public class LatLongHelper extends EditorHelper
 			_longMin = _origLongMin = "" + bLong.min;
 			_longSec = _origLongSec = _floatFormat.format(bLong.sec);
 			_longHem = _origLongHem = "" + bLong.hem;
+
+			_depth = _origDepth = new WorldDistance(location.getDepth(),
+					WorldDistanceWithUnits.METRES);
 
 		}
 
@@ -246,6 +263,8 @@ public class LatLongHelper extends EditorHelper
 				else
 					res = new Integer(1);
 			}
+			else if (ID_DEPTH.equals(propName))
+				res = _depth;
 
 			return res;
 		}
@@ -288,6 +307,8 @@ public class LatLongHelper extends EditorHelper
 				res = !_longSec.equals(_origLongSec);
 			else if (ID_LONG_HEM.equals(propName))
 				res = !_longHem.equals(_origLongHem);
+			else if (ID_DEPTH.equals(propName))
+				res = !_depth.equals(_origDepth);
 
 			return res;
 		}
@@ -310,6 +331,8 @@ public class LatLongHelper extends EditorHelper
 				_longSec = new String(_origLongSec);
 			else if (ID_LONG_HEM.equals(propName))
 				_longHem = new String(_origLongHem);
+			else if (ID_DEPTH.equals(propName))
+				_depth = new WorldDistance(_origDepth);
 		}
 
 		public void setPropertyValue(Object propName, Object value)
@@ -336,6 +359,8 @@ public class LatLongHelper extends EditorHelper
 				int index = ((Integer) value).intValue();
 				_longHem = _longCats[index];
 			}
+			else if (ID_DEPTH.equals(propName))
+				_depth = new WorldDistance((WorldDistance) value);
 
 			firePropertyChanged((String) propName);
 		}
@@ -351,13 +376,18 @@ public class LatLongHelper extends EditorHelper
 
 		private WorldLocation getLocation()
 		{
+			double depth = 0d;
+
+			// hold on, do we have a depth?
+			if (_depth != null)
+				depth = _depth.getValueIn(WorldDistanceWithUnits.METRES);
+
 			// produce a new location from our data values
 			WorldLocation res = new WorldLocation((int) Double.parseDouble(_latDeg),
-					(int) Double.parseDouble(_latMin)
-							+ (Double.parseDouble(_latSec) / 60), _latHem.charAt(0),
-					(int) Double.parseDouble(_longDeg), (int) Double
+					(int) Double.parseDouble(_latMin) + (Double.parseDouble(_latSec) / 60), _latHem
+							.charAt(0), (int) Double.parseDouble(_longDeg), (int) Double
 							.parseDouble(_longMin)
-							+ (Double.parseDouble(_longSec) / 60), _longHem.charAt(0), 0);
+							+ (Double.parseDouble(_longSec) / 60), _longHem.charAt(0), depth);
 
 			return res;
 		}
@@ -419,7 +449,8 @@ public class LatLongHelper extends EditorHelper
 				else
 				{
 					CorePlugin.showMessage("Paste location",
-							"Sorry the clipboard text is not in the right format." + "\nContents:" + txt);
+							"Sorry the clipboard text is not in the right format." + "\nContents:"
+									+ txt);
 				}
 			}
 			else
