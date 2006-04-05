@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.27  2006-02-23 11:48:31  Ian.Mayo
+// Revision 1.28  2006-04-05 08:15:42  Ian.Mayo
+// Refactoring, improvements
+//
+// Revision 1.27  2006/02/23 11:48:31  Ian.Mayo
 // Become selection provider
 //
 // Revision 1.26  2006/02/08 09:32:22  Ian.Mayo
@@ -132,13 +135,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	/**
 	 * our list of layered images.
 	 */
-	private HashMap _myLayers = new HashMap();
+	protected HashMap _myLayers = new HashMap();
 
 	/**
 	 * the data area we last plotted (so that we know when a full layered repaint
 	 * is needed).
 	 */
-	private WorldArea _lastDataArea = null;
+	protected WorldArea _lastDataArea = null;
 
 	private final int JITTER = 3;
 
@@ -170,8 +173,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		_theCanvas.setProjection(new MWC.Algorithms.Projections.FlatProjection());
 
 		// sort out the area of coverage of the plot
-		WorldArea area = theLayers.getBounds();
-		_theCanvas.getProjection().setDataArea(area);
+		if (theLayers != null)
+		{
+			WorldArea area = theLayers.getBounds();
+			_theCanvas.getProjection().setDataArea(area);
+		}
 
 		// add us as a painter to the canvas
 		_theCanvas.addPainter(this);
@@ -266,9 +272,10 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * 
 	 * @return the Canvas to use
 	 */
-	public final SWTCanvas createCanvas(Composite parent)
+	public SWTCanvas createCanvas(Composite parent)
 	{
-		return new CustomisedSWTCanvas(parent){
+		return new CustomisedSWTCanvas(parent)
+		{
 
 			/**
 			 * 
@@ -278,7 +285,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			public void parentFireSelectionChanged(ISelection selected)
 			{
 				chartFireSelectionChanged(selected);
-			}};
+			}
+		};
 	}
 
 	public abstract void chartFireSelectionChanged(ISelection sel);
@@ -346,8 +354,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * over-ride the parent's version of paint, so that we can try to do it by
 	 * layers.
 	 */
-	public final void paintMe(final CanvasType dest)
+	public void paintMe(final CanvasType dest)
 	{
+
+		System.out.println("SWT Chart doing repaint onto:" + dest.hashCode() + " wid:" + dest.getSize().width);
+		
+		// just double-check we have some layers (if we're part of an overview
+		// chart, we may not have...)
+		if (_theLayers == null)
+			return;
 
 		Image template = null;
 
@@ -420,6 +435,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 											// wrap the GC into something we know how to plot to.
 											SWTCanvasAdapter ca = new SWTCanvasAdapter(dest.getProjection());
+											ca.setScreenSize(_theCanvas.getProjection().getScreenArea());
 
 											// and store the GC
 											ca.startDraw(newGC);
@@ -460,6 +476,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						}
 					}
 				}
+
 			}
 		}
 
@@ -487,7 +504,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * @param canvasWidth
 	 * @return
 	 */
-	private org.eclipse.swt.graphics.Image createSWTImage(Image template)
+	protected org.eclipse.swt.graphics.Image createSWTImage(Image template)
 	{
 		ImageData id = template.getImageData();
 		id.transparentPixel = id.palette.getPixel(new RGB(255, 255, 255));
@@ -511,7 +528,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * @param dest
 	 *          where we're painting to
 	 */
-	private void paintBackground(final CanvasType dest)
+	protected void paintBackground(final CanvasType dest)
 	{
 		// fill the background, to start with
 		final Dimension sz = _theCanvas.getSize();
@@ -687,7 +704,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param pt
 		 *          the new cursor location
 		 */
-		abstract public void doMouseMove(final Point pt, final int JITTER,
+		abstract public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
 				final Layers theLayers);
 
 		/**
@@ -698,7 +715,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param pt
 		 *          the final cursor location
 		 */
-		abstract public void doMouseUp(Point point, int keyState);
+		abstract public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState);
 
 		/**
 		 * handle the mouse drag starting
@@ -710,7 +727,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param pt
 		 *          the first cursor location
 		 */
-		abstract public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart);
+		abstract public void mouseDown(org.eclipse.swt.graphics.Point point, SWTCanvas canvas, PlainChart theChart);
 
 	}
 
@@ -783,7 +800,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				{
 					RightClickSupport.getDropdownListFor(mmgr, new Editable[] { res },
 							new Layer[] { theParent }, new Layer[] { theParent }, getLayers(), false);
-					
+
 					// hmm, is it a fix. if it is, also flash up the track
 					if (res instanceof FixWrapper)
 					{
@@ -814,9 +831,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						final Plottable pl = (Plottable) iter.next();
 						RightClickSupport.getDropdownListFor(mmgr, new Editable[] { pl }, null, null,
 								getLayers(), true);
-						
+
 						// ok, is it editable
-						if(pl.getInfo() != null)
+						if (pl.getInfo() != null)
 						{
 							// ok, also insert an "Edit..." item
 							Action editThis = new Action("Edit " + pl.getName() + " ...")
@@ -827,9 +844,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 									EditableWrapper pw = new EditableWrapper(pl, getLayers());
 									ISelection selected = new StructuredSelection(pw);
 									parentFireSelectionChanged(selected);
-								}						
+								}
 							};
-							
+
 							mmgr.add(editThis);
 							// hey, stick in another separator
 							mmgr.add(new Separator());
@@ -851,13 +868,14 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			mmgr.add(editProjection);
 
 		}
+
 		public abstract void parentFireSelectionChanged(ISelection selected);
 	}
 
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public ISelection getSelection()
@@ -869,13 +887,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void setSelection(ISelection selection)
 	{
 		// TODO Auto-generated method stub
-		
 	}
 
 }
