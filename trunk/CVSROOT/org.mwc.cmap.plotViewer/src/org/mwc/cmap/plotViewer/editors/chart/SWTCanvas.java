@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.20  2006-02-23 11:49:07  Ian.Mayo
+// Revision 1.21  2006-04-05 08:33:59  Ian.Mayo
+// Minor tidying
+//
+// Revision 1.20  2006/02/23 11:49:07  Ian.Mayo
 // Tidying
 //
 // Revision 1.19  2005/12/09 14:54:37  Ian.Mayo
@@ -293,7 +296,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * handler for a screen resize - inform our projection of the resize then
 	 * inform the painters.
 	 */
-	protected void setScreenSize(final java.awt.Dimension p1)
+	public void setScreenSize(final java.awt.Dimension p1)
 	{
 		super.setScreenSize(p1);
 
@@ -346,6 +349,7 @@ public final void updateMe()
 				{
 					if(!_myCanvas.isDisposed())
 					{
+						System.out.println("canvas redraw happening for:" + _myCanvas.hashCode());
 						_myCanvas.redraw();
 					}
 				}
