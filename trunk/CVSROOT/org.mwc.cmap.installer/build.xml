@@ -21,6 +21,7 @@
 		<copy todir="${updateUploadDir}" preservelastmodified="yes">
 			<fileset dir="${srcDir}" />
 		</copy>
+  	<echo message="Upload complete" />		
 	</target>
 
 	<target name="empty_dist_dir" description="clear the output directory" depends="">
