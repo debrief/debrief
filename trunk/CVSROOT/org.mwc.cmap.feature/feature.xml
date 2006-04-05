@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.11"
+      version="1.0.12"
       provider-name="MWC">
 
    <description>
-      [1.0.11] Include x-stream library (for xy-plot)
+      [1.0.12] Include definition of overview chart
+[1.0.11] Include x-stream library (for xy-plot)
 [1.0.10] Include Debrief legacy content
 [1.0.9] Preps for RC1
 [1.0.8] Property editing

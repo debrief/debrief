@@ -5,7 +5,8 @@
       version="1.0.5">
 
    <description>
-      [1.0.5] Preps for RC5
+      [1.0.6] Support for overview chart
+[1.0.5] Preps for RC5
 [1.0.4] Don&apos;t allow save of REP files
 [1.0.3] Implement correct save-as function
 [1.0.2] Keep track of file clean/dirty status
@@ -521,6 +522,10 @@ necessary.  Here is a sample; alter the names:
 That&apos;s all there is to it!
    </license>
 
+   <url>
+      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+   </url>
+
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
@@ -537,8 +542,5 @@ That&apos;s all there is to it!
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-   <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
-   </url>
 
 </feature>
