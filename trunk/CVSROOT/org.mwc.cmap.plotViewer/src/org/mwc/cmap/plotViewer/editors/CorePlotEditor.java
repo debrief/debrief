@@ -395,6 +395,10 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		{
 			res = this;
 		}
+		else if (adapter == IControllableViewport.class)
+		{
+			res = this;
+		}
 		else if (adapter == ControllableTime.class)
 		{
 			res = _timeManager;
@@ -448,20 +452,17 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	public WorldArea getViewport()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getChart().getCanvas().getProjection().getDataArea();
 	}
 
 	public void setViewport(WorldArea target)
 	{
-		// TODO Auto-generated method stub
-
+		getChart().getCanvas().getProjection().setDataArea(target);
 	}
 
 	public PlainProjection getProjection()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return getChart().getCanvas().getProjection();
 	}
 
 	public void setProjection(PlainProjection proj)
@@ -636,4 +637,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			_myChart.getCanvas().setBackgroundColor(theColor);
 	}
 
+	public void update()
+	{
+		getChart().getCanvas().updateMe();
+	}
 }
