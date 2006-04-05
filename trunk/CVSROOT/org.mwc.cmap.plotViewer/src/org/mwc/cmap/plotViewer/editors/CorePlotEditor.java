@@ -641,4 +641,12 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	{
 		getChart().getCanvas().updateMe();
 	}
+
+	/** get the chart to fit to window
+	 *
+	 */
+	public void rescale()
+	{
+	  _myChart.rescale();
+	}
 }
