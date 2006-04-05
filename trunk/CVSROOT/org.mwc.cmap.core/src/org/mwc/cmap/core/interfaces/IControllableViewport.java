@@ -37,4 +37,14 @@ public interface IControllableViewport
 	 * 
 	 */
 	public PlainProjection getProjection();
+	
+	/** get it to redraw itself
+	 * 
+	 */
+	public void update();
+	
+	/** and to fit to window
+	 * 
+	 */
+	public void rescale();
 }
