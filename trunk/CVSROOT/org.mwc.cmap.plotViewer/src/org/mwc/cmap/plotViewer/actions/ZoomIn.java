@@ -57,7 +57,7 @@ public class ZoomIn extends CoreDragAction
 					Action theAction = 	new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(_myChart, oldArea, area);
 					
 					// and wrap it
-					DebriefActionWrapper daw = new DebriefActionWrapper(theAction, _myChart.getLayers());
+					DebriefActionWrapper daw = new DebriefActionWrapper(theAction, null);
 					
 					// and add it to the clipboard
 					CorePlugin.run(daw);
