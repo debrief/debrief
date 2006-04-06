@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.28  2006-04-05 08:15:42  Ian.Mayo
+// Revision 1.29  2006-04-06 13:01:05  Ian.Mayo
+// Ditch performance timers
+//
+// Revision 1.28  2006/04/05 08:15:42  Ian.Mayo
 // Refactoring, improvements
 //
 // Revision 1.27  2006/02/23 11:48:31  Ian.Mayo
@@ -355,10 +358,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * layers.
 	 */
 	public void paintMe(final CanvasType dest)
-	{
-
-		System.out.println("SWT Chart doing repaint onto:" + dest.hashCode() + " wid:" + dest.getSize().width);
-		
+	{		
 		// just double-check we have some layers (if we're part of an overview
 		// chart, we may not have...)
 		if (_theLayers == null)
