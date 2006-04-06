@@ -3,19 +3,24 @@
  */
 package org.mwc.debrief.core.creators.chartFeatures;
 
+import org.eclipse.core.runtime.Status;
+import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
 import MWC.GUI.*;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.Palette.PlainCreate;
+import MWC.GenericData.WorldArea;
 
 /**
  * @author ian.mayo
  */
 abstract public class CoreInsertChartFeature extends CoreEditorAction
 {
+
 	public static ToolParent _theParent = null;
 
 	/**
@@ -35,46 +40,85 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	{
 		final PlainChart theChart = getChart();
 
-		Action res = getData(theChart);
+		Action res = createAction(theChart);
 
 		// ok, now wrap the action
-		DebriefActionWrapper daw = new DebriefActionWrapper(res, theChart.getLayers());
+		DebriefActionWrapper daw = new DebriefActionWrapper(res);
 
 		// and add it to our buffer (which will execute it anyway)
 		CorePlugin.run(daw);
-
-		// res.execute();
-
 	}
 
-	public Action getData(PlainChart theChart)
+	protected final Action createAction(PlainChart theChart)
 	{
 		Action res = null;
+		WorldArea wa = theChart.getDataArea();
 
-		// create the shape, based on the centre
-		Plottable myFeature = getPlottable(theChart);
-
-		// lastly, get the data
-		Layers theData = theChart.getLayers();
-
-		// ok, get our layer name
-		final String myLayer = getLayerName();
-
-		// aah, and the misc layer, in which we will store the shape
-		Layer theLayer = theData.findLayer(myLayer);
-
-		// did we find it?
-		if (theLayer == null)
+		// see if we have an area defined
+		if (wa != null)
 		{
-			// nope, better create it.
-			theLayer = new BaseLayer();
-			theLayer.setName(myLayer);
-			theData.addThisLayer(theLayer);
-		}
+			// ok - get the object we're going to insert
+			Plottable thePlottable = getPlottable(theChart);
 
-		// and put it into an action (so we can undo it)
-		res = new PlainCreate.CreateLabelAction(null, theLayer, theChart.getLayers(),
-				myFeature);
+			// lastly, get the data
+			Layers theData = theChart.getLayers();
+
+			// ok, get our layer name
+			final String myLayer = getLayerName();
+
+			// aah, and the misc layer, in which we will store the shape
+			Layer theLayer = theData.findLayer(myLayer);
+
+			// did we find it?
+			if (theLayer == null)
+			{
+				// nope, better create it.
+				theLayer = new BaseLayer();
+				theLayer.setName(myLayer);
+				theData.addThisLayer(theLayer);
+			}
+
+			// and put it into an action (so we can undo it)
+			res = new PlainCreate.CreateLabelAction(null, theLayer, theChart
+					.getLayers(), thePlottable)
+			{
+
+				public void execute()
+				{
+					// generate the object
+					super.execute();
+
+					// ok, now open the properties window
+					try
+					{
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+								.showView(IPageLayout.ID_PROP_SHEET);
+					}
+					catch (PartInitException e)
+					{
+						CorePlugin.logError(Status.WARNING, "Failed to open properties view", e);
+					}
+
+					// find the editor
+					CorePlotEditor editor = getEditor();
+
+					// highlight the editor
+					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().activate(
+							editor);
+
+					// select the shape
+					editor.selectPlottable(_theShape, _theLayer);
+
+				}
+			};
+		}
+		else
+		{
+			// we haven't got an area, inform the user
+			CorePlugin
+					.showMessage("Create Feature",
+							"Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
+		}
 
 		return res;
 	}
@@ -92,7 +136,6 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	 */
 	protected String getLayerName()
 	{
-		final String myLayer = Layers.CHART_FEATURES;
-		return myLayer;
+		return Layers.CHART_FEATURES;
 	}
 }
