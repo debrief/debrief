@@ -9,6 +9,8 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
+import org.mwc.debrief.core.preferences.PrefsPage;
+import org.mwc.debrief.core.preferences.PrefsPage.PreferenceConstants;
 
 import MWC.GUI.*;
 import MWC.GUI.Tools.Action;
@@ -79,8 +81,8 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 			}
 
 			// and put it into an action (so we can undo it)
-			res = new PlainCreate.CreateLabelAction(null, theLayer, theChart
-					.getLayers(), thePlottable)
+			res = new PlainCreate.CreateLabelAction(null, theLayer, theChart.getLayers(),
+					thePlottable)
 			{
 
 				public void execute()
@@ -88,27 +90,34 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 					// generate the object
 					super.execute();
 
-					// ok, now open the properties window
-					try
+					// right, does the user want me to auto-select the newly created item?
+					String autoSelectStr = CorePlugin.getToolParent().getProperty(
+							PrefsPage.PreferenceConstants.AUTO_SELECT);
+					boolean autoSelect = Boolean.getBoolean(autoSelectStr);
+					if (autoSelect)
 					{
+
+						// ok, now open the properties window
+						try
+						{
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
+									.showView(IPageLayout.ID_PROP_SHEET);
+						}
+						catch (PartInitException e)
+						{
+							CorePlugin.logError(Status.WARNING, "Failed to open properties view", e);
+						}
+
+						// find the editor
+						CorePlotEditor editor = getEditor();
+
+						// highlight the editor
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-								.showView(IPageLayout.ID_PROP_SHEET);
+								.activate(editor);
+
+						// select the shape
+						editor.selectPlottable(_theShape, _theLayer);
 					}
-					catch (PartInitException e)
-					{
-						CorePlugin.logError(Status.WARNING, "Failed to open properties view", e);
-					}
-
-					// find the editor
-					CorePlotEditor editor = getEditor();
-
-					// highlight the editor
-					PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage().activate(
-							editor);
-
-					// select the shape
-					editor.selectPlottable(_theShape, _theLayer);
-
 				}
 			};
 		}

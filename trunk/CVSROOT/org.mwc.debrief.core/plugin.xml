@@ -392,4 +392,18 @@
         point="org.eclipse.core.contenttype.contentTypes">
   </extension>  
   
+  
+  <extension
+        point="org.eclipse.ui.preferencePages">
+     <page
+           class="org.mwc.debrief.core.preferences.PrefsPage"
+           id="org.mwc.debrief.core.preferences.PrefsPage"
+           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+           name="Debrief-specific settings"/>
+  </extension>
+  <extension
+        point="org.eclipse.core.runtime.preferences">
+     <initializer class="org.mwc.debrief.core.preferences.PreferenceInitializer"/>
+  </extension>  
+  
 </plugin>
