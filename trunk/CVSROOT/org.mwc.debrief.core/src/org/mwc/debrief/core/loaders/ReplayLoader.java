@@ -10,7 +10,7 @@ import org.eclipse.core.runtime.*;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.*;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.debrief.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
@@ -54,16 +54,16 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 					final FileInputStream lineCounterStream = new FileInputStream(fName);
 					lines = super.countLinesInStream(lineCounterStream);			
 					lineCounterStream.close();
-					CorePlugin.logError(Status.INFO, "Replay loader - counted:" + lines
+					DebriefPlugin.logError(Status.INFO, "Replay loader - counted:" + lines
 							+ " lines", null);
 				}
 				catch (FileNotFoundException fe)
 				{
-					CorePlugin.logError(Status.INFO, "Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.", fe);
+					DebriefPlugin.logError(Status.INFO, "Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.", fe);
 				}
 				catch (IOException e)
 				{
-					CorePlugin.logError(Status.ERROR,
+					DebriefPlugin.logError(Status.ERROR,
 							"Failed to open stream for counting lines:" + fName, null);
 					e.printStackTrace();
 				}
@@ -93,7 +93,7 @@ public void loadFile(final PlotEditor thePlot, final InputStream inputStream, fi
 // final String thePath = _theFile.getFullPath().toOSString();
 // IPath iPath = _theFile.getFullPath();
 
-		CorePlugin.logError(Status.INFO, "About to load REPLAY file:" + fileName,
+		DebriefPlugin.logError(Status.INFO, "About to load REPLAY file:" + fileName,
 				null);
 		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
@@ -120,7 +120,7 @@ public void loadFile(final PlotEditor thePlot, final InputStream inputStream, fi
 					catch (RuntimeException e)
 					{
 						e.printStackTrace();
-						CorePlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
+						DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
 					}
 					finally
 					{
@@ -148,5 +148,5 @@ public void loadFile(final PlotEditor thePlot, final InputStream inputStream, fi
 		{
 		}
 		// ok, load the data...
-		CorePlugin.logError(Status.INFO, "Successfully loaded REPLAY file", null);
+		DebriefPlugin.logError(Status.INFO, "Successfully loaded REPLAY file", null);
 	}}

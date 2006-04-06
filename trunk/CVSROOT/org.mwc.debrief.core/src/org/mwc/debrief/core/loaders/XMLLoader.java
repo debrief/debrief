@@ -11,7 +11,7 @@ import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.ui.*;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
-import org.mwc.debrief.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
@@ -89,26 +89,26 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 
 							try
 							{
-								CorePlugin.logError(Status.INFO, "about to start loading:"
+								DebriefPlugin.logError(Status.INFO, "about to start loading:"
 										+ fileName, null);
 
 								// ok - get loading going
 
 								doTheLoad(theLayers, inputStream, fileName, thePlot, thePlot);
 
-								CorePlugin.logError(Status.INFO,
+								DebriefPlugin.logError(Status.INFO,
 										"completed loading:" + fileName, null);
 
 								// and inform the plot editor
 								thePlot.loadingComplete(this);
 
-								CorePlugin.logError(Status.INFO, "parent plot informed", null);
+								DebriefPlugin.logError(Status.INFO, "parent plot informed", null);
 
 							}
 							catch (RuntimeException e)
 							{
 								e.printStackTrace();
-								CorePlugin.logError(Status.ERROR, "Problem loading datafile:"
+								DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
 										+ fileName, e);
 							}
 							finally
@@ -147,6 +147,6 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 			}
 	//	}
 		// ok, load the data...
-		CorePlugin.logError(Status.INFO, "Successfully loaded XML file", null);
+		DebriefPlugin.logError(Status.INFO, "Successfully loaded XML file", null);
 	}
 }

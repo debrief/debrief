@@ -1337,7 +1337,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				}
 			};
 			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
-			thisOne.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+			thisOne.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 					.getImageDescriptor(descPath));
 
 			// hmm, and see if this is our current painter
@@ -1369,7 +1369,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				addMarker();
 			}
 		};
-		_setAsBookmarkAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+		_setAsBookmarkAction.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/bkmrk_nav.gif"));
 		_setAsBookmarkAction.setToolTipText("Add this DTG to the list of bookmarks");
 		menuManager.add(_setAsBookmarkAction);
@@ -1379,7 +1379,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		{
 
 		};
-		_filterToSelectionAction.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+		_filterToSelectionAction.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/filter_to_period.gif"));
 		_filterToSelectionAction.setToolTipText("Filter plot data to selected time period");
 		menuManager.add(_filterToSelectionAction);
@@ -1409,7 +1409,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			}
 		};
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
-		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.CorePlugin
+		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/properties.gif"));
 		menuManager.add(new Separator());
 		menuManager.add(toolboxProperties);

@@ -8,7 +8,7 @@ import java.io.InputStream;
 import org.eclipse.core.runtime.*;
 import org.eclipse.ui.IEditorInput;
 import org.mwc.cmap.core.interfaces.INamedItem;
-import org.mwc.debrief.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 
 /** Interface for classes which are capable of populating a plot from a file
@@ -124,7 +124,7 @@ public interface IPlotLoader extends INamedItem
 				}
 				catch (CoreException e)
 				{			
-					CorePlugin.logError(Status.ERROR, "Failed to create instance of loader:"
+					DebriefPlugin.logError(Status.ERROR, "Failed to create instance of loader:"
 							+ _config, e);
 					
 				}
@@ -137,7 +137,7 @@ public interface IPlotLoader extends INamedItem
 			}
 			else
 			{
-				CorePlugin.logError(Status.ERROR, "Unable to load file. Loader unavailable for:"
+				DebriefPlugin.logError(Status.ERROR, "Unable to load file. Loader unavailable for:"
 						+ _config, null);
 				
 			}

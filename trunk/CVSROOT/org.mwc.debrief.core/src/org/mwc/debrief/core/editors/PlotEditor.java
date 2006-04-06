@@ -21,7 +21,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
-import org.mwc.debrief.core.CorePlugin;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
@@ -329,7 +329,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// to start off with a dirty plot
 		startIgnoringDirtyCalls();
 
-		CorePlugin.logError(Status.INFO, "File load received", null);
+		DebriefPlugin.logError(Status.INFO, "File load received", null);
 
 		// and update the time management bits
 		TimePeriod timePeriod = getPeriodFor(_myLayers);
@@ -561,7 +561,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		else
 		{
-			CorePlugin.logError(Status.ERROR,
+			DebriefPlugin.logError(Status.ERROR,
 					"Unable to identify source file for plot", null);
 		}
 
@@ -608,7 +608,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 				catch (CoreException e)
 				{
-					CorePlugin.logError(IStatus.ERROR, "Failed trying to create new file for save-as", e);
+					DebriefPlugin.logError(IStatus.ERROR, "Failed trying to create new file for save-as", e);
 					return;
 				}
 

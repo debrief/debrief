@@ -5,7 +5,7 @@
    name="Debrief Core"
    version="1.0.9"
    provider-name="MWC"
-   class="org.mwc.debrief.core.CorePlugin">
+   class="org.mwc.debrief.core.DebriefPlugin">
 
    <runtime>
       <library name="debrief_core.jar">
