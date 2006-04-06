@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.22  2006-04-06 13:03:13  Ian.Mayo
+// Revision 1.23  2006-04-06 13:31:13  Ian.Mayo
+// Output time-to-plot to log for performance tracking
+//
+// Revision 1.22  2006/04/06 13:03:13  Ian.Mayo
 // Ditch performance indicators
 //
 // Revision 1.21  2006/04/05 08:33:59  Ian.Mayo
@@ -268,6 +271,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public void paintPlot(CanvasType dest)
 	{
+		// what's the time Mr Wolf?
+		long tThen = System.currentTimeMillis();
+		
 		// go through our painters
 		final Enumeration enumer = _thePainters.elements();
 		while (enumer.hasMoreElements())
@@ -285,6 +291,11 @@ public class SWTCanvas extends SWTCanvasAdapter
 			// it must be ok
 			thisPainter.paintMe(dest);
 		}
+		
+		// how long was it?
+		long tNow = System.currentTimeMillis();
+		long tDelta = tNow - tThen;
+		CorePlugin.logError(Status.INFO, "Canvas update took:" + tDelta + " millis", null);
 
 	}
 
