@@ -10,7 +10,6 @@ import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.preferences.PrefsPage;
-import org.mwc.debrief.core.preferences.PrefsPage.PreferenceConstants;
 
 import MWC.GUI.*;
 import MWC.GUI.Tools.Action;
@@ -93,7 +92,7 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 					// right, does the user want me to auto-select the newly created item?
 					String autoSelectStr = CorePlugin.getToolParent().getProperty(
 							PrefsPage.PreferenceConstants.AUTO_SELECT);
-					boolean autoSelect = Boolean.getBoolean(autoSelectStr);
+					boolean autoSelect = Boolean.parseBoolean(autoSelectStr);
 					if (autoSelect)
 					{
 
