@@ -46,7 +46,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 
 	}
 
-	private CorePlotEditor getEditor()
+	protected CorePlotEditor getEditor()
 	{
 		_myEditor = null;
 		// do we know our editor?
