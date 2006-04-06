@@ -217,14 +217,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 			protected void addEditor(Plottable res, EditorType e, Layer parentLayer)
 			{
-				CorePlugin.logError(Status.INFO, "Double-click processed, opening property editor for:" + res, null);
-				PlottableWrapper parentP = new PlottableWrapper(parentLayer, null, getChart()
-						.getLayers());
-				PlottableWrapper wrapped = new PlottableWrapper(res, parentP, getChart()
-						.getLayers());
-				ISelection selected = new StructuredSelection(wrapped);
-				fireSelectionChanged(selected);
+				selectPlottable(res, parentLayer);
 			}
+
 
 			protected void handleItemNotFound(PlainProjection projection)
 			{
@@ -263,6 +258,24 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				ActionFactory.COPY.getId(),
 				_copyClipboardAction);			
 	}
+	
+
+	/** ok - let somebody else select an item on the plot.  The initial reason for making this public 
+	 * was so that when a new item is created, we can select it on the plot.  The plot then fires a 
+	 * 'selected' event, and the new item is shown in the properties window.  Cool.
+	 * @param target - the item to select
+	 * @param parentLayer - the item's parent layer.  Used to decide which layers to update.
+	 */
+	public void selectPlottable(Plottable target, Layer parentLayer)
+	{
+		CorePlugin.logError(Status.INFO, "Double-click processed, opening property editor for:" + target, null);
+		PlottableWrapper parentP = new PlottableWrapper(parentLayer, null, getChart()
+				.getLayers());
+		PlottableWrapper wrapped = new PlottableWrapper(target, parentP, getChart()
+				.getLayers());
+		ISelection selected = new StructuredSelection(wrapped);
+		fireSelectionChanged(selected);
+	}	
 
 	/** place the chart in the properties window
 	 *
