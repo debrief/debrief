@@ -60,8 +60,8 @@ public class Pan extends CoreDragAction
 
 		protected WorldLocation _theEnd;
 
-		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theLayers)
+		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt, final int JITTER,
+				final Layers theLayers, SWTCanvas theCanvas)
 		{
 			WorldLocation theLocation = _myChart.getCanvas().getProjection().toWorld(
 					new java.awt.Point(pt.x, pt.y));

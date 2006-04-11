@@ -299,8 +299,8 @@ public class ChartOverview extends ViewPart
 
 		SWTCanvas _myCanvas;
 
-		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theLayers)
+		public void doMouseDrag(final org.eclipse.swt.graphics.Point pt, final int JITTER,
+				final Layers theLayers, SWTCanvas theCanvas)
 		{
 			// just do a check that we have our start point (it may have been cleared
 			// at the end of the move operation)

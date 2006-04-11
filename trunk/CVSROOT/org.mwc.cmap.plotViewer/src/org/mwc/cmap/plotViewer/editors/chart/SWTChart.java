@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.29  2006-04-06 13:01:05  Ian.Mayo
+// Revision 1.30  2006-04-11 08:10:42  Ian.Mayo
+// Include support for mouse-move event (in addition to mouse-drag).
+//
+// Revision 1.29  2006/04/06 13:01:05  Ian.Mayo
 // Ditch performance timers
 //
 // Revision 1.28  2006/04/05 08:15:42  Ian.Mayo
@@ -589,8 +592,16 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	public void doMouseMove(MouseEvent e)
 	{
-		super.mouseMoved(new java.awt.Point(e.x, e.y));
+		java.awt.Point thisPoint = new java.awt.Point(e.x, e.y);
+		
+		super.mouseMoved(thisPoint);
+		
+		Point swtPoint = new Point(e.x, e.y);
 
+		// ok - pass the move event to our drag control (if it's interested...)
+		if (_myDragMode != null)
+			_myDragMode.doMouseMove(swtPoint, JITTER, super.getLayers(), _theCanvas);
+		
 		if (_startPoint == null)
 			return;
 
@@ -601,7 +612,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 			// ok - pass the drag to our drag control
 			if (_myDragMode != null)
-				_myDragMode.doMouseMove(_draggedPoint, JITTER, super.getLayers());
+				_myDragMode.doMouseDrag(_draggedPoint, JITTER, super.getLayers(), _theCanvas);
 		}
 	}
 
@@ -703,9 +714,23 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * 
 		 * @param pt
 		 *          the new cursor location
+		 * @param theCanvas TODO
 		 */
-		abstract public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theLayers);
+		abstract public void doMouseDrag(final org.eclipse.swt.graphics.Point pt, final int JITTER,
+				final Layers theLayers, SWTCanvas theCanvas);
+		
+		/**
+		 * handle the mouse moving across the screen
+		 * 
+		 * @param pt
+		 *          the new cursor location
+		 * @param theCanvas TODO
+		 */
+		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
+				final Layers theLayers, SWTCanvas theCanvas)
+		{
+			// provide a dummy implementation - most of our modes don't use this...
+		}
 
 		/**
 		 * handle the mouse drag finishing

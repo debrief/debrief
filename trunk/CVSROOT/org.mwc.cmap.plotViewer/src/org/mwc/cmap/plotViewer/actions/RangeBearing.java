@@ -48,7 +48,7 @@ final public class RangeBearing extends CoreDragAction
 		 */
 		SWTCanvas _myCanvas;
 
-		final public void doMouseMove(Point pt, int JITTER, Layers theLayers)
+		final public void doMouseDrag(Point pt, int JITTER, Layers theLayers, SWTCanvas theCanvas)
 		{
 			if (_startPoint != null)
 			{

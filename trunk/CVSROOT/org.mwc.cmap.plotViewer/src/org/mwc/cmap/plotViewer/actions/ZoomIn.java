@@ -29,7 +29,7 @@ public class ZoomIn extends CoreDragAction
 
 		private PlainChart _myChart;
 
-		public void doMouseMove(final Point pt, final int JITTER, final Layers theLayers)
+		public void doMouseDrag(final Point pt, final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
 		{
 			// just do a check that we have our start point (it may have been cleared at the end of the move operation)
 			if (_startPoint != null)
