@@ -37,7 +37,7 @@ public class CorePlugin extends AbstractUIPlugin
 	public static final String TIME_CONTROLLER = "org.mwc.cmap.TimeController.views.TimeController";
 	public static final String XY_PLOT = "org.mwc.cmap.xyplot.views.XYPlotView";
 	public static final String OVERVIEW_PLOT = "org.mwc.cmap.overview.views.ChartOverview";
-	
+	public static final String STACKED_DOTS = "org.mwc.debrief.track_shift.views.StackedDotsView";	
 	
 	// The shared instance.
 	private static CorePlugin plugin;
@@ -80,6 +80,7 @@ public class CorePlugin extends AbstractUIPlugin
 	 * 
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
+
 
 	/**
 	 * The constructor.
