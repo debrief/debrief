@@ -301,6 +301,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
 		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
+//		eBwd.setImage(TimeControllerPlugin.getImage("icons/control_start_blue.png"));
+		
+		
+		
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
 		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
