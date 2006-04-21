@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.30  2006-04-11 08:10:42  Ian.Mayo
+// Revision 1.31  2006-04-21 08:13:51  Ian.Mayo
+// keep a cached copy of the image - to reduce replotting time
+//
+// Revision 1.30  2006/04/11 08:10:42  Ian.Mayo
 // Include support for mouse-move event (in addition to mouse-drag).
 //
 // Revision 1.29  2006/04/06 13:01:05  Ian.Mayo
@@ -162,6 +165,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	private Point _draggedPoint = null;
 
 	private PlotMouseDragger _myDragMode;
+	
+
+	/** keep a cached copy of the image - to reduce replotting time
+	 * 
+	 */
+	protected ImageData _myImageTemplate = null;	
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -237,27 +246,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	}
 
-	/**
-	 * constructor, providing us with a set of layers to plot, together with a
-	 * background image.
-	 * 
-	 * @param theLayers
-	 *          the data to plot
-	 * @param imageName
-	 *          the image to show as a water-mark
-	 */
-	// public SWTChart(final Layers theLayers, final String imageName)
-	// {
-	// this(theLayers);
-	//
-	// // try to open the image
-	// final URL imageURL = getClass().getClassLoader().getResource(imageName);
-	// if (imageURL != null)
-	// {
-	// final ImageIcon io = new ImageIcon(imageURL);
-	// _ourImage = io.getImage();
-	// }
-	// }
+
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
@@ -265,6 +254,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		// and clear out our buffered layers (they all need to be repainted anyway)
 		_myLayers.clear();
+		
+		// and ditch our image template (since it's size related)
+		_myImageTemplate = null;
 
 		// now we've cleared the layers, call the parent resize method (which causes
 		// a repaint
@@ -367,8 +359,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		if (_theLayers == null)
 			return;
 
-		Image template = null;
-
 		// check that we have a valid canvas (that the sizes are set)
 		final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
 		if (sArea != null)
@@ -426,13 +416,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 												.get(thisLayer);
 										if (image == null)
 										{
-											// ok - create our image
-											if (template == null)
+											// ok - do we have an image template?
+											if (_myImageTemplate == null)
 											{
-												template = new Image(Display.getCurrent(), canvasWidth,
+												// nope, better create one
+												Image template = new Image(Display.getCurrent(), canvasWidth,
 														canvasHeight);
+												// and remember it.
+												_myImageTemplate = template.getImageData();
 											}
-											image = createSWTImage(template);
+											
+											// ok, and now the SWT image
+											image = createSWTImage(_myImageTemplate);
 
 											GC newGC = new GC(image);
 
@@ -443,6 +438,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 											// and store the GC
 											ca.startDraw(newGC);
 
+											System.out.println("painting:" + thisLayer);
+											
 											// ok, paint the layer into this canvas
 											thisLayer.paint(ca);
 
@@ -474,6 +471,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						if (!isAlreadyPlotted)
 						{
 							paintThisLayer(thisLayer, dest);
+							
+							System.out.println("painting (2):" + thisLayer);
 
 							isAlreadyPlotted = true;
 						}
@@ -499,6 +498,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		thisLayer.paint(dest);
 	}
 
+	
 	/**
 	 * create the transparent image we need to for collating multiple layers into
 	 * an image
@@ -507,12 +507,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * @param canvasWidth
 	 * @return
 	 */
-	protected org.eclipse.swt.graphics.Image createSWTImage(Image template)
+	protected org.eclipse.swt.graphics.Image createSWTImage(ImageData myImageTemplate)
 	{
-		ImageData id = template.getImageData();
-		id.transparentPixel = id.palette.getPixel(new RGB(255, 255, 255));
+		_myImageTemplate.transparentPixel = _myImageTemplate.palette.getPixel(new RGB(255, 255, 255));
 		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(Display
-				.getCurrent(), id);
+				.getCurrent(), _myImageTemplate);
 		return image;
 	}
 
