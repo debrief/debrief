@@ -496,7 +496,7 @@ public class ChartOverview extends ViewPart
 		public void chartFireSelectionChanged(ISelection sel)
 		{
 		}
-
+		
 		/**
 		 * over-ride the parent's version of paint, so that we can try to do it by
 		 * layers.
@@ -508,8 +508,6 @@ public class ChartOverview extends ViewPart
 			// chart, we may not have...)
 			if (_theLayers == null)
 				return;
-
-			Image template = null;
 
 			// check that we have a valid canvas (that the sizes are set)
 			final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
@@ -569,12 +567,14 @@ public class ChartOverview extends ViewPart
 											if (image == null)
 											{
 												// ok - create our image
-												if (template == null)
+												if (_myImageTemplate == null)
 												{
-													template = new Image(Display.getCurrent(), canvasWidth,
+													
+													Image tmpTemplate = new Image(Display.getCurrent(), canvasWidth,
 															canvasHeight);
+													_myImageTemplate = tmpTemplate.getImageData();
 												}
-												image = createSWTImage(template);
+												image = createSWTImage(_myImageTemplate);
 
 												GC newGC = new GC(image);
 
