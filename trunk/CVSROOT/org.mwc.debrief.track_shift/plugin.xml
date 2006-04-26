@@ -12,36 +12,9 @@
             id="org.mwc.debrief.track_shift.views.StackedDotsView">
       </view>         
    </extension>
-   <extension
-         point="org.eclipse.ui.perspectiveExtensions">
-      <perspectiveExtension
-            targetID="org.eclipse.ui.resourcePerspective">
-         <view
-               ratio="0.5"
-               relative="org.eclipse.ui.views.TaskList"
-               relationship="right"
-               id="org.mwc.debrief.track_shift.views.StackedDotsView">
-         </view>
-      </perspectiveExtension>
-   </extension>
+	<extension point = "org.eclipse.ui.actionSets">    
+	<actionSet id="org.mwc.debrief.track_shift" label="Debrief Track Shifting">
 
-   <extension
-         id="org.mwc.debrief.core.editors.DebriefActions"
-         name="DebriefActions"
-         point="org.eclipse.ui.actionSets">
-     <actionSet id="org.mwc.cmap.plot3d" label="Debrief 3D actions">
-         <action
-               class="actions.DragFeature"
-               icon="icons/SelectFeature.gif"
-               id="org.mwc.debrief.core.DragFeature"
-               label="&amp;Drag Feature"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
-               style="radio"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>                      
-      </actionSet>
+   </actionSet>
    </extension>
-   
-               
-     
-
 </plugin>
