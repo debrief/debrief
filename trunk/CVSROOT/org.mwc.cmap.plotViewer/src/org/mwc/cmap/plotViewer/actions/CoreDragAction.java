@@ -5,6 +5,7 @@ package org.mwc.cmap.plotViewer.actions;
 
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
+import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import MWC.GUI.PlainChart;
@@ -22,7 +23,7 @@ abstract public class CoreDragAction extends CoreEditorAction
 	abstract public SWTChart.PlotMouseDragger getDragMode();
 	
 	
-	final protected void execute()
+	protected void execute()
 	{
 		// find out what the current dragger is
 		PlainChart chrs = getChart();
@@ -87,11 +88,17 @@ abstract public class CoreDragAction extends CoreEditorAction
 		public void undo()
 		{
 			_editor.setDragMode(_oldMode);
+
+			// ok - store the mode in the core editor
+			PlotViewerPlugin.setCurrentMode(_oldMode);
 		}
 	
 		public void execute()
 		{
 			_editor.setDragMode(_newMode);
+			
+			// ok - store the mode in the core editor
+			PlotViewerPlugin.setCurrentMode(_newMode);
 		}
 		
 	}	
