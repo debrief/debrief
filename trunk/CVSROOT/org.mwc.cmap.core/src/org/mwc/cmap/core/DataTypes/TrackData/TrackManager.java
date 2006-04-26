@@ -11,16 +11,18 @@ import MWC.TacticalData.Track;
  * embedded class which manages the primary & secondary tracks
  */
 public class TrackManager implements TrackDataProvider // ,
-																												// TrackDataProvider.TrackDataListener
+// TrackDataProvider.TrackDataListener
 {
 
 	private WatchableList _thePrimary;
 
 	private WatchableList[] _theSecondaries;
 
-	private Vector _myListeners;
+	private Vector _myDataListeners;
 
 	private Layers _theLayers;
+
+	private Vector _myShiftListeners;
 
 	public TrackManager(Layers parentLayers)
 	{
@@ -66,10 +68,18 @@ public class TrackManager implements TrackDataProvider // ,
 
 	public void addTrackDataListener(TrackDataListener listener)
 	{
-		if (_myListeners == null)
-			_myListeners = new Vector();
+		if (_myDataListeners == null)
+			_myDataListeners = new Vector();
 
-		_myListeners.add(listener);
+		_myDataListeners.add(listener);
+	}
+
+	public void addTrackShiftListener(TrackShiftListener listener)
+	{
+		if (_myShiftListeners == null)
+			_myShiftListeners = new Vector();
+
+		_myShiftListeners.add(listener);
 	}
 
 	public WatchableList getPrimaryTrack()
@@ -98,9 +108,9 @@ public class TrackManager implements TrackDataProvider // ,
 		_thePrimary = primary;
 
 		// and inform the listeners
-		if (_myListeners != null)
+		if (_myDataListeners != null)
 		{
-			Iterator iter = _myListeners.iterator();
+			Iterator iter = _myDataListeners.iterator();
 			while (iter.hasNext())
 			{
 				TrackDataListener list = (TrackDataListener) iter.next();
@@ -119,9 +129,9 @@ public class TrackManager implements TrackDataProvider // ,
 
 	private void fireTracksChanged()
 	{
-		if (_myListeners != null)
+		if (_myDataListeners != null)
 		{
-			Iterator iter = _myListeners.iterator();
+			Iterator iter = _myDataListeners.iterator();
 			while (iter.hasNext())
 			{
 				TrackDataListener list = (TrackDataListener) iter.next();
@@ -246,7 +256,14 @@ public class TrackManager implements TrackDataProvider // ,
 
 	public void removeTrackDataListener(TrackDataListener listener)
 	{
-		_myListeners.remove(listener);
+		if (_myDataListeners != null)
+			_myDataListeners.remove(listener);
+	}
+
+	public void removeTrackShiftListener(TrackShiftListener listener)
+	{
+		if (_myShiftListeners != null)
+			_myShiftListeners.remove(listener);
 	}
 
 	/**
@@ -292,5 +309,23 @@ public class TrackManager implements TrackDataProvider // ,
 		else
 			_theSecondaries = new WatchableList[0];
 
+	}
+
+	/**
+	 * ok - tell anybody that wants to know that it's moved
+	 * 
+	 * @param target
+	 */
+	public void fireTrackShift(TrackWrapper target)
+	{
+		if (_myShiftListeners != null)
+		{
+			Iterator iter = _myShiftListeners.iterator();
+			while (iter.hasNext())
+			{
+				TrackShiftListener list = (TrackShiftListener) iter.next();
+				list.trackShifted(target);
+			}
+		}
 	}
 }
