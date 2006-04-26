@@ -73,7 +73,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	{
 		PlainChart res = null;
 		CorePlotEditor editor = getEditor();
-		if(editor != null)
+		if (editor != null)
 			res = editor.getChart();
 		return res;
 	}
@@ -90,17 +90,25 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 	 */
 	public final void run(IAction action)
 	{
-		// check we're looking at our type of editor
-		PlainChart chrt = getChart();
-		if (chrt == null)
+		// right - we get called when radio buttons get de-selected. We only want to fire
+		// the event for the 'new action' - that's the action that's checked.
+		if((action.getStyle() != IAction.AS_RADIO_BUTTON) || (action.getStyle() == IAction.AS_RADIO_BUTTON && action.isChecked()))
+//		if (action.isChecked())
 		{
-		  // report to user that they do need to have a plot editor open...
-		//	System.err.println("wrong type of editor");
-			MessageDialog.openWarning( Display.getCurrent().getActiveShell(), "Debrief action", "Please select a Debrief plot before performing this action");
-		}
-		else
-		{
-			execute();
+			// check we're looking at our type of editor
+			PlainChart chrt = getChart();
+			if (chrt == null)
+			{
+				// report to user that they do need to have a plot editor open...
+				// System.err.println("wrong type of editor");
+				MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
+						"Debrief action",
+						"Please select a Debrief plot before performing this action");
+			}
+			else
+			{
+				execute();
+			}
 		}
 	}
 
