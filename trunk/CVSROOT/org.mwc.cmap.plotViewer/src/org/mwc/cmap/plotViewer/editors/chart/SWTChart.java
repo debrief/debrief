@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.31  2006-04-21 08:13:51  Ian.Mayo
+// Revision 1.32  2006-04-26 12:39:46  Ian.Mayo
+// Remove d-lines
+//
+// Revision 1.31  2006/04/21 08:13:51  Ian.Mayo
 // keep a cached copy of the image - to reduce replotting time
 //
 // Revision 1.30  2006/04/11 08:10:42  Ian.Mayo
@@ -437,8 +440,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 											// and store the GC
 											ca.startDraw(newGC);
-
-											System.out.println("painting:" + thisLayer);
 											
 											// ok, paint the layer into this canvas
 											thisLayer.paint(ca);
@@ -472,8 +473,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						{
 							paintThisLayer(thisLayer, dest);
 							
-							System.out.println("painting (2):" + thisLayer);
-
 							isAlreadyPlotted = true;
 						}
 					}
