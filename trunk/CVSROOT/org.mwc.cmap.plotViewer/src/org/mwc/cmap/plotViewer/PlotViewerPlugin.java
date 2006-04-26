@@ -5,7 +5,8 @@ import java.util.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
-import org.mwc.cmap.plotViewer.editors.chart.SWTRasterPainter;
+import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.osgi.framework.BundleContext;
 
 import MWC.GUI.Chart.Painters.SpatialRasterPainter;
@@ -18,6 +19,9 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	private static PlotViewerPlugin plugin;
 	//Resource bundle.
 	private ResourceBundle resourceBundle;
+	
+	
+	private static PlotMouseDragger _currentMode;		
 	
 	/**
 	 * The constructor.
@@ -92,4 +96,21 @@ public class PlotViewerPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path) {
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.plotViewer", path);
 	}
+	
+	
+
+	/** ok, the dragging mode has changed. remember it, so new editors can adopt the same mode
+	 * 
+	 * @param mode
+	 */
+	public static void setCurrentMode(SWTChart.PlotMouseDragger mode)
+	{
+		_currentMode = mode;
+	}
+	
+	public static PlotMouseDragger getCurrentMode()
+	{
+		return _currentMode;
+	}	
+	
 }
