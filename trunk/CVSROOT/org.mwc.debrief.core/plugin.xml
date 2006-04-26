@@ -70,6 +70,7 @@
                id="org.mwc.debrief.core.EditorView"
                label="&amp;View"
                path="additions">
+            <groupMarker name="viewRadio"/>
             <groupMarker name="view"/>
             <separator name="sep1"/>
             <groupMarker name="additions"/>
@@ -104,32 +105,37 @@
                icon="icons/zoomin.gif"
                id="org.mwc.debrief.core.ZoomIn"
                label="Zoom &amp;In"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
+               menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
                style="radio"
                state="true"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"
-               />       
-
-             
-               
+               toolbarPath="org.mwc.debrief.core.EditorView/viewRadio"
+               />                      
          <action
                class="org.mwc.cmap.plotViewer.actions.Pan"
                icon="icons/drag.gif"
                id="org.mwc.debrief.core.Pan"
                label="&amp;Pan"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
+               menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
                style="radio"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>                    
-               
+               toolbarPath="org.mwc.debrief.core.EditorView/viewRadio"/>                    
          <action
                class="org.mwc.cmap.plotViewer.actions.RangeBearing"
                icon="icons/rng_brg.gif"
                id="org.mwc.debrief.core.RangeBearing"
                label="Measure range &amp;bearing"
-               menubarPath="org.mwc.debrief.core.EditorView/view"
+               menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
                style="radio"
-               toolbarPath="org.mwc.debrief.core.EditorView/view"/>                 
-
+               toolbarPath="org.mwc.debrief.core.EditorView/viewRadio"/>  
+               
+    <action
+       class="org.mwc.debrief.core.actions.DragFeature"
+       icon="icons/SelectFeature.gif"
+       id="org.mwc.debrief.core.DragFeature"
+       label="&amp;Drag Feature"
+       menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
+       style="radio"
+       toolbarPath="org.mwc.debrief.core.EditorView/viewRadio"/>  
+                                     
          <action
                class="org.mwc.cmap.plotViewer.actions.FitToWindow"
                icon="icons/fit_to_win.gif"
@@ -137,10 +143,7 @@
                label="&amp;Fit to window"
                menubarPath="org.mwc.debrief.core.EditorView/additions"
                style="push"
-               toolbarPath="org.mwc.debrief.core.EditorView/additions"/>
-               
-
-               
+               toolbarPath="org.mwc.debrief.core.EditorView/additions"/>                              
          <action
                class="org.mwc.cmap.plotViewer.actions.Redraw"
                icon="icons/repaint.gif"
