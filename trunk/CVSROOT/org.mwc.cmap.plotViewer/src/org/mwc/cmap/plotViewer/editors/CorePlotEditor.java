@@ -21,8 +21,10 @@ import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.core.ui_support.LineItem;
+import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
@@ -384,6 +386,18 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	{
 		// just put some kind of blank object into the properties window
 		// putBackdropIntoProperties();
+		
+		// ok, set the drag mode to whatever our common "mode" is.
+		// - start off by getting the current mode
+		PlotMouseDragger curMode = PlotViewerPlugin.getCurrentMode();
+		
+		// has one been set?
+		if(curMode != null)
+		{
+			// yup, better observe it then
+			_myChart.setDragMode(curMode);
+		}
+		
 	}
 
 	public Object getAdapter(Class adapter)
