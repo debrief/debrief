@@ -70,8 +70,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		// ok - make sure the debrief action sets are visible
 		layout.addActionSet("org.mwc.debrief.core");
 		layout.addActionSet("org.mwc.cmap.plot3d");
-		
-		
+		layout.addActionSet("org.mwc.debrief.track_shift");
 	}
 
 	
