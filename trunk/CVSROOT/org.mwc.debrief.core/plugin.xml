@@ -124,10 +124,20 @@
        class="org.mwc.debrief.core.actions.DragFeature"
        icon="icons/SelectFeature.gif"
        id="org.mwc.debrief.core.DragFeature"
-       label="&amp;Drag Feature"
+       label="&amp;Drag Whole Feature"
        menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
        style="radio"
        toolbarPath="org.mwc.debrief.core.EditorView/viewRadio"/>  
+
+    <action
+       class="org.mwc.debrief.core.actions.DragComponent"
+       icon="icons/SelectComponent.png"
+       id="org.mwc.debrief.core.DragComponent"
+       label="Drag &amp;Component"
+       menubarPath="org.mwc.debrief.core.EditorView/viewRadio"
+       style="radio"
+       toolbarPath="org.mwc.debrief.core.EditorView/viewRadio"/>  
+
          <action
                class="org.mwc.cmap.plotViewer.actions.ZoomOut"
                icon="icons/zoomout.gif"
