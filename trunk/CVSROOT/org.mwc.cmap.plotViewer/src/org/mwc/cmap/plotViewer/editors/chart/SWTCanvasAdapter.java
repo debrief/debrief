@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.18  2006-04-05 08:15:00  Ian.Mayo
+// Revision 1.19  2006-05-02 13:44:24  Ian.Mayo
+// Allow us to over-ride setColor method
+//
+// Revision 1.18  2006/04/05 08:15:00  Ian.Mayo
 // Allow screen size to be overwritten
 //
 // Revision 1.17  2006/03/31 14:30:14  Ian.Mayo
@@ -627,7 +630,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// painting oval - occasionally happens in first pass", false);
 	}
 
-	public final void setColor(final java.awt.Color theCol)
+	public void setColor(final java.awt.Color theCol)
 	{
 		if (_theDest == null)
 			return;
