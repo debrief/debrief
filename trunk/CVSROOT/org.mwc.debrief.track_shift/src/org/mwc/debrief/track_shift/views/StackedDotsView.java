@@ -180,7 +180,7 @@ public class StackedDotsView extends ViewPart
 				super.run();
 				// we need to get a fresh set of data pairs - the number may have
 				// changed
-				_myHelper.initialise(_theTrackDataListener);
+				_myHelper.initialise(_theTrackDataListener, true);
 
 				// and a new plot please
 				updateStackedDots();
@@ -297,7 +297,7 @@ public class StackedDotsView extends ViewPart
 						_theTrackDataListener = (TrackManager) part;
 
 						// ok - fire off the event for the new tracks
-						_myHelper.initialise(_theTrackDataListener);
+						_myHelper.initialise(_theTrackDataListener, true);
 
 					}
 				});
@@ -391,7 +391,7 @@ public class StackedDotsView extends ViewPart
 
 								public void dataReformatted(Layers theData, Layer changedLayer)
 								{
-									_myHelper.initialise(_theTrackDataListener);
+									_myHelper.initialise(_theTrackDataListener, false);
 									updateStackedDots();
 								}
 							};
@@ -487,7 +487,7 @@ public class StackedDotsView extends ViewPart
 		{
 			// ok, find the track wrappers
 			if (_secondaryTrack == null)
-				initialise(tracks);
+				initialise(tracks, true);
 
 			// did it work?
 			if (_secondaryTrack == null)
@@ -574,8 +574,9 @@ public class StackedDotsView extends ViewPart
 		/**
 		 * initialise the data, check we've got sensor data & the correct number of
 		 * visible tracks
+		 * @param showError TODO
 		 */
-		private void initialise(TrackManager tracks)
+		private void initialise(TrackManager tracks, boolean showError)
 		{
 
 			_secondaryTrack = null;
@@ -585,7 +586,7 @@ public class StackedDotsView extends ViewPart
 			if (tracks == null)
 			{
 				// output error message
-				showMessage("Sorry, a Debrief plot must be selected");
+				showMessage("Sorry, a Debrief plot must be selected", showError);
 				return;
 			}
 
@@ -593,14 +594,14 @@ public class StackedDotsView extends ViewPart
 			WatchableList priTrk = tracks.getPrimaryTrack();
 			if (priTrk == null)
 			{
-				showMessage("Sorry, stacked dots will not open.  A primary track must be placed on the Tote");
+				showMessage("Sorry, stacked dots will not open.  A primary track must be placed on the Tote", showError);
 				return;
 			}
 			else
 			{
 				if (!(priTrk instanceof TrackWrapper))
 				{
-					showMessage("Sorry, stacked dots will not open.  The primary track must be a vehicle track");
+					showMessage("Sorry, stacked dots will not open.  The primary track must be a vehicle track", showError);
 					return;
 				}
 				else
@@ -613,14 +614,14 @@ public class StackedDotsView extends ViewPart
 			// any?
 			if ((secs == null) || (secs.length == 0))
 			{
-				showMessage("Sorry, stacked dots will not open.  A secondary track must be present on the tote");
+				showMessage("Sorry, stacked dots will not open.  A secondary track must be present on the tote", showError);
 				return;
 			}
 
 			// too many?
 			if (secs.length > 1)
 			{
-				showMessage("Sorry, stacked dots will not open.  Only one secondary track may be present on the tote");
+				showMessage("Sorry, stacked dots will not open.  Only one secondary track may be present on the tote", showError);
 				return;
 			}
 
@@ -628,7 +629,7 @@ public class StackedDotsView extends ViewPart
 			WatchableList secTrk = secs[0];
 			if (!(secTrk instanceof TrackWrapper))
 			{
-				showMessage("Sorry, stacked dots will not open.  The secondary track must be a vehicle track");
+				showMessage("Sorry, stacked dots will not open.  The secondary track must be a vehicle track", showError);
 				return;
 			}
 			else
@@ -811,9 +812,10 @@ public class StackedDotsView extends ViewPart
 
 	}
 
-	private void showMessage(String message)
+	private void showMessage(String message, boolean showError)
 	{
-		MessageDialog.openInformation(getSite().getShell(), "Stacked dots", message);
+	//	if(showError)
+	//		MessageDialog.openInformation(getSite().getShell(), "Stacked dots", message);
 	}
 
 }
