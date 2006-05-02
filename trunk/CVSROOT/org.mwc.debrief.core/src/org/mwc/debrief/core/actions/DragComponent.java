@@ -8,62 +8,32 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
-import org.mwc.cmap.plotViewer.actions.CoreDragAction;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
-import MWC.GUI.Shapes.DraggableItem;
-import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
+import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.*;
 
 /**
  * @author ian.mayo
  */
-public class DragFeature extends CoreDragAction
+public class DragComponent extends DragFeature
 {
-
-	public static void checkClosest(Plottable thisSubject,
-			MWC.GenericData.WorldLocation cursorPos, LocationConstruct currentNearest,
-			DragTargetChecker helper)
-	{
-	}
-
-	protected void execute()
-	{
-		// ok, fire our parent
-		super.execute();
-
-		// now, try to open the stacked dots view
-		try
-		{
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-			page.showView(CorePlugin.STACKED_DOTS);
-		}
-		catch (PartInitException e)
-		{
-			CorePlugin.logError(Status.ERROR, "Failed to open stacked dots", e);
-		}
-
-	}
 
 	public static void findNearest(Layer thisLayer,
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
-			LocationConstruct currentNearest, Layer parentLayer)
+			MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct currentNearest, Layer parentLayer)
 	{
 		// 
 		Layer thisParentLayer;
@@ -78,9 +48,9 @@ public class DragFeature extends CoreDragAction
 			boolean sorted = false;
 
 			// is this layer a track?
-			if (thisLayer instanceof DraggableItem)
+			if (thisLayer instanceof HasDraggableComponents)
 			{
-				DraggableItem dw = (DraggableItem) thisLayer;
+				HasDraggableComponents dw = (HasDraggableComponents) thisLayer;
 
 				// yup, find the distance to it's nearest point
 				dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest, thisParentLayer);
@@ -105,12 +75,12 @@ public class DragFeature extends CoreDragAction
 					}
 					else
 					{
-						DraggableItem draggable = null;
+						HasDraggableComponents draggable = null;
 
 						// is it a shape?
-						if (pt instanceof DraggableItem)
+						if (pt instanceof HasDraggableComponents)
 						{
-							draggable = (DraggableItem) pt;
+							draggable = (HasDraggableComponents) pt;
 
 							// yup, find the distance to it's nearest point
 							draggable.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
@@ -119,18 +89,6 @@ public class DragFeature extends CoreDragAction
 							// right, this one's processed. carry on
 							sorted = true;
 						}
-
-						if (!sorted)
-						{
-							double rngDegs = pt.rangeFrom(cursorLoc);
-							if (rngDegs != -1)
-							{
-								WorldDistance thisSep = new WorldDistance(pt.rangeFrom(cursorLoc),
-										WorldDistance.DEGS);
-								currentNearest.checkMe(draggable, thisSep, null, thisLayer);
-							}
-						}
-
 					}
 				}
 			}
@@ -174,7 +132,12 @@ public class DragFeature extends CoreDragAction
 		/**
 		 * the thing we're currently hovering over
 		 */
-		protected DraggableItem _hoverTarget;
+		protected HasDraggableComponents _hoverTarget;
+		
+		/** the component we're going to drag
+		 * 
+		 */
+		protected WorldLocation _hoverComponent;
 
 		/**
 		 * the hand cursor we show when dragging
@@ -211,7 +174,7 @@ public class DragFeature extends CoreDragAction
 			WorldLocation cursorLoc = theCanvas.toWorld(cursorPt);
 
 			// find the nearest editable item
-			LocationConstruct currentNearest = new LocationConstruct();
+			ComponentConstruct currentNearest = new ComponentConstruct();
 			int num = theData.size();
 			for (int i = 0; i < num; i++)
 			{
@@ -255,18 +218,30 @@ public class DragFeature extends CoreDragAction
 					highlightShown = true;
 
 					_hoverTarget = currentNearest._object;
+					_hoverComponent = currentNearest._draggableComponent;
 					_parentLayer = currentNearest._topLayer;
 
 				}
+				else
+				{
+					// nope, out of range. clear our settings
+					_hoverTarget = null;
+					_hoverComponent = null;
+					_parentLayer = null;
+				}
+			}
+			else
+			{
+				// nope, we haven't found anything. clear our settings
+				_hoverTarget = null;
+				_hoverComponent = null;
+				_parentLayer = null;
 			}
 
 			if (!highlightShown)
 			{
 				// reset the cursor on the canvas
 				theCanvas.getCanvas().setCursor(null);
-				
-				if(_newCursor != null)
-					_newCursor.dispose();
 			}
 		}
 
@@ -357,7 +332,7 @@ public class DragFeature extends CoreDragAction
 			WorldVector reverse = _startLocation.subtract(_lastLocation);
 
 			// apply the reverse vector
-			_hoverTarget.shift(reverse);
+			_hoverTarget.shift(_hoverComponent, reverse);
 
 			// and get the chart to redraw itself
 			_myChart.update();
@@ -366,7 +341,7 @@ public class DragFeature extends CoreDragAction
 			WorldVector forward = _lastLocation.subtract(_startLocation);
 
 			// put it into our action
-			DragFeatureAction dta = new DragFeatureAction(forward, _hoverTarget, _myChart
+			DragComponentAction dta = new DragComponentAction(forward, _hoverTarget, _hoverComponent, _myChart
 					.getLayers(), _parentLayer);
 
 			// and wrap it
@@ -407,7 +382,7 @@ public class DragFeature extends CoreDragAction
 
 			// ok, move the target ot the new location...
 			if (newVector != null)
-				_hoverTarget.shift(newVector);
+				_hoverTarget.shift(_hoverComponent, newVector);
 
 			// TrackWrapper tw = (TrackWrapper) _hoverTarget;
 			SWTCanvasAdapter ca = new SWTCanvasAdapter(_myCanvas.getProjection())
@@ -443,45 +418,11 @@ public class DragFeature extends CoreDragAction
 
 	}
 
-	public static abstract class DragTargetChecker
-	{
-		/**
-		 * decide whether to inspect child components of this layer
-		 * 
-		 * @param target
-		 * @return
-		 */
-		abstract public boolean breakDown(Layer target);
-
-		/**
-		 * decide if this is a candidate for dragging
-		 */
-		abstract public boolean isDraggingCandidate(Plottable target);
-
-		/**
-		 * return the current location of the nearest draggable component
-		 * 
-		 * @param target
-		 * @param spot
-		 *          TODO
-		 * @param nearestLocation
-		 *          TODO
-		 * @return
-		 */
-		public void updateNearest(Plottable target, WorldLocation spot,
-				LocationConstruct nearestLocation)
-		{
-
-		}
-
-		abstract public WorldLocation findNearestHotSpot(Plottable target, WorldLocation spot);
-	}
-
 	/**
 	 * action representing a track being dragged. It's undo-able and redo-able,
 	 * since it's quite simple really.
 	 */
-	public static final class DragFeatureAction implements MWC.GUI.Tools.Action
+	public static final class DragComponentAction implements MWC.GUI.Tools.Action
 	{
 		/**
 		 * the offset we're going to apply
@@ -491,7 +432,7 @@ public class DragFeature extends CoreDragAction
 		/**
 		 * the track we're going to apply it to
 		 */
-		private final DraggableItem _itemToDrag;
+		private final HasDraggableComponents _theFeature;
 
 		/**
 		 * the set of layers we're need to update on completion
@@ -503,21 +444,28 @@ public class DragFeature extends CoreDragAction
 		 */
 		private Layer _parentLayer;
 
+		/** the component we're going to shift
+		 * 
+		 */
+		private WorldLocation _theComponent;
+
 		/**
 		 * constructor - providing the parameters to store to execute/reproduce the
 		 * operation
 		 * 
 		 * @param theOffset
-		 * @param theTrack
+		 * @param theFeature
 		 * @param theLayers
 		 */
-		public DragFeatureAction(final WorldVector theOffset, final DraggableItem theTrack,
+		public DragComponentAction(final WorldVector theOffset, final HasDraggableComponents theFeature,
+				WorldLocation theComponent,
 				final Layers theLayers, final Layer parentLayer)
 		{
 			_theOffset = theOffset;
-			_itemToDrag = theTrack;
+			_theFeature = theFeature;
 			_theLayers = theLayers;
 			_parentLayer = parentLayer;
+			_theComponent = theComponent;
 		}
 
 		/**
@@ -525,7 +473,7 @@ public class DragFeature extends CoreDragAction
 		 */
 		public String toString()
 		{
-			final String res = "Drag " + _itemToDrag.getName() + _theOffset.toString();
+			final String res = "Drag " + _theFeature.getName() + _theOffset.toString();
 			return res;
 		}
 
@@ -536,7 +484,7 @@ public class DragFeature extends CoreDragAction
 		public void execute()
 		{
 			// apply the shift
-			_itemToDrag.shift(_theOffset);
+			_theFeature.shift(_theComponent, _theOffset);
 
 			// update the layers
 			_theLayers.fireModified(_parentLayer);
@@ -552,7 +500,7 @@ public class DragFeature extends CoreDragAction
 			final WorldVector reverseVector = _theOffset.generateInverse();
 
 			// and apply it
-			_itemToDrag.shift(reverseVector);
+			_theFeature.shift(_theComponent, reverseVector);
 
 			_theLayers.fireModified(_parentLayer);
 		}
