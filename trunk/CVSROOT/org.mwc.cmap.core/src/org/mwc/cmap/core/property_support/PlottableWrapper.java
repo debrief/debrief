@@ -12,6 +12,7 @@ import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.*;
+import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other
@@ -44,8 +45,7 @@ public class PlottableWrapper implements IPropertySource
 	 */
 	static String[] _booleanTags = new String[] { "Yes", "No" };
 
-	public PlottableWrapper(Plottable plottable, PlottableWrapper parent,
-			Layers layers)
+	public PlottableWrapper(Plottable plottable, PlottableWrapper parent, Layers layers)
 	{
 		if (plottable == null)
 			System.err.println("null PLOTTABLE");
@@ -139,24 +139,31 @@ public class PlottableWrapper implements IPropertySource
 	 */
 	public IPropertyDescriptor[] getPropertyDescriptors()
 	{
-		
+
 		if (_myDescriptors == null)
 		{
-			Vector list = new Vector(0,1);
-			IPropertyDescriptor[] res = new IPropertyDescriptor[]{null};
+			Vector list = new Vector(0, 1);
+			IPropertyDescriptor[] res = new IPropertyDescriptor[] { null };
 			Editable.EditorType editor = _plottable.getInfo();
 			if (editor != null)
 			{
 				PropertyDescriptor[] properties = editor.getPropertyDescriptors();
-//				_myDescriptors = new IPropertyDescriptor[properties.length];
+				// _myDescriptors = new IPropertyDescriptor[properties.length];
 
 				for (int i = 0; i < properties.length; i++)
 				{
 					final PropertyDescriptor thisProp = properties[i];
-					IPropertyDescriptor newProp = new DebriefProperty(thisProp,
-							_plottable, null);
-//					_myDescriptors[i] = newProp;
-					list.add(newProp);
+					if (thisProp instanceof Editable.DeprecatedPropertyDescriptor)
+					{
+						// ignore this one - it doesn't relate to our modern world.
+						//   aah, changing times.
+					}
+					else
+					{
+						IPropertyDescriptor newProp = new DebriefProperty(thisProp, _plottable, null);
+						// _myDescriptors[i] = newProp;
+						list.add(newProp);
+					}
 				}
 
 				// hmm, are there any "supplemental" editors?
@@ -187,9 +194,8 @@ public class PlottableWrapper implements IPropertySource
 									else
 									{
 										// ok, add this editor
-										IPropertyDescriptor newProp = new DebriefProperty(pd,
-												obj, null);
-										
+										IPropertyDescriptor newProp = new DebriefProperty(pd, obj, null);
+
 										list.add(newProp);
 									}
 								}
@@ -198,13 +204,13 @@ public class PlottableWrapper implements IPropertySource
 					}
 				}
 			}
-			
+
 			// hmm, did we find any
-			if(list.size() > 0)
+			if (list.size() > 0)
 			{
 				_myDescriptors = (IPropertyDescriptor[]) list.toArray(res);
 			}
-			
+
 		}
 		return _myDescriptors;
 	}
@@ -285,13 +291,14 @@ public class PlottableWrapper implements IPropertySource
 
 		// and find the existing value
 		Object oldVal = thisProp.getValue();
-		
+
 		// find the parent layer
 		Layer parent = getTopLevelLayer();
 
 		// ok, create the action
-		PropertyChangeAction pca = new PropertyChangeAction(oldVal,value, thisProp, getPlottable().getName(), parent, getLayers());
-		
+		PropertyChangeAction pca = new PropertyChangeAction(oldVal, value, thisProp,
+				getPlottable().getName(), parent, getLayers());
+
 		// and sort it out with the history
 		CorePlugin.run(pca);
 	}
@@ -305,7 +312,8 @@ public class PlottableWrapper implements IPropertySource
 			// find out the type of the editor
 			Method m = thisProp.getReadMethod();
 			res = m.getReturnType();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -313,38 +321,44 @@ public class PlottableWrapper implements IPropertySource
 		return res;
 	}
 
-	/** embedded class which stores a property change in an undoable operation
+	/**
+	 * embedded class which stores a property change in an undoable operation
 	 * 
 	 * @author ian.mayo
-	 *
 	 */
-	private static class PropertyChangeAction extends AbstractOperation 
+	private static class PropertyChangeAction extends AbstractOperation
 	{
 		private final Object _oldValue;
+
 		private final Object _newValue;
+
 		private final DebriefProperty _property;
+
 		private final Layer _parentLayer;
+
 		private final Layers _wholeLayers;
 
-		/** setup the change details
+		/**
+		 * setup the change details
 		 * 
-		 * @param oldValue old value (to undo to)
-		 * @param newValue new value 
-		 * @param subject the item being edited
-		 * @param parentLayer the parent layer - the one to be updated following a change
-		 * @param wholeLayers the layers object we inform about the change
+		 * @param oldValue
+		 *          old value (to undo to)
+		 * @param newValue
+		 *          new value
+		 * @param subject
+		 *          the item being edited
+		 * @param parentLayer
+		 *          the parent layer - the one to be updated following a change
+		 * @param wholeLayers
+		 *          the layers object we inform about the change
 		 */
-		public PropertyChangeAction(Object oldValue,
-				Object newValue,
-				DebriefProperty subject,
-				String name,
-				Layer parentLayer,
-				Layers wholeLayers)
+		public PropertyChangeAction(Object oldValue, Object newValue,
+				DebriefProperty subject, String name, Layer parentLayer, Layers wholeLayers)
 		{
 			super(name + " " + subject.getDisplayName());
-			
+
 			this.addContext(CorePlugin.CMAP_CONTEXT);
-			
+
 			_oldValue = oldValue;
 			_newValue = newValue;
 			_property = subject;
@@ -352,35 +366,37 @@ public class PlottableWrapper implements IPropertySource
 			_wholeLayers = wholeLayers;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
 		{
-				// get the value, if it worked
-				_property.setValue(_newValue);
+			// get the value, if it worked
+			_property.setValue(_newValue);
 
-				// fire the reformatted event for the parent layer
-				_wholeLayers.fireReformatted(_parentLayer);
+			// fire the reformatted event for the parent layer
+			_wholeLayers.fireReformatted(_parentLayer);
 
 			return Status.OK_STATUS;
 		}
 
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
 		{
 			return execute(monitor, info);
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
 		{
 			// get the value, if it worked
 			_property.setValue(_oldValue);
 
 			// fire the reformatted event for the parent layer
 			_wholeLayers.fireReformatted(_parentLayer);
-			
+
 			// and return the status
 			return Status.OK_STATUS;
 		}
-		
+
 	}
 
-	
 }
