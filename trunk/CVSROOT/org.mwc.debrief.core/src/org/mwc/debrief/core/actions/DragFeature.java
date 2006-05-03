@@ -11,8 +11,6 @@ import java.util.Enumeration;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
@@ -247,7 +245,14 @@ public class DragFeature extends CoreDragAction
 				{
 					// ok - change what the cursor looks liks
 					// create the new cursor
-					_newCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+					// _newCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+
+					if (_newCursor != null)
+						_newCursor.dispose();
+
+					ImageData _imData = new ImageData(
+							"D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectFeatureHit.ico");
+					_newCursor = new Cursor(Display.getDefault(), _imData, 4,2);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);
@@ -260,13 +265,23 @@ public class DragFeature extends CoreDragAction
 				}
 			}
 
+			// have we shown the 'hit' cursor?
 			if (!highlightShown)
 			{
-				// reset the cursor on the canvas
-				theCanvas.getCanvas().setCursor(null);
-				
-				if(_newCursor != null)
+				// nope. do we already have a local cursor?
+				if (_newCursor != null)
+				{
+					// yup, better ditch it
 					_newCursor.dispose();
+
+				}
+
+				// and show our special cursor
+				ImageData _imData = new ImageData(
+						"D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectFeature.ico");
+				_newCursor = new Cursor(Display.getDefault(), _imData, 4,2);
+				theCanvas.getCanvas().setCursor(_newCursor);
+
 			}
 		}
 
@@ -418,13 +433,16 @@ public class DragFeature extends CoreDragAction
 				{
 					// ignore the color change, we just want to keep it white...
 				}
+
 				protected void switchAntiAliasOn(boolean val)
 				{
 					// ignore this, we won't be anti-aliasing
 				}
+
 				public void drawImage(Image image, int x, int y, int width, int height)
 				{
 				}
+
 				public void drawText(Font theFont, String theStr, int x, int y)
 				{
 				}
@@ -432,7 +450,6 @@ public class DragFeature extends CoreDragAction
 				public void drawText(String theStr, int x, int y)
 				{
 				}
-				
 
 			};
 			// change the color by hand

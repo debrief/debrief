@@ -210,7 +210,9 @@ public class DragComponent extends DragFeature
 				{
 					// ok - change what the cursor looks liks
 					// create the new cursor
-					_newCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+					ImageData _imData = new ImageData("D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectPointHit.ico");
+					_newCursor = new Cursor(Display.getDefault(), _imData, 7,3);
+//					_newCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);
@@ -222,26 +224,26 @@ public class DragComponent extends DragFeature
 					_parentLayer = currentNearest._topLayer;
 
 				}
-				else
-				{
-					// nope, out of range. clear our settings
+			}
+			
+			if (!highlightShown)
+			{
+					// nope, we haven't found anything. clear our settings
 					_hoverTarget = null;
 					_hoverComponent = null;
 					_parentLayer = null;
-				}
-			}
-			else
-			{
-				// nope, we haven't found anything. clear our settings
-				_hoverTarget = null;
-				_hoverComponent = null;
-				_parentLayer = null;
-			}
 
-			if (!highlightShown)
-			{
+					if(_newCursor != null)
+					{
+						_newCursor.dispose();
+						_newCursor = null;
+					}
+					
 				// reset the cursor on the canvas
-				theCanvas.getCanvas().setCursor(null);
+		//		theCanvas.getCanvas().setCursor(null);
+				ImageData _imData = new ImageData("D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectPoint.ico");
+				_newCursor = new Cursor(Display.getDefault(), _imData, 7,3);
+				theCanvas.getCanvas().setCursor(_newCursor);
 			}
 		}
 
