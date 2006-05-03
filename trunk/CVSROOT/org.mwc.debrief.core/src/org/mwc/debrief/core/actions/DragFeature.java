@@ -20,6 +20,7 @@ import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.plotViewer.actions.CoreDragAction;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
@@ -250,9 +251,9 @@ public class DragFeature extends CoreDragAction
 					if (_newCursor != null)
 						_newCursor.dispose();
 
-					ImageData _imData = new ImageData(
-							"D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectFeatureHit.ico");
-					_newCursor = new Cursor(Display.getDefault(), _imData, 4,2);
+					_newCursor = new Cursor(Display.getDefault(), 
+							DebriefPlugin.getImageDescriptor("icons/SelectFeatureHit.ico").getImageData(), 
+							4, 2);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);
@@ -277,9 +278,9 @@ public class DragFeature extends CoreDragAction
 				}
 
 				// and show our special cursor
-				ImageData _imData = new ImageData(
-						"D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectFeature.ico");
-				_newCursor = new Cursor(Display.getDefault(), _imData, 4,2);
+				_newCursor = new Cursor(Display.getDefault(), 
+						DebriefPlugin.getImageDescriptor("icons/SelectFeature.ico").getImageData(), 
+						4,2);
 				theCanvas.getCanvas().setCursor(_newCursor);
 
 			}

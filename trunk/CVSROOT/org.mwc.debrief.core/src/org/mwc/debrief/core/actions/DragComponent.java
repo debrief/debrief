@@ -8,6 +8,7 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
@@ -18,6 +19,7 @@ import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
+import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
@@ -210,9 +212,9 @@ public class DragComponent extends DragFeature
 				{
 					// ok - change what the cursor looks liks
 					// create the new cursor
-					ImageData _imData = new ImageData("D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectPointHit.ico");
-					_newCursor = new Cursor(Display.getDefault(), _imData, 7,3);
-//					_newCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+					_newCursor = new Cursor(Display.getDefault(), 
+							DebriefPlugin.getImageDescriptor("icons/SelectPointHit.ico").getImageData(), 
+							7,3);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);
@@ -240,9 +242,10 @@ public class DragComponent extends DragFeature
 					}
 					
 				// reset the cursor on the canvas
-		//		theCanvas.getCanvas().setCursor(null);
-				ImageData _imData = new ImageData("D:/Dev/Eclipse2/org.mwc.debrief.core/icons/SelectPoint.ico");
-				_newCursor = new Cursor(Display.getDefault(), _imData, 7,3);
+				_newCursor = new Cursor(Display.getDefault(), 
+						DebriefPlugin.getImageDescriptor("icons/SelectPoint.ico").getImageData(), 7,3);
+
+				// and assign it to the control				
 				theCanvas.getCanvas().setCursor(_newCursor);
 			}
 		}
