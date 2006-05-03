@@ -19,6 +19,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.overview.Activator;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 
 import MWC.Algorithms.PlainProjection;
@@ -267,6 +268,7 @@ public class ChartOverview extends ViewPart
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
 		manager.add(_fitToWindow);
+
 	}
 
 	private void makeActions()
@@ -281,7 +283,7 @@ public class ChartOverview extends ViewPart
 		};
 		_fitToWindow.setText("Fit to window");
 		_fitToWindow.setToolTipText("Zoom the selected plot out to show the full data");
-		_fitToWindow.setImageDescriptor(CorePlugin.getImageDescriptor("icons/fit_to_win.gif"));
+		_fitToWindow.setImageDescriptor(Activator.getImageDescriptor("icons/fit_to_win.gif"));
 
 	}
 
