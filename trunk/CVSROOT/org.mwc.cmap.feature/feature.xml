@@ -585,6 +585,7 @@ That&apos;s all there is to it!
    <plugin
          id="org.eclipse.pde.junit.runtime"
          download-size="0"
+         unpack="false"
          install-size="0"
          version="0.0.0"/>
 
