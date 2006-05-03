@@ -40,14 +40,14 @@ package org.mwc.cmap.plot3d.actions;
  */
 
 import java.applet.Applet;
-import java.awt.BorderLayout;
-import java.awt.event.*;
-import java.awt.GraphicsConfiguration;
+import java.awt.*;
+
+import javax.media.j3d.*;
+import javax.vecmath.Point3d;
+
 import com.sun.j3d.utils.applet.MainFrame;
 import com.sun.j3d.utils.geometry.ColorCube;
-import com.sun.j3d.utils.universe.*;
-import javax.media.j3d.*;
-import javax.vecmath.*;
+import com.sun.j3d.utils.universe.SimpleUniverse;
 
 public class HelloUniverse extends Applet {
 

@@ -12,7 +12,6 @@ import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.*;
-import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other
