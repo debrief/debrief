@@ -448,7 +448,7 @@ public class ToteView extends ViewPart
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-		manager.add(new Separator());
+	//	manager.add(new Separator());
 
 	}
 
