@@ -452,7 +452,6 @@ public class ChartOverview extends ViewPart
 
 			public void paintPlot(CanvasType dest)
 		{
-			System.out.println("overview chart being redrawn onto:" + dest.hashCode());
 			super.paintPlot(dest);
 		}
 
