@@ -104,6 +104,7 @@ public class NarrativeView extends ViewPart
 
 		/**
 		 * Return true if the political unit is county or smaller
+		 * 
 		 * @see org.eclipse.jface.viewers.ViewerFilter#select(org.eclipse.jface.viewers.Viewer,
 		 *      java.lang.Object, java.lang.Object)
 		 */
@@ -167,10 +168,9 @@ public class NarrativeView extends ViewPart
 		// try to add ourselves to listen out for page changes
 		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
 
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
-				.getPartService());
-		_myPartMonitor.addPartListener(NarrativeProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
@@ -206,8 +206,7 @@ public class NarrativeView extends ViewPart
 						}
 					}
 				});
-		
-		
+
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -216,6 +215,16 @@ public class NarrativeView extends ViewPart
 						// just check we're not already looking at it
 						if (part != _myTemporalDataset)
 						{
+							// ok, better stop listening to the old one
+							if (_myTemporalDataset != null)
+							{
+								// yup, better ignore it
+								_myTemporalDataset.removeListener(_temporalListener,
+										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+								_myTemporalDataset = null;
+							}
+
 							// implementation here.
 							_myTemporalDataset = (TimeProvider) part;
 							if (_temporalListener == null)
@@ -235,17 +244,20 @@ public class NarrativeView extends ViewPart
 						}
 					}
 				});
-		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.DEACTIVATED,
+		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						_myTemporalDataset.removeListener(_temporalListener,
-								TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						if (part == _myTemporalDataset)
+						{
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						}
 					}
 				});
-		_myPartMonitor.addPartListener(ControllableTime.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
@@ -259,21 +271,22 @@ public class NarrativeView extends ViewPart
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// no, don't bother clearing the controllable time when the plot is de-activated,
-						// - since with the highlight on the narrative, we want to be able to control the time still.
+						// no, don't bother clearing the controllable time when the plot is
+						// de-activated,
+						// - since with the highlight on the narrative, we want to be able
+						// to control the time still.
 						// _controllableTime = null;
 					}
 				});
 
-
 		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
-				.getActivePage());
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 
 	}
 
 	/**
-	 * @param parent what we have to fit into
+	 * @param parent
+	 *          what we have to fit into
 	 */
 	private static TableViewer createTableWithColumns(Composite parent)
 	{
@@ -285,8 +298,7 @@ public class NarrativeView extends ViewPart
 
 		table.setLinesVisible(true);
 		table.setHeaderVisible(true);
-		String[] STD_HEADINGS =
-		{ "DTG", "Track", "Type", "Entry" };
+		String[] STD_HEADINGS = { "DTG", "Track", "Type", "Entry" };
 
 		layout.addColumnData(new ColumnWeightData(5, 40, true));
 		TableColumn tc0 = new TableColumn(table, SWT.NONE);
@@ -336,13 +348,14 @@ public class NarrativeView extends ViewPart
 			}
 		};
 		filterToggleAction.setToolTipText("Hide anything other than type_1");
-		filterToggleAction.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
+		filterToggleAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.part.WorkbenchPart#dispose()
 	 */
 	public void dispose()
@@ -417,31 +430,28 @@ public class NarrativeView extends ViewPart
 		_followTimeToggle.setText("Follow time");
 		_followTimeToggle.setChecked(true);
 		_followTimeToggle.setToolTipText("Highlight entry nearest current DTG");
-		_followTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_UP));
+		_followTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_UP));
 
 		_jumpToTimeToggle = new Action("Jump to time", Action.AS_CHECK_BOX)
 		{
 		};
 		_jumpToTimeToggle.setText("Jump to current");
 		_jumpToTimeToggle.setChecked(true);
-		_jumpToTimeToggle
-				.setToolTipText("Ensure highlighted entry is always visible");
-		_jumpToTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		_jumpToTimeToggle.setToolTipText("Ensure highlighted entry is always visible");
+		_jumpToTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
 
 		_controllingTimeToggle = new Action("Control time", Action.AS_CHECK_BOX)
 		{
 		};
 		_controllingTimeToggle.setText("Control time");
 		_controllingTimeToggle.setChecked(true);
-		_controllingTimeToggle
-				.setToolTipText("Make rest of application follow our time");
-		_controllingTimeToggle.setImageDescriptor(PlatformUI.getWorkbench()
-				.getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+		_controllingTimeToggle.setToolTipText("Make rest of application follow our time");
+		_controllingTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+				.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
 
-		_setAsBookmarkAction = new Action("Add DTG to bookmarks",
-				Action.AS_PUSH_BUTTON)
+		_setAsBookmarkAction = new Action("Add DTG to bookmarks", Action.AS_PUSH_BUTTON)
 		{
 
 			public void run()
@@ -536,7 +546,6 @@ public class NarrativeView extends ViewPart
 	{
 		viewer.getControl().setFocus();
 	}
-	
 
 	/**
 	 * @param part
@@ -547,11 +556,11 @@ public class NarrativeView extends ViewPart
 		// implementation here.
 		NarrativeProvider np = (NarrativeProvider) part;
 		viewer.setInput(np.getNarrative());
-		if(parentPart instanceof IEditorPart)
+		if (parentPart instanceof IEditorPart)
 		{
-			_currentEditor = (IEditorPart)parentPart;
+			_currentEditor = (IEditorPart) parentPart;
 		}
-	}	
+	}
 
 	// //////////////////////////////
 	// temporal data management
@@ -599,6 +608,7 @@ public class NarrativeView extends ViewPart
 	 * view. It can wrap existing objects in adapters or simply return objects
 	 * as-is. These objects may be sensitive to the current input of the view, or
 	 * ignore it and always show the same content (like Task List, for example).
+	 * 
 	 * @author ian.mayo created: {date}
 	 */
 
@@ -633,8 +643,8 @@ public class NarrativeView extends ViewPart
 					currentNarrative = (NarrativeWrapper) newInput;
 
 					// and listen to the new one
-					currentNarrative.addPropertyChangeListener(
-							NarrativeWrapper.CONTENTS_CHANGED, this);
+					currentNarrative.addPropertyChangeListener(NarrativeWrapper.CONTENTS_CHANGED,
+							this);
 				}
 			}
 		}
@@ -666,6 +676,7 @@ public class NarrativeView extends ViewPart
 
 		/*
 		 * (non-Javadoc)
+		 * 
 		 * @see java.beans.PropertyChangeListener#propertyChange(java.beans.PropertyChangeEvent)
 		 */
 		public void propertyChange(PropertyChangeEvent arg0)
@@ -689,20 +700,22 @@ public class NarrativeView extends ViewPart
 
 	/**
 	 * how to show a narrative as a series of labels
+	 * 
 	 * @author ian.mayo
 	 */
 	static class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
 	{
 
-		/** keep track of which date format we're plotting with
-		 * 
+		/**
+		 * keep track of which date format we're plotting with
 		 */
 		private String _myDateFormat = dateFormats[1];
-		
-		private static String[] dateFormats =
-		{ "yyyy MMM dd HH:mm", "ddHHmm ss", "HH:mm:ss", "HH:mm:ss.SSS" };
 
-		/** ok, output the time component
+		private static String[] dateFormats = { "yyyy MMM dd HH:mm", "ddHHmm ss", "HH:mm:ss",
+				"HH:mm:ss.SSS" };
+
+		/**
+		 * ok, output the time component
 		 * 
 		 * @param dtg
 		 * @return
