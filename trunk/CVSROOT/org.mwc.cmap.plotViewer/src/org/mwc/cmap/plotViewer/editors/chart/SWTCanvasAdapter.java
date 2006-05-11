@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.19  2006-05-02 13:44:24  Ian.Mayo
+// Revision 1.20  2006-05-11 15:04:43  Ian.Mayo
+// Ditch gash
+//
+// Revision 1.19  2006/05/02 13:44:24  Ian.Mayo
 // Allow us to over-ride setColor method
 //
 // Revision 1.18  2006/04/05 08:15:00  Ian.Mayo
@@ -857,25 +860,6 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		}
 
 		// fillOff();
-	}
-
-	private static Color _theOldColor;
-
-	protected void fillOn()
-	{
-		if (!_theDest.isDisposed())
-		{
-			_theOldColor = _theDest.getBackground();
-			Color theForeColor = _theDest.getForeground();
-			_theDest.setBackground(theForeColor);
-		}
-	}
-
-	protected void fillOff()
-	{
-		if (!_theDest.isDisposed())
-			_theDest.setBackground(_theOldColor);
-		_theOldColor = null;
 	}
 
 	/**
