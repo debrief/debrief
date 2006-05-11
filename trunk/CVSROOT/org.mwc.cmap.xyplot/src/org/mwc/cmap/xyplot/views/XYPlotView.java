@@ -303,6 +303,11 @@ public class XYPlotView extends ViewPart
 
 		// and the data
 		String dataStr = _myMemento.getString(DATA);
+		
+		// hmm, is there anything in it?
+		if(dataStr == null)
+			return;
+		
 		_dataset = (AbstractDataset) xs.fromXML(dataStr);
 
 		// right, that's the essential bits, now open the plot
@@ -442,7 +447,14 @@ public class XYPlotView extends ViewPart
 		IWorkbenchPage page = win.getActivePage();
 		IEditorPart editor = page.getActiveEditor();
 
-		// get it's time-provider interface
+		// do we have an active editor?
+		if(editor == null)
+		{
+			// nope, drop out.
+			return;
+		}
+		
+		// get it's time-provider interface		
 		TimeProvider prov = (TimeProvider) editor.getAdapter(TimeProvider.class);
 
 		if (prov != null)
