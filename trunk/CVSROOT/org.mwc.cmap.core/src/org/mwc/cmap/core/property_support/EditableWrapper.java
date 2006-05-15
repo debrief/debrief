@@ -96,7 +96,7 @@ public class EditableWrapper implements IPropertySource
 				{
 					final PropertyDescriptor thisProp = properties[i];
 					IPropertyDescriptor newProp = new DebriefProperty(thisProp,
-							_editable, null);
+							(Editable) editor.getData(), null);
 //					_myDescriptors[i] = newProp;
 					list.add(newProp);
 				}
