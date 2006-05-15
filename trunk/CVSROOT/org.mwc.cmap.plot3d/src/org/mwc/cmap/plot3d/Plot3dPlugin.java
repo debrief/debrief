@@ -1,8 +1,13 @@
 package org.mwc.cmap.plot3d;
 
+import java.net.URL;
+
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.osgi.framework.BundleContext;
+import org.osgi.framework.*;
+
+import MWC.GUI.Java3d.ModelFactory;
 
 /**
  * The main plugin class to be used in the desktop.
@@ -24,6 +29,25 @@ public class Plot3dPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);	
+		
+		// ok - tell the model factory where it is...
+		ModelFactory.init(new ModelFactory(){
+			
+			public java.net.URL getURLFor(String pre_path, java.lang.ClassLoader loader)
+			{
+				
+				URL fileURL = null;
+				Path etopoPath = new Path(pre_path);				
+				Bundle staticBundle = Platform.getBundle("org.mwc.cmap.plot3d");
+				if (staticBundle != null)
+				{
+					// and get the relative path compared to the Core Plugin
+					fileURL = FileLocator.find(staticBundle, etopoPath, null);
+				}
+				return fileURL;
+			}
+			
+			});
 	}
 
 	/**
