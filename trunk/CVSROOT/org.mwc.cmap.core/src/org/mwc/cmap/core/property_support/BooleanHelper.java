@@ -3,13 +3,10 @@
  */
 package org.mwc.cmap.core.property_support;
 
-import org.eclipse.jface.viewers.CellEditor;
-import org.eclipse.jface.viewers.CheckboxCellEditor;
-import org.eclipse.jface.viewers.ILabelProvider;
-import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.CorePlugin;
 
@@ -48,24 +45,39 @@ public class BooleanHelper extends EditorHelper
 		{
 			public String getText(Object element)
 			{
-				return null;
-			}
-
-			public Image getImage(Object element)
-			{
-				Image res = null;
+				String res = null;
 				Boolean val = (Boolean) element;
 				String name = null;
 				if(val.booleanValue())
 				{
-					name = "checked.gif";
+					name = "Yes";
 				}
 				else
 				{
-					name = "unchecked.gif";
+					name = "No";
 				}
-				res = CorePlugin.getImageFromRegistry(name);
+				res = name;
 				return res;
+//				return null;
+			}
+
+			public Image getImage(Object element)
+			{
+				return null;
+//				
+//				Image res = null;
+//				Boolean val = (Boolean) element;
+//				String name = null;
+//				if(val.booleanValue())
+//				{
+//					name = "checked.gif";
+//				}
+//				else
+//				{
+//					name = "unchecked.gif";
+//				}
+//				res = CorePlugin.getImageFromRegistry(name);
+//				return res;
 			}
 
 		};
