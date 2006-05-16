@@ -4,10 +4,12 @@
 package org.mwc.debrief.core.editors.painters;
 
 import java.awt.*;
+import java.beans.PropertyDescriptor;
 
 import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.*;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
+import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.*;
 
 /**
@@ -18,9 +20,9 @@ import MWC.GenericData.*;
  */
 public class PlainHighlighter implements TemporalLayerPainter
 {
-	private static Color _myColor = Color.white;
+	private Color _myColor = Color.white;
 
-	private static int _mySize = 5;
+	private int _mySize = 5;
 
 	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
 			CanvasType dest, Debrief.Tools.Tote.Watchable watch)
@@ -116,6 +118,28 @@ public class PlainHighlighter implements TemporalLayerPainter
 		}
 	}
 
+	
+	
+	public Color getColor()
+	{
+		return _myColor;
+	}
+
+	public void setColor(Color color)
+	{
+		_myColor = color;
+	}
+
+	public BoundedInteger getSize()
+	{
+		return new BoundedInteger(_mySize, 1, 10);
+	}
+
+	public void setSize(BoundedInteger size)
+	{
+		_mySize = size.getCurrent();
+	}
+
 	public String toString()
 	{
 		return "Normal";
@@ -126,4 +150,50 @@ public class PlainHighlighter implements TemporalLayerPainter
 		return toString();
 	}
 
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	public EditorType getInfo()
+	{
+		return new PlainHighlighterInfo(this);
+	}
+
+	 /////////////////////////////////////////////////////////////
+  // nested class describing how to edit this class
+  ////////////////////////////////////////////////////////////
+/** the set of editable details for the painter
+ */
+  public static final class PlainHighlighterInfo extends Editable.EditorType
+  {
+
+/** constructor for editable
+ * @param data the object we are editing
+ */
+    public PlainHighlighterInfo(final PlainHighlighter data)
+    {
+      super(data, "Normal", "");
+    }
+
+/** the set of descriptions for this object
+ * @return the properties
+ */
+    public final PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try{
+        final PropertyDescriptor[] res={
+          prop("Color", "Color to paint highlight"),
+          prop("Size", "size to paint highlight (pixels"),
+        };
+        return res;
+      }
+      catch(Exception e)
+      {
+        MWC.Utilities.Errors.Trace.trace(e);
+        return super.getPropertyDescriptors();
+      }
+
+    }
+  }	
 }

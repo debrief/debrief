@@ -9,7 +9,7 @@ import MWC.GenericData.HiResDate;
  * @author ian.mayo
  *
  */
-public interface TemporalLayerPainter
+public interface TemporalLayerPainter extends Editable
 {
 	/** ok, get painting
 	 * 

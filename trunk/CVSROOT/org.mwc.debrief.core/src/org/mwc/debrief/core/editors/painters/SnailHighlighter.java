@@ -27,22 +27,22 @@ public class SnailHighlighter implements TemporalLayerPainter
 {
 
 	public final static String NAME = "Snail";
-	
+
 	// /////////////////////////////////////////////////
 	// nested interface for painters which can draw snail trail components
 	// /////////////////////////////////////////////////
 	public static interface drawSWTHighLight
 	{
 		public java.awt.Rectangle drawMe(MWC.Algorithms.PlainProjection proj,
-				CanvasType dest, WatchableList list, Watchable watch,
-				SnailHighlighter parent, HiResDate dtg, Color backColor);
+				CanvasType dest, WatchableList list, Watchable watch, SnailHighlighter parent,
+				HiResDate dtg, Color backColor);
 
 		public boolean canPlot(Watchable wt);
 	}
 
-//	private static Color _myColor = Color.white;
-//
-//	private static int _mySize = 5;
+	// private static Color _myColor = Color.white;
+	//
+	// private static int _mySize = 5;
 
 	final TrackDataProvider _dataProvider;
 
@@ -77,16 +77,15 @@ public class SnailHighlighter implements TemporalLayerPainter
 		_myHighlightPlotters.addElement(_mySnailPlotter);
 		_myHighlightPlotters.addElement(_mySnailBuoyPlotter);
 		_myHighlightPlotters.addElement(new SnailDrawSWTAnnotation());
-		_myHighlightPlotters.addElement(new SnailDrawSWTSensorContact(
-				_mySnailPlotter));
-		_myHighlightPlotters
-				.addElement(new SnailDrawSWTTMAContact(_mySnailPlotter));
+		_myHighlightPlotters.addElement(new SnailDrawSWTSensorContact(_mySnailPlotter));
+		_myHighlightPlotters.addElement(new SnailDrawSWTTMAContact(_mySnailPlotter));
 
 		_mySnailPlotter.setPointSize(new BoundedInteger(5, 0, 0));
 		_mySnailPlotter.setVectorStretch(1);
 	}
-	
-	/** find out the stretch on the vector for snail plots
+
+	/**
+	 * find out the stretch on the vector for snail plots
 	 * 
 	 * @return
 	 */
@@ -94,15 +93,15 @@ public class SnailHighlighter implements TemporalLayerPainter
 	{
 		return _mySnailPlotter.getVectorStretch();
 	}
-	
-	/** set the snail stretch factor
-	 * 
+
+	/**
+	 * set the snail stretch factor
 	 */
 	public void setVectorStretch(double val)
 	{
 		_mySnailPlotter.setVectorStretch(val);
 	}
-	
+
 	/**
 	 * ok, paint this layer, adding highlights where applicable
 	 * 
@@ -152,8 +151,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 			if (watch != null)
 			{
 				// plot it
-				highlightIt(dest.getProjection(), dest, list, watch, newDTG,
-						java.awt.Color.black);
+				highlightIt(dest.getProjection(), dest, list, watch, newDTG, java.awt.Color.black);
 			}
 		}
 
@@ -165,8 +163,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 	}
 
 	private void highlightIt(PlainProjection projection, CanvasType dest,
-			WatchableList list, Watchable watch, HiResDate newDTG,
-			Color backgroundColor)
+			WatchableList list, Watchable watch, HiResDate newDTG, Color backgroundColor)
 	{
 		// set the highlight colour
 		dest.setColor(Color.white);
@@ -190,8 +187,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 					}
 				}
 
-				plotter.drawMe(projection, dest, list, watch,
-						this, newDTG, backgroundColor);
+				plotter.drawMe(projection, dest, list, watch, this, newDTG, backgroundColor);
 
 				// // add this to the list to be hidden at a later date
 				// if (!_paintingOldies)
@@ -218,7 +214,6 @@ public class SnailHighlighter implements TemporalLayerPainter
 		return new SWTPlotHighlighter.RectangleHighlight();
 	}
 
-
 	public String toString()
 	{
 		return NAME;
@@ -228,5 +223,19 @@ public class SnailHighlighter implements TemporalLayerPainter
 	{
 		return toString();
 	}
-	
+
+	public boolean hasEditor()
+	{
+		return true;
+	}
+
+	/**
+	 * NON-STANDARD implementation, we are returning the editor for our snail
+	 * plotter object, not ourself
+	 */
+	public final Editable.EditorType getInfo()
+	{
+		return _mySnailPlotter.getInfo();
+	}
+
 }
