@@ -24,6 +24,7 @@ import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.*;
@@ -971,23 +972,32 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			if (_propsAsSelection == null)
 				_propsAsSelection = new StructuredSelection(_myStepperProperties);
 
-			if (_selectionListeners != null)
-			{
-				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, _propsAsSelection);
-				for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
-				{
-					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
-					if (thisL != null)
-					{
-						thisL.selectionChanged(sEvent);
-					}
-				}
-			}
+			editThisInProperties(_propsAsSelection);
 			_propsAsSelection = null;
 		}
 		else
 		{
 			System.out.println("we haven't got any properties yet");
+		}
+	}
+
+	/**
+	 * @param asSelection 
+	 * 
+	 */
+	private void editThisInProperties(StructuredSelection asSelection)
+	{
+		if (_selectionListeners != null)
+		{
+			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, asSelection);
+			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			{
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				if (thisL != null)
+				{
+					thisL.selectionChanged(sEvent);
+				}
+			}
 		}
 	}
 
@@ -1332,13 +1342,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		toolManager.removeAll();
 
 		// ok, what are the painters we know about
-		TemporalLayerPainter[] list = myLayerPainterManager.getList();
+		TemporalLayerPainter[] painterList = myLayerPainterManager.getList();
 
 		// add the items
-		for (int i = 0; i < list.length; i++)
+		for (int i = 0; i < painterList.length; i++)
 		{
 			// ok, next painter
-			final TemporalLayerPainter painter = list[i];
+			final TemporalLayerPainter painter = painterList[i];
 
 			// create an action for it
 			Action thisOne = new Action(painter.toString(), Action.AS_RADIO_BUTTON)
@@ -1397,23 +1407,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		menuManager.add(_filterToSelectionAction);
 		toolManager.add(_filterToSelectionAction);
 
-		// // and the
-		// Action expandTimeSliders = new Action("Expand slider to full period",
-		// Action.AS_PUSH_BUTTON)
-		// {
-		// public void runWithEvent(Event event)
-		// {
-		// expandTimeSliderRangeToFull();
-		// }
-		// };
-		// expandTimeSliders.setImageDescriptor(org.mwc.debrief.core.CorePlugin
-		// .getImageDescriptor("icons/expand_time_period.gif"));
-		// expandTimeSliders.setToolTipText("Expand time-slider to full period");
-		// menuManager.add(expandTimeSliders);
-		// toolManager.add(expandTimeSliders);
-
-		// and a properties editor
-		Action toolboxProperties = new Action("Properties...", Action.AS_PUSH_BUTTON)
+		// and a list of  properties editors 
+		//   first - setup the parent menu item
+		IMenuManager mgr = new MenuManager("Properties");
+		menuManager.add(mgr);
+		
+		//   now our own menu editor
+		Action toolboxProperties = new Action("Time controller", Action.AS_PUSH_BUTTON)
 		{
 			public void runWithEvent(Event event)
 			{
@@ -1423,8 +1423,37 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
 		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/properties.gif"));
-		menuManager.add(new Separator());
-		menuManager.add(toolboxProperties);
+		
+		mgr.add(toolboxProperties);
+		
+		//   now properties boxes for our child properties windows
+		for (int i = 0; i < painterList.length; i++)
+		{
+			// ok, next painter
+			final TemporalLayerPainter painter = painterList[i];
+
+			// create an action for it
+			Action thistoolboxProperties = new Action(painter.getName(), Action.AS_PUSH_BUTTON)
+			{
+				public void runWithEvent(Event event)
+				{
+					// ok - get the info object for this painter
+					if(painter.hasEditor())
+					{
+						EditableWrapper pw = new EditableWrapper(painter, _myLayers);
+						editThisInProperties(new StructuredSelection(pw));
+					}
+				}
+			};
+			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
+			thistoolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+					.getImageDescriptor(descPath));			
+
+
+			// and store it on both menus
+			mgr.add(thistoolboxProperties);
+		}		
+		
 
 		// ok - get the action bars to re-populate themselves, otherwise we don't
 		// see our changes
