@@ -1,7 +1,5 @@
 package org.mwc.cmap.layer_manager.views;
 
-import java.beans.MethodDescriptor;
-import java.lang.reflect.*;
 import java.util.*;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -13,7 +11,7 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
-import org.eclipse.ui.part.*;
+import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.*;
