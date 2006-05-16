@@ -57,9 +57,6 @@ public class View3d extends CoreEditorAction
 			TimeProvider timer = (TimeProvider) cpe.getAdapter(TimeProvider.class);
 			
 			CorePlugin.logError(Status.INFO, "Found plot editor & time provider", null);
-			
-			// get ready for the start/end times
-//			HiResDate startTime, endTime;
 
 			try
 			{
@@ -68,7 +65,7 @@ public class View3d extends CoreEditorAction
 				// sort out the title
 				// ////////////////////////////////////////////////
 				// get the title to use
-				String theTitle = "3d plot";
+				String theTitle = "3D - " + cpe.getTitle();
 
 				// and the plot itself
 				String plotId = "org.mwc.cmap.plot3d.views.Plot3dView";
