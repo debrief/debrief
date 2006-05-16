@@ -5,7 +5,10 @@ package org.mwc.debrief.core.editors.painters.snail;
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.1  2005-07-04 07:45:51  Ian.Mayo
+// Revision 1.2  2006-05-16 08:40:44  Ian.Mayo
+// Add categories for properties
+//
+// Revision 1.1  2005/07/04 07:45:51  Ian.Mayo
 // Initial snail implementation
 //
 
@@ -387,12 +390,12 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
     {
       try{
         final PropertyDescriptor[] res={
-          prop("LinkPositions", "whether to join the points in the trail"),
-          prop("PlotTrackName", "whether to plot the name of the track"),
-          prop("FadePoints", "whether the trails should fade to black"),
-          prop("PointSize", "the size of the points in the trail"),
-          prop("TrailLength", "the length of trail to draw"),
-          prop("VectorStretch", "how far to stretch the speed vector (pixels per knot)"),
+          prop("LinkPositions", "whether to join the points in the trail", Editable.EditorType.VISIBILITY),
+          prop("PlotTrackName", "whether to plot the name of the track", Editable.EditorType.VISIBILITY),
+          prop("FadePoints", "whether the trails should fade to black", Editable.EditorType.FORMAT),
+          prop("PointSize", "the size of the points in the trail", Editable.EditorType.FORMAT),
+          prop("TrailLength", "the length of trail to draw", Editable.EditorType.TEMPORAL),
+          prop("VectorStretch", "how far to stretch the speed vector (pixels per knot)", Editable.EditorType.FORMAT),
         };
 
         res[5].setPropertyEditorClass(FractionPropertyEditor.class);
