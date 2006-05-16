@@ -25,6 +25,21 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 	public static ToolParent _theParent = null;
 
 	/**
+	 * whether this item is a top-level layer
+	 */
+	private final boolean _isTopLevelLayer;
+
+	public CoreInsertChartFeature()
+	{
+		this(false);
+	}
+
+	public CoreInsertChartFeature(boolean isLayer)
+	{
+		_isTopLevelLayer = isLayer;
+	}
+
+	/**
 	 * ok, store who the parent is for the operation
 	 * 
 	 * @param theParent
@@ -68,15 +83,21 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 			final String myLayer = getLayerName();
 
 			// aah, and the misc layer, in which we will store the shape
-			Layer theLayer = theData.findLayer(myLayer);
+			Layer theLayer = null;
 
-			// did we find it?
-			if (theLayer == null)
+			// hmm, do we want to insert ourselves as a layer?
+			if (!_isTopLevelLayer)
 			{
-				// nope, better create it.
-				theLayer = new BaseLayer();
-				theLayer.setName(myLayer);
-				theData.addThisLayer(theLayer);
+				theLayer = theData.findLayer(myLayer);
+
+				// did we find it?
+				if (theLayer == null)
+				{
+					// nope, better create it.
+					theLayer = new BaseLayer();
+					theLayer.setName(myLayer);
+					theData.addThisLayer(theLayer);
+				}
 			}
 
 			// and put it into an action (so we can undo it)

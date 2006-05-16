@@ -13,6 +13,12 @@ import MWC.GUI.Tools.Palette.*;
  */
 public class InsertETOPO extends CoreInsertChartFeature
 {
+	
+	public InsertETOPO()
+	{
+		// tell our parent that we want to be inserted as a top-level layer
+		super(true);
+	}
 
 	/**
 	 * @return
