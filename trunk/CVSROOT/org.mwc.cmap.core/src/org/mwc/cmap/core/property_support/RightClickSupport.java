@@ -1,7 +1,7 @@
 package org.mwc.cmap.core.property_support;
 
 import java.beans.*;
-import java.lang.reflect.Method;
+import java.lang.reflect.*;
 import java.util.*;
 
 import org.eclipse.core.commands.ExecutionException;
@@ -40,11 +40,10 @@ public class RightClickSupport
 	/**
 	 * @param manager
 	 * @param hideClipboardOperations
-	 *          TODO
 	 * @param pw
 	 */
 	static public void getDropdownListFor(IMenuManager manager, Editable[] editables,
-			Layer[] topLevelLayers, Layer[] parentLayers, Layers theLayers,
+			Layer[] topLevelLayers, Layer[] parentLayers, final Layers theLayers,
 			boolean hideClipboardOperations)
 	{
 
@@ -87,6 +86,51 @@ public class RightClickSupport
 				}
 
 			}
+
+			// hmm, have a go at methods for this item
+			// ok, try the methods
+			final Editable theItem = editables[0];
+
+			MethodDescriptor[] meths = theItem.getInfo().getMethodDescriptors();
+			for (int i = 0; i < meths.length; i++)
+			{
+				final Layer myTopLayer = theTopLayer;
+
+				final MethodDescriptor thisMethD = meths[i];
+				// create button for this method
+				Action doThisAction = new Action(thisMethD.getDisplayName())
+				{
+					public void run()
+					{
+						Method thisMeth = thisMethD.getMethod();
+						try
+						{
+							thisMeth.invoke(theItem, new Object[0]);
+
+							// hey, let's do a redraw aswell...
+							theLayers.fireModified(myTopLayer);
+						}
+						catch (IllegalArgumentException e)
+						{
+							CorePlugin.logError(Status.ERROR, "whilst firing method from right-click",
+									e);
+						}
+						catch (IllegalAccessException e)
+						{
+							CorePlugin.logError(Status.ERROR, "whilst firing method from right-click",
+									e);
+						}
+						catch (InvocationTargetException e)
+						{
+							CorePlugin.logError(Status.ERROR, "whilst firing method from right-click",
+									e);
+						}
+					}
+				};
+
+				manager.add(doThisAction);
+			}
+
 		}
 
 		Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
@@ -107,6 +151,8 @@ public class RightClickSupport
 			}
 			RightClickPasteAdaptor.getDropdownListFor(manager, selectedItem, topLevelLayers,
 					topLevelLayers, theLayers, theClipboard);
+			
+			manager.add(new Separator());
 		}
 
 		// hmm, do we have any right-click generators?
