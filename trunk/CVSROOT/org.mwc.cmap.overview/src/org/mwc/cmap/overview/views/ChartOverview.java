@@ -3,6 +3,7 @@ package org.mwc.cmap.overview.views;
 import java.awt.*;
 import java.awt.Font;
 import java.awt.Point;
+import java.beans.*;
 import java.util.Enumeration;
 
 import org.eclipse.jface.action.*;
@@ -25,6 +26,7 @@ import org.mwc.cmap.plotViewer.editors.chart.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.CanvasType.PaintListener;
+import MWC.GUI.Chart.Painters.SpatialRasterPainter;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.*;
 
@@ -43,7 +45,7 @@ import MWC.GenericData.*;
  * <p>
  */
 
-public class ChartOverview extends ViewPart
+public class ChartOverview extends ViewPart implements PropertyChangeListener
 {
 
 	/**
@@ -128,6 +130,7 @@ public class ChartOverview extends ViewPart
 						// is this different to our current one?
 						if (provider != _targetLayers)
 						{
+							// ok, start listening to the new one
 							_targetLayers = provider;
 							plotSelected(provider, parentPart);
 						}
@@ -155,7 +158,16 @@ public class ChartOverview extends ViewPart
 						// is this different to our current one?
 						if (provider != _targetViewport)
 						{
+							// ok, stop listening to the current viewport (if we have one)
+							if(_targetViewport != null)
+								stopListeningToViewport();
+							
+							// and start listening to the new one
 							_targetViewport = provider;
+							
+							startListeningToViewport();
+							
+							
 						}
 					}
 				});
@@ -249,8 +261,7 @@ public class ChartOverview extends ViewPart
 		// ok - update our chart to show the indicated plot.
 		_myOverviewChart.setLayers(provider);
 		_myOverviewChart.rescale();
-		_myOverviewChart.repaint();
-
+		_myOverviewChart.repaint();		
 		// this.setPartName(parentPart.getTitle());
 	}
 
@@ -539,6 +550,10 @@ public class ChartOverview extends ViewPart
 						final Layer thisLayer = (Layer) numer.nextElement();
 
 						boolean isAlreadyPlotted = false;
+						
+						// hmm, do we want to paint this layer?
+						if(doWePaintThisLayer(thisLayer))
+						{
 
 						// just check if this layer is visible
 						if (thisLayer.getVisible())
@@ -624,6 +639,7 @@ public class ChartOverview extends ViewPart
 							}
 						}
 					}
+					}
 
 				}
 			}
@@ -653,5 +669,42 @@ public class ChartOverview extends ViewPart
 		
 		// now, redraw our rectable
 		_myOverviewChart.repaint();
+	}
+
+	/** decide whether to paint this layer...
+	 * 
+	 * @param thisLayer the layer we're looking at
+	 * @return
+	 */
+	public boolean doWePaintThisLayer(Layer thisLayer)
+	{
+		boolean res = true;
+		
+		if(thisLayer instanceof SpatialRasterPainter)
+			res = false;
+		
+		return res;
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		// ok, we've had a range change. better update
+		_myOverviewChart.repaint();
+	}
+
+	/**
+	 * 
+	 */
+	private void stopListeningToViewport()
+	{
+		_targetViewport.getProjection().removeListener(this);
+	}
+
+	/**
+	 * 
+	 */
+	private void startListeningToViewport()
+	{
+		_targetViewport.getProjection().addListener(this);
 	}	
 }
