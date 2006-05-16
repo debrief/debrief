@@ -40,8 +40,6 @@ public class View3d extends CoreEditorAction
 		try{
 		final PlainChart theChart = getChart();
 		Layers theLayers = theChart.getLayers();		
-//		View3dPlot plotter = new View3dPlot(_theParent, null, theLayers, null);		
-//		plotter.execute();
 		
 		CorePlugin.logError(Status.INFO, "Found source data", null);
 	
@@ -72,19 +70,6 @@ public class View3d extends CoreEditorAction
 				page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
 
 				CorePlugin.logError(Status.INFO, "Show view called", null);
-				
-
-				//				// put our subjects into a vector
-//				Vector theTracks = new Vector(0, 1);
-//				for (int i = 0; i < subjects.length; i++)
-//				{
-//					Editable thisS = subjects[i];
-//					theTracks.add(thisS);
-//				}
-//
-//				// right, now for the data
-//				AbstractDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary, theHolder,
-//						theTracks, startTime, endTime, null);
 
 				// ok, try to retrieve the view
 				IViewReference plotRef = page.findViewReference(plotId, theTitle);
@@ -101,18 +86,6 @@ public class View3d extends CoreEditorAction
 				e.printStackTrace();
 			}
 
-		
-
-
-//	// ok - set the image descriptor
-//	viewPlot.setImageDescriptor(Plot3dPlugin
-//			.getImageDescriptor("icons/document_chart.png"));		
-//		
-	
-	
-	
-	
-		//	World.main(new String[]{});
 		}
 		catch(NoClassDefFoundError err)
 		{
