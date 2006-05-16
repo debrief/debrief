@@ -57,6 +57,8 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.TOTE);
 		layout.addShowViewShortcut(CorePlugin.STACKED_DOTS);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
+		// layout.addShowViewShortcut(CorePlugin.PLOT_3d); -- don't show shortcut for 3d, we only open
+		// it via action (so we can populate it)  
 
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
