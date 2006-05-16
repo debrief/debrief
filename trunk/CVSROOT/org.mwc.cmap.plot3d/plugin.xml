@@ -8,7 +8,7 @@
             allowMultiple="true"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.plot3d.views.Plot3dView"
-            icon="icons/document_chart.png"
+            icon="icons/view3d.gif"
             id="org.mwc.cmap.plot3d.views.Plot3dView"
             name="3d Plot">
       </view>
