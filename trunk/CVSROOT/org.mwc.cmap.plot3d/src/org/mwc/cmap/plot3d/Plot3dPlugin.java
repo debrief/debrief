@@ -37,12 +37,12 @@ public class Plot3dPlugin extends AbstractUIPlugin {
 			{
 				
 				URL fileURL = null;
-				Path etopoPath = new Path(pre_path);				
+				Path filePath = new Path(pre_path);				
 				Bundle staticBundle = Platform.getBundle("org.mwc.cmap.plot3d");
 				if (staticBundle != null)
 				{
 					// and get the relative path compared to the Core Plugin
-					fileURL = FileLocator.find(staticBundle, etopoPath, null);
+					fileURL = FileLocator.find(staticBundle, filePath, null);
 				}
 				return fileURL;
 			}
