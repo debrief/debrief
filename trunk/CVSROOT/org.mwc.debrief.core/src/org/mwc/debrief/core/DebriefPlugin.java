@@ -10,6 +10,8 @@ import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.debrief.core.ContextOperations.*;
 import org.osgi.framework.BundleContext;
 
+import MWC.Utilities.ReaderWriter.ImportManager;
+
 /**
  * The main plugin class to be used in the desktop.
  */
@@ -36,6 +38,9 @@ public class DebriefPlugin extends AbstractUIPlugin {
 		// also provide someps extra functionality to the right-click editor
 		RightClickSupport.addRightClickGenerator(new GenerateTrack());
 		RightClickSupport.addRightClickGenerator(new InterpolateTrack());		
+		
+		// and the Replay importer/exporter (used to export items from the layer-manager)
+		ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
 		
 	}
 
