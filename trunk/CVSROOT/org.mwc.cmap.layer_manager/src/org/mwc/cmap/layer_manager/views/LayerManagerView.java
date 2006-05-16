@@ -687,46 +687,6 @@ public class LayerManagerView extends ViewPart
 		RightClickSupport.getDropdownListFor(manager, eList, updateLayers, parentLayers,
 				_myLayers, false);
 		
-		// hmm, have a go at methods for this item
-		if(eList.length == 1)
-		{
-			// ok, try the methods
-			final Editable theItem = eList[0];
-			
-			MethodDescriptor[] meths = theItem.getInfo().getMethodDescriptors();
-			for (int i = 0; i < meths.length; i++)
-			{
-				final MethodDescriptor thisMethD = meths[i];
-				// create  button for this method
-				Action doThisAction = new Action(thisMethD.getDisplayName()){
-					public void run()
-					{
-					  Method thisMeth = thisMethD.getMethod();
-					  try
-						{
-							thisMeth.invoke(theItem, new Object[0]);
-						}
-						catch (IllegalArgumentException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						catch (IllegalAccessException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-						catch (InvocationTargetException e)
-						{
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-					}};
-					
-					manager.add(doThisAction);
-				
-			}
-		}
 
 	}
 
