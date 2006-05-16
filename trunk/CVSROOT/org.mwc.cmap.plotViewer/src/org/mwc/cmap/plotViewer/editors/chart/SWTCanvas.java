@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.23  2006-04-06 13:31:13  Ian.Mayo
+// Revision 1.24  2006-05-16 08:45:16  Ian.Mayo
+// Include another separator
+//
+// Revision 1.23  2006/04/06 13:31:13  Ian.Mayo
 // Output time-to-plot to log for performance tracking
 //
 // Revision 1.22  2006/04/06 13:03:13  Ian.Mayo
@@ -215,6 +218,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		};
 
 		mmgr.add(_copyLocation);
+		mmgr.add(new Separator());
 
 		
 	}
