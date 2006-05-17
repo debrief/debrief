@@ -92,45 +92,47 @@ public class RightClickSupport
 			final Editable theItem = editables[0];
 
 			MethodDescriptor[] meths = theItem.getInfo().getMethodDescriptors();
-			for (int i = 0; i < meths.length; i++)
+			if (meths != null)
 			{
-				final Layer myTopLayer = theTopLayer;
-
-				final MethodDescriptor thisMethD = meths[i];
-				// create button for this method
-				Action doThisAction = new Action(thisMethD.getDisplayName())
+				for (int i = 0; i < meths.length; i++)
 				{
-					public void run()
+					final Layer myTopLayer = theTopLayer;
+
+					final MethodDescriptor thisMethD = meths[i];
+					// create button for this method
+					Action doThisAction = new Action(thisMethD.getDisplayName())
 					{
-						Method thisMeth = thisMethD.getMethod();
-						try
+						public void run()
 						{
-							thisMeth.invoke(theItem, new Object[0]);
+							Method thisMeth = thisMethD.getMethod();
+							try
+							{
+								thisMeth.invoke(theItem, new Object[0]);
 
-							// hey, let's do a redraw aswell...
-							theLayers.fireModified(myTopLayer);
+								// hey, let's do a redraw aswell...
+								theLayers.fireModified(myTopLayer);
+							}
+							catch (IllegalArgumentException e)
+							{
+								CorePlugin.logError(Status.ERROR,
+										"whilst firing method from right-click", e);
+							}
+							catch (IllegalAccessException e)
+							{
+								CorePlugin.logError(Status.ERROR,
+										"whilst firing method from right-click", e);
+							}
+							catch (InvocationTargetException e)
+							{
+								CorePlugin.logError(Status.ERROR,
+										"whilst firing method from right-click", e);
+							}
 						}
-						catch (IllegalArgumentException e)
-						{
-							CorePlugin.logError(Status.ERROR, "whilst firing method from right-click",
-									e);
-						}
-						catch (IllegalAccessException e)
-						{
-							CorePlugin.logError(Status.ERROR, "whilst firing method from right-click",
-									e);
-						}
-						catch (InvocationTargetException e)
-						{
-							CorePlugin.logError(Status.ERROR, "whilst firing method from right-click",
-									e);
-						}
-					}
-				};
+					};
 
-				manager.add(doThisAction);
+					manager.add(doThisAction);
+				}
 			}
-
 		}
 
 		Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
@@ -151,7 +153,7 @@ public class RightClickSupport
 			}
 			RightClickPasteAdaptor.getDropdownListFor(manager, selectedItem, topLevelLayers,
 					topLevelLayers, theLayers, theClipboard);
-			
+
 			manager.add(new Separator());
 		}
 
