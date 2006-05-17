@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.20  2006-05-11 15:04:43  Ian.Mayo
+// Revision 1.21  2006-05-17 08:35:08  Ian.Mayo
+// Refactor setting background color
+//
+// Revision 1.20  2006/05/11 15:04:43  Ian.Mayo
 // Ditch gash
 //
 // Revision 1.19  2006/05/02 13:44:24  Ian.Mayo
@@ -176,6 +179,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 * not bother calling from there on.
 	 */
 	private boolean _gdiAvailable = true;
+	
+	/** and our default background color
+	 * 
+	 */
+	private java.awt.Color DEFAULT_BACKGROUND_COLOR = java.awt.Color.BLACK;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -187,7 +195,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	public SWTCanvasAdapter(PlainProjection proj)
 	{
 		// start with our background colour
-		setBackgroundColor(java.awt.Color.black);
+		setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
 
 		// initialisation
 		_thePainters = new Vector(0, 1);
@@ -639,8 +647,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 
 		if (theCol != _currentColor)
-		{
-			
+		{			
 			_currentColor = theCol;
 
 			// transfer the color
@@ -649,7 +656,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			if (!_theDest.isDisposed())
 			{
 				_theDest.setForeground(swtCol);
-				_theDest.setBackground(swtCol);
+	//			_theDest.setBackground(swtCol);
 			}
 		}
 	}
