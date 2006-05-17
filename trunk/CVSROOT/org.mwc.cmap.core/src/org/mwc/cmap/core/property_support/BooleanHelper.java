@@ -6,9 +6,8 @@ package org.mwc.cmap.core.property_support;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
-import org.mwc.cmap.core.CorePlugin;
 
 public class BooleanHelper extends EditorHelper
 {
