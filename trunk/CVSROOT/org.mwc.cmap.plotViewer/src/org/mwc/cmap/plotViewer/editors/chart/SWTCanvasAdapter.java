@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.21  2006-05-17 08:35:08  Ian.Mayo
+// Revision 1.22  2006-05-17 15:20:07  Ian.Mayo
+// We need the bkgnd color for filled shapes to work
+//
+// Revision 1.21  2006/05/17 08:35:08  Ian.Mayo
 // Refactor setting background color
 //
 // Revision 1.20  2006/05/11 15:04:43  Ian.Mayo
@@ -656,7 +659,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			if (!_theDest.isDisposed())
 			{
 				_theDest.setForeground(swtCol);
-	//			_theDest.setBackground(swtCol);
+				_theDest.setBackground(swtCol);
 			}
 		}
 	}
