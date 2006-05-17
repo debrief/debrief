@@ -24,9 +24,13 @@
 		<!-- produce the CVS log -->
 		<echo message="about to log:${sourceDir}"/>
 		
+		<tstamp>
+			<format property="TODAY_UK" pattern="yyyy-MM-dd" locale="en" />
+		</tstamp>
+			
 		<cvs  quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
 			<commandline>
-				<argument line="log -d>&quot;3 months ago&quot; ../" />
+				<argument line="log -d&quot;2006-01-01&quot;&lt;&quot;${TODAY_UK}&quot;  ../" />
 			</commandline>
 		</cvs>
 	</target>
@@ -73,6 +77,10 @@
 		
 		<!-- generate the output -->
 		<mkdir dir="${helpDest}" />
+		
+
+		<!-- build the history content -->
+		<antcall target="cvs_log"/>		
 
 		<!-- generate the HTML -->
 		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
@@ -101,8 +109,6 @@
 			<fileset file="${helpDir}\docbook/header.css" />
 		</copy>
 
-		<!-- build the history content -->
-		<antcall target="cvs_log"/>
 		
 		<!-- try to insert our additional section content -->
 		<antcall target="insert_history_link"/>
