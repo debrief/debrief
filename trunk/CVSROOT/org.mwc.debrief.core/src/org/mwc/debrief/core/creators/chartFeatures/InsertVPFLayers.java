@@ -13,6 +13,13 @@ import MWC.GUI.Tools.Palette.CreateVPFLayers;
 public class InsertVPFLayers extends CoreInsertChartFeature
 {
 
+	
+	public InsertVPFLayers()
+	{
+		// tell our parent that we want to be inserted as a top-level layer
+		super(false);
+	}	
+	
 	/**
 	 * @return
 	 */
