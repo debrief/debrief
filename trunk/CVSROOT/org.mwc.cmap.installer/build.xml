@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.mwc.cmap.installer" default="upload" basedir=".">
+<project name="org.mwc.cmap.installer" default="collate_dist" basedir=".">
 	<property name="zipUploadDir" value="l://TD Submarines Info/PlanetMayo/Debrief/eclipse" description="the destination for the zip file" />
 	<property name="updateUploadDir" value="${zipUploadDir}/updates" description="the destination for the updates" />
 	<property name="archiveUploadDir" value="${zipUploadDir}/old" description="the destination for the updates" />
@@ -15,13 +15,6 @@
 	<target name="clean" description="clear the output directory" depends="">
 		<delete dir="${updateUploadDir}/features" />
 		<delete dir="${updateUploadDir}/plugins" />
-	</target>
-
-	<target name="upload" description="upload updated files to td submarines directory" depends="clean">
-		<copy todir="${updateUploadDir}" preservelastmodified="yes">
-			<fileset dir="${srcDir}" />
-		</copy>
-  	<echo message="Upload complete" />		
 	</target>
 
 	<target name="empty_dist_dir" description="clear the output directory" depends="">
@@ -53,9 +46,10 @@
 		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />
 		<property name="destZip" value="${destDir}/${dist-title}.zip" description="the target file" />
 		<tstamp>
-			<format property="TODAY_UK" pattern="yyyy_MM_dd_hh_mm" locale="en" />
+			<format property="TODAY_UK" pattern="yyyyMMdd_hhmm" locale="en" />
 		</tstamp>
-		<property name="archiveDestZipFile" value="${dist-title}_${TODAY_UK}.zip" description="the target file" />
+		<property name="archiveDestZipFile" value="${TODAY_UK}_${dist-title}.zip" description="the target zip" />
+		<property name="destInstallFile" value="${TODAY_UK}_${dist-title}.exe" description="the target installer" />
 
 		<!-- clean the target dist -->
 		<echo message="clearing 'build' directory" />
@@ -76,20 +70,18 @@
 		
 		<!-- do the installer -->
 		<echo message="creating single-file installer" />
-	<!--	<antcall target="build_installer" />		 -->
+  	<antcall target="build_installer" />		
 	  	
-
 		<!-- ok - copy the dist to td-subs -->
 		<echo message="copying dist to td-subs" />
 		<copy file="${destZip}" toDir="${zipUploadDir}" />
+		<move file="${deployDir}/debrief_install.exe" tofile="${zipUploadDir}/${destInstallFile}" />
 
-		<!-- now save an archived version of the zip in a legacy folder -->
+		<!-- now save versions of the zip to a legacy folder -->
 		<move file="${destZip}" tofile="${archiveUploadDir}/${archiveDestZipFile}" />
-
 		<echo message="All copied.  Dist complete" />
 
 	</target>
-
 
 
 
