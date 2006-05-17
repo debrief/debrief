@@ -22,26 +22,38 @@ public class EditableWrapper implements IPropertySource
 	/**
 	 * the data object we are wrapping
 	 */
-	private final Editable _editable;
+	protected final Editable _editable;
 
 	/**
 	 * the editable properties of this object
 	 */
 	IPropertyDescriptor[] _myDescriptors;
 
-	private final Layers _theLayers;
+	/** the layers we're looking at
+	 * 
+	 */
+	protected final Layers _theLayers;
 
 	/**
 	 * the tags we use for the boolean editor
 	 */
 	static String[] _booleanTags = new String[] { "Yes", "No" };
 
+	/** constructor - ok, lets get going
+	 * 
+	 * @param plottable
+	 * @param theLayers
+	 */
 	public EditableWrapper(Editable plottable, Layers theLayers)
 	{
 		_editable = plottable;
 		_theLayers = theLayers;
 	}
 
+	/** hey, where's the thing we're dealing with?
+	 * 
+	 * @return
+	 */
 	public Editable getEditable()
 	{
 		return _editable;
@@ -77,7 +89,7 @@ public class EditableWrapper implements IPropertySource
 	 * 
 	 * @see org.eclipse.ui.views.properties.IPropertySource#getPropertyDescriptors()
 	 */
-	public IPropertyDescriptor[] getPropertyDescriptors()
+	final public IPropertyDescriptor[] getPropertyDescriptors()
 	{
 		
 		if (_myDescriptors == null)
@@ -157,7 +169,7 @@ public class EditableWrapper implements IPropertySource
 	 *          the string to look for
 	 * @return the matching property descriptor
 	 */
-	private DebriefProperty getDescriptorFor(String id)
+	final private DebriefProperty getDescriptorFor(String id)
 	{
 
 		DebriefProperty res = null;
@@ -180,7 +192,7 @@ public class EditableWrapper implements IPropertySource
 	 * 
 	 * @see org.eclipse.ui.views.properties.IPropertySource#getPropertyValue(java.lang.Object)
 	 */
-	public Object getPropertyValue(Object id)
+	final public Object getPropertyValue(Object id)
 	{
 		Object res = null;
 
@@ -197,12 +209,12 @@ public class EditableWrapper implements IPropertySource
 		return res;
 	}
 
-	public boolean isPropertySet(Object id)
+	final public boolean isPropertySet(Object id)
 	{
 		return true;
 	}
 
-	public void resetPropertyValue(Object id)
+	final public void resetPropertyValue(Object id)
 	{
 		// TODO Auto-generated method stub
 
@@ -214,7 +226,7 @@ public class EditableWrapper implements IPropertySource
 	 * @see org.eclipse.ui.views.properties.IPropertySource#setPropertyValue(java.lang.Object,
 	 *      java.lang.Object)
 	 */
-	public void setPropertyValue(Object id, Object value)
+	final public void setPropertyValue(Object id, Object value)
 	{
 
 		// convert the id back to a string
@@ -233,12 +245,17 @@ public class EditableWrapper implements IPropertySource
 		CorePlugin.run(pca);
 	}
 
-	private Layers getLayers()
+	final public Layers getLayers()
 	{
 		return _theLayers;
 	}
+	
+	final public boolean hasChildren()
+	{
+		return (_editable instanceof Layer);
+	}
 
-	protected static Class getPropertyClass(PropertyDescriptor thisProp)
+	final protected static Class getPropertyClass(PropertyDescriptor thisProp)
 	{
 
 		Class res = null;
@@ -260,7 +277,7 @@ public class EditableWrapper implements IPropertySource
 	 * @author ian.mayo
 	 *
 	 */
-	private static class PropertyChangeAction extends AbstractOperation 
+	final protected static class PropertyChangeAction extends AbstractOperation 
 	{
 		private final Object _oldValue;
 		private final Object _newValue;
