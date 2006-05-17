@@ -23,6 +23,8 @@ public class ColorHelper extends EditorHelper
 	// color using
 	// the SWT color-registry. we'll keep our own local list instead...
 	private static HashMap _myColorList = new HashMap();
+	
+	private final static java.awt.Color OFF_WHITE = new Color(255,255,254);;
 
 	public ColorHelper(Control parentControl)
 	{
@@ -63,6 +65,13 @@ public class ColorHelper extends EditorHelper
 	public static org.eclipse.swt.graphics.Color getColor(java.awt.Color javaCol)
 	{
 
+		// hmm, we're having trouble with white. is this white?
+		if(javaCol == java.awt.Color.WHITE)
+		{
+			//  right - switch White to off-white. For some reason SWT won't plot white
+			javaCol = OFF_WHITE;
+		}
+		
 		// see if we have it in our own private list
 		org.eclipse.swt.graphics.Color thisCol = (org.eclipse.swt.graphics.Color) _myColorList
 				.get(javaCol);
@@ -82,8 +91,13 @@ public class ColorHelper extends EditorHelper
 			// ok. do we have the color?
 			if (thisCol == null)
 			{
+				
+				
 				// bugger, we'll have to create it
-				RGB newData = new RGB(javaCol.getRed(), javaCol.getGreen(), javaCol.getBlue());
+				final int red = javaCol.getRed();
+				final int green = javaCol.getGreen();
+				final int blue = javaCol.getBlue();
+				RGB newData = new RGB(red, green, blue);
 				_colRegistry.put(colName, newData);
 
 				// and try to retrieve it again
