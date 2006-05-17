@@ -38,8 +38,6 @@ public class EditableWrapper implements IPropertySource
 
 	public EditableWrapper(Editable plottable, Layers theLayers)
 	{
-		if (plottable == null)
-			System.err.println("null PLOTTABLE");
 		_editable = plottable;
 		_theLayers = theLayers;
 	}

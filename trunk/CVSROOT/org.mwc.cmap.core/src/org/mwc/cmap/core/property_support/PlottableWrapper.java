@@ -46,8 +46,6 @@ public class PlottableWrapper implements IPropertySource
 
 	public PlottableWrapper(Plottable plottable, PlottableWrapper parent, Layers layers)
 	{
-		if (plottable == null)
-			System.err.println("null PLOTTABLE");
 		_plottable = plottable;
 		_parent = parent;
 		_layers = layers;
