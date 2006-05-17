@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.24  2006-05-16 08:45:16  Ian.Mayo
+// Revision 1.25  2006-05-17 08:34:30  Ian.Mayo
+// Reduce number of instances where we set canvas-color
+//
+// Revision 1.24  2006/05/16 08:45:16  Ian.Mayo
 // Include another separator
 //
 // Revision 1.23  2006/04/06 13:31:13  Ian.Mayo
@@ -157,7 +160,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 			}
 		});
 
-		_myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.black));
+//		_myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.BLUE));
 
 		_myCanvas.addMouseListener(new MouseAdapter()
 		{
