@@ -4,35 +4,33 @@
 package org.mwc.cmap.core.property_support;
 
 import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.ui.*;
+import org.mwc.cmap.core.editor_views.PolygonEditorView;
 
 import MWC.GenericData.WorldPath;
 
 public class WorldPathHelper extends EditorHelper
 {
 
-	/** constructor..
-	 *
+	/**
+	 * constructor..
 	 */
 	public WorldPathHelper()
 	{
 		super(WorldPath.class);
 	}
 
-	/** create an instance of the cell editor suited to our data-type
+	/**
+	 * create an instance of the cell editor suited to our data-type
 	 * 
 	 * @param parent
 	 * @return
 	 */
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new WorldPathCellEditor(parent, "Acceleration")
-		{
-		
-		};
+		return new EditPathDialogCellEditor(parent);
 	}
 
 	public ILabelProvider getLabelFor(Object currentValue)
@@ -42,7 +40,7 @@ public class WorldPathHelper extends EditorHelper
 			public String getText(Object element)
 			{
 				WorldPath wp = (WorldPath) element;
-				return "Path (" + wp.getPoints().size() + " points)";
+				return wp.toString();
 			}
 
 			public Image getImage(Object element)
@@ -53,111 +51,79 @@ public class WorldPathHelper extends EditorHelper
 		};
 		return label1;
 	}
-	
-	abstract public class WorldPathCellEditor extends CellEditor
+
+	/**
+	 * custom cell editor which re-purposes button used to open dialog as a paste
+	 * button
+	 * 
+	 * @author ian.mayo
+	 */
+	private static class EditPathDialogCellEditor extends DialogCellEditor
 	{
-		/** hmm, the text bit.
+		/**
+		 * constructor - just pass on to parent
 		 * 
+		 * @param cellParent
 		 */
-		Text _myText;
-		
-		/** and the drop-down units bit
-		 * 
-		 */
-		Combo _myCombo;
-		
-		
-		/** the title for what we're editing
-		 * 
-		 */
-		final private String _title;
-		
-		/** the world distance we're editing
-		 * 
-		 */
-		WorldPath _myVal;
-		
-
-		
-		public WorldPathCellEditor(Composite parent, String textTip)
+		public EditPathDialogCellEditor(Composite cellParent)
 		{
-			super(parent);
-			_title = textTip;
-		}
-
-		protected Control createControl(Composite parent)
-		{
-			return createControl(parent, _title);
-		}
-		
-		protected Control createControl(Composite parent, String tipOne)
-		{
-			Composite holder = new Composite(parent, SWT.NONE);
-//			Button btn = new Button(parent, SWT.NONE);
-//			btn.setText("push to test");
-//			Label lbl = new Label(parent, SWT.NONE);
-//			lbl.setText("aaa");
-			
-			RowLayout rows = new RowLayout();
-			rows.marginLeft = rows.marginRight = 0;
-			rows.marginTop = rows.marginBottom	 = 0;
-			rows.fill = false;
-			rows.spacing = 0;
-			rows.pack = false;
-			holder.setLayout(rows);
-			
-			_myText = new Text(holder, SWT.BORDER);
-			_myText.setTextLimit(7);
-			_myText.setToolTipText(tipOne);
-			
-			List _myList = new List(holder, SWT.SINGLE);
-			_myList.setItems(new String[]{"aa", "bb", "cc"});
-
-			
-//			_myCombo = new Combo(holder, SWT.DROP_DOWN);
-//			_myCombo.setItems(new String[]{"aa", "bb", "cc"});
-//			_myCombo.setToolTipText("bingo");
-			
-			return holder;
+			super(cellParent);
 		}
 
 		/**
+		 * override operation triggered when button pressed. We should strictly be
+		 * opening a new dialog, instead we're looking for a valid location on the
+		 * clipboard. If one is there, we paste it.
 		 * 
+		 * @param cellEditorWindow
+		 *          the parent control we belong to
+		 * @return
 		 */
-		final private void doUpdate()
+		protected Object openDialogBox(Control cellEditorWindow)
 		{
-			// get the best units
-//			final int units = getUnitsValue();
-//			final String txt = "" + getDoubleValue();
-//			_myCombo.select(units);
-//			_myText.setText(txt);
+			
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = win.getActivePage();
+			
+			Object output = null;
+			
+			String plotId = "org.mwc.cmap.core.editor_views.PolygonEditorView";
+			try
+			{
+				IViewPart polyEditor = page.showView(plotId);		
+				if (polyEditor != null)
+				{
+					PolygonEditorView pev = (PolygonEditorView) polyEditor;
+					pev.setPolygon((WorldPath) doGetValue());
+				}				
+				
+			}
+			catch (PartInitException e)
+			{
+				e.printStackTrace();
+			}			
+
+			return output;
 		}
 
-		
-		protected Object doGetValue()
-		{
-			return _myVal;
-		}
-
-
-		protected void doSetFocus()
-		{
-		}
-
-		protected void doSetValue(Object value)
-		{
-			storeMe(value);
-			doUpdate();
-		}
-
-		/** convert the object to our data units
+		/**
+		 * Creates the button for this cell editor under the given parent control.
+		 * <p>
+		 * The default implementation of this framework method creates the button
+		 * display on the right hand side of the dialog cell editor. Subclasses may
+		 * extend or reimplement.
+		 * </p>
 		 * 
-		 * @param value
+		 * @param parent
+		 *          the parent control
+		 * @return the new button control
 		 */
-		protected void storeMe(Object value)
+		protected Button createButton(Composite parent)
 		{
-			_myVal = (WorldPath) value;
-		}				
-		
-	}	
+			Button result = super.createButton(parent);
+			result.setText("Edit");
+			return result;
+		}
+	}
 }
