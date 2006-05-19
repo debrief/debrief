@@ -34,12 +34,14 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		midLeft.addView(CorePlugin.TOTE);
 		midLeft.addView(CorePlugin.STACKED_DOTS);
 		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
-
+		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
+		
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
 			"midLeft");
 		bottomLeft.addView(CorePlugin.LAYER_MANAGER);
 		bottomLeft.addView(IPageLayout.ID_PROP_SHEET);
+			
 		
 		// bottom: placeholder for the xyplot
 		IPlaceholderFolderLayout bottomPanel = layout.createPlaceholderFolder("bottom", IPageLayout.BOTTOM, 0.7f, editorArea);
