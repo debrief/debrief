@@ -37,14 +37,14 @@
       <plugin id="org.eclipse.core.contenttype"/>
       <plugin id="org.eclipse.core.expressions"/>
       <plugin id="org.eclipse.core.filesystem"/>
-      <plugin id="org.eclipse.core.filesystem.win32.x86"/>
+      <plugin id="org.eclipse.core.filesystem.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
-      <plugin id="org.eclipse.core.resources.compatibility"/>
-      <plugin id="org.eclipse.core.resources.win32"/>
+      <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
+      <plugin id="org.eclipse.core.resources.win32" fragment="true"/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
-      <plugin id="org.eclipse.core.runtime.compatibility.registry"/>
+      <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
       <plugin id="org.eclipse.core.variables"/>
       <plugin id="org.eclipse.equinox.common"/>
       <plugin id="org.eclipse.equinox.preferences"/>
@@ -58,7 +58,7 @@
       <plugin id="org.eclipse.osgi"/>
       <plugin id="org.eclipse.platform"/>
       <plugin id="org.eclipse.swt"/>
-      <plugin id="org.eclipse.swt.win32.win32.x86"/>
+      <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
       <plugin id="org.eclipse.tomcat"/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.cheatsheets"/>
@@ -66,11 +66,11 @@
       <plugin id="org.eclipse.ui.ide"/>
       <plugin id="org.eclipse.ui.intro"/>
       <plugin id="org.eclipse.ui.views"/>
-      <plugin id="org.eclipse.ui.win32"/>
+      <plugin id="org.eclipse.ui.win32" fragment="true"/>
       <plugin id="org.eclipse.ui.workbench"/>
       <plugin id="org.eclipse.update.configurator"/>
       <plugin id="org.eclipse.update.core"/>
-      <plugin id="org.eclipse.update.core.win32"/>
+      <plugin id="org.eclipse.update.core.win32" fragment="true"/>
       <plugin id="org.eclipse.update.ui"/>
       <plugin id="org.junit"/>
       <plugin id="org.mwc.cmap.TimeController"/>
@@ -89,8 +89,8 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.platform" version="3.2.0.v20060215-6arkIf-1sI"/>
-      <feature id="org.eclipse.rcp" version="3.2.0.v20060210-3BlARRhN5X"/>
+      <feature id="org.eclipse.platform" version="3.2.0.v20060512-0730-_OZ2g3C9A7hWY9A"/>
+      <feature id="org.eclipse.rcp" version="3.2.0.v20060511-2000-VDNgUi843pOsLRQ"/>
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.3"/>
       <feature id="org.mwc.cmap.feature" version="1.0.12"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.4"/>
