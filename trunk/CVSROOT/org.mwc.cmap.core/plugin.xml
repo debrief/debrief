@@ -28,6 +28,7 @@
       <import plugin="org.mwc.cmap.legacy"/>
       <import plugin="org.eclipse.ui.cheatsheets"/>
       <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.eclipse.ui.forms"/>
    </requires>
    
 
@@ -102,5 +103,15 @@
            id="org.mwc.cmap.core"
            name="New CMAP Files"/>
   </extension>      
-  
+
+     <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            class="org.mwc.cmap.core.editor_views.PolygonEditorView"
+            icon="icons/document_chart.png"
+            id="org.mwc.cmap.core.editor_views.PolygonEditorView"
+            name="XY Plot">
+      </view>
+   </extension>  
 </plugin>
