@@ -32,7 +32,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f,
 				"topLeft");
 		midLeft.addView(CorePlugin.TOTE);
-		midLeft.addView(CorePlugin.STACKED_DOTS);
+		midLeft.addPlaceholder(CorePlugin.STACKED_DOTS);
 		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
 		
