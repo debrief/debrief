@@ -69,7 +69,7 @@ public class PolygonEditorView extends ViewPart
 	 */
 	private void updateUI()
 	{
-		_tstLabel.setText(_myPath.toString() + " id:" + _myPath.hashCode());
+		_tstLabel.setText(_myPath.getPoints().size() + " Points");
 	}
 
 }

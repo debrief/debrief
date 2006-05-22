@@ -40,7 +40,7 @@ public class WorldPathHelper extends EditorHelper
 			public String getText(Object element)
 			{
 				WorldPath wp = (WorldPath) element;
-				return wp.toString();
+				return wp.getPoints().size() + " Points";
 			}
 
 			public Image getImage(Object element)
