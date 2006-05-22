@@ -17,5 +17,16 @@
                toolbarPath="org.mwc.debrief.core.EditorView/additions"/>                    
       </actionSet>
    </extension>
+   
+     <extension
+         point="org.eclipse.ui.views">
+      <view
+            allowMultiple="true"
+            class="org.mwc.cmap.plot3d.views.Plot3dView"
+            icon="icons/view3d.gif"
+            id="org.mwc.cmap.plot3d.views.Plot3dView"                
+            name="3D Plot">
+      </view>
+   </extension>   
 
 </plugin>
