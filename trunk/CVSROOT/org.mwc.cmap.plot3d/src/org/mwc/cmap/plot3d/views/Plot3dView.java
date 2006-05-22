@@ -324,7 +324,6 @@ public class Plot3dView extends ViewPart
 
 		public HiResDate getCurrentTime()
 		{
-			// TODO Auto-generated method stub
 			return _prov.getTime();
 		}
 
@@ -1038,8 +1037,5 @@ public class Plot3dView extends ViewPart
 
 	public void setFocus()
 	{
-		// TODO Auto-generated method stub
-
 	}
-
 }
