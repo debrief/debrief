@@ -101,9 +101,11 @@
       <feature id="org.mwc.cmap.static_resources.feature" version="1.0.2"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.3"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.4"/>
+      <feature id="org.mwc.debrief.data_feed.feature" version="1.0.0"/>
       <feature id="org.mwc.debrief.feature" version="1.0.9"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.6"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.0"/>
+      <feature id="org.qinetiq.data_feed.feature" version="1.0.0"/>
    </features>
 
 </product>
