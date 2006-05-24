@@ -684,7 +684,6 @@ public class LayerManagerView extends ViewPart
 		// ok, sort out what we can do with all of this...
 		RightClickSupport.getDropdownListFor(manager, eList, updateLayers, parentLayers,
 				_myLayers, false);
-		
 
 	}
 
@@ -1103,13 +1102,12 @@ public class LayerManagerView extends ViewPart
 			Vector newList = new Vector(0, 1);
 			Widget changed = null;
 
-			for (Iterator iter = _pendingLayers.iterator(); iter.hasNext();)
+			if (_pendingLayers.size() > 0)
 			{
-				Layer changedLayer = (Layer) iter.next();
-
-				// right. has just one layer updated?
-				if (changedLayer != null)
+				for (Iterator iter = _pendingLayers.iterator(); iter.hasNext();)
 				{
+					Layer changedLayer = (Layer) iter.next();
+
 					changed = _treeViewer.findPlottable(changedLayer);
 					// see if we can find the element related to the indicated layer
 					TreeItem thisItem = (TreeItem) changed;
@@ -1117,21 +1115,21 @@ public class LayerManagerView extends ViewPart
 					// add the item and its children to the list
 					addItemAndChildrenToList(newList, thisItem);
 				}
-				else
+
+			}
+			else
+			{
+				// hey, all of the layers need updating.
+				// better get on with it.
+				changed = _treeViewer.findPlottable(_myLayers);
+
+				Tree theTree = (Tree) changed;
+				TreeItem[] children = theTree.getItems();
+				for (int i = 0; i < children.length; i++)
 				{
-					// hey, all of the layers need updating.
-					// better get on with it.
-					changed = _treeViewer.findPlottable(_myLayers);
-
-					Tree theTree = (Tree) changed;
-					TreeItem[] children = theTree.getItems();
-					for (int i = 0; i < children.length; i++)
-					{
-						TreeItem thisItem = children[i];
-						addItemAndChildrenToList(newList, thisItem);
-					}
+					TreeItem thisItem = children[i];
+					addItemAndChildrenToList(newList, thisItem);
 				}
-
 			}
 
 			// and do the update
@@ -1244,6 +1242,8 @@ public class LayerManagerView extends ViewPart
 				triggerChartUpdate(parentLayer, myLayers);
 			}
 		}
+
+		// ok, and update the layers
 	}
 
 	/**
