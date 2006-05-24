@@ -26,9 +26,12 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.*;
 
+import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.*;
@@ -39,7 +42,8 @@ import MWC.Utilities.Timer.TimerListener;
  * allow selection of time periods
  */
 
-public class TimeController extends ViewPart implements ISelectionProvider, TimerListener
+public class TimeController extends ViewPart implements ISelectionProvider,
+		TimerListener, RelativeProjectionParent
 {
 	private PartMonitor _myPartMonitor;
 
@@ -145,10 +149,21 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private final String SLIDER_STEP_SIZE = "SLIDER_STEP_SIZE";
 
-	/** make the forward button visible at a class level so that we can
-	 * fire it in testing
+	/**
+	 * make the forward button visible at a class level so that we can fire it in
+	 * testing
 	 */
 	private Button _forwardButton;
+
+	/**
+	 * utility class to help us plot relative plots
+	 */
+	private RelativeProjectionParent _relativeProjector;
+
+	/**
+	 * the projection we're going to set to relative mode, as we wish
+	 */
+	private PlainProjection _targetProjection;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -302,24 +317,22 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
 		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
-//		eBwd.setImage(TimeControllerPlugin.getImage("icons/control_start_blue.png"));
-		
-		
-		
+		// eBwd.setImage(TimeControllerPlugin.getImage("icons/control_start_blue.png"));
+
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
-//		lBwd.setImage(TimeControllerPlugin.getImage("icons/control_rewind_blue.png"));
+		// lBwd.setImage(TimeControllerPlugin.getImage("icons/control_rewind_blue.png"));
 		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setText("<");
 		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
-	//	sBwd.setImage(TimeControllerPlugin.getImage("icons/control_back_blue.png"));
+		// sBwd.setImage(TimeControllerPlugin.getImage("icons/control_back_blue.png"));
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
 
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
 		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
-//		_playButton.setImage(TimeControllerPlugin.getImage("icons/control_play_blue.png"));
+		// _playButton.setImage(TimeControllerPlugin.getImage("icons/control_play_blue.png"));
 		_playButton.addSelectionListener(new SelectionAdapter()
 		{
 			public void widgetSelected(SelectionEvent e)
@@ -329,29 +342,32 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				if (playing)
 				{
 					thisD = TimeControllerPlugin.getImageDescriptor("icons/media_pause.png");
-//					thisD = TimeControllerPlugin.getImageDescriptor("icons/control_pause_blue.png");
+					// thisD =
+					// TimeControllerPlugin.getImageDescriptor("icons/control_pause_blue.png");
 					startPlaying();
 				}
 				else
 				{
 					thisD = TimeControllerPlugin.getImageDescriptor("icons/media_play.png");
-//					thisD = TimeControllerPlugin.getImageDescriptor("icons/control_play_blue.png");
+					// thisD =
+					// TimeControllerPlugin.getImageDescriptor("icons/control_play_blue.png");
 					stopPlaying();
 				}
 				_playButton.setImage(thisD.createImage());
 			}
 		});
 
-	  _forwardButton = new Button(_btnPanel, SWT.NONE);
-//		_forwardButton.setImage(TimeControllerPlugin.getImage("icons/control_forward_blue.png"));
+		_forwardButton = new Button(_btnPanel, SWT.NONE);
+		// _forwardButton.setImage(TimeControllerPlugin.getImage("icons/control_forward_blue.png"));
 		_forwardButton.setImage(TimeControllerPlugin.getImage("icons/media_forward.png"));
-		_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(false)));
+		_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true,
+				new Boolean(false)));
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
-//		lFwd.setImage(TimeControllerPlugin.getImage("icons/control_fastforward_blue.png"));
+		// lFwd.setImage(TimeControllerPlugin.getImage("icons/control_fastforward_blue.png"));
 		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
 		Button eFwd = new Button(_btnPanel, SWT.NONE);
-//		eFwd.setImage(TimeControllerPlugin.getImage("icons/control_end_blue.png"));
+		// eFwd.setImage(TimeControllerPlugin.getImage("icons/control_end_blue.png"));
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 	}
@@ -561,6 +577,8 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	 */
 	private Integer _defaultSliderResolution;
 
+	private Action _relPlotToggle;
+
 	private void fireNewTime(HiResDate dtg)
 	{
 		if (!_firingNewTime)
@@ -663,22 +681,6 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 						checkTimeEnabled();
 					}
 				});
-		// _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part, IWorkbenchPart
-		// parentPart)
-		// {
-		// // are we still listening?
-		// if (_myTemporalDataset != null)
-		// {
-		// _myTemporalDataset.removeListener(_temporalListener,
-		// TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-		// _myTemporalDataset = null;
-		// }
-		// checkTimeEnabled();
-		// }
-		// });
 
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
@@ -701,6 +703,53 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 					{
 						if (part == _myLayers)
 							_myLayers = null;
+					}
+				});
+
+		_myPartMonitor.addPartListener(RelativeProjectionParent.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// implementation here.
+						RelativeProjectionParent relProjector = (RelativeProjectionParent) part;
+						if (relProjector != _relativeProjector)
+						{
+							// ok, better store it
+							storeProjectionParent(relProjector);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(RelativeProjectionParent.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						if (part == _relativeProjector)
+							_relativeProjector = null;
+					}
+				});
+
+		_myPartMonitor.addPartListener(PlainProjection.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// implementation here.
+						PlainProjection newProjection = (PlainProjection) part;
+						if (newProjection != _targetProjection)
+						{
+							storeNewProjection(newProjection);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(PlainProjection.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						if (part == _targetProjection)
+							_targetProjection = null;
 					}
 				});
 
@@ -906,6 +955,33 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 
 	}
 
+	/** remember the new relative projection provider
+	 * 
+	 * @param relProjector
+	 */
+	protected void storeProjectionParent(RelativeProjectionParent relProjector)
+	{
+		// ok, this isn't us, is it?
+		if(relProjector != this)
+		{
+			// ok, store it
+			_relativeProjector = relProjector;
+		}
+	}
+
+	protected void storeNewProjection(PlainProjection newProjection)
+	{
+		// ok, remember the projection
+		_targetProjection = newProjection;
+
+		// and tell it we're here
+		_targetProjection.setRelativeProjectionParent(this);
+		
+		// and reflect it's current status
+		if(_relPlotToggle != null)
+			_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
+	}
+
 	/**
 	 * convenience method to make the panel enabled if we have a time controller
 	 * and a valid time
@@ -982,8 +1058,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	}
 
 	/**
-	 * @param asSelection 
-	 * 
+	 * @param asSelection
 	 */
 	private void editThisInProperties(StructuredSelection asSelection)
 	{
@@ -1087,8 +1162,9 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	}
 
 	private static SimpleDateFormat _myFormat = null;
+
 	private static String _myFormatString = null;
-	
+
 	public static String toStringHiRes(HiResDate time, String pattern)
 			throws IllegalArgumentException
 	{
@@ -1101,19 +1177,20 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		java.util.Date theTime = new java.util.Date(micros / 1000);
 
 		// do we already know about a date format?
-		if(_myFormatString != null)
+		if (_myFormatString != null)
 		{
 			// right, see if it's what we're after
-			if(_myFormatString != pattern)
+			if (_myFormatString != pattern)
 			{
-				// nope, it's not what we're after.  ditch gash
+				// nope, it's not what we're after. ditch gash
 				_myFormatString = null;
 				_myFormat = null;
 			}
 		}
-		
-		// so, we either don't have a format yet, or we did have, and now we want to forget it...
-		if(_myFormat == null)
+
+		// so, we either don't have a format yet, or we did have, and now we want to
+		// forget it...
+		if (_myFormat == null)
 		{
 			_myFormatString = pattern;
 			_myFormat = new SimpleDateFormat(pattern);
@@ -1245,13 +1322,13 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			{
 				final double zoomFactor;
 				// decide if we're going in or out
-				if(event.count > 0)
+				if (event.count > 0)
 					zoomFactor = 0.9;
 				else
 					zoomFactor = 1.1;
-				
+
 				// and request the zoom
-				doZoom(zoomFactor);				
+				doZoom(zoomFactor);
 			}
 			else
 			{
@@ -1283,14 +1360,15 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			_selectionListeners.add(listener);
 	}
 
-	/** zoom the plot (in response to a control-mouse drag)
+	/**
+	 * zoom the plot (in response to a control-mouse drag)
 	 * 
 	 * @param zoomFactor
 	 */
 	public void doZoom(double zoomFactor)
 	{
 		// ok, get the plot, and do some zooming
-		if(_currentEditor instanceof PlotEditor)
+		if (_currentEditor instanceof PlotEditor)
 		{
 			PlotEditor plot = (PlotEditor) _currentEditor;
 			plot.getChart().getCanvas().getProjection().zoom(zoomFactor);
@@ -1313,7 +1391,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	{
 		return _dtgRangeSlider;
 	}
-	
+
 	public Scale getTimeSlider()
 	{
 		return _tNowSlider;
@@ -1340,6 +1418,44 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		// ok, remove the existing items
 		menuManager.removeAll();
 		toolManager.removeAll();
+
+		// start off with the relative painter setting, if we have to
+		if (_relPlotToggle == null)
+		{
+			_relPlotToggle = new Action("Relative", SWT.TOGGLE)
+			{
+				public void run()
+				{
+					// right, change the projection stuff...
+					if (_targetProjection != null)
+					{
+						_targetProjection.setRelativePlot(_relPlotToggle.isChecked());
+						
+						// and trigger redraw
+						IWorkbench wb = PlatformUI.getWorkbench();
+						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+						IWorkbenchPage page = win.getActivePage();
+						IEditorPart editor = page.getActiveEditor();
+						if(editor instanceof CorePlotEditor)
+						{
+							CorePlotEditor plot = (CorePlotEditor) editor;
+							plot.update();
+						}
+					}
+				}
+			};
+			_relPlotToggle.setToolTipText("Switch the projection to always be centred on primary track");
+			_relPlotToggle.setImageDescriptor(org.mwc.cmap.TimeController.TimeControllerPlugin
+					.getImageDescriptor("icons/lock_view.png"));
+			
+			// initialise it, if we have a plot
+			if(_targetProjection != null)
+				_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
+		}
+
+		// hey, store it anyway.
+		toolManager.add(_relPlotToggle);
+		menuManager.add(_relPlotToggle);
 
 		// ok, what are the painters we know about
 		TemporalLayerPainter[] painterList = myLayerPainterManager.getList();
@@ -1407,12 +1523,12 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		menuManager.add(_filterToSelectionAction);
 		toolManager.add(_filterToSelectionAction);
 
-		// and a list of  properties editors 
-		//   first - setup the parent menu item
+		// and a list of properties editors
+		// first - setup the parent menu item
 		IMenuManager mgr = new MenuManager("Properties");
 		menuManager.add(mgr);
-		
-		//   now our own menu editor
+
+		// now our own menu editor
 		Action toolboxProperties = new Action("Time controller", Action.AS_PUSH_BUTTON)
 		{
 			public void runWithEvent(Event event)
@@ -1423,10 +1539,10 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
 		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/properties.gif"));
-		
+
 		mgr.add(toolboxProperties);
-		
-		//   now properties boxes for our child properties windows
+
+		// now properties boxes for our child properties windows
 		for (int i = 0; i < painterList.length; i++)
 		{
 			// ok, next painter
@@ -1438,7 +1554,7 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 				public void runWithEvent(Event event)
 				{
 					// ok - get the info object for this painter
-					if(painter.hasEditor())
+					if (painter.hasEditor())
 					{
 						EditableWrapper pw = new EditableWrapper(painter, _myLayers);
 						editThisInProperties(new StructuredSelection(pw));
@@ -1447,13 +1563,11 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 			};
 			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
 			thistoolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
-					.getImageDescriptor(descPath));			
-
+					.getImageDescriptor(descPath));
 
 			// and store it on both menus
 			mgr.add(thistoolboxProperties);
-		}		
-		
+		}
 
 		// ok - get the action bars to re-populate themselves, otherwise we don't
 		// see our changes
@@ -1674,40 +1788,62 @@ public class TimeController extends ViewPart implements ISelectionProvider, Time
 	{
 		return getPeriodSlider().getPeriod();
 	}
-	
-	/** provide some support for external testing
+
+	/**
+	 * provide some support for external testing
 	 */
 	public void doTests()
 	{
 		// check we have some data
-		TestCase.assertNotNull("check we have time to control",_controllableTime);
-		TestCase.assertNotNull("check we have time provider",_myTemporalDataset);
-		TestCase.assertNotNull("check we have period to control",_controllablePeriod);
-		
+		TestCase.assertNotNull("check we have time to control", _controllableTime);
+		TestCase.assertNotNull("check we have time provider", _myTemporalDataset);
+		TestCase.assertNotNull("check we have period to control", _controllablePeriod);
+
 		HiResDate tDemanded = new HiResDate(0, 818748000000000L);
 		// note - time equates to: 120600:00
-		
-		// ok, try stepping forward.  get the current time
+
+		// ok, try stepping forward. get the current time
 		HiResDate tNow = _myTemporalDataset.getTime();
-		
+
 		// step forward one
 		Event ev = new Event();
 		_forwardButton.notifyListeners(SWT.Selection, ev);
-		
+
 		// find the new time
 		HiResDate tNew = _myTemporalDataset.getTime();
-		
-		TestCase.assertNotSame("time has changed", "" + tNew.getMicros(), "" + tNow.getMicros());
 
-		// ok, go back to the demanded time (in case we loaded the plot with a different saved time)
+		TestCase.assertNotSame("time has changed", "" + tNew.getMicros(), ""
+				+ tNow.getMicros());
+
+		// ok, go back to the demanded time (in case we loaded the plot with a
+		// different saved time)
 		_controllableTime.setTime(new Integer(111), tDemanded, true);
-		
+
 		// have a look at the date
 		String timeStr = _timeLabel.getText();
-				
+
 		// check it's what we're expecting
 		TestCase.assertEquals("time is correct", timeStr, "120600:00");
-		
 
+	}
+
+	// /////////////////////////////////////////////////
+	// RELATIVE PROJECTION-RELATED BITS
+	// /////////////////////////////////////////////////
+
+	public double getHeading()
+	{
+		double res = 0;
+		if (_relativeProjector != null)
+			res = _relativeProjector.getHeading();
+		return res;
+	}
+
+	public WorldLocation getLocation()
+	{
+		WorldLocation res = null;
+		if (_relativeProjector != null)
+			res = _relativeProjector.getLocation();
+		return res;
 	}
 }
