@@ -12,6 +12,7 @@ import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
 
 import MWC.GUI.*;
+import MWC.GUI.Editable.DeprecatedPropertyDescriptor;
 
 /**
  * embedded class which wraps a plottable object alongside some useful other
@@ -29,8 +30,8 @@ public class EditableWrapper implements IPropertySource
 	 */
 	IPropertyDescriptor[] _myDescriptors;
 
-	/** the layers we're looking at
-	 * 
+	/**
+	 * the layers we're looking at
 	 */
 	protected final Layers _theLayers;
 
@@ -39,7 +40,8 @@ public class EditableWrapper implements IPropertySource
 	 */
 	static String[] _booleanTags = new String[] { "Yes", "No" };
 
-	/** constructor - ok, lets get going
+	/**
+	 * constructor - ok, lets get going
 	 * 
 	 * @param plottable
 	 * @param theLayers
@@ -50,7 +52,8 @@ public class EditableWrapper implements IPropertySource
 		_theLayers = theLayers;
 	}
 
-	/** hey, where's the thing we're dealing with?
+	/**
+	 * hey, where's the thing we're dealing with?
 	 * 
 	 * @return
 	 */
@@ -58,7 +61,6 @@ public class EditableWrapper implements IPropertySource
 	{
 		return _editable;
 	}
-
 
 	public boolean equals(Object arg0)
 	{
@@ -91,24 +93,33 @@ public class EditableWrapper implements IPropertySource
 	 */
 	final public IPropertyDescriptor[] getPropertyDescriptors()
 	{
-		
+
 		if (_myDescriptors == null)
 		{
-			Vector list = new Vector(0,1);
-			IPropertyDescriptor[] res = new IPropertyDescriptor[]{null};
+			Vector list = new Vector(0, 1);
+			IPropertyDescriptor[] res = new IPropertyDescriptor[] { null };
 			Editable.EditorType editor = _editable.getInfo();
 			if (editor != null)
 			{
 				PropertyDescriptor[] properties = editor.getPropertyDescriptors();
-//				_myDescriptors = new IPropertyDescriptor[properties.length];
+				// _myDescriptors = new IPropertyDescriptor[properties.length];
 
 				for (int i = 0; i < properties.length; i++)
 				{
 					final PropertyDescriptor thisProp = properties[i];
-					IPropertyDescriptor newProp = new DebriefProperty(thisProp,
-							(Editable) editor.getData(), null);
-//					_myDescriptors[i] = newProp;
-					list.add(newProp);
+
+					// hmm, is it a legacy property?
+					if (thisProp instanceof DeprecatedPropertyDescriptor)
+					{
+						// right, just give it a stiff ignoring, it's deprecated
+					}
+					else
+					{
+						// ok, wrap it, and add it to our list.
+						IPropertyDescriptor newProp = new DebriefProperty(thisProp, (Editable) editor
+								.getData(), null);
+						list.add(newProp);
+					}
 				}
 
 				// hmm, are there any "supplemental" editors?
@@ -139,9 +150,8 @@ public class EditableWrapper implements IPropertySource
 									else
 									{
 										// ok, add this editor
-										IPropertyDescriptor newProp = new DebriefProperty(pd,
-												obj, null);
-										
+										IPropertyDescriptor newProp = new DebriefProperty(pd, obj, null);
+
 										list.add(newProp);
 									}
 								}
@@ -150,13 +160,13 @@ public class EditableWrapper implements IPropertySource
 					}
 				}
 			}
-			
+
 			// hmm, did we find any
-			if(list.size() > 0)
+			if (list.size() > 0)
 			{
 				_myDescriptors = (IPropertyDescriptor[]) list.toArray(res);
 			}
-			
+
 		}
 		return _myDescriptors;
 	}
@@ -237,10 +247,11 @@ public class EditableWrapper implements IPropertySource
 
 		// and find the existing value
 		Object oldVal = thisProp.getValue();
-		
+
 		// ok, create the action
-		PropertyChangeAction pca = new PropertyChangeAction(oldVal,value, thisProp, getEditable().getName(), getLayers());
-		
+		PropertyChangeAction pca = new PropertyChangeAction(oldVal, value, thisProp,
+				getEditable().getName(), getLayers());
+
 		// and sort it out with the history
 		CorePlugin.run(pca);
 	}
@@ -249,7 +260,7 @@ public class EditableWrapper implements IPropertySource
 	{
 		return _theLayers;
 	}
-	
+
 	final public boolean hasChildren()
 	{
 		return (_editable instanceof Layer);
@@ -264,7 +275,8 @@ public class EditableWrapper implements IPropertySource
 			// find out the type of the editor
 			Method m = thisProp.getReadMethod();
 			res = m.getReturnType();
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -272,83 +284,94 @@ public class EditableWrapper implements IPropertySource
 		return res;
 	}
 
-	/** embedded class which stores a property change in an undoable operation
+	/**
+	 * embedded class which stores a property change in an undoable operation
 	 * 
 	 * @author ian.mayo
-	 *
 	 */
-	final protected static class PropertyChangeAction extends AbstractOperation 
+	final protected static class PropertyChangeAction extends AbstractOperation
 	{
 		private final Object _oldValue;
+
 		private final Object _newValue;
+
 		private final DebriefProperty _property;
+
 		private final Layers _wholeLayers;
 
-		/** setup the change details
+		/**
+		 * setup the change details
 		 * 
-		 * @param oldValue old value (to undo to)
-		 * @param newValue new value 
-		 * @param subject the item being edited
-		 * @param wholeLayers the complete set of layers to redraw
-		 * @param parentLayer the parent layer - the one to be updated following a change
-		 * @param wholeLayers the layers object we inform about the change
+		 * @param oldValue
+		 *          old value (to undo to)
+		 * @param newValue
+		 *          new value
+		 * @param subject
+		 *          the item being edited
+		 * @param wholeLayers
+		 *          the complete set of layers to redraw
+		 * @param parentLayer
+		 *          the parent layer - the one to be updated following a change
+		 * @param wholeLayers
+		 *          the layers object we inform about the change
 		 */
-		public PropertyChangeAction(Object oldValue,
-				Object newValue,
-				DebriefProperty subject,
-				String name, Layers wholeLayers)
+		public PropertyChangeAction(Object oldValue, Object newValue,
+				DebriefProperty subject, String name, Layers wholeLayers)
 		{
 			super(name + " " + subject.getDisplayName());
-			
+
 			this.addContext(CorePlugin.CMAP_CONTEXT);
-			
+
 			_oldValue = oldValue;
 			_newValue = newValue;
 			_property = subject;
 			_wholeLayers = wholeLayers;
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
 		{
-				// get the value, if it worked
-				_property.setValue(_newValue);
-				
-				// ok, and tell any listeners that want to know
-				// - the only listener I can think of is the Java3d properties viewer
-				_property._subject.getInfo().fireChanged(_property.getValue(), _property.getDisplayName(),
-						_oldValue, _newValue );
+			// get the value, if it worked
+			_property.setValue(_newValue);
 
-				// fire the reformatted event for the parent layer
-				// - note, we may not have the layers object if this editable isn't a plot object
-				//   (it could be an xy plot)
-				if(_wholeLayers != null)
-					_wholeLayers.fireReformatted(null);
+			// ok, and tell any listeners that want to know
+			// - the only listener I can think of is the Java3d properties viewer
+			_property._subject.getInfo().fireChanged(_property.getValue(),
+					_property.getDisplayName(), _oldValue, _newValue);
+
+			// fire the reformatted event for the parent layer
+			// - note, we may not have the layers object if this editable isn't a plot
+			// object
+			// (it could be an xy plot)
+			if (_wholeLayers != null)
+				_wholeLayers.fireReformatted(null);
 
 			return Status.OK_STATUS;
 		}
 
-		public IStatus redo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
 		{
 			return execute(monitor, info);
 		}
 
-		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
 		{
 			// get the value, if it worked
 			_property.setValue(_oldValue);
-			
+
 			// ok, and tell any listeners that want to know...
-			_property._subject.getInfo().fireChanged(_property.getValue(), _property.getDisplayName(),
-					_newValue, _oldValue );
+			_property._subject.getInfo().fireChanged(_property.getValue(),
+					_property.getDisplayName(), _newValue, _oldValue);
 
 			// fire the reformatted event for the parent layer
 			_wholeLayers.fireReformatted(null);
-			
+
 			// and return the status
 			return Status.OK_STATUS;
 		}
-		
+
 	}
 
-	
 }
