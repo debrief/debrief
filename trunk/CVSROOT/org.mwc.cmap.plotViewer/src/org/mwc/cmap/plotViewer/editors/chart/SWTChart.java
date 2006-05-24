@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.32  2006-04-26 12:39:46  Ian.Mayo
+// Revision 1.33  2006-05-24 14:50:10  Ian.Mayo
+// Always redraw the whole plot if in relative mode
+//
+// Revision 1.32  2006/04/26 12:39:46  Ian.Mayo
 // Remove d-lines
 //
 // Revision 1.31  2006/04/21 08:13:51  Ian.Mayo
@@ -168,12 +171,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	private Point _draggedPoint = null;
 
 	private PlotMouseDragger _myDragMode;
-	
 
-	/** keep a cached copy of the image - to reduce replotting time
-	 * 
+	/**
+	 * keep a cached copy of the image - to reduce replotting time
 	 */
-	protected ImageData _myImageTemplate = null;	
+	protected ImageData _myImageTemplate = null;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -249,7 +251,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	}
 
-
 	// ///////////////////////////////////////////////////////////
 	// member functions
 	// //////////////////////////////////////////////////////////
@@ -257,7 +258,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	{
 		// and clear out our buffered layers (they all need to be repainted anyway)
 		_myLayers.clear();
-		
+
 		// and ditch our image template (since it's size related)
 		_myImageTemplate = null;
 
@@ -356,7 +357,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * layers.
 	 */
 	public void paintMe(final CanvasType dest)
-	{		
+	{
 		// just double-check we have some layers (if we're part of an overview
 		// chart, we may not have...)
 		if (_theLayers == null)
@@ -376,6 +377,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					_lastDataArea = _theCanvas.getProjection().getDataArea();
 
 					// clear out all of the layers we are using
+					_myLayers.clear();
+				}
+
+				// we also clear the layers if we're in relative projection mode
+				if (_theCanvas.getProjection().getRelativePlot())
+				{
 					_myLayers.clear();
 				}
 
@@ -428,7 +435,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 												// and remember it.
 												_myImageTemplate = template.getImageData();
 											}
-											
+
 											// ok, and now the SWT image
 											image = createSWTImage(_myImageTemplate);
 
@@ -440,7 +447,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 											// and store the GC
 											ca.startDraw(newGC);
-											
+
 											// ok, paint the layer into this canvas
 											thisLayer.paint(ca);
 
@@ -472,7 +479,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 						if (!isAlreadyPlotted)
 						{
 							paintThisLayer(thisLayer, dest);
-							
+
 							isAlreadyPlotted = true;
 						}
 					}
@@ -497,7 +504,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		thisLayer.paint(dest);
 	}
 
-	
 	/**
 	 * create the transparent image we need to for collating multiple layers into
 	 * an image
@@ -508,7 +514,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	protected org.eclipse.swt.graphics.Image createSWTImage(ImageData myImageTemplate)
 	{
-		_myImageTemplate.transparentPixel = _myImageTemplate.palette.getPixel(new RGB(255, 255, 255));
+		_myImageTemplate.transparentPixel = _myImageTemplate.palette.getPixel(new RGB(255,
+				255, 255));
 		org.eclipse.swt.graphics.Image image = new org.eclipse.swt.graphics.Image(Display
 				.getCurrent(), _myImageTemplate);
 		return image;
@@ -591,15 +598,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	public void doMouseMove(MouseEvent e)
 	{
 		java.awt.Point thisPoint = new java.awt.Point(e.x, e.y);
-		
+
 		super.mouseMoved(thisPoint);
-		
+
 		Point swtPoint = new Point(e.x, e.y);
 
 		// ok - pass the move event to our drag control (if it's interested...)
 		if (_myDragMode != null)
 			_myDragMode.doMouseMove(swtPoint, JITTER, super.getLayers(), _theCanvas);
-		
+
 		if (_startPoint == null)
 			return;
 
@@ -712,17 +719,19 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * 
 		 * @param pt
 		 *          the new cursor location
-		 * @param theCanvas TODO
+		 * @param theCanvas
+		 *          TODO
 		 */
-		abstract public void doMouseDrag(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theLayers, SWTCanvas theCanvas);
-		
+		abstract public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
+				final int JITTER, final Layers theLayers, SWTCanvas theCanvas);
+
 		/**
 		 * handle the mouse moving across the screen
 		 * 
 		 * @param pt
 		 *          the new cursor location
-		 * @param theCanvas TODO
+		 * @param theCanvas
+		 *          TODO
 		 */
 		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
 				final Layers theLayers, SWTCanvas theCanvas)
@@ -750,7 +759,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param pt
 		 *          the first cursor location
 		 */
-		abstract public void mouseDown(org.eclipse.swt.graphics.Point point, SWTCanvas canvas, PlainChart theChart);
+		abstract public void mouseDown(org.eclipse.swt.graphics.Point point,
+				SWTCanvas canvas, PlainChart theChart);
 
 	}
 
