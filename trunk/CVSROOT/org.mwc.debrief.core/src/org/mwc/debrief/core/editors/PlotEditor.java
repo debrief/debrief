@@ -32,6 +32,7 @@ import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.*;
 import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
@@ -70,9 +71,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * something to look after our layer painters
 	 */
 	private LayerPainterManager _layerPainterManager;
-	
 
-	private PlotOperations _myOperations;	
+	private PlotOperations _myOperations;
+
+	/**
+	 * support tool that provides a relative plot
+	 */
+	private RelativeProjectionParent _myRelativeWrapper;
 
 	/**
 	 * constructor - quite simple really.
@@ -100,72 +105,74 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			public void propertyChange(PropertyChangeEvent arg0)
 			{
 				// ok, trigger repaint of plot
-				if(getChart() != null)
+				if (getChart() != null)
 					getChart().update();
 			}
 		});
-		
-		// listen out for when our input changes, since we will change the editor window title
-		this.addPropertyListener(new IPropertyListener(){
+
+		// listen out for when our input changes, since we will change the editor
+		// window title
+		this.addPropertyListener(new IPropertyListener()
+		{
 
 			public void propertyChanged(Object source, int propId)
 			{
-				if(propId == PROP_INPUT)
+				if (propId == PROP_INPUT)
 				{
 					IFileEditorInput inp = (IFileEditorInput) getEditorInput();
-				  setPartName(inp.getName());
+					setPartName(inp.getName());
 				}
-			}});
-		
-		
+			}
+		});
+
 		_myOperations = new PlotOperations()
 		{
 			// just provide with our complete set of layers
 			public Object[] getTargets()
 			{
 				// ok, return our top level layers as objects
-				Vector res = new Vector(0,1);
-				for(int i=0;i<_myLayers.size();i++)
+				Vector res = new Vector(0, 1);
+				for (int i = 0; i < _myLayers.size(); i++)
 				{
 					res.add(_myLayers.elementAt(i));
 				}
 				return res.toArray();
 			}
 
-			/** override performing the operation, since we'll do a screen update on completion
+			/**
+			 * override performing the operation, since we'll do a screen update on
+			 * completion
 			 */
 			public Vector performOperation(AnOperation operationName)
 			{
 				// make the actual change
 				Vector res = super.performOperation(operationName);
-				
-				if(res != null)
+
+				if (res != null)
 				{
-					if(res.size() != 0)
+					if (res.size() != 0)
 					{
 						for (Iterator iter = res.iterator(); iter.hasNext();)
 						{
-							Layer  thisL = (Layer ) iter.next();
+							Layer thisL = (Layer) iter.next();
 							// and update the screen
 							_myLayers.fireReformatted(thisL);
-							
+
 						}
 					}
 				}
-				
+
 				return res;
-				
-				
+
 			}
 		};
 	}
 
-	public void init(IEditorSite site, IEditorInput input)
-			throws PartInitException
+	public void init(IEditorSite site, IEditorInput input) throws PartInitException
 	{
 		setSite(site);
 		setInputWithNotify(input);
-		
+
 		// ok - declare and load the supplemental plugins which can load datafiles
 		initialiseFileLoaders();
 
@@ -194,7 +201,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			e.printStackTrace();
 		}
 	}
-	
+
 	/**
 	 * @param input
 	 *          the file to insert
@@ -212,8 +219,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			e.printStackTrace();
 		}
 	}
-		
-	
+
 	private void loadThisStream(InputStream is, String fileName)
 	{
 		// right, see if any of them will do our edit
@@ -249,18 +255,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		_loader = new LoaderManager(EXTENSION_POINT_ID, EXTENSION_TAG, PLUGIN_ID)
 		{
 
-			public INamedItem createInstance(IConfigurationElement configElement,
-					String label)
+			public INamedItem createInstance(IConfigurationElement configElement, String label)
 			{
 				// get the attributes
 				label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 				String icon = configElement.getAttribute(EXTENSION_TAG_ICON_ATTRIB);
-				String fileTypes = configElement
-						.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
+				String fileTypes = configElement.getAttribute(EXTENSION_TAG_EXTENSIONS_ATTRIB);
 
 				// create the instance
-				INamedItem res = new IPlotLoader.DeferredPlotLoader(configElement,
-						label, icon, fileTypes);
+				INamedItem res = new IPlotLoader.DeferredPlotLoader(configElement, label, icon,
+						fileTypes);
 
 				// and return it.
 				return res;
@@ -339,7 +343,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			super._timeManager.setPeriod(this, timePeriod);
 
 			// also give it a current DTG (if it doesn't have one)
-			if(_timeManager.getTime() == null)
+			if (_timeManager.getTime() == null)
 				_timeManager.setTime(this, timePeriod.getStartDTG(), false);
 		}
 
@@ -374,30 +378,29 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			final String thisFilename = fileNames[i];
 			System.out.println("should be loading:" + thisFilename);
 			loadThisFile(thisFilename);
-			
-//			File newFile = new java.io.File(thisFilename);
-			// File thisFile = new File(thisFilename);
-//			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
-//			 = new
-//			 org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
-//			 IFile theFile = (IFile) localF.getAdapter(IFile.class);
 
-//			IEditorInput theInput = new JavaFileEditorInput(newFile);
-//			 this.loadThisFile(theInput);
-//			DialogFactory.showMessage("Load plot", "Sorry, plots must be loaded from a project");
+			// File newFile = new java.io.File(thisFilename);
+			// File thisFile = new File(thisFilename);
+			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
+			// = new
+			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
+			// IFile theFile = (IFile) localF.getAdapter(IFile.class);
+
+			// IEditorInput theInput = new JavaFileEditorInput(newFile);
+			// this.loadThisFile(theInput);
+			// DialogFactory.showMessage("Load plot", "Sorry, plots must be loaded
+			// from a project");
 
 		}
 
 		// ok, we're probably done - fire the update
 		this._myLayers.fireExtended();
-		
+
 		// and resize to make sure we're showing all the data
 		this._myChart.rescale();
-	
 
- }
+	}
 
-	
 	/*
 	 * (non-Javadoc)
 	 * 
@@ -443,7 +446,47 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			res = _myOperations;
 		}
-		
+		else if (adapter == RelativeProjectionParent.class)
+		{
+			if (_myRelativeWrapper == null)
+			{
+				_myRelativeWrapper = new RelativeProjectionParent()
+				{
+					public double getHeading()
+					{
+						double res = 0.0;
+						// do we have a primary?
+						Watchable[] thePositions = _trackDataProvider.getPrimaryTrack().getNearestTo(
+								_timeManager.getTime());
+						if (thePositions != null)
+						{
+							// yup, get the centre point
+							res = thePositions[0].getCourse();
+						}
+						return res;
+					}
+
+					public WorldLocation getLocation()
+					{
+						MWC.GenericData.WorldLocation res = null;
+						// do we have a primary?
+						Watchable[] thePositions = _trackDataProvider.getPrimaryTrack().getNearestTo(
+								_timeManager.getTime());
+						if (thePositions != null)
+						{
+							if (thePositions.length > 0)
+							{
+								// yup, get the centre point
+								res = thePositions[0].getBounds().getCentre();
+							}
+						}
+						return res;
+					}
+
+				};
+			}
+			res = _myRelativeWrapper;
+		}
 
 		// did we find anything?
 		if (res == null)
@@ -470,7 +513,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				// TODO Auto-generated method stub
 				fireSelectionChanged(sel);
 			};
-			
+
 			/**
 			 * 
 			 */
@@ -484,20 +527,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				// get the current time
 				HiResDate tNow = _timeManager.getTime();
-				
+
 				// do we know the time?
-				if(tNow != null)
+				if (tNow != null)
 				{
 					// yes. cool, get plotting
-					_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer, dest,
-						tNow);
+					_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer, dest, tNow);
 				}
 			}
 
 		};
 		return res;
 	}
-
 
 	/**
 	 * @see org.eclipse.ui.IEditorPart#doSave(IProgressMonitor)
@@ -506,7 +547,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 
 		IEditorInput input = getEditorInput();
-		
+
 		if (input.exists())
 		{
 			// is this the correct type of file?
@@ -523,10 +564,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 	}
 
-	/** save our plot to the indicated location
+	/**
+	 * save our plot to the indicated location
 	 * 
-	 * @param destination where to save plot to
-	 * @param monitor somebody/something to be informed about progress
+	 * @param destination
+	 *          where to save plot to
+	 * @param monitor
+	 *          somebody/something to be informed about progress
 	 */
 	private void doSaveTo(IFile destination, IProgressMonitor monitor)
 	{
@@ -561,8 +605,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		else
 		{
-			DebriefPlugin.logError(Status.ERROR,
-					"Unable to identify source file for plot", null);
+			DebriefPlugin.logError(Status.ERROR, "Unable to identify source file for plot",
+					null);
 		}
 
 	}
@@ -575,14 +619,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		if (getEditorInput() instanceof FileEditorInput)
 		{
 			IFile oldFile = ((FileEditorInput) getEditorInput()).getFile();
-//			dialog.setOriginalFile(oldFile);
-			
+			// dialog.setOriginalFile(oldFile);
+
 			IPath oldPath = oldFile.getFullPath();
 			IPath newStart = oldPath.removeFileExtension();
 			IPath newPath = newStart.addFileExtension("xml");
 			File asFile = newPath.toFile();
 			String newName = asFile.getName();
-	//		dialog.setOriginalFile(newName);
+			// dialog.setOriginalFile(newName);
 			dialog.setOriginalName(newName);
 		}
 		dialog.create();
@@ -608,13 +652,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 				catch (CoreException e)
 				{
-					DebriefPlugin.logError(IStatus.ERROR, "Failed trying to create new file for save-as", e);
+					DebriefPlugin.logError(IStatus.ERROR,
+							"Failed trying to create new file for save-as", e);
 					return;
 				}
 
 			// ok, write to the file
 			doSaveTo(file, new NullProgressMonitor());
-			
+
 			// also make this new file our input
 			IFileEditorInput newInput = new FileEditorInput(file);
 			setInputWithNotify(newInput);
