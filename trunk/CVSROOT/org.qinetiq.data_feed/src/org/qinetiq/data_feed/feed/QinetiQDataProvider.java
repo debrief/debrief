@@ -85,6 +85,9 @@ public class QinetiQDataProvider implements RealTimeProvider, TimerListener
 	 */
 	public void disconnect(LiveFeedViewer host)
 	{
+		if(_myHost != null)
+		{
+			
 		_myHost.showMessage("Disconnecting");
 		
 		// ok, start the trigger
@@ -96,6 +99,7 @@ public class QinetiQDataProvider implements RealTimeProvider, TimerListener
 
 		// done.
 		_myHost = null;
+		}
 		
 	}
 
