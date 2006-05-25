@@ -45,7 +45,7 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 		 */
 		_theTimer = new MWC.Utilities.Timer.Timer();
 		_theTimer.stop();
-		_theTimer.setDelay(1000);
+		_theTimer.setDelay(500);
 		_theTimer.addTimerListener(this);
 	}
 
@@ -140,7 +140,7 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 		String theStr = _iff.exportThis(fw);
 
 		_myHost.insertData(theStr);
-		_myHost.showMessage("DATA RX");
+//		_myHost.showMessage("DATA RX");
 
 		// just see if we are doing a fix aswell?
 		if (Math.random() > 0.9)
