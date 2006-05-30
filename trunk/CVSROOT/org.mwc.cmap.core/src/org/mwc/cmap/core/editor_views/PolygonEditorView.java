@@ -18,6 +18,7 @@ public class PolygonEditorView extends ViewPart
 	private WorldPath _myPath;
 	private PropertyChangeSupport _pSupport;
 	private Label _tstLabel;
+	private PolygonEditorControl _myEditor;
 
 	public PolygonEditorView()
 	{
@@ -26,15 +27,7 @@ public class PolygonEditorView extends ViewPart
 	
 	public void createPartControl(Composite parent)
 	{
-		_toolkit = new FormToolkit(parent.getDisplay());
-		_form = _toolkit.createForm(parent);
-		_form.setText("Polygon gets edited here (to be implemented)");
-		
-		GridLayout grid = new GridLayout();
-		_form.getBody().setLayout(grid);
-		_tstLabel = new Label(_form.getBody(), SWT.NONE);
-		_tstLabel.setText("====    pending     =====");
-		
+		_myEditor = new PolygonEditorControl(parent, SWT.NONE);
 	}
 
 	public void setFocus()
