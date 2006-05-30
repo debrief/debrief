@@ -3,6 +3,7 @@ package org.mwc.cmap.core.editor_views;
 import java.beans.*;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.forms.widgets.*;
@@ -17,7 +18,6 @@ public class PolygonEditorView extends ViewPart
 	private Form _form;
 	private WorldPath _myPath;
 	private PropertyChangeSupport _pSupport;
-	private Label _tstLabel;
 	private PolygonEditorControl _myEditor;
 
 	public PolygonEditorView()
@@ -27,7 +27,25 @@ public class PolygonEditorView extends ViewPart
 	
 	public void createPartControl(Composite parent)
 	{
-		_myEditor = new PolygonEditorControl(parent, SWT.NONE);
+		_myEditor = new PolygonEditorControl(parent, SWT.NONE){
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			public void widgetSelected(SelectionEvent e)
+			{
+				btnPushed(e);
+			}};
+	}
+
+	protected void btnPushed(SelectionEvent e)
+	{
+		// ok, the user has done something in the editor control. what was it?
+		Object source = e.widget;
+		if(source == _myEditor.newBtn)
+			System.out.println("new pressed!");
+		else if(source == _myEditor.delBtn)
+			System.out.println("delete pressed!");
 	}
 
 	public void setFocus()
@@ -62,7 +80,7 @@ public class PolygonEditorView extends ViewPart
 	 */
 	private void updateUI()
 	{
-		_tstLabel.setText(_myPath.getPoints().size() + " Points");
+		_myEditor.editorPanel.setText(_myPath.getPoints().size() + " Points");
 	}
 
 }
