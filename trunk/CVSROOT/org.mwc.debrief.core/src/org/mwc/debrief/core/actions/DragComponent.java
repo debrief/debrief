@@ -36,7 +36,8 @@ public class DragComponent extends DragFeature
 
 	public static void findNearest(Layer thisLayer,
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
-			MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct currentNearest, Layer parentLayer)
+			MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct currentNearest,
+			Layer parentLayer)
 	{
 		// 
 		Layer thisParentLayer;
@@ -136,9 +137,9 @@ public class DragComponent extends DragFeature
 		 * the thing we're currently hovering over
 		 */
 		protected HasDraggableComponents _hoverTarget;
-		
-		/** the component we're going to drag
-		 * 
+
+		/**
+		 * the component we're going to drag
 		 */
 		protected WorldLocation _hoverComponent;
 
@@ -213,9 +214,8 @@ public class DragComponent extends DragFeature
 				{
 					// ok - change what the cursor looks liks
 					// create the new cursor
-					_newCursor = new Cursor(Display.getDefault(), 
-							DebriefPlugin.getImageDescriptor("icons/SelectPointHit.ico").getImageData(), 
-							7,3);
+					_newCursor = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+							"icons/SelectPointHit.ico").getImageData(), 7, 3);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);
@@ -228,25 +228,25 @@ public class DragComponent extends DragFeature
 
 				}
 			}
-			
+
 			if (!highlightShown)
 			{
-					// nope, we haven't found anything. clear our settings
-					_hoverTarget = null;
-					_hoverComponent = null;
-					_parentLayer = null;
+				// nope, we haven't found anything. clear our settings
+				_hoverTarget = null;
+				_hoverComponent = null;
+				_parentLayer = null;
 
-					if(_newCursor != null)
-					{
-						_newCursor.dispose();
-						_newCursor = null;
-					}
-					
+				if (_newCursor != null)
+				{
+					_newCursor.dispose();
+					_newCursor = null;
+				}
+
 				// reset the cursor on the canvas
-				_newCursor = new Cursor(Display.getDefault(), 
-						DebriefPlugin.getImageDescriptor("icons/SelectPoint.ico").getImageData(), 7,3);
+				_newCursor = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+						"icons/SelectPoint.ico").getImageData(), 7, 3);
 
-				// and assign it to the control				
+				// and assign it to the control
 				theCanvas.getCanvas().setCursor(_newCursor);
 			}
 		}
@@ -254,7 +254,7 @@ public class DragComponent extends DragFeature
 		final public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
 				Layers theLayers, SWTCanvas theCanvas)
 		{
-			if (_startPoint != null)
+			if ((_startPoint != null) && (_hoverTarget != null))
 			{
 				GC gc = new GC(_myCanvas.getCanvas());
 
@@ -319,48 +319,55 @@ public class DragComponent extends DragFeature
 
 		final public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
 		{
-			GC gc = new GC(_myCanvas.getCanvas());
-
-			// This is the same as a !XOR
-			gc.setXORMode(true);
-			gc.setForeground(gc.getBackground());
-
-			// Erase existing rectangle
-			if (_lastPoint != null)
+			// just check we actually dragged something
+			if (_hoverTarget != null)
 			{
-				// hmm, we've finished plotting. see if the ctrl button is
-				// down
-				if ((keyState & SWT.CTRL) == 0)
-					drawHere(gc, null);
+
+				GC gc = new GC(_myCanvas.getCanvas());
+
+				// This is the same as a !XOR
+				gc.setXORMode(true);
+				gc.setForeground(gc.getBackground());
+
+				// Erase existing rectangle
+				if (_lastPoint != null)
+				{
+					// hmm, we've finished plotting. see if the ctrl button is
+					// down
+					if ((keyState & SWT.CTRL) == 0)
+						drawHere(gc, null);
+				}
+
+				// generate the reverse vector
+				WorldVector reverse = _startLocation.subtract(_lastLocation);
+
+				// apply the reverse vector
+				_hoverTarget.shift(_hoverComponent, reverse);
+
+				// and get the chart to redraw itself
+				_myChart.update();
+
+				// ok, now calculate the real offset to apply
+				WorldVector forward = _lastLocation.subtract(_startLocation);
+
+				// put it into our action
+				DragComponentAction dta = new DragComponentAction(forward, _hoverTarget,
+						_hoverComponent, _myChart.getLayers(), _parentLayer);
+
+				// and wrap it
+				DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart.getLayers());
+
+				// and add it to the clipboard
+				CorePlugin.run(daw);
+
 			}
-
-			// generate the reverse vector
-			WorldVector reverse = _startLocation.subtract(_lastLocation);
-
-			// apply the reverse vector
-			_hoverTarget.shift(_hoverComponent, reverse);
-
-			// and get the chart to redraw itself
-			_myChart.update();
-
-			// ok, now calculate the real offset to apply
-			WorldVector forward = _lastLocation.subtract(_startLocation);
-
-			// put it into our action
-			DragComponentAction dta = new DragComponentAction(forward, _hoverTarget, _hoverComponent, _myChart
-					.getLayers(), _parentLayer);
-
-			// and wrap it
-			DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart.getLayers());
-
-			// and add it to the clipboard
-			CorePlugin.run(daw);
 
 			_startPoint = null;
 			_lastPoint = null;
 			_lastLocation = null;
 			_myCanvas = null;
 			_startLocation = null;
+			_hoverTarget = null;
 		}
 
 		final public void mouseDown(org.eclipse.swt.graphics.Point point, SWTCanvas canvas,
@@ -399,13 +406,16 @@ public class DragComponent extends DragFeature
 				{
 					// ignore the color change, we just want to keep it white...
 				}
+
 				protected void switchAntiAliasOn(boolean val)
 				{
 					// ignore this, we won't be anti-aliasing
 				}
+
 				public void drawImage(Image image, int x, int y, int width, int height)
 				{
 				}
+
 				public void drawText(Font theFont, String theStr, int x, int y)
 				{
 				}
@@ -413,7 +423,6 @@ public class DragComponent extends DragFeature
 				public void drawText(String theStr, int x, int y)
 				{
 				}
-				
 
 			};
 			// change the color by hand
@@ -450,8 +459,8 @@ public class DragComponent extends DragFeature
 		 */
 		private Layer _parentLayer;
 
-		/** the component we're going to shift
-		 * 
+		/**
+		 * the component we're going to shift
 		 */
 		private WorldLocation _theComponent;
 
@@ -463,8 +472,8 @@ public class DragComponent extends DragFeature
 		 * @param theFeature
 		 * @param theLayers
 		 */
-		public DragComponentAction(final WorldVector theOffset, final HasDraggableComponents theFeature,
-				WorldLocation theComponent,
+		public DragComponentAction(final WorldVector theOffset,
+				final HasDraggableComponents theFeature, WorldLocation theComponent,
 				final Layers theLayers, final Layer parentLayer)
 		{
 			_theOffset = theOffset;
