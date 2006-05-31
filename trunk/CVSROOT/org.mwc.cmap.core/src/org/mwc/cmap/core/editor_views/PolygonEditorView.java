@@ -28,7 +28,7 @@ public class PolygonEditorView extends ViewPart
 	private PaintListener _myPainter;
 
 	private CanvasType _theCanvas;
-	
+
 	private CountingLabelProvider _labeller;
 
 	public PolygonEditorView()
@@ -78,7 +78,7 @@ public class PolygonEditorView extends ViewPart
 		// try to sort out a fancy painter thingy
 		_labeller = new CountingLabelProvider();
 		_myEditor.pointList2.setLabelProvider(_labeller);
-		
+
 	}
 
 	protected WorldLocation getSelectedPoint()
@@ -187,27 +187,29 @@ public class PolygonEditorView extends ViewPart
 		// remove the current list items = we're going to put them back in, in a mo.
 		clearOut();
 
-		// first the count
-		_myEditor.editorPanel.setText(_myPath.getPoints().size() + " Points");
-
-		Object[] thePts = _myPath.getPoints().toArray();
-		_myEditor.pointList2.add(thePts);
-
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-
-		// hmm, see if this editor has some layers we can fire a reformatted at
-		Layers theLayers = (Layers) editor.getAdapter(Layers.class);
-		if (theLayers != null)
+		if (!_myEditor.isDisposed())
 		{
-			theLayers.fireReformatted(null);
-		}
-		
-		// and reset the counter
-		_labeller.reset();
+			// first the count
+			_myEditor.editorPanel.setText(_myPath.getPoints().size() + " Points");
 
+			Object[] thePts = _myPath.getPoints().toArray();
+			_myEditor.pointList2.add(thePts);
+
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = win.getActivePage();
+			IEditorPart editor = page.getActiveEditor();
+
+			// hmm, see if this editor has some layers we can fire a reformatted at
+			Layers theLayers = (Layers) editor.getAdapter(Layers.class);
+			if (theLayers != null)
+			{
+				theLayers.fireReformatted(null);
+			}
+
+			// and reset the counter
+			_labeller.reset();
+		}
 	}
 
 	/**
@@ -215,14 +217,17 @@ public class PolygonEditorView extends ViewPart
 	 */
 	private void clearOut()
 	{
-		// right - clear the list
-		Object thisItem = _myEditor.pointList2.getElementAt(0);
-		while (thisItem != null)
+		if (!_myEditor.isDisposed())
 		{
-			_myEditor.pointList2.remove(thisItem);
-			thisItem = _myEditor.pointList2.getElementAt(0);
+			// right - clear the list
+			Object thisItem = _myEditor.pointList2.getElementAt(0);
+			while (thisItem != null)
+			{
+				_myEditor.pointList2.remove(thisItem);
+				thisItem = _myEditor.pointList2.getElementAt(0);
+			}
+			_myEditor.editorPanel.setText("Empty");
 		}
-		_myEditor.editorPanel.setText("Empty");
 	}
 
 	/**
@@ -234,12 +239,15 @@ public class PolygonEditorView extends ViewPart
 		{
 			System.out.println("!removing painter..");
 			_theCanvas.removePainter(_myPainter);
+
+			// also trigger a repaint
+			_theCanvas.updateMe();
 			_theCanvas = null;
 		}
-		
+
 		// hey, also remove the bits
 		clearOut();
-		
+
 	}
 
 	/**
@@ -284,16 +292,15 @@ public class PolygonEditorView extends ViewPart
 		// right, take us back to the beginning
 		dest.drawLine(lastP.x, lastP.y, startP.x, startP.y);
 	}
-	/** final tidy up before we go home
+
+	/**
+	 * final tidy up before we go home
 	 */
 	public void dispose()
 	{
 		// just check we still haven't got a painter defined
-		if(_theCanvas != null)
-		{
-			_theCanvas.removePainter(_myPainter);
-			_theCanvas = null;
-		}
+		stopPainting();
+
 		// and let the parent do it's bits
 		super.dispose();
 	}
@@ -301,21 +308,20 @@ public class PolygonEditorView extends ViewPart
 	private static class CountingLabelProvider extends LabelProvider
 	{
 		int counter = 0;
-		/** reset the counter
-		 * 
-		 *
+
+		/**
+		 * reset the counter
 		 */
 		public void reset()
 		{
 			counter = 0;
 		}
-		
+
 		public String getText(Object element)
 		{
 			return "" + ++counter + ": " + super.getText(element);
 		}
-		
-		
+
 	}
 
 }

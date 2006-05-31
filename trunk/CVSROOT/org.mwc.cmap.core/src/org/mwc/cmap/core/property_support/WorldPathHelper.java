@@ -60,6 +60,9 @@ public class WorldPathHelper extends EditorHelper
 	 */
 	private static class EditPathDialogCellEditor extends DialogCellEditor
 	{
+
+		PolygonEditorView _myEditor = null;
+
 		/**
 		 * constructor - just pass on to parent
 		 * 
@@ -82,6 +85,13 @@ public class WorldPathHelper extends EditorHelper
 		protected Object openDialogBox(Control cellEditorWindow)
 		{
 
+			// ditch our current editor, if we have one
+			if (_myEditor != null)
+			{
+				_myEditor.stopPainting();
+				_myEditor = null;
+			}
+
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
@@ -94,8 +104,8 @@ public class WorldPathHelper extends EditorHelper
 				IViewPart polyEditor = page.showView(plotId);
 				if (polyEditor != null)
 				{
-					PolygonEditorView pev = (PolygonEditorView) polyEditor;
-					pev.setPolygon((WorldPath) doGetValue());
+					_myEditor = (PolygonEditorView) polyEditor;
+					_myEditor.setPolygon((WorldPath) doGetValue());
 				}
 
 			}
@@ -143,26 +153,14 @@ public class WorldPathHelper extends EditorHelper
 		public void deactivate()
 		{
 			// try to get our editor to ditch, if we can.
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-
-			// is there an active page?
-			if (page != null)
+			// ditch our current editor, if we have one
+			if (_myEditor != null)
 			{
-				// yup, try to find our polygon editor
-				String plotId = "org.mwc.cmap.core.editor_views.PolygonEditorView";
-				IViewPart polyEditor = page.findView(plotId);
-				
-				// did we find it?
-				if (polyEditor != null)
-				{
-					// yup, tell it we're f*cking off.
-					PolygonEditorView pev = (PolygonEditorView) polyEditor;
-					pev.stopPainting();
-				}
+				_myEditor.stopPainting();
+				_myEditor = null;
 			}
-			super.deactivate();
+			
+	//		super.deactivate();
 		}
 	}
 }
