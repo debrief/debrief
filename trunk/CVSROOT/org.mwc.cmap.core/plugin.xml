@@ -111,7 +111,7 @@
             class="org.mwc.cmap.core.editor_views.PolygonEditorView"
             icon="icons/document_chart.png"
             id="org.mwc.cmap.core.editor_views.PolygonEditorView"
-            name="XY Plot">
+            name="Path editor">
       </view>
    </extension>  
 </plugin>
