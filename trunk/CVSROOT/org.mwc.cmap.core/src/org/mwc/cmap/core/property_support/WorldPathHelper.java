@@ -81,28 +81,28 @@ public class WorldPathHelper extends EditorHelper
 		 */
 		protected Object openDialogBox(Control cellEditorWindow)
 		{
-			
+
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
-			
+
 			Object output = null;
-			
+
 			String plotId = "org.mwc.cmap.core.editor_views.PolygonEditorView";
 			try
 			{
-				IViewPart polyEditor = page.showView(plotId);		
+				IViewPart polyEditor = page.showView(plotId);
 				if (polyEditor != null)
 				{
 					PolygonEditorView pev = (PolygonEditorView) polyEditor;
 					pev.setPolygon((WorldPath) doGetValue());
-				}				
-				
+				}
+
 			}
 			catch (PartInitException e)
 			{
 				e.printStackTrace();
-			}			
+			}
 
 			return output;
 		}
@@ -124,6 +124,45 @@ public class WorldPathHelper extends EditorHelper
 			Button result = super.createButton(parent);
 			result.setText("Edit");
 			return result;
+		}
+
+		protected Object doGetValue()
+		{
+			WorldPath res = (WorldPath) super.doGetValue();
+			return res;
+		}
+
+		protected void doSetValue(Object value)
+		{
+			WorldPath myData = (WorldPath) value;
+			WorldPath toStore = new WorldPath(myData);
+
+			super.doSetValue(toStore);
+		}
+
+		public void deactivate()
+		{
+			// try to get our editor to ditch, if we can.
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = win.getActivePage();
+
+			// is there an active page?
+			if (page != null)
+			{
+				// yup, try to find our polygon editor
+				String plotId = "org.mwc.cmap.core.editor_views.PolygonEditorView";
+				IViewPart polyEditor = page.findView(plotId);
+				
+				// did we find it?
+				if (polyEditor != null)
+				{
+					// yup, tell it we're f*cking off.
+					PolygonEditorView pev = (PolygonEditorView) polyEditor;
+					pev.stopPainting();
+				}
+			}
+			super.deactivate();
 		}
 	}
 }

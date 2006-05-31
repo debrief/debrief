@@ -1,4 +1,5 @@
 package org.mwc.cmap.core.editor_views;
+import org.eclipse.jface.viewers.ListViewer;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
@@ -8,8 +9,8 @@ import org.eclipse.swt.widgets.*;
 public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Composite implements SelectionListener {
 	private Composite topHolder;
 	private Composite btnHolder;
+	public ListViewer pointList2;
 	public Label editorPanel;
-	public List pointList;
 	public Button newBtn;
 	public Button delBtn;
 	public Button downBtn;
@@ -52,6 +53,8 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 	public PolygonEditorControl(org.eclipse.swt.widgets.Composite parent, int style) {
 		super(parent, style);
 		initGUI();
+		{
+		}
 	}
 
 	private void initGUI() {
@@ -91,6 +94,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						downBtnLData.grabExcessHorizontalSpace = true;
 						downBtn.setLayoutData(downBtnLData);
 						downBtn.setText("Down");
+						downBtn.addSelectionListener(this);
 					}
 					{
 						newBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
@@ -99,6 +103,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						newBtnLData.grabExcessHorizontalSpace = true;
 						newBtn.setLayoutData(newBtnLData);
 						newBtn.setText("New");
+						newBtn.addSelectionListener(this);
 					}
 					{
 						delBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
@@ -107,18 +112,17 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						DelBtnLData.grabExcessHorizontalSpace = true;
 						delBtn.setLayoutData(DelBtnLData);
 						delBtn.setText("Delete");
+						delBtn.addSelectionListener(this);
 					}
-				}
-			}
+				}			}
 			{
-				GridData pointListLData = new GridData();
-				pointListLData.horizontalAlignment = GridData.FILL;
-				pointListLData.grabExcessHorizontalSpace = true;
-				pointListLData.verticalAlignment = GridData.FILL;
-				pointListLData.verticalSpan = 2;
-				pointListLData.grabExcessVerticalSpace = true;
-				pointList = new List(this, SWT.SINGLE | SWT.V_SCROLL);
-				pointList.setLayoutData(pointListLData);
+				GridData pointList2LData = new GridData();
+				pointList2LData.grabExcessHorizontalSpace = true;
+				pointList2LData.horizontalAlignment = GridData.FILL;
+				pointList2LData.verticalAlignment = GridData.FILL;
+				pointList2LData.grabExcessVerticalSpace = true;
+				pointList2 = new ListViewer(this, SWT.SINGLE);
+				pointList2.getControl().setLayoutData(pointList2LData);
 			}
 			{
 				editorPanel = new Label(this, SWT.NONE);
