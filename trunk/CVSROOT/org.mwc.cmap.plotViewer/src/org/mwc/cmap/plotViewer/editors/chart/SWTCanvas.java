@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.25  2006-05-17 08:34:30  Ian.Mayo
+// Revision 1.26  2006-05-31 13:40:17  Ian.Mayo
+// Minor tidying
+//
+// Revision 1.25  2006/05/17 08:34:30  Ian.Mayo
 // Reduce number of instances where we set canvas-color
 //
 // Revision 1.24  2006/05/16 08:45:16  Ian.Mayo
@@ -93,8 +96,6 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.ColorHelper;
-
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
 

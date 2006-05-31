@@ -8,9 +8,10 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
-import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
