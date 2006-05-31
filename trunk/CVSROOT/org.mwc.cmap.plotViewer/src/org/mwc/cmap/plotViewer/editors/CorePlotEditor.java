@@ -434,6 +434,10 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		{
 			res = _timePreferences;
 		}
+		else if (adapter == CanvasType.class)
+		{
+			res = _myChart.getCanvas();
+		}
 		else if (adapter == IGotoMarker.class)
 		{
 			return new IGotoMarker()
