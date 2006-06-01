@@ -154,11 +154,11 @@ public class WorldPathHelper extends EditorHelper
 		{
 			// try to get our editor to ditch, if we can.
 			// ditch our current editor, if we have one
-			if (_myEditor != null)
-			{
-				_myEditor.stopPainting();
-				_myEditor = null;
-			}
+//			if (_myEditor != null)
+//			{
+//				_myEditor.stopPainting();
+//				_myEditor = null;
+//			}
 			
 	//		super.deactivate();
 		}

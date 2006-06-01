@@ -11,13 +11,15 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.property_support.LatLongHelper;
+import org.mwc.cmap.core.property_support.LatLongHelper.LatLongPropertySource;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.CanvasType.PaintListener;
 import MWC.GenericData.*;
 
-public class PolygonEditorView extends ViewPart
+public class PolygonEditorView extends ViewPart implements ISelectionProvider, PropertyChangeListener
 {
 	private WorldPath _myPath;
 
@@ -31,6 +33,14 @@ public class PolygonEditorView extends ViewPart
 
 	private CountingLabelProvider _labeller;
 
+
+	/**
+	 * the people listening to us
+	 */
+	private Vector _selectionListeners;
+	
+	/** constructor...
+	 */
 	public PolygonEditorView()
 	{
 		_pSupport = new PropertyChangeSupport(this);
@@ -78,7 +88,24 @@ public class PolygonEditorView extends ViewPart
 		// try to sort out a fancy painter thingy
 		_labeller = new CountingLabelProvider();
 		_myEditor.pointList2.setLabelProvider(_labeller);
+		IDoubleClickListener _dblClickListener = new IDoubleClickListener(){
+		
+					public void doubleClick(DoubleClickEvent event)
+					{
+						doubleClicked(event);
+					}};
+		_myEditor.pointList2.addDoubleClickListener(_dblClickListener);
 
+
+		// say that we're a selection provider
+		getSite().setSelectionProvider(this);		
+	}
+
+	protected void doubleClicked(DoubleClickEvent event)
+	{
+		StructuredSelection sel = (StructuredSelection) event.getSelection();
+		WorldLocation loc = (WorldLocation) sel.getFirstElement();
+		editThisInProperties(loc);
 	}
 
 	protected WorldLocation getSelectedPoint()
@@ -324,4 +351,57 @@ public class PolygonEditorView extends ViewPart
 
 	}
 
+	public ISelection getSelection()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionListeners.remove(listener);
+	}
+
+	public void setSelection(ISelection selection)
+	{
+	}
+	
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		if (_selectionListeners == null)
+			_selectionListeners = new Vector(0, 1);
+
+		// see if we don't already contain it..
+		if (!_selectionListeners.contains(listener))
+			_selectionListeners.add(listener);
+	}
+	
+	/**
+	 * @param asSelection
+	 */
+	private void editThisInProperties(WorldLocation loc)
+	{
+		LatLongPropertySource source = new LatLongHelper.LatLongPropertySource(loc);
+		source.addPropertyChangeListener(this);
+		StructuredSelection asSelection = new StructuredSelection(source);
+		if (_selectionListeners != null)
+		{
+			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, asSelection);
+			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			{
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				if (thisL != null)
+				{
+					thisL.selectionChanged(sEvent);
+				}
+			}
+		}
+	}
+
+	public void propertyChange(PropertyChangeEvent evt)
+	{
+		System.out.println("location updated");
+	}	
 }

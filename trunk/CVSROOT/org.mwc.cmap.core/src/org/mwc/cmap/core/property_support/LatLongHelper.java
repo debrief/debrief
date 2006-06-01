@@ -3,6 +3,7 @@
  */
 package org.mwc.cmap.core.property_support;
 
+import java.beans.*;
 import java.text.DecimalFormat;
 
 import org.eclipse.core.runtime.Status;
@@ -90,6 +91,8 @@ public class LatLongHelper extends EditorHelper
 	public static class LatLongPropertySource implements IPropertySource2
 	{
 
+		private PropertyChangeSupport _pSupport;;
+		
 		/**
 		 * the working values
 		 */
@@ -217,11 +220,25 @@ public class LatLongHelper extends EditorHelper
 
 			_depth = _origDepth = new WorldDistance(location.getDepth(),
 					WorldDistanceWithUnits.METRES);
+			
+			_pSupport = new PropertyChangeSupport(this);
 
 		}
 
-		protected void firePropertyChanged(String propName)
+		public void addPropertyChangeListener(PropertyChangeListener listener)
 		{
+			_pSupport.addPropertyChangeListener(listener);
+		}
+		
+		public void removePropertyChangeListener(PropertyChangeListener listener)
+		{
+			_pSupport.removePropertyChangeListener(listener);
+		}
+		
+		private void firePropertyChanged(String type)
+		{
+			PropertyChangeEvent event = new PropertyChangeEvent(this, type, _originalLocation, getLocation());
+			_pSupport.firePropertyChange(event );
 		}
 
 		public Object getEditableValue()
@@ -397,7 +414,6 @@ public class LatLongHelper extends EditorHelper
 			// both parameters are resettable. cool.
 			return true;
 		}
-
 	}
 
 	/**
