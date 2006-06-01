@@ -7,7 +7,6 @@ import java.util.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
@@ -38,6 +37,8 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 	 * the people listening to us
 	 */
 	private Vector _selectionListeners;
+
+	private StructuredSelection _currentSelection;
 	
 	/** constructor...
 	 */
@@ -181,7 +182,6 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 				// right, ditch the old canvas, if we have one
 				if (_theCanvas != null)
 				{
-					System.out.println("pending painter remaining, removing");
 					_theCanvas.removePainter(_myPainter);
 					_theCanvas = null;
 				}
@@ -191,7 +191,6 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 
 				// and start painting to it.
 				_theCanvas.addPainter(_myPainter);
-				System.out.println("adding painter");
 			}
 		}
 	}
@@ -264,7 +263,6 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 	{
 		if (_theCanvas != null)
 		{
-			System.out.println("!removing painter..");
 			_theCanvas.removePainter(_myPainter);
 
 			// also trigger a repaint
@@ -325,6 +323,9 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 	 */
 	public void dispose()
 	{
+		// stop listening
+		clearPropertyListener();
+		
 		// just check we still haven't got a painter defined
 		stopPainting();
 
@@ -353,8 +354,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 
 	public ISelection getSelection()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		return null;// _currentSelection;
 	}
 
 
@@ -365,6 +365,19 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 
 	public void setSelection(ISelection selection)
 	{
+		_currentSelection = (StructuredSelection) selection;
+		if (_selectionListeners != null)
+		{
+			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, selection);
+			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			{
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				if (thisL != null)
+				{
+					thisL.selectionChanged(sEvent);
+				}
+			}
+		}		
 	}
 	
 
@@ -383,25 +396,39 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 	 */
 	private void editThisInProperties(WorldLocation loc)
 	{
+		// are we already listening to something?
+		clearPropertyListener();
+		
 		LatLongPropertySource source = new LatLongHelper.LatLongPropertySource(loc);
 		source.addPropertyChangeListener(this);
-		StructuredSelection asSelection = new StructuredSelection(source);
-		if (_selectionListeners != null)
+		// ok, better store it.
+		StructuredSelection newSelection = new StructuredSelection(source);
+		setSelection(newSelection);
+	}
+
+	/** stop listening to any property we're already listening to
+	 * 
+	 */
+	private void clearPropertyListener()
+	{
+		if(_currentSelection != null)
 		{
-			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, asSelection);
-			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
-			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
-				if (thisL != null)
-				{
-					thisL.selectionChanged(sEvent);
-				}
-			}
+			LatLongPropertySource ps = (LatLongPropertySource) _currentSelection.getFirstElement();
+			ps.removePropertyChangeListener(this);
+			_currentSelection = null;
 		}
 	}
 
 	public void propertyChange(PropertyChangeEvent evt)
 	{
-		System.out.println("location updated");
+		// right, get the location that's changed
+		WorldLocation original = (WorldLocation) evt.getOldValue();
+		WorldLocation newLoc = (WorldLocation) evt.getNewValue();
+
+		// update the old one
+		original.copy(newLoc);
+		
+    // and update the UI
+		updateUI();
 	}	
 }

@@ -145,7 +145,7 @@ public class WorldPathHelper extends EditorHelper
 		protected void doSetValue(Object value)
 		{
 			WorldPath myData = (WorldPath) value;
-			WorldPath toStore = new WorldPath(myData);
+			WorldPath toStore = myData;// new WorldPath(myData);
 
 			super.doSetValue(toStore);
 		}

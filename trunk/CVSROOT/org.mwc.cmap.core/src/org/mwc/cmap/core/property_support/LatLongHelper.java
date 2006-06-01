@@ -201,7 +201,7 @@ public class LatLongHelper extends EditorHelper
 
 		public LatLongPropertySource(WorldLocation location)
 		{
-			_originalLocation = new WorldLocation(location);
+			_originalLocation = location;// new WorldLocation(location);
 
 			DebriefFormatLocation.brokenDown bLat = new DebriefFormatLocation.brokenDown(
 					location.getLat(), true);
