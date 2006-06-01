@@ -23,6 +23,7 @@
       <import plugin="org.mwc.debrief.core"/>
       <import plugin="org.eclipse.ui.views"/>
       <import plugin="org.mwc.cmap.plotViewer"/>
+      <import plugin="org.mwc.debrief.legacy"/>
    </requires>
 
   <extension
