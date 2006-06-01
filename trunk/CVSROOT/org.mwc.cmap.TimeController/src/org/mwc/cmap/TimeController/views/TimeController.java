@@ -21,15 +21,18 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
+import org.mwc.cmap.TimeController.Operations.ExportTimeDataToClipboard;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.*;
 
+import Debrief.Tools.Tote.WatchableList;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
@@ -579,6 +582,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private Action _relPlotToggle;
 
+	private Action _exportDataToClipboard;
+
+	/**
+	 * keep track of what tracks are open - we may want to use them for our
+	 * exporting calc data to clipboard
+	 */
+	protected TrackDataProvider _myTrackProvider;
+
 	private void fireNewTime(HiResDate dtg)
 	{
 		if (!_firingNewTime)
@@ -696,7 +707,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					}
 
 				});
-		_myPartMonitor.addPartListener(ControllableTime.class, PartMonitor.CLOSED,
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
@@ -801,6 +812,29 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						}
 					}
 				});
+
+		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// implementation here.
+						_myTrackProvider = (TrackDataProvider) part;
+					}
+
+				});
+		_myPartMonitor.addPartListener(TrackDataProvider.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						if (part == _myTrackProvider)
+						{
+							_myTrackProvider = null;
+						}
+					}
+				});
+
 		_myPartMonitor.addPartListener(LayerPainterManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -955,14 +989,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	}
 
-	/** remember the new relative projection provider
+	/**
+	 * remember the new relative projection provider
 	 * 
 	 * @param relProjector
 	 */
 	protected void storeProjectionParent(RelativeProjectionParent relProjector)
 	{
 		// ok, this isn't us, is it?
-		if(relProjector != this)
+		if (relProjector != this)
 		{
 			// ok, store it
 			_relativeProjector = relProjector;
@@ -976,9 +1011,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		// and tell it we're here
 		_targetProjection.setRelativeProjectionParent(this);
-		
+
 		// and reflect it's current status
-		if(_relPlotToggle != null)
+		if (_relPlotToggle != null)
 			_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
 	}
 
@@ -1430,13 +1465,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					if (_targetProjection != null)
 					{
 						_targetProjection.setRelativePlot(_relPlotToggle.isChecked());
-						
+
 						// and trigger redraw
 						IWorkbench wb = PlatformUI.getWorkbench();
 						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 						IWorkbenchPage page = win.getActivePage();
 						IEditorPart editor = page.getActiveEditor();
-						if(editor instanceof CorePlotEditor)
+						if (editor instanceof CorePlotEditor)
 						{
 							CorePlotEditor plot = (CorePlotEditor) editor;
 							plot.update();
@@ -1444,12 +1479,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					}
 				}
 			};
-			_relPlotToggle.setToolTipText("Switch the projection to always be centred on primary track");
+			_relPlotToggle
+					.setToolTipText("Switch the projection to always be centred on primary track");
 			_relPlotToggle.setImageDescriptor(org.mwc.cmap.TimeController.TimeControllerPlugin
 					.getImageDescriptor("icons/lock_view.png"));
-			
+
 			// initialise it, if we have a plot
-			if(_targetProjection != null)
+			if (_targetProjection != null)
 				_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
 		}
 
@@ -1522,6 +1558,26 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_filterToSelectionAction.setToolTipText("Filter plot data to selected time period");
 		menuManager.add(_filterToSelectionAction);
 		toolManager.add(_filterToSelectionAction);
+
+		// hmm, what about our export to clipboard action
+		if (_exportDataToClipboard == null)
+		{
+			_exportDataToClipboard = new Action()
+			{
+
+				public void run()
+				{
+					exportDataToClipboard();
+				}
+			};
+			_exportDataToClipboard.setText("Export calculated data to clipboard");
+			_exportDataToClipboard
+					.setToolTipText("For the indicated time period, export data calculated between current primary and secondary tracks to the clipboard");
+			_exportDataToClipboard.setImageDescriptor(CorePlugin
+					.getImageDescriptor("icons/Calculator.gif"));
+		}
+		// ok, stick it on the clipboard
+		menuManager.add(_exportDataToClipboard);
 
 		// and a list of properties editors
 		// first - setup the parent menu item
@@ -1845,5 +1901,37 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		if (_relativeProjector != null)
 			res = _relativeProjector.getLocation();
 		return res;
+	}
+
+	/**
+	 * ok - do the export to clipboard
+	 */
+	private void exportDataToClipboard()
+	{
+		if (_myTrackProvider != null)
+		{
+			WatchableList thePrimary = _myTrackProvider.getPrimaryTrack();
+			WatchableList[] theSecList = _myTrackProvider.getSecondaryTracks();
+			if (thePrimary == null)
+			{
+				CorePlugin.showMessage("Export data",
+						"Please select a primary track for the current plot");
+			}
+			else if ((theSecList == null) || (theSecList.length == 0))
+			{
+				CorePlugin.showMessage("Export data",
+						"Please select one or more secondary tracks for the current plot");
+			}
+			else
+			{
+				Vector theSecs = new Vector(0, 1);
+				for (int i = 0; i < theSecList.length; i++)
+				{
+					WatchableList list = theSecList[i];
+					theSecs.add(list);
+				}
+				ExportTimeDataToClipboard.export(getPeriod(), thePrimary, theSecs);
+			}
+		}
 	}
 }
