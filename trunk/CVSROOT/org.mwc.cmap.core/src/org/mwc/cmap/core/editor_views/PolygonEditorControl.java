@@ -1,10 +1,10 @@
 package org.mwc.cmap.core.editor_views;
 import org.eclipse.jface.viewers.ListViewer;
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
+import org.mwc.cmap.core.CorePlugin;
 
 public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Composite implements SelectionListener {
 	private Composite topHolder;
@@ -15,7 +15,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 	public Button delBtn;
 	public Button downBtn;
 	public Button upBtn;
-	private Label helpLbl;
+	public Label helpLbl;
 
 //	/**
 //	* Auto-generated main method to display this 
@@ -55,6 +55,13 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 		initGUI();
 		{
 		}
+		{
+			// ok, sort out the images
+			downBtn.setImage(CorePlugin.getImageFromRegistry("down.gif"));
+			upBtn.setImage(CorePlugin.getImageFromRegistry("up.gif"));
+			newBtn.setImage(CorePlugin.getImageFromRegistry("NewPin.gif"));
+			delBtn.setImage(CorePlugin.getImageFromRegistry("DeletePin.gif"));
+			}
 	}
 
 	private void initGUI() {
@@ -70,7 +77,8 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 				topHolder.setLayout(topHolderLayout);
 				{
 					helpLbl = new Label(topHolder, SWT.WRAP);
-					helpLbl.setText("here goes the initial guidance \nfor use of this control");
+
+					helpLbl.setText("helpTxt");
 				}
 				{
 					btnHolder = new Composite(topHolder, SWT.NONE);
@@ -85,6 +93,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						upBtnLData.grabExcessHorizontalSpace = true;
 						upBtn.setLayoutData(upBtnLData);
 						upBtn.setText("Up");
+						upBtn.setToolTipText("Move point up order");
 						upBtn.addSelectionListener(this);
 					}
 					{
@@ -94,6 +103,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						downBtnLData.grabExcessHorizontalSpace = true;
 						downBtn.setLayoutData(downBtnLData);
 						downBtn.setText("Down");
+						downBtn.setToolTipText("Move point down order");
 						downBtn.addSelectionListener(this);
 					}
 					{
@@ -103,6 +113,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						newBtnLData.grabExcessHorizontalSpace = true;
 						newBtn.setLayoutData(newBtnLData);
 						newBtn.setText("New");
+						newBtn.setToolTipText("Add new point");
 						newBtn.addSelectionListener(this);
 					}
 					{
@@ -112,6 +123,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						DelBtnLData.grabExcessHorizontalSpace = true;
 						delBtn.setLayoutData(DelBtnLData);
 						delBtn.setText("Delete");
+						delBtn.setToolTipText("Delete current point");
 						delBtn.addSelectionListener(this);
 					}
 				}			}
