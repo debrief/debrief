@@ -4,12 +4,16 @@ import java.awt.*;
 import java.beans.*;
 import java.util.*;
 
+import org.eclipse.core.commands.ExecutionException;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.LatLongHelper;
 import org.mwc.cmap.core.property_support.LatLongHelper.LatLongPropertySource;
 
@@ -18,7 +22,8 @@ import MWC.GUI.*;
 import MWC.GUI.CanvasType.PaintListener;
 import MWC.GenericData.*;
 
-public class PolygonEditorView extends ViewPart implements ISelectionProvider, PropertyChangeListener
+public class PolygonEditorView extends ViewPart implements ISelectionProvider,
+		PropertyChangeListener
 {
 	private WorldPath _myPath;
 
@@ -32,15 +37,15 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 
 	private CountingLabelProvider _labeller;
 
-
 	/**
 	 * the people listening to us
 	 */
 	private Vector _selectionListeners;
 
 	private StructuredSelection _currentSelection;
-	
-	/** constructor...
+
+	/**
+	 * constructor...
 	 */
 	public PolygonEditorView()
 	{
@@ -89,19 +94,22 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 		// try to sort out a fancy painter thingy
 		_labeller = new CountingLabelProvider();
 		_myEditor.pointList2.setLabelProvider(_labeller);
-		IDoubleClickListener _dblClickListener = new IDoubleClickListener(){
-		
-					public void doubleClick(DoubleClickEvent event)
-					{
-						doubleClicked(event);
-					}};
+		IDoubleClickListener _dblClickListener = new IDoubleClickListener()
+		{
+
+			public void doubleClick(DoubleClickEvent event)
+			{
+				doubleClicked(event);
+			}
+		};
 		_myEditor.pointList2.addDoubleClickListener(_dblClickListener);
-		_myEditor.helpLbl.setText("Manipulate your points using the buttons to the right, " +
-		" by double-clicking on a point to change it in the Properties view, or by dragging" +
-		" in Drag Component mouse mode.");
-		
+		_myEditor.helpLbl
+				.setText("Manipulate your points using the buttons to the right, "
+						+ " by double-clicking on a point to change it in the Properties view, or by dragging"
+						+ " in Drag Component mouse mode.");
+
 		// say that we're a selection provider
-		getSite().setSelectionProvider(this);		
+		getSite().setSelectionProvider(this);
 	}
 
 	protected void doubleClicked(DoubleClickEvent event)
@@ -133,31 +141,63 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 		Object source = e.widget;
 		if (source == _myEditor.delBtn)
 		{
-			_myPath.remove(thisPoint);
-			updateUI();
+			removePoint(thisPoint);
 			selection = null;
 		}
 		else if (source == _myEditor.upBtn)
 		{
-			_myPath.moveUpward(thisPoint);
-			updateUI();
+			moveUpward(thisPoint);
 		}
 		else if (source == _myEditor.downBtn)
 		{
-			_myPath.moveDownward(thisPoint);
-			updateUI();
+			moveDownward(thisPoint);
 		}
 		else if (source == _myEditor.newBtn)
 		{
 			// right, what's the center point?
 			WorldLocation centre = _myPath.getBounds().getCentre();
-			_myPath.addPoint(centre);
-			updateUI();
+			addPoint(centre);
 		}
 
 		// and restore the seletion
 		_myEditor.pointList2.setSelection(selection);
 
+	}
+
+	/**
+	 * @param centre
+	 */
+	private void addPoint(WorldLocation centre)
+	{
+		NewPointAction theAction = new NewPointAction(_myPath, centre);
+		CorePlugin.run(theAction);
+	}
+
+	/**
+	 * @param thisPoint
+	 */
+	private void moveDownward(WorldLocation thisPoint)
+	{
+		MoveDownAction theAction = new MoveDownAction(_myPath, thisPoint);
+		CorePlugin.run(theAction);
+	}
+
+	/**
+	 * @param thisPoint
+	 */
+	private void moveUpward(WorldLocation thisPoint)
+	{
+		MoveUpAction theAction = new MoveUpAction(_myPath, thisPoint);
+		CorePlugin.run(theAction);
+	}
+
+	/**
+	 * @param thisPoint
+	 */
+	private void removePoint(WorldLocation thisPoint)
+	{
+		DeleteAction theAction = new DeleteAction(_myPath, thisPoint);
+		CorePlugin.run(theAction);
 	}
 
 	public void setFocus()
@@ -327,7 +367,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 	{
 		// stop listening
 		clearPropertyListener();
-		
+
 		// just check we still haven't got a painter defined
 		stopPainting();
 
@@ -359,7 +399,6 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 		return null;// _currentSelection;
 	}
 
-
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		_selectionListeners.remove(listener);
@@ -379,9 +418,8 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 					thisL.selectionChanged(sEvent);
 				}
 			}
-		}		
+		}
 	}
-	
 
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
@@ -392,7 +430,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 		if (!_selectionListeners.contains(listener))
 			_selectionListeners.add(listener);
 	}
-	
+
 	/**
 	 * @param asSelection
 	 */
@@ -400,7 +438,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 	{
 		// are we already listening to something?
 		clearPropertyListener();
-		
+
 		LatLongPropertySource source = new LatLongHelper.LatLongPropertySource(loc);
 		source.addPropertyChangeListener(this);
 		// ok, better store it.
@@ -408,14 +446,15 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 		setSelection(newSelection);
 	}
 
-	/** stop listening to any property we're already listening to
-	 * 
+	/**
+	 * stop listening to any property we're already listening to
 	 */
 	private void clearPropertyListener()
 	{
-		if(_currentSelection != null)
+		if (_currentSelection != null)
 		{
-			LatLongPropertySource ps = (LatLongPropertySource) _currentSelection.getFirstElement();
+			LatLongPropertySource ps = (LatLongPropertySource) _currentSelection
+					.getFirstElement();
 			ps.removePropertyChangeListener(this);
 			_currentSelection = null;
 		}
@@ -429,8 +468,167 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 
 		// update the old one
 		original.copy(newLoc);
-		
-    // and update the UI
+
+		// and update the UI
 		updateUI();
-	}	
+	}
+
+	public class MoveUpAction extends AbstractPolygonAction
+	{
+		public MoveUpAction(WorldPath path, WorldLocation loc)
+		{
+			super(path, loc, "Move point upward");
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			goUp();
+			updateUI();
+
+			return Status.OK_STATUS;
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			goDown();
+			updateUI();
+
+			return Status.OK_STATUS;
+		}
+	}
+
+	public class MoveDownAction extends AbstractPolygonAction
+	{
+		public MoveDownAction(WorldPath path, WorldLocation loc)
+		{
+			super(path, loc, "Move point downward");
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			goDown();
+			updateUI();
+
+			return Status.OK_STATUS;
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			goUp();
+			updateUI();
+
+			return Status.OK_STATUS;
+		}
+	}
+
+	public class NewPointAction extends AbstractPolygonAction
+	{
+		public NewPointAction(WorldPath path, WorldLocation loc)
+		{
+			super(path, loc, "Insert new point");
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			_path.addPoint(_loc);
+			updateUI();
+
+			return Status.OK_STATUS;
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			_path.remove(_loc);
+			updateUI();
+
+			return Status.OK_STATUS;
+		}
+	}
+
+	public class DeleteAction extends AbstractPolygonAction
+	{
+		private int _index;
+
+		public DeleteAction(WorldPath path, WorldLocation loc)
+		{
+			super(path, loc, "Delete point in polygon");
+
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			// right, remember where it is
+			_index = _path.indexOf(_loc);
+
+			// now ditch it
+			_path.remove(_loc);
+
+			updateUI();
+			return Status.OK_STATUS;
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			// ok, put it back in
+			_path.insertPointAt(_loc, _index);
+			updateUI();
+
+			return Status.OK_STATUS;
+		}
+	}
+
+	abstract public class AbstractPolygonAction extends CMAPOperation
+	{
+
+		/** the polygon we're operating on
+		 * 
+		 */
+		protected WorldPath _path;
+
+		/** the point we're manipulating
+		 * 
+		 */
+		protected WorldLocation _loc;
+
+		public AbstractPolygonAction(WorldPath path, WorldLocation loc, String title)
+		{
+			super(title);
+			_path = path;
+			_loc = loc;
+		}
+
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			return execute(monitor, info);
+		}
+
+		abstract public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException;
+
+		public abstract IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException;
+
+		public final void goDown()
+		{
+			_path.moveDownward(_loc);
+			updateUI();
+		}
+
+		public final void goUp()
+		{
+			_path.moveUpward(_loc);
+			updateUI();
+		}
+
+	}
+
 }
