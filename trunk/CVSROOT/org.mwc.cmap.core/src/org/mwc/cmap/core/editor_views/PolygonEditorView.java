@@ -96,8 +96,10 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider, P
 						doubleClicked(event);
 					}};
 		_myEditor.pointList2.addDoubleClickListener(_dblClickListener);
-
-
+		_myEditor.helpLbl.setText("Manipulate your points using the buttons to the right, " +
+		" by double-clicking on a point to change it in the Properties view, or by dragging" +
+		" in Drag Component mouse mode.");
+		
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);		
 	}
