@@ -73,8 +73,8 @@ public class DTGHelper extends EditorHelper
 		static
 		{
 			descriptors = new IPropertyDescriptor[] {
-					new TextPropertyDescriptor(ID_DATE, "date"),
-					new TextPropertyDescriptor(ID_TIME, "time"), };
+					new TextPropertyDescriptor(ID_DATE, "date (dd/mmm/yyyy)"),
+					new TextPropertyDescriptor(ID_TIME, "time (hh:mm:ss)"), };
 		}
 
 		public DTGPropertySource(HiResDate dtg)
