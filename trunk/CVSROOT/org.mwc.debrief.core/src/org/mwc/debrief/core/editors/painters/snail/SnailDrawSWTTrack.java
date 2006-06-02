@@ -179,7 +179,6 @@ final class SnailDrawSWTTrack
         Iterator iter = dotPoints.iterator();
         while(iter.hasNext())
         {
-
           final Color newCol;
 
           // see if we are fading to black
@@ -204,7 +203,7 @@ final class SnailDrawSWTTrack
 
           // get this fix
           FixWrapper gw = (FixWrapper)iter.next();
-
+          
           // get the location
           WorldLocation loc = gw.getLocation();
 
@@ -245,14 +244,20 @@ final class SnailDrawSWTTrack
           // see if we are plotting the DTG
           if(gw.getLabelShowing())
           {
-//            // set the font to the current font for the fix (so that we get the metrics right)
-//            dest.setFont(gw.getFont());
-
             // get the text itself, again for the metrics
             String msg = gw.getName();
+            
+            // store the old label color
+            Color oldCol = gw.getColor();
+            
+            // use the new color
+            gw.setColor(newCol);
 
             // and get the label to paint itself
             gw.paintLabel(dest);
+            
+            // restore the old color
+            gw.setColor(oldCol);
 
             // somehow we need to include this extended area
             int sWid = dest.getStringWidth(gw.getFont(), msg);
