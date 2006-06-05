@@ -9,6 +9,7 @@ import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
@@ -93,6 +94,8 @@ public class LayerManagerView extends ViewPart
 	private Action _expandAllAction;
 
 	protected TrackManager _theTrackDataListener;
+
+	private LayerMgrDragDropSupport _dragDropSupport;
 
 	/**
 	 * whether we are already ignoring firing messages
@@ -373,6 +376,10 @@ public class LayerManagerView extends ViewPart
 			}
 
 		});
+
+		_dragDropSupport = new LayerMgrDragDropSupport(_treeViewer);
+		_treeViewer.addDragSupport(DND.DROP_MOVE, _dragDropSupport.getTypes(), _dragDropSupport);
+		_treeViewer.addDropSupport(DND.DROP_MOVE, _dragDropSupport.getTypes(), _dragDropSupport);
 
 		// and format the tree
 		Tree tree = _treeViewer.getTree();
