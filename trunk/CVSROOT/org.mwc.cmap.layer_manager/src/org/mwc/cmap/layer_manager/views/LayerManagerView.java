@@ -378,8 +378,8 @@ public class LayerManagerView extends ViewPart
 		});
 
 		_dragDropSupport = new LayerMgrDragDropSupport(_treeViewer);
-		_treeViewer.addDragSupport(DND.DROP_MOVE, _dragDropSupport.getTypes(), _dragDropSupport);
-		_treeViewer.addDropSupport(DND.DROP_MOVE, _dragDropSupport.getTypes(), _dragDropSupport);
+		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport.getTypes(), _dragDropSupport);
+		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport.getTypes(), _dragDropSupport);
 
 		// and format the tree
 		Tree tree = _treeViewer.getTree();
