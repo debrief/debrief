@@ -62,7 +62,7 @@
 <revnumber>2.0</revnumber> <date>1st March 2006</date> 
 <authorinitials>IM</authorinitials> 
 <revremark>Start transition to Debrief NG</revremark> 
-</revision>
+</revision> 
 <revision> 
 <revnumber>1.7</revnumber> <date>10th July 2004</date> 
 <authorinitials>IM</authorinitials> 
@@ -349,7 +349,7 @@ The wider national/international use of
 <entry> 
 <para>COMSUBDEVRON 12
                     <address>
-                      <firstname>Mr James Smith</firstname>
+                      
                       <street>Submarine Development Squadron Twelve</street>
                       <city>Naval Submarine Base New London</city>
                       <state>Groton, CT</state>
@@ -536,27 +536,6 @@ Naval Undersea Warfare Center (NUWC)
 <sect1 id="pre_install_debrief"> 
 <title>Before installing Debrief</title> 
 <sect2> 
-<title>Preparing your system</title> 
-<para>
-            <application>Debrief</application> and it&apos;s installer
-            <indexterm>
-              <primary>Installing Debrief</primary>
-            </indexterm> are built using a software library named
-            <application>Java</application>.
-            <application>Java</application> is a product of
-            <ulink url="http://java.sun.com">Sun Microsystems Limited</ulink>. Most version of Microsoft Windows ship with a version of
-            <application>Java</application> sufficient to install the Debrief software, and once installed, the
-            <application>Debrief</application> installation itself includes a copy of
-            <application>Java</application>. For other operating systems, the newest version of
-            <application>Java</application> for your operating system may be downloaded from the
-            <application>Java</application>
-            <ulink url="http://java.sun.com/j2se/1.4">download page</ulink>.
-          </para> 
-<para>
-            <inlinegraphic fileref="figures/java.gif"/>
-          </para> 
-</sect2> 
-<sect2> 
 <title>Obtaining Debrief</title> 
 <para>A number of project
             <indexterm>
@@ -569,8 +548,9 @@ Naval Undersea Warfare Center (NUWC)
           </para> 
 <para>The home page for
             <application>Debrief</application> on
-            <application>SourceForge</application> is at:
-            <ulink url="http://sourceforge.net/projects/debrief">http://sourceforge.net/projects/debrief</ulink>. From this home you can read the latest news on Debrief, request new features, report bugs, and download the most recent version.  To obtain the latest version, examine the table titled "Latest File Releases", and click on the
+            <application>SourceForge</application> is at
+            <ulink url="http://sourceforge.net/projects/debrief">http://sourceforge.net/projects/debrief</ulink>. From this home you can read the latest news on Debrief, request new features, report bugs, and download the most recent version.  </para> 
+<para>To obtain the latest version, examine the table titled "Latest File Releases", and click on the
             <guilabel>Download</guilabel> link next to
             <guilabel>Debrief-Installation-Set</guilabel>. Then click on
             <guilabel>install.exe</guilabel> for a windows version of Debrief, or
@@ -603,7 +583,7 @@ Naval Undersea Warfare Center (NUWC)
 <title>Running installation</title> 
 <warning> 
 <para>If you already have
-              <application>Debrief</application> 2000, 2001 or 2002 installed on your machine you should attempt to remove it using the
+              <application>Debrief NG</application>  installed   on your machine you should attempt to remove it using the
               <guibutton>Add/Remove Programs</guibutton> button from the
               <guibutton>Settings</guibutton> button on the
               <application>Windows</application>
@@ -620,7 +600,7 @@ Naval Undersea Warfare Center (NUWC)
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/install1.gif"/>
+                    <imagedata fileref="figures/install1.png"/>
                   </imageobject>
                   <textobject>
                     <phrase>Welcome view of the installer</phrase>
@@ -639,7 +619,7 @@ Naval Undersea Warfare Center (NUWC)
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/install2.gif"/>
+                    <imagedata fileref="figures/install2.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -650,7 +630,7 @@ Naval Undersea Warfare Center (NUWC)
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/install3.gif"/>
+                    <imagedata fileref="figures/install3.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -660,7 +640,7 @@ Naval Undersea Warfare Center (NUWC)
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/install4.gif"/>
+                    <imagedata fileref="figures/install4.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -677,7 +657,7 @@ Naval Undersea Warfare Center (NUWC)
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/install5.gif"/>
+                    <imagedata fileref="figures/install5.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -702,59 +682,35 @@ Naval Undersea Warfare Center (NUWC)
 	   overlap if you have limited screen space).
           </para> 
 <figure float="0"> 
-<title>Debrief&apos;s initial view</title> 
+<title>Debrief&apos;s Welcome view</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/apptoolbar.gif"/> 
+<imageobject> <imagedata fileref="figures/apptoolbar.png"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
 </figure> 
-<para>The title-bar of the window you see indicates the
-	    build-date of the version you are using.  The menus you
-	    see are similar to those you would see in any desktop
-	    application, if a little more sparse (the
-            <guilabel>New (default plot)</guilabel> command, used to load a default plot, is discussed further below).  The toolbar shown
-	    has 4 buttons on it, to provide the following:
-
-
-            <variablelist>
-              <varlistentry>
-                <term>New Plot</term>
-                <listitem>
-                  <para>To create a new,
-		    blank
-		    plot</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Open Plot</term> 
-<listitem> 
-<para>To re-open an
-		    existing
-		    plot</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Close Plot</term> 
-<listitem> 
-<para>To close the
-		    current
-		    plot</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Exit</term> 
-<listitem> 
-<para>To exit
-                    <application>Debrief</application>
-                  </para> 
-</listitem> 
-</varlistentry> 
-</variablelist> Now click on <guilabel>New Plot</guilabel> ( <guiicon>
-              <inlinegraphic fileref="figures/NewSession.gif"/>
-            </guiicon>) to create a new session, which will be introduced in the
-next section. </para> 
+<para>When opened for the very first time Debrief shows its Welcome page.  This page (shown above) includes a series of links to high-level introductory information.  The Overview page contains guidance for  new-adopters of Debrief, whereas the Tutorials page contains leads users through more specific tasks through the use of <glossterm linkend="g_cheat">cheat-sheets</glossterm> - small pages breaking a task down into a series of tasks. The buttons at the top-left of each page navigate you around the welcome guidance.  Two tutorials in particular will help new Debrief-adopters:<variablelist><varlistentry><term>Generating a project</term><listitem><para>Debrief NG likes to store your work in specific folders designated as <emphasis>projects</emphasis>.   Once created, the project can contain sub-folders, or links to other folders as described below.</para> 
+</listitem>
+</varlistentry>
+<varlistentry>
+<term>Getting your data into Debrief</term>
+<listitem>
+<para>In addition to storing your data in a Debrief NG project, you can provide a link to your existing data-directory, and pull files directly from there.</para>
+</listitem>
+</varlistentry>
+</variablelist></para>
+<para>Starting any of the cheat-sheets will shrink the Welcome guidance to a smaller pane exposing the rest of Debrief NG as shown in the following diagram. </para>
+<figure float="0"> 
+<title>Debrief&apos;s default view</title> 
+<screenshot> 
+<mediaobject> 
+<imageobject> <imagedata fileref="figures/bare_app.png"/> 
+</imageobject> 
+</mediaobject> 
+</screenshot> 
+</figure>
+<para>The Debrief user-interface follows the Workbench convention, whereby a users edits individual files in an <emphasis>Editor</emphasis> supported by a series of supporting information panes called <emphasis>Views</emphasis>.  The specific arrangement of editors and views offered by Default is called a <emphasis>Perspective</emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective. The Tactical Analysis perspective arranges the views into sets of grouped tabs, though views can be dragged to any other location on the workbench, or floated above the workbench.  Views frequently have their own toolbar and drop-down menu providing actions related to that particular task.      Once selected, views are closed by clicking on the white diagonally oriented cross.  To re-open a view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu.  A list of Debrief-related views will be shown. Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu item</para> 
 <note> 
 <formalpara> 
 <title>Loading default plot</title> 
@@ -771,6 +727,10 @@ next section. </para>
 </formalpara> 
 </note> 
 </sect2> 
+<sect2>
+<title>Loading your first plot</title>
+<para></para>
+</sect2>
 <sect2 id="new_session"> 
 <title>New Session</title> 
 <para>The
@@ -7414,6 +7374,12 @@ range = Range to target from ownship (yds)</markup>
 <para>Acronym representing Date Time Group</para> 
 </glossdef> 
 </glossentry> 
+<glossentry id="g_cheat"> 
+<glossterm>Cheat Sheets</glossterm> 
+<glossdef> 
+<para>Cheat sheets guide users through tasks. The task is broken down into steps and presented to the user one step at a time, and the user checks off the steps as he/she completes them.</para> 
+</glossdef> 
+</glossentry>
 <glossentry id="g_highlighter"> 
 <glossterm>Highlighter</glossterm> 
 <glossdef> 
