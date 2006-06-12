@@ -287,7 +287,7 @@
                               
          <action
                class="org.mwc.cmap.plotViewer.actions.ExportWMF"
-               icon="icons/write_wmf.gif"
+               icon="icons/photo_scenery.png"
                id="org.mwc.debrief.core.ExportWMF"
                label="&amp;Export WMF"
                menubarPath="file/additions"
