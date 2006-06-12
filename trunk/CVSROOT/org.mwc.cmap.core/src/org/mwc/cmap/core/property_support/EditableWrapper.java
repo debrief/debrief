@@ -250,7 +250,7 @@ public class EditableWrapper implements IPropertySource
 
 		// ok, create the action
 		PropertyChangeAction pca = new PropertyChangeAction(oldVal, value, thisProp,
-				getEditable().getName(), getLayers());
+				getEditable().getName(), getLayers(), null);
 
 		// and sort it out with the history
 		CorePlugin.run(pca);
@@ -299,6 +299,11 @@ public class EditableWrapper implements IPropertySource
 
 		private final Layers _wholeLayers;
 
+		/** the parent plottable for this item - the layer that we fire an
+		 * update for after a change
+		 */
+		private Layer _topLevelLayer;
+
 		/**
 		 * setup the change details
 		 * 
@@ -316,7 +321,7 @@ public class EditableWrapper implements IPropertySource
 		 *          the layers object we inform about the change
 		 */
 		public PropertyChangeAction(Object oldValue, Object newValue,
-				DebriefProperty subject, String name, Layers wholeLayers)
+				DebriefProperty subject, String name, Layers wholeLayers, Layer topLevelLayer)
 		{
 			super(name + " " + subject.getDisplayName());
 
@@ -326,6 +331,7 @@ public class EditableWrapper implements IPropertySource
 			_newValue = newValue;
 			_property = subject;
 			_wholeLayers = wholeLayers;
+			_topLevelLayer = topLevelLayer;
 		}
 
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
@@ -344,7 +350,7 @@ public class EditableWrapper implements IPropertySource
 			// object
 			// (it could be an xy plot)
 			if (_wholeLayers != null)
-				_wholeLayers.fireReformatted(null);
+				_wholeLayers.fireReformatted(_topLevelLayer);
 
 			return Status.OK_STATUS;
 		}
@@ -366,7 +372,7 @@ public class EditableWrapper implements IPropertySource
 					_property.getDisplayName(), _newValue, _oldValue);
 
 			// fire the reformatted event for the parent layer
-			_wholeLayers.fireReformatted(null);
+			_wholeLayers.fireReformatted(_topLevelLayer);
 
 			// and return the status
 			return Status.OK_STATUS;
