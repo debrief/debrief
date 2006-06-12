@@ -479,9 +479,21 @@ public class RightClickSupport
 			{
 				_setter.invoke(_subject, new Object[] { _newValue });
 			}
-			catch (Exception e)
+			catch (InvocationTargetException e)
 			{
-				CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
+				CorePlugin.logError(Status.ERROR, "Setter call failed:"
+						+ _subject.getName() + " Error was:" + e.getTargetException().getMessage(), e.getTargetException());
+				res = null;
+			}
+			catch (IllegalArgumentException e)
+			{
+				CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
+						+ _subject.getName(), e);
+				res = null;
+			}
+			catch (IllegalAccessException e)
+			{
+				CorePlugin.logError(Status.ERROR, "Illegal access problem for:"
 						+ _subject.getName(), e);
 				res = null;
 			}
