@@ -29,59 +29,65 @@ import MWC.GenericData.WorldLocation;
  */
 public class CorePlugin extends AbstractUIPlugin
 {
-	
+
 	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
+
 	public static final String NARRATIVES = "org.mwc.cmap.narrative.views.NarrativeView";
+
 	public static final String PLOT_3d = "org.mwc.cmap.plot3d.views.Plot3dView";
+
 	public static final String TOTE = "org.mwc.cmap.tote.views.ToteView";
+
 	public static final String TIME_CONTROLLER = "org.mwc.cmap.TimeController.views.TimeController";
+
 	public static final String XY_PLOT = "org.mwc.cmap.xyplot.views.XYPlotView";
+
 	public static final String OVERVIEW_PLOT = "org.mwc.cmap.overview.views.ChartOverview";
-	public static final String STACKED_DOTS = "org.mwc.debrief.track_shift.views.StackedDotsView";	
+
+	public static final String STACKED_DOTS = "org.mwc.debrief.track_shift.views.StackedDotsView";
+
 	public static final String POLYGON_EDITOR = "org.mwc.cmap.core.editor_views.PolygonEditorView";
-	
+
 	// The shared instance.
 	private static CorePlugin plugin;
 
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
-	
-	/** the Debrief tool-parent used to provide legacy access to properties
-	 * 
+
+	/**
+	 * the Debrief tool-parent used to provide legacy access to properties
 	 */
 	private static DebriefToolParent _toolParent;
-	
 
-	/** the shared line of status text used across CMAP apps
-	 * 
+	/**
+	 * the shared line of status text used across CMAP apps
 	 */
-	private static LineItem _myLineItem = null;	
+	private static LineItem _myLineItem = null;
 
 	/**
 	 * where we cache our images
 	 */
 	private ImageRegistry _imageRegistry;
 
-	/** our CMAP-wide clipboard
-	 * 
+	/**
+	 * our CMAP-wide clipboard
 	 */
 	private Clipboard _myClipboard;
-	
-	/** the undo buffer we manage/support
-	 * 
+
+	/**
+	 * the undo buffer we manage/support
 	 */
 	private static IOperationHistory _myHistory;
-	
-	/** and the context used to describe our undo list
-	 * 
-	 */
-	public final static IUndoContext CMAP_CONTEXT = new ObjectUndoContext("CMAP"); 
 
-	/** fixed string used to indicate a string is in our location format
-	 * 
+	/**
+	 * and the context used to describe our undo list
+	 */
+	public final static IUndoContext CMAP_CONTEXT = new ObjectUndoContext("CMAP");
+
+	/**
+	 * fixed string used to indicate a string is in our location format
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
-
 
 	/**
 	 * The constructor.
@@ -90,11 +96,10 @@ public class CorePlugin extends AbstractUIPlugin
 	{
 		super();
 		plugin = this;
-		
 
-    // store our color property editor
-    java.beans.PropertyEditorManager.registerEditor(Color.class,
-                      MWC.GUI.Properties.ColorPropertyEditor.class);		
+		// store our color property editor
+		java.beans.PropertyEditorManager.registerEditor(Color.class,
+				MWC.GUI.Properties.ColorPropertyEditor.class);
 	}
 
 	/**
@@ -103,23 +108,22 @@ public class CorePlugin extends AbstractUIPlugin
 	public void start(BundleContext context) throws Exception
 	{
 		super.start(context);
-		
-		
+
 		// create something capable of handling legacy preferences
 		_toolParent = new DebriefToolParent(getPreferenceStore(), getHistory());
-		
+
 		// tell the VPF generator where to get its preferences from
 		CreateVPFLayers.initialise(_toolParent);
-		
+
 		// also initialise the ETOPO wrapper (if we have to)
 		CreateTOPO.initialise(_toolParent);
-		
+
 		// and the range calculator
 		rangeCalc.init(_toolParent);
-		
+
 		// and the coastline-reader
 		CoastPainter.initialise(_toolParent);
-		
+
 		// and the application - so we can use our own toolparent for the properties
 		Application.initialise(_toolParent);
 	}
@@ -142,14 +146,14 @@ public class CorePlugin extends AbstractUIPlugin
 		return plugin;
 	}
 
-	/** retrieve the toolparent we're using
-	 * 
+	/**
+	 * retrieve the toolparent we're using
 	 */
 	public static ToolParent getToolParent()
 	{
 		return _toolParent;
 	}
-	
+
 	/**
 	 * Returns the string from the plugin's resource bundle, or 'key' if not
 	 * found.
@@ -160,36 +164,39 @@ public class CorePlugin extends AbstractUIPlugin
 		try
 		{
 			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e)
+		}
+		catch (MissingResourceException e)
 		{
 			return key;
 		}
 	}
 
-	
-	/** get the CMAP clipboard
+	/**
+	 * get the CMAP clipboard
 	 * 
 	 * @return
 	 */
 	public Clipboard getClipboard()
 	{
-		if(_myClipboard == null)
+		if (_myClipboard == null)
 			_myClipboard = new Clipboard(Display.getCurrent());
-		
+
 		return _myClipboard;
 	}
-	
-	/** get the undo buffer
+
+	/**
+	 * get the undo buffer
+	 * 
 	 * @return the undo buffer (called a History in Eclipse)
 	 */
 	public static IOperationHistory getHistory()
 	{
-		if(_myHistory == null)
+		if (_myHistory == null)
 			_myHistory = OperationHistoryFactory.getOperationHistory();
-		
+
 		return _myHistory;
 	}
-	
+
 	/**
 	 * Returns the plugin's resource bundle,
 	 */
@@ -200,34 +207,38 @@ public class CorePlugin extends AbstractUIPlugin
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle
 						.getBundle("org.mwc.cmap.core.CorePluginResources");
-		} catch (MissingResourceException x)
+		}
+		catch (MissingResourceException x)
 		{
 			resourceBundle = null;
 		}
 		return resourceBundle;
 	}
 
-	/** convenience method to assist in extracting a location from the clipboard
+	/**
+	 * convenience method to assist in extracting a location from the clipboard
 	 * 
 	 * @param txt
 	 * @return
 	 */
 	public static WorldLocation fromClipboard(String txt)
-	{		
+	{
 		// get rid of the title
 		String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(), txt.length());
-	  StringTokenizer st = new StringTokenizer(dataPart);
-	  String latP = st.nextToken(",");
-	  String longP = st.nextToken(",");
-	  String depthP = st.nextToken();
-	  Double _lat = new Double(latP);
-	  Double _long = new Double(longP);
-	  Double _depth = new Double(depthP);
-	  WorldLocation res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth.doubleValue());
+		StringTokenizer st = new StringTokenizer(dataPart);
+		String latP = st.nextToken(",");
+		String longP = st.nextToken(",");
+		String depthP = st.nextToken();
+		Double _lat = new Double(latP);
+		Double _long = new Double(longP);
+		Double _depth = new Double(depthP);
+		WorldLocation res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth
+				.doubleValue());
 		return res;
 	}
 
-	/** convenience method to check if a string is in our format
+	/**
+	 * convenience method to check if a string is in our format
 	 * 
 	 * @param txt
 	 * @return
@@ -237,14 +248,16 @@ public class CorePlugin extends AbstractUIPlugin
 		return txt.startsWith(LOCATION_STRING_IDENTIFIER);
 	}
 
-	/** convenience method to assist placing locations on the clipboard
+	/**
+	 * convenience method to assist placing locations on the clipboard
 	 * 
 	 * @param loc
 	 * @return
 	 */
 	public static String toClipboard(WorldLocation loc)
 	{
-		String res = LOCATION_STRING_IDENTIFIER + loc.getLat() + "," + loc.getLong() + "," + loc.getDepth();
+		String res = LOCATION_STRING_IDENTIFIER + loc.getLat() + "," + loc.getLong() + ","
+				+ loc.getDepth();
 		return res;
 	}
 
@@ -258,8 +271,7 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static ImageDescriptor getImageDescriptor(String path)
 	{
-		return AbstractUIPlugin
-				.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
 	}
 
 	/**
@@ -276,8 +288,7 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static void logError(int severity, String message, Throwable exception)
 	{
-		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message,
-				exception);
+		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message, exception);
 		getDefault().getLog().log(stat);
 	}
 
@@ -310,48 +321,51 @@ public class CorePlugin extends AbstractUIPlugin
 		return res;
 	}
 
-
 	public static LineItem getStatusLine(EditorPart editor)
 	{
-		if(_myLineItem == null)
+		if (_myLineItem == null)
 		{
-		IStatusLineManager mgr = editor.getEditorSite().getActionBars()
-				.getStatusLineManager();
-		_myLineItem = new LineItem("vv aa");
-		mgr.add(_myLineItem);
+			IStatusLineManager mgr = editor.getEditorSite().getActionBars()
+					.getStatusLineManager();
+			_myLineItem = new LineItem("vv aa");
+			mgr.add(_myLineItem);
 		}
 
 		return _myLineItem;
 	}
-	
-	/** show a message to the user
+
+	/**
+	 * show a message to the user
 	 * 
 	 * @param title
 	 * @param message
 	 */
-	public static void showMessage(final String title, final String message) {
-		MessageDialog.openInformation(
-				Display.getCurrent().getActiveShell(),
-			title,
-			message);
+	public static void showMessage(final String title, final String message)
+	{
+		MessageDialog.openInformation(Display.getCurrent().getActiveShell(), title, message);
 	}
 
-	/** run this supplied action, then add it to our undo buffer
+	/**
+	 * run this supplied action, then add it to our undo buffer
 	 * 
-	 * @param theAction the action to run...
+	 * @param theAction
+	 *          the action to run...
 	 */
-	public static void run(IUndoableOperation  theAction)
+	public static void run(IUndoableOperation theAction)
 	{
-		// and now run it
-		try
+		// check the action arrived...
+		if (theAction != null)
 		{
-			// add, then run the action to the buffer
-			getHistory().execute(theAction, null, null);
-		}
-		catch (ExecutionException e)
-		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			// and now run it
+			try
+			{
+				// add, then run the action to the buffer
+				getHistory().execute(theAction, null, null);
+			}
+			catch (ExecutionException e)
+			{
+				logError(Status.ERROR, "Whilst adding new action to history buffer", e);
+			}
 		}
 	}
 
