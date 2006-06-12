@@ -656,7 +656,7 @@ public class XYPlotView extends ViewPart
 			}
 		};
 		_exportToClipboard.setText("Copy to Clipboard");
-		_exportToClipboard.setToolTipText("Place a WMF file of the graph on the clipboard");
+		_exportToClipboard.setToolTipText("Place a WMF image of the graph on the clipboard");
 		_exportToClipboard
 				.setImageDescriptor(CorePlugin.getImageDescriptor("icons/copy.png"));
 
