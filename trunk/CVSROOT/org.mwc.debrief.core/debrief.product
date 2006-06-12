@@ -89,8 +89,8 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.platform" version="3.2.0.v20060512-0730-_OZ2g3C9A7hWY9A"/>
-      <feature id="org.eclipse.rcp" version="3.2.0.v20060511-2000-VDNgUi843pOsLRQ"/>
+      <feature id="org.eclipse.platform" version="3.2.0.v20060602-0010-_OZ2h-8eOaU1uKq"/>
+      <feature id="org.eclipse.rcp" version="3.2.0.v20060602-0010-VDNgVdItGFMTNJo"/>
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.3"/>
       <feature id="org.mwc.cmap.feature" version="1.0.12"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.4"/>
