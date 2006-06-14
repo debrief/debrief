@@ -3,7 +3,7 @@
 	<xsd:annotation>
 		<xsd:documentation xml:lang="en">
 		Schema for cheat sheet content file.
- 		Copyright (c) 2004 IBM Corporation and others.&lt;br&gt;
+ 		Copyright (c) 2004, 2005 IBM Corporation and others.&lt;br&gt;
 		All rights reserved. This program and the accompanying materials are made 
 		available under the terms of the Eclipse Public License v1.0 which 
 		accompanies this distribution, and is available at 
@@ -13,8 +13,8 @@
 	<xsd:element name="cheatsheet">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="intro"/>
-				<xsd:element ref="item" maxOccurs="unbounded"/>
+				<xsd:element maxOccurs="1" minOccurs="1" ref="intro"/>
+				<xsd:element maxOccurs="unbounded" minOccurs="1" ref="item"/>
 			</xsd:sequence>
 			<xsd:attribute name="title" type="xsd:string" use="required"/>
 		</xsd:complexType>
@@ -22,7 +22,7 @@
 	<xsd:element name="intro">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="description"/>
+				<xsd:element ref="description" minOccurs="1" maxOccurs="1"/>
 			</xsd:sequence>
 			<xsd:attribute name="contextId" type="xsd:string" use="optional"/>
 			<xsd:attribute name="href" type="xsd:string" use="optional"/>
@@ -35,23 +35,33 @@
 			</xsd:simpleContent>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="onCompletion">
+		<xsd:complexType>
+			<xsd:simpleContent>
+				<xsd:extension base="xsd:string"/>
+			</xsd:simpleContent>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="item">
 		<xsd:complexType mixed="true">
-			<xsd:choice>
+			<xsd:choice maxOccurs="1" minOccurs="1">
 				<xsd:sequence>
 					<xsd:element ref="description"/>
-					<xsd:choice minOccurs="0">
+					<xsd:choice minOccurs="0" maxOccurs="1">
 						<xsd:element ref="action"/>
+						<xsd:element ref="command"/>
 						<xsd:element ref="perform-when"/>
 					</xsd:choice>
+					<xsd:element minOccurs="0" maxOccurs="1" ref="onCompletion"/>
 				</xsd:sequence>
-				<xsd:choice minOccurs="0" maxOccurs="unbounded">
+				<xsd:choice maxOccurs="unbounded" minOccurs="0">
 					<xsd:element ref="subitem"/>
 					<xsd:element ref="conditional-subitem"/>
 					<xsd:element ref="repeated-subitem"/>
 				</xsd:choice>
 			</xsd:choice>
 			<xsd:attribute name="title" type="xsd:string" use="required"/>
+			<xsd:attribute name="dialog" type="xsd:boolean" use="optional" default="false"/>
 			<xsd:attribute name="skip" type="xsd:boolean" use="optional" default="false"/>
 			<xsd:attribute name="contextId" type="xsd:string" use="optional"/>
 			<xsd:attribute name="href" type="xsd:string" use="optional"/>
@@ -59,20 +69,20 @@
 	</xsd:element>
 	<xsd:element name="subitem">
 		<xsd:complexType>
-			<xsd:choice minOccurs="0">
+			<xsd:choice minOccurs="0" maxOccurs="1">
 				<xsd:element ref="action"/>
+				<xsd:element ref="command"/>
 				<xsd:element ref="perform-when"/>
 			</xsd:choice>
 			<xsd:attribute name="label" type="xsd:string" use="required"/>
-			<xsd:attribute name="when" type="xsd:string" use="required"/>
+			<xsd:attribute name="kind" type="xsd:string" use="required"/>
 			<xsd:attribute name="skip" type="xsd:boolean" use="optional" default="false"/>
-			<!--            <xsd:attribute name="kind" type="ActionKind" use="required"/> -->
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="conditional-subitem">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="subitem" maxOccurs="unbounded"/>
+				<xsd:element ref="subitem" minOccurs="1" maxOccurs="unbounded"/>
 			</xsd:sequence>
 			<xsd:attribute name="condition" type="xsd:string" use="required"/>
 		</xsd:complexType>
@@ -80,14 +90,14 @@
 	<xsd:element name="repeated-subitem">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="subitem"/>
+				<xsd:element ref="subitem" minOccurs="1" maxOccurs="1"/>
 			</xsd:sequence>
 			<xsd:attribute name="values" type="xsd:string" use="required"/>
 		</xsd:complexType>
 	</xsd:element>
 	<xsd:element name="action">
 		<xsd:complexType>
-			<xsd:attribute name="when" type="xsd:string" use="optional"/>
+			<xsd:attribute name="when" type="xsd:string" use="required"/>
 			<xsd:attribute name="confirm" type="xsd:boolean" use="optional" default="false"/>
 			<xsd:attribute name="class" type="xsd:string" use="optional"/>
 			<xsd:attribute name="pluginId" type="xsd:string" use="optional"/>
@@ -102,10 +112,21 @@
 			<xsd:attribute name="param9" type="xsd:string" use="optional"/>
 		</xsd:complexType>
 	</xsd:element>
+	<xsd:element name="command">
+		<xsd:complexType>
+			<xsd:attribute name="when" type="xsd:string" use="required"/>
+			<xsd:attribute name="confirm" type="xsd:boolean" use="optional" default="false"/>
+			<xsd:attribute name="serialization" type="xsd:string" use="optional"/>
+			<xsd:attribute name="returns" type="xsd:string" use="optional"/>
+		</xsd:complexType>
+	</xsd:element>
 	<xsd:element name="perform-when">
 		<xsd:complexType>
 			<xsd:sequence>
-				<xsd:element ref="action" maxOccurs="unbounded"/>
+				<xsd:choice minOccurs="1" maxOccurs="unbounded">
+					<xsd:element ref="action"/>
+					<xsd:element ref="command"/>
+				</xsd:choice>
 			</xsd:sequence>
 			<xsd:attribute name="condition" type="xsd:string" use="required"/>
 		</xsd:complexType>
