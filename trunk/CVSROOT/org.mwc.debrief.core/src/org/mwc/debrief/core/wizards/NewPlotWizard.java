@@ -185,7 +185,7 @@ public class NewPlotWizard extends Wizard implements INewWizard
 						.getActiveWorkbenchWindow().getActivePage();
 				try
 				{
-					IDE.openEditor(page, file, true);
+					IDE.openEditor(page, file, "org.mwc.debrief.core.editors.PlotEditor");
 				}
 				catch (PartInitException e)
 				{
