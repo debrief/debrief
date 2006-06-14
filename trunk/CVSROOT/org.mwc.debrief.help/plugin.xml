@@ -57,24 +57,30 @@
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/CreatePlot.xml"
-            id="org.mwc.debrief.help.create_plot"
+            id="org.mwc.debrief.help.started.create_plot"
             name="Creating a new plot"/>
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/OpenPlot.xml"
-            id="org.mwc.debrief.help.open_plot"
+            id="org.mwc.debrief.help.started.open_plot"
             name="Opening an existing plot"/>                                       
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/FindingYourData.xml"
-            id="org.mwc.debrief.help.existing_data"
+            id="org.mwc.debrief.help.started.existing_data"
             name="Linking to existing datafiles"/>                                       
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/GenerateProject.xml"
-            id="org.mwc.debrief.help.generate_project"
+            id="org.mwc.debrief.help.started.generate_project"
             name="Generating a project"/>                                       
-   </extension>
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_viewing"
+            composite="true"
+            contentFile="cheat_sheets/GettingStarted/GettingStartedComposite.xml"
+            id="org.mwc.debrief.help.viewing.changing_view"
+            name="Composite getting started"/> 
+                              </extension>
 
 
 </plugin>
