@@ -21,9 +21,6 @@
    <feature url="features/org.mwc.cmap.TimeController.feature_1.0.3.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.3">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.tote.feature_1.0.3.jar" id="org.mwc.cmap.tote.feature" version="1.0.3">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.xyplot.feature_1.0.4.jar" id="org.mwc.cmap.xyplot.feature" version="1.0.4">
       <category name="cmap_features"/>
    </feature>
@@ -31,6 +28,15 @@
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.debrief.help.feature_1.0.6.jar" id="org.mwc.debrief.help.feature" version="1.0.6">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.cmap.overview.feature_1.0.0.jar" id="org.mwc.cmap.overview.feature" version="1.0.0">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.cmap.tote.feature_1.0.4.jar" id="org.mwc.cmap.tote.feature" version="1.0.4">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.debrief.track_shift.feature_1.0.0.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.0">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
