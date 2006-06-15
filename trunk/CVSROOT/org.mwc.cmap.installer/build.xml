@@ -46,7 +46,7 @@
 		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />
 		<property name="destZip" value="${destDir}/${dist-title}.zip" description="the target file" />
 		<tstamp>
-			<format property="TODAY_UK" pattern="yyyyMMdd_hhmm" locale="en" />
+			<format property="TODAY_UK" pattern="yyyyMMdd_HHmm" locale="en" />
 		</tstamp>
 		<property name="archiveDestZipFile" value="${TODAY_UK}_${dist-title}.zip" description="the target zip" />
 		<property name="destInstallFile" value="${TODAY_UK}_${dist-title}.exe" description="the target installer" />
