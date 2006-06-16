@@ -17,9 +17,9 @@
    		name="Tote Calculation" 
    		schema="schema/ToteCalculation.exsd"/> 
    <extension point="org.mwc.cmap.tote.ToteCalculation">
-      <calculation class="Debrief.Tools.Tote.Calculations.rangeCalc"
-            name="Range"/>
-   </extension>   
+      <calculation class="org.mwc.cmap.tote.calculations.SlantRangeCalc"
+            name="Slant range"/>
+   </extension>      		
    <extension point="org.mwc.cmap.tote.ToteCalculation">
       <calculation class="Debrief.Tools.Tote.Calculations.bearingCalc"
             name="Bearing"/>
