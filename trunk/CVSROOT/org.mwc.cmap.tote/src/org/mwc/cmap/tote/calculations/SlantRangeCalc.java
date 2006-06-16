@@ -98,7 +98,7 @@ public class SlantRangeCalc extends rangeCalc
 		String res = super.getTitle();
 		if(doSlant())
 		{
-			res = "Slant " & res;
+			res = "Slant " + res;
 		}
 		return res;
 	}
