@@ -7,13 +7,6 @@ Bundle-Activator: org.mwc.debrief.help.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
- org.eclipse.ui.cheatsheets,
- org.eclipse.tomcat,
- org.eclipse.help,
- org.eclipse.help.appserver,
- org.eclipse.help.base,
- org.eclipse.help.ui,
- org.eclipse.help.webapp,
- org.mwc.cmap.core
+ org.eclipse.ui.cheatsheets
 Eclipse-LazyStart: true
 Bundle-Vendor: MWC
