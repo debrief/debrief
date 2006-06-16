@@ -159,15 +159,14 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						if (provider != _targetViewport)
 						{
 							// ok, stop listening to the current viewport (if we have one)
-							if(_targetViewport != null)
+							if (_targetViewport != null)
 								stopListeningToViewport();
-							
+
 							// and start listening to the new one
 							_targetViewport = provider;
-							
+
 							startListeningToViewport();
-							
-							
+
 						}
 					}
 				});
@@ -261,7 +260,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		// ok - update our chart to show the indicated plot.
 		_myOverviewChart.setLayers(provider);
 		_myOverviewChart.rescale();
-		_myOverviewChart.repaint();		
+		_myOverviewChart.repaint();
 		// this.setPartName(parentPart.getTitle());
 	}
 
@@ -350,7 +349,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 							Action theAction = new OverviewZoomInAction(_targetViewport, oldArea, area);
 
 							// and wrap it
-							DebriefActionWrapper daw = new DebriefActionWrapper(theAction,null);
+							DebriefActionWrapper daw = new DebriefActionWrapper(theAction, null);
 
 							// and add it to the clipboard
 							CorePlugin.run(daw);
@@ -418,18 +417,18 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			// set the data area for the chart to the specified area
 			_theViewport.setViewport(_oldArea);
 
-			 _theViewport.update();
-			 
-			 _myOverviewChart.update();
+			_theViewport.update();
+
+			_myOverviewChart.update();
 		}
 
 		public void execute()
 		{
 			_theViewport.setViewport(_newArea);
-			
-			 _theViewport.update();
 
-			 _myOverviewChart.update();
+			_theViewport.update();
+
+			_myOverviewChart.update();
 		}
 	}
 
@@ -461,9 +460,11 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			// ignore - we don't do text in overview
 		}
 
-			public void paintPlot(CanvasType dest)
+		public void paintPlot(CanvasType dest)
 		{
-			super.paintPlot(dest);
+			// just check we're looking at something
+			if (_targetViewport != null)
+				super.paintPlot(dest);
 		}
 
 	}
@@ -508,7 +509,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		public void chartFireSelectionChanged(ISelection sel)
 		{
 		}
-		
+
 		/**
 		 * over-ride the parent's version of paint, so that we can try to do it by
 		 * layers.
@@ -550,95 +551,95 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						final Layer thisLayer = (Layer) numer.nextElement();
 
 						boolean isAlreadyPlotted = false;
-						
+
 						// hmm, do we want to paint this layer?
-						if(doWePaintThisLayer(thisLayer))
+						if (doWePaintThisLayer(thisLayer))
 						{
 
-						// just check if this layer is visible
-						if (thisLayer.getVisible())
-						{
-							// System.out.println("painting:" + thisLayer.getName());
-
-							if (doubleBufferPlot())
+							// just check if this layer is visible
+							if (thisLayer.getVisible())
 							{
-								// check we're plotting to a SwingCanvas, because we don't
-								// double-buffer anything else
-								if (dest instanceof SWTCanvas)
+								// System.out.println("painting:" + thisLayer.getName());
+
+								if (doubleBufferPlot())
 								{
-									// does this layer want to be double-buffered?
-									if (thisLayer instanceof BaseLayer)
+									// check we're plotting to a SwingCanvas, because we don't
+									// double-buffer anything else
+									if (dest instanceof SWTCanvas)
 									{
-										// just check if there is a property which over-rides the
-										// double-buffering
-										final BaseLayer bl = (BaseLayer) thisLayer;
-										if (bl.isBuffered())
+										// does this layer want to be double-buffered?
+										if (thisLayer instanceof BaseLayer)
 										{
-											isAlreadyPlotted = true;
-
-											// do our double-buffering bit
-											// do we have a layer for this object
-											org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image) _myLayers
-													.get(thisLayer);
-											if (image == null)
+											// just check if there is a property which over-rides the
+											// double-buffering
+											final BaseLayer bl = (BaseLayer) thisLayer;
+											if (bl.isBuffered())
 											{
-												// ok - create our image
-												if (_myImageTemplate == null)
+												isAlreadyPlotted = true;
+
+												// do our double-buffering bit
+												// do we have a layer for this object
+												org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image) _myLayers
+														.get(thisLayer);
+												if (image == null)
 												{
-													
-													Image tmpTemplate = new Image(Display.getCurrent(), canvasWidth,
-															canvasHeight);
-													_myImageTemplate = tmpTemplate.getImageData();
+													// ok - create our image
+													if (_myImageTemplate == null)
+													{
+
+														Image tmpTemplate = new Image(Display.getCurrent(),
+																canvasWidth, canvasHeight);
+														_myImageTemplate = tmpTemplate.getImageData();
+													}
+													image = createSWTImage(_myImageTemplate);
+
+													GC newGC = new GC(image);
+
+													// wrap the GC into something we know how to plot to.
+													SWTCanvasAdapter ca = new OverviewSWTCanvasAdapter(dest
+															.getProjection());
+
+													ca.setScreenSize(dest.getProjection().getScreenArea());
+
+													// and store the GC
+													ca.startDraw(newGC);
+
+													// ok, paint the layer into this canvas
+													thisLayer.paint(ca);
+
+													// done.
+													ca.endDraw(null);
+
+													// store this image in our list, indexed by the layer
+													// object itself
+													_myLayers.put(thisLayer, image);
 												}
-												image = createSWTImage(_myImageTemplate);
 
-												GC newGC = new GC(image);
+												// have we ended up with an image to paint?
+												if (image != null)
+												{
+													// get the graphics to paint to
+													SWTCanvas canv = (SWTCanvas) dest;
 
-												// wrap the GC into something we know how to plot to.
-												SWTCanvasAdapter ca = new OverviewSWTCanvasAdapter(dest
-														.getProjection());
+													// lastly add this image to our Graphics object
+													canv.drawSWTImage(image, 0, 0, canvasWidth, canvasHeight);
+												}
 
-												ca.setScreenSize(dest.getProjection().getScreenArea());
-
-												// and store the GC
-												ca.startDraw(newGC);
-
-												// ok, paint the layer into this canvas
-												thisLayer.paint(ca);
-
-												// done.
-												ca.endDraw(null);
-
-												// store this image in our list, indexed by the layer
-												// object itself
-												_myLayers.put(thisLayer, image);
 											}
-
-											// have we ended up with an image to paint?
-											if (image != null)
-											{
-												// get the graphics to paint to
-												SWTCanvas canv = (SWTCanvas) dest;
-
-												// lastly add this image to our Graphics object
-												canv.drawSWTImage(image, 0, 0, canvasWidth, canvasHeight);
-											}
-
 										}
-									}
-								} // whether we were plotting to a SwingCanvas (which may be
-								// double-buffered
-							} // whther we are happy to do double-buffering
+									} // whether we were plotting to a SwingCanvas (which may be
+									// double-buffered
+								} // whther we are happy to do double-buffering
 
-							// did we manage to paint it
-							if (!isAlreadyPlotted)
-							{
-								paintThisLayer(thisLayer, dest);
+								// did we manage to paint it
+								if (!isAlreadyPlotted)
+								{
+									paintThisLayer(thisLayer, dest);
 
-								isAlreadyPlotted = true;
+									isAlreadyPlotted = true;
+								}
 							}
 						}
-					}
 					}
 
 				}
@@ -658,31 +659,33 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		}
 
 	};
-	
-	/** do a fit-to-window of the target viewport
-	 * 
+
+	/**
+	 * do a fit-to-window of the target viewport
 	 */
 	private void fitTargetToWindow()
 	{
 		_targetViewport.rescale();
 		_targetViewport.update();
-		
+
 		// now, redraw our rectable
 		_myOverviewChart.repaint();
 	}
 
-	/** decide whether to paint this layer...
+	/**
+	 * decide whether to paint this layer...
 	 * 
-	 * @param thisLayer the layer we're looking at
+	 * @param thisLayer
+	 *          the layer we're looking at
 	 * @return
 	 */
 	public boolean doWePaintThisLayer(Layer thisLayer)
 	{
 		boolean res = true;
-		
-		if(thisLayer instanceof SpatialRasterPainter)
+
+		if (thisLayer instanceof SpatialRasterPainter)
 			res = false;
-		
+
 		return res;
 	}
 
@@ -706,5 +709,5 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	private void startListeningToViewport()
 	{
 		_targetViewport.getProjection().addListener(this);
-	}	
+	}
 }
