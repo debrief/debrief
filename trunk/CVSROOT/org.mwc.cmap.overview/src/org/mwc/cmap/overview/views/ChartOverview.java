@@ -55,9 +55,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 	protected Layers _targetLayers;
 
-	SWTChart _myOverviewChart;
+	OverviewSWTChart _myOverviewChart;
 
-	protected IControllableViewport _targetViewport;
+	private IControllableViewport _targetViewport;
 
 	private org.eclipse.jface.action.Action _fitToWindow;
 
@@ -75,10 +75,13 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	public void createPartControl(Composite parent)
 	{
 		// hey, first create the chart
-		_myOverviewChart = new OverviewSWTChart(null, parent);
+		_myOverviewChart = new OverviewSWTChart(parent);
 
 		// use our special dragger
 		_myOverviewChart.setDragMode(new MyZoomMode());
+		
+		// and update the chart
+		_myOverviewChart.setChartOverview(this);
 
 		// and our special painter
 		_myOverviewChart.getCanvas().addPainter(new PaintListener()
@@ -90,7 +93,6 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 			public String getName()
 			{
-				// TODO Auto-generated method stub
 				return "Overview data area";
 			}
 
@@ -164,6 +166,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 							// and start listening to the new one
 							_targetViewport = provider;
+							
+							System.out.println("new viewport is" + _targetViewport);
 
 							startListeningToViewport();
 
@@ -437,14 +441,24 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		return null;
 	}
 
-	protected class OverviewSWTCanvas extends SWTCanvas
+	protected static class OverviewSWTCanvas extends SWTCanvas
 	{
+
+		/** remember who is providing us with the target viewport
+		 * 
+		 */
+		private ChartOverview _parentView;
 
 		public OverviewSWTCanvas(Composite parent)
 		{
 			super(parent);
 		}
 
+		public void setChartOverview(ChartOverview parentView)
+		{
+			_parentView = parentView;
+		}
+		
 		/**
 		 * 
 		 */
@@ -461,15 +475,15 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		}
 
 		public void paintPlot(CanvasType dest)
-		{
+		{		
 			// just check we're looking at something
-			if (_targetViewport != null)
+			if (_parentView._targetViewport != null)
 				super.paintPlot(dest);
 		}
 
 	}
 
-	protected class OverviewSWTCanvasAdapter extends SWTCanvasAdapter
+	protected static class OverviewSWTCanvasAdapter extends SWTCanvasAdapter
 	{
 
 		public OverviewSWTCanvasAdapter(PlainProjection proj)
@@ -496,15 +510,24 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	protected class OverviewSWTChart extends SWTChart
 	{
 
-		public OverviewSWTChart(Layers theLayers, Composite parent)
-		{
-			super(theLayers, parent);
-		}
-
+		ChartOverview _parentView;
+		
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
+
+		public OverviewSWTChart(Composite parent)
+		{
+			super(null, parent);
+		}
+
+		public void setChartOverview(ChartOverview view)
+		{
+			OverviewSWTCanvas sc = (OverviewSWTCanvas) getCanvas();
+			sc.setChartOverview(view);
+			_parentView = view;
+		}
 
 		public void chartFireSelectionChanged(ISelection sel)
 		{
@@ -530,17 +553,17 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 				{
 
 					// hey, we've plotted at least once, has the data area changed?
-					if (_lastDataArea != _myOverviewChart.getCanvas().getProjection().getDataArea())
+					if (_lastDataArea != _parentView._myOverviewChart.getCanvas().getProjection().getDataArea())
 					{
 						// remember the data area for next time
-						_lastDataArea = _myOverviewChart.getCanvas().getProjection().getDataArea();
+						_lastDataArea = _parentView._myOverviewChart.getCanvas().getProjection().getDataArea();
 
 						// clear out all of the layers we are using
 						_myLayers.clear();
 					}
 
-					int canvasHeight = _myOverviewChart.getCanvas().getSize().getSize().height;
-					int canvasWidth = _myOverviewChart.getCanvas().getSize().width;
+					int canvasHeight = _parentView._myOverviewChart.getCanvas().getSize().getSize().height;
+					int canvasWidth = _parentView._myOverviewChart.getCanvas().getSize().width;
 
 					paintBackground(dest);
 
@@ -553,7 +576,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 						boolean isAlreadyPlotted = false;
 
 						// hmm, do we want to paint this layer?
-						if (doWePaintThisLayer(thisLayer))
+						if (_parentView.doWePaintThisLayer(thisLayer))
 						{
 
 							// just check if this layer is visible
