@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.3">
+      version="1.0.4">
 
    <description>
-      [1.0.3] Preps for RC1
+      [1.0.4] Add user-selectable slant-range property
+[1.0.3] Preps for RC1
 [1.0.2] Incorporate removing primary/secondary tracks
    </description>
 
@@ -535,6 +536,5 @@ That&apos;s all there is to it!
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-
 
 </feature>
