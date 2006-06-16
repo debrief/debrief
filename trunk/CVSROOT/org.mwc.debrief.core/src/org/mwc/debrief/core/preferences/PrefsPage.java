@@ -35,6 +35,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 	public void createFieldEditors()
 	{
 		addField(new BooleanFieldEditor(PreferenceConstants.AUTO_SELECT, "Select newly created items in Properties View", getFieldEditorParent()));		
+		addField(new BooleanFieldEditor(PreferenceConstants.CALC_SLANT_RANGE, "Use Slant range in Tote range calculations", getFieldEditorParent()));		
 	}
 
 	/*
@@ -52,6 +53,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 	public static class PreferenceConstants
 	{
 		public static final String AUTO_SELECT = "AUTO_SELECT";
+		public static final String CALC_SLANT_RANGE = "CALC_SLANT_RANGE";
 	}
 
 }
