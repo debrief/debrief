@@ -691,16 +691,16 @@ Naval Undersea Warfare Center (NUWC)
 </screenshot> 
 </figure> 
 <para>When opened for the very first time Debrief shows its Welcome page.  This page (shown above) includes a series of links to high-level introductory information.  The Overview page contains guidance for  new-adopters of Debrief, whereas the Tutorials page contains leads users through more specific tasks through the use of <glossterm linkend="g_cheat">cheat-sheets</glossterm> - small pages breaking a task down into a series of tasks. The buttons at the top-left of each page navigate you around the welcome guidance.  Two tutorials in particular will help new Debrief-adopters:<variablelist><varlistentry><term>Generating a project</term><listitem><para>Debrief NG likes to store your work in specific folders designated as <emphasis>projects</emphasis>.   Once created, the project can contain sub-folders, or links to other folders as described below.</para> 
-</listitem>
-</varlistentry>
-<varlistentry>
-<term>Getting your data into Debrief</term>
-<listitem>
-<para>In addition to storing your data in a Debrief NG project, you can provide a link to your existing data-directory, and pull files directly from there.</para>
-</listitem>
-</varlistentry>
-</variablelist></para>
-<para>Starting any of the cheat-sheets will shrink the Welcome guidance to a smaller pane exposing the rest of Debrief NG as shown in the following diagram. </para>
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Getting your data into Debrief</term> 
+<listitem> 
+<para>In addition to storing your data in a Debrief NG project, you can provide a link to your existing data-directory, and pull files directly from there.</para> 
+</listitem> 
+</varlistentry> 
+</variablelist></para> 
+<para>Starting any of the cheat-sheets will shrink the Welcome guidance to a smaller pane exposing the rest of Debrief NG as shown in the following diagram. </para> 
 <figure float="0"> 
 <title>Debrief&apos;s default view</title> 
 <screenshot> 
@@ -709,7 +709,7 @@ Naval Undersea Warfare Center (NUWC)
 </imageobject> 
 </mediaobject> 
 </screenshot> 
-</figure>
+</figure> 
 <para>The Debrief user-interface follows the Workbench convention, whereby a users edits individual files in an <emphasis>Editor</emphasis> supported by a series of supporting information panes called <emphasis>Views</emphasis>.  The specific arrangement of editors and views offered by Default is called a <emphasis>Perspective</emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective. The Tactical Analysis perspective arranges the views into sets of grouped tabs, though views can be dragged to any other location on the workbench, or floated above the workbench.  Views frequently have their own toolbar and drop-down menu providing actions related to that particular task.      Once selected, views are closed by clicking on the white diagonally oriented cross.  To re-open a view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu.  A list of Debrief-related views will be shown. Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu item</para> 
 <note> 
 <formalpara> 
@@ -727,10 +727,25 @@ Naval Undersea Warfare Center (NUWC)
 </formalpara> 
 </note> 
 </sect2> 
-<sect2>
-<title>Loading your first plot</title>
+<sect2> 
+<title>Navigating around Debrief</title>
+<sect3 id="debrief_editors">
+<title>Editors</title>
 <para></para>
+</sect3>
+<sect3 id="debrief_views">
+<title>Views</title>
+<para></para>
+</sect3>
+<sect3 id="debrief_toolbars">
+<title>Toolbars</title>
+<para></para>
+</sect3>
 </sect2>
+<sect2>
+<title>Loading your first plot</title> 
+<para></para> 
+</sect2> 
 <sect2 id="new_session"> 
 <title>New Session</title> 
 <para>The
@@ -2081,7 +2096,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
       </para> 
 <sect1> 
 <title>Assigning tracks as primary and secondary</title> 
-<sect2> 
+<sect2 id="the_tote_area"> 
 <title>Tote area</title> 
 <para>We&apos;ll have a brief explanation of the Tote at this point, using the image below.
             <figure float="0">
@@ -2181,7 +2196,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               </para> 
 </note> </para> 
 </sect2> 
-<sect2> 
+<sect2 id="assigning_tracks"> 
 <title>Assigning Tracks</title> 
 <para>Back to the tutorial, setup
             <application>Debrief</application> to have
@@ -2221,7 +2236,11 @@ You should probably have noticed the
             </para> 
 </tip> 
 </sect2> 
-<sect2> 
+<sect2 id="removing_tracks"> 
+<title>Removing tracks</title>
+<para>[guidance here]</para>
+</sect2>
+<sect2 id="stepping_forward_in_time">
 <title>Stepping forward</title> 
 <para>Now click on the Forward Button (that&apos;s the single right arrow). You should see the white highlight on each track move forward. If you can&apos;t see the highlight because part of the track is not visible, select the
             <guibutton>Fit to Window</guibutton> button. Now repeatedly click on the forward button, and you will see both the highlight move, and the information in the
@@ -7379,7 +7398,7 @@ range = Range to target from ownship (yds)</markup>
 <glossdef> 
 <para>Cheat sheets guide users through tasks. The task is broken down into steps and presented to the user one step at a time, and the user checks off the steps as he/she completes them.</para> 
 </glossdef> 
-</glossentry>
+</glossentry> 
 <glossentry id="g_highlighter"> 
 <glossterm>Highlighter</glossterm> 
 <glossdef> 

@@ -1,11 +1,22 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cheatsheet title="Filtering your view" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
+<cheatsheet title="Viewing time-related vessel tracks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
 	<intro>
-		<description>With ever-increasing data rates from multiple recording systems it is easy for an analysis plot to become swamped.  Debrief NG provides tools to reduce the volume and type of data displayed.  This tutorial will lead you through the management of large volumes of data.</description>
+		<description>Debrief offers more than just a static overview of vessel tracks - it allows you to control the time period of data shown.</description>
 	</intro>
 	<item title="Check you have some data">
+		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.  Also check you have our sample data-files - it they're not there, find how to load them from the "Loading sample data" cheat-sheet.</description>
+	</item>
+	<item title="Open the sample plot-file">
+		<description>Double-click on 'sample.xml' in the Navigator window, and the sample plot will open.</description>
+	</item>
+	<item title="Fit to window" href="\org.mwc.debrief.help\html\legacy\moving_around.html#Fit_To_Win">
+		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.</description>
+	</item>
+	<item title="View the time controller" href="\org.mwc.debrief.help\html\legacy\start_up.html#debrief_views">
+		<description>In the top section of the left hand column in Debrief is the Time Controller.  If it's not at the top, click on it's tab to highlight it.  If it's not visible at all, open it by selecting "Time Controller" from the "Window/Show View" drop-down menu.</description>
+	</item>
+	<item title="Check you have some data">
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.</description>
-		<action class="OpenCheatSheetAction" param1=""/>
 	</item>
 	<item title="Check you have a workspace">
 		<description>Before you can link in existing data, you need to define a project for your work.  This is a parent folder within which your links are stored.  If your Navigator window is empty, you must follow the "Generating a project" cheat-sheet accessed from the Help/Cheat Sheets menu.</description>
