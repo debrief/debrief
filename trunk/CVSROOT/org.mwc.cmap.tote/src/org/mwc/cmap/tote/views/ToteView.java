@@ -214,19 +214,16 @@ public class ToteView extends ViewPart
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						if (_myTemporalDataset != null)
-						{
-							// ok, stop listening to this object (just in case we were,
-							// anyway).
-							_myTemporalDataset.removeListener(_temporalListener,
-									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
 							// was it our one?
 							if (_myTemporalDataset == part)
 							{
+								// ok, stop listening to this object (just in case we were,
+								// anyway).
+								_myTemporalDataset.removeListener(_temporalListener,
+										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 								_myTemporalDataset = null;
 							}
-						}
 					}
 				});
 
@@ -240,12 +237,14 @@ public class ToteView extends ViewPart
 		// check we have some data
 		if (_trackData == null)
 		{
-			// aah = no track data. better clear the table
-			_tableViewer.getTable().removeAll();
+			// aah = no track data. better disable the table
+			timeUpdated(null);
+			_tableViewer.getTable().setEnabled(false);
 			return;
 		}
 
 		Table tbl = _tableViewer.getTable();
+		tbl.setEnabled(true);
 
 		// ok, remove all of the columns
 		TableColumn[] cols = tbl.getColumns();
@@ -558,6 +557,7 @@ public class ToteView extends ViewPart
 		if (_trackData == null)
 		{
 			// don't bother with any further processing.
+			_tableViewer.getTable().setRedraw(true);
 			return;
 		}
 
@@ -627,6 +627,7 @@ public class ToteView extends ViewPart
 					{
 						_labelProvider.setDTG(newDTG);
 						_tableViewer.refresh(true);
+						System.out.println("updating tote");
 					}
 				}
 			});
