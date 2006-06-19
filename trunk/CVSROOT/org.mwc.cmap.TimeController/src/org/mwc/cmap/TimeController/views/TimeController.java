@@ -1549,7 +1549,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		menuManager.add(_setAsBookmarkAction);
 
 		// let user indicate whether we should be filtering to window
-		_filterToSelectionAction = new Action("Filter to time", Action.AS_CHECK_BOX)
+		_filterToSelectionAction = new Action("Filter to period", Action.AS_CHECK_BOX)
 		{
 
 		};
