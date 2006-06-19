@@ -214,16 +214,16 @@ public class ToteView extends ViewPart
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-							// was it our one?
-							if (_myTemporalDataset == part)
-							{
-								// ok, stop listening to this object (just in case we were,
-								// anyway).
-								_myTemporalDataset.removeListener(_temporalListener,
-										TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+						// was it our one?
+						if (_myTemporalDataset == part)
+						{
+							// ok, stop listening to this object (just in case we were,
+							// anyway).
+							_myTemporalDataset.removeListener(_temporalListener,
+									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
-								_myTemporalDataset = null;
-							}
+							_myTemporalDataset = null;
+						}
 					}
 				});
 
@@ -235,13 +235,13 @@ public class ToteView extends ViewPart
 	private void updateTableLayout()
 	{
 		// check we have some data
-		if (_trackData == null)
-		{
-			// aah = no track data. better disable the table
-			timeUpdated(null);
-			_tableViewer.getTable().setEnabled(false);
-			return;
-		}
+//		if (_trackData == null)
+//		{
+//			// aah = no track data. better disable the table
+//			timeUpdated(null);
+//			// _tableViewer.getTable().setEnabled(false);
+//			// return;
+//		}
 
 		Table tbl = _tableViewer.getTable();
 		tbl.setEnabled(true);
@@ -262,33 +262,36 @@ public class ToteView extends ViewPart
 		TableColumn tc0 = new TableColumn(tbl, SWT.NONE);
 		tc0.setText("Calculation");
 
-		// first sort out the primary track column
-		WatchableList priTrack = _trackData.getPrimaryTrack();
-		// if (priTrack != null)
-		// {
-
-		layout.addColumnData(new ColumnWeightData(10, true));
-		TableColumn pri = new TableColumn(tbl, SWT.NONE);
-
-		if (priTrack != null)
-			pri.setText(priTrack.getName());
-		else
-			pri.setText("n/a");
-
-		// and now the secondary track columns
-		WatchableList[] secTracks = _trackData.getSecondaryTracks();
-
-		if (secTracks != null)
+		if (_trackData != null)
 		{
-			for (int i = 0; i < secTracks.length; i++)
-			{
-				WatchableList secTrack = secTracks[i];
-				layout.addColumnData(new ColumnWeightData(10, true));
-				TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-				thisSec.setText(secTrack.getName());
-			}
-		}
+			// first sort out the primary track column
+			WatchableList priTrack = _trackData.getPrimaryTrack();
+			// if (priTrack != null)
+			// {
 
+			layout.addColumnData(new ColumnWeightData(10, true));
+			TableColumn pri = new TableColumn(tbl, SWT.NONE);
+
+			if (priTrack != null)
+				pri.setText(priTrack.getName());
+			else
+				pri.setText("n/a");
+
+			// and now the secondary track columns
+			WatchableList[] secTracks = _trackData.getSecondaryTracks();
+
+			if (secTracks != null)
+			{
+				for (int i = 0; i < secTracks.length; i++)
+				{
+					WatchableList secTrack = secTracks[i];
+					layout.addColumnData(new ColumnWeightData(10, true));
+					TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+					thisSec.setText(secTrack.getName());
+				}
+			}
+
+		}
 		// and the units column
 		layout.addColumnData(new ColumnWeightData(5, true));
 		TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
@@ -447,7 +450,7 @@ public class ToteView extends ViewPart
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-	//	manager.add(new Separator());
+		// manager.add(new Separator());
 
 	}
 
@@ -549,8 +552,11 @@ public class ToteView extends ViewPart
 
 		// and fire the update
 		_tableViewer.getTable().layout(true);
-		
-		Color greyCol = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND  );// ColorHelper.getColor(new java.awt.Color(225, 225, 220));		
+
+		Color greyCol = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);// ColorHelper.getColor(new
+		// java.awt.Color(225,
+		// 225,
+		// 220));
 		_tableViewer.getTable().setBackground(greyCol);
 
 		// hmm, check if we have any track data
@@ -590,9 +596,8 @@ public class ToteView extends ViewPart
 			{
 				TableItem thisRow = items[j];
 				thisRow.setForeground(1, thisCol);
-				 Color lightCol = ColorHelper.getColor(new java.awt.Color(240, 240,
-				 245));
-				 thisRow.setBackground(1, lightCol);
+				Color lightCol = ColorHelper.getColor(new java.awt.Color(240, 240, 245));
+				thisRow.setBackground(1, lightCol);
 			}
 		}
 
@@ -627,7 +632,6 @@ public class ToteView extends ViewPart
 					{
 						_labelProvider.setDTG(newDTG);
 						_tableViewer.refresh(true);
-						System.out.println("updating tote");
 					}
 				}
 			});
