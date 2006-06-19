@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<cheatsheet title="Filtering your view" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
+<cheatsheet title="Assigning primary and secondary tracks" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
 	<intro>
 		<description>With ever-increasing data rates from multiple recording systems it is easy for an analysis plot to become swamped.  Debrief NG provides tools to reduce the volume and type of data displayed.  This tutorial will lead you through the management of large volumes of data.</description>
 	</intro>
 	<item title="Check you have some data">
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.</description>
-		<action class="OpenCheatSheetAction" param1=""/>
 	</item>
 	<item title="Check you have a workspace">
 		<description>Before you can link in existing data, you need to define a project for your work.  This is a parent folder within which your links are stored.  If your Navigator window is empty, you must follow the "Generating a project" cheat-sheet accessed from the Help/Cheat Sheets menu.</description>
