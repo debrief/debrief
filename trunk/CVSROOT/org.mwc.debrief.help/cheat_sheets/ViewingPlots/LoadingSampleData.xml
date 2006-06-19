@@ -17,9 +17,9 @@
 		<description>Still in the New Folder Wizard, click the 'Advanced' button to display the Advanced options.</description>
 	</item>
 	<item title="Linking to an existing folder">
-		<description>Click on the 'Link to folder in the file system', and navigate to the target folder</description>
+		<description>Click on the 'Link to folder in the file system'.  Using the file-browser, you now need to navigate to the 'test_data' sub-directory of the 'workspace' folder, itself found within your Debrief NG installation folder. Finally click on 'Finish' to add the folder link. </description>
 	</item>
 	<item title="Done">
-		<description>Well done, there you are.  Just repeat this process to add any other data directories you want to load data from.</description>
+		<description>Well done, there you are - you now have a set of files to experiment with.</description>
 	</item>
 </cheatsheet>
