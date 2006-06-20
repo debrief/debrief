@@ -124,15 +124,7 @@
             contentFile="cheat_sheets/analysis/TemporalNavigation.xml"
             id="org.mwc.debrief.help.analysis.temp_nav"
             name="Temporal navigation through your data"/>            
-
-            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_analysing"
-            contentFile="cheat_sheets/analysis/TemporalPlotModes.xml"
-            id="org.mwc.debrief.help.analysis.temp_plot_"
-            name="Time-related presentation of your data"/>            
-
-            
+           
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_analysing"
             contentFile="cheat_sheets/analysis/TimeVariableAnalysis.xml"
