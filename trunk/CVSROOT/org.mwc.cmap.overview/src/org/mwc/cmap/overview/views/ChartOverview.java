@@ -166,8 +166,6 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 							// and start listening to the new one
 							_targetViewport = provider;
-							
-							System.out.println("new viewport is" + _targetViewport);
 
 							startListeningToViewport();
 
