@@ -1109,6 +1109,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 			}
 		}
+		
+		// hey, better make sure the properties window is open
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		IWorkbenchPage page = win.getActivePage();
+
+		// get ready for the start/end times
+		// right, we need the time controller if we're going to get the
+		// times
+		try
+		{
+			page.showView(IPageLayout.ID_PROP_SHEET, null, IWorkbenchPage.VIEW_VISIBLE);
+		}
+		catch (PartInitException e)
+		{
+			CorePlugin.logError(Status.ERROR, "Failed to open properties view when showing timer properties", e);
+		}	
 	}
 
 	// //////////////////////////////
@@ -1454,44 +1471,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		menuManager.removeAll();
 		toolManager.removeAll();
 
-		// start off with the relative painter setting, if we have to
-		if (_relPlotToggle == null)
-		{
-			_relPlotToggle = new Action("Relative", SWT.TOGGLE)
-			{
-				public void run()
-				{
-					// right, change the projection stuff...
-					if (_targetProjection != null)
-					{
-						_targetProjection.setRelativePlot(_relPlotToggle.isChecked());
-
-						// and trigger redraw
-						IWorkbench wb = PlatformUI.getWorkbench();
-						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-						IWorkbenchPage page = win.getActivePage();
-						IEditorPart editor = page.getActiveEditor();
-						if (editor instanceof CorePlotEditor)
-						{
-							CorePlotEditor plot = (CorePlotEditor) editor;
-							plot.update();
-						}
-					}
-				}
-			};
-			_relPlotToggle
-					.setToolTipText("Switch the projection to always be centred on primary track");
-			_relPlotToggle.setImageDescriptor(org.mwc.cmap.TimeController.TimeControllerPlugin
-					.getImageDescriptor("icons/lock_view.png"));
-
-			// initialise it, if we have a plot
-			if (_targetProjection != null)
-				_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
-		}
-
-		// hey, store it anyway.
-		toolManager.add(_relPlotToggle);
-		menuManager.add(_relPlotToggle);
 
 		// ok, what are the painters we know about
 		TemporalLayerPainter[] painterList = myLayerPainterManager.getList();
@@ -1534,6 +1513,49 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		// add the list of DTG formats for the DTG slider
 		addBiSliderResolution(menuManager);
+		
+
+		// start off with the relative painter setting, if we have to
+		if (_relPlotToggle == null)
+		{
+			_relPlotToggle = new Action("Relative plotting mode", SWT.TOGGLE)
+			{
+				public void run()
+				{
+					// right, change the projection stuff...
+					if (_targetProjection != null)
+					{
+						_targetProjection.setRelativePlot(_relPlotToggle.isChecked());
+
+						// and trigger redraw
+						IWorkbench wb = PlatformUI.getWorkbench();
+						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+						IWorkbenchPage page = win.getActivePage();
+						IEditorPart editor = page.getActiveEditor();
+						if (editor instanceof CorePlotEditor)
+						{
+							CorePlotEditor plot = (CorePlotEditor) editor;
+							plot.update();
+						}
+					}
+				}
+			};
+			_relPlotToggle
+					.setToolTipText("Orient the plot on the primary track  projection to always be centred on primary track");
+			_relPlotToggle.setImageDescriptor(org.mwc.cmap.TimeController.TimeControllerPlugin
+					.getImageDescriptor("icons/lock_view.png"));
+
+			// initialise it, if we have a plot
+			if (_targetProjection != null)
+				_relPlotToggle.setChecked(_targetProjection.getRelativePlot());
+		}
+
+		// hey, store it anyway.
+		toolManager.add(_relPlotToggle);
+		menuManager.add(_relPlotToggle);
+		
+		// and another separator
+		toolManager.add(new Separator());
 
 		// now the add-bookmark item
 		_setAsBookmarkAction = new Action("Add DTG as bookmark", Action.AS_PUSH_BUTTON)
