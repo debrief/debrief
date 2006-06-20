@@ -728,21 +728,21 @@ Naval Undersea Warfare Center (NUWC)
 </note> 
 </sect2> 
 <sect2> 
-<title>Navigating around Debrief</title>
-<sect3 id="debrief_editors">
-<title>Editors</title>
-<para></para>
-</sect3>
-<sect3 id="debrief_views">
-<title>Views</title>
-<para></para>
-</sect3>
-<sect3 id="debrief_toolbars">
-<title>Toolbars</title>
-<para></para>
-</sect3>
-</sect2>
-<sect2>
+<title>Navigating around Debrief</title> 
+<sect3 id="debrief_editors"> 
+<title>Editors</title> 
+<para></para> 
+</sect3> 
+<sect3 id="debrief_views"> 
+<title>Views</title> 
+<para></para> 
+</sect3> 
+<sect3 id="debrief_toolbars"> 
+<title>Toolbars</title> 
+<para></para> 
+</sect3> 
+</sect2> 
+<sect2> 
 <title>Loading your first plot</title> 
 <para></para> 
 </sect2> 
@@ -2140,8 +2140,8 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                 <listitem>
                   <para>The range between the current point on the secondary track and the current point on the primary track using the
                     <glossterm linkend="g_earth_model">earth model</glossterm> as described in the Glossary, displayed in the units stored in the
-                    <link linkend="debrief_props" endterm="debrief_props_title"/> section of the Maintainer&apos;s Guide
-                  </para> 
+                    <link linkend="debrief_props" endterm="debrief_props_title"/> section of the Maintainer&apos;s Guide.  Debrief NG introduced the option of showing <glossterm linkend="g_slant_range">slant range</glossterm>, accessible from Debrief's Preferences window.  
+                  If you have indicated that you want to view slant range, then the range shown is a function of horizontal range and vertical separation.</para> 
 </listitem> 
 </varlistentry> 
 <varlistentry> 
@@ -2237,10 +2237,10 @@ You should probably have noticed the
 </tip> 
 </sect2> 
 <sect2 id="removing_tracks"> 
-<title>Removing tracks</title>
-<para>[guidance here]</para>
-</sect2>
-<sect2 id="stepping_forward_in_time">
+<title>Removing tracks</title> 
+<para>[guidance here]</para> 
+</sect2> 
+<sect2 id="stepping_forward_in_time"> 
 <title>Stepping forward</title> 
 <para>Now click on the Forward Button (that&apos;s the single right arrow). You should see the white highlight on each track move forward. If you can&apos;t see the highlight because part of the track is not visible, select the
             <guibutton>Fit to Window</guibutton> button. Now repeatedly click on the forward button, and you will see both the highlight move, and the information in the
@@ -2297,10 +2297,34 @@ mouse wheel also controls the scroll-bars used in the application
 </tip> </para> 
 </sect2> 
 </sect1> 
-<sect1 id="auto_stepping"> 
+<sect1 id="controlling_time"> 
+<title>Controlling Time</title> 
+<sect2 id="time_controller"> 
+<title>The Time Controller</title>
+<para>insert screenshot of time-stepper, explain various components.  Toolbar: modes &amp; drop-down, buttons, current time, time slider, period slider.</para>
+<sect3>
+<title>Display modes</title>
+<para>normal, snail, relative</para>
+</sect3>
+<sect3>
+<title>VCR controls</title>
+<para></para>
+</sect3>
+<sect3>
+<title>Time display</title>
+<para>choices of time format, slider increments</para>
+</sect3>
+<sect3>
+<title>Bookmarking</title>
+<para>add DTG to bookmark list</para>
+</sect3>
+<sect3>
+<title>Manipulating according to time period</title>
+<para>filter to time, export data</para>
+</sect3>
+</sect2>
+<sect2 id="auto_stepping">
 <title>Automatic stepping</title> 
-<sect2> 
-<title>Introduction to automatic stepping</title> 
 <para>The automatic stepping control (containing a picture of a Stopwatch) repeats the last step at timed intervals.
             <guiicon>
               <inlinegraphic fileref="figures/Timer.gif"/>
@@ -7566,6 +7590,12 @@ brg = Bearing to target from ownship (degs)
 	    GUI-elements for the current view</para> 
 </glossdef> 
 </glossentry> 
+<glossentry id="g_slant_range"> 
+<glossterm>Slant Range</glossterm> 
+<glossdef> 
+<para>The  line of sight distance between two points, not at the same level relative to a specific datum.  Normally in Debrief range is just calculated in two-dimensions (at the surface), but slant ranges can be requested via the Preferences window.  Slant ranges are particularly useful in Debrief when analysing the proximity of two entities that are very close when measured at the surface but who possess a significant depth separation.</para> 
+</glossdef> 
+</glossentry>
 <glossentry id="g_snail_trail"> 
 <glossterm>Snail Trail</glossterm> 
 <glossdef> 
