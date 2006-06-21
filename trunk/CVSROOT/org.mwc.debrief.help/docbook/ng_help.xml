@@ -2868,8 +2868,171 @@ observed. New libraries will be adopted as soon as a fix is available
 </tip> </para> 
 <para><?xm-replace_text {para}?></para> 
 </sect2> 
-</sect1>
-      <!--  Track/time toolbox                                           -->
+</sect1> 
+<sect1>
+<title>Show time-related variables</title>
+<para>The
+            <guibutton>Show Time Variables</guibutton> operation
+            <indexterm>
+              <primary>Toolbox</primary>
+              <secondary>Show time variables</secondary>
+            </indexterm> produces an x-y plot of a set of calculated data.  After pressing the
+            <guibutton>Apply</guibutton> button the user is invited to indicate which track is to be used as the primary
+            <glossterm linkend="g_track">track</glossterm>,  and which calculation is to be plotted.  The example below shows the results of a
+            <guilabel>Range</guilabel> calculation between two tracks.  Note that dragging the mouse downwards in a rectangle inside the plot zooms in on the data, dragging the mouse upwards into a rectangle zooms out on the data, and that the
+            <guibutton>Fit to Window</guibutton> button zooms out to show all of the current data.
+
+   Where data is not present, a gap is inserted into the data-line.
+            <figure float="0">
+              <title>View of time-variable plot</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/time_variable_plot.gif"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>
+          </para>
+<note> 
+<para>
+              <application>Debrief</application> performs special processing depending on whether the selected items contain valid time data or not.  In general, when an annotation (such as a label) does not contain DTG data Debrief assumes that it is valid throughout the selected time period.
+              <application>Debrief</application> produces the time-variable plot according to the following tables:
+              <table frame="sides">
+                <title>Relative Calculations (range, bearing, etc)</title>
+                <tgroup cols="3">
+                  <thead>
+                    <row>
+                      <entry> </entry>
+                      <entry>Primary contains DTG</entry>
+                      <entry>Primary does not contain DTG</entry>
+                    </row>
+                  </thead>
+                  <tbody>
+                    <row>
+                      <entry>Secondary contains DTG</entry>
+                      <entry>For each point on secondary, find nearest primary point (in time), use these for calculation</entry>
+                      <entry>For each point on secondary, use single primary point for calculation</entry>
+                    </row>
+                    <row>
+                      <entry>Secondary does not contain DTG</entry>
+                      <entry>For each point in primary, use single secondary point for calculation.</entry>
+                      <entry>Produce single calculations at start &amp; end of time period</entry>
+                    </row>
+                  </tbody>
+                </tgroup>
+              </table>
+
+              <table>
+                <title>Absolute Calculations (range, bearing, etc)</title>
+                <tgroup cols="2">
+                  <thead>
+                    <row>
+                      <entry> </entry>
+                      <entry>Calculation</entry>
+                    </row>
+                  </thead>
+                  <tbody>
+                    <row>
+                      <entry>Data series contains DTG</entry>
+                      <entry>For each point on series, calculate result</entry>
+                    </row>
+                    <row>
+                      <entry>Data series does not contain DTG</entry>
+                      <entry>Produce single calculations at start &amp; end of time period</entry>
+                    </row>
+                  </tbody>
+                </tgroup>
+              </table>
+            </para> 
+</note>
+<para>The
+            <guibutton>WMF</guibutton> button writes the current graph to a Windows Metafile in the current WMF_Directory (as configured in the
+            <link linkend="debrief_props_title">Debrief properties file</link>, described in Section
+            <xref linkend="debrief_props"/>, titled
+            <xref linkend="debrief_props" endterm="debrief_props_title"/>).
+          </para>
+<para>The
+            <guibutton>Edit</guibutton> button opens a
+            <link linkend="g_property_window">property window</link> allowing you to control the presentation of the time-variable graph.
+            <figure float="0">
+              <title>View of time-variable plot</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/time_variable_plot_options.gif"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>
+          </para>
+<para>These properties control the following:
+            <informaltable>
+              <tgroup cols="2">
+                <colspec colnum="1" colname="col1" colwidth="*"/>
+                <colspec colnum="2" colname="col2" colwidth="*"/>
+                <thead>
+                  <row>
+                    <entry colname="col1">Parameter</entry>
+                    <entry colname="col2">Description</entry>
+                  </row>
+                </thead>
+                <tbody>
+                  <row>
+                    <entry colname="col1">DataLineWidth</entry>
+                    <entry colname="col2">The width to plot the data-lines on the graph</entry>
+                  </row>
+                  <row>
+                    <entry colname="col1">DateTickUnits</entry>
+                    <entry colname="col2">The interval (and format) to use on the date axis</entry>
+                  </row>
+                  <row>
+                    <entry colname="col1">RelativeTimes</entry>
+                    <entry colname="col2">Whether to plot absolute or relative times (used when analysing time-zero data).  See
+                      <xref linkend="time_var_rel_times"/>
+                    </entry>
+                  </row>
+                  <row>
+                    <entry colname="col1">ShowSymbols</entry>
+                    <entry colname="col2">Whether to show datum symbols (useful to indicate difference data recording rates)</entry>
+                  </row>
+                  <row>
+                    <entry colname="col1">Title</entry>
+                    <entry colname="col2">The Title of the graph</entry>
+                  </row>
+                  <row>
+                    <entry colname="col1">X_AxisTitle</entry>
+                    <entry colname="col2">The x-axis label on the graph</entry>
+                  </row>
+                  <row>
+                    <entry colname="col1">Y_AxisTitle</entry>
+                    <entry colname="col2">The y-axis label on the graph</entry>
+                  </row>
+                </tbody>
+              </tgroup>
+            </informaltable>
+          </para>
+<sect2>
+<title>Time-Variable Plot Tracker-Bar</title>
+<para>If there are tracks on the Debrief
+              <glossterm linkend="g_tote">Tote</glossterm>, a vertical bar is drawn through the plot at the correct time.  If the current time on the Tote occurs before the earliest time on the Time-Variable plot then the bar is drawn at the minimum value, and drawn over the maximum value if the current time on the Tote occurs after the latest time value.  The bar redraws itself automatically as the time in the Tote changes.
+            </para>
+</sect2>
+<sect2 id="show_time_vars">
+<title id="show_time_vars_title">Analysing time-zero data in time-variable plot</title> 
+<para>By default the
+              <indexterm>
+                <primary>Time Zero</primary>
+                <secondary>in time-variable plots</secondary>
+              </indexterm>time-variable plot shows absolute times (e.g.
+              <computeroutput>12:34.00</computeroutput>).  Some forms of analysis conducted with Debrief rely on the use of relative times, such as a weapon firing where T-Zero is the time of fire,  as described in
+              <xref linkend="z_zero_times"/>. To show these relative times on the lower axis of the time-variable plot, select
+              <guilabel id="time_var_rel_times">RelativeTimes</guilabel> from the time-variable plot property window. Once this mode is selected, times will be shown relative to the last time-zero value set.  By default, the times are shown in a normal
+              <computeroutput>HH:mm:ss</computeroutput> format, but the
+              <guilabel>DateTickUnits</guilabel> drop-down list contains a number of display formats which specifically support presentation of elapsed times.
+            </para> 
+</sect2>
+</sect1><!--  Track/time toolbox                                           -->
 <sect1 id="track_toolbox"> 
 <title id="track_toolbox_title">Track &amp; Time toolbox</title> 
 <para>The Track &amp; Time toolbox acts a
@@ -2958,170 +3121,6 @@ operation together with the steps to be taken. </para>
             <note>
               <para>It is quite possible to apply a time filter such that all of the points in a short track become hidden.  In such circumstances the track name is also hidden, but revealed as soon as a single data point becomes visible.</para> 
 </note> </para> 
-</sect2> 
-<sect2 id="show_time_vars"> 
-<title id="show_time_vars_title">Show time-related variables</title> 
-<para>The
-            <guibutton>Show Time Variables</guibutton> operation
-            <indexterm>
-              <primary>Toolbox</primary>
-              <secondary>Show time variables</secondary>
-            </indexterm> produces an x-y plot of a set of calculated data.  After pressing the
-            <guibutton>Apply</guibutton> button the user is invited to indicate which track is to be used as the primary
-            <glossterm linkend="g_track">track</glossterm>,  and which calculation is to be plotted.  The example below shows the results of a
-            <guilabel>Range</guilabel> calculation between two tracks.  Note that dragging the mouse downwards in a rectangle inside the plot zooms in on the data, dragging the mouse upwards into a rectangle zooms out on the data, and that the
-            <guibutton>Fit to Window</guibutton> button zooms out to show all of the current data.
-
-   Where data is not present, a gap is inserted into the data-line.
-            <figure float="0">
-              <title>View of time-variable plot</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/time_variable_plot.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<note> 
-<para>
-              <application>Debrief</application> performs special processing depending on whether the selected items contain valid time data or not.  In general, when an annotation (such as a label) does not contain DTG data Debrief assumes that it is valid throughout the selected time period.
-              <application>Debrief</application> produces the time-variable plot according to the following tables:
-              <table frame="sides">
-                <title>Relative Calculations (range, bearing, etc)</title>
-                <tgroup cols="3">
-                  <thead>
-                    <row>
-                      <entry> </entry>
-                      <entry>Primary contains DTG</entry>
-                      <entry>Primary does not contain DTG</entry>
-                    </row>
-                  </thead>
-                  <tbody>
-                    <row>
-                      <entry>Secondary contains DTG</entry>
-                      <entry>For each point on secondary, find nearest primary point (in time), use these for calculation</entry>
-                      <entry>For each point on secondary, use single primary point for calculation</entry>
-                    </row>
-                    <row>
-                      <entry>Secondary does not contain DTG</entry>
-                      <entry>For each point in primary, use single secondary point for calculation.</entry>
-                      <entry>Produce single calculations at start &amp; end of time period</entry>
-                    </row>
-                  </tbody>
-                </tgroup>
-              </table>
-
-              <table>
-                <title>Absolute Calculations (range, bearing, etc)</title>
-                <tgroup cols="2">
-                  <thead>
-                    <row>
-                      <entry> </entry>
-                      <entry>Calculation</entry>
-                    </row>
-                  </thead>
-                  <tbody>
-                    <row>
-                      <entry>Data series contains DTG</entry>
-                      <entry>For each point on series, calculate result</entry>
-                    </row>
-                    <row>
-                      <entry>Data series does not contain DTG</entry>
-                      <entry>Produce single calculations at start &amp; end of time period</entry>
-                    </row>
-                  </tbody>
-                </tgroup>
-              </table>
-            </para> 
-</note> 
-<para>The
-            <guibutton>WMF</guibutton> button writes the current graph to a Windows Metafile in the current WMF_Directory (as configured in the
-            <link linkend="debrief_props_title">Debrief properties file</link>, described in Section
-            <xref linkend="debrief_props"/>, titled
-            <xref linkend="debrief_props" endterm="debrief_props_title"/>).
-          </para> 
-<para>The
-            <guibutton>Edit</guibutton> button opens a
-            <link linkend="g_property_window">property window</link> allowing you to control the presentation of the time-variable graph.
-            <figure float="0">
-              <title>View of time-variable plot</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/time_variable_plot_options.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>These properties control the following:
-            <informaltable>
-              <tgroup cols="2">
-                <colspec colnum="1" colname="col1" colwidth="*"/>
-                <colspec colnum="2" colname="col2" colwidth="*"/>
-                <thead>
-                  <row>
-                    <entry colname="col1">Parameter</entry>
-                    <entry colname="col2">Description</entry>
-                  </row>
-                </thead>
-                <tbody>
-                  <row>
-                    <entry colname="col1">DataLineWidth</entry>
-                    <entry colname="col2">The width to plot the data-lines on the graph</entry>
-                  </row>
-                  <row>
-                    <entry colname="col1">DateTickUnits</entry>
-                    <entry colname="col2">The interval (and format) to use on the date axis</entry>
-                  </row>
-                  <row>
-                    <entry colname="col1">RelativeTimes</entry>
-                    <entry colname="col2">Whether to plot absolute or relative times (used when analysing time-zero data).  See
-                      <xref linkend="time_var_rel_times"/>
-                    </entry>
-                  </row>
-                  <row>
-                    <entry colname="col1">ShowSymbols</entry>
-                    <entry colname="col2">Whether to show datum symbols (useful to indicate difference data recording rates)</entry>
-                  </row>
-                  <row>
-                    <entry colname="col1">Title</entry>
-                    <entry colname="col2">The Title of the graph</entry>
-                  </row>
-                  <row>
-                    <entry colname="col1">X_AxisTitle</entry>
-                    <entry colname="col2">The x-axis label on the graph</entry>
-                  </row>
-                  <row>
-                    <entry colname="col1">Y_AxisTitle</entry>
-                    <entry colname="col2">The y-axis label on the graph</entry>
-                  </row>
-                </tbody>
-              </tgroup>
-            </informaltable>
-          </para> 
-<sect3> 
-<title>Time-Variable Plot Tracker-Bar</title> 
-<para>If there are tracks on the Debrief
-              <glossterm linkend="g_tote">Tote</glossterm>, a vertical bar is drawn through the plot at the correct time.  If the current time on the Tote occurs before the earliest time on the Time-Variable plot then the bar is drawn at the minimum value, and drawn over the maximum value if the current time on the Tote occurs after the latest time value.  The bar redraws itself automatically as the time in the Tote changes.
-            </para> 
-</sect3> 
-<sect3 id="time_var_rel_times"> 
-<title>Analysing time-zero data in time-variable plot</title> 
-<para>By default the
-              <indexterm>
-                <primary>Time Zero</primary>
-                <secondary>in time-variable plots</secondary>
-              </indexterm>time-variable plot shows absolute times (e.g.
-              <computeroutput>12:34.00</computeroutput>).  Some forms of analysis conducted with Debrief rely on the use of relative times, such as a weapon firing where T-Zero is the time of fire,  as described in
-              <xref linkend="z_zero_times"/>. To show these relative times on the lower axis of the time-variable plot, select
-              <guilabel>RelativeTimes</guilabel> from the time-variable plot property window. Once this mode is selected, times will be shown relative to the last time-zero value set.  By default, the times are shown in a normal
-              <computeroutput>HH:mm:ss</computeroutput> format, but the
-              <guilabel>DateTickUnits</guilabel> drop-down list contains a number of display formats which specifically support presentation of elapsed times.
-            </para> 
-</sect3> 
 </sect2> 
 <sect2> 
 <title>Copy data to clipboard</title> 
