@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">-->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "file:///c:/docbook/docbkx412/docbookx.dtd">
-<?xml-stylesheet href="file:///C:/docbook/docbook-xsl-1.44/html/docbook.xsl" type="text/xsl"?>
+<?xml-stylesheet href="file:///C:/docbook/docbook-xsl-1.44/html/docbook.xsl" type="text/xsl"?>
 <book> 
 <bookinfo> 
 <title>Debrief NG User Documentation</title> 
@@ -2300,30 +2300,30 @@ mouse wheel also controls the scroll-bars used in the application
 <sect1 id="controlling_time"> 
 <title>Controlling Time</title> 
 <sect2 id="time_controller"> 
-<title>The Time Controller</title>
-<para>insert screenshot of time-stepper, explain various components.  Toolbar: modes &amp; drop-down, buttons, current time, time slider, period slider.</para>
-<sect3>
-<title>Display modes</title>
-<para>normal, snail, relative</para>
-</sect3>
-<sect3>
-<title>VCR controls</title>
-<para></para>
-</sect3>
-<sect3>
-<title>Time display</title>
-<para>choices of time format, slider increments</para>
-</sect3>
-<sect3>
-<title>Bookmarking</title>
-<para>add DTG to bookmark list</para>
-</sect3>
-<sect3>
-<title>Manipulating according to time period</title>
-<para>filter to time, export data</para>
-</sect3>
-</sect2>
-<sect2 id="auto_stepping">
+<title>The Time Controller</title> 
+<para>insert screenshot of time-stepper, explain various components.  Toolbar: modes &amp; drop-down, buttons, current time, time slider, period slider.</para> 
+<sect3> 
+<title>Display modes</title> 
+<para>normal, snail, relative</para> 
+</sect3> 
+<sect3> 
+<title>VCR controls</title> 
+<para></para> 
+</sect3> 
+<sect3> 
+<title>Time display</title> 
+<para>choices of time format, slider increments</para> 
+</sect3> 
+<sect3> 
+<title>Bookmarking</title> 
+<para>add DTG to bookmark list</para> 
+</sect3> 
+<sect3> 
+<title>Manipulating according to time period</title> 
+<para>filter to time, export data</para> 
+</sect3> 
+</sect2> 
+<sect2 id="auto_stepping"> 
 <title>Automatic stepping</title> 
 <para>The automatic stepping control (containing a picture of a Stopwatch) repeats the last step at timed intervals.
             <guiicon>
@@ -7595,7 +7595,7 @@ brg = Bearing to target from ownship (degs)
 <glossdef> 
 <para>The  line of sight distance between two points, not at the same level relative to a specific datum.  Normally in Debrief range is just calculated in two-dimensions (at the surface), but slant ranges can be requested via the Preferences window.  Slant ranges are particularly useful in Debrief when analysing the proximity of two entities that are very close when measured at the surface but who possess a significant depth separation.</para> 
 </glossdef> 
-</glossentry>
+</glossentry> 
 <glossentry id="g_snail_trail"> 
 <glossterm>Snail Trail</glossterm> 
 <glossdef> 
