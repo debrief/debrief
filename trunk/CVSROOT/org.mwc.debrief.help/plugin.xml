@@ -129,7 +129,7 @@
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_analysing"
             contentFile="cheat_sheets/analysis/TimeVariableAnalysis.xml"
             id="org.mwc.debrief.help.analysis.time_var_analysis"
-            name="Time-related graphss of your data"/>            
+            name="Time-related graphs of your data"/>            
             
       <!-- right, now the sensor bits -->
       <cheatsheet
@@ -185,6 +185,10 @@
       
       
                               </extension>
-
-
+   <extension
+         point="org.eclipse.help.contexts">
+      <contexts
+            file="HelpContexts.xml"
+            plugin="org.mwc.cmap.overview"/>
+   </extension>
 </plugin>
