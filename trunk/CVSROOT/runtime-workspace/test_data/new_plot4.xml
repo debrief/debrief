@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plot Created="Tue Jun 13 16:24:41 BST 2006" Name="Debrief Plot">
+  <details Text="Saved with Debrief version dated 06 May 05 15:47"/>
+  <session>
+    <layers>
+      <layer LineThickness="0" Name="Chart Features" Visible="true">
+        <scale AutoMode="true" DisplayUnits="kyd" Location="BottomLeft" Name="World Default" ScaleMax="0" ScaleStep="0" Visible="true">
+          <colour Value="DARK_GREY"/>
+        </scale>
+      </layer>
+    </layers>
+    <projection Border="1.100" Relative="false" Type="Flat">
+      <tl>
+        <shortLocation Depth="0.000" Lat="51.2022972" Long="-1.9687833"/>
+      </tl>
+      <br>
+        <shortLocation Depth="0.000" Lat="50.5074972" Long="-0.7157167"/>
+      </br>
+    </projection>
+  </session>
+</plot>
