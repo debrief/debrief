@@ -114,6 +114,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		// ok - listen out for changes in the view
 		// /////////////////////////////////////////
 		watchMyParts();
+		
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(_myOverviewChart.getCanvasControl(),
+				"org.mwc.debrief.help.OverviewChart");		
 	}
 
 	/**
@@ -518,6 +521,21 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		public OverviewSWTChart(Composite parent)
 		{
 			super(null, parent);
+			
+			// ok, setup double-click handler to zoom in on target location
+			this.addCursorDblClickedListener(new ChartDoubleClickListener(){
+				public void cursorDblClicked(PlainChart theChart, WorldLocation theLocation, Point thePoint)
+				{
+					// ok - got location centre plot on target loc
+					WorldArea currentArea = new WorldArea(_targetViewport.getViewport());
+					
+					currentArea.setCentre(theLocation);
+					
+					_targetViewport.setViewport(currentArea);
+					
+					// and trigger an update
+					_targetViewport.update();
+				}});
 		}
 
 		public void setChartOverview(ChartOverview view)
