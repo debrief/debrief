@@ -3,7 +3,7 @@
 	<intro>
 		<description>So, you've found your data, loaded it into Debrief, and now you want to make some changes to it.  This cheat-sheet will give you some pointers.</description>
 	</intro>
-	<item title="Check you have some data">
+	<item title="Check you have some data" href="/org.eclipse.platform.doc.user/concepts/cnav.htm">
 		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.  Also check you have our sample data-files - it they're not there, find how to load them from the "Loading sample data" cheat-sheet.</description>
 	</item>
 	<item title="Open the sample plot-file">
@@ -12,7 +12,7 @@
 	<item title="Fit to window">
 		<description>To make sure all of the data is visible, click on the "Fit-to-Window" toolbar button.</description>
 	</item>
-	<item title="Make sure the properties window is open">
+	<item title="Make sure the properties window is open" href="/org.eclipse.platform.doc.user/concepts/cpropview.htm">
 		<description>The properties window is normally at the bottom left of Debrief.  If it's there but not at the top of the 'stack', click on its title to reveal it.  If you can't find it, select "Properties" from the 'Window/Show View" drop-down list.</description>
 	</item>
 	<item title="Select an item">
