@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">-->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "file:///c:/docbook/docbkx412/docbookx.dtd">
-<?xml-stylesheet href="file:///C:/docbook/docbook-xsl-1.44/html/docbook.xsl" type="text/xsl"?>
+<?xml-stylesheet href="file:///C:/docbook/docbook-xsl-1.44/html/docbook.xsl" type="text/xsl"?>
 <book> 
 <bookinfo> 
 <title>Debrief NG User Documentation</title> 
@@ -711,110 +711,68 @@ Naval Undersea Warfare Center (NUWC)
 </screenshot> 
 </figure> 
 <para>The Debrief user-interface follows the Workbench convention, whereby a users edits individual files in an <emphasis>Editor</emphasis> supported by a series of supporting information panes called <emphasis>Views</emphasis>.  The specific arrangement of editors and views offered by Default is called a <emphasis>Perspective</emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective. The Tactical Analysis perspective arranges the views into sets of grouped tabs, though views can be dragged to any other location on the workbench, or floated above the workbench.  Views frequently have their own toolbar and drop-down menu providing actions related to that particular task.      Once selected, views are closed by clicking on the white diagonally oriented cross.  To re-open a view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu.  A list of Debrief-related views will be shown. Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu item</para> 
-<note> 
-<formalpara> 
-<title>Loading default plot</title> 
-<para>
-                <indexterm>
-                  <primary>Default Plot</primary>
-                </indexterm>In addition to instructing
-                <application>Debrief</application> to provide you with a new, blank, plot, you can request a plot containing a default plot suited to your current analysis.  To do this, customize an existing plot file by removing sufficient items to just leave the default, generic items you want to keep.  Perform this customisation as described below under
-                <link linkend="how_to_create_default_layers">VPF Management</link> - noting that
-                <emphasis>you must retain the &lt;plot&gt; and &lt;session&gt; objects</emphasis>.  Whilst for VPF management you strip out the high-level elements; only wanting to keep the &lt;layers&gt; object, whereas when defining the default set of layers to load you should keep the high-level elements (since these may contain the settings of interest to you). Store your default plot (with the
-                <filename>default_plot.xml</filename> filename) in your Debrief installation directory (normally
-                <filename>c:/program files/Debrief 2003</filename>)
-              </para> 
-</formalpara> 
-</note> 
 </sect2> 
-<sect2> 
+<sect2 id="navigating_debrief"> 
 <title>Navigating around Debrief</title> 
+<para>Fundamentally, the Debrief user interface (generically termed the Workbench) is constructed from an plot editor, surrounded by a series of support panes (called views), both underpinned by a main menu and a series of toolbars.  These elements are described further below. </para>
+<figure float="0"> 
+<title>Debrief&apos;s default view</title> 
+<screenshot> 
+<mediaobject> 
+<imageobject>
+<imagedata fileref="figures/app_with_plot.png" id="sample_plot"/> 
+</imageobject> 
+</mediaobject> 
+</screenshot> 
+</figure>
 <sect3 id="debrief_editors"> 
 <title>Editors</title> 
-<para></para> 
+<para>Any number of editors can be open at once, but only one can be active at a time. The main menu bar and toolbar for Debrief contain operations that are applicable to the active editor. Initially the active editor will always be the Debrief plot, but the extensibility of Debrief NG means other types of editor can tbe implemented.  
+
+Tabs at the top of the editor area indicate the names of files that are currently open for editing. An asterisk (*) indicates that an editor has unsaved changes.   
+
+By default, editors are stacked in the editor area, but you can choose to tile them (by dragging the tabbed plot-name) in order to view source files simultaneously.
+</para> 
 </sect3> 
 <sect3 id="debrief_views"> 
 <title>Views</title> 
-<para></para> 
+<para>Views support editors and provide alternative presentations as well as ways to navigate the information in your Workbench.  For example, the Navigator displays projects and other resources that you are working with, and the Layer Manager shows a list of selectable items within the current plot.
+
+</para>
+<para>Views also have their own menus. To open the menu for a view, click the icon at the right end of the view's title bar. Some views also have their own toolbars. The actions represented by buttons on view toolbars only affect the items within that view. 
+
+</para>
+<para>A view might appear by itself, or stacked with other views in a tabbed notebook. You can change the layout of a perspective by opening and closing views and by docking them in different positions in the Workbench window.  
+ We've attempted  to provide a logical arrangement of Debrief views, but feel free to experiment. Debrief will remember your settings, but you can return to the defaults at any point by selecting <guimenuitem>Reset Perspective</guimenuitem> from the <guimenu>Window</guimenu> menu.</para> 
 </sect3> 
 <sect3 id="debrief_toolbars"> 
 <title>Toolbars</title> 
-<para></para> 
+<para>There are four kinds of toolbars in Debrief.
+
+</para>
+<para>The main toolbar, sometimes called the Workbench toolbar, is displayed at the top of the Workbench window directly beneath the menu bar. Items in the toolbar might be enabled or disabled based on the state of either the active view or editor. Sections of the main toolbar can be rearranged using the mouse. 
+
+</para>
+<para>There are also individual view toolbars, which appear in the title bar of a view. Actions in a view's toolbar apply only to the view in which they appear. Some view toolbars include a Menu button, shown as an inverted triangle, that contain actions for that view.
+
+</para>
+<para>Whilst Debrief doesn't currently make use of <link linkend="perspectives_note">Perspectives</link>, a third type of toolbar is the perspective switcher. The perspective switcher allows quick access to perspectives that are currently open. It also has a button that can open new perspectives. The perspective switcher is normally located in the top-right, next to the main toolbar. However, it is also possible to position it below the main toolbar ("top-left"), or to position it vertically on the left-hand side of the workbench ("left"). The name of the perspectives is shown by default, but it is possible to hide the text and show only the icons. To reposition the perspective or hide the text, right-click on it and choose the appropriate item from the context menu.
+
+</para>
+<para>Finally, the fast view bar is a toolbar that contains icons representing the current set of fast views. A fast view is a shortcut to a view that is frequently used; see the section on fast views for more information. The fast view bar appears in the bottom left corner of the workbench by default. However, it is possible to position it on the left or right as well.
+
+In all cases, you can find out what toolbar buttons do by moving your mouse pointer over the button and reading the tooltip that opens. See the list of related reference topics below for a table of all toolbar buttons.
+<note><formalpara id="perspectives_note"><title>Perspectives</title><para>Each Workbench window contains one or more perspectives. A perspective defines the initial set and layout of views in the Workbench window. Within the window, each perspective shares the same set of editors. Each perspective provides a set of functionality aimed at accomplishing a specific type of task or works with specific types of resources. For example, the Tactical Analysis perspective combines views that you would commonly use while editing analysing tactical exercises. Perspectives control what appears in certain menus and toolbars. They define visible action sets, which you can change to customize a perspective. You can save a perspective that you build in this manner, making your own custom perspective that you can open again later.  
+
+You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guilabel> preference page to open perspectives in the same window or in a new window.
+</para>
+</formalpara>
+</note></para> 
 </sect3> 
 </sect2> 
 <sect2> 
 <title>Loading your first plot</title> 
-<para></para> 
-</sect2> 
-<sect2 id="new_session"> 
-<title>New Session</title> 
-<para>The
-            <glossterm linkend="g_session">Session</glossterm> window is broken down into three areas.  The
-	   black-painted right-hand of the screen is named the
-            <glossterm linkend="g_plt">Plot</glossterm>,
-	   the left-hand side is split into two areas: at the top is a
-	     set of toolbars used to control
-            <application>Debrief</application>, whilst at the
-	   bottom is an area used to display a number of different
-            <glossterm linkend="g_property_window">property windows</glossterm> - the
-            <glossterm linkend="g_tote">Tote</glossterm> is the window currently displayed - itself containing the
-            <glossterm linkend="g_overview">Overview </glossterm>
-          </para> 
-<figure float="0"> 
-<title>Debrief Screen</title> 
-<screenshot> 
-<mediaobject> 
-<imageobject> <imagedata fileref="figures/LabelledScreen.gif"/> 
-</imageobject> 
-</mediaobject> 
-</screenshot> 
-</figure> 
-<para>Note
-            <indexterm>
-              <primary>Screen</primary>
-              <secondary>Initial View</secondary>
-            </indexterm>that the toolbars are on separate tabs, grouped as
-	   follows:
-          </para> 
-<variablelist> 
-<varlistentry> 
-<term>File</term> 
-<listitem> 
-<para>Commands related to loading/saving data, and
-		   performing operations which result in file
-		   output</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>View</term> 
-<listitem> 
-<para>Commands which change/refresh the current
-		   view, but which do not make any changes to the data
-		   itself</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Chart Features</term> 
-<listitem> 
-<para>Commands which add chart-related features to
-		   the
-                  <glossterm linkend="g_plt">plot</glossterm>, features which are not tactical or
-		   exercise-generated data, but which provide a
-                  &quot;backdrop&quot; to this
-		   data
-                </para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Drawing</term> 
-<listitem> 
-<para>Commands which add new tactical or
-		   exercise-related features to the
-                  <glossterm linkend="g_plt">plot</glossterm>.
-                </para> 
-</listitem> 
-</varlistentry> 
-</variablelist> 
+<para>See the Debrief <link linkend="g_cheat">Cheat-Sheet</link> for guidance in creating a new Debrief plot, or loading an existing plot. </para> 
 </sect2> 
 </sect1> 
 <sect1 id="import_range_data"> 
@@ -896,95 +854,16 @@ Naval Undersea Warfare Center (NUWC)
 <sect2> 
 <title>Import</title> 
 <para>
-	     You must now
-            <indexterm>
-              <primary>Data</primary>
-              <secondary>Inserting Data</secondary>
-            </indexterm>import some data into
-            <application>Debrief</application>, so click on the Import Data button (it&apos;s on the
-            <guilabel>File</guilabel> toolbar), which looks like this:
-            <guiicon>
-              <inlinegraphic fileref="figures/ImportReplay.gif"/>
-            </guiicon>
+	     See the <link linkend="g_cheat">cheat-sheet</link> covering importing existing data into Debrief.
           </para> 
-</sect2> 
-<sect2> 
-<title>File Open</title> 
-<para>
-	     A file-open dialog will now open, containing a filter to only show Replay files. Navigate to the demonstration files (
-            <filename>boat1.rep</filename> &amp;
-            <filename>boat2.rep</filename>) which should be stored in the installation directory (which on
-            <application>Windows</application> is normally in
-            <filename>C:\Program Files\Debrief 2003</filename>).
-          </para> 
-<para>
-	    The
-            <guilabel>File-Open</guilabel> dialog is more complex than others you may be familiar with.  The left-hand side works as expected, showing the list of files and directories in the current directory.  Change directory using the drop-down list at the top of the dialog.  When you single-click on a
-            <filename>REP</filename> or
-            <filename>XML</filename> file (the file types accepted by
-            <application>Debrief</application>), the contents of the file appear in the
-            <guilabel>Navigation</guilabel> window on the right-hand side.  The drop-down list at the top of the
-            <guilabel>Navigation</guilabel> window (labelled
-            <guilabel>C:\D3</guilabel> in this example) provides a list of the directories most recently accessed by
-            <application>Debrief</application>.
-          </para> 
-<para>
-	   Behind the
-            <guilabel>Navigation</guilabel> window is the
-            <guilabel>Find Files</guilabel> window.  This collection of forms allow you to search for files by name, date or contents.
-            <figure float="0">
-              <title>File open dialog</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/FileOpen.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-</sect2> 
-<sect2 id="load_initial_data"> 
-<title id="load_initial_data.title">Select files</title> 
-<para>
-	     Back to the tutorial, navigate to the directory where
-            <application>Debrief</application> was installed, then select both
-            <filename>BOAT1.REP</filename> and
-            <filename>BOAT2.REP</filename> files using the
-            <keycap>Control</keycap> key, then press
-            <guibutton>Open</guibutton>.
-          </para> 
-<para>
-	     A progress bar will flash up to illustrate the import process.  On completion the screen will still show as blank - since Debrief does not change the area being viewed after loading new data.  Change to the View toolbar and click the
-            <link linkend="Fit_To_Win">Fit-To-Window</link> button (second along),  and  the track data will appear in the plot area on the right-hand side of the screen.
-          </para> 
-<para>
-	    You will see that the Red track, named CARPET is plotted in several different colours.  This is an illustration of per-position colouring for tracks.  The colours can be specified inside the REP file, as we see here, or can be specified within Debrief using the Track/Time toolbox,
-            <xref linkend="reformat_positions"/> under
-            <link linkend="reformat_positions" endterm="reformat_positions.title"></link>
-
-            <figure float="0">
-              <title>Debrief immediately after opening file</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/FileJustOpened.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-</sect2> 
-<sect2> 
-<title>Default labels</title> 
 <para>When data is imported,
             <application>Debrief</application> applies default values to the time labels for positions. The first point in a
             <glossterm linkend="g_track">track</glossterm>, together with the first point every day includes the day, otherwise just hours and minutes are displayed.
-          </para> 
+          </para>
 <para>
  Of course though, you haven&apos;t learnt how to show the labels, so that&apos;s still to follow - but remember, when you switch on the labels for a
             <glossterm linkend="g_track">track</glossterm>, it was at the import stage that the default labels were set.
-          </para> 
+          </para>
 </sect2> 
 </sect1> 
 <sect1 id="moving_around"> 
@@ -998,7 +877,7 @@ Naval Undersea Warfare Center (NUWC)
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons3.gif"/>
+                    <imagedata fileref="figures/PaletteButtons3.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1011,16 +890,36 @@ Naval Undersea Warfare Center (NUWC)
 <sect2 id="toggle_buttons"> 
 <title id="toggle_buttons.title">Mouse mode buttons</title> 
 <para>
- The first three modes of use are selectable individually, only one may be selected at a time.  When one is clicked, it remains depressed, popping up the button  previously in use.
+ The first five  modes of use are selectable individually, only one may be selected at a time.  When one is clicked, it remains depressed, popping up the button  previously in use.
             <variablelist>
               <varlistentry>
                 <term>
                   <guiicon>
-                    <inlinegraphic fileref="figures/Pan.gif" align="center"/>
-                  </guiicon>Pan
+                    <inlinegraphic fileref="figures/DragComponent.png" align="center"/>
+                  </guiicon>Drag Component
                 </term>
                 <listitem>
-                  <para>The Pan control lets you move your current viewpoint. Click on the Pan button, and then drag the mouse around the
+                  <para>This setting lets you drag a single point within a large feature.  For example, after switching to Drag Component mode you can drag the corners of a rectangle or a single point within a vessel track.</para> 
+</listitem> 
+</varlistentry>
+<varlistentry> 
+<term>
+                  <guiicon>
+                    <inlinegraphic fileref="figures/DragWholeFeature.png" align="center"/>
+                  </guiicon>Drag Whole Feature
+                </term> 
+<listitem> 
+<para>This setting lets you drag a complete feature.  In Drag Whole Feature mode you can drag a rectangle around the plot, or move a complete vessel track.</para> 
+</listitem> 
+</varlistentry>
+<varlistentry> 
+<term>
+                  <guiicon>
+                    <inlinegraphic fileref="figures/Pan.png" align="center"/>
+                  </guiicon>Pan
+                </term> 
+<listitem> 
+<para>The Pan control lets you move your current viewpoint. Click on the Pan button, and then drag the mouse around the
                     <glossterm linkend="g_plt">plot</glossterm> -- you will see the view change as you do it.
                   </para> 
 </listitem> 
@@ -1028,17 +927,17 @@ Naval Undersea Warfare Center (NUWC)
 <varlistentry> 
 <term>
                   <guiicon>
-                    <inlinegraphic fileref="figures/RngBrg.gif" align="center"/>
+                    <inlinegraphic fileref="figures/RngBrg.png" align="center"/>
                   </guiicon>Range Bearing
                 </term> 
 <listitem> 
-<para>Whilst the Range and Bearing control does not allow you to move around the view, it does merit discussion at this point, since it is the third in this group of selectable mouse modes. Select the Range and Bearing control, then drag the mouse to measure the range and bearing between two points - you will see the calculated results displayed at the foot of the
-                    <glossterm linkend="g_tote">Tote</glossterm> panel, as shown below.  The default units are yards, but if you wish to change them double-click on the calculated range results: the units editor will open, allowing you to change the default units (your selection is saved in the
+<para>Whilst the Range and Bearing control does not allow you to move around the view, it does merit discussion at this point. Select the Range and Bearing control, then drag the mouse to measure the range and bearing between two points - you will see the calculated results displayed at the foot of the
+                    window, as shown below.  The default units are yards, but if you wish to change them double-click on the calculated range results: the units editor will open, allowing you to change the default units (your selection is saved in the
                     <link linkend="debrief_props" endterm="debrief_props_title"/> section of the Maintainer&apos;s Guide).
                   </para> 
 <para>
                     <guiicon>
-                      <inlinegraphic fileref="figures/RngDisplay.gif" align="center"/>
+                      <inlinegraphic fileref="figures/RngDisplay.png" align="center"/>
                     </guiicon>
                   </para> 
 </listitem> 
@@ -1046,7 +945,7 @@ Naval Undersea Warfare Center (NUWC)
 <varlistentry> 
 <term id="zoom_in.title">
                   <guiicon>
-                    <inlinegraphic fileref="figures/ZoomIn.gif" align="center"/>
+                    <inlinegraphic fileref="figures/ZoomIn.png" align="center"/>
                   </guiicon>Zoom in
                 </term> 
 <listitem> 
@@ -2869,8 +2768,8 @@ observed. New libraries will be adopted as soon as a fix is available
 <para><?xm-replace_text {para}?></para> 
 </sect2> 
 </sect1> 
-<sect1>
-<title>Show time-related variables</title>
+<sect1> 
+<title>Show time-related variables</title> 
 <para>The
             <guibutton>Show Time Variables</guibutton> operation
             <indexterm>
@@ -2893,7 +2792,7 @@ observed. New libraries will be adopted as soon as a fix is available
                 </mediaobject>
               </screenshot>
             </figure>
-          </para>
+          </para> 
 <note> 
 <para>
               <application>Debrief</application> performs special processing depending on whether the selected items contain valid time data or not.  In general, when an annotation (such as a label) does not contain DTG data Debrief assumes that it is valid throughout the selected time period.
@@ -2945,13 +2844,13 @@ observed. New libraries will be adopted as soon as a fix is available
                 </tgroup>
               </table>
             </para> 
-</note>
+</note> 
 <para>The
             <guibutton>WMF</guibutton> button writes the current graph to a Windows Metafile in the current WMF_Directory (as configured in the
             <link linkend="debrief_props_title">Debrief properties file</link>, described in Section
             <xref linkend="debrief_props"/>, titled
             <xref linkend="debrief_props" endterm="debrief_props_title"/>).
-          </para>
+          </para> 
 <para>The
             <guibutton>Edit</guibutton> button opens a
             <link linkend="g_property_window">property window</link> allowing you to control the presentation of the time-variable graph.
@@ -2965,7 +2864,7 @@ observed. New libraries will be adopted as soon as a fix is available
                 </mediaobject>
               </screenshot>
             </figure>
-          </para>
+          </para> 
 <para>These properties control the following:
             <informaltable>
               <tgroup cols="2">
@@ -3011,14 +2910,14 @@ observed. New libraries will be adopted as soon as a fix is available
                 </tbody>
               </tgroup>
             </informaltable>
-          </para>
-<sect2>
-<title>Time-Variable Plot Tracker-Bar</title>
+          </para> 
+<sect2> 
+<title>Time-Variable Plot Tracker-Bar</title> 
 <para>If there are tracks on the Debrief
               <glossterm linkend="g_tote">Tote</glossterm>, a vertical bar is drawn through the plot at the correct time.  If the current time on the Tote occurs before the earliest time on the Time-Variable plot then the bar is drawn at the minimum value, and drawn over the maximum value if the current time on the Tote occurs after the latest time value.  The bar redraws itself automatically as the time in the Tote changes.
-            </para>
-</sect2>
-<sect2 id="show_time_vars">
+            </para> 
+</sect2> 
+<sect2 id="show_time_vars"> 
 <title id="show_time_vars_title">Analysing time-zero data in time-variable plot</title> 
 <para>By default the
               <indexterm>
@@ -3027,11 +2926,11 @@ observed. New libraries will be adopted as soon as a fix is available
               </indexterm>time-variable plot shows absolute times (e.g.
               <computeroutput>12:34.00</computeroutput>).  Some forms of analysis conducted with Debrief rely on the use of relative times, such as a weapon firing where T-Zero is the time of fire,  as described in
               <xref linkend="z_zero_times"/>. To show these relative times on the lower axis of the time-variable plot, select
-              <guilabel id="time_var_rel_times">RelativeTimes</guilabel> from the time-variable plot property window. Once this mode is selected, times will be shown relative to the last time-zero value set.  By default, the times are shown in a normal
+              <anchor id="time_var_rel_times"/><guilabel>RelativeTimes</guilabel> from the time-variable plot property window. Once this mode is selected, times will be shown relative to the last time-zero value set.  By default, the times are shown in a normal
               <computeroutput>HH:mm:ss</computeroutput> format, but the
               <guilabel>DateTickUnits</guilabel> drop-down list contains a number of display formats which specifically support presentation of elapsed times.
             </para> 
-</sect2>
+</sect2> 
 </sect1><!--  Track/time toolbox                                           -->
 <sect1 id="track_toolbox"> 
 <title id="track_toolbox_title">Track &amp; Time toolbox</title> 
@@ -3145,8 +3044,8 @@ operation together with the steps to be taken. </para>
             <guibutton>Apply</guibutton>.  A dialog will open asking you what characteristic you wish to change, select
             <guilabel>Color</guilabel> from this. The next dialog box provides a list of possible values for the selected characteristic: a list of colours in this case. After this selection the relevant positions will be updated.  Use
             <guibutton>Undo</guibutton> to cancel any changes created this way. An example of coloured tracks can be seen in
-            <xref linkend="load_initial_data"/> under
-            <link linkend="load_initial_data" endterm="load_initial_data.title"></link>
+            <xref linkend="sample_plot"/> under
+            <link linkend="navigating_debrief" endterm="navigating_debrief"></link>
           </para> 
 <tip> 
 <para>When running the
@@ -4327,7 +4226,7 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
 <para>In addition to changing the Debrief step time, the user is also able to change the format of the data in the DTG column, and elect whether to view only the first line of data or the full entry.
           </para> 
 </sect2> 
-<sect2> 
+<sect2 id="preparing_narrative_data"> 
 <title>Preparing the data</title> 
 <para>Narrative data is loaded into Debrief using the following file format:
             <screen>;NARRATIVE:  YYMMDD HHMMSS  TTT.TTT  XX..XX
@@ -4436,7 +4335,7 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
             </figure>
           </para> 
 </sect2> 
-<sect2> 
+<sect2 id="analysing_narrative_data"> 
 <title>Analysing narrative data</title> 
 <para>So, now that you have all of
             <indexterm>
