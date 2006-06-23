@@ -714,7 +714,7 @@ Naval Undersea Warfare Center (NUWC)
 </sect2> 
 <sect2 id="navigating_debrief"> 
 <title>Navigating around Debrief</title> 
-<para>Fundamentally, the Debrief user interface (generically termed the Workbench) is constructed from an plot editor, surrounded by a series of support panes (called views), both underpinned by a main menu and a series of toolbars.  These elements are described further below. </para>
+<para>Fundamentally, the Debrief user interface (generically termed the Workbench) is constructed from an plot editor, surrounded by a series of support panes (called views), both underpinned by a main menu and a series of toolbars.  These elements are described further below. </para> 
 <figure float="0"> 
 <title>Debrief&apos;s default view</title> 
 <screenshot> 
@@ -724,7 +724,7 @@ Naval Undersea Warfare Center (NUWC)
 </imageobject> 
 </mediaobject> 
 </screenshot> 
-</figure>
+</figure> 
 <sect3 id="debrief_editors"> 
 <title>Editors</title> 
 <para>Any number of editors can be open at once, but only one can be active at a time. The main menu bar and toolbar for Debrief contain operations that are applicable to the active editor. Initially the active editor will always be the Debrief plot, but the extensibility of Debrief NG means other types of editor can tbe implemented.  
@@ -738,10 +738,10 @@ By default, editors are stacked in the editor area, but you can choose to tile t
 <title>Views</title> 
 <para>Views support editors and provide alternative presentations as well as ways to navigate the information in your Workbench.  For example, the Navigator displays projects and other resources that you are working with, and the Layer Manager shows a list of selectable items within the current plot.
 
-</para>
+</para> 
 <para>Views also have their own menus. To open the menu for a view, click the icon at the right end of the view's title bar. Some views also have their own toolbars. The actions represented by buttons on view toolbars only affect the items within that view. 
 
-</para>
+</para> 
 <para>A view might appear by itself, or stacked with other views in a tabbed notebook. You can change the layout of a perspective by opening and closing views and by docking them in different positions in the Workbench window.  
  We've attempted  to provide a logical arrangement of Debrief views, but feel free to experiment. Debrief will remember your settings, but you can return to the defaults at any point by selecting <guimenuitem>Reset Perspective</guimenuitem> from the <guimenu>Window</guimenu> menu.</para> 
 </sect3> 
@@ -749,24 +749,24 @@ By default, editors are stacked in the editor area, but you can choose to tile t
 <title>Toolbars</title> 
 <para>There are four kinds of toolbars in Debrief.
 
-</para>
+</para> 
 <para>The main toolbar, sometimes called the Workbench toolbar, is displayed at the top of the Workbench window directly beneath the menu bar. Items in the toolbar might be enabled or disabled based on the state of either the active view or editor. Sections of the main toolbar can be rearranged using the mouse. 
 
-</para>
+</para> 
 <para>There are also individual view toolbars, which appear in the title bar of a view. Actions in a view's toolbar apply only to the view in which they appear. Some view toolbars include a Menu button, shown as an inverted triangle, that contain actions for that view.
 
-</para>
+</para> 
 <para>Whilst Debrief doesn't currently make use of <link linkend="perspectives_note">Perspectives</link>, a third type of toolbar is the perspective switcher. The perspective switcher allows quick access to perspectives that are currently open. It also has a button that can open new perspectives. The perspective switcher is normally located in the top-right, next to the main toolbar. However, it is also possible to position it below the main toolbar ("top-left"), or to position it vertically on the left-hand side of the workbench ("left"). The name of the perspectives is shown by default, but it is possible to hide the text and show only the icons. To reposition the perspective or hide the text, right-click on it and choose the appropriate item from the context menu.
 
-</para>
+</para> 
 <para>Finally, the fast view bar is a toolbar that contains icons representing the current set of fast views. A fast view is a shortcut to a view that is frequently used; see the section on fast views for more information. The fast view bar appears in the bottom left corner of the workbench by default. However, it is possible to position it on the left or right as well.
 
 In all cases, you can find out what toolbar buttons do by moving your mouse pointer over the button and reading the tooltip that opens. See the list of related reference topics below for a table of all toolbar buttons.
 <note><formalpara id="perspectives_note"><title>Perspectives</title><para>Each Workbench window contains one or more perspectives. A perspective defines the initial set and layout of views in the Workbench window. Within the window, each perspective shares the same set of editors. Each perspective provides a set of functionality aimed at accomplishing a specific type of task or works with specific types of resources. For example, the Tactical Analysis perspective combines views that you would commonly use while editing analysing tactical exercises. Perspectives control what appears in certain menus and toolbars. They define visible action sets, which you can change to customize a perspective. You can save a perspective that you build in this manner, making your own custom perspective that you can open again later.  
 
 You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guilabel> preference page to open perspectives in the same window or in a new window.
-</para>
-</formalpara>
+</para> 
+</formalpara> 
 </note></para> 
 </sect3> 
 </sect2> 
@@ -859,11 +859,11 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
 <para>When data is imported,
             <application>Debrief</application> applies default values to the time labels for positions. The first point in a
             <glossterm linkend="g_track">track</glossterm>, together with the first point every day includes the day, otherwise just hours and minutes are displayed.
-          </para>
+          </para> 
 <para>
  Of course though, you haven&apos;t learnt how to show the labels, so that&apos;s still to follow - but remember, when you switch on the labels for a
             <glossterm linkend="g_track">track</glossterm>, it was at the import stage that the default labels were set.
-          </para>
+          </para> 
 </sect2> 
 </sect1> 
 <sect1 id="moving_around"> 
@@ -901,7 +901,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
                 <listitem>
                   <para>This setting lets you drag a single point within a large feature.  For example, after switching to Drag Component mode you can drag the corners of a rectangle or a single point within a vessel track.</para> 
 </listitem> 
-</varlistentry>
+</varlistentry> 
 <varlistentry> 
 <term>
                   <guiicon>
@@ -911,7 +911,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
 <listitem> 
 <para>This setting lets you drag a complete feature.  In Drag Whole Feature mode you can drag a rectangle around the plot, or move a complete vessel track.</para> 
 </listitem> 
-</varlistentry>
+</varlistentry> 
 <varlistentry> 
 <term>
                   <guiicon>
@@ -970,7 +970,7 @@ The next set of buttons do not rely on mouse activity over the plot, they just r
               <varlistentry>
                 <term>
                   <guiicon>
-                    <inlinegraphic fileref="figures/ZoomOut.gif" align="center"/>
+                    <inlinegraphic fileref="figures/ZoomOut.png" align="center"/>
                   </guiicon>Zoom out
                 </term>
                 <listitem>
@@ -983,7 +983,7 @@ The next set of buttons do not rely on mouse activity over the plot, they just r
 <varlistentry id="Fit_To_Win"> 
 <term>
                   <guiicon>
-                    <inlinegraphic fileref="figures/FitToWin.gif"/>
+                    <inlinegraphic fileref="figures/FitToWin.png"/>
                   </guiicon>Fit to Window
                 </term> 
 <listitem> 
@@ -1000,7 +1000,7 @@ The next set of buttons do not rely on mouse activity over the plot, they just r
 <varlistentry> 
 <term>
                   <guiicon>
-                    <inlinegraphic fileref="figures/repaint.gif"/>
+                    <inlinegraphic fileref="figures/repaint.png"/>
                   </guiicon>Refresh View
                 </term> 
 <listitem> 
@@ -1010,68 +1010,18 @@ The next set of buttons do not rely on mouse activity over the plot, they just r
 </variablelist> Select the Fit to Window button now to make sure all
 of the data is visible. </para> 
 </sect2> 
-<sect2> 
-<title>Others</title> 
-<para>
-Lastly we have the overview button:
-            <variablelist>
-              <varlistentry>
-                <term>
-                  <guiicon>
-                    <inlinegraphic fileref="figures/overview.gif" align="center"/>
-                  </guiicon>Overview
-                </term>
-                <listitem>
-                  <para>This button controls whether the overview button is currently visible.  Click once to show the overview (in which case the button will remain depressed), and click again to hide the overview (when the button will return to its "up" state). When you have a very complex plot showing the overview chart can slow down
-                    <application>Debrief </application>, particularly when you are showing
-                    <link linkend="etopo_gridded_bathy">ETOPO</link> data.
-                  </para> 
-</listitem> 
-</varlistentry> 
-</variablelist> </para> 
-</sect2> 
 <sect2 id="overview_window"> 
-<title>Overview chart</title> 
-<para>Why not have play with the overview chart
-            <indexterm>
-              <primary>Overview Chart</primary>
-            </indexterm> at this point?  Click on the overview button, and the overview chart will be shown in the Tote.  Note the shaded grey rectangle over the view.  This shows the portion of the data currently shown on the main plot.  This shaded rectangle is automatically updated when the view in the main plot is changed, and the overview itself is automatically updated when any formatting changes in the main plot.
-            <figure float="0">
+<title>Chart Overview</title> 
+<para>The Chart 	Overview provides an overview of the full exercise area.  This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop down list. Using it is quite simple.  Drag a region in the overview and the current plot will quickly zoom to show that area. A highlight rectangle shows the current plot view.  Once you've zoomed in a little you can double-click in the overview to recentre the main plot on that point.  That's it really.<figure float="0">
               <title>Overview chart in use</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/OverviewInUse.gif"/>
+                    <imagedata fileref="figures/OverviewInUse.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure>
-          </para> 
-<para>Now drag the mouse to select an area within the overview chart, and observe that both the shaded rectangle shrinks and the data visible in the main plot changes.
-            <figure float="0">
-              <title>Overview chart after zoom operation</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/OverviewZoomedIn.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>Now try double-clicking on a point of interest in the overview, the main plot will recenter on this point.  Lastly try using the tools on the View toolbar to move around the main plot, and observe that the shaded area in the overview chart updates accordingly.</para> 
-</sect2> 
-<sect2> 
-<title>Floating toolbars</title> 
-<para>This seems a good point to introduce the floating toolbars.  You see the dotted rectangle at the left-hand end of the
-            <guilabel>Shapes</guilabel> toolbar?  Click on it with the mouse and drag it away from
-            <application>Debrief</application> - the toolbar will now float above
-            <application>Debrief</application>.  Once floating, the toolbar can be moved or resized,  and closed by clicking on it&apos;s
-            <guibutton>Close</guibutton> icon.
-          </para> 
-<para>Where-ever you see this dotted texture along the left-hand side of a
-            <application>Debrief</application> panel, remember it can be dragged out.  In some of the larger panels, such as properties windows, you have to "grab" the dotted area right at the top, but be assured it becomes second nature with practice.
-          </para> 
+            </figure></para> 
 </sect2> 
 <sect2> 
 <title>Undo</title> 
@@ -1088,8 +1038,7 @@ Lastly we have the overview button:
             <indexterm>
               <primary>Formatting</primary>
               <secondary>Plot (background color)</secondary>
-            </indexterm>changed to suit different projection/printing mediums, or to suit the analysts personal choice.  Additionally, the width at which lines of tactical obects are drawn can also be changed.  Either of these options are accessed by right-clicking on the plot background and selecting
-            <guilabel>Edit Appearance</guilabel>.  A properties panel will appear, use the drop-down list to change the background colour, or move the slider to change the line width itself.
+            </indexterm>changed to suit different projection/printing mediums, or to suit the analysts personal choice.  Additionally, the width at which lines of tactical obects are drawn can also be changed.  Either of these options are accessed by double-clicking on the plot background.  A properties panel will appear, use the drop-down list to change the background colour, or move the slider to change the line width itself.
           </para> 
 </sect2> 
 </sect1>
@@ -1103,86 +1052,8 @@ Lastly we have the overview button:
           <secondary>Track data</secondary>
         </indexterm> what you see to improve its legibility, as covered in this part of the tutorial.
       </para> 
-<sect1 id="editing_track"> 
-<title>Editing a track</title> 
-<sect2> 
-<title>Right-click editing</title> 
-<para>A number of entities in
-            <application>Debrief</application> allow right-click editing using the mouse. For example, if you right-click over the Red
-            <glossterm linkend="g_track">track</glossterm> in the
-            <glossterm linkend="g_plt">plot</glossterm>, a popup menu will appear:
-            <figure float="0">
-              <title>Menu shown after right-clicking on the
-                <glossterm linkend="g_plt">plot</glossterm>
-              </title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/PopupMenu.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>
- The first item in this menu allows you to edit the individual vessel position (in this case the position at 0533z). The second menu item contains an expanding list of items. These items are "commands" which may be applied to the selected position item (although when you open the menu more items may appear):
-            <figure float="0">
-              <title>Right-click menu commands</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/EditPositionMenu.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-
-          </para> 
-</sect2> 
-<sect2> 
-<title>On-off Settings</title> 
-<para>The items in this first part of this drop-down list are on/off settings for characteristics of this position item; in this case settings which specify whether the label or symbol are plotted.  Selecting one of these items "toggles" that setting.</para> 
-<para>Following these on/off toggles may be a number of characteristics for which the value can be selected from a list (such as the colour of the point, the location of the text label in relation to the data point, the size of any symbol to plot at this point, and the format of the text for the label at this point).</para> 
-<para>The items in the last part of the menu are actual "commands". The three commands displayed reset the colour of the position to that of the whole
-            <glossterm linkend="g_track">track</glossterm>, reset the label used for the item to its DTG, and export the details of the position in Replay format to the clipboard.
-          </para> 
-<para>Experiment with changing the value of "Symbol Showing" from this menu, you will see the symbol for the current point appear and disappear accordingly, you can also experiment with changing the colour of the symbol.</para> 
-</sect2> 
-</sect1> 
 <sect1 id="property_editing"> 
 <title>Property editing</title> 
-<sect2> 
-<title>Edit track</title> 
-<para>If you once again right-click on the red
-            <glossterm linkend="g_track">track</glossterm>, and select the third item: "Edit Track CARPET", a properties window will open in the
-            <glossterm linkend="g_tote">Tote</glossterm> which allows you to change individual characteristics of this
-            <glossterm linkend="g_track">track</glossterm>
-
-            <figure float="0">
-              <title>Formatting a track</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/FormatTrack.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>At the top of the property window is a row of buttons which run actions on the Track. In this case there is just one button, the one to export the
-            <glossterm linkend="g_track">track</glossterm> to the clipboard.
-          </para> 
-<para>Beneath the button is a list of editable properties for the
-            <glossterm linkend="g_track">track</glossterm>, and at the bottom are three buttons to Close the properties panel, Apply the current changes, and Reset the properties to their original values.
-          </para> 
-<para>As the mouse is hovered over the names of these properties you will see tooltips appear giving more information about each property.</para> 
-<para>The first editable property provided for tracks is not actually editable, it is an accessor to allow you to drag the track around the chart.  Click on the
-            <guibutton>Drag</guibutton> button, then drag the track around the chart with the mouse.  Click the
-            <guibutton>Drag</guibutton> button (whose label has now changed to
-            <guibutton>Cancel</guibutton>) again to return to the previous mouse-drag mode (such as zoom-in). Please read the section below on track-shifting. The
-            <guibutton>DTG</guibutton> toggle-button indicates whether DTG information should be plotted on the track being dragged.
-          </para> 
-</sect2> 
 <sect2> 
 <title>Track Shifting</title> 
 <para>
