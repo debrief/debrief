@@ -716,7 +716,7 @@ Naval Undersea Warfare Center (NUWC)
 <title>Navigating around Debrief</title> 
 <para>Fundamentally, the Debrief user interface (generically termed the Workbench) is constructed from an plot editor, surrounded by a series of support panes (called views), both underpinned by a main menu and a series of toolbars.  These elements are described further below. </para> 
 <figure float="0"> 
-<title>Debrief&apos;s default view</title> 
+<title>A Debrief plot</title> 
 <screenshot> 
 <mediaobject> 
 <imageobject>
@@ -1012,7 +1012,7 @@ of the data is visible. </para>
 </sect2> 
 <sect2 id="overview_window"> 
 <title>Chart Overview</title> 
-<para>The Chart 	Overview provides an overview of the full exercise area.  This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop down list. Using it is quite simple.  Drag a region in the overview and the current plot will quickly zoom to show that area. A highlight rectangle shows the current plot view.  Once you've zoomed in a little you can double-click in the overview to recentre the main plot on that point.  That's it really.<figure float="0">
+<para>The Chart 	Overview provides an overview of the full exercise area.  This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop down list. Using it is quite simple.  Drag a region in the overview and the current plot will quickly zoom to show that area. A highlight rectangle shows the current plot view.  Once you've zoomed in a little you can double-click in the overview to recentre the main plot on that point.  <figure float="0">
               <title>Overview chart in use</title>
               <screenshot>
                 <mediaobject>
@@ -1025,12 +1025,9 @@ of the data is visible. </para>
 </sect2> 
 <sect2> 
 <title>Undo</title> 
-<para>Briefly experiment with moving around inside the
-            <glossterm linkend="g_plt">plot</glossterm>, zooming in and out of the view.  Also experiment with the Undo operation on the Edit toolbar.  This will return you to the previous state.
-          </para> 
 <para>
-            <application>Debrief</application> contains a never-ending list of operations which are undo-able.  The list is only cleared when you close the current session.
-          </para> 
+            <application>Debrief</application> contains an unending list of undo-able operations, only cleared when the current session is closed.
+          Most changes to the <application>Debrief</application> plot are undo-able - whether they be creating a new feature, changing an attribute of a feature (such as color), or changing the current perspective.</para> 
 </sect2> 
 <sect2> 
 <title>Formatting the plot</title> 
@@ -1045,15 +1042,28 @@ of the data is visible. </para>
       <!-- formatting track data -->
 </chapter> 
 <chapter id="formatting_data"> 
-<title>Formatting Track Data</title> 
+<title>Manipulating Track Data</title> 
 <para>Before you are able to analyse or export plots from your data you need to know how to format
         <indexterm>
           <primary>Formatting</primary>
           <secondary>Track data</secondary>
-        </indexterm> what you see to improve its legibility, as covered in this part of the tutorial.
-      </para> 
+        </indexterm> what you see to improve its legibility.  Learn more about formatting tracks in the <emphasis>Editing your data</emphasis> cheat-sheet.
+      <note>
+              <para>Apologies in advance to the British users of
+                <application>Debrief</application> for the American-spelling of colour.  The software environment within which
+                <application>Debrief</application> is developed is American, and in this case superimposing the UK spelling upon it&apos;s not a battle worth fighting.
+              </para> 
+</note></para> 
 <sect1 id="property_editing"> 
 <title>Property editing</title> 
+<sect2> 
+<title>Edit Track</title>
+<para>Track editing is perform on the <link linkend="g_property_window">Properties Window</link>, and is initiated by selecting the track either from the plot or the Layer Manager, as described in the <emphasis>Editing your data</emphasis> cheat-sheet.</para>
+</sect2> 
+<sect2> 
+<title>Set label and symbol display intervals</title> 
+<para>Also experiment with setting the display interval of labels and symbols.  The symbols and labels for positions are switched on at a whole multiple of the indicated interval:  so if you select 5 minutes the positions at minutes 0, 5, 10, 15... are switched on, regardless of the Date-Time of the first point on the track.</para> 
+</sect2> 
 <sect2> 
 <title>Track Shifting</title> 
 <para>
@@ -1068,7 +1078,7 @@ of the data is visible. </para>
             <indexterm>
               <primary>Reconstruction</primary>
               <secondary>Plot-lock</secondary>
-            </indexterm> or tie-point
+            </indexterm>or tie-point
             <indexterm>
               <primary>Reconstruction</primary>
               <secondary>Tie-point</secondary>
@@ -1109,53 +1119,11 @@ of the data is visible. </para>
 </warning> 
 <tip> 
 <para>To prevent repeatedly switching between
-              <link linkend="toggle_buttons">mouse-drag modes</link> whilst track-shifting is performed by dragging the mouse, it is easier to used the mouse
+              <link linkend="toggle_buttons">mouse-drag modes</link> whilst track-shifting is performed by dragging the mouse, it is easier to use the mouse
               <link linkend="middle_controls">middle-button controls</link> to change view whilst dragging.
             </para> 
 </tip> 
-</sect2> 
-<sect2> 
-<title>Set colour</title> 
-<para>For the colour of the
-            <glossterm linkend="g_track">track</glossterm>,  a drop-down list of colours are provided. This list
-consists of the colour set traditionally provided by
-            <application>Debrief</application> (for backwards compatibility)
-followed by a number of grey shades suited to grids, scales and the
-background colour of the
-            <glossterm linkend="g_plt">plot</glossterm>.  At the bottom of the list of colours is a
-            <guilabel>Custom...</guilabel> entry.  Selecting this value opens up a colour selector dialog allowing a wide range of colours to be chosen using three different mechanisms.  Each of the mechanisms may be used to select a Debrief colour.
-            <figure float="0">
-              <title>Custom colour editor</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/ColorEditor.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-            <note>
-              <para>Apologies in advance to the British users of
-                <application>Debrief</application> for the American-spelling of colour.  The software environment within which
-                <application>Debrief</application> is developed is American, and in this case superimposing the UK spelling upon it&apos;s not a battle worth fighting.
-              </para> 
-</note> </para> 
-<para>Try changing the colour of the
-            <glossterm linkend="g_track">track</glossterm> from red to green.
-          </para> 
-<para>Note that nothing happens to the
-            <glossterm linkend="g_plt">plot</glossterm> at this point, but the colour in the property window has changed. Click the Apply button at the foot of the Properties window to apply the change, and the
-            <glossterm linkend="g_plt">plot</glossterm> will update.
-          </para> 
-<para>Note that if you press Undo on the Edit menu, the track will switch back to red both on the
-            <glossterm linkend="g_plt">plot</glossterm> and on the
-            <glossterm linkend="g_property_window">property editor</glossterm>.  Now press Redo from the Edit menu and your updates will be re-applied.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Set label and symbol display intervals</title> 
-<para>Also experiment with setting the display interval of labels and symbols.  The symbols and labels for positions are switched on at a whole multiple of the indicated interval:  so if you select 5 minutes the positions at minutes 0, 5, 10, 15... are switched on, regardless of the Date-Time of the first point on the track.</para> 
-</sect2> 
+</sect2>
 </sect1> 
 <sect1 id="new_chart_features"> 
 <title>Adding chart features</title> 
@@ -7294,10 +7262,10 @@ in <application>Internet Explorer</application> or edited using
 </glossdef> 
 </glossentry> 
 <glossentry id="g_property_window"> 
-<glossterm>Property Window</glossterm> 
+<glossterm>Properties Window</glossterm> 
 <glossdef> 
-<para>A GUI control which
-	    contains a list of all of the editable properties for an
+<para>A view
+	    containing a list of all of the editable properties for an
 	    object within Debrief.  Where applicable, custom editors
 	    are supplied (Color, Location, DTG, etc)</para> 
 </glossdef> 
@@ -7305,7 +7273,7 @@ in <application>Internet Explorer</application> or edited using
 <glossentry id="g_range_rate"> 
 <glossterm>Range Rate</glossterm> 
 <glossdef> 
-<para>Rage rate within the application is calculated using the following formula:
+<para>Range rate within the application is calculated using the following formula:
             <screen>
               <markup>
 Rdot = (Tspd * cos (Tcrse - brg) - Ospd * cos(Ocrse - brg) /*60
