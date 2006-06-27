@@ -5,7 +5,6 @@ import java.util.*;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
@@ -656,7 +655,7 @@ public class StackedDotsView extends ViewPart
 			final Enumeration iter = sensorHost.elements();
 			while (iter.hasMoreElements())
 			{
-				final PlainWrapper pw = (PlainWrapper) iter.nextElement();
+				final Plottable pw = (Plottable) iter.nextElement();
 
 				if (pw.getVisible())
 				{

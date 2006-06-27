@@ -354,6 +354,15 @@ public class DragFeature extends CoreDragAction
 
 		final public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
 		{
+			if(_myCanvas == null)
+			{
+				System.out.println("canvas is null!");
+				return;
+			}
+			else
+			{
+				System.out.println("canvas not null");
+			}
 			GC gc = new GC(_myCanvas.getCanvas());
 
 			// This is the same as a !XOR
