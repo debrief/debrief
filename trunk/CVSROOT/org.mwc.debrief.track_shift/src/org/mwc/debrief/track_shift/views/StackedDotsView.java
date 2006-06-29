@@ -5,6 +5,7 @@ import java.util.*;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
@@ -94,6 +95,8 @@ public class StackedDotsView extends ViewPart
 
 	protected TrackDataProvider _myTrackDataProvider;
 
+	private Composite _holder;
+
 	/**
 	 * The constructor.
 	 */
@@ -114,10 +117,10 @@ public class StackedDotsView extends ViewPart
 	{
 
 		// right, we need an SWT.EMBEDDED object to act as a holder
-		Composite holder = new Composite(parent, SWT.EMBEDDED);
+		_holder = new Composite(parent, SWT.EMBEDDED);
 
 		// now we need a Swing object to put our chart into
-		Frame plotControl = SWT_AWT.new_Frame(holder);
+		Frame plotControl = SWT_AWT.new_Frame(_holder);
 		plotControl.setLayout(new BorderLayout());
 
 		// hey - now create the stacked plot!
@@ -343,7 +346,7 @@ public class StackedDotsView extends ViewPart
 						}
 
 						// ok, start listening to it anyway
-						_myTrackDataProvider = dataP;
+						_myTrackDataProvider = dataP;			
 						_myTrackDataProvider.addTrackShiftListener(_myShiftListener);
 
 						// hey - fire a dot update
@@ -578,6 +581,14 @@ public class StackedDotsView extends ViewPart
 		private void initialise(TrackManager tracks, boolean showError)
 		{
 
+			// have we been created?
+			if(_holder == null)
+			  return;
+			
+			// are we visible?
+			if(_holder.isDisposed())
+				return;
+			
 			_secondaryTrack = null;
 			_primaryTrack = null;
 
@@ -592,7 +603,7 @@ public class StackedDotsView extends ViewPart
 			// check we have a primary track
 			WatchableList priTrk = tracks.getPrimaryTrack();
 			if (priTrk == null)
-			{
+			{				
 				showMessage("Sorry, stacked dots will not open.  A primary track must be placed on the Tote", showError);
 				return;
 			}
@@ -813,8 +824,8 @@ public class StackedDotsView extends ViewPart
 
 	private void showMessage(String message, boolean showError)
 	{
-	//	if(showError)
-	//		MessageDialog.openInformation(getSite().getShell(), "Stacked dots", message);
+		if(showError)
+			MessageDialog.openInformation(getSite().getShell(), "Stacked dots", message);
 	}
 
 }
