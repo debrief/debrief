@@ -71,7 +71,9 @@ public class TrackManager implements TrackDataProvider // ,
 		if (_myDataListeners == null)
 			_myDataListeners = new Vector();
 
-		_myDataListeners.add(listener);
+		// do we already contain this one?
+		if(!_myDataListeners.contains(listener))
+			_myDataListeners.add(listener);
 	}
 
 	public void addTrackShiftListener(TrackShiftListener listener)
@@ -79,7 +81,9 @@ public class TrackManager implements TrackDataProvider // ,
 		if (_myShiftListeners == null)
 			_myShiftListeners = new Vector();
 
-		_myShiftListeners.add(listener);
+		// do we already contain this one?
+		if(!_myShiftListeners.contains(listener))
+			_myShiftListeners.add(listener);
 	}
 
 	public WatchableList getPrimaryTrack()
