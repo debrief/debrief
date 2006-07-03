@@ -283,7 +283,7 @@ The wider national/international use of
             <primary>NUWC</primary>
           </indexterm>
           <link linkend="nuwc_address">NUWC</link> of an algorithm and code suitable for shifting tracks.  NUWC developed a set of experimental classes used to perform
-          <link linkend="track_shifting">track-shifting</link>.  The algorithms used in these classes was taken and modified to complement the Debrief look and feel, and to provide greater useability resulting in the track-shifting editor included in Debrief 2002.
+          <link linkend="track_shifting_note">track-shifting</link>.  The algorithms used in these classes was taken and modified to complement the Debrief look and feel, and to provide greater useability resulting in the track-shifting editor included in Debrief 2002.
         </para> 
 <para>Through 2003,4,5,6 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new featueres.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accomodate ad-hoc analysis tools).</para> 
 </sect2> 
@@ -1056,18 +1056,27 @@ of the data is visible. </para>
 </note></para> 
 <sect1 id="property_editing"> 
 <title>Property editing</title> 
+<figure float="0" id="properties_view"> 
+<title>Properties View</title> 
+<screenshot> 
+<mediaobject> 
+<imageobject> <imagedata fileref="figures/PropertiesView.png"/> 
+</imageobject> 
+</mediaobject> 
+</screenshot> 
+</figure> 
 <sect2> 
-<title>Edit Track</title>
-<para>Track editing is perform on the <link linkend="g_property_window">Properties Window</link>, and is initiated by selecting the track either from the plot or the Layer Manager, as described in the <emphasis>Editing your data</emphasis> cheat-sheet.</para>
+<title>Edit Track</title> 
+<para>Track editing is performed on the <link linkend="g_property_window">Properties Window</link>, and is initiated by selecting the track either from the plot or the Layer Manager, as described in the <emphasis>Editing your data</emphasis> cheat-sheet.</para> 
 </sect2> 
 <sect2> 
 <title>Set label and symbol display intervals</title> 
-<para>Also experiment with setting the display interval of labels and symbols.  The symbols and labels for positions are switched on at a whole multiple of the indicated interval:  so if you select 5 minutes the positions at minutes 0, 5, 10, 15... are switched on, regardless of the Date-Time of the first point on the track.</para> 
+<para>In addition to switching the symbols and labels on and off for individual positions, you can instruct Debrief to show symbols or labels at one of  a series of frequencies - allowing you to quickly add 15 minute symbols and hourly time labels to a track.  The timings of the particular positions that get highlighted do not have their origin at the start of the track - but from 0000 hrs - thus the 15 minute positions will be marked for 00, 15, 30, 45 minutes past the hour.</para> 
 </sect2> 
-<sect2> 
+<sect2 id="track_shifting"> 
 <title>Track Shifting</title> 
 <para>
-            <emphasis>Track-Shifting.</emphasis>The track-shifting
+            The track-shifting
             <indexterm>
               <primary>Track Shifting</primary>
             </indexterm>
@@ -1085,13 +1094,13 @@ of the data is visible. </para>
             </indexterm>.
           </para> 
 <para>
-            <note id="track_shifting">
+            <note id="track_shifting_note">
               <para>The Track-shifting implementation was originally provided by Mr David Gong at
                 <link linkend="nuwc_address">NUWC</link>.
               </para> 
 </note> </para> 
 <para>A
-            <link linkend="show_time_vars">time-variable plot</link> is used to show bearing-errors when the track-shift is being conducted to line up one or two sets of
+            Stacked Dots view is used to show bearing-errors when the track-shift is being conducted to line up one or two sets of
             <link linkend="sensor_data">sensor data</link>. For each
             <link linkend="g_sensor_contact">sensor bearing</link> on a track,
             <application>Debrief</application> identifies the point on the opposing track nearest to that time.  Each time the track is shifted (dragged)
@@ -1102,28 +1111,16 @@ of the data is visible. </para>
             <link linkend="filter_to_period">filter-to-time-period</link> (from the
             <link linkend="track_toolbox">track time toolbox</link>) for the plot-lock period, thus viewing a much smaller data-set in the time-variable plot.   Additionally, you can zoom in on a particular area (by dragging an area downward and to the right) of the time-variable plot for detailed analysis, dragging the mouse up and to the left to clear the zoom.
           </para> 
-<figure float="0"> 
-<title>Bearing error plot</title> 
+<figure float="0" id="stacked_dots_view"> 
+<title>Stacked Dots View</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/brg_error.gif"/> 
+<imageobject> <imagedata fileref="figures/brg_error.png"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
 </figure> 
-<warning> 
-<para>Note that in order to see the new location of the dragged track, the offset is permanently applied as soon as the track is dropped. The operation does not wait for the
-              <guibutton>Apply </guibutton>button to be pressed, nor is it cancelled when the
-              <guibutton>Cancel</guibutton> button is pressed.  This is contrary to the normal edit-process, where any changes made may still be Cancelled prior to closing the property editor.
-            </para> 
-</warning> 
-<tip> 
-<para>To prevent repeatedly switching between
-              <link linkend="toggle_buttons">mouse-drag modes</link> whilst track-shifting is performed by dragging the mouse, it is easier to use the mouse
-              <link linkend="middle_controls">middle-button controls</link> to change view whilst dragging.
-            </para> 
-</tip> 
-</sect2>
+</sect2> 
 </sect1> 
 <sect1 id="new_chart_features"> 
 <title>Adding chart features</title> 
@@ -1132,16 +1129,16 @@ of the data is visible. </para>
 <para>Debrief also allows you to add items to the
             <glossterm linkend="g_plt">plot</glossterm>.
           </para> 
-<para>These items are contained in two toolbars;
+<para>These items are contained in two menus;
             <guilabel>Chart Features</guilabel> and
             <guilabel>Drawing</guilabel>. In
             <application>Debrief</application>, hover the mouse over them to see what type of item they create.
             <figure float="0">
-              <title>Chart features toolbar</title>
+              <title>Chart features menu</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PaletteButtons2.gif"/>
+                    <imagedata fileref="figures/PaletteButtons2.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1150,9 +1147,6 @@ of the data is visible. </para>
 <important> 
 <para> It is important to note that each time you click on an item from the toolbar, a new instance of it is created, it does not re-open an existing item.</para> 
 </important> 
-<para>Back to the palette items, experiment with the buttons by putting new features on the
-            <glossterm linkend="g_plt">plot</glossterm>.
-          </para> 
 </sect2> 
 <sect2> 
 <title>Scale</title> 
@@ -1224,30 +1218,44 @@ of the data is visible. </para>
 <title>Grid</title> 
 <para>Next, try with a new grid:
             <guiicon>
-              <inlinegraphic fileref="figures/GridBtn.gif"/>
-            </guiicon>
-          </para> 
-<para>A properties
-            <indexterm>
-              <primary>Grid</primary>
-              <secondary>Inserting Grid</secondary>
-            </indexterm>panel will open, in this panel change the Delta (the space between the lines) to 5 (minutes), and make it visible. Now Apply. The grid will now appear on the
-            <glossterm linkend="g_plt">plot</glossterm>.
-            <figure float="0">
-              <title>Properties for a grid</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/GridProps.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>Note the option provided to allow you to select to
-            <glossterm linkend="g_plt">plot</glossterm> labels on the grid lines.  Decimal seconds will be displayed when the delta requested is less than one second.
-            <warning>
-              <para>Two methods are used to produce grid lines:
+              <inlinegraphic fileref="figures/GridBtn.png"/>
+            </guiicon><variablelist>
+              <varlistentry>
+                <term>Auto Mode</term>
+                <listitem>
+                  <para>In auto-mode Debrief assesses the current screen size and area of data covered, and attempts to set the most appropriate range of values and step size for the scale.  A good working practice is to switch to auto-mode to allow Debrief to estimate the optimal values, then switch out of auto-mode to fine-tune the
+                    <guilabel>ScaleMax</guilabel> and
+                    <guilabel>ScaleStep</guilabel> values provided.
+                  </para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Color</term> 
+<listitem> 
+<para>The colour used to draw the scale.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Delta</term> 
+<listitem> 
+<para>The corner of the plot where the scale is placed.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>PlotLabels</term> 
+<listitem> 
+<para>Whether to label the grid. See tip <link linkend="grid_labels">below</link> for details regarding how the labels are formatted</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Visible</term> 
+<listitem> 
+<para>Whether you can hide the grid, of course.</para> 
+</listitem> 
+</varlistentry> 
+</variablelist> </para> 
+<tip id="grid_labels"> 
+<para>Two methods are used to produce grid lines:
                 <itemizedlist>
                   <listitem>
                     <para>
@@ -1260,13 +1268,13 @@ of the data is visible. </para>
                     </para> 
 </listitem> 
 </itemizedlist> </para> 
-</warning> </para> 
+</tip> 
 </sect2> 
 <sect2> 
 <title>Local Grid</title> 
 <para>The Local Grid (
             <guiicon>
-              <inlinegraphic fileref="figures/local_grid.gif"/>
+              <inlinegraphic fileref="figures/local_grid.png"/>
             </guiicon>) is a modified grid for which the origin has been over-ridden. Change the
             <guilabel>Origin</guilabel> attribute to move the grid origin.  The
             <guilabel>PlotOrigin</guilabel> attribute has been provided to draw a small point at the origin of the grid - useful when initially designing/recording the grid.
@@ -1280,12 +1288,7 @@ of the data is visible. </para>
               <primary>Coastline Data</primary>
               <secondary>Introduction</secondary>
             </indexterm>low-resolution coastline datafile.  Whilst it does cover the whole globe, it does so at a low resolution, so is only useful for an overview.  The vectored chart data discussed later provides a much lower resolution of data.
-          </para> 
-<para>
-Have a go at adding a
-            <glossterm linkend="g_coastline_file">Coastline</glossterm>, although you may need to zoom out to see it (
-            <application>Debrief</application> veterans will be please to see the tracks no longer appear over desert).  The screenshot shows the British coastline, which you can view by zooming out and panning upwards from the sample tracks.
-            <figure float="0">
+          <figure float="0">
               <title>Sample of default coastline data.</title>
               <screenshot>
                 <mediaobject>
@@ -1296,10 +1299,8 @@ Have a go at adding a
 
                 </mediaobject>
               </screenshot>
-            </figure>
-          </para> 
-</sect2>
-        <!--                             -->
+            </figure></para> 
+</sect2> 
 <sect2> 
 <title>Vectored data</title> 
 <para>The addition of vectored chart data is covered later in this document, in
@@ -1465,7 +1466,7 @@ over appearance in the plot:
 <title>Adding drawing features</title> 
 <para>
 	  The
-          <guilabel>Drawing Toolbar</guilabel> is used to place geographic features on the plot; features which are geographically fixed.  In general, when you create them, their corners must be specified. To do this, click on the
+          <guilabel>Drawing</guilabel> toolbar and menu are used to place geographic features on the plot; features which are geographically fixed.  In general, when you create them, their corners must be specified. To do this, click on the
           <guibutton>Select Point</guibutton> button, then double-click on the
           <glossterm linkend="g_plt">plot</glossterm> to set the point..
           <figure float="0">
@@ -1473,48 +1474,57 @@ over appearance in the plot:
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/PaletteButtons1.gif"/>
+                  <imagedata fileref="figures/PaletteButtons1.png"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
           </figure>
         </para> 
 <sect2> 
-<title>Buoyfield</title> 
-<para>Debrief provides a
-            <emphasis>builder</emphasis> dialog to assist
- in the creation of buoyfields.  The creation of
-            <glossterm linkend="g_buoyfields">buoyfields</glossterm> is covered later in
-            <link linkend="handling_buoyfields">Handling Buoyfields</link>.
-          </para> 
-</sect2> 
-<sect2> 
 <title>Label</title> 
 <para>The Label
             <indexterm>
               <primary>Annotations</primary>
               <secondary>Label</secondary>
-            </indexterm>drawing item allows you to place a labelled symbol on the plot.  Typically this may be used to annotate events on the plot, or to add an extra feature which did not warrant its own Debrief file.  Like all annotations Labels have time start and end properties.  Because of this they can be placed on the Tote and used in analysis, as you will learn later.
+            </indexterm>drawing item allows you to place a labelled symbol on the plot.  Typically this may be used to annotate events on the plot, or to add an extra feature which did not warrant its own Debrief file.  Like all annotations Labels have time start and end properties.  Because of this they can be placed on the <link linkend="the_tote_area">Tote</link> and used in analysis, as you will learn later.
           </para> 
-<para>Try adding a Label to the plot.  When you press the Label button, a properties window will open, showing you the variety of editable properties of a Label.  These range from the label&apos;s appearance (Color, Font, Visible), the label&apos;s content (Label, SymbolType, SymbolSize), through to data describing the label (Location, TimeStart, Time_End).  Experiment with changing the formatting on a label.</para> 
 <para>
             <tip>
-              <para>Be sure to experiment with setting the Location of the Label. A custom editor is supplied (see below) for editing locations of data items, it is used frequently in
+              <para>A custom editor is supplied (see below) for editing locations of data items, it is used frequently in
                 <application>Debrief</application>.
- Clicking on the button labelled
+ Clicking on the expand button will let you edit individual lat/long fields (shown  in figure <xref linkend="editor_expanded"/>).  Alternatively, you may set the location to a specific point on the plot.  Right-click on the plot and select <guimenuitem>Copy cursor location</guimenuitem>.  Then click once on the location editor to reveal the <guibutton>Paste</guibutton> button (shown in <xref linkend="editor_paste"/>), and click it to paste the cursor location.</para> 
+<para>labelled
                 <guibutton>Edit</guibutton> will allow you to type in the exact location of the label (useful when you have received the location in printed form), but clicking on
                 <guibutton>Select Point</guibutton> button will let you double-click on the chart to set the Label location.
               </para> 
-</tip> 
-<figure float="0"> 
-<title>Location Editor</title> 
+<figure float="0" id="editor_initial"> 
+<title>Location Editor (initial view)</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/LocationEditor.gif"/> 
+<imageobject> <imagedata fileref="figures/LocationEditor.png"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
-</figure> </para> 
+</figure> 
+<figure float="0" id="editor_expanded"> 
+<title>Location Editor (expanded view)</title> 
+<screenshot> 
+<mediaobject> 
+<imageobject> <imagedata fileref="figures/LocationEditor3.png"/> 
+</imageobject> 
+</mediaobject> 
+</screenshot> 
+</figure> 
+<figure float="0" id="editor_paste"> 
+<title>Location Editor (paste view)</title> 
+<screenshot> 
+<mediaobject> 
+<imageobject> <imagedata fileref="figures/LocationEditor2.png"/> 
+</imageobject> 
+</mediaobject> 
+</screenshot> 
+</figure> 
+</tip> </para> 
 <note> 
 <para>Note that the text for the label itself can be a multi-line piece of text.  When in the text-editor box for the label, just press the return key on your keyboard to move to the next line.  The multi-line piece of text will be centre formatted on screen according to the
               <guilabel>Label Location</guilabel> property.  The multi-line label is also available for  all labels on the
@@ -1549,7 +1559,7 @@ over appearance in the plot:
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/EditPolygon.gif"/>
+                    <imagedata fileref="figures/EditPolygon.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1564,19 +1574,14 @@ button which will take you to the Path editor.  The Path editor is shown below:
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/PathEditor.gif"/>
+                    <imagedata fileref="figures/PathEditor.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
             </figure>
           </para> 
 <para>When it opens, the Path editor contains a single point (incidentally, this point it is placed a the centre of the current dataset).  The four buttons at the top-right of the panel allow you to move the points up and down, create a new point, and delete a point.</para> 
-<para>To edit a point, first single-click on it, it will then be shown in the lower panel.  You may then click on the Edit or Select Point buttons to either type-in the location of the point or to double-click the new location for the point.  Additionally you may click on the Drag button to enter Drag mode.  In Drag mode  any point may be picked up with the mouse and dragged around the plot.</para> 
-<note> 
-<para>In the Path editor it is a copy of the polygon which is being edited, and not the actual polygon.  This is why it is sometimes possible to see both the yellow polygon being edited and as the original one.  The original polygon only gets updated when the
-              <guibutton>Apply</guibutton> is pressed.
-            </para> 
-</note> 
+<para>To edit a point, first single-click on it, it will then be shown in the lower panel.  You may then click on the Edit or Select Point buttons to either type-in the location of the point or to double-click the new location for the point.  Double-click on a point to edit it's individual attributes in the <link linkend="properties_view">Properties View</link>, or right-click on a point to paste the location currently on the clipboard.</para> 
 </sect2> 
 <sect2> 
 <title>Rectangle, Circle, Line, Arc</title> 
@@ -1584,9 +1589,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
             <indexterm>
               <primary>Annotations</primary>
               <secondary>Rectangle, Circle, Line, Arc</secondary>
-            </indexterm>work in the same way as the others described here, the Location Editor described above being used to set the corners, centre, or ends as required.  Experiment with adding them to the plot.
-
-            <note>
+            </indexterm>work in the same way as the others described here, the Location Editor described above being used to set the corners, centre, or ends as required.<note>
               <para>Some of the more basic drawing items have a single
                 <guilabel>DTG</guilabel> parameter instead of
                 <guilabel>TimeStart</guilabel> and
@@ -1607,15 +1610,19 @@ button which will take you to the Path editor.  The Path editor is shown below:
 </tip> 
 </sect2> 
 <sect2> 
-<title>General</title> 
-<para>Try adding a few more features to the
-            <glossterm linkend="g_plt">plot</glossterm>.
-   To edit an existing annotation right-click on it on the
-            <glossterm linkend="g_plt">plot</glossterm> and select
-            <guibutton>Edit..</guibutton>. Alternatively an item may be edited by navigating to it using the
-            <guilabel>Layer Manager</guilabel> (you&apos;ll learn about that very soon), and right-click on it there, selecting
-            <guibutton>Edit..</guibutton> from the list provided.
+<title>Buoyfield</title> 
+<para>Debrief provides a
+            <emphasis>builder</emphasis> dialog to assist
+ in the creation of buoyfields.  The creation of
+            <glossterm linkend="g_buoyfields">buoyfields</glossterm> is covered later in
+            <link linkend="handling_buoyfields">Handling Buoyfields</link>.
           </para> 
+</sect2> 
+<sect2> 
+<title>General</title> 
+<para>
+   To edit any existing annotation, left-click on it on the
+            <glossterm linkend="g_plt">plot</glossterm> or the Layer Manager  to select it - it's attributes will then be available from the Properties View. Alternatively, right-click on an item on the Plot or Layer Manager, and editable attributes are available from the object's drop-down list. Only boolean (true/false) and list-related (top/bottom/left/right etc) are editable from the right-click menu.  </para> 
 </sect2> 
 </sect1>
 
@@ -1624,55 +1631,22 @@ button which will take you to the Path editor.  The Path editor is shown below:
 <title>Layer management</title> 
 <sect2> 
 <title>Layer Manager</title> 
-<para>If you right-click on the
-            <glossterm linkend="g_plt">plot</glossterm>, another editable item listed is the Layer Manager. Selecting this opens the Layer Manager in the
-            <glossterm linkend="g_tote">Tote</glossterm>.
-          </para> 
-<para>Right-click on the layer named
-            <guilabel>Chart Features</guilabel> (which should now have a number of items added to it, including the grid), and from the drop-down menu labelled
-            <guilabel>Layer: Chart Features</guilabel> &gt;, de-select the toggle-item labelled
-            <guilabel>Visible</guilabel>.
-            <figure float="0" id="right_click_layer">
-              <title>Right-clicking in a Layer Manager</title>
+<para>The Layer Manager provides a tree-oriented view of all of the editable data within a plot, organised into layers. New items added to the plot are placed into a <emphasis>Misc</emphasis> layer.From here they can be reorganised into suitably themed layers via <link linkend="cut_copy_paste">cut/paste</link>.<figure float="0" id="layer_manager">
+              <title>Layer Manager View</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/EditLayerItem.gif"/>
+                    <imagedata fileref="figures/LayerManagerView.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure>
-	 The Grid will now disappear. Right-click on "Chart Features" again and make the grid visible.
-          </para> 
-<para>You may also expand any of the Layers to see the items they contain. This is a particularly good way of editing individual position fixes where you know their DTG; simply double-click on the relevant DTG and it will open in a
-            <glossterm linkend="g_property_window">property editor</glossterm> window.
-          </para> 
-<para> There is also a button to open the Layer Manager from the Stepper Control, which you&apos;ll learn more about shortly.
-            <guiicon>
-              <inlinegraphic fileref="figures/layer_mgr.gif"/>
-            </guiicon>
-          </para> 
+            </figure></para> 
+<para>Reveal the Layer Manager by selecting it from the <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop-down list.  Once open you will see the data shown as a series of layers - each with a tick indicating if it's visible or not.  A toolbar provides command buttons to make items visible or not visible, and buttons are enabled to make an entity the primary or secondary track when applicable.  Note that not just tracks may be denoted primary or secondary:  and graphic item with a position and date-time can be selected: thus Debrief can be configured to show a running indication of bearing and range for a series of vessels from a single label datum (representing a sonar-buoy or mine).</para> 
+<para>The drop-down menu provides further commands, significantly including the ability to add a new layer; <guimenuitem>Create Layer</guimenuitem>. Further commands are available when right-clicking on one or more Layer Manager elements: in particular the ability to cut/copy/paste elements between layers and plots, together with the command to view a time-variable graph of the selected elements (see <xref linkend="show_time_vars"/>).</para> 
 </sect2> 
-<sect2> 
-<title>Layer buttons</title> 
-<para>There are two buttons at the top of the
-            <indexterm>
-              <primary>Layer Manager</primary>
-            </indexterm>Layer Manager.  The first of these allows you to create and name a new, empty, top-level layer.  This can be used to tidy up large numbers of annotations.  New annotations (drawings) are always placed on the
-            <guilabel>Misc</guilabel> layer.  You can tidy them up by creating a layer dedicated to a set of annotations and cut/paste them into it.  Once on a layer these annotations can be switched on and off at once (using the Layer/Visible property), a useful analysis feature.
-          </para> 
-<para>Once you are more familiar with the
-            <application>Debrief</application>
-            <glossterm linkend="g_xml">XML</glossterm> format, custom layers can be created to contain, for example, exercise areas or underwater hazards.  Information in these custom layers can be dropped into new
-            <glossterm linkend="g_plt">plot</glossterm>s and switched on and off as required.
-          </para> 
-<para>
- The second button is to update the "tree" of data you are looking at, although normally the Layer Manager is good at recognizing changes and it updates itself.
-          </para> 
-</sect2> 
-<sect2> 
+<sect2 id="cut_copy_paste"> 
 <title>Cut/Copy Paste</title> 
-<para>Finally, items may be cut, copied and pasted between Layers using the commands contained in the menus obtained by right-clicking on the item. The cut command may be used on it&apos;s own to delete an item. Copying items is a quick way of making duplicates of a correctly formatted annotation or screen item such as a rectangle or ellipse.
+<para>Items may be cut, copied and pasted between Layers using the commands contained in the menus obtained by right-clicking on the item. The cut command may be used on it&apos;s own to delete an item. Copying items is a quick way of making duplicates of a correctly formatted annotation or screen item such as a rectangle or ellipse.
           </para> 
 <para>In addition to copying/moving items between layers, items and layers themselves can be copied or moved between sessions within Debrief.</para> 
 <para>To paste a layer (or track) into the top level of the layer manager just click on the white space below the displayed layers and select
@@ -1684,24 +1658,12 @@ button which will take you to the Path editor.  The Path editor is shown below:
             </para> 
 </note> 
 </sect2> 
-<sect2> 
-<title>Line thickness</title> 
-<para>The thickness used for plotting lines on the plot is controlled on a per-layer basis.  Hence, on the popup menu shown above in
-            <link linkend="right_click_layer"><?xm-replace_text {link}?></link> a drop-down list of line thicknesses is shown. Within the list of line thicknesses available is the
-            <emphasis>Hairwidth</emphasis>
-            <indexterm>
-              <primary>Hairwidth</primary>
-            </indexterm> value - this uses the thinnest possible line thickness on that particular device; whether it be screen or printer.
-          </para> 
-</sect2> 
 </sect1> 
 <sect1 id="save_reopen"> 
 <title>Saving &amp; re-opening plots</title> 
 <sect2> 
 <title>Save</title> 
-<para>Now that all of this work has been invested in the plot, it&apos;s worth saving it.
-          </para> 
-<para>You may (or my not) remember what the
+<para>You may (or my not) know what the
             <glossterm linkend="g_replay">Replay</glossterm> file format used to load data into
             <application>Debrief</application> looked like.  Whilst it is compact and easy to use, unfortunately the Replay file format does not allow us to store all of the formatting we have applied to the
             <application>Debrief</application>
@@ -1729,26 +1691,23 @@ button which will take you to the Path editor.  The Path editor is shown below:
                 </para> 
 </listitem> 
 </itemizedlist> </para> 
-<para>To save your work as an
-            <glossterm linkend="g_xml">XML</glossterm> file, click on the Save Plot button:
+<para>Whilst a plot is typically created from an REP file, it may not be saved back into that REP file - it must be saved as an XML Plot-File. To save your work as an
+            <glossterm linkend="g_xml">XML</glossterm> file, click on the Save button:
             <guiicon>
-              <inlinegraphic fileref="figures/SaveBtn.gif"/>
-            </guiicon>
-          </para> 
-<para>A file dialog will open (see below), allowing you to save the current session as a
+              <inlinegraphic fileref="figures/SaveBtn.png"/>
+            </guiicon> from the Workbench toolbar or the <guimenu>File</guimenu> menu. A file dialog will open (see below), allowing you to save the current session as a
             <application>Debrief</application>
             <glossterm linkend="g_plot_file">Plot-File</glossterm> (
-            <filename>xml</filename>). Name your new file (
-            <filename>tutorial.xml</filename> would seem a good name), select a sensible location, and press
-            <guilabel>Save</guilabel>.
-          </para> 
+            <filename>xml</filename>).<note><para>Debrief will only let you save the new plot into one of your project folders, so you must both select a folder and a provide a filename for the new file.  Usefully, Debrief guesses that you probably want to name the plot the same as the REP file first loaded.  Hey, it's only a guess.</para> 
+</note></para> 
+<para> </para> 
 <para>
             <figure float="0">
               <title>Save-file dialog</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SaveDialog.gif"/>
+                    <imagedata fileref="figures/SaveDialog.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1756,71 +1715,18 @@ button which will take you to the Path editor.  The Path editor is shown below:
           </para> 
 <para>Save-as functionality is provided through the
             <guibutton>Save As</guibutton> button, next to the
-            <guibutton>Save Plot</guibutton> button described above.
-          </para> 
+            <guibutton>Save</guibutton> button in the <guimenu>File</guimenu> menu.</para> 
 <sidebar> 
 <para><application>Debrief</application> plot files can grow very large, and on occasion the memory required for the save operation can reach the upper limit provided to the application by default.  When Debrief fails during the Save operation due to reaching the upper memory limit it stops trying to save to file and shows a message dialog advising you to increase the limit:<quote>Ran out of memory whilst saving plot, try adding -Xmx256m to the command line</quote>. This extra parameter passed when Debrief is starting instructs your PC to provide Debrief with 256 Megabytes of memory.  If you continue to receive the error message try increasing the memory allocation to 512 Megaytes.</para> 
 <para>The save operation itself is conducted in a two-stage process.  If the operation entails saving over an existing file (when you just do a plain Save, or Save As over-writing an older version) Debrief first writes the plot to a subtlely different filename in the same directory (<filename>plot.xml</filename> would get saved to <filename>~plot.tmp</filename>). If the save operation completes successfully then the older file is deleted and the temporary file renamed to the originally requested filename.  Thus, your existing file only gets overwritten on successful completion of the save.</para> 
 </sidebar> 
 </sect2> 
 <sect2> 
-<title>Close</title> 
-<para>Now you can close the session, using the
-            <guilabel>Close Session</guilabel> button:
-            <guiicon>
-              <inlinegraphic fileref="figures/CloseSession.gif"/>
-            </guiicon>
-          </para> 
-<para>The session will close.  Where it can,
-            <application>Debrief</application> recognizes if anything has changed since the last save, and it will prompt you to save your plot before it lets you close.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Open Existing Plot</title> 
-<para>You should now be looking at an "empty"
-            <application>Debrief</application> application, without any Sessions visible.
-          </para> 
-<para>You open an existing plot using the Open Plot control:
-            <guiicon>
-              <inlinegraphic fileref="figures/OpenSession.gif"/>
-            </guiicon>
-          </para> 
-<para>This will open the
-            <guilabel>File Dialog</guilabel> you saw earlier.  Navigate to your saved plot and select "Open". The plot will re-open with the same view on the data as when the file was saved.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Drag &amp; Drop (new plot)</title> 
-<para>Now that we&apos;ve mastered that, close this session and experiment with the drag and drop functionality within
-            <application>Debrief</application>.  Re-arrange the windows on your desktop so that you have
-            <application>Debrief</application> and
-            <application>Windows Explorer</application> visible.
-          </para> 
-<para>Now drag a
-            <application>Debrief</application>
-            <filename>XML</filename>
- or
-            <filename>REP</filename> file from
-            <application>Explorer</application> onto the grey area to the right of the application toolbar (near the top of the
-            <application>Debrief</application> window).
- A round cursor containing a plus symbol will be displayed beneath the mouse, showing that this is a legitimate "drop" point for that type of file.  
- Drop the file into the grey area, and after a few seconds the plot will open.
-          </para> 
-<para>You have now dragged a file into
-            <application>Debrief</application>, creating a new session.   If you drag more than one file on to the Application toolbar, each one will open into a new session.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Drag &amp; Drop (add)</title> 
-<para>With a session already open, you are able to drag a
+<title>Adding more data to a plot</title> 
+<para>With a plot already open, you are able to drag a
             <application>Debrief</application>
             <filename>XML</filename> or
-            <filename>REP</filename> file into it&apos;s chart, adding the content to the existing session.  Dragging multiple files onto the plot area adds them all to the existing session.  So a quick way to create a plot containing a number of files is to click on
-            <guibutton>New Session</guibutton>
-            <guiicon>
-              <inlinegraphic fileref="figures/NewSession.gif"/>
-            </guiicon> , then drag the files onto the plot.
-          </para> 
+            <filename>REP</filename> file into it&apos;s chart, adding the content to the existing session.  Dragging multiple files onto the plot area adds them all to the existing session.  To create a composite plot like this, you can start by using Debrief's <emphasis>New Plot Wizard</emphasis> (see relevant <link linkend="g_cheat">Cheat Sheet</link>)</para> 
 </sect2> 
 </sect1> 
 </chapter> 
@@ -1830,7 +1736,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
         <indexterm>
           <primary>Track Data</primary>
           <secondary>Primary &amp; Secondary Tracks</secondary>
-        </indexterm> Debrief.  In this section of tutorial (at last) you are going to gain some familiarity with how Debrief can be used to analyse maritime exercises.
+        </indexterm> Debrief.  In this section (at last) you are going to gain some familiarity with how Debrief can be used to analyse maritime exercises.
       </para> 
 <sect1> 
 <title>Assigning tracks as primary and secondary</title> 
@@ -1844,7 +1750,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/ToteLabelled.gif"/>
+                    <imagedata fileref="figures/ToteLabelled.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1854,7 +1760,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
 	   The
             <glossterm linkend="g_tote">Tote</glossterm> area is used to show the current and relative status between two or more platform tracks. The information on the
             <glossterm linkend="g_tote">Tote</glossterm> is dynamic, showing vessel information at the time indicated in the Stepper Control (
-            <userinput>120500.00</userinput> in this case). The user is able to step through the tracks either manually (using the forward and backward buttons) or automatically (by switching on the timer button).
+            <userinput>120500.00</userinput> in this case). 
           </para> 
 <note> 
 <para>The primary and secondary tracks may not contain values exactly at the time in the time stepper control.  For both the tote display and the plot-highlights, Debrief uses the data values recorded on or immediately after the indicated stepper time.</para> 
@@ -1936,65 +1842,13 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </sect2> 
 <sect2 id="assigning_tracks"> 
 <title>Assigning Tracks</title> 
-<para>Back to the tutorial, setup
-            <application>Debrief</application> to have
-            <application>Debrief</application> running with
-            <indexterm>
-              <primary>Track Data</primary>
-              <secondary>Assigning Primary &amp; Secondary</secondary>
-            </indexterm> the two tracks (
-            <filename>boat1.rep</filename> and
-            <filename>boat2.rep</filename>) visible. If there are any properties windows open on the Tote, close them at this point to save space, to have a view like that below.
-            <figure float="0">
-              <title>Initial view</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/FileJustOpened.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>If you right click on one of the tracks, you will see that on the popup menu provided, one of the commands is
-            <guibutton>Set Primary Track</guibutton>. Select this command, and the track will appear on the
-            <glossterm linkend="g_tote">Tote</glossterm>. Now right-click on the other track, and select
-            <guibutton>Set Secondary Track</guibutton>. The
-            <glossterm linkend="g_tote">Tote</glossterm> should now look like the screenshot at the start of this demonstration (although the tracks may be the other way around).
-          </para> 
-<para>
-You should probably have noticed the
-            <guibutton>Auto Generate</guibutton> buttons at the foot of the Tote.  These buttons automatically assign tracks and annotations to the Tote.  They take a look at all of the data currently loaded and identify any visible items that may be placed on the Tote
-            <guibutton>Auto Generate</guibutton> or any visible tracks which may be placed on the tote
-            <guibutton>Auto Generate (Tracks)</guibutton>.  Once they have analysed the list, they mark one of these items the primary track, and the others as secondaries.
+<para>Assigning primary and secondary tracks is covered in the respective <glossterm linkend="g_cheat">Cheat Sheet</glossterm>. 
           </para> 
 <tip> 
 <para>If you have more than two tracks, it can be quicker to assign the primary track manually and then press
               <guibutton>Auto Generate</guibutton> to assign the remaining tracks as secondary.
             </para> 
 </tip> 
-</sect2> 
-<sect2 id="removing_tracks"> 
-<title>Removing tracks</title> 
-<para>[guidance here]</para> 
-</sect2> 
-<sect2 id="stepping_forward_in_time"> 
-<title>Stepping forward</title> 
-<para>Now click on the Forward Button (that&apos;s the single right arrow). You should see the white highlight on each track move forward. If you can&apos;t see the highlight because part of the track is not visible, select the
-            <guibutton>Fit to Window</guibutton> button. Now repeatedly click on the forward button, and you will see both the highlight move, and the information in the
-            <glossterm linkend="g_tote">Tote</glossterm> update. The highlight and Tote are moving forward in one minute steps (one minute is the default). Also try clicking on the backward button, and the large step forward and backwards buttons (which contain double-arrows). The large step buttons by default move you in 10 minute steps. The buttons with an arrow and a line move you to the start or end of the time period.  If the
-            <guibutton>Move to end of plot</guibutton> button is obscured (as in the screen-shot above) expand the Tote by dragging the separator bar to it&apos;s right.  Note that the Tote can be completely hidden by clicking on the tiny left-arrow at the top of this bar.
-          </para> 
-<para>With the introduction of Java 1.4 came wheel-mouse support.  To move forward and backward in time through the serial just roll the wheel-mouse either way whilst either the Tote or the Chart has focus.
-            <note>
-              <para>
-                <emphasis>Has focus</emphasis> means that this item was the last item clicked, and it is where Debrief is going to apply the next keyboard or mouse action.
-              </para> 
-</note>By default the wheel moves the current time in small steps,
-but hold down the <guibutton>SHIFT</guibutton> key to move in large steps. You will notice that the
-mouse wheel also controls the scroll-bars used in the application
-(such as when a long 
-<link linkend="narrative_intro">narrative</link> is shown), and that holding down the <guibutton>CTRL</guibutton> key will zoom the plot in and out. </para> 
 </sect2> 
 <sect2> 
 <title>Notes</title> 
@@ -2607,7 +2461,7 @@ observed. New libraries will be adopted as soon as a fix is available
 <para><?xm-replace_text {para}?></para> 
 </sect2> 
 </sect1> 
-<sect1> 
+<sect1 id="show_time_vars"> 
 <title>Show time-related variables</title> 
 <para>The
             <guibutton>Show Time Variables</guibutton> operation
@@ -2756,7 +2610,7 @@ observed. New libraries will be adopted as soon as a fix is available
               <glossterm linkend="g_tote">Tote</glossterm>, a vertical bar is drawn through the plot at the correct time.  If the current time on the Tote occurs before the earliest time on the Time-Variable plot then the bar is drawn at the minimum value, and drawn over the maximum value if the current time on the Tote occurs after the latest time value.  The bar redraws itself automatically as the time in the Tote changes.
             </para> 
 </sect2> 
-<sect2 id="show_time_vars"> 
+<sect2 id="show_time_vars_tZero"> 
 <title id="show_time_vars_title">Analysing time-zero data in time-variable plot</title> 
 <para>By default the
               <indexterm>
