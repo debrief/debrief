@@ -1,0 +1,6 @@
+<contexts>
+	<context id="OverviewChart" title="Panic Button Title">
+		<description>This is the panic button.</description>
+		<topic href="html\legacy\moving_around.html" label="Pushing the panic button"/>
+	</context>
+</contexts>
