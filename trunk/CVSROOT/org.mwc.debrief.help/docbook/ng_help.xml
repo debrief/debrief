@@ -1893,18 +1893,55 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <title>Controlling Time</title> 
 <sect2 id="time_controller"> 
 <title>The Time Controller</title> 
-<para>insert screenshot of time-stepper, explain various components.  Toolbar: modes &amp; drop-down, buttons, current time, time slider, period slider.</para> 
+<para>Time is managed within Debrief through the Time Controller.  This view provides time display, it allows time control, and it acts as a placeholder for a series of other time-related operations. <figure float="0">
+              <title>Time Controller View</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/TimeController.png"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>insert screenshot of time-stepper, explain various components.  Toolbar: modes &amp; drop-down, buttons, current time, time slider, period slider.</para> 
 <sect3> 
 <title>Display modes</title> 
-<para>normal, snail, relative</para> 
+<para>The first three icons on the Time Controller toolbar allow you to choose two combinations of plotting modes.  The first two control how data is displayed:  in Normal Mode, all exercise data is displayed, whereas in Snail mode, only the current position and a series of recent points are displayed (similar to a Snail with trail following behind it).  <figure float="0">
+              <title>Example of a snail trail</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/SnailTrailImage.gif"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>The circle represents the current position, the stalk direction represents the current course, and its length gives a relative idea of the vessel speed (when compared to the length of the other vessel&apos;s stalk,
+            <emphasis>boys will be boys</emphasis>). The dots trailing back from the current position are a
+            <glossterm linkend="g_snail_trail">snail trail</glossterm> of points going back in time. If you move forward and backward with the stepper control you will see these trails moving.
+          </para>
+<para>The next display mode, Relative Mode, affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. <figure float="0">
+              <title>Sample of relative display mode</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/relative_demo.gif"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para> 
+<tip> 
+<para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
+            </para> 
+<para>The sample shown below gives a demonstration of the use of this relative mode. You can quickly see that the blue vessel is directly ahead of the red trailing vessel, and your use of the Range Ring Highlighter gives us a quick indication of range.
+            </para> 
+</tip> 
 </sect3> 
 <sect3> 
 <title>VCR controls</title> 
-<para></para> 
+<para>The VCR controls allow you to move forwards and backwards in time through the plot.  Looking at the order of buttons in  the Time Controller screenshot above, the commands allow you to move to the beginning, move a large step backwards, move a small step backwards and repeat the last time step continuously (small or large step, backwards or forwards).  The remaining buttons repeat these operations in the "forward" direction. The size of small and large steps is controlled by the Time Controller properties window, accessed by selecting <guimenu>Properties</guimenu>/<guimenuitem>Time Controller</guimenuitem>.  Also available from this set of properties is the <guibutton>Step Interval</guibutton>; the time interval that Debrief waits before automatically moving forwards.</para> 
 </sect3> 
 <sect3> 
 <title>Time display</title> 
-<para>choices of time format, slider increments</para> 
+<para>The green digits of the time display is tied closely to the slider-bar immediately beneath it.  Dragging the slider controls the current display time together with how the current data is displayed.  Other Debrief views (such as the <link linkend="viewing_narratives">Narrative Viewer</link> and the <link linkend="show_time_vars">Time-Variable</link> graphs) update in response to time changes from the time slider.</para> 
 </sect3> 
 <sect3> 
 <title>Bookmarking</title> 
@@ -1913,6 +1950,10 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <sect3> 
 <title>Manipulating according to time period</title> 
 <para>filter to time, export data</para> 
+</sect3>
+<sect3>
+<title>Other time operations</title>
+<para></para>
 </sect3> 
 </sect2> 
 <sect2 id="auto_stepping"> 
@@ -2052,22 +2093,9 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             <guilabel>Snail Display Mode</guilabel> and
             <guibutton>Apply</guibutton>. Quick as a flash, the plot will clear. Now switch back to the Tote and move forward a few steps. You will see a vector appear at the current vessel position.
 
-            <figure float="0">
-              <title>Example of a snail trail</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/SnailTrailImage.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
+            
           </para> 
 <para>This is such a useful thing to use that it can also be changed from the Stepper control itself, where a drop-down list of the two options is supplied.
-          </para> 
-<para>The circle represents the current position, the stalk direction represents the current course, and its length gives a relative idea of the vessel speed (when compared to the length of the other vessel&apos;s stalk,
-            <emphasis>boys will be boys</emphasis>). The dots trailing back from the current position are a
-            <glossterm linkend="g_snail_trail">snail trail</glossterm> of points going back in time. If you move forward and backward with the stepper control you will see these trails moving.
           </para> 
 </sect2> 
 <sect2> 
@@ -2078,24 +2106,6 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <secondary>Relative</secondary>
             </indexterm> of the Snail Display Mode.  It works identically, except that the plot is oriented to match the current heading of the primary track, so the vector on the primary track always
             <emphasis>points upwards</emphasis>.
-          </para> 
-<tip> 
-<para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
-            </para> 
-<para>The sample shown below gives a demonstration of the use of this relative mode. You can quickly see that the blue vessel is directly ahead of the red trailing vessel, and your use of the Range Ring Highlighter gives us a quick indication of range.
-            </para> 
-</tip> 
-<para>
-            <figure float="0">
-              <title>Sample of a relative display mode</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/relative_demo.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
           </para> 
 </sect2> 
 <sect2 id="display_mode_properties"> 
