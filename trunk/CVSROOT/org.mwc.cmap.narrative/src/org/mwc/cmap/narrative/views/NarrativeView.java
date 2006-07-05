@@ -16,6 +16,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.narrative.NarrativePlugin;
 
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.NarrativeWrapper.NarrativeEntry;
@@ -430,8 +431,7 @@ public class NarrativeView extends ViewPart
 		_followTimeToggle.setText("Follow time");
 		_followTimeToggle.setChecked(true);
 		_followTimeToggle.setToolTipText("Highlight entry nearest current DTG");
-		_followTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_TOOL_UP));
+		_followTimeToggle.setImageDescriptor(NarrativePlugin.getImageDescriptor("icons/history.png"));
 
 		_jumpToTimeToggle = new Action("Jump to time", Action.AS_CHECK_BOX)
 		{
@@ -439,8 +439,7 @@ public class NarrativeView extends ViewPart
 		_jumpToTimeToggle.setText("Jump to current");
 		_jumpToTimeToggle.setChecked(true);
 		_jumpToTimeToggle.setToolTipText("Ensure highlighted entry is always visible");
-		_jumpToTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		_jumpToTimeToggle.setImageDescriptor(NarrativePlugin.getImageDescriptor("icons/magic-wand.png"));
 
 		_controllingTimeToggle = new Action("Control time", Action.AS_CHECK_BOX)
 		{
@@ -448,8 +447,7 @@ public class NarrativeView extends ViewPart
 		_controllingTimeToggle.setText("Control time");
 		_controllingTimeToggle.setChecked(true);
 		_controllingTimeToggle.setToolTipText("Make rest of application follow our time");
-		_controllingTimeToggle.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+		_controllingTimeToggle.setImageDescriptor(NarrativePlugin.getImageDescriptor("icons/history_add.png"));
 
 		_setAsBookmarkAction = new Action("Add DTG to bookmarks", Action.AS_PUSH_BUTTON)
 		{
