@@ -1996,13 +1996,13 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <sect3 id="filter_to_time_period"> 
 <title>Manipulating according to time period</title> 
 <para>The pair of sliders at the foot of the <guiicon>Time Controller</guiicon> view allow you to set start and finish times.  These times are not set in support of a single Debrief  operation,  but are used across a range of operations.  When dragging the sliders, hold down the shift-key to move in whole segments (hours, days, as appropriate).  Drag the shaded section to retain the period length but change its origin (again using the shift-key if appropriate).  </para> 
-</sect3>
-<sect3>
-<title>Filter to time period</title>
-<para>When the <guibutton><inlinegraphic fileref="figures/FilterToTimePeriod.png"/>Filter to time period</guibutton> radio button is depressed the plot will automatically filter the displayed data to the indicated period.  In this mode, you can select a  6-hour period (for example), and drag it through the full serial time with shift-key depressed to view a moving "window" of data.</para>
-</sect3>
-<sect3>
-<title>Copy to clipboard</title>
+</sect3> 
+<sect3> 
+<title>Filter to time period</title> 
+<para>When the <guibutton><inlinegraphic fileref="figures/FilterToTimePeriod.png"/>Filter to time period</guibutton> radio button is depressed the plot will automatically filter the displayed data to the indicated period.  In this mode, you can select a  6-hour period (for example), and drag it through the full serial time with shift-key depressed to view a moving "window" of data.</para> 
+</sect3> 
+<sect3> 
+<title>Copy to clipboard</title> 
 <para>Another operation that relies on the selected time period is exporting calculated data to the clipboard.  This operation is available form the <guiicon>
               <inlinegraphic fileref="figures/Calculator.png"/>
             </guiicon><guibutton>Time Controller</guibutton>'s drop-down menu, and it performs a series of calculations for each data-point in the indicated time period.  These calculations are then placed on the system clipboard in Comma-Separated-Variable format  for reuse in other applications, <application>Microsoft Excel</application>, for instance.</para> 
@@ -2041,7 +2041,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <glossterm linkend="g_track">track</glossterm>, and the second is the point in the primary
               <glossterm linkend="g_track">track</glossterm> nearest to the current time stamp: that-is the point in the primary track which has been used for the calculated results.
             </para> 
-</note>
+</note> 
 </sect3> 
 <sect3> 
 <title>Other time operations</title> 
@@ -2494,7 +2494,7 @@ data is not present, a gap is inserted into the data-line.
 <title id="track_toolbox_title">Track &amp; Time toolbox</title> 
 <sect2 id="z_zero_times"> 
 <title>T-Zero times</title> 
-<para><emphasis>T-Zero times are still to be implemented, but the mode of operation will be very similar to that shown below, June 2006.</emphasis></para>
+<para><emphasis>T-Zero times are still to be implemented, but the mode of operation will be very similar to that shown below, June 2006.</emphasis></para> 
 <para>The
             <guibutton>Set time zero</guibutton> command
             <indexterm>
@@ -2709,6 +2709,7 @@ data is not present, a gap is inserted into the data-line.
 </sect1> 
 <sect1 id="create_buoys"> 
 <title>Creating buoyfields</title> 
+<para><emphasis>Note,  at the time of writing (June 2006) Debrief NG does not contain the Buoyfields wizard. Debrief 2003 may be used to create a plot-file containing buoyfields, which can then be re-opened in Debrief NG.</emphasis></para>
 <sect2> 
 <title>Toolbar</title> 
 <para>A single toolbar
@@ -3054,59 +3055,17 @@ different vectored databases. </para>
             <indexterm>
               <primary>VPF Data</primary>
               <secondary>Configuring Debrief</secondary>
-            </indexterm> entries in the
-            <application>Debrief</application> properties file.
-          </para> 
-<para>The
-            <application>Debrief</application> properties file is named
-            <filename>d2ksettings.prp</filename> and is contained in the directory where
-            <application>Debrief</application> is started from.  For a typical installation this is
-            <filename>C:/Program Files/Debrief 2003</filename>.
-          </para> 
-<tip> 
-<para>If you cannot find the properties file, do a Search (Start/Search/Files and programs). If a number of files are returned then quickly open and quit
-              <application>Debrief</application>, and repeat the search - the newest version of the file is the one in use.
-            </para> 
-</tip> 
-<tip> 
-<para>Before editing the Properties File, ensure that
-              <application>Debrief</application> is closed, otherwise your changes will be overwritten when
-              <application>Debrief</application> closes.
-            </para> 
-</tip> 
-<para>Open the file in a text editor (such as notepad), and append  the VPF directory entries:
-            <screen>
-              <markup>
-VPF_DATABASE_DIR.1=c\:\\vpf\\SASAUS
-VPF_DATABASE_DIR.2=c\:\\vpf\\NOAMER
-VPF_DATABASE_DIR.3=c\:\\vpf\\SOAMAFR
-VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
-              </markup>
-            </screen>
-          </para> 
-<note> 
-<para>Note the following points:
-              <itemizedlist>
-                <listitem>
-                  <para>Each line starts with the VPF property prefix VPF_DATABASE_DIR</para> 
-</listitem> 
-<listitem> 
-<para>This prefix is followed by a unique integer (numbers 1 to 4 in this example)</para> 
-</listitem> 
-<listitem> 
-<para>The property name is followed immediately by an equals sign (=), then one of the data paths.</para> 
-</listitem> 
-<listitem> 
-<para>These data paths are names of directories which contain DHT and LAT entries.</para> 
-</listitem> 
-<listitem> 
-<para>In the data path, each symbol used is prefixed by a slash character (\).</para> 
-</listitem> 
-</itemizedlist> </para> 
-</note> 
-<para>Now save the properties file, and you are ready to view the data in
-            <application>Debrief</application> in the next part of the tutorial.
-          </para> 
+            </indexterm>the <guibutton>VPF Data storage</guibutton> tab of the <guibutton>Preferences</guibutton> dialog from the <guimenu>Window</guimenu> menu.
+          Indicate the four data-file locations using the file-browser buttons.<figure float="0">
+              <title>VPF preferences</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/vpf_prefs.png"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para> 
 </sect2> 
 <sect2> 
 <title>Thank heavens
@@ -3145,7 +3104,7 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
           </para> 
 <para>VPF layers are loaded into a plot using the "Create VPF Layers" button:
             <guiicon>
-              <inlinegraphic fileref="figures/vpf.gif"/>
+              <inlinegraphic fileref="figures/create_vpf.png"/>
             </guiicon>
           </para> 
 <para>Yes, it&apos;s a shrunken version of NIMA&apos;s  VPF logo.  If VPF layers have been loaded into
@@ -3154,41 +3113,14 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
 </sect2> 
 <sect2> 
 <title>Creating VPF Layers</title> 
-<para>So, to work through the process, start a new blank session in
-            <application>Debrief</application>, and drag across the boat1.rep track from the installation directory.
-          </para> 
-<para>When the data has loaded and you can see the familiar red track on the right hand side of the screen, switch to the
-            <guilabel>Chart Features</guilabel> toolbar and click on the
-            <guibutton>Create VPF Layers</guibutton> button:
-            <guiicon>
-              <inlinegraphic fileref="figures/vpf.gif"/>
-            </guiicon>
-          </para> 
-<para>
-            <application>Debrief</application> will now take a few seconds to look through the directories defined in your
-            <application>Debrief</application> properties file.  From these directories it will find the names of the VPF databases you are using (probably just VMap initially), then find the themes of data within this database.  Then it adds this data as new layers.  Finally it shows a property window for the master layer containing the VPF data.  Should you wish to you could rename this layer, but for simplicity isn&apos;t really recommended.
-          </para> 
-<para>To configure the VPF data, switch to the
-            <application>Debrief</application> tote and select
-            <guibutton>View
-	     Layer Manager</guibutton>.    The
-            <guilabel>Layer
-	     Manager</guilabel> will open, and show our
-            <guilabel>Track:Carpet</guilabel> layer together with
-	   another layer,
-            <guilabel>Chart Features</guilabel>.  Click
-	   on the symbol to the left of the
-            <guilabel>Chart
-	     Features</guilabel> (
-            <guiicon>
-              <inlinegraphic fileref="figures/VPF_Symbol.gif"/>
-            </guiicon>) text to open that layer, and you will see the following view, clearly showing the new VPF layer.
+<para>Once loaded into a plot configure the VPF data by switching to the
+            <guibutton>Layer Manager</guibutton>.  In there, open the <guilabel>Chart Features</guilabel> layer, to see the new VPF layer.
             <figure float="0">
               <title>Layer Manager</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer1.gif"/>
+                    <imagedata fileref="figures/VPF_Layer1.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3200,7 +3132,7 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer2.gif"/>
+                    <imagedata fileref="figures/VPF_Layer2.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3214,7 +3146,7 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer3.gif"/>
+                    <imagedata fileref="figures/VPF_Layer3.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3226,7 +3158,7 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/VPF_Layer4.gif"/>
+                    <imagedata fileref="figures/VPF_Layer4.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3587,14 +3519,33 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/Narr_1.gif"/>
+                    <imagedata fileref="figures/Narr_1.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure>
-          </para> 
-<para>In addition to changing the Debrief step time, the user is also able to change the format of the data in the DTG column, and elect whether to view only the first line of data or the full entry.
-          </para> 
+            </figure>Three settings affect how the Narrative Viewer integrates with the current plot time (as indicated on the <link linkend="time_controller">Time Controller</link> (see <xref linkend="time_controller"/>).
+          <variablelist><varlistentry><term><guiicon>
+              <inlinegraphic fileref="figures/FollowTime.png"/>
+            </guiicon></term><listitem><para>Highlight the narrative entry nearest to the current plot time.</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guiicon>
+              <inlinegraphic fileref="figures/JumpToCurrent.png"/>
+            </guiicon></term>
+<listitem>
+<para>Always ensure the current entry is visible (scrolling up and down as necessary)</para>
+</listitem>
+</varlistentry>
+<varlistentry>
+<term><guiicon>
+              <inlinegraphic fileref="figures/ControlTime.png"/>
+            </guiicon></term>
+<listitem>
+<para>Change the plot-time to that of a narrative entry when the user double-clicks on it.</para>
+</listitem>
+</varlistentry>
+</variablelist></para> 
 </sect2> 
 <sect2 id="preparing_narrative_data"> 
 <title>Preparing the data</title> 
@@ -3656,116 +3607,9 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
 <sect1 id="view_narrative"> 
 <title>Viewing narrative data</title> 
 <sect2> 
-<title>Getting started</title> 
-<para>So, to have a go at working with narrative data, open
-            <application>Debrief</application> and load your sample tracks:
-            <filename>boat1.rep</filename> and
-            <filename>boat2.rep</filename> from the Debrief directory.  Also in the
-            <application>Debrief</application> directory you should find your sample narrative data;
-            <filename>narrative.rep</filename>.  Have a quick look at this file in
-            <application>Notepad</application> if you want to, then drag it into the current
-            <application>Debrief</application> session to add it to your two tracks.
-            <application>Debrief</application> won&apos;t show any immediate change since narrative data doesn&apos;t have a graphic representation.
-          </para> 
-</sect2> 
-<sect2> 
 <title>Opening the narrative viewer</title> 
-<para>To view the narrative data, first
-            <indexterm>
-              <primary>Narrative Data</primary>
-              <secondary>Opening Narrative Viewer</secondary>
-            </indexterm>you have to open its viewer.  Start by opening up the
-            <guilabel>Layer Manager</guilabel> using its icon on the
-            <guilabel>Stepper Control</guilabel>.
-          </para> 
-<para>From the Layer Manager you can see a new layer named "Narratives" which contains 19 narrative entries.
-            <figure float="0">
-              <title>Narratives from the Layer Manager</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/Narr_2.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
+<para>To view the narrative data, just select <guibutton>Narrative Viewer</guibutton> from the <guimenu>Window</guimenu>/<guibutton>Show View...</guibutton> drop-down list.</para> 
 <para>To open the narrative viewer, double-click on the Narratives text.
-          </para> 
-<para>The narrative viewer will now open
-            <figure float="0">
-              <title>Viewing a narrative</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/Narr_1.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-</sect2> 
-<sect2 id="analysing_narrative_data"> 
-<title>Analysing narrative data</title> 
-<para>So, now that you have all of
-            <indexterm>
-              <primary>Narrative Data</primary>
-              <secondary>Analysing Narrative Data</secondary>
-            </indexterm> your data in
-            <application>Debrief</application>, you will simulate its use in analysis.  First of all, configure the Debrief time limits by pressing
-            <guibutton>Auto Generate</guibutton> from the
-            <guilabel>Tote</guilabel> panel.
-          </para> 
-<para>Now switch to the narrative viewer, and double-click on the entry titled
-            <guilabel>DISABLE SYSTEM DELTA</guilabel>.  You will see the white rectangle on the plot jump to the time
-            <guilabel>120614</guilabel>.  Now double-click on the entries either side, to see the plot highlight move backwards and forwards.  The points where
-            <glossterm linkend="g_track">track</glossterm>
-            <emphasis>CARPET</emphasis> changes colour should now become clear, we&apos;re using them to mark different sensor states.
-          </para> 
-<para>Also have a play with changing the time format from
-            <guilabel>ddHHmm</guilabel> to
-            <guilabel>HHmm</guilabel>.  The
-            <guilabel>DTG</guilabel> column will now shrink, allowing more space for the
-            <guilabel>Entry</guilabel> column.  To show even more narrative entries, click on the
-            <guilabel>First line only</guilabel> checkbox - only the first line of each entry is now shown.
-          </para> 
-<para>To stop the narrative from following the current
-            <glossterm linkend="g_tote">Tote</glossterm> time, clear the
-            <guilabel>Follow time</guilabel> checkbox - this will leave the narrative at the current point irrespective of the Tote time.  Initially this checkbox may not be visible, just widen the properties window as required to see it.
-          </para> 
-<para>To give yourself a larger view of the narrative data, the narrative viewer can be "popped out" from Debrief.  To do this, pick up the Narrative viewer panel at the very top of the dotted strip (the black square in the screenshot).
-            <figure float="0">
-              <title>Resizing the narrative window</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/Narr_3.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>Now arrange the
-            <application>Debrief</application> windows so that the narrative window is to the left of the screen, with
-            <application>Debrief</application> itself to the right:
-            <figure float="0">
-              <title>Re-arranging the Narrative windows</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/Narr_4.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>This layout enables us to simultaneously view both the narrative and the
-            <glossterm linkend="g_tote">Tote</glossterm>.  So, switch to the
-            <guilabel>Tote</guilabel> panel in
-            <application>Debrief</application>, then continue double-clicking on narrative entries - you will see both the Tote time and the calculated values updating after each click.
-          </para> 
-<para>Alternatively experiment with stepping forwards and backwards through the
-            <glossterm linkend="g_tote">Tote</glossterm>, you will see the "current" entry highlighted in the narrative viewer as you step through.  Step forwards and backwards in large steps to see the most movement.
           </para> 
 </sect2> 
 </sect1> 
@@ -3784,186 +3628,13 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
               <secondary>Recording to video</secondary>
             </indexterm> intended uses for
             <application>Debrief</application> was to conduct post-exercise debriefs.
-          </para> 
+          </para>
 <para>Nowadays
             <application>Debrief</application> gets a lot more use for exercise analysis, and has evolved into an exercise analysis tool, but there are still aspirations to use it in debriefs.  Unfortunately, its use in a debrief normally requires an expert operator; who is not always available.  Recording a
             <application>Debrief</application> session to file, however, enables it to be inserted into a
             <application>PowerPoint</application> presentation for automated replay.
-          </para> 
-<para>Previously video segments have been recorded using the HyperCam application from
-            <ulink url="http://www.hyperionics.com">http://www.hyperionics.com</ulink>
-
- Now video can be recorded from within Debrief itself by taking advantage of the Java Media Framework
-            <inlinegraphic fileref="figures/video_1.gif"/>
-          </para> 
-<note> 
-<para>In this initial version, the video is composed of uncompressed bitmap images - typically around a megabyte per frame recorded.  This makes the videos recorded from within
-              <application>Debrief</application> at least 10 times larger than those recorded within
-              <application>HyperCam</application> - but as soon as
-              <application>Java</application> contains support for comprising videos from JPegs the files will shrink drastically - wait and see!
-            </para> 
-</note> 
-</sect2> 
-<sect2> 
-<title>Preparing to record</title> 
-<para>
-            <application>Debrief</application> determines the directory to record to by looking at the
-            <guilabel>WMF_Directory</guilabel> property from the
-            <application>Debrief</application> properties file.  So, before you start recording video files ensure that this property is set to a useful value (and make sure you edit it without
-            <application>Debrief</application> running, or else your changes will be over-written by
-            <application>Debrief</application> as it closes).
-          </para> 
-<para>It&apos;s also worth resizing the Debrief plot to the correct size for your video, and having a practice run of stepping through the important part of your
-            <glossterm linkend="g_serial">serial</glossterm>, prior to recording.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Recording Debrief</title> 
-<para>Recording to video is all quite simple, really.  To open the video window, click on the record to video icon:
-            <guiicon>
-              <inlinegraphic fileref="figures/camera.gif"/>
-            </guiicon>
-          </para> 
-<para>
- The video window will now open.
-            <figure float="0">
-              <title>Configuring for video recording</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/video_2.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>The three buttons at the top control the recording process itself, whilst the two text boxes contain configuration details.
-            <variablelist>
-              <varlistentry>
-                <term>
-                  <guilabel>Configure</guilabel>
-                </term>
-                <listitem>
-                  <para>Press this at the start of the recording process.  This will create the video recorder support objects and the output file, then wait for you to start recording.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>
-                  <guilabel>Start</guilabel>
-                </term> 
-<listitem> 
-<para>This button is enabled once the configuration is complete.  Once started, Debrief copies the content of the Debrief plot to the destination video file at the indicated frame rate.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>
-                  <guilabel>Stop</guilabel>
-                </term> 
-<listitem> 
-<para>This button stops the recording and closes the video file.  Press the configure button to restart the recording process.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>
-                  <guilabel>Destination</guilabel>
-                </term> 
-<listitem> 
-<para>The name of the file to record to.  You will receive a prompt if the output file already exists in the output directory (see above).  The video is recorded in the AVI format, so it is best to use a file with this suffix.  Don&apos;t worry about missing off the AVI suffix, good old Debrief will append it for you.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>
-                  <guilabel>Frame Rate</guilabel>
-                </term> 
-<listitem> 
-<para>This is the frequency (in frames per second) at which video is recorded to file.  Obviously the faster the frame rate, the larger the resulting video file.</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> </para> 
-</sect2> 
-<sect2> 
-<title>Test Run</title> 
-<para>
-
- If you want to have a go at recording to video, run through the following steps:
-
-
-            <orderedlist>
-              <listitem>
-                <para>First check that the
-                  <guilabel>WMF_Directory</guilabel> property in your
-                  <application>Debrief</application> properties file contains a sensible directory name.
-                </para> 
-</listitem> 
-<listitem> 
-<para>Then open a new
-                  <application>Debrief</application> session and load your
-                  <filename>Boat1.rep</filename> and
-                  <filename>Boat2.rep</filename> data files into it.
-                </para> 
-</listitem> 
-<listitem> 
-<para>Press
-                  <guibutton>Auto-generate</guibutton> on the Tote to configure the time stepper.  Now step forward in large steps until the vessels enter the melee period near the end.
-                </para> 
-</listitem> 
-<listitem> 
-<para>Zoom in to get the best view of the tracks in the remaining time period.</para> 
-</listitem> 
-<listitem> 
-<para>Click on the
-                  <guibutton>Record Video</guibutton> button on the
-                  <guilabel>File</guilabel> toolbar, and once the video window has opened drag it out of
-                  <application>Debrief</application>.  Switch back to the
-                  <guilabel>Tote</guilabel> window.
-                </para> 
-</listitem> 
-<listitem> 
-<para>Now arrange the windows so that you have a clear view of both
-                  <application>Debrief</application> and the video window.
-                </para> 
-</listitem> 
-<listitem> 
-<para>Press
-                  <guibutton>Configure</guibutton> on the video window, and wait for its processing to complete: at which point the
-                  <guibutton>Start</guibutton> button will be enabled.
-                </para> 
-</listitem> 
-<listitem> 
-<para>In the
-                  <application>Debrief</application> Tote, start
-                  <application>Debrief</application> stepping forward automatically.  Immediately after this press the
-                  <guibutton>Start</guibutton> button.  Let
-                  <application>Debrief</application> run for a few seconds, and press
-                  <guibutton>Stop</guibutton> in the video window, and cancel the
-                  <guibutton>Step Automatically</guibutton> button on the Tote.
-                </para> 
-</listitem> 
-<listitem> 
-<para>You should now be able to switch to the
-                  <guilabel>WMF_Directory</guilabel>, where you will find the video file named
-                  <filename>Debrief2K1.avi</filename>. Double-click on this file, and view your recorded video.
-                </para> 
-</listitem> 
-</orderedlist> </para> 
-</sect2> 
-<sect2> 
-<title>Things to remember</title> 
-<tip> 
-<para>
-	     The videos recorded in this way are still much larger than those
-	     recorded in HyperCam.  However, they will shrink as soon
-	     as the Java Media Framework provides the necessary
-	     functionality.
-            </para> 
-</tip> 
-<warning> 
-<para>
-	     Don&apos;t resize the Debrief plot after you&apos;ve pressed the Configure
-	     button, since the frame size of the video file has already
-	     been initialised.
-            </para> 
-</warning> 
+          </para>
+<para>Debrief 2003 included experimental "Record to video" functionality.  This feature was no match for the commercial equivalents.  Applications such as HyperCam (<ulink url="http://www.hyperionics.com">http://www.hyperionics.com</ulink>) allow more intuitive video recording, with much smaller file sizes  - all for a very reasonable price. Until better performing video recording functionality becomes available in Java/Eclipse, purchase of off-the-shelf screen-recording video is the recommended route.</para> 
 </sect2> 
 </sect1> 
 </chapter> 
@@ -4063,204 +3734,6 @@ VPF_DATABASE_DIR.4=c\:\\vpf\\EURNASIA
 </itemizedlist> </para> 
 </sect2> 
 </sect1> 
-<sect1 id="view_sensor"> 
-<title>Viewing sensor data</title> 
-<sect2> 
-<title>Get started</title> 
-<para>To get started in this part of the tutorial, you first need to
-            <indexterm>
-              <primary>Sensor Data</primary>
-              <secondary>Loading Sensor Data</secondary>
-            </indexterm>load your track data.  Drag the file
-            <filename>sen_tracks.rep</filename> from your
-            <application>Debrief</application> directory into a new, blank session.
-            <note>
-              <para>Note that you have to load tracks before loading any
-                <glossterm linkend="g_sensor">sensor</glossterm> data, since the sensor data looks for its "host track" whilst it is being loaded.  Debrief will report an error message should you try to load sensor data first.
-              </para> 
-</note> </para> 
-<para>Next drag in the
-            <filename>sen_frig_sensor.rep</filename> and
-            <filename>sen_ssk_sensor.rep</filename> tracks (either individually or together).  The progress window will show the data being read into
-            <application>Debrief</application>, after which you should see the following:
-            <figure float="0">
-              <title>Original sensor tracks</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/sensor_tracks.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>Note that by default sensor tracks are not visible when first loaded - there&apos;s a strong chance of the plot being unmanageably cluttered if they are visible when loaded.  If you&apos;re inquisitive about the squiggles on the red line, read the end-note
-            <footnote>
-              <para>
- To guarantee that the data-set was unclassified a set of simulated vessel tracks are shown, produced during ASSET testing.  The squiggle on the red-track represents the stern-arc clearance behavior of the SSK represented by the red track.  The SSK is fitted with broadband sonar and periscope (optic) sensors, which are seen from the Layer Manager.  The other vessel, the frigate is equipped with just an optic sensor (Mk1 Eyeball)</para> 
-</footnote>. </para> 
-</sect2> 
-<sect2> 
-<title>Viewing the sensor data</title> 
-<para>As mentioned above, you can&apos;t actually
-            <indexterm>
-              <primary>Sensor Data</primary>
-              <secondary>Viewing Sensor Data</secondary>
-            </indexterm>see any sensor data at the moment.  you switch on the sensor data from the
-            <guilabel>Layer Manager</guilabel> - so, open the
-            <guilabel>Layer Manager</guilabel> from the
-            <guilabel>Stepper Control</guilabel>:
-            <guiicon>
-              <inlinegraphic fileref="figures/layer_mgr.gif"/>
-            </guiicon>
-          </para> 
-<para>The
-            <guilabel>Layer Manager</guilabel> appears as shown:
-            <figure float="0">
-              <title>Layer Manager showing sensor tracks</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/sensors2.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>
-
-	   Open up the
-            <guilabel>Track:New_SSK</guilabel> layer to examine it&apos;s contents, as shown below:
-            <figure float="0">
-              <title>Sensor track contents</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/sensors3.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>As you can see before the locations within the Track the vessel&apos;s two sensors are listed.</para> 
-</sect2> 
-<sect2> 
-<title>Formatting the sensor data</title> 
-<para>Right-click on the
-            <guilabel>New_SSK_Optic</guilabel> sensor, and
-            <indexterm>
-              <primary>Sensor Data</primary>
-              <secondary>Formatting</secondary>
-            </indexterm>
-            <indexterm>
-              <primary>Formatting Data</primary>
-              <secondary>Sensor Data</secondary>
-            </indexterm>change its visibility to true.  The plot will change to appear as below:
-            <figure float="0">
-              <title>Coloured sensor track</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/sensors4.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>The area where the two tracks meet now has a red-block between it.  This is in fact, the series of periscope contacts from the red vessel. Zoom in on this area, to show the plot below:
-            <figure float="0">
-              <title>Zoomed in on sensor track</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/sensors5.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>As you hover your mouse over the data, the DTGs of the track positions will be shown in the tooltips.  If you hover the mouse over the area between the two tracks the DTGs of the
-            <glossterm linkend="g_sensor">sensor</glossterm> contact data items will be shown (you have some unusual processing here, typically each end of a sensor contact will be over a track - so the track data item will normally be returned.  So, for the sensor contact data item, an additional "hot-spot" is located half-way along the bearing line).
-          </para> 
-<para>Right-click near the middle of one of the bearing lines, and make the sensor contact label visible.  Right-click near the middle of one of them again, and select Edit Sensor Contact Data xxxxx.  The properties window shows the editable aspects of sensor contact data.  Whilst many familiar properties will be found there (colour, visible, label) there are also some more unusual ones:
-            <variablelist>
-              <varlistentry>
-                <term>LineStyle</term>
-                <listitem>
-                  <para>To provide easier identification of all of lines which now appear on the plot, you can set the line-style of Sensor Contact lines from the list provided.  Note that at present these line-styles are not shown when the plot is written to the metafile or in Snail mode, where they appear as solid lines.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>PutLabelAt</term> 
-<listitem> 
-<para>This lists the three locations where the label can be placed.</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> </para> 
-</sect2> 
-<sect2> 
-<title>Analysing the sensor data</title> 
-<para>So, now that we&apos;re zoomed in, we&apos;ll have a go at running through the
-            <glossterm linkend="g_serial">serial</glossterm> in snail mode.
-          </para> 
-<para>Switch to the
-            <guilabel>Tote</guilabel> window on the left-hand side of the screen, and press
-            <guibutton>Auto Generate</guibutton> to let
-            <application>Debrief</application> automatically assign the tracks.
-          </para> 
-<para>Whilst still in Normal Display Mode, jump to the end of the track by pressing the Last button:
-            <guiicon>
-              <inlinegraphic fileref="figures/LastBtn.gif"/>
-            </guiicon>
-          </para> 
-<para>If this isn&apos;t quite visible on the time stepper, resize the Tote to show it by dragging the slider bar to the right:
-            <figure float="0">
-              <title>Resizing the time stepper</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/sensors6.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>On the plot, you should see the white rectangle jump to the ends of the track.  Now step backwards to the start of the contact data using the
-            <guibutton>Large Bwd</guibutton> step button:
-            <guiicon>
-              <inlinegraphic fileref="figures/LargeBwd.gif"/>
-            </guiicon>
-          </para> 
-<para>The highlight on the red track should now be before the point where the first
-            <glossterm linkend="g_sensor">sensor</glossterm> contact line starts.  Now switch to snail mode, the plot should now show the two vessels with their speed/heading vectors (if the plot is blank, just press the
-            <guibutton>Step Fwd</guibutton> button).
-          </para> 
-<para>
-	   Step forward using the
-            <guibutton>Fwd</guibutton> button, and you will see the sensor contact bearing fans appear:
-            <figure float="0">
-              <title>Sensor data in Snail mode</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/sensors7.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>The fan bearing line nearest to the
-            <indexterm>
-              <primary>Snail Trail</primary>
-              <secondary>Stepping through sensor data</secondary>
-            </indexterm>
-            <indexterm>
-              <primary>Sensor Data</primary>
-              <secondary>Snail Trail</secondary>
-            </indexterm>current stepper time is shaded solid, whilst earlier bearing lines fade to the background colour.
-          </para> 
-</sect2> 
-</sect1> 
 </chapter> 
 <chapter id="tma_data"> 
 <title>TMA solution data</title> 
@@ -4337,15 +3810,6 @@ track name, elipse orientation (deg from north),  maxima (yds),
 </itemizedlist> </para> 
 </sect2> 
 </sect1> 
-<sect1 id="view_tma"> 
-<title>Viewing TMA data</title> 
-<sect2> 
-<title>Introduction</title> 
-<para>At the time of writing this TMA support, the Maritime Warfare Centre is not able to produce TMA data for use in tutorial screenshots.  The TMA implementation is very close to that of Sensor data, so if you have TMA data to view, the steps to take are very similar to those presented in
-            <xref linkend="view_sensor"/>
-          </para> 
-</sect2> 
-</sect1> 
 </chapter> 
 </part>
 
@@ -4365,7 +3829,7 @@ track name, elipse orientation (deg from north),  maxima (yds),
 <title>Debrief online</title> 
 <para>Whilst the use of
           <application>Debrief</application> originated at the
-          <glossterm linkend="g_MWC">MWC</glossterm>, it now has a very distributed community of users.  Communication across this distributed user-group is enabled via the Internet, through three mechanisms: the Debrief home page, the SourceForge project management page, and the Debrief news list.  These mechanisms are described in this chapter.
+          <glossterm linkend="g_MWC">MWC</glossterm>, it now has a very distributed community of users.  Communication across this distributed user-group is enabled via the Internet through three mechanisms: the Debrief home page, the SourceForge project management page, and the Debrief news list.  These mechanisms are described in this chapter.
         </para> 
 <para>The
           <application>Debrief</application> web-site, found at
@@ -4377,7 +3841,7 @@ track name, elipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/debrief_home.gif"/>
+                  <imagedata fileref="figures/debrief_home.png"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4569,7 +4033,7 @@ track name, elipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/sf_page.gif"/>
+                  <imagedata fileref="figures/sf_page.png"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4584,7 +4048,7 @@ track name, elipse orientation (deg from north),  maxima (yds),
 <sidebar> 
 <para>
             <guiicon>
-              <inlinegraphic fileref="figures/sflogo-hammer1.jpg"/>
+              <inlinegraphic fileref="figures/sf_logo.png"/>
             </guiicon>
           </para> 
 <para>
@@ -4621,7 +4085,7 @@ permanent file archival, full backups, and total web-based administration.
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/sf_trackers.gif"/>
+                    <imagedata fileref="figures/sf_trackers.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4639,7 +4103,7 @@ permanent file archival, full backups, and total web-based administration.
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/sf_bugs.gif"/>
+                    <imagedata fileref="figures/sf_bugs.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4706,20 +4170,17 @@ permanent file archival, full backups, and total web-based administration.
 <entry> 
 <para>Memory</para> </entry> 
 <entry> 
-<para>128 Mb</para> </entry> 
-<entry> 
 <para>256 Mb</para> </entry> 
+<entry> 
+<para>1024 Mb</para> </entry> 
 </row> 
 <row> 
 <entry> 
 <para>Java Virtual Machine</para> </entry> 
 <entry> 
-<para>JVM 1.3 (
-                        <application>Debrief</application> relies on JVM 1.3 for its updated Table control.  For a JVM1.2 version of
-                        <application>Debrief</application>, please contact the administrator).
-                      </para> </entry> 
+<para>JVM 1.4 </para> </entry> 
 <entry> 
-<para>As new as possible. JVM 1.4.1 includes mouse-wheel control, has been seen to provide the fastest performance, and provides the most robust 3-d plotting support (JVM1.4.0 experienced problems with 3-d plotting).</para> </entry> 
+<para>As new as possible. JVM 1.5 includes significant performance improvements, particularly in the list processing used extensively within Debrief</para> </entry> 
 </row> 
 <row> 
 <entry> 
@@ -4737,14 +4198,6 @@ permanent file archival, full backups, and total web-based administration.
 <para>XML Libraries</para> </entry> 
 <entry> 
 <para>SAX and DOM support (through the enclosed jaxp.jar and parser.jar libraries)</para> </entry> 
-<entry> 
-<para></para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>Java Media Framework (required for copying Debrief sessions to video file).</para> </entry> 
-<entry> 
-<para>2.1.1 (through the enclosed jmf.jar library)</para> </entry> 
 <entry> 
 <para></para> </entry> 
 </row> 
@@ -6592,9 +6045,9 @@ of this license document, but changing it is not allowed.</para>
 <glossentry id="g_asset"> 
 <glossterm>ASSET</glossterm> 
 <glossdef> 
-<para>The <abbrev>Advanced Scenario Simulator for the Evaluation of Tactics</abbrev>, a modular simulation suite intended for high-level simulation of maritime tactical scenarios by a relatively inexperienced user (read: uniformed). ASSET was actually the pre-decessor to Debrief, with the initial Debrief software being created to analyse ASSET simulation results.  Quickly it was recognised that Debrief could also be usefully employed in the analysis of real exercise tracks.  Aaah, what a near-miss that was.</para> 
+<para>The <abbrev>Advanced Scenario Simulator for the Evaluation of Tactics</abbrev>, a modular simulation suite intended for high-level simulation of maritime tactical scenarios by a relatively inexperienced user (read: uniformed). ASSET was actually the pre-decessor to Debrief, with the initial Debrief software being created to analyse ASSET simulation results.  Quickly it was recognised that Debrief could also be usefully employed in the analysis of real exercise tracks.  Aaah, how close we came to not having Debrief at all...</para> 
 </glossdef> 
-</glossentry>
+</glossentry> 
 <glossentry id="g_bearing_rate"> 
 <glossterm>Bearing Rate</glossterm> 
 <glossdef> 
@@ -6640,7 +6093,7 @@ range = Range to target from ownship (yds)</markup>
 <glossdef> 
 <para><abbrev>Core Maritime Analysis Platform</abbrev> a framework of components intended to be reused across a range of maritime analysis applications. The two initial CMAP applications are Debrief and <glossterm linkend="g_asset">ASSET</glossterm>.</para> 
 </glossdef> 
-</glossentry>
+</glossentry> 
 <glossentry id="g_coastline_file"> 
 <glossterm>Coastline File</glossterm> 
 <glossdef> 
