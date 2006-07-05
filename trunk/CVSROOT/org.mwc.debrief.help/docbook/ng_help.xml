@@ -1108,7 +1108,7 @@ of the data is visible. </para>
           </para> 
 <para>
             <application>Debrief</application> displays a symbol for each visible sensor data, with the symbol being plotted the same colour as the sensor data.  When track-shifting a long exercise serial, the time-variable plot may become difficult to use due to the y-axis always auto-scaling to accomodate all available data.  Overcome this by using Debrief to
-            <link linkend="filter_to_period">filter-to-time-period</link> (from the
+            <link linkend="filter_to_time_period">filter-to-time-period</link> (from the
             <link linkend="track_toolbox">track time toolbox</link>) for the plot-lock period, thus viewing a much smaller data-set in the time-variable plot.   Additionally, you can zoom in on a particular area (by dragging an area downward and to the right) of the time-variable plot for detailed analysis, dragging the mouse up and to the left to clear the zoom.
           </para> 
 <figure float="0" id="stacked_dots_view"> 
@@ -1902,7 +1902,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure>insert screenshot of time-stepper, explain various components.  Toolbar: modes &amp; drop-down, buttons, current time, time slider, period slider.</para> 
+            </figure></para> 
 <sect3> 
 <title>Display modes</title> 
 <para>The first three icons on the Time Controller toolbar allow you to choose two combinations of plotting modes.  The first two control how data is displayed:  in Normal Mode, all exercise data is displayed, whereas in Snail mode, only the current position and a series of recent points are displayed (similar to a Snail with trail following behind it).  <figure float="0">
@@ -1917,207 +1917,8 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             </figure>The circle represents the current position, the stalk direction represents the current course, and its length gives a relative idea of the vessel speed (when compared to the length of the other vessel&apos;s stalk,
             <emphasis>boys will be boys</emphasis>). The dots trailing back from the current position are a
             <glossterm linkend="g_snail_trail">snail trail</glossterm> of points going back in time. If you move forward and backward with the stepper control you will see these trails moving.
-          </para>
-<para>The next display mode, Relative Mode, affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. <figure float="0">
-              <title>Sample of relative display mode</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/relative_demo.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure></para> 
-<tip> 
-<para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
-            </para> 
-<para>The sample shown below gives a demonstration of the use of this relative mode. You can quickly see that the blue vessel is directly ahead of the red trailing vessel, and your use of the Range Ring Highlighter gives us a quick indication of range.
-            </para> 
-</tip> 
-</sect3> 
-<sect3> 
-<title>VCR controls</title> 
-<para>The VCR controls allow you to move forwards and backwards in time through the plot.  Looking at the order of buttons in  the Time Controller screenshot above, the commands allow you to move to the beginning, move a large step backwards, move a small step backwards and repeat the last time step continuously (small or large step, backwards or forwards).  The remaining buttons repeat these operations in the "forward" direction. The size of small and large steps is controlled by the Time Controller properties window, accessed by selecting <guimenu>Properties</guimenu>/<guimenuitem>Time Controller</guimenuitem>.  Also available from this set of properties is the <guibutton>Step Interval</guibutton>; the time interval that Debrief waits before automatically moving forwards.</para> 
-</sect3> 
-<sect3> 
-<title>Time display</title> 
-<para>The green digits of the time display is tied closely to the slider-bar immediately beneath it.  Dragging the slider controls the current display time together with how the current data is displayed.  Other Debrief views (such as the <link linkend="viewing_narratives">Narrative Viewer</link> and the <link linkend="show_time_vars">Time-Variable</link> graphs) update in response to time changes from the time slider.</para> 
-</sect3> 
-<sect3> 
-<title>Bookmarking</title> 
-<para>add DTG to bookmark list</para> 
-</sect3> 
-<sect3> 
-<title>Manipulating according to time period</title> 
-<para>filter to time, export data</para> 
-</sect3>
-<sect3>
-<title>Other time operations</title>
-<para></para>
-</sect3> 
-</sect2> 
-<sect2 id="auto_stepping"> 
-<title>Automatic stepping</title> 
-<para>The automatic stepping control (containing a picture of a Stopwatch) repeats the last step at timed intervals.
-            <guiicon>
-              <inlinegraphic fileref="figures/Timer.gif"/>
-            </guiicon>
-          </para> 
-<para>
-	   Move to the start of the time period (using the
-            <guibutton>First</guibutton> button), then move forward one step (to tell the automatic stepper what type of step to repeat). Now click on the
-            <guibutton>automatic</guibutton> button, and the highlights will start moving forward one minute every second. Once it has moved forward a few steps, try clicking the
-            <guibutton>backward</guibutton> button, and you will see the highlight move backwards.
-          </para> 
-<para>Now click on the automatic stepping control again to stop it, and you will experiment with configuring it.  Click on the
-            <guibutton>Edit Stepper Control</guibutton> button to view the properties for the stepper control:
-            <guiicon>
-              <inlinegraphic fileref="figures/PropertiesBtn.gif"/>
-            </guiicon>
-          </para> 
-</sect2> 
-<sect2 id="stepping_keywords"> 
-<title>Stepping keywords</title> 
-<para>A now-familiar properties window will open, allowing you to edit the properties of the Stepper control.
-          </para> 
-<para>The properties available are:
-
-
-            <variablelist>
-              <varlistentry>
-                <term>Auto Step</term>
-                <listitem>
-                  <para>this is the real time interval used between each automatic step, not the track time moved forward.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Date Format</term> 
-<listitem> 
-<para>the format of the time value displayed on the
-                    <glossterm linkend="g_tote">Tote</glossterm> is a useful format for the majority of cases.  Unfortunately it does not offer sufficient resolution for tracks recorded with very small (sub-second) time steps.   This option provides a number of choices of date format, where for example mm:ss.SSS shows the current time in minutes, seconds, and milliseconds.
-                  </para> 
-<para> Note the last couple of formats in the list provided (T+ ....).  These provide support for displaying time as "T-Zero" time instead of absolute time.  When one of these modes is selected, the Start time currently set in the
-                    <guilabel>Track/Time toolbox</guilabel> is used as T-Zero, and the time in the stepper is displayed as an offset from this.
-                  </para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Display</term> 
-<listitem> 
-<para>I&apos;ll defer discussion of this until you get to the "Configuring
-                    <glossterm linkend="g_display_mode">Display Mode</glossterm>" section below (because it&apos;s particularly good)
-                  </para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Font Size</term> 
-<listitem> 
-<para>this is the size to draw the current time text in the middle of the stepper control</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Highlighter</term> 
-<listitem> 
-<para>this option allows you to select whether to show the current point as a plain rectangle,  to draw heading-centred range rings around the primary track, or to represent the current point on each track as a symbol</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>StepLarge</term> 
-<listitem> 
-<para>this is the track time moved forward for each large step of the Stepper Control</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>StepSmall</term> 
-<listitem> 
-<para>and this is the time moved forward for each small step.</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> </para> 
-<para>Experiment with decreasing the Interval of the stepper, pressing
-            <guibutton>Apply</guibutton>, switching back to the
-            <glossterm linkend="g_tote">Tote</glossterm>, and making the stepper run automatically, you should see the highlight move through the track more quickly now.
-          </para> 
-<para>Note that you could at this point drag out the "Edit Stepper Control" properties window to make it float, making it easier to experiment with different intervals, applying them, and seeing the speed of the stepper change before you.
-          </para> 
-<para>Additionally experiment with changing the
-            <glossterm linkend="g_highlighter">Highlighter</glossterm> used for the stepping to the one named "Range Rings" - selectable from the Step Control properties page.  Apply the change and look at the plot stepping through.  Whilst you may have to zoom in, you will see that a set of grey range rings are drawn around the current point - the size and colour of these rings can be edited by pressing the "Edit
-            <glossterm linkend="g_highlighter">Highlighter</glossterm>" button on the Step Control properties page.
-          </para> 
-<para>Alternatively select "Symbol Highlight".  If a track has a symbol assigned to it (this is only normally applicable to vessel tracks) then the symbol is drawn at the current track point.  Later, when you learn about Snail Track mode, using this symbol mode when in snail mode with zero-length tails allows a GOP-type plot to be presented.
-          </para> 
-<note> 
-<para>You will notice the terms
-              <emphasis>Highlighter</emphasis> and
-              <emphasis>Display Mode</emphasis> used in this document.  The combination of these two features give us a large degree of flexibility in how you step through an exercise serial. The display mode determines how the tracks are plotted, and the highlighter determines how the current point on each track is plotted.   The two can be used in any combination, so experiment with them to present the information in the most legible manner.
-            </para> 
-</note> 
-</sect2> 
-</sect1> 
-<sect1 id="display_modes"> 
-<title>Using display modes</title> 
-<sect2> 
-<title>Configuring Display Modes</title> 
-<para>In addition to changing the properties for the
-            <guilabel>Stepper Control</guilabel>, you can change the properties of the current
-            <glossterm linkend="g_display_mode">display mode</glossterm> by clicking on the
-            <guibutton>Edit Highlighter</guibutton> button visible at the top of the
-            <guilabel>Edit Step Control</guilabel> properties page. The properties page will open for the current
-            <glossterm linkend="g_display_mode">display mode</glossterm>, which allows us to edit only two parameters, these relate to the colour the highlight is drawn in, and the size of the highlight drawn (in screen pixels). Try increasing the size of the highlight and
-            <guibutton>apply</guibutton>ing it, and you will see the highlight grow. Now
-            <guibutton>Close</guibutton> this properties window and return to the
-            <glossterm linkend="g_tote">Tote</glossterm>.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Normal Display Mode</title> 
-<para>The default
-            <glossterm linkend="g_display_mode">display mode</glossterm>, called
-            <indexterm>
-              <primary>Display Mode</primary>
-              <secondary>Normal</secondary>
-            </indexterm>the
-            <guilabel>Normal Display Mode</guilabel> offers a quick and easy way to move through tracks whilst retaining sight of all of the data by plotting a highlight over the current data point.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Snail Display Mode</title> 
-<para>However the next
-            <glossterm linkend="g_display_mode">display mode</glossterm>, named
-            <indexterm>
-              <primary>Display Mode</primary>
-              <secondary>Snail</secondary>
-            </indexterm>the
-            <guilabel>Snail Display Mode</guilabel> provides a more stylised view of the data only showing the current vessel positions.  Now change the
-            <guilabel>Current Display Mode</guilabel> property to
-            <guilabel>Snail Display Mode</guilabel> and
-            <guibutton>Apply</guibutton>. Quick as a flash, the plot will clear. Now switch back to the Tote and move forward a few steps. You will see a vector appear at the current vessel position.
-
-            
-          </para> 
-<para>This is such a useful thing to use that it can also be changed from the Stepper control itself, where a drop-down list of the two options is supplied.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Relative Display Mode</title> 
-<para>The Relative Display Mode is a specialised version
-            <indexterm>
-              <primary>Display Mode</primary>
-              <secondary>Relative</secondary>
-            </indexterm> of the Snail Display Mode.  It works identically, except that the plot is oriented to match the current heading of the primary track, so the vector on the primary track always
-            <emphasis>points upwards</emphasis>.
-          </para> 
-</sect2> 
-<sect2 id="display_mode_properties"> 
-<title>Display Mode Properties</title> 
-<para>The Snail and Relative
-            <glossterm linkend="g_display_mode">Display Modes</glossterm> have a few more editable properties than the Normal Display Mode. Access these properties using the Properties button:
-            <guiicon>
-              <inlinegraphic fileref="figures/PropertiesBtn.gif"/>
-            </guiicon>
-. In the properties window which opens, you are able to edit the following parameters:
-            <variablelist>
-              <varlistentry>
+          The following properties are editable for a snail trail:<variablelist>
+              <title>Snail trail properties</title><varlistentry>
                 <term>Fade Points</term>
                 <listitem>
                   <para>this will cause the points in the trail to fade away to the background colour</para> 
@@ -2155,7 +1956,97 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                   </para> 
 </listitem> 
 </varlistentry> 
-</variablelist> </para> 
+</variablelist></para> 
+<para>The next display mode, Relative Mode, affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. <figure float="0">
+              <title>Sample of relative display mode</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/relative_demo.gif"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para> 
+<tip> 
+<para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
+            </para> 
+<para>The sample shown below gives a demonstration of the use of this relative mode. You can quickly see that the blue vessel is directly ahead of the red trailing vessel, and your use of the Range Ring Highlighter gives us a quick indication of range.
+            </para> 
+</tip> 
+</sect3> 
+<sect3> 
+<title>VCR controls</title> 
+<para>The VCR controls allow you to move forwards and backwards in time through the plot.  Looking at the order of buttons in  the Time Controller screenshot above, the commands allow you to move to the beginning, move a large step backwards, move a small step backwards and repeat the last time step continuously (small or large step, backwards or forwards).  The remaining buttons repeat these operations in the "forward" direction. The size of small and large steps is controlled by the Time Controller properties window, accessed by selecting <guimenu>Properties</guimenu>/<guimenuitem>Time Controller</guimenuitem>.  Also available from this set of properties is the <guibutton>Step Interval</guibutton>; the time interval that Debrief waits before automatically moving forwards.</para> 
+</sect3> 
+<sect3> 
+<title>Time display</title> 
+<para>The green digits of the time display is tied closely to the slider-bar immediately beneath it.  Dragging the slider controls the current display time together with how the current data is displayed.  Other Debrief views (such as the <link linkend="viewing_narratives">Narrative Viewer</link> and the <link linkend="show_time_vars">Time-Variable</link> graphs) update in response to time changes from the time slider.</para> 
+<para>A range of dispay formats are provided to make the displayed time more consistent with that in a supporting document, or of sufficient fidelity to support the current analysis.</para> 
+</sect3> 
+<sect3> 
+<title>Time slider</title> 
+<para>Beneath the time-display is the time-slider, used to quickly move through a time-period.  By default there the slider is of infinite resolution, stopping  exactly on the second/millisecond proportionate to the position of the slider.  Debrief can be configured such that the slider stops on higher resolutions by selecting the relevant  increment from the <guibutton>Time slider increment</guibutton> list in the Time Controller's drop-down menu.</para> 
+</sect3> 
+<sect3> 
+<title>Bookmarking</title> 
+<para>Debrief NG introduces the concept of <glossterm linkend="g_bookmarks">Bookmarks</glossterm>.   These represent the combination of a DTG, a remark, and the name of a plot-file, and are displayed in the <guibutton>Bookmarks</guibutton> view.  With the view open you can quickly move between significant events across a number of files.  Bookmarks are added by clicking on the <guiicon>
+              <inlinegraphic fileref="figures/AddBookmark.png"/>
+            </guiicon><guimenuitem>Add DTG as bookmark</guimenuitem>  command from the <guiicon>Time Controller</guiicon>'s drop-down menu.  The bookmarks view will not automatically open, but the bookmarks themselves will be present when it is. The current DTG is used as a default remark - but you'll get most mileage our of the bookmarks by describing the event that you're bookmarking.</para> 
+</sect3> 
+<sect3 id="filter_to_time_period"> 
+<title>Manipulating according to time period</title> 
+<para>The pair of sliders at the foot of the <guiicon>Time Controller</guiicon> view allow you to set start and finish times.  These times are not set in support of a single Debrief  operation,  but are used across a range of operations.  When dragging the sliders, hold down the shift-key to move in whole segments (hours, days, as appropriate).  Drag the shaded section to retain the period length but change its origin (again using the shift-key if appropriate).  </para> 
+</sect3>
+<sect3>
+<title>Filter to time period</title>
+<para>When the <guibutton><inlinegraphic fileref="figures/FilterToTimePeriod.png"/>Filter to time period</guibutton> radio button is depressed the plot will automatically filter the displayed data to the indicated period.  In this mode, you can select a  6-hour period (for example), and drag it through the full serial time with shift-key depressed to view a moving "window" of data.</para>
+</sect3>
+<sect3>
+<title>Copy to clipboard</title>
+<para>Another operation that relies on the selected time period is exporting calculated data to the clipboard.  This operation is available form the <guiicon>
+              <inlinegraphic fileref="figures/Calculator.png"/>
+            </guiicon><guibutton>Time Controller</guibutton>'s drop-down menu, and it performs a series of calculations for each data-point in the indicated time period.  These calculations are then placed on the system clipboard in Comma-Separated-Variable format  for reuse in other applications, <application>Microsoft Excel</application>, for instance.</para> 
+<para>A header line is written first, which indicates the contents of each column:
+            <simplelist type="horiz">
+              <member>Track Time(hhmmss)</member>
+              <member>Depth(metres)</member>
+              <member>Speed(Knots)</member>
+              <member>Course(degs)</member>
+              <member>Range(yards)</member>
+              <member>Bearing(degs)</member>
+              <member>Rel Bearing(degs - using
+                <varname>REL_BEARING_FORMAT</varname> described in
+                <xref linkend="debrief_properties"/>)
+              </member>
+              <member>Brg Rate(deg/min)</member>
+              <member>Color (for this track point)</member>
+              <member>Name</member>
+              <member>PrimaryName</member>
+            </simplelist>
+          </para> 
+<para>The results from the primary track are listed first, which (as in the
+            <glossterm linkend="g_tote">Tote</glossterm>) do not show results of calculated operations:
+            <screen>CARPET 12/Dec/95 05:00:00 000 02.00 269.7 n/a n/a n/a n/a 0500 0500</screen>
+          </para> 
+<para>Lastly the secondary tracks are listed:
+            <screen>
+ BUNKUM 12/Dec/95 05:50:00 000 00.00 000.0 12381 311.0 R49.0 R0.264 F5 0550</screen>
+          </para> 
+<tip> 
+<para>The Colour parameter shows the colour of the track point used in that calculation.  On occasion analysts colour a track according to whether that participant is in contact or not.  Exporting the colour flag to Excel allows the post-analysis data to be filtered according to periods in contact - or any other time-dependent aspect specified by the analyst.  The application of a particular colour to sections of track is performed within the Layer Manager.
+            </para> 
+</tip> 
+<note> 
+<para>The last two columns output give identifier information:  the first of these is the name of the current item in this
+              <glossterm linkend="g_track">track</glossterm>, and the second is the point in the primary
+              <glossterm linkend="g_track">track</glossterm> nearest to the current time stamp: that-is the point in the primary track which has been used for the calculated results.
+            </para> 
+</note>
+</sect3> 
+<sect3> 
+<title>Other time operations</title> 
+<para>Beyond the operations available from the Time Controller, the time-period is used to support other Debrief operations.  The most significant of these operations is when producing time variable plots (see <xref linkend="show_time_vars"/>). The current time period settings dictate the extent of what information is calculated for these plots.</para> 
+</sect3> 
 </sect2> 
 </sect1> 
 <sect1 id="measure_range"> 
@@ -2164,39 +2055,11 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <title>Range &amp; Bearing</title> 
 <para>It&apos;s worth reminding you at this point about the Range Bearing measuring tool
             <guiicon>
-              <inlinegraphic fileref="figures/RangeBearing.gif"/>
+              <inlinegraphic fileref="figures/RngBrg.png"/>
             </guiicon>
  which is frequently useful in analysis.  The calculated range and bearing is displayed at the bottom right-hand corner of the Tote.
           </para> 
-<para>The default units for the range displayed is configured using the Properties File
-            <emphasis>(d2ksettings.prp)</emphasis>, but it can be over-ridden by double-clicking on the calculated range/bearing data itself.  A
-            <glossterm linkend="g_property_window">property editor</glossterm> will open, from which you can switch to one of the following units:
-            <variablelist>
-              <varlistentry>
-                <term>yds</term>
-                <listitem>
-                  <para>Yards</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>nm</term> 
-<listitem> 
-<para>Nautical Miles</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>km</term> 
-<listitem> 
-<para>Kilometres</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>m</term> 
-<listitem> 
-<para>Metres</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> </para> 
+<para>The default units for the range displayed are configured using the <guimenu>CMAP</guimenu> section of the <guimenuitem>Preferences</guimenuitem> dialog in the <guimenu>Window</guimenu> menu. </para> 
 </sect2> 
 <sect2> 
 <title>Earth Model</title> 
@@ -2237,8 +2100,8 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             </para> 
 </note> 
 <para>Unfortunately there is not any 3-d data in the sample plots we&apos;ve been using so far, but another sample file does.  Close the current session, open a new, blank, one, and load the data-file named
-            <filename>sen_tracks.rep</filename>.  This is a datafile produced using
-            <ulink url="http://asset.sourceforge.net">ASSET</ulink>, a simulator under development at PlanetMayo.
+            <filename>sen_tracks.xml</filename>.  This is a datafile produced using
+            <glossterm linkend="g_asset">ASSET</glossterm>, a simulator under development at PlanetMayo.
           </para> 
 <para>Once the tracks are loaded, you will see the view as below:
             <figure float="0">
@@ -2246,15 +2109,13 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/sensor_tracks.gif"/>
+                    <imagedata fileref="figures/3d_tracks.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
             </figure>
           </para> 
-<para>Now initialize the
-            <glossterm linkend="g_tote">Tote</glossterm> by pressing Auto-Generate.
-            <application>Debrief</application> now knows the time period covered by the tracks.
+<para>If you don't have primary and secondary tracks on the tote, intialise them now (or do it automatically, if you know how). <application>Debrief</application> now knows the time period covered by the tracks.
 	  The updated 3D viewer in Debrief now shows 3-dimensional models of the exercise participants.  The model used is taken from the
             <guilabel>SymbolType</guilabel> property of each track (although the default type is
             <guilabel>Submarine</guilabel>).  So before opening the 3-d view, change the
@@ -2271,19 +2132,17 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </sect2> 
 <sect2> 
 <title>Initial View</title> 
-<para>A new window will open, containing a 3D view of the current track data, as shown below:
+<para>A new window will open, containing a 3D view of the current track data, as shown below (after a little screen-tidying):
             <figure float="0">
               <title>Initial 3D View</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_view.gif"/>
+                    <imagedata fileref="figures/3d_tracks_with_3d.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
             </figure>
-          </para> 
-<para>Enlarge the window until it covers about a quarter of your screen, then arrange the windows so that you can see both Debrief and the 3-d view..
           </para> 
 <tip> 
 <para>Not all objects viewable on the normal 2-d Debrief plot are applicable in 3-dimensions, but most are.  If one is absent which you think would usefully be shown in 3-d then please approach the
@@ -2348,14 +2207,14 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_view2.gif"/>
+                    <imagedata fileref="figures/3d_view2.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
             </figure>
 
           </para> 
-<para>A set of properties are also provided to
+<para>A set of properties are also provided from the 3d view toolbar to
             <indexterm>
               <primary>3D View</primary>
               <secondary>Editable properties</secondary>
@@ -2468,34 +2327,33 @@ observed. New libraries will be adopted as soon as a fix is available
 <tip> 
 <para>The 3-d view contains text labels which automatically orientate themselves towards the viewer.  This orientation is computationally expensive (it is not a collection of 3-d objects being mathematically re-oriented, but a 2-d image being rescaled in 3-dimensions).  The plot will be significantly slowed down if many text labels are set to visible.  A good way of overcoming this problem is to set the parent layer to not-visible, then work through the items on that layer switching the label to not visible.  Finally switch the layer back to visible.  This method works quickly because time is not spent </para> 
 </tip> </para> 
-<para><?xm-replace_text {para}?></para> 
 </sect2> 
 </sect1> 
 <sect1 id="show_time_vars"> 
 <title>Show time-related variables</title> 
-<para>The
-            <guibutton>Show Time Variables</guibutton> operation
-            <indexterm>
-              <primary>Toolbox</primary>
-              <secondary>Show time variables</secondary>
-            </indexterm> produces an x-y plot of a set of calculated data.  After pressing the
-            <guibutton>Apply</guibutton> button the user is invited to indicate which track is to be used as the primary
-            <glossterm linkend="g_track">track</glossterm>,  and which calculation is to be plotted.  The example below shows the results of a
-            <guilabel>Range</guilabel> calculation between two tracks.  Note that dragging the mouse downwards in a rectangle inside the plot zooms in on the data, dragging the mouse upwards into a rectangle zooms out on the data, and that the
-            <guibutton>Fit to Window</guibutton> button zooms out to show all of the current data.
-
-   Where data is not present, a gap is inserted into the data-line.
-            <figure float="0">
-              <title>View of time-variable plot</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/time_variable_plot.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
+<para>Time-variable plots can be opened via the Layer Manager.  When one or more items  that are candidate subjects <footnote><para>Items are suitable for inclusion in a time-variable plot when they have both temporal and spatial attributes, so this includes tracks, individual locations and annotations, but does not include grids, scales, or background datasets.</para></footnote> for a time-variable plot are selected in the Layer
+Manager, it adds the <guibutton>Show XY Plot</guibutton> operation 
+<indexterm> 
+<primary>Toolbox</primary> 
+<secondary>Show time variables</secondary> 
+</indexterm>to its right-click menu. After requesting the plot, the
+user is invited to indicate which calculation is to be plotted, and
+which track is to be used as the primary 
+<glossterm linkend="g_track">track</glossterm> (where relevant).The
+example below shows the results of a <guilabel>Range</guilabel> calculation between two tracks. Note that dragging the
+mouse downwards in a rectangle inside the plot zooms in on the data,
+dragging the mouse upwards into a rectangle zooms out on the data,
+and that the <guibutton>Fit to Window</guibutton> button zooms out to show all of the current data. Where
+data is not present, a gap is inserted into the data-line. 
+<figure float="0"> 
+<title>View of time-variable plot</title> 
+<screenshot> 
+<mediaobject> 
+<imageobject> <imagedata fileref="figures/time_variable_plot.png"/> 
+</imageobject> 
+</mediaobject> 
+</screenshot> 
+</figure> </para> 
 <note> 
 <para>
               <application>Debrief</application> performs special processing depending on whether the selected items contain valid time data or not.  In general, when an annotation (such as a label) does not contain DTG data Debrief assumes that it is valid throughout the selected time period.
@@ -2549,24 +2407,21 @@ observed. New libraries will be adopted as soon as a fix is available
             </para> 
 </note> 
 <para>The
-            <guibutton>WMF</guibutton> button writes the current graph to a Windows Metafile in the current WMF_Directory (as configured in the
+            <guibutton>Export to WMF</guibutton> <guiicon>
+              <inlinegraphic fileref="figures/ExportToWMF.png"/>
+            </guiicon> button writes the current graph to a Windows Metafile in the current WMF_Directory (as configured in the
             <link linkend="debrief_props_title">Debrief properties file</link>, described in Section
             <xref linkend="debrief_props"/>, titled
-            <xref linkend="debrief_props" endterm="debrief_props_title"/>).
-          </para> 
+            <xref linkend="debrief_props" endterm="debrief_props_title"/>), and the 
+          <guibutton>Export to Clipboard </guibutton> (<guiicon>
+              <inlinegraphic fileref="figures/ExportToClipboard.png"/>
+            </guiicon>) places a copy of the plot on the Windows clipboard for onward insertion into MS Word.</para> 
 <para>The
-            <guibutton>Edit</guibutton> button opens a
+            <guibutton>Configure Plot</guibutton>(<guiicon>
+              <inlinegraphic fileref="figures/ConfigurePlot.png"/>
+            </guiicon>) button opens a
             <link linkend="g_property_window">property window</link> allowing you to control the presentation of the time-variable graph.
-            <figure float="0">
-              <title>View of time-variable plot</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/time_variable_plot_options.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
+            
           </para> 
 <para>These properties control the following:
             <informaltable>
@@ -2591,7 +2446,7 @@ observed. New libraries will be adopted as soon as a fix is available
                   <row>
                     <entry colname="col1">RelativeTimes</entry>
                     <entry colname="col2">Whether to plot absolute or relative times (used when analysing time-zero data).  See
-                      <xref linkend="time_var_rel_times"/>
+                      <xref linkend="show_time_vars_title"/>
                     </entry>
                   </row>
                   <row>
@@ -2609,7 +2464,7 @@ observed. New libraries will be adopted as soon as a fix is available
                   <row>
                     <entry colname="col1">Y_AxisTitle</entry>
                     <entry colname="col2">The y-axis label on the graph</entry>
-                  </row>
+                  </row><row><entry colname="col1"><emphasis>xxx</emphasis> Font</entry><entry colname="col2">The font to use for the respective label</entry></row>
                 </tbody>
               </tgroup>
             </informaltable>
@@ -2637,43 +2492,9 @@ observed. New libraries will be adopted as soon as a fix is available
 </sect1><!--  Track/time toolbox                                           -->
 <sect1 id="track_toolbox"> 
 <title id="track_toolbox_title">Track &amp; Time toolbox</title> 
-<para>The Track &amp; Time toolbox acts a
-          <indexterm>
-            <primary>Toolbox</primary>
-            <secondary>Introduction</secondary>
-          </indexterm>multi-purpose panel providing access to a number of operations.
-          <figure float="0">
-            <title>The Track &amp; Time toolbox</title>
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/time_toolbox.gif"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure>
-        </para> 
-<para>
- The general sequence for using these commands is as follows:
-          <orderedlist inheritnum="ignore" continuation="restarts">
-            <listitem>
-              <para>Select the operation to perform</para> 
-</listitem> 
-<listitem> 
-<para>Select which tracks/buoyfields/graphic annotations the operation is to be performed on</para> 
-</listitem> 
-<listitem> 
-<para>Select the time period for which the operation is to cover</para> 
-</listitem> 
-<listitem> 
-<para>Press the "Apply" button</para> 
-</listitem> 
-</orderedlist> As you will see from the screenshot of the Track &amp;
-Time toolbox, a panel to the right of the list of operations provides
-details of each operation. These details include the purpose of the
-operation together with the steps to be taken. </para> 
 <sect2 id="z_zero_times"> 
 <title>T-Zero times</title> 
+<para><emphasis>T-Zero times are still to be implemented, but the mode of operation will be very similar to that shown below, June 2006.</emphasis></para>
 <para>The
             <guibutton>Set time zero</guibutton> command
             <indexterm>
@@ -2712,69 +2533,6 @@ operation together with the steps to be taken. </para>
             </para> 
 </note> 
 </sect2> 
-<sect2 id="filter_to_period"> 
-<title>Filter to time period</title> 
-<para>The
-            <guibutton>Filter to time period</guibutton> hides all data
-            <indexterm>
-              <primary>Toolbox</primary>
-              <secondary>Filter to time period</secondary>
-            </indexterm>points on the selected tracks which are before the current Start time, or after the current End time.  The range of the time sliders themselves then shrinks to this new period.  The range of the time sliders can be reset back out to cover the full period of the currently loaded data by pressing the Reset button.
-            <note>
-              <para>It is quite possible to apply a time filter such that all of the points in a short track become hidden.  In such circumstances the track name is also hidden, but revealed as soon as a single data point becomes visible.</para> 
-</note> </para> 
-</sect2> 
-<sect2> 
-<title>Copy data to clipboard</title> 
-<para>The details of copying data to the
-            <indexterm>
-              <primary>Toolbox</primary>
-              <secondary>Copy data to clipboard</secondary>
-            </indexterm>clipboard are covered later in
-            <xref linkend="copy_data_clip"/> under
-            <link linkend="copy_data_clip" endterm="copy_data_clip.title"></link>
-          </para> 
-</sect2> 
-<sect2 id="reformat_positions"> 
-<title id="reformat_positions.title">Reformat Positions</title> 
-<para>The Reformat Positions operation
-            <indexterm>
-              <primary>Toolbox</primary>
-              <secondary>Reformat Positions</secondary>
-            </indexterm>allows you to reformat one or more tracks and annotations.  The algorithm inspects the currently selected objects and produces the set of editable properties common to them: so if a track and an annotation are shown you will be offered the set of properties which apply to both of them - such as the colour, the label, and whether or not they are visible.
-          </para> 
-<para>Suppose that you want to change the colour of a particular track between two times, possibly to indicate an SSK&apos; snort period. First select the SSK track, then the time period for which it was snorting.  Next select
-            <guibutton>Apply</guibutton>.  A dialog will open asking you what characteristic you wish to change, select
-            <guilabel>Color</guilabel> from this. The next dialog box provides a list of possible values for the selected characteristic: a list of colours in this case. After this selection the relevant positions will be updated.  Use
-            <guibutton>Undo</guibutton> to cancel any changes created this way. An example of coloured tracks can be seen in
-            <xref linkend="sample_plot"/> under
-            <link linkend="navigating_debrief" endterm="navigating_debrief"></link>
-          </para> 
-<tip> 
-<para>When running the
-              <guilabel> Reformat Positions</guilabel> operation a choice is provided which allows you to decide whether to apply the reformatting to the whole track or only the visible position fixes.  Significantly this allows you to do the following:
-              <orderedlist>
-                <listitem>
-                  <para>Select all position fixes in a track and apply mm:ss label formatting</para> 
-</listitem> 
-<listitem> 
-<para>Edit the track to only show labels and fixes for every hour (hiding the others)</para> 
-</listitem> 
-<listitem> 
-<para>User reformat positions to apply hh:mm formatting to all visible positions</para> 
-</listitem> 
-<listitem> 
-<para>Show all labels and symbols for track - with the result that all positions have min/sec labels, but with the hourly fixes having hour/min labels.</para> 
-</listitem> 
-</orderedlist> </para> 
-</tip> 
-</sect2> 
-<sect2> 
-<title>Hide/Reveal Objects</title> 
-<para>This operation allows you to select a series of objects from the track/time toolbox and collectively set them to be visible or invisible.  Their previous state is remembered by Debrief so you can quickly and easily perform an
-            <guibutton>Undo</guibutton> operation to reset them.
-          </para> 
-</sect2> 
 </sect1> 
 </chapter> 
 <chapter id="exporting_data"> 
@@ -2795,11 +2553,11 @@ operation together with the steps to be taken. </para>
 <para>To do this load the data into
             <application>Debrief</application> and format the plot, adding scales, grids, coastlines, and annotations as desired.
           </para> 
-<para>To export this image as a Windows Metafile (WMF), press the
-            <guibutton>Write WMF</guibutton> button:
-            <guiicon>
-              <inlinegraphic fileref="figures/write_wmf.gif"/>
-            </guiicon>
+<para>To export this image as a Windows Metafile (WMF), select the
+            <guibutton>Export WMF</guibutton> (<guiicon>
+              <inlinegraphic fileref="figures/ExportToWMF.png"/>
+            </guiicon>) operation from the <guimenu>File</guimenu> menu.
+            
           </para> 
 <para>This will place the image in a time-stamped file named
             <filename>d3_minute_second.WMF</filename>, located in the directory indicated in the
@@ -2846,97 +2604,6 @@ operation together with the steps to be taken. </para>
               <inlinegraphic fileref="figures/write_vr.gif"/>
             </guiicon>
           </para> 
-</sect2> 
-</sect1> 
-<sect1 id="calc_data"> 
-<title>Calculated data</title> 
-<sect2> 
-<title>Tote controls</title> 
-<para>As you have seen earlier, the
-            <glossterm linkend="g_tote">Tote</glossterm> performs a number of
-            <indexterm>
-              <primary>Tote</primary>
-              <secondary>Calculated Data</secondary>
-            </indexterm>calculations while you are stepping through a plot.  Of the two symbols at the foot of each secondary column in the Tote, the first one is the "remove" button, which removes that track from the Tote.
-            <figure float="0">
-              <title>The controls on the Tote</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/Tote.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
-<para>There is no need to remove the primary track from the
-            <glossterm linkend="g_tote">Tote</glossterm>, just make another track the primary track by right-clicking on it in the plot.
-          </para> 
-</sect2> 
-<sect2> 
-<title>Comma-separated Variables</title> 
-<para>The second symbol is the "copy" symbol which copies the current column of data to the clipboard in a comma-separated-variable text format.
-          </para> 
-</sect2> 
-<sect2> 
-<title>
-            <application>Microsoft Excel</application>
-          </title> 
-<para>This information can be pasted directly into a spreadsheet such as
-            <application>Microsoft Excel</application>.
-          </para> 
-<para>Alternatively,
-            <application>Debrief</application> can output a whole series of calculated data for each track in the
-            <glossterm linkend="g_tote">Tote</glossterm>.  To do this, you must enter the Track &amp; Time Toolbox panel by clicking the right-most button on the second row of buttons shown above:
-            <guiicon>
-              <inlinegraphic fileref="figures/track_time_toolbox.gif"/>
-            </guiicon>
-          </para> 
-</sect2> 
-<sect2 id="copy_data_clip"> 
-<title id="copy_data_clip.title">Copying data to clipboard</title> 
-<para>The
-            <guibutton>Copy data to clipboard</guibutton> operation within the
-            <guilabel>Track &amp; Time Toolbox</guilabel> performs calculations between a number of tracks, outputting the data to the clipboard in tab-separated variable format.  This textual data is ideally formatted for further analysis in
-            <application>Excel</application>.
-          </para> 
-<para>A header line is written first, which indicates the contents of each column:
-            <simplelist type="horiz">
-              <member>Track Time(hhmmss)</member>
-              <member>Depth(metres)</member>
-              <member>Speed(Knots)</member>
-              <member>Course(degs)</member>
-              <member>Range(yards)</member>
-              <member>Bearing(degs)</member>
-              <member>Rel Bearing(degs - using
-                <varname>REL_BEARING_FORMAT</varname> described in
-                <xref linkend="debrief_properties"/>)
-              </member>
-              <member>Brg Rate(deg/min)</member>
-              <member>Color (for this track point)</member>
-              <member>Name</member>
-              <member>PrimaryName</member>
-            </simplelist>
-          </para> 
-<para>The results from the primary track are listed first, which (as in the
-            <glossterm linkend="g_tote">Tote</glossterm>) do not show results of calculated operations:
-            <screen>CARPET 12/Dec/95 05:00:00 000 02.00 269.7 n/a n/a n/a n/a 0500 0500</screen>
-          </para> 
-<para>Lastly the secondary tracks are listed:
-            <screen>
- BUNKUM 12/Dec/95 05:50:00 000 00.00 000.0 12381 311.0 R49.0 R0.264 F5 0550</screen>
-          </para> 
-<tip> 
-<para>The Colour parameter shows the colour of the track point used in that calculation.  On occasion analysts colour a track according to whether that participant is in contact or not.  Exporting the colour flag to Excel allows the post-analysis data to be filtered according to periods in contact - or any other time-dependent aspect specified by the analyst.  The applying of a particular colour to sections of track is performed within the Track-Time toolbox as described in
-              <xref linkend="reformat_positions"/>.
-            </para> 
-</tip> 
-<note> 
-<para>The last two columns output give identifier information:  the first of these is the name of the current item in this
-              <glossterm linkend="g_track">track</glossterm>, and the second is the point in the primary
-              <glossterm linkend="g_track">track</glossterm> nearest to the current time stamp: that-is the point in the primary track which has been used for the calculated results.
-            </para> 
-</note> 
 </sect2> 
 </sect1> 
 </chapter> 
@@ -6922,6 +6589,12 @@ of this license document, but changing it is not allowed.</para>
 <para>An annotation is the generic term used to describe the graphic elements added to a plot which do not represent vehicle positions, or bearings recorded on vehicle-mounted sensors.  Examples of annotations are rectangles, ellipses and lines.</para> 
 </glossdef> 
 </glossentry> 
+<glossentry id="g_asset"> 
+<glossterm>ASSET</glossterm> 
+<glossdef> 
+<para>The <abbrev>Advanced Scenario Simulator for the Evaluation of Tactics</abbrev>, a modular simulation suite intended for high-level simulation of maritime tactical scenarios by a relatively inexperienced user (read: uniformed). ASSET was actually the pre-decessor to Debrief, with the initial Debrief software being created to analyse ASSET simulation results.  Quickly it was recognised that Debrief could also be usefully employed in the analysis of real exercise tracks.  Aaah, what a near-miss that was.</para> 
+</glossdef> 
+</glossentry>
 <glossentry id="g_bearing_rate"> 
 <glossterm>Bearing Rate</glossterm> 
 <glossdef> 
@@ -6944,6 +6617,12 @@ range = Range to target from ownship (yds)</markup>
 <para>Positive and negative bearing rates are named Right and Left according to naval convention, abreviated to R and L in the tote.</para> 
 </glossdef> 
 </glossentry> 
+<glossentry id="g_bookmarks"> 
+<glossterm>Bookmarks</glossterm> 
+<glossdef> 
+<para>The combination of a DTG, a remark and the name of a plot-file. Debrief NG presents the series of bookmarks allowing you to quickly move through events of interest across a series of plot-files.</para> 
+</glossdef> 
+</glossentry> 
 <glossentry id="g_buoyfields"> 
 <glossterm>Buoyfields</glossterm> 
 <glossdef> 
@@ -6956,6 +6635,12 @@ range = Range to target from ownship (yds)</markup>
 <para>Each copy of Debrief is aware of the date is was built. Find this out by selecting <guimenuitem>About</guimenuitem> from the <guimenu>Help</guimenu> menu.</para> 
 </glossdef> 
 </glossentry> 
+<glossentry id="g_cmap"> 
+<glossterm>CMAP</glossterm> 
+<glossdef> 
+<para><abbrev>Core Maritime Analysis Platform</abbrev> a framework of components intended to be reused across a range of maritime analysis applications. The two initial CMAP applications are Debrief and <glossterm linkend="g_asset">ASSET</glossterm>.</para> 
+</glossdef> 
+</glossentry>
 <glossentry id="g_coastline_file"> 
 <glossterm>Coastline File</glossterm> 
 <glossdef> 
@@ -7258,7 +6943,7 @@ brg = Bearing to target from ownship (degs)
 	    (ship, submarine, helo, etc).  A track has its own
 	    characteristics such as colour, label and symbol
 	    frequency, and the symbol used to represent it when the
-            <link linkend="stepping_keywords">symbol
+            <link linkend="intro_to_sym_sets">symbol
 	      highlighter</link> is in use.
           </para> 
 </glossdef> 
