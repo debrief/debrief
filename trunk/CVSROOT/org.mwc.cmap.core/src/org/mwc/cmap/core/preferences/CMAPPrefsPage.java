@@ -77,7 +77,7 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 		
 		
 		addField(new RadioGroupFieldEditor(PreferenceConstants.REL_BEARING_FORMAT,
-				"Relative &bearingf format:", 1, _relBearingTags, getFieldEditorParent()));
+				"Relative &bearing format:", 1, _relBearingTags, getFieldEditorParent()));
 	}
 
 	/*
