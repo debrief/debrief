@@ -275,7 +275,7 @@ The wider national/international use of
 <para>The year 2002 also saw the first conference paper extolling the virtues of Debrief and the Open Source principles behind it, at
           <indexterm>
             <primary>UDT</primary>
-          </indexterm>Undersea Defence Technology 2002 in La Spetzia, Italy.  The paper itself is availble for viewing at the:
+          </indexterm>Undersea Defence Technology 2002 in La Spetzia, Italy.  The paper itself is available for viewing at the:
           <ulink url="http://www.debrief.info">Debrief web site</ulink>.
         </para> 
 <para>Another significant step forward for Debrief in 2002 was the contribution from
@@ -283,9 +283,9 @@ The wider national/international use of
             <primary>NUWC</primary>
           </indexterm>
           <link linkend="nuwc_address">NUWC</link> of an algorithm and code suitable for shifting tracks.  NUWC developed a set of experimental classes used to perform
-          <link linkend="track_shifting_note">track-shifting</link>.  The algorithms used in these classes was taken and modified to complement the Debrief look and feel, and to provide greater useability resulting in the track-shifting editor included in Debrief 2002.
+          <link linkend="track_shifting_note">track-shifting</link>.  The algorithms used in these classes was taken and modified to complement the Debrief look and feel, and to provide greater usability resulting in the track-shifting editor included in Debrief 2002.
         </para> 
-<para>Through 2003,4,5,6 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new featueres.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accomodate ad-hoc analysis tools).</para> 
+<para>Through 2003,4,5,6 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new features.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accommodate ad-hoc analysis tools).</para> 
 </sect2> 
 </sect1> 
 <sect1 id="users"> 
@@ -390,7 +390,7 @@ Naval Undersea Warfare Center (NUWC)
                       <lineage>Poseidon Simulation AS</lineage>
                       <street>Lufthavnveien 11</street>
                       <city>P.O.Box 89</city>
-                      <state>N-8376 Leknes</state>
+                      <state>–8376 Leknes</state>
                       <postcode></postcode>
                       <country>Norway</country>
                       <email>eh@poseidon.no</email>
@@ -625,7 +625,7 @@ Naval Undersea Warfare Center (NUWC)
               </screenshot>
             </figure> Next you will see the
             <guilabel>Pre-Installation Summary</guilabel> dialog
-	    which will allow you step backwards to review installation settings prior to conducting the insatll.<figure float="0">
+	    which will allow you step backwards to review installation settings prior to conducting the install.<figure float="0">
               <title>Pre-installation summary</title>
               <screenshot>
                 <mediaobject>
@@ -710,7 +710,7 @@ Naval Undersea Warfare Center (NUWC)
 </mediaobject> 
 </screenshot> 
 </figure> 
-<para>The Debrief user-interface follows the Workbench convention, whereby a users edits individual files in an <emphasis>Editor</emphasis> supported by a series of supporting information panes called <emphasis>Views</emphasis>.  The specific arrangement of editors and views offered by Default is called a <emphasis>Perspective</emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective. The Tactical Analysis perspective arranges the views into sets of grouped tabs, though views can be dragged to any other location on the workbench, or floated above the workbench.  Views frequently have their own toolbar and drop-down menu providing actions related to that particular task.      Once selected, views are closed by clicking on the white diagonally oriented cross.  To re-open a view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu.  A list of Debrief-related views will be shown. Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu item</para> 
+<para>The Debrief user-interface follows the Workbench convention, whereby a users edits individual files in an <emphasis>Editor</emphasis> supported by a series of supporting information panes called <emphasis>Views</emphasis>.  The specific arrangement of editors and views offered by Default is called a <emphasis><glossterm linkend="g_perspective">Perspective</glossterm></emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective. The Tactical Analysis perspective arranges the views into sets of grouped tabs, though views can be dragged to any other location on the workbench, or floated above the workbench.  Views frequently have their own toolbar and drop-down menu providing actions related to that particular task.      Once selected, views are closed by clicking on the white diagonally oriented cross.  To re-open a view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu.  A list of Debrief-related views will be shown. Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu item</para> 
 </sect2> 
 <sect2 id="navigating_debrief"> 
 <title>Navigating around Debrief</title> 
@@ -727,7 +727,7 @@ Naval Undersea Warfare Center (NUWC)
 </figure> 
 <sect3 id="debrief_editors"> 
 <title>Editors</title> 
-<para>Any number of editors can be open at once, but only one can be active at a time. The main menu bar and toolbar for Debrief contain operations that are applicable to the active editor. Initially the active editor will always be the Debrief plot, but the extensibility of Debrief NG means other types of editor can tbe implemented.  
+<para>Any number of editors can be open at once, but only one can be active at a time. The main menu bar and toolbar for Debrief contain operations that are applicable to the active editor. Initially the active editor will always be the Debrief plot, but the extensibility of Debrief NG means other types of editor can be implemented.  
 
 Tabs at the top of the editor area indicate the names of files that are currently open for editing. An asterisk (*) indicates that an editor has unsaved changes.   
 
@@ -801,7 +801,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
 
 </example> 
 <note> 
-<para>Since Autumn 2004 mult-word track names can now be read in if they are
+<para>Since Autumn 2004 multi-word track names can now be read in if they are
               <link linkend="quoted_track_names">surrounded by quotation marks</link>.
             </para> 
 </note> 
@@ -884,7 +884,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
             </figure>
           </para> 
 <tip> 
-<para>For most of Debrief's operations (such as adding drawing features) it needs to have an area to look at.  When re-opening an existing plot file, or importing data, Debrief can determine the area covered by the plot.  However, when starting a new, blank session, Debrief does not know what area to cover.  In this circumstance Debrief sets the origin to its own origin, at Fort Blockhouse, HMS Dolphin, Portsmouth, United Kingdom - the plot will be centered approximately on 50 degrees 49 minutes North, 1 degree 19 minutes West.</para> 
+<para>For most of Debrief's operations (such as adding drawing features) it needs to have an area to look at.  When re-opening an existing plot file, or importing data, Debrief can determine the area covered by the plot.  However, when starting a new, blank session, Debrief does not know what area to cover.  In this circumstance Debrief sets the origin to its own origin, at Fort Blockhouse, HMS Dolphin, Portsmouth, United Kingdom - the plot will be centred approximately on 50 degrees 49 minutes North, 1 degree 19 minutes West.</para> 
 </tip> 
 </sect2> 
 <sect2 id="toggle_buttons"> 
@@ -1012,7 +1012,7 @@ of the data is visible. </para>
 </sect2> 
 <sect2 id="overview_window"> 
 <title>Chart Overview</title> 
-<para>The Chart 	Overview provides an overview of the full exercise area.  This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop down list. Using it is quite simple.  Drag a region in the overview and the current plot will quickly zoom to show that area. A highlight rectangle shows the current plot view.  Once you've zoomed in a little you can double-click in the overview to recentre the main plot on that point.  <figure float="0">
+<para>The Chart 	Overview provides an overview of the full exercise area.  This view is opened from the <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop down list. Using it is quite simple.  Drag a region in the overview and the current plot will quickly zoom to show that area. A highlight rectangle shows the current plot view.  Once you've zoomed in a little you can double-click in the overview to recenter the main plot on that point.  <figure float="0">
               <title>Overview chart in use</title>
               <screenshot>
                 <mediaobject>
@@ -1035,7 +1035,7 @@ of the data is visible. </para>
             <indexterm>
               <primary>Formatting</primary>
               <secondary>Plot (background color)</secondary>
-            </indexterm>changed to suit different projection/printing mediums, or to suit the analysts personal choice.  Additionally, the width at which lines of tactical obects are drawn can also be changed.  Either of these options are accessed by double-clicking on the plot background.  A properties panel will appear, use the drop-down list to change the background colour, or move the slider to change the line width itself.
+            </indexterm>changed to suit different projection/printing mediums, or to suit the analysts personal choice.  Additionally, the width at which lines of tactical objects are drawn can also be changed.  Either of these options are accessed by double-clicking on the plot background.  A properties panel will appear, use the drop-down list to change the background colour, or move the slider to change the line width itself.
           </para> 
 </sect2> 
 </sect1>
@@ -1107,7 +1107,7 @@ of the data is visible. </para>
             <application>Debrief</application> calculates the error between the sensor bearing and the current measured bearing, showing these in a plot (bearing error against time).
           </para> 
 <para>
-            <application>Debrief</application> displays a symbol for each visible sensor data, with the symbol being plotted the same colour as the sensor data.  When track-shifting a long exercise serial, the time-variable plot may become difficult to use due to the y-axis always auto-scaling to accomodate all available data.  Overcome this by using Debrief to
+            <application>Debrief</application> displays a symbol for each visible sensor data, with the symbol being plotted the same colour as the sensor data.  When track-shifting a long exercise serial, the time-variable plot may become difficult to use due to the y-axis always auto-scaling to accommodate all available data.  Overcome this by using Debrief to
             <link linkend="filter_to_time_period">filter-to-time-period</link> (from the
             <link linkend="track_toolbox">track time toolbox</link>) for the plot-lock period, thus viewing a much smaller data-set in the time-variable plot.   Additionally, you can zoom in on a particular area (by dragging an area downward and to the right) of the time-variable plot for detailed analysis, dragging the mouse up and to the left to clear the zoom.
           </para> 
@@ -1631,7 +1631,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
 <title>Layer management</title> 
 <sect2> 
 <title>Layer Manager</title> 
-<para>The Layer Manager provides a tree-oriented view of all of the editable data within a plot, organised into layers. New items added to the plot are placed into a <emphasis>Misc</emphasis> layer.From here they can be reorganised into suitably themed layers via <link linkend="cut_copy_paste">cut/paste</link>.<figure float="0" id="layer_manager">
+<para>The Layer Manager provides a tree-oriented view of all of the editable data within a plot, organised into layers. New items added to the plot are placed into a <emphasis>Misc</emphasis> layer. From here they can be reorganised into suitably themed layers via <link linkend="cut_copy_paste">cut/paste</link>.<figure float="0" id="layer_manager">
               <title>Layer Manager View</title>
               <screenshot>
                 <mediaobject>
@@ -1717,7 +1717,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
             <guibutton>Save As</guibutton> button, next to the
             <guibutton>Save</guibutton> button in the <guimenu>File</guimenu> menu.</para> 
 <sidebar> 
-<para><application>Debrief</application> plot files can grow very large, and on occasion the memory required for the save operation can reach the upper limit provided to the application by default.  When Debrief fails during the Save operation due to reaching the upper memory limit it stops trying to save to file and shows a message dialog advising you to increase the limit:<quote>Ran out of memory whilst saving plot, try adding -Xmx256m to the command line</quote>. This extra parameter passed when Debrief is starting instructs your PC to provide Debrief with 256 Megabytes of memory.  If you continue to receive the error message try increasing the memory allocation to 512 Megaytes.</para> 
+<para><application>Debrief</application> plot files can grow very large, and on occasion the memory required for the save operation can reach the upper limit provided to the application by default.  When Debrief fails during the Save operation due to reaching the upper memory limit it stops trying to save to file and shows a message dialog advising you to increase the limit:<quote>Ran out of memory whilst saving plot, try adding -Xmx256m to the command line</quote>. This extra parameter passed when Debrief is starting instructs your PC to provide Debrief with 256 Megabytes of memory.  If you continue to receive the error message try increasing the memory allocation to 512 Megabytes.</para> 
 <para>The save operation itself is conducted in a two-stage process.  If the operation entails saving over an existing file (when you just do a plain Save, or Save As over-writing an older version) Debrief first writes the plot to a subtlely different filename in the same directory (<filename>plot.xml</filename> would get saved to <filename>~plot.tmp</filename>). If the save operation completes successfully then the older file is deleted and the temporary file renamed to the originally requested filename.  Thus, your existing file only gets overwritten on successful completion of the save.</para> 
 </sidebar> 
 </sect2> 
@@ -1797,9 +1797,9 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <varlistentry id="RelBearingDescription"> 
 <term>Rel Bearing</term> 
 <listitem> 
-<para>The relative bearing between the heading of the participant in the secondary track, and the bearing to the primary track.   There are two formats used for relative bearing, depending on the setting of
-                    <emphasis>REL_BEARING_FORMAT</emphasis> in the
-                    <link linkend="RelBearingProperty">Debrief properties</link> file.  If the format is specified as UK, the R and G characters at the start of the result are short for Red and Green, which indicate that the contact is to the Port or Starboard of the secondary track. If the format is specified as US, the value uses 0 as directly ahead and continues clockwise through 180 (astern) and back round to 359.9.
+<para>The relative bearing between the heading of the participant in the secondary track, and the bearing to the primary track.   There are two formats used for relative bearing, depending on the setting of 
+                     <emphasis>Relative bearing format</emphasis> in the
+                    <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu> dialog.  If the format is specified as UK, the R and G characters at the start of the result are short for Red and Green, which indicate that the contact is to the Port or Starboard of the secondary track. If the format is specified as US, the value uses 0 as directly ahead and continues clockwise through 180 (astern) and back round to 359.9.
                   </para> 
 </listitem> 
 </varlistentry> 
@@ -1981,7 +1981,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <sect3> 
 <title>Time display</title> 
 <para>The green digits of the time display is tied closely to the slider-bar immediately beneath it.  Dragging the slider controls the current display time together with how the current data is displayed.  Other Debrief views (such as the <link linkend="viewing_narratives">Narrative Viewer</link> and the <link linkend="show_time_vars">Time-Variable</link> graphs) update in response to time changes from the time slider.</para> 
-<para>A range of dispay formats are provided to make the displayed time more consistent with that in a supporting document, or of sufficient fidelity to support the current analysis.</para> 
+<para>A range of display formats are provided to make the displayed time more consistent with that in a supporting document, or of sufficient fidelity to support the current analysis.</para> 
 </sect3> 
 <sect3> 
 <title>Time slider</title> 
@@ -2015,8 +2015,8 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <member>Range(yards)</member>
               <member>Bearing(degs)</member>
               <member>Rel Bearing(degs - using
-                <varname>REL_BEARING_FORMAT</varname> described in
-                <xref linkend="debrief_properties"/>)
+                <varname>Relative bearing format</varname> specified in
+                the <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>dialog)
               </member>
               <member>Brg Rate(deg/min)</member>
               <member>Color (for this track point)</member>
@@ -2115,7 +2115,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               </screenshot>
             </figure>
           </para> 
-<para>If you don't have primary and secondary tracks on the tote, intialise them now (or do it automatically, if you know how). <application>Debrief</application> now knows the time period covered by the tracks.
+<para>If you don't have primary and secondary tracks on the tote, initialise them now (or do it automatically, if you know how). <application>Debrief</application> now knows the time period covered by the tracks.
 	  The updated 3D viewer in Debrief now shows 3-dimensional models of the exercise participants.  The model used is taken from the
             <guilabel>SymbolType</guilabel> property of each track (although the default type is
             <guilabel>Submarine</guilabel>).  So before opening the 3-d view, change the
@@ -2146,7 +2146,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
           </para> 
 <tip> 
 <para>Not all objects viewable on the normal 2-d Debrief plot are applicable in 3-dimensions, but most are.  If one is absent which you think would usefully be shown in 3-d then please approach the
-              <link linkend="project_manager">Debrief Project Manager</link>. Additionally it is not always clear whether a 2-d item (such as a labelled annotation) should be visible in 3-d.  Such an instance is a labelled annotation added to the 2-d plot to help the readability of a plot in a report (for example a label placed on a sea-mount).  This labelled annotation may just clutter the 3-d plot, so Debrief only shows labelled annotations when their symbol is visible; change the symbol of a labelled annotation to not visible, and it will dissappear from the 3-d plot.
+              <link linkend="project_manager">Debrief Project Manager</link>. Additionally it is not always clear whether a 2-d item (such as a labelled annotation) should be visible in 3-d.  Such an instance is a labelled annotation added to the 2-d plot to help the readability of a plot in a report (for example a label placed on a sea-mount).  This labelled annotation may just clutter the 3-d plot, so Debrief only shows labelled annotations when their symbol is visible; change the symbol of a labelled annotation to not visible, and it will disappear from the 3-d plot.
             </para> 
 </tip> 
 </sect2> 
@@ -2668,10 +2668,10 @@ data is not present, a gap is inserted into the data-line.
 <para>The Left, Right, or Centre offset value is interpreted in the following way:
               <simplelist type="vert">
                 <member>
-                  <emphasis>Left</emphasis>: is interpreted as the "alternate" rows starting offset a 1/2 buoy width further in the field orientation
+                  <emphasis>Left</emphasis>: is interpreted as the "alternate" rows starting offset a ½ buoy width further in the field orientation
                 </member>
                 <member>
-                  <emphasis>Right</emphasis>: is interpreted as the "alternate" rows being offset a 1/2 buoy width backwards along the field orientation
+                  <emphasis>Right</emphasis>: is interpreted as the "alternate" rows being offset a ½ buoy width backwards along the field orientation
                 </member>
                 <member>
                   <emphasis>Centre</emphasis>: in interpreted as there being no offset in successive rows.
@@ -2709,7 +2709,7 @@ data is not present, a gap is inserted into the data-line.
 </sect1> 
 <sect1 id="create_buoys"> 
 <title>Creating buoyfields</title> 
-<para><emphasis>Note,  at the time of writing (June 2006) Debrief NG does not contain the Buoyfields wizard. Debrief 2003 may be used to create a plot-file containing buoyfields, which can then be re-opened in Debrief NG.</emphasis></para>
+<para><emphasis>Note,  at the time of writing (June 2006) Debrief NG does not contain the Buoyfields wizard. Debrief 2003 may be used to create a plot-file containing buoyfields, which can then be re-opened in Debrief NG.</emphasis></para> 
 <sect2> 
 <title>Toolbar</title> 
 <para>A single toolbar
@@ -3526,25 +3526,25 @@ different vectored databases. </para>
             </figure>Three settings affect how the Narrative Viewer integrates with the current plot time (as indicated on the <link linkend="time_controller">Time Controller</link> (see <xref linkend="time_controller"/>).
           <variablelist><varlistentry><term><guiicon>
               <inlinegraphic fileref="figures/FollowTime.png"/>
-            </guiicon></term><listitem><para>Highlight the narrative entry nearest to the current plot time.</para>
-</listitem>
-</varlistentry>
-<varlistentry>
+            </guiicon></term><listitem><para>Highlight the narrative entry nearest to the current plot time.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
 <term><guiicon>
               <inlinegraphic fileref="figures/JumpToCurrent.png"/>
-            </guiicon></term>
-<listitem>
-<para>Always ensure the current entry is visible (scrolling up and down as necessary)</para>
-</listitem>
-</varlistentry>
-<varlistentry>
+            </guiicon></term> 
+<listitem> 
+<para>Always ensure the current entry is visible (scrolling up and down as necessary)</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
 <term><guiicon>
               <inlinegraphic fileref="figures/ControlTime.png"/>
-            </guiicon></term>
-<listitem>
-<para>Change the plot-time to that of a narrative entry when the user double-clicks on it.</para>
-</listitem>
-</varlistentry>
+            </guiicon></term> 
+<listitem> 
+<para>Change the plot-time to that of a narrative entry when the user double-clicks on it.</para> 
+</listitem> 
+</varlistentry> 
 </variablelist></para> 
 </sect2> 
 <sect2 id="preparing_narrative_data"> 
@@ -3628,12 +3628,12 @@ different vectored databases. </para>
               <secondary>Recording to video</secondary>
             </indexterm> intended uses for
             <application>Debrief</application> was to conduct post-exercise debriefs.
-          </para>
+          </para> 
 <para>Nowadays
             <application>Debrief</application> gets a lot more use for exercise analysis, and has evolved into an exercise analysis tool, but there are still aspirations to use it in debriefs.  Unfortunately, its use in a debrief normally requires an expert operator; who is not always available.  Recording a
             <application>Debrief</application> session to file, however, enables it to be inserted into a
             <application>PowerPoint</application> presentation for automated replay.
-          </para>
+          </para> 
 <para>Debrief 2003 included experimental "Record to video" functionality.  This feature was no match for the commercial equivalents.  Applications such as HyperCam (<ulink url="http://www.hyperionics.com">http://www.hyperionics.com</ulink>) allow more intuitive video recording, with much smaller file sizes  - all for a very reasonable price. Until better performing video recording functionality becomes available in Java/Eclipse, purchase of off-the-shelf screen-recording video is the recommended route.</para> 
 </sect2> 
 </sect1> 
@@ -3763,7 +3763,7 @@ course, speed, depth (m), label string
 ;TMA_RB: YYMMDD HHMMSS.SSS AAAAAA @@ BBB.B RRR.R TT...TT OOO.O
 XXXX YYYY  CCC SSS DDD xx.xx 
 ;; date, time, ownship name, symbology, bearing (deg), range (yds), 
-track name, elipse orientation (deg from north),  maxima (yds),
+track name, ellipse orientation (deg from north),  maxima (yds),
  minima (yds), course, speed, depth (m), label string
               </markup>
             </screen>
@@ -3908,10 +3908,10 @@ track name, elipse orientation (deg from north),  maxima (yds),
 </sect1> 
 <sect1 id="debrief_at_mwc"> 
 <title>Debrief at the Maritime Warfare Centre</title> 
-<para>This section provides guiance on maintenance of Debrief installations for users on the Maritime Warfare Centre network.</para> 
+<para>This section provides guidance on maintenance of Debrief installations for users on the Maritime Warfare Centre network.</para> 
 <sect2> 
 <title>Installing Debrief</title> 
-<para>The IT Support department should be approaced to conduct fresh <application>Debrief</application> installations. The most up-to-date Debrief installer is located at <filename>Nelson/TD Submarines Info/PlanetMayo/Debrief/Debrief.exe</filename>.  </para> 
+<para>The IT Support department should be approached to conduct fresh <application>Debrief</application> installations. The most up-to-date Debrief installer is located at <filename>Nelson/TD Submarines Info/PlanetMayo/Debrief/Debrief.exe</filename>.  </para> 
 </sect2> 
 <sect2> 
 <title>Keeping your Debrief installation up to date</title> 
@@ -3922,99 +3922,30 @@ track name, elipse orientation (deg from north),  maxima (yds),
 <para>On the MWC network mailing lists have been set up to allow e-mails to quickly be addressed to a group of users.  One such list is the <emphasis>Debrief Users</emphasis> list.  When you start using <application>Debrief</application> it is worth contacting IT Support to have your name added to the list - then you know you will be informed of any significant changes to Debrief.</para> 
 </formalpara> 
 </sidebar> 
-<para>Don't worry about always having the newest version of <application>Debrief</application>.  Most software changes only apply to a small portion of the software and don't justify the upgrade effort.  If, however, a Debrief fix applies specifically to your work, you should follow these steps to upgrade your Debrief installation:<orderedlist><listitem><para>Close the Debrief application, if it is running</para> 
+<para>Don't worry about always having the newest version of <application>Debrief</application>.  Most software changes only apply to a small portion of the software and don't justify the upgrade effort.  If, however, a Debrief fix applies specifically to your work, you should follow these steps to upgrade your Debrief installation:<orderedlist id="search_software_updates"><title>Searching for software updates</title><listitem><para>Select <guimenu>Help</guimenu>/<guimenu>Software Updates</guimenu>/<guimenu>Find and install</guimenu>.</para> 
 </listitem> 
 <listitem> 
-<para>Open <application>Windows Explorer</application> and navigate to the <filename>Nelson</filename> server - you may have to find this through <guilabel>Network Neighbourhood</guilabel>.  Within <filename>Nelson</filename>, navigate to <filename>TACDEV/TD Submarines Info/PlanetMayo/Debrief/Updates</filename> <ulink url="\\nelson\tacdev\TD Submarines Info\PlanetMayo\Debrief\updates">(here)</ulink>. From this directory select <filename>d2003.jar</filename> and <filename>d2003.chm</filename>, then select <guimenuitem>Copy</guimenuitem> from the <guimenu>Edit</guimenu> menu.</para> 
+<para>Select <guibutton>Search for updates of the currently installed features</guibutton>, then <guibutton>Next</guibutton>.</para>
+</listitem>
+<listitem>
+<para>Follow the instructions provided to view what updates are available, select any relevant ones (though you can't really go wrong in retrieving all of them), and install them.  Easy.</para>
 </listitem> 
-<listitem> 
-<para>Still in <application>Windows Explorer</application>, navigate to your <application>Debrief</application> installation directory - which is probably at <filename>c:\\program files\debrief 2003</filename>.  Into this directory press <guimenuitem>Paste</guimenuitem> from the <guimenu>Edit</guimenu> menu, to paste the files into this Directory. You can now use your normal <application>Debrief</application> shortcut to load the new version.</para> 
-</listitem> 
+</orderedlist></para>
+<para>Now, Debrief may now have found any updates.  Hey, maybe there weren't any.  But maybe Debrief's not looking in the right place.  If no updates are found, follow these steps to ensure the MWC download server is configured:<orderedlist><listitem><para>Select <guimenu>Help</guimenu>/<guimenu>Software Updates</guimenu>/<guimenu>Find and install</guimenu>.</para>
+</listitem>
+<listitem>
+<para>Select <guibutton>Search for new features to install</guibutton></para>
+</listitem>
+<listitem>
+<para>You will see a list of download sites.  If there isn't one with a name you associate with MWC, select <guibutton>New Local Site...</guibutton>.  </para>
+</listitem>
+<listitem>
+<para>A file dialog will open.  From it, enter <filename>Network Neighbourhood</filename>,  and navigate to <filename>Nelson/Common/TD Submarines Info/PlanetMayo/Debrief/Eclipse/Updates</filename>.  Then press <guibutton>OK</guibutton> and name the local site as <userinput>MWC Updates</userinput>.  Accept this.  Now, from the list of update sites, ensure <userinput>MWC Updates</userinput> is ticked, but not the others (since they rely on an internet connection).</para>
+</listitem>
+<listitem>
+<para>Now you should be able to perform the <link linkend="search_software_updates">search for software updates</link> again.</para>
+</listitem>
 </orderedlist></para> 
-</sect2> 
-<sect2> 
-<title>Reporting MWC bugs/feature requests</title> 
-<para>On the MWC Intranet is the <application>MWC Issue Tracker</application>, an application provided for users of software produced by PlanetMayo Ltd (of which Debrief is one). This web-based application is used for reporting and managing feature requests and bug reports.  When you encounter a problem with Debrief it may be worth consulting the Issue Tracker first to see if it is an existing problem.  If the problem already exists, have a read through its history and see if any workarounds are recorded.  Similarly, if you are able to contribute to the description on what caused the bug feel free to do so.<tip><para>Obviously, if you are being held back by a bug approach Mr Ian Mayo immediately for direct support.  It is still worth reporting the bug in the <application>Issue Tracker</application> however, since the information you enter may be of value to another user encountering a similar problem in the future, particularly if Mr Mayo isn't available.</para> 
-</tip></para> 
-<sect3> 
-<title>Finding the MWC Issue Tracker</title> 
-<para>The MWC <application>Issue Tracker</application> is on the MWC Intranet at <ulink url="http://intranet2/mis2/bugs/Default.asp">http://intranet2/mis2/bugs/Default.asp</ulink>.</para> 
-</sect3> 
-<sect3> 
-<title>Using the MWC Issue Tracker</title> 
-<para>The first view you see of the <application>Issue Tracker</application> is the overview page.  This contains a series of action-oriented links, some querying functionality (which provides you with a query-box:<guilabel>Search</guilabel>, and a  series of overviews:<guilabel>Bookmarks</guilabel>), and finally a list of the most recently active issues (both recently created and recently updated). By default, the <application>Issue Tracker</application> shows <emphasis>open</emphasis> issues related to <emphasis>all</emphasis> PlanetMayo Ltd applications, but you can quickly switch to <application>Debrief</application>-related issues by selecting <application>Debrief</application> from the <guilabel>Application</guilabel> drop-down list.<figure float="0">
-            <title>Issue Tracker home page</title>
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/IssueTracker_FrontPage.gif"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure></para> 
-<para>The list of actions along the top of the page allow to view the full issue list (the current page) or to add a new issue. The <guilabel>Administration</guilabel> link allows administrators to correct typos etc.  We will start off by viewing an issue.  Click on the first issue in the list (<guilabel>Improve time-track toolbox layout</guilabel> in the figure above).<figure float="0">
-            <title>Viewing an issue</title>
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/IssueTracker_ViewIssue.gif"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure>The View Issue page shows the information recorded when the issue was submitted, followed by a text-box into which updates can be added, followed by a series of previous updates.  Adding an update can be used to provide additional contextual information regarding an issue, or to update its status (including marking it as complete).</para> 
-</sect3> 
-<sect3> 
-<title>Adding an Issue</title> 
-<para>To add a new issue, click on <guilabel>Add New Issue</guilabel> from the action-links at the top of any <application>Issue Tracker</application> page.  Once you have entered the details of the new issue, press the <guibutton>Submit</guibutton> button at the bottom of the page.<figure float="0">
-            <title>Add/Edit issue page</title>
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/IssueTracker_AddIssue.gif"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure>Now work your way down the new-issue form, filling in the following details:<variablelist><varlistentry><term>Application/Area</term><listitem><para>a combined term representing the application for which an issue is being reported, together the area within that application which the issue relates to. </para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Issue Name</term> 
-<listitem> 
-<para>a short name used to describe the issue.  You could describe the area of Debrief within which the problem occured, or the nature of the new feature you would like added to Debrief</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Issue Desc</term> 
-<listitem> 
-<para>include here a more detailed description of the issue.  For bugs, include a description of the steps which can be taken to reproduce it, or the activity you were conducting when the problem occurred.  It's quite likely that since you encountered the bug, your work would benefit from the bug and would be inconvenienced by the bug not being fixed.  In many cases, providing a series of steps to reproduce bug fantastically reduces the effort required in fix it.  For feature requests include a description of the outcome you would like.  So, first picture a version of Debrief which exactly meets your new requirement.  Now describe in detail the new features.  It is also of value to provide detail regarding the MWC business benefit of the new feature (on occasion addition of new features is prioritised according to benefit/cost).</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Priority</term> 
-<listitem> 
-<para>how strongly you need a bug-fixed/feature added.  For urgent issues contact Ian Mayo directly by e-mail/telephone.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Status</term> 
-<listitem> 
-<para>The current status of this issue - new issues start as <guilabel>Open</guilabel>. Issues being worked on change to <guilabel>In Progress</guilabel>, and are marked as <guilabel>Closed</guilabel> on completion.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Version</term> 
-<listitem> 
-<para>This is the <glossterm linkend="G_BUILD_DATE">build-date</glossterm> of Debrief which your issue relates to.  This is essential for bug-reports, though it isn't normally applicable to feature requests.  </para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Assigned To</term> 
-<listitem> 
-<para>This contains a list of recognised users of the <application>Issue Tracker</application>. For <application>Debrief</application>, it is only really worthwhile assigning them to Ian Mayo.  From the <application>Issue Tracker</application> home page you can quickly see issues assigned to you - this may happen if there are outstanding questions regarding an issue - though typically you'll find out about such questions via e-mail/phone. </para> 
-</listitem> 
-</varlistentry> 
-</variablelist></para> 
-</sect3> 
 </sect2> 
 </sect1> 
 <sect1 id="debrief_feedback"> 
@@ -4215,143 +4146,42 @@ permanent file archival, full backups, and total web-based administration.
 </sect2> 
 <sect2> 
 <title>Directory Structure</title> 
-<para>The directory where the application startup script is installed is called the "Startup Directory".  The Startup Directory is set during the installation of Debrief, and defaults to
-            <filename>c:\Program Files\Debrief 2003</filename>. In this directory you should find a collection of REP and
-            <glossterm linkend="g_xml">XML</glossterm> files, some icons, the CHM help file, the
-            <filename>d2ksettings.prp</filename> properties file.  In a sub-directory titled
-            <filename>lib</filename>, are
-            <application>Debrief</application>&apos;s supporting libraries (mostly third party), and in the directory named
-            <filename>UninstallerData</filename> are the files necessary to support removing
-            <application>Debrief</application>.
-            <figure float="0">
-              <title>Debrief directory structure</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/DirectoryStructure.gif"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>
-          </para> 
+<para>Debrief installs itself into a  <filename>Debrief NG</filename>   folder within your <filename>Program Files</filename>.  Within the Debrief NG folder you will find the DebriefNG executable in the top-level, together with some additional <filename>dll</filename> files used for optimised graphics (<filename>gdiplus.dll</filename>), and copy to clipboard (<filename>JavaClipboard.dll</filename>).</para>
+<para>The <filename>jre</filename> folder contains a Java Runtime Environment that's been modified by the inclusion of a current set of Java3d libraries.  In the absence of this <filename>jre</filename> folder Debrief (Eclipse) would use the system's default Java installation, if there was one.  Including it overrides  any other configured library.</para>
+<para>The <filename>configuration</filename> folder contains details of Debrief's initial settings together with the locations of update download sites.</para>
+<para>The <filename>features</filename> and <filename>plugins</filename> folders include details of what Eclipse plugins are present (where each feature is actually a group of plugins), together with the plugins themselves.  The <filename>workspace</filename> folder is a default workspace provided for new users.  It contains current work projects together with a large volume of metadata representing change history, screen layout and user preferences.</para> 
 </sect2> 
 <sect2 id="starting_debrief"> 
 <title>Starting the program</title> 
 <para>The shortcut placed on the
-            <guimenu>Start|Program Files|Debrief 2003</guimenu> menu actually calls the
-            <filename>Debrief.exe</filename> file found in the startup directory.  This application sets the class-path for the application and starts Debrief itself (which is contained in
-            <filename>D2003.jar</filename>).  It is also possible to start the application by double-clicking on
-            <filename>D2003.jar</filename> itself.
-          </para> 
-<para>There are instances when
-            <application>Debrief</application> has an insufficient memory allocation (of 64Mb) and halts processing reporting an
-            <emphasis>out of memory</emphasis> error to the
-            <filename>trace.txt</filename>.   Such instances occur more frequently with
-            <link linkend="etopo_description">ETOPO</link> data loaded.  To increase the maximum memory allocated to
-            <application>Debrief</application>, insert the following lines into the top of Debrief launch properties file, titled
-            <filename>Debrief.cfg</filename>:
-            <screen>
-              <markup>
-.
-jre1.5\bin\javaw.exe 
--Dswing.metalTheme=steel -Xmx256m -jar D2003.jar
-</markup>
-            </screen>
-          </para> 
-<para>The example shown above allows the memory allocated to Debrief to expand up to 256 Mb if necessary.</para> 
-<note> 
-<para>As you may be aware,
-              <application>Debrief</application> uses the
-              <application>Launch4j</application> application to make Debrief run more intuitively under MS Windows.  Launch4j provides an executable which can be used to start
-              <application>Debrief</application> - particularly useful for
-              <application>MS Windows</application>users are used to starting applications which a
-              <filename>exe</filename> suffix. This application is called
-              <filename>Debrief.exe</filename>.  The application loads
-              <application>Debrief</application> using the settings and parameters contained in a data-file, which takes the same name as the application but adds a
-              <filename>cfg</filename> suffix. The workaround described above adds a property to this settings file to increase the memory available to Debrief. </para> 
-</note> 
+            <guimenu>Start|Program Files|Debrief NG</guimenu> menu actually calls the
+            <filename>DebriefNG.exe</filename> file found in the startup directory.  This application triggers the startup of Debrief, passing to it the parameters contained in the <filename>DebriefNG.ini</filename> file. This file contains options to select the initial perspective,   the memory allocation, and additional files to include on the classpath (3d files in our case).</para> 
 </sect2> 
 </sect1> 
 <sect1 id="fault_diagnosis"> 
 <title>Fault-Diagnosis Instructions</title> 
 <sect2> 
 <title>How-to</title> 
-<para>In Oct 2000,
-            <application>Debrief</application> was modified in order that errors and stack traces were written to a log file suitable for transmission back to MWC.  The trace file is named "
-            <filename>trace.txt</filename>" and is created afresh each time Debrief is run (and a trace is required).  The file is normally placed in the directory from which the application was started. The format/content of the file is as follows:
-
-
-            <table frame="all">
-              <title>Debrief Error Traces</title>
-              <tgroup cols="2">
-                <thead>
-                  <row>
-                    <entry>
-                      <para>Content</para> </entry> 
-<entry> 
-<para>Description</para> </entry> 
-</row> 
-</thead> 
-<tbody> 
-<row> 
-<entry> 
-<para>
-                        <markup>Stack trace started at:Mon Oct 09 13:44:17 GMT+01:00 2000</markup>
-                      </para> </entry> 
-<entry> 
-<para>Header Information</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>
-                        <screen>
-                          <markup>-- listing properties --
- java.runtime.name=Java(TM) 2 Runtime Environment, Stand...
- sun.boot.library.path=C:\Program Files\JavaSoft\JRE\1.3\bin
- java.vm.version=1.3.0-C
- java.vm.vendor=Sun Microsystems Inc.
- ... ETC, ETC, ETC
- java.ext.dirs=C:\Program Files\JavaSoft\JRE\1.3\lib...
- sun.boot.class.path=C:\Program Files\JavaSoft\JRE\1.3\lib...
- java.vendor=Sun Microsystems Inc.
- file.separator=\
- java.vendor.url.bug=http://java.sun.com/cgi-bin/bugreport...
- sun.cpu.endian=little
- sun.io.unicode.encoding=UnicodeLittle
- user.region=GB
- sun.cpu.isalist=pentium_pro+mmx pentium_pro pentium+m...
- ****************-------------</markup>
-                        </screen>
-                      </para> </entry> 
-<entry> 
-<para>Settings for this PC / Java installation</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>
-                        <screen>
-                          <markup>****************-------------
- java.io.StreamCorruptedException: InputStream does not contain a serialized object
- at java.io.ObjectInputStream.readStreamHeader(Unknown Source)
- at java.io.ObjectInputStream.&lt;init&gt;(Unknown Source)
- ETC, ETC, ETC
- at java.awt.Container.dispatchEventImpl(Unknown Source)
- at java.awt.Window.dispatchEventImpl(Unknown Source)
- at java.awt.Component.dispatchEvent(Unknown Source)
- at java.awt.EventQueue.dispatchEvent(Unknown Source)
- at java.awt.EventDispatchThread.pumpOneEvent(Unknown Source)
- at java.awt.EventDispatchThread.pumpEvents(Unknown Source)
- at java.awt.EventDispatchThread.run(Unknown Source)</markup>
-                        </screen>
-                      </para> </entry> 
-<entry> 
-<para>Stack trace for errors as they occur</para> </entry> 
-</row> 
-</tbody> 
-</tgroup> 
-</table> </para> 
-<para>This error trace may be examined for hints to the problem occurring.  The error trace may be viewed in a text editor, and may be forwarded back to the
-            <link linkend="project_manager">Project Manager</link> via post/e-mail/fax as applicable.  The file does not contain any details of the data being edited, but the file should still be inspected before transmission
+<para>With the adoption of the Eclipse framework,
+            <application>Debrief</application> enjoys the benefits of the Eclipse configuration and logging engine. Debrief uses this for information, warning, and error reporting.</para>
+<para>Details of an individual Debrief NG installation can be obtained by selecting <guimenuitem>About Debrief NG</guimenuitem> from the <guimenu>Help</guimenu> menu.  From the dialog that opens, select <guibutton>Configuration Details</guibutton>. This will open a text dialog providing the following information:<itemizedlist><listitem><para>Date stamp</para>
+</listitem>
+<listitem>
+<para>System properties (about the Java and OS environments)</para>
+</listitem>
+<listitem>
+<para>Plug-in registry (plug-ins and fragments - ids, versions, and names)</para>
+</listitem>
+<listitem>
+<para>Update manager log</para>
+</listitem>
+<listitem>
+<para>Current error log contents</para>
+</listitem>
+</itemizedlist></para>
+<para>In addition  to these configuration details is a button to <guibutton>View Error Log</guibutton>.  The Error Log is a continuous stream of comments recorded by Debrief - typically comments that are not of value to a typical user under normal usage.  The log itself is called <filename>.log</filename> and is located in the <filename class="directory">Workspace</filename> folder.  </para> 
+<para>Th error log may be examined for hints to the problem occurring.  The error trace may be viewed in a text editor, and may be forwarded back to the
+            <link linkend="project_manager">Project Manager</link> via post/e-mail/fax as applicable.  The file does not contain any details of the data being edited, but the file may still be inspected before transmission
           </para> 
 <para>If these error messages do not provide any insight to the problem, you are left with the normal diagnosis steps as follows:
             <itemizedlist>
@@ -4389,171 +4219,7 @@ jre1.5\bin\javaw.exe
 <title id="debrief_props_title">Debrief Properties </title> 
 <sect2> 
 <title>Introduction</title> 
-<para>Debrief uses a
-            <indexterm>
-              <primary>File Format</primary>
-              <secondary>Properties file</secondary>
-            </indexterm>text file to store the Most Recently Used file list and an assortment of properties.
-          </para> 
-<para>The file is named
-            <filename>d2ksettings.prp</filename>, and is located in the
-            <indexterm>
-              <primary>Directory</primary>
-              <secondary>Properties file settings</secondary>
-            </indexterm>directory from which
-            <application>Debrief</application> is started.  If such a file is not present in the startup directory, it will be created as the application exits.
-          </para> 
-<para>The Most Recently Used file list stores itself into the properties file, appearing as a series of entries beginning with the letters MRU.</para> 
-<note> 
-<para>Note that when Debrief closes it over-writes the existing properties file (since it needs to add the new MRU items).  So, if you want to make manual edits to the properties file, make sure you do it with Debrief closed.</para> 
-</note> 
-</sect2> 
-<sect2 id="debrief_properties"> 
-<title>Definitions</title> 
-<para>
-            <table>
-              <title>Debrief properties</title>
-              <tgroup cols="3">
-                <thead>
-                  <row>
-                    <entry>
-                      <para>Property</para> </entry> 
-<entry> 
-<para>Description</para> </entry> 
-<entry> 
-<para>Example</para> </entry> 
-</row> 
-</thead> 
-<tbody> 
-<row> 
-<entry> <filename>XML_Directory</filename> </entry> 
-<entry> 
-<para>Default location to use for opening and saving Debrief
-                        <glossterm linkend="g_plot_file">Plot-File</glossterm>s
-                      </para> </entry> 
-<entry> <filename>D\:\\Plots</filename> </entry> 
-</row> 
-<row> 
-<entry> <filename>REP_Directory</filename> </entry> 
-<entry> 
-<para>Default location to use for importing Replay files</para> </entry> 
-<entry> <filename>D\:\\Tracks</filename> </entry> 
-</row> 
-<row> 
-<entry> <filename>RANGE_Directory</filename> </entry> 
-<entry> 
-<para>Default location to use for importing Range data files</para> </entry> 
-<entry> <filename>D\:\\RANGE_DATA</filename> </entry> 
-</row> 
-<row> 
-<entry> <filename>ETOPO_Directory</filename> </entry> 
-<entry> 
-<para>Optional property to specify the location of the ETOPO dataset (when not installed with Debrief)</para> </entry> 
-<entry> <filename>ETOPO</filename> (relative references may be used,
-the path is produced relative to the Debrief installation directory).
-</entry> 
-</row> 
-<row> 
-<entry> <filename>VPF_DATABASE_DIR.x</filename> </entry> 
-<entry> 
-<para>Multiple entries of this property (where x is an ascending integer counter) are specified to inform Debrief where the VPF datasets are located.</para> </entry> 
-<entry> <filename>C\:\\vpf\\SASAUS</filename> </entry> 
-</row> 
-<row> 
-<entry> <filename>WMF_Directory</filename> </entry> 
-<entry> 
-<para>Default destination for Windows Metafile plots, and the destination for recorded video files</para> </entry> 
-<entry> <filename>D\:\\Plots</filename> </entry> 
-</row> 
-<row> 
-<entry> <filename>STEP_THRESHOLD</filename> </entry> 
-<entry> 
-<para>Period (in seconds) either side of current Tote time for which data points are visible in snail mode</para> </entry> 
-<entry> <filename>30</filename> </entry> 
-</row> 
-<row> 
-<entry> <filename>RNG_UNITS</filename> </entry> 
-<entry> 
-<para>The units to display when measuring range and bearing using the mouse. One of the following:
-                        <variablelist>
-                          <varlistentry>
-                            <term>yds</term>
-                            <listitem>
-                              <para>yards(default)</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>nm</term> 
-<listitem> 
-<para>nautical miles</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>m</term> 
-<listitem> 
-<para>metres</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>km</term> 
-<listitem> 
-<para>kilometres</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> </para> 
-<para>
-               The units used for measurement of range (both using the range-bearing 
- tool and for the ranges displayed in the Tote) may be edited within Debrief by double-clicking on the measured range/bearing value at the bottom left of the
-                        <glossterm linkend="g_tote">Tote</glossterm>.
-                      </para> </entry> 
-<entry> <filename>nm</filename> </entry> 
-</row> 
-<row> 
-<entry id="RelBearingProperty">
-<filename>REL_BEARING_FORMAT</filename> </entry> 
-<entry>Whether to show 
-<link linkend="RelBearingDescription">relative bearing</link> using the UK format (R180 through 0 to G180) or US format
-(180 through 0 to 179.9). Use the two-character word
-<emphasis>UK</emphasis> or <emphasis>US</emphasis> </entry> 
-<entry> <filename>UK</filename> </entry> 
-</row> 
-</tbody> 
-</tgroup> 
-</table> </para> 
-</sect2> 
-<sect2> 
-<title>Syntax</title> 
-<para>
- The following paragraph is the technical description of this file, which provides background information regarding the formatting used in the file:
-            <blockquote>
-
-              <para>Reads a property list (key and element pairs) from the input stream.
-              </para> 
-<para>A line that contains only whitespace or whose first non-whitespace character is an ASCII # or ! is ignored (thus, # or ! indicate comment lines).</para> 
-<para>Every line other than a blank line or a comment line describes one property to be added to the table (except that if a line ends with \, then the following line, if it exists, is treated as a continuation line, as described below). The key consists of all the characters in the line starting with the first non-whitespace character and up to, but not including, the first ASCII =, :, or whitespace character. All of the key termination characters may be included in the key by preceding them with a \. Any whitespace after the key is skipped; if the first non-whitespace character after the key is = or :, then it is ignored and any whitespace characters after it are also skipped. All remaining characters on the line become part of the associated element string. Within the element string, the ASCII escape sequences \t, \n, \r, \\, \", \&apos;, \ (a backslash and a space), and \\uxxxx are recognized and converted to single characters. Moreover, if the last character on the line is \, then the next line is treated as a continuation of the current line; the \ and line terminator are simply discarded, and any leading whitespace characters on the continuation line are also discarded and are not part of the element string.
-              </para> 
-<para>As an example, each of the following three lines specifies the key "Truth" and the associated element value "Beauty":</para> 
-<para>Truth = Beauty</para> 
-<para>Truth:Beauty</para> 
-<para>Truth :             Beauty</para> 
-</blockquote> </para> 
-</sect2> 
-<sect2> 
-<title>Example File</title> 
-<para>
-            <screen>
-              <markup>#d2ksettings.prp
- #Thu Sep 21 12:55:40 GMT+01:00 2000
-MRU.4=d\:\\single.dpl
-REP_Directory=D\:\\medsaw
-WMF_Directory=D\:\\
-MRU.3=D\:\\short.dpl
-MRU.2=D\:\\withCoast.dpl1
-MRU.1=D\:\\coast2.dpl
-MRU.0=D\:\\coast3.dpl
-XML_Directory=D\:\\</markup>
-            </screen>
-          </para> 
+<para>Whilst Debrief used to use a dedicated settings file, the settings have now been incorporated into the general framework of the application - with context sensitive help available where applicable.</para>
 </sect2> 
 </sect1> 
 </chapter> 
@@ -5460,7 +5126,7 @@ departure / d.lat = tan (course)</markup>
 </sect1> 
 <sect1 id="contouring_algorithm"> 
 <title>Contouring Algorithm</title> 
-<para>The contouring algortihm employed within Debrief was originally produced by Paul Bourke back in 1987, for submission to the Byte magazine. Here's the article pretty much verbatim:</para> 
+<para>The contouring algorithm employed within Debrief was originally produced by Paul Bourke back in 1987, for submission to the Byte magazine. Here's the article pretty much verbatim:</para> 
 <sect2> 
 <title>Introduction</title> 
 <para>This article introduces a straightforward method of contouring some surface represented as a regular triangular mesh.</para> 
@@ -5635,7 +5301,7 @@ departure / d.lat = tan (course)</markup>
               <title>GNU Free Documentation License</title -->
 <para>Version 1.1, March 2000</para> 
 <blockquote> 
-<para>Copyright (C) 2000  Free Software Foundation, Inc.
+<para>Copyright ©) 2000  Free Software Foundation, Inc.
 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA.
 Everyone is permitted to copy and distribute verbatim copies
 of this license document, but changing it is not allowed.</para> 
@@ -6209,6 +5875,20 @@ The MWC was formed on 1 October 1995 merging the activities of the Maritime Warf
 <para>A zoomed out plot showing the full dataset currently loaded.  Double clicking on this plot forces the main plot to re-centre on the selected point, and dragging an area on this plot forces the main plot to zoom in on the selected area. The formatting on the overview chart is identical to (and unchangeable from) that on the main plot, with the exception that text is not plotted - to reduce clutter.</para> 
 </glossdef> 
 </glossentry> 
+<glossentry id="g_perspective"> 
+<glossterm>Perspective</glossterm> 
+<glossdef> 
+<para>Each Workbench window contains one or more perspectives. A perspective defines the initial set and layout of views in the Workbench window. Within the window, each perspective shares the same set of editors. Each perspective provides a set of functionality aimed at accomplishing a specific type of task or works with specific types of resources. For example, the <guibutton>Tactical Analysis</guibutton> perspective combines views that you would commonly use while editing analysing tactical files, while the <guibutton>Contact Ork</guibutton> perspective would help aliens (typically named Mork) in contacting their mother planet - together with the VOIP software link direct to Orson. As you work in the Workbench, you will probably switch perspectives frequently, especially if you're having Mindy trouble.
+
+</para>
+<para>Perspectives control what appears in certain menus and toolbars. They define visible action sets, which you can change to customize a perspective. You can save a perspective that you build in this manner, making your own custom perspective that you can open again later.  
+
+</para>
+<para>You can use the  <guimenu>General &gt; Perspectives</guimenu> preference page to open perspectives in the same window or in a new window.
+
+          </para> 
+</glossdef> 
+</glossentry>
 <glossentry id="g_pfwtf"> 
 <glossterm>PFWTF</glossterm> 
 <glossdef> 
