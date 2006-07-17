@@ -8,6 +8,7 @@ import java.lang.reflect.*;
 import java.util.*;
 
 import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
@@ -113,7 +114,7 @@ public class DebriefProperty implements IPropertyDescriptor
 
 				public CellEditor getCellEditorFor(Composite parent)
 				{
-					return new TextCellEditor(parent);
+					return new TextCellEditor(parent, SWT.MULTI | SWT.V_SCROLL);
 				}
 
 			});
