@@ -99,37 +99,13 @@ public class RightClickSupport
 					final Layer myTopLayer = theTopLayer;
 
 					final MethodDescriptor thisMethD = meths[i];
+					
 					// create button for this method
-					Action doThisAction = new Action(thisMethD.getDisplayName())
-					{
-						public void run()
-						{
-							Method thisMeth = thisMethD.getMethod();
-							try
-							{
-								thisMeth.invoke(theItem, new Object[0]);
+					Action doThisAction = new SubjectAction(thisMethD.getDisplayName(),
+							theItem, thisMethD.getMethod(), myTopLayer, theLayers);
 
-								// hey, let's do a redraw aswell...
-								theLayers.fireModified(myTopLayer);
-							}
-							catch (IllegalArgumentException e)
-							{
-								CorePlugin.logError(Status.ERROR,
-										"whilst firing method from right-click", e);
-							}
-							catch (IllegalAccessException e)
-							{
-								CorePlugin.logError(Status.ERROR,
-										"whilst firing method from right-click", e);
-							}
-							catch (InvocationTargetException e)
-							{
-								CorePlugin.logError(Status.ERROR,
-										"whilst firing method from right-click", e);
-							}
-						}
-					};
 
+					// ok - add to the list.
 					manager.add(doThisAction);
 				}
 			}
@@ -169,6 +145,63 @@ public class RightClickSupport
 		}
 	}
 
+
+	/** embedded class that encapsulates the information we need to fire an action.
+	 * It was really only refactored to aid debugging.
+	 * @author ian.mayo
+	 *
+	 */
+	private static class SubjectAction extends Action
+	{
+		private Object _subject;
+		private Method _method;
+		private Layer _topLayer;
+		private Layers _theLayers;
+		
+		/**
+		 * 
+		 * @param title what to call the action
+		 * @param subject the thing we're operating upon
+		 * @param method what we're going to run
+		 * @param topLayer the layer to update after the action is complete
+		 * @param theLayers the host for the target layer
+		 */
+		public SubjectAction(String title, Object subject, Method method,
+				Layer topLayer, Layers theLayers)
+		{
+			super(title);
+			_subject = subject;
+			_method = method;
+			_topLayer = topLayer;
+			_theLayers = theLayers;
+		}
+		public void run()
+		{
+			try
+			{
+				_method.invoke(_subject, new Object[0]);
+
+				// hey, let's do a redraw aswell...
+				_theLayers.fireModified(_topLayer);
+			}
+			catch (IllegalArgumentException e)
+			{
+				CorePlugin.logError(Status.ERROR,
+						"whilst firing method from right-click", e);
+			}
+			catch (IllegalAccessException e)
+			{
+				CorePlugin.logError(Status.ERROR,
+						"whilst firing method from right-click", e);
+			}
+			catch (InvocationTargetException e)
+			{
+				CorePlugin.logError(Status.ERROR,
+						"whilst firing method from right-click", e);
+			}
+		}		
+	}
+	
 	/**
 	 * can we edit this property with a tick-box?
 	 * 
