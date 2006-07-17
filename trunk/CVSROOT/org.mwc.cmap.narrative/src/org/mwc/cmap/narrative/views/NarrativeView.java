@@ -119,7 +119,7 @@ public class NarrativeView extends ViewPart
 				String thisType = ne.getType();
 				if (thisType != null)
 				{
-					if (thisType.equals("type_1"))
+	//				if (thisType.equals("type_1"))
 						res = true;
 				}
 			}
@@ -332,7 +332,7 @@ public class NarrativeView extends ViewPart
 
 		// -------------------------------------------------------
 		// Toggle filter action
-		filterToggleAction = new Action("Only show Type_1", Action.AS_CHECK_BOX)
+		filterToggleAction = new Action("Only show entries with Type data", Action.AS_CHECK_BOX)
 		{
 
 			public void run()
@@ -348,7 +348,7 @@ public class NarrativeView extends ViewPart
 					viewer.removeFilter(filter);
 			}
 		};
-		filterToggleAction.setToolTipText("Hide anything other than type_1");
+		filterToggleAction.setToolTipText("Hide anything without type data");
 		filterToggleAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
