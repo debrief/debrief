@@ -117,9 +117,11 @@ public class NarrativeView extends ViewPart
 			{
 				NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) element;
 				String thisType = ne.getType();
+				
+				// hmm, but does this include type data? 
+				// if it does, then it's not for us to export it.
 				if (thisType != null)
 				{
-	//				if (thisType.equals("type_1"))
 						res = true;
 				}
 			}
