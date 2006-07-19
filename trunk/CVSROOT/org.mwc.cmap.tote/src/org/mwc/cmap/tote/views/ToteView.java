@@ -48,6 +48,8 @@ public class ToteView extends ViewPart
 	// Plug-in ID from <plugin> tag in plugin.xml
 	private static final String PLUGIN_ID = "org.mwc.cmap.tote";
 
+	private static final String SHOW_UNITS = "SHOW_UNITS";
+
 	/**
 	 * the table showing the calcs
 	 */
@@ -106,6 +108,21 @@ public class ToteView extends ViewPart
 	private CalculationLoaderManager _loader;
 
 	private ToteLabelProvider _labelProvider;
+
+	/**
+	 * action to put watchables on the tote
+	 */
+	private Action _autoGenerate;
+
+	/**
+	 * action to put tracks on the tote
+	 */
+	private Action _autoGenerateJustTracks;
+
+	/**
+	 * action to hide/reveal the units column
+	 */
+	private Action _showUnits;
 
 	/**
 	 * The constructor.
@@ -235,13 +252,13 @@ public class ToteView extends ViewPart
 	private void updateTableLayout()
 	{
 		// check we have some data
-//		if (_trackData == null)
-//		{
-//			// aah = no track data. better disable the table
-//			timeUpdated(null);
-//			// _tableViewer.getTable().setEnabled(false);
-//			// return;
-//		}
+		// if (_trackData == null)
+		// {
+		// // aah = no track data. better disable the table
+		// timeUpdated(null);
+		// // _tableViewer.getTable().setEnabled(false);
+		// // return;
+		// }
 
 		Table tbl = _tableViewer.getTable();
 		tbl.setEnabled(true);
@@ -292,11 +309,14 @@ public class ToteView extends ViewPart
 			}
 
 		}
-		// and the units column
-		layout.addColumnData(new ColumnWeightData(5, true));
-		TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-		thisSec.setText("Units");
-		// }
+
+		if (_showUnits.isChecked())
+		{
+			// and the units column
+			layout.addColumnData(new ColumnWeightData(5, true));
+			TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+			thisSec.setText("Units");
+		}
 	}
 
 	/**
@@ -335,6 +355,21 @@ public class ToteView extends ViewPart
 		// let the parent do its bits
 		super.init(site, memento);
 
+		_showUnits = new Action("Show units column", Action.AS_CHECK_BOX)
+		{
+			public void run()
+			{
+				redoTableAfterTrackChanges();
+			}
+		};
+
+		// are we showing the units column?
+		String unitsVal = memento.getString(SHOW_UNITS);
+		if (unitsVal != null)
+		{
+			_showUnits.setChecked(Boolean.getBoolean(memento.getString(SHOW_UNITS)));
+		}
+
 		// ok - declare and load the supplemental plugins which can load datafiles
 		initialiseCalcLoaders();
 
@@ -344,6 +379,20 @@ public class ToteView extends ViewPart
 			toteCalculation thisCalc = calcs[i];
 			_myCalculations.add(thisCalc);
 		}
+	}
+
+	/**
+	 * right - store ourselves into the supplied memento object
+	 * 
+	 * @param memento
+	 */
+	public void saveState(IMemento memento)
+	{
+		// let our parent go for it first
+		super.saveState(memento);
+
+		String unitsVal = Boolean.toString(_showUnits.isChecked());
+		memento.putString(SHOW_UNITS, unitsVal);
 	}
 
 	private void createViewActions()
@@ -372,6 +421,44 @@ public class ToteView extends ViewPart
 		_removeTrackAction.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 				.getImageDescriptor(ISharedImages.IMG_TOOL_REDO));
 
+		// -------------------------------------------------------
+		// put watchables on the tote
+		// -------------------------------------------------------
+		_autoGenerate = new Action("Auto-populate Tote", Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				autoGenerate(false);
+			}
+		};
+		// -------------------------------------------------------
+		// put watchables on the tote
+		// -------------------------------------------------------
+		_autoGenerateJustTracks = new Action("Auto-populate Tote (tracks only)",
+				Action.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				autoGenerate(true);
+			}
+		};
+
+		// #### show units is generated in the "init" method, since it uses
+		// part of the memento
+
+	}
+
+	/**
+	 * automatically pass through the data, and automatically assign the relevant
+	 * watchable items to primary, secondary, etc.
+	 * 
+	 * @param onlyAssignTracks -
+	 *          as we scan through the layers, only put TrackWrappers onto the
+	 *          tote
+	 */
+	protected void autoGenerate(boolean onlyAssignTracks)
+	{
+		_trackData.autoAssign(onlyAssignTracks);
 	}
 
 	/*
@@ -451,7 +538,9 @@ public class ToteView extends ViewPart
 	private void fillLocalPullDown(IMenuManager manager)
 	{
 		// manager.add(new Separator());
-
+		manager.add(_autoGenerate);
+		manager.add(_autoGenerateJustTracks);
+		manager.add(_showUnits);
 	}
 
 	private void fillContextMenu(IMenuManager manager, final int index)
