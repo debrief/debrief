@@ -4,7 +4,7 @@ import java.util.*;
 
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.Layers;
+import MWC.GUI.*;
 import MWC.TacticalData.Track;
 
 /**
@@ -24,9 +24,129 @@ public class TrackManager implements TrackDataProvider // ,
 
 	private Vector _myShiftListeners;
 
+	/**
+	 * set a limit for the maximum number of secondary tracks we will plot
+	 */
+	private static final int MAX_SECONDARIES = 10;
+
+	/**
+	 * and the message to display
+	 */
+	private static final String MAX_MESSAGE = "Too many tracks.  Only the first "
+			+ MAX_SECONDARIES + " secondary tracks have been assigned";
+
 	public TrackManager(Layers parentLayers)
 	{
 		_theLayers = parentLayers;
+	}
+
+	/**
+	 * pass through the data, and assign any watchables as primary and secondary
+	 * 
+	 * @param onlyAssignTracks
+	 *          only put TracksWrappers on the tote
+	 */
+	public void autoAssign(boolean onlyAssignTracks)
+	{
+
+		// check we have some data to search
+		if (_theLayers != null)
+		{
+
+			// pass through the data to find the WatchableLists
+			for (int l = 0; l < _theLayers.size(); l++)
+			{
+				final Layer layer = _theLayers.elementAt(l);
+
+				if (layer instanceof WatchableList)
+				{
+					if (_theSecondaries != null)
+					{
+						// have we got our full set of secondarires yet?
+						if (_theSecondaries.length >= MAX_SECONDARIES)
+						{
+							MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached",
+									MAX_MESSAGE);
+							return;
+						}
+					}
+
+					processWatchableList((WatchableList) layer, onlyAssignTracks);
+				}
+				else
+				{
+					final Enumeration iter = layer.elements();
+					while (iter.hasMoreElements())
+					{
+						final Plottable p = (Plottable) iter.nextElement();
+						if (p instanceof WatchableList)
+						{
+
+							if (_theSecondaries != null)
+							{
+								// have we got our full set of secondarires yet?
+								if (_theSecondaries.length >= MAX_SECONDARIES)
+								{
+									MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached",
+											MAX_MESSAGE);
+									return;
+								}
+							}
+
+							processWatchableList((WatchableList) p, onlyAssignTracks);
+						}
+					}
+				}
+			}
+		}
+	}
+
+	/**
+	 * @param list
+	 *          the list of items to process
+	 * @param onlyAssignTracks
+	 *          whether only TrackWrapper items should be placed on the list
+	 */
+	private void processWatchableList(final WatchableList list, boolean onlyAssignTracks)
+	{
+		// check this isn't the primary
+		if (list != getPrimaryTrack())
+		{
+			final WatchableList w = (WatchableList) list;
+			// see if we need a primary setting
+			if (getPrimaryTrack() == null)
+			{
+				if (w.getVisible())
+					if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
+						setPrimary(w);
+			}
+			else
+			{
+
+				boolean haveAlready = false;
+
+				// check that this isn't one of our secondaries
+				for (int i = 0; i < _theSecondaries.length; i++)
+				{
+					WatchableList secW = _theSecondaries[i];
+					if (secW == w)
+					{
+						// don't bother with it, we've got it already
+						haveAlready = true;
+						continue;
+					}
+				}
+
+				if (!haveAlready)
+				{
+					if (w.getVisible())
+						if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
+							addSecondary(w);
+				}
+			}
+
+		}
+
 	}
 
 	public void assignTracks(String primaryTrack, Vector secondaryTracks)
@@ -72,7 +192,7 @@ public class TrackManager implements TrackDataProvider // ,
 			_myDataListeners = new Vector();
 
 		// do we already contain this one?
-		if(!_myDataListeners.contains(listener))
+		if (!_myDataListeners.contains(listener))
 			_myDataListeners.add(listener);
 	}
 
@@ -82,7 +202,7 @@ public class TrackManager implements TrackDataProvider // ,
 			_myShiftListeners = new Vector();
 
 		// do we already contain this one?
-		if(!_myShiftListeners.contains(listener))
+		if (!_myShiftListeners.contains(listener))
 			_myShiftListeners.add(listener);
 	}
 
