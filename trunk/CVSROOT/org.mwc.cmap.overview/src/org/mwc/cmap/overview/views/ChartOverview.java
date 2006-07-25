@@ -26,7 +26,6 @@ import org.mwc.cmap.plotViewer.editors.chart.*;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.CanvasType.PaintListener;
-import MWC.GUI.Chart.Painters.SpatialRasterPainter;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.*;
 
@@ -722,8 +721,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	{
 		boolean res = true;
 
-		if (thisLayer instanceof SpatialRasterPainter)
-			res = false;
+		// no, don't check for ETOPO data - just paint the lot.
+//		if (thisLayer instanceof SpatialRasterPainter)
+//			res = false;
 
 		return res;
 	}
