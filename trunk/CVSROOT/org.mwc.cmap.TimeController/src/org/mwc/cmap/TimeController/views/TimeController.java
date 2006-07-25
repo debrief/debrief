@@ -320,15 +320,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
 		eBwd.setImage(TimeControllerPlugin.getImage("icons/media_beginning.png"));
+		eBwd.setToolTipText("Move to start of dataset");
 		// eBwd.setImage(TimeControllerPlugin.getImage("icons/control_start_blue.png"));
 
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
 		lBwd.setText("<<");
+		lBwd.setToolTipText("Move backward large step");
 		// lBwd.setImage(TimeControllerPlugin.getImage("icons/control_rewind_blue.png"));
 		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(_btnPanel, SWT.NONE);
 		sBwd.setText("<");
+		sBwd.setToolTipText("Move backward small step");
 		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
 		// sBwd.setImage(TimeControllerPlugin.getImage("icons/control_back_blue.png"));
 		sBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(false)));
@@ -348,6 +351,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					// thisD =
 					// TimeControllerPlugin.getImageDescriptor("icons/control_pause_blue.png");
 					startPlaying();
+					_playButton.setToolTipText("Pause play");
 				}
 				else
 				{
@@ -355,6 +359,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					// thisD =
 					// TimeControllerPlugin.getImageDescriptor("icons/control_play_blue.png");
 					stopPlaying();
+					_playButton.setToolTipText("auto-step");
 				}
 				_playButton.setImage(thisD.createImage());
 			}
@@ -365,13 +370,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_forwardButton.setImage(TimeControllerPlugin.getImage("icons/media_forward.png"));
 		_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true,
 				new Boolean(false)));
+		_forwardButton.setToolTipText("Move forward small step");
+		
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
 		// lFwd.setImage(TimeControllerPlugin.getImage("icons/control_fastforward_blue.png"));
 		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
+		lFwd.setToolTipText("Move forward large step");
 		lFwd.addSelectionListener(new TimeButtonSelectionListener(true, new Boolean(true)));
 		Button eFwd = new Button(_btnPanel, SWT.NONE);
 		// eFwd.setImage(TimeControllerPlugin.getImage("icons/control_end_blue.png"));
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
+		eFwd.setToolTipText("Move to end of dataset");
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
 	}
 
