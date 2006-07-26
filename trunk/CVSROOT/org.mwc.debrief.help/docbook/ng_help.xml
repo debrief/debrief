@@ -1905,7 +1905,19 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             </figure></para> 
 <sect3> 
 <title>Display modes</title> 
-<para>The first three icons on the Time Controller toolbar allow you to choose two combinations of plotting modes.  The first two control how data is displayed:  in Normal Mode, all exercise data is displayed, whereas in Snail mode, only the current position and a series of recent points are displayed (similar to a Snail with trail following behind it).  <figure float="0">
+<para>The first three icons on the Time Controller toolbar allow you to choose two combinations of plotting modes.  The first two control how data is displayed:  in Normal Mode, all exercise data is displayed, whereas in Snail mode, only the current position and a series of recent points are displayed (similar to a Snail with trail following behind it).  </para> 
+<para>As you'd imagine, Normal Mode is the mode that is used for most analysis tasks.  It's North oriented and shows all relevant data.  It's also quite simple, only having two properties, both of which control the presentation of the highlight:<variablelist><varlistentry><term>Color</term><listitem><para>Yes, the Color of the highlight</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Size</term> 
+<listitem> 
+<para>I know, I know, it's the size of the rectangle used to plot the highlight (measured in pixels)</para> 
+</listitem> 
+</varlistentry> 
+</variablelist></para> 
+<para>The Snail Trail is used for specific analysis tasks when you need to concentrate on the specific activities around a certain time, without the clutter of the remaining track data.</para> 
+<para><figure float="0">
               <title>Example of a snail trail</title>
               <screenshot>
                 <mediaobject>
@@ -1957,7 +1969,12 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </listitem> 
 </varlistentry> 
 </variablelist></para> 
-<para>The next display mode, Relative Mode, affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. <figure float="0">
+<para>The next display mode, Relative Mode, affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. </para> 
+<tip> 
+<para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
+            </para> 
+<para>The sample shown below gives a demonstration of the use of this relative mode. You can quickly see that the blue vessel is directly ahead of the red trailing vessel, and your use of the Range Ring Highlighter gives us a quick indication of range.
+            <figure float="0">
               <title>Sample of relative display mode</title>
               <screenshot>
                 <mediaobject>
@@ -1967,11 +1984,6 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                 </mediaobject>
               </screenshot>
             </figure></para> 
-<tip> 
-<para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
-            </para> 
-<para>The sample shown below gives a demonstration of the use of this relative mode. You can quickly see that the blue vessel is directly ahead of the red trailing vessel, and your use of the Range Ring Highlighter gives us a quick indication of range.
-            </para> 
 </tip> 
 </sect3> 
 <sect3> 
@@ -2006,24 +2018,44 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <para>Another operation that relies on the selected time period is exporting calculated data to the clipboard.  This operation is available form the <guiicon>
               <inlinegraphic fileref="figures/Calculator.png"/>
             </guiicon><guibutton>Time Controller</guibutton>'s drop-down menu, and it performs a series of calculations for each data-point in the indicated time period.  These calculations are then placed on the system clipboard in Comma-Separated-Variable format  for reuse in other applications, <application>Microsoft Excel</application>, for instance.</para> 
-<para>A header line is written first, which indicates the contents of each column:
-            <simplelist type="horiz">
-              <member>Track Time(hhmmss)</member>
-              <member>Depth(metres)</member>
-              <member>Speed(Knots)</member>
-              <member>Course(degs)</member>
-              <member>Range(yards)</member>
-              <member>Bearing(degs)</member>
-              <member>Rel Bearing(degs - using
+<para>A header line is written first, indicating the contents of each column:
+            <itemizedlist spacing="compact">
+              <listitem><para>Track Time(hhmmss)</para>
+</listitem> 
+<listitem>
+<para>Depth(metres)</para>
+</listitem> 
+<listitem>
+<para>Speed(Knots)</para>
+</listitem> 
+<listitem>
+<para>Course(degs)</para>
+</listitem> 
+<listitem>
+<para>Range(yards)</para>
+</listitem> 
+<listitem>
+<para>Bearing(degs)</para>
+</listitem> 
+<listitem>
+<para>Rel Bearing(degs - using
                 <varname>Relative bearing format</varname> specified in
                 the <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>dialog)
-              </member>
-              <member>Brg Rate(deg/min)</member>
-              <member>Color (for this track point)</member>
-              <member>Name</member>
-              <member>PrimaryName</member>
-            </simplelist>
-          </para> 
+              </para>
+</listitem> 
+<listitem>
+<para>Brg Rate(deg/min)</para>
+</listitem> 
+<listitem>
+<para>Color (for this track point)</para>
+</listitem> 
+<listitem>
+<para>Name</para>
+</listitem> 
+<listitem>
+<para>PrimaryName</para>
+</listitem> 
+</itemizedlist> </para> 
 <para>The results from the primary track are listed first, which (as in the
             <glossterm linkend="g_tote">Tote</glossterm>) do not show results of calculated operations:
             <screen>CARPET 12/Dec/95 05:00:00 000 02.00 269.7 n/a n/a n/a n/a 0500 0500</screen>
