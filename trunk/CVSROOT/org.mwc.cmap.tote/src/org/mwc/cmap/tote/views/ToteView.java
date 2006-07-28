@@ -364,10 +364,13 @@ public class ToteView extends ViewPart
 		};
 
 		// are we showing the units column?
-		String unitsVal = memento.getString(SHOW_UNITS);
-		if (unitsVal != null)
+		if (memento != null)
 		{
-			_showUnits.setChecked(Boolean.getBoolean(memento.getString(SHOW_UNITS)));
+			String unitsVal = memento.getString(SHOW_UNITS);
+			if (unitsVal != null)
+			{
+				_showUnits.setChecked(Boolean.getBoolean(memento.getString(SHOW_UNITS)));
+			}
 		}
 
 		// ok - declare and load the supplemental plugins which can load datafiles
@@ -941,11 +944,14 @@ public class ToteView extends ViewPart
 			}
 			else
 			{
-				// hmm, could it be the units column?
-				int numCols = _tableViewer.getTable().getColumnCount();
-				if (columnIndex == numCols - 1)
+				if (_showUnits.isChecked())
 				{
-					res = tc.getUnits();
+					// hmm, could it be the units column?
+					int numCols = _tableViewer.getTable().getColumnCount();
+					if (columnIndex == numCols - 1)
+					{
+						res = tc.getUnits();
+					}
 				}
 			}
 
@@ -1017,7 +1023,7 @@ public class ToteView extends ViewPart
 
 	}
 
-	private static int findSelectedColumn(int x, int y, Table table)
+	private int findSelectedColumn(int x, int y, Table table)
 	{
 		int index = -1;
 		TableItem[] selectedCols = table.getSelection();
@@ -1025,7 +1031,13 @@ public class ToteView extends ViewPart
 		{
 			TableItem selection = selectedCols[0];
 			TableColumn[] tc = table.getColumns();
-			for (int i = 1; i < tc.length - 1; i++)
+			
+			// sort out how many c
+			int numCols = tc.length;
+			if(_showUnits.isChecked())
+				numCols--;
+			
+			for (int i = 1; i < numCols; i++)
 			{
 				Rectangle bounds = selection.getBounds(i);
 				if (bounds.contains(x, bounds.y))
