@@ -8,6 +8,7 @@ import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.runtime.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
@@ -105,8 +106,9 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		_myEditor.pointList2.addDoubleClickListener(_dblClickListener);
 		_myEditor.helpLbl
 				.setText("Manipulate your points using the buttons to the right, "
-						+ " by double-clicking on a point to change it in the Properties view, or by dragging"
-						+ " in Drag Component mouse mode.");
+						+ " by double-clicking on a point to change it in the Properties view, " +
+								"by dragging in Drag Component mouse mode," +
+								"or by pasting from the clipboard.");
 
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
@@ -148,9 +150,9 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		{
 			moveUpward(thisPoint);
 		}
-		else if (source == _myEditor.downBtn)
+		else if (source == _myEditor.pasteBtn)
 		{
-			moveDownward(thisPoint);
+			pasteLoc(thisPoint);
 		}
 		else if (source == _myEditor.newBtn)
 		{
@@ -164,6 +166,45 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 
 	}
 
+	/** user is trying to paste location off clipboard
+	 * 
+	 * @param thisPoint
+	 */
+	private void pasteLoc(WorldLocation thisPoint)
+	{
+		// is a location selected?
+		if(thisPoint != null)
+		{
+		
+			// is there a location on the clipboard?
+			// right, see what's on the clipboard
+			// right, copy the location to the clipboard
+			Clipboard clip = CorePlugin.getDefault().getClipboard();
+			Object val = clip.getContents(TextTransfer.getInstance());
+			if (val != null)
+			{
+				String txt = (String) val;
+				if (CorePlugin.isLocation(txt))
+				{
+					// cool, get the text
+					WorldLocation loc = CorePlugin.fromClipboard(txt);
+
+					// create the output value
+					thisPoint.copy(loc);
+					
+					// and fire some kind of update...
+					updateUI();
+				}
+				else
+				{
+					CorePlugin.showMessage("Paste location",
+							"Sorry the clipboard text is not in the right format." + "\nContents:"
+									+ txt);
+				}
+			}
+		}
+	}
+
 	/**
 	 * @param centre
 	 */
@@ -173,14 +214,14 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		CorePlugin.run(theAction);
 	}
 
-	/**
-	 * @param thisPoint
-	 */
-	private void moveDownward(WorldLocation thisPoint)
-	{
-		MoveDownAction theAction = new MoveDownAction(_myPath, thisPoint);
-		CorePlugin.run(theAction);
-	}
+//	/**
+//	 * @param thisPoint
+//	 */
+//	private void moveDownward(WorldLocation thisPoint)
+//	{
+//		MoveDownAction theAction = new MoveDownAction(_myPath, thisPoint);
+//		CorePlugin.run(theAction);
+//	}
 
 	/**
 	 * @param thisPoint

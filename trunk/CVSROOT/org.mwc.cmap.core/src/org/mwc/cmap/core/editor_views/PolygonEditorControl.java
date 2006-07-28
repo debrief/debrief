@@ -13,7 +13,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 	public Label editorPanel;
 	public Button newBtn;
 	public Button delBtn;
-	public Button downBtn;
+	public Button pasteBtn;
 	public Button upBtn;
 	public Label helpLbl;
 
@@ -57,7 +57,7 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 		}
 		{
 			// ok, sort out the images
-			downBtn.setImage(CorePlugin.getImageFromRegistry("down.gif"));
+			pasteBtn.setImage(CorePlugin.getImageFromRegistry("paste_20.png"));
 			upBtn.setImage(CorePlugin.getImageFromRegistry("up.gif"));
 			newBtn.setImage(CorePlugin.getImageFromRegistry("NewPin.gif"));
 			delBtn.setImage(CorePlugin.getImageFromRegistry("DeletePin.gif"));
@@ -97,14 +97,14 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 						upBtn.addSelectionListener(this);
 					}
 					{
-						downBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
+						pasteBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
 						GridData downBtnLData = new GridData();
 						downBtnLData.horizontalAlignment = GridData.FILL;
 						downBtnLData.grabExcessHorizontalSpace = true;
-						downBtn.setLayoutData(downBtnLData);
-						downBtn.setText("Down");
-						downBtn.setToolTipText("Move point down order");
-						downBtn.addSelectionListener(this);
+						pasteBtn.setLayoutData(downBtnLData);
+						pasteBtn.setText("Paste");
+						pasteBtn.setToolTipText("Paste location from clipboard");
+						pasteBtn.addSelectionListener(this);
 					}
 					{
 						newBtn = new Button(btnHolder, SWT.PUSH | SWT.CENTER);
