@@ -310,12 +310,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 	private static TimePeriod extend(TimePeriod period, HiResDate date)
 	{
-		if (period == null)
+		// have we received a date?
+		if (date != null)
 		{
-			period = new TimePeriod.BaseTimePeriod(date, date);
+			if (period == null)
+			{
+				period = new TimePeriod.BaseTimePeriod(date, date);
+			}
+			else
+				period.extend(date);
 		}
-		else
-			period.extend(date);
 
 		return period;
 	}
