@@ -101,7 +101,7 @@ public class DragComponent extends DragFeature
 
 	public PlotMouseDragger getDragMode()
 	{
-		return new DragFeatureMode();
+		return new DragComponentMode();
 	}
 
 	/**
@@ -109,7 +109,7 @@ public class DragComponent extends DragFeature
 	 * 
 	 * @author Ian
 	 */
-	final static public class DragFeatureMode extends SWTChart.PlotMouseDragger
+	final static public class DragComponentMode extends SWTChart.PlotMouseDragger
 	{
 
 		/**
@@ -173,6 +173,11 @@ public class DragComponent extends DragFeature
 			// check we're not currently dragging something
 			if (_lastPoint != null)
 				return;
+
+			// clear our bits
+			_hoverTarget = null;
+			_hoverComponent = null;
+			_parentLayer = null;
 
 			java.awt.Point cursorPt = new java.awt.Point(pt.x, pt.y);
 			WorldLocation cursorLoc = theCanvas.toWorld(cursorPt);
@@ -243,12 +248,19 @@ public class DragComponent extends DragFeature
 				}
 
 				// reset the cursor on the canvas
-				_newCursor = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-						"icons/SelectPoint.ico").getImageData(), 7, 3);
+				_newCursor = getNormalCursor();
 
 				// and assign it to the control
 				theCanvas.getCanvas().setCursor(_newCursor);
 			}
+		}
+
+		public Cursor getNormalCursor()
+		{
+			Cursor res = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+					"icons/SelectPoint.ico").getImageData(), 7, 3);
+
+			return res;
 		}
 
 		final public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
@@ -257,6 +269,7 @@ public class DragComponent extends DragFeature
 			if ((_startPoint != null) && (_hoverTarget != null))
 			{
 				GC gc = new GC(_myCanvas.getCanvas());
+
 
 				// This is the same as a !XOR
 				gc.setXORMode(true);
@@ -272,6 +285,15 @@ public class DragComponent extends DragFeature
 					// we're drawing for the first time. make the last location equal the
 					// start location
 					_lastLocation = _startLocation;
+					
+					// override the icon we're using
+					if (_newCursor != null)
+					{
+						_newCursor.dispose();
+						_newCursor = new Cursor(Display.getDefault(), CorePlugin.getImageDescriptor(
+								"icons/SelectPointHitDown.ico").getImageData(), 7, 3);
+					}					
+					
 				}
 
 				// remember where we are
