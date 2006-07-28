@@ -205,6 +205,10 @@ public class DragFeature extends CoreDragAction
 			// check we're not currently dragging something
 			if (_lastPoint != null)
 				return;
+			
+			// clear our bits
+			_hoverTarget = null;
+			_parentLayer = null;
 
 			java.awt.Point cursorPt = new java.awt.Point(pt.x, pt.y);
 			WorldLocation cursorLoc = theCanvas.toWorld(cursorPt);
@@ -274,13 +278,10 @@ public class DragFeature extends CoreDragAction
 				{
 					// yup, better ditch it
 					_newCursor.dispose();
-
 				}
 
 				// and show our special cursor
-				_newCursor = new Cursor(Display.getDefault(), 
-						DebriefPlugin.getImageDescriptor("icons/SelectFeature.ico").getImageData(), 
-						4,2);
+				_newCursor = getNormalCursor();
 				theCanvas.getCanvas().setCursor(_newCursor);
 
 			}
@@ -307,6 +308,16 @@ public class DragFeature extends CoreDragAction
 					// we're drawing for the first time. make the last location equal the
 					// start location
 					_lastLocation = _startLocation;
+					
+					// also override the cursor, if we have to.
+					if(_newCursor != null)
+					{
+						_newCursor.dispose();
+						_newCursor = new Cursor(Display.getDefault(), 
+								DebriefPlugin.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 
+								4,2);
+						theCanvas.getCanvas().setCursor(_newCursor);
+					}
 				}
 
 				// remember where we are
@@ -359,10 +370,7 @@ public class DragFeature extends CoreDragAction
 				System.out.println("canvas is null!");
 				return;
 			}
-			else
-			{
-				System.out.println("canvas not null");
-			}
+
 			GC gc = new GC(_myCanvas.getCanvas());
 
 			// This is the same as a !XOR
@@ -418,6 +426,15 @@ public class DragFeature extends CoreDragAction
 			_myChart = theChart;
 		}
 
+		
+		public Cursor getNormalCursor()
+		{
+			Cursor res = new Cursor(Display.getDefault(), 
+					DebriefPlugin.getImageDescriptor("icons/SelectFeature.ico").getImageData(), 
+					4,2);			
+			return res;
+		}
+		
 		/**
 		 * dragging happening. Either draw (or erase) the previous point
 		 * 
