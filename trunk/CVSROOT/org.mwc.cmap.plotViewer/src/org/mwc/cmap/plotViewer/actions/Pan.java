@@ -5,7 +5,6 @@ package org.mwc.cmap.plotViewer.actions;
 
 import java.awt.Point;
 
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
@@ -94,9 +93,6 @@ public class Pan extends CoreDragAction
 		public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
 		{
 
-			// reset the cursor on the canvas
-			_myCanvas.getCanvas().setCursor(null);
-
 			// and ditch our old one
 			_newCursor.dispose();
 			_newCursor = null;
@@ -122,6 +118,9 @@ public class Pan extends CoreDragAction
 
 			// cool, sorted. remember the action
 			Action theAction = new PanAction(_myChart, _originalArea, _newArea);
+			
+			System.out.println("start point cleared.");
+			_startPoint = null;
 
 			// and wrap it
 			DebriefActionWrapper daw = new DebriefActionWrapper(theAction, _myChart.getLayers());
@@ -148,7 +147,7 @@ public class Pan extends CoreDragAction
 	    
 
 			// create the new cursor
-			_newCursor = new Cursor(Display.getDefault(), SWT.CURSOR_HAND);
+			_newCursor = getDownCursor();	
 
 			// and assign it to the control
 			canvas.getCanvas().setCursor(_newCursor);
@@ -163,10 +162,39 @@ public class Pan extends CoreDragAction
 			proj.setDataBorder(oldBorder);
 		}
 
+		/** ok, assign the cursor for when we're just hovering
+		 * 
+		 * @return the new cursor to use, silly.
+		 */
+		public Cursor getDownCursor()
+		{
+			// ok, return the pan cursor
+			Cursor res = new Cursor(Display.getDefault(), 
+					CorePlugin.getImageDescriptor("icons/hand_fist.ico").getImageData(), 
+					4, 2);		
+			
+			return res;
+		}				
+		
+		/** ok, assign the cursor for when we're just hovering
+		 * 
+		 * @return the new cursor to use, silly.
+		 */
+		public Cursor getNormalCursor()
+		{
+			// ok, return the pan cursor
+			Cursor res = new Cursor(Display.getDefault(), 
+					CorePlugin.getImageDescriptor("icons/hand.ico").getImageData(), 
+					4, 2);		
+			
+			return res;
+		}			
 	}
 
 	public PlotMouseDragger getDragMode()
 	{
 		return new PanMode();
 	}
+	
+
 }

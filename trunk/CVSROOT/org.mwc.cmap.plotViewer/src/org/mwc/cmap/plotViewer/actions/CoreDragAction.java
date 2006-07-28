@@ -3,6 +3,9 @@
  */
 package org.mwc.cmap.plotViewer.actions;
 
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
@@ -36,12 +39,16 @@ abstract public class CoreDragAction extends CoreEditorAction
 		// create the action
 		CoreDragAction.SwitchModeAction theAction = new CoreDragAction.SwitchModeAction(newMode, oldMode, myChart);
 		
+		// initialise the cursor
+		myChart.getCanvasControl().setCursor(newMode.getNormalCursor());
+		
 		// and wrap it
 		DebriefActionWrapper daw = new DebriefActionWrapper(theAction);
 
 		// and run it
 		CorePlugin.run(daw);
 	}
+
 	
 	
 	/** embed switching drag mode into an action, so we can reverse it
