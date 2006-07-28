@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.33  2006-05-24 14:50:10  Ian.Mayo
+// Revision 1.34  2006-07-28 10:16:22  Ian.Mayo
+// Reset normal cursor on mouse up
+//
+// Revision 1.33  2006/05/24 14:50:10  Ian.Mayo
 // Always redraw the whole plot if in relative mode
 //
 // Revision 1.32  2006/04/26 12:39:46  Ian.Mayo
@@ -112,8 +115,10 @@ import java.util.*;
 
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
@@ -631,7 +636,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			{
 				// yes, process the drag
 				if (_myDragMode != null)
+				{
 					_myDragMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
+					
+					// and restore the mouse mode cursor
+					_theCanvas.getCanvas().setCursor(_myDragMode.getNormalCursor());
+				}
 			}
 			else
 			{
@@ -761,6 +771,31 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 */
 		abstract public void mouseDown(org.eclipse.swt.graphics.Point point,
 				SWTCanvas canvas, PlainChart theChart);
+		
+		
+		/** ok, assign the cursor for when we're just hovering
+		 * 
+		 * @return the new cursor to use, silly.
+		 */
+		public Cursor getNormalCursor()
+		{
+			// ok, return the 'normal' cursor
+			Cursor res = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
+			
+			return res;
+		}		
+		
+		/** ok, assign the cursor for when we're just hovering
+		 * 
+		 * @return the new cursor to use, silly.
+		 */
+		public Cursor getDownCursor()
+		{
+			// ok, return the 'normal' cursor
+			Cursor res = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
+			
+			return res;
+		}				
 
 	}
 
