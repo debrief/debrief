@@ -9,17 +9,8 @@
 	<item title="Check you need a project">
 		<description>If the navigator window is empty, then you need to create a project.  If the window already contains a folder-icon (possibly containing sample data) then hey, you're ready to go, well done! Return to the Welcome page and select another tutorial (such as 'Getting your data into Debrief'. Otherwise, tick the 'Complete' box below and continue with this tutorial.</description>
 	</item>
-	<item title="Create a project">
-		<description>Right-click in the Navigator view, and select 'Project...' from the 'New' sub-menu.  The New Project wizard will open.
+	<item title="Create a 'General' project" dialog="true">
+		<description>Right-click in the Navigator view, and select 'Project...' from the 'New' sub-menu.  The New Project wizard will open. From the 'General' folder, select Project, and then press 'Next'. Now just enter a name for your project (this could be the name of the current exercise). Just press the 'Finish' button, and you will see the new project in your workspace.
 		</description>
-	</item>
-	<item title="Select General project">
-		<description>From the 'General' folder, select Project, and then press 'Next'</description>
-	</item>
-	<item title="Name the project">
-		<description>Now just enter a name for your project (this could be the name of the current exercise)</description>
-	</item>
-	<item title="Done">
-		<description>Just press the 'Finish' button, and you will see the new project in your workspace.</description>
 	</item>
 </cheatsheet>
