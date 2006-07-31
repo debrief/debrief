@@ -251,7 +251,7 @@ public class TrackManager implements TrackDataProvider // ,
 		fireTracksChanged();
 	}
 
-	private void fireTracksChanged()
+	public void fireTracksChanged()
 	{
 		if (_myDataListeners != null)
 		{

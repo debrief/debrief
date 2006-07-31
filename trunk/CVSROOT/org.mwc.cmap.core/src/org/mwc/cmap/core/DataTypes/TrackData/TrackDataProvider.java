@@ -60,6 +60,11 @@ public interface TrackDataProvider
 	 */
 	public void fireTrackShift(TrackWrapper target);
 	
+	/** ok, the tracks have changed. tell the world
+	 * 
+	 */
+	public void fireTracksChanged();
+	
 
 	/**
 	 * find out what the primary track is
