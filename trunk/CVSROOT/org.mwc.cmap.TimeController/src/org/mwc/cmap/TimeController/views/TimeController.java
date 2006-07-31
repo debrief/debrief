@@ -168,6 +168,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private PlainProjection _targetProjection;
 
+	private TrackDataProvider.TrackDataListener _theTrackDataListener;
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -371,7 +373,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_forwardButton.addSelectionListener(new TimeButtonSelectionListener(true,
 				new Boolean(false)));
 		_forwardButton.setToolTipText("Move forward small step");
-		
+
 		Button lFwd = new Button(_btnPanel, SWT.NONE);
 		// lFwd.setImage(TimeControllerPlugin.getImage("icons/control_fastforward_blue.png"));
 		lFwd.setImage(TimeControllerPlugin.getImage("icons/media_fast_forward.png"));
@@ -827,8 +829,36 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						_myTrackProvider = (TrackDataProvider) part;
+						// sort out our listener
+						if (_theTrackDataListener == null)
+							_theTrackDataListener = new TrackDataProvider.TrackDataListener()
+							{
+
+								public void tracksUpdated(WatchableList primary,
+										WatchableList[] secondaries)
+								{
+									// ok - make sure we're seeing the full time period
+									expandTimeSliderRangeToFull();
+									
+									// and the controls are enabled (if we know time data)
+									checkTimeEnabled();
+								}
+							};
+
+						TrackDataProvider thisTrackProvider = (TrackDataProvider) part;
+						if (thisTrackProvider != _myTrackProvider)
+						{
+							// do we have one already?
+							if (_myTrackProvider != null)
+							{
+								// ok, ditch existing provider
+								_myTrackProvider.removeTrackDataListener(_theTrackDataListener);
+							}
+
+							// remember the new one
+							_myTrackProvider = thisTrackProvider;
+							_myTrackProvider.addTrackDataListener(_theTrackDataListener);
+						}
 					}
 
 				});
@@ -1118,7 +1148,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 			}
 		}
-		
+
 		// hey, better make sure the properties window is open
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
@@ -1133,8 +1163,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		}
 		catch (PartInitException e)
 		{
-			CorePlugin.logError(Status.ERROR, "Failed to open properties view when showing timer properties", e);
-		}	
+			CorePlugin.logError(Status.ERROR,
+					"Failed to open properties view when showing timer properties", e);
+		}
 	}
 
 	// //////////////////////////////
@@ -1480,7 +1511,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		menuManager.removeAll();
 		toolManager.removeAll();
 
-
 		// ok, what are the painters we know about
 		TemporalLayerPainter[] painterList = myLayerPainterManager.getList();
 
@@ -1522,7 +1552,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		// add the list of DTG formats for the DTG slider
 		addBiSliderResolution(menuManager);
-		
 
 		// start off with the relative painter setting, if we have to
 		if (_relPlotToggle == null)
@@ -1562,7 +1591,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// hey, store it anyway.
 		toolManager.add(_relPlotToggle);
 		menuManager.add(_relPlotToggle);
-		
+
 		// and another separator
 		toolManager.add(new Separator());
 
