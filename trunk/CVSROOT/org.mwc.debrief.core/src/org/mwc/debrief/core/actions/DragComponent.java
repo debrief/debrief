@@ -8,10 +8,9 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.graphics.Cursor;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
@@ -270,7 +269,6 @@ public class DragComponent extends DragFeature
 			{
 				GC gc = new GC(_myCanvas.getCanvas());
 
-
 				// This is the same as a !XOR
 				gc.setXORMode(true);
 				gc.setForeground(gc.getBackground());
@@ -290,8 +288,10 @@ public class DragComponent extends DragFeature
 					if (_newCursor != null)
 					{
 						_newCursor.dispose();
-						_newCursor = new Cursor(Display.getDefault(), CorePlugin.getImageDescriptor(
-								"icons/SelectPointHitDown.ico").getImageData(), 7, 3);
+						ImageDescriptor imageDescriptor = DebriefPlugin.getImageDescriptor(
+														"icons/SelectPointHitDown.ico");
+						ImageData imageData = imageDescriptor.getImageData();
+						_newCursor = new Cursor(Display.getDefault(), imageData, 7, 3);
 					}					
 					
 				}
@@ -330,7 +330,6 @@ public class DragComponent extends DragFeature
 						}
 					}
 				}
-
 			}
 			else
 			{
