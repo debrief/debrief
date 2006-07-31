@@ -258,7 +258,6 @@ public class LayerManagerView extends ViewPart
 
 	public void dispose()
 	{
-		// TODO Auto-generated method stub
 		super.dispose();
 
 		// make sure we close the listeners
@@ -961,7 +960,21 @@ public class LayerManagerView extends ViewPart
 		{
 			public void doubleClick(DoubleClickEvent event)
 			{
-				// doubleClickAction.run();
+
+					try
+					{
+						// open the properties window
+						IWorkbench wb = PlatformUI.getWorkbench();
+						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+						IWorkbenchPage page = win.getActivePage();
+
+						// right, open the view.
+						page.showView(IPageLayout.ID_PROP_SHEET);
+					}
+					catch (PartInitException e)
+					{
+						CorePlugin.logError(Status.ERROR, "Failed to automatically open properties window on Layer Mgr double-click", e);
+					}
 			}
 		});
 	}
@@ -1256,8 +1269,7 @@ public class LayerManagerView extends ViewPart
 	/**
 	 * user has double-clicked on an item. process.
 	 * 
-	 * @param operation
-	 *          TODO
+	 * @param operation the thingy we're doing
 	 */
 	private void applyOperationToSelection(IOperateOn operation)
 	{
