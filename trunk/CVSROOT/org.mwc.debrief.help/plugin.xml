@@ -87,7 +87,12 @@
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/GenerateProject.xml"
             id="org.mwc.debrief.help.started.generate_project"
-            name="Generating a project"/>                                       
+            name="Generating a project"/>                 
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            contentFile="cheat_sheets/GettingStarted/ImportingData.xml"
+            id="org.mwc.debrief.help.started.loading_data"
+            name="Generating a project"/>                                      
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             composite="true"
@@ -130,6 +135,7 @@
             contentFile="cheat_sheets/analysis/TimeVariableAnalysis.xml"
             id="org.mwc.debrief.help.analysis.time_var_analysis"
             name="Time-related graphs of your data"/>            
+      
             
       <!-- right, now the sensor bits -->
       <cheatsheet
