@@ -399,9 +399,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		// ok, we're probably done - fire the update
 		this._myLayers.fireExtended();
-
+		
 		// and resize to make sure we're showing all the data
 		this._myChart.rescale();
+		
+		// hmm, we may have loaded more track data - but we don't track
+		// loading of individual tracks - just fire a "modified" flag
+		_trackDataProvider.fireTracksChanged();
 
 	}
 
