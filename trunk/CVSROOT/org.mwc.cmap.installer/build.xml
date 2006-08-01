@@ -12,6 +12,12 @@
   <property name="advancedInstallerPath" value="d:\dev\eclipse2\contribs\advancedinstaller\"/>
 	
 
+	<target name="upload_online_updaters" description="upload updated files to td submarines directory" depends="clean">
+		<copy todir="${updateUploadDir}" preservelastmodified="yes">
+			<fileset dir="${srcDir}" />
+		</copy>
+	</target>	
+
 	<target name="clean" description="clear the output directory" depends="">
 		<delete dir="${updateUploadDir}/features" />
 		<delete dir="${updateUploadDir}/plugins" />
@@ -51,6 +57,11 @@
 		<property name="archiveDestZipFile" value="${TODAY_UK}_${dist-title}.zip" description="the target zip" />
 		<property name="destInstallFile" value="${TODAY_UK}_${dist-title}.exe" description="the target installer" />
 
+
+		<!-- upload the modified features -->
+		<echo message="uploading features for online updates" />
+		<antcall target="upload_online_updaters" />
+		
 		<!-- clean the target dist -->
 		<echo message="clearing 'build' directory" />
 		<antcall target="empty_dist_dir" />
