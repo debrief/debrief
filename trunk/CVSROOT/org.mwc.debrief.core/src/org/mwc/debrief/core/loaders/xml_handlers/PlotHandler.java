@@ -45,12 +45,14 @@ final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     });
   }
 
-  public static org.w3c.dom.Element exportPlot(PlotEditor thePlot, org.w3c.dom.Document doc)
+  public static org.w3c.dom.Element exportPlot(PlotEditor thePlot, org.w3c.dom.Document doc, String version)
   {
     org.w3c.dom.Element plt = doc.createElement("plot");
     plt.setAttribute("Created", new java.util.Date().toString());
     plt.setAttribute("Name", "Debrief Plot");
-    String details = "Saved with Debrief version dated " + Debrief.GUI.VersionInfo.getVersion();
+    if(version == null)
+    	version = Debrief.GUI.VersionInfo.getVersion();
+    String details = "Saved with Debrief version dated " + version;
     DetailsHandler.exportPlot(details, plt, doc);
     SessionHandler.exportThis(thePlot, plt, doc);
     return plt;

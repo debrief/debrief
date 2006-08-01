@@ -56,12 +56,13 @@ public final class DebriefEclipseXMLReaderWriter extends MWC.Utilities.ReaderWri
 
   /**
    * exporting the session
+   * @param version the version number of Debrief that's doing the export
    */
-  static public void exportThis(final PlotEditor thePlot, final java.io.OutputStream os)
+  static public void exportThis(final PlotEditor thePlot, final java.io.OutputStream os, String version)
   {
     // first put the plot into an XML document
     final Document doc = new DocumentImpl();
-    final org.w3c.dom.Element plot = PlotHandler.exportPlot(thePlot, doc);
+    final org.w3c.dom.Element plot = PlotHandler.exportPlot(thePlot, doc, version);
     doc.appendChild(plot);
 
     outputContent(os, doc);
