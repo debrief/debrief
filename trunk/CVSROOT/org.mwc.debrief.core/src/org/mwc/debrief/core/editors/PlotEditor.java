@@ -27,6 +27,7 @@ import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 import org.mwc.debrief.core.operations.PlotOperations;
+import org.osgi.framework.Bundle;
 
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.*;
@@ -587,9 +588,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		if (destination != null)
 		{
 
+			IProduct prod = Platform.getProduct();
+			Bundle bund = prod.getDefiningBundle();
+			String version = "" + new Date(bund.getLastModified());
+			
+			
 			// ok, now write to the file
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			DebriefEclipseXMLReaderWriter.exportThis(this, bos);
+			DebriefEclipseXMLReaderWriter.exportThis(this, bos, version);
 
 			// now convert to String
 			byte[] output = bos.toByteArray();
