@@ -11,6 +11,7 @@
 	<property name="contribDir" value="../contribs" />
 	<property name="helpDir" value="./" />
 	<property name="helpDest" value="${helpDir}\html\legacy" />
+	<property name="pdfDest" value="${helpDir}\html\pdf" />
 	
 	<target name="_log1_produce" description="produce the cvs change logs">
 
@@ -77,16 +78,19 @@
 		
 		<!-- generate the output -->
 		<mkdir dir="${helpDest}" />
+		<mkdir dir="${pdfDest}" />
 		
 
 		<!-- build the history content -->
 		<antcall target="cvs_log"/>		
 
-		<!-- generate the HTML -->
+		<!-- generate the HTML  -->
 		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
 			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/ng_help.xml" />
 			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
-		</java>
+		</java> 
+	
+		
 		
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
 		  into the top-level of the docbook output directories -->
