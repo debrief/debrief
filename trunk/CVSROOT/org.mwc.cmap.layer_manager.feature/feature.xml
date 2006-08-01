@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.layer_manager.feature"
       label="org.mwc.cmap.layer_manager.feature"
-      version="1.0.4"
+      version="1.0.5"
       provider-name="MWC">
 
    <description>
-      [1.0.4] Context-sensitive primary &amp; secondary buttons
+      [1.0.5] Double-click to open item in props window
+[1.0.4] Context-sensitive primary &amp; secondary buttons
 [1.0.3] Preps for RC1
 [1.0.1]  Provide management of primary/secondary tracks
    </description>
