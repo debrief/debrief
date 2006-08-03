@@ -129,12 +129,10 @@ included in the section entitled "GNU Free Documentation License".
       </para> 
 <para>In December 2000 the Maritime Warfare Centre decided to give
         <application>Debrief</application> an Open Source status, opening the application and its source code into the public domain.
-      </para> 
-<para>Debrief has been made
+      Debrief has been made
         <indexterm>
           <primary>Open Source</primary>
-        </indexterm>Open Source to facilitate its wider use, encouraging adoption of standard file formats, presentation and practices between analysis agencies.
-      </para> 
+        </indexterm>Open Source to facilitate its wider use, encouraging adoption of standard file formats, presentation and practices between analysis agencies.</para> 
 <para>Debrief provides the following features:
         <itemizedlist>
           <listitem>
@@ -168,9 +166,6 @@ included in the section entitled "GNU Free Documentation License".
 <listitem> 
 <para>Display of time-stamped text and sensor data</para> 
 </listitem> 
-<listitem> 
-<para>Video output (avi) facility</para> 
-</listitem> 
 </itemizedlist> </para> 
 </sect1> 
 <sect1 id="debrief_history"> 
@@ -185,8 +180,8 @@ included in the section entitled "GNU Free Documentation License".
           <glossterm linkend="g_MWC">Maritime Warfare Centre</glossterm> to act as a desktop viewer for results produced by the MWC&apos;s ASSET
           <indexterm>
             <primary>ASSET</primary>
-          </indexterm> submarine simulator. In use, it quickly became
-apparent that real exercise data could also be viewed in the application, removing the requirement
+          </indexterm> submarine simulator. In use it quickly became
+apparent that real exercise data could also be viewed in the application removing the requirement
  for clerical staff to produce paper plots for use in analysis. The initial 
  version of
           <application>Debrief</application> was a 16-bit MS Windows C++ application.
@@ -269,8 +264,8 @@ The wider national/international use of
           <application>Debrief  2001</application>.  This update bought new, large areas of functionality to
           <application>Debrief</application> including vectored chart data, display of narrative text, and display of sensor-data.
         </para> 
-<para>Debrief development has continued in 2002, with the update to
-          <application>Debrief 2002</application>, which has bought greatly improved 3-d plotting facilities and a number of incremental improvements to other areas of functionality.
+<para>Debrief development continued in 2002, with the update to
+          <application>Debrief 2002</application>, which bought greatly improved 3-d plotting facilities and a number of incremental improvements to other areas of functionality.
         </para> 
 <para>The year 2002 also saw the first conference paper extolling the virtues of Debrief and the Open Source principles behind it, at
           <indexterm>
@@ -283,9 +278,9 @@ The wider national/international use of
             <primary>NUWC</primary>
           </indexterm>
           <link linkend="nuwc_address">NUWC</link> of an algorithm and code suitable for shifting tracks.  NUWC developed a set of experimental classes used to perform
-          <link linkend="track_shifting_note">track-shifting</link>.  The algorithms used in these classes was taken and modified to complement the Debrief look and feel, and to provide greater usability resulting in the track-shifting editor included in Debrief 2002.
+          <link linkend="track_shifting_note">track-shifting</link>.  The algorithms used in these classes were taken and modified to complement the Debrief look and feel, and to provide greater usability resulting in the track-shifting editor included in Debrief 2002.
         </para> 
-<para>Through 2003,4,5,6 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new features.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accommodate ad-hoc analysis tools).</para> 
+<para>Through 2003-2006 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new features.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accommodate ad-hoc analysis tools).</para> 
 </sect2> 
 </sect1> 
 <sect1 id="users"> 
@@ -572,6 +567,25 @@ Naval Undersea Warfare Center (NUWC)
 </note> 
 </sect2> 
 <sect2> 
+<title>Where to get Help on Debrief</title> 
+<para>If you get stuck with Debrief, the following sources of information are available:<orderedlist><listitem><formalpara><title>This document</title><para>The Debrief NG User guide is a useful reference for determining where to find something, the overall capabilities of the tool, and assorted reference guidance</para> 
+</formalpara> 
+</listitem> 
+<listitem> 
+<formalpara> 
+<title>Cheat sheets</title> 
+<para>A series of online cheat sheets is distributed with Debrief.  These sheets guide the user through a series of complex tasks to achieve an overall goals such as: <emphasis>loading data into Debrief</emphasis> or <emphasis>analysing narrative data</emphasis>.  The cheat sheets are accesssed by selecting <guimenuitem>Debrief Cheat Sheets</guimenuitem> from the <guimenu>Help</guimenu> menu in Debrief NG.</para> 
+</formalpara> 
+</listitem> 
+<listitem> 
+<formalpara> 
+<title>Welcome Page</title> 
+<para>Debrief NG's welcome page provides a high level overview of Debrief, and guides the user to further sources of information, tutorials (cheat sheets), and samples.</para> 
+</formalpara> 
+</listitem> 
+</orderedlist></para> 
+</sect2> 
+<sect2> 
 <title>Debrief on CD-Rom</title> 
 <note> 
 <para>If you are unable to download Debrief from the Internet, please contact the
@@ -590,9 +604,7 @@ Naval Undersea Warfare Center (NUWC)
               <guibutton>Start</guibutton> menu.
             </para> 
 </warning> 
-<para>Once you have installed Java, and downloaded your
-	    installation set you can continue to install the
-	    application.  Double-click on
+<para>Once you have downloaded Debrief NG, double-click on
             <filename>install.exe</filename> and follow the steps
 	    provided.  You are first met with the welcome screen:
             <figure float="0">
@@ -675,7 +687,7 @@ Naval Undersea Warfare Center (NUWC)
 <para>Open the application using the shortcut placed in the
 	   Programs section of your Start menu. The application may
 	   take a couple of seconds to load, but don&apos;t worry about the
-	   speed; once the windows are open the application runs quite
+	   speed; once the windows are open Debrief runs quite
 	     quickly. If you are viewing this tutorial online, arrange this window and the
             <application>Debrief</application> window so
 	   that both are visible (although you may need to let them
@@ -710,11 +722,11 @@ Naval Undersea Warfare Center (NUWC)
 </mediaobject> 
 </screenshot> 
 </figure> 
-<para>The Debrief user-interface follows the Workbench convention, whereby a users edits individual files in an <emphasis>Editor</emphasis> supported by a series of supporting information panes called <emphasis>Views</emphasis>.  The specific arrangement of editors and views offered by Default is called a <emphasis><glossterm linkend="g_perspective">Perspective</glossterm></emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective. The Tactical Analysis perspective arranges the views into sets of grouped tabs, though views can be dragged to any other location on the workbench, or floated above the workbench.  Views frequently have their own toolbar and drop-down menu providing actions related to that particular task.      Once selected, views are closed by clicking on the white diagonally oriented cross.  To re-open a view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu.  A list of Debrief-related views will be shown. Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu item</para> 
+<para>The Debrief user-interface follows the Workbench convention, whereby a users edits individual files in an <emphasis>Editor</emphasis> assisted by a series of supporting information panes called <emphasis>Views</emphasis>.  The specific arrangement of editors and views offered by Default is called a <emphasis><glossterm linkend="g_perspective">Perspective</glossterm></emphasis>, in this instance the <emphasis>Tactical Analysis</emphasis> perspective. The Tactical Analysis perspective arranges the views into sets of grouped tabs, though views can be dragged to any other location on the workbench, or floated above the workbench.  Views frequently have their own toolbar and drop-down menu providing actions related to that particular task.      Once selected, views are closed by clicking on the white diagonally oriented cross.  To re-open a view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from the <guimenu>Window</guimenu> menu.  A list of Debrief-related views will be shown. Other views can be selected from the <guimenuitem>Other...</guimenuitem> menu item</para> 
 </sect2> 
 <sect2 id="navigating_debrief"> 
 <title>Navigating around Debrief</title> 
-<para>Fundamentally, the Debrief user interface (generically termed the Workbench) is constructed from an plot editor, surrounded by a series of support panes (called views), both underpinned by a main menu and a series of toolbars.  These elements are described further below. </para> 
+<para>Fundamentally, the Debrief user interface (generically termed the Workbench) is constructed from a plot editor, surrounded by a series of support panes (called views), both underpinned by a main menu and a series of toolbars.  These elements are described further below. </para> 
 <figure float="0"> 
 <title>A Debrief plot</title> 
 <screenshot> 
@@ -729,14 +741,14 @@ Naval Undersea Warfare Center (NUWC)
 <title>Editors</title> 
 <para>Any number of editors can be open at once, but only one can be active at a time. The main menu bar and toolbar for Debrief contain operations that are applicable to the active editor. Initially the active editor will always be the Debrief plot, but the extensibility of Debrief NG means other types of editor can be implemented.  
 
-Tabs at the top of the editor area indicate the names of files that are currently open for editing. An asterisk (*) indicates that an editor has unsaved changes.   
+Tabs at the top of the editor area indicate the names of files that are currently open for editing (<filename>Sample.xml</filename> in the previous screenshot). An asterisk (*) indicates that an editor has unsaved changes.   
 
 By default, editors are stacked in the editor area, but you can choose to tile them (by dragging the tabbed plot-name) in order to view source files simultaneously.
 </para> 
 </sect3> 
 <sect3 id="debrief_views"> 
 <title>Views</title> 
-<para>Views support editors and provide alternative presentations as well as ways to navigate the information in your Workbench.  For example, the Navigator displays projects and other resources that you are working with, and the Layer Manager shows a list of selectable items within the current plot.
+<para>Views support editors and provide alternative presentations as well as ways to navigate the information in your Workbench.  For example, the <link linkend="navigating_debrief">Navigator</link> displays projects and other resources that you are working with, and the <link linkend="layer_mgr">Layer Manager</link> shows a list of selectable items within the current plot.
 
 </para> 
 <para>Views also have their own menus. To open the menu for a view, click the icon at the right end of the view's title bar. Some views also have their own toolbars. The actions represented by buttons on view toolbars only affect the items within that view. 
@@ -756,7 +768,7 @@ By default, editors are stacked in the editor area, but you can choose to tile t
 <para>There are also individual view toolbars, which appear in the title bar of a view. Actions in a view's toolbar apply only to the view in which they appear. Some view toolbars include a Menu button, shown as an inverted triangle, that contain actions for that view.
 
 </para> 
-<para>Whilst Debrief doesn't currently make use of <link linkend="perspectives_note">Perspectives</link>, a third type of toolbar is the perspective switcher. The perspective switcher allows quick access to perspectives that are currently open. It also has a button that can open new perspectives. The perspective switcher is normally located in the top-right, next to the main toolbar. However, it is also possible to position it below the main toolbar ("top-left"), or to position it vertically on the left-hand side of the workbench ("left"). The name of the perspectives is shown by default, but it is possible to hide the text and show only the icons. To reposition the perspective or hide the text, right-click on it and choose the appropriate item from the context menu.
+<para>Whilst Debrief doesn't currently make use of <link linkend="perspectives_note">Perspectives</link>, a third type of toolbar is the perspective switcher. The perspective switcher allows quick access to perspectives that are currently open. It also has a button that can open new perspectives. The perspective switcher is normally located in the top-right, next to the main toolbar. However, it is also possible to position it below the main toolbar ("top-left"), or to position it vertically on the left-hand side of the workbench ("left"). The name of the perspectives is shown by default, but it is possible to hide the text and show only the icons. To reposition the perspective or hide the text, right-click on it and choose the appropriate item from the context menu. When Debrief contains modules for Track Reconstruction it would be understandable for a Track Reconstruction perspective to provide a suitably tailored set of views.
 
 </para> 
 <para>Finally, the fast view bar is a toolbar that contains icons representing the current set of fast views. A fast view is a shortcut to a view that is frequently used - generated by right-clicking in a view's title bar. The fast view bar appears in the bottom left corner of the workbench by default. However, it is possible to position it on the left or right as well.
@@ -787,7 +799,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
             <glossterm linkend="g_replay">Replay</glossterm> was an application used in
             <application>Debrief</application>-style tasks in Royal Navy analysis in past years).
           </para> 
-<para>Replay files are ASCII-FILES containing vessel position data in a flat-file format similar to that below:</para> 
+<para>Replay files are ASCII-files containing vessel position data in a flat-file format similar to that below:</para> 
 <example> 
 <title>Sample Replay file contents</title> 
 <programlisting>
@@ -871,7 +883,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
 <sect2> 
 <title>Introduction</title> 
 <para>Once data is loaded into
-            <application>Debrief</application>, there are a number of ways of controlling the view of the track data by use of the buttons on the View toolbar.
+            <application>Debrief</application>, there are a number of ways of controlling the view of the track data using the buttons on the View toolbar.
             <figure float="0">
               <title>View toolbar</title>
               <screenshot>
@@ -890,7 +902,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
 <sect2 id="toggle_buttons"> 
 <title id="toggle_buttons.title">Mouse mode buttons</title> 
 <para>
- The first five  modes of use are selectable individually, only one may be selected at a time.  When one is clicked, it remains depressed, popping up the button  previously in use.
+ The first five  buttons represent modes of use and are selectable individually, with only one selected at a time.  When one does get  clicked, it remains depressed, popping up the button  previously in use.
             <variablelist>
               <varlistentry>
                 <term>
@@ -909,7 +921,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
                   </guiicon>Drag Whole Feature
                 </term> 
 <listitem> 
-<para>This setting lets you drag a complete feature.  In Drag Whole Feature mode you can drag a rectangle around the plot, or move a complete vessel track.</para> 
+<para>This setting lets you drag a complete feature.  In Drag Whole Feature mode you can drag a rectangle around the plot, or <link linkend="track_shifting">move a complete vessel track</link>.</para> 
 </listitem> 
 </varlistentry> 
 <varlistentry> 
@@ -965,7 +977,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
 <sect2> 
 <title>Click buttons</title> 
 <para>
-The next set of buttons do not rely on mouse activity over the plot, they just require mouse clicks
+The next set of buttons do not involve mouse interaction with the plot, they just require mouse clicks
             <variablelist>
               <varlistentry>
                 <term>
@@ -976,7 +988,7 @@ The next set of buttons do not rely on mouse activity over the plot, they just r
                 <listitem>
                   <para>If you now click on the Zoom out button, you will "zoom out" of the
                     <glossterm linkend="g_plt">plot</glossterm> (surprise, surprise). This button works well in conjunction with the Zoom in button, since this does not take the mouse out of "zoom in" mode -- therefore you can zoom in on areas, click zoom out a couple of times, then zoom in again, all with the minimum of mouse clicks.  The wheel-mouse may also be used to zoom out as described above in
-                    <link endterm="zoom_in.title" linkend="zoom_in.title"></link>
+                    <link linkend="toggle_buttons"></link>
                   </para> 
 </listitem> 
 </varlistentry> 
@@ -989,8 +1001,8 @@ The next set of buttons do not rely on mouse activity over the plot, they just r
 <listitem> 
 <para>Whilst the meaning of the icon on this button is not all that clear (it&apos;s meant to be a combination of zoom in, zoom out, and all of the pan/move buttons), it fits the view to display all of the currently visible data. Note that there may be data on the
                     <glossterm linkend="g_plt">plot</glossterm> which is not visible (hidden layers), the area covered by the hidden items of information is not included in the "Fit to window" operation.  Additionally this phenomenon relates to the data once you have pressed "Filter to time period" from the
-                    <link linkend="track_toolbox">Track &amp; Time toolbox</link> - the
-                    <glossterm linkend="g_plt">plot</glossterm> is resized to fit the data contained in the indicated time period (yes, you&apos;ll learn about this later).
+                    <link linkend="filter_time_period">Time Controller</link> - the
+                    <glossterm linkend="g_plt">plot</glossterm> is resized to fit the data contained in the indicated time period (yes, you&apos;ll learn about this later in <xref linkend="filter_time_period"/>).
                   </para> 
 <para>
 
@@ -1007,8 +1019,7 @@ The next set of buttons do not rely on mouse activity over the plot, they just r
 <para>This button refreshes the current view. Refreshing is occasionally required when switching between display modes</para> 
 </listitem> 
 </varlistentry> 
-</variablelist> Select the Fit to Window button now to make sure all
-of the data is visible. </para> 
+</variablelist> </para> 
 </sect2> 
 <sect2 id="overview_window"> 
 <title>Chart Overview</title> 
@@ -1027,7 +1038,7 @@ of the data is visible. </para>
 <title>Undo</title> 
 <para>
             <application>Debrief</application> contains an unending list of undo-able operations, only cleared when the current session is closed.
-          Most changes to the <application>Debrief</application> plot are undo-able - whether they be creating a new feature, changing an attribute of a feature (such as color), or changing the current perspective.</para> 
+          Most changes to the <application>Debrief</application> plot are undo-able - whether they be creating a new feature, changing an attribute of a feature (such as color), or changing the current perspective. If something doesn't undo, then the changes are we've missed it.  Please report the oversight using the procedure in <xref linkend="debrief_bugs"/>and we'll correct it.</para> 
 </sect2> 
 <sect2> 
 <title>Formatting the plot</title> 
@@ -1060,7 +1071,8 @@ of the data is visible. </para>
 <title>Properties View</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/PropertiesView.png"/> 
+<imageobject>
+<imagedata fileref="figures/PropertiesView.png" width="200"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -1098,7 +1110,8 @@ of the data is visible. </para>
               <para>The Track-shifting implementation was originally provided by Mr David Gong at
                 <link linkend="nuwc_address">NUWC</link>.
               </para> 
-</note> </para> 
+</note> </para>
+<para>Debrief NG provides two modes of track shifting - moving individual points in a track to correct a potentially erroneous data point, or moving whole tracks to overcome navigational system inaccuracies - such as during a plot-lock or tie-in. See the two modes above in <xref linkend="toggle_buttons"/>.</para> 
 <para>A
             Stacked Dots view is used to show bearing-errors when the track-shift is being conducted to line up one or two sets of
             <link linkend="sensor_data">sensor data</link>. For each
@@ -1238,7 +1251,7 @@ of the data is visible. </para>
 <varlistentry> 
 <term>Delta</term> 
 <listitem> 
-<para>The corner of the plot where the scale is placed.</para> 
+<para>The interval between plotted lines</para> 
 </listitem> 
 </varlistentry> 
 <varlistentry> 
@@ -1259,7 +1272,7 @@ of the data is visible. </para>
                 <itemizedlist>
                   <listitem>
                     <para>
-                      <emphasis>Lat/Long Grid</emphasis>. Where geographic related delta units are selected (degrees, minutes), vertical and horizontal grid lines are calculated relative to the latitude of the plot (thus a 1 degree grid requested at 60 degrees North will have grid lines of   60nm separation in latitude, but with lines of longitude at 30nm separation).
+                      <emphasis>Lat/Long Grid</emphasis>. Where angular delta units are selected (degrees, minutes), vertical and horizontal grid lines are calculated relative to the latitude of the plot (thus a 1 degree grid requested at 60 degrees North will have grid lines of   60nm separation in latitude, but with lines of longitude at 30nm separation).
                     </para> 
 </listitem> 
 <listitem> 
@@ -1304,7 +1317,7 @@ of the data is visible. </para>
 <sect2> 
 <title>Vectored data</title> 
 <para>The addition of vectored chart data is covered later in this document, in
-            <link linkend="view_vpf">Viewing VPF data</link> The image below provides a sample of the level of detail supplied.
+            <xref linkend="view_vpf"/>. The image below provides a sample of the level of detail supplied.
             <figure float="0">
               <title>Sample of vectored coastline data.</title>
               <screenshot>
@@ -1322,7 +1335,7 @@ of the data is visible. </para>
 <para>  Whilst the VPF dataset
             <indexterm>
               <primary>ETOPO Data</primary>
-            </indexterm>provides a contoured bathymetry within broad depth steps, the ETOPO dataset  provides a gridded bathymetry in 5' or 2' steps. The 5' dataset is downloadable with Debrief, but the 2' dataset (weighing in at 80Mb compressed) must be downloaded/purchased (in November 2002 the ETOPO2 dataset on CD-ROM cost around $80) separately.  When you ask Debrief to plot an ETOPO background, Debrief will try to load an ETOPO-2 dataset first, followed by an ETOPO-5 dataset  if that is unavailable.  The image below provides a sample of the level of detail supplied.
+            </indexterm>provides a contoured bathymetry within broad depth steps, the ETOPO dataset  provides a gridded bathymetry in 5' or 2' steps. When you ask Debrief to plot an ETOPO background, Debrief will try to load an ETOPO-2 dataset first, followed by an ETOPO-5 dataset  if that is unavailable.  The image below provides a sample of the level of detail supplied.
             <figure float="0">
               <title>Sample of ETOPO gridded bathymetry.</title>
               <screenshot>
@@ -1412,7 +1425,7 @@ of the data is visible. </para>
 <para>Whether to plot the ETOPO data</para> 
 </listitem> 
 </varlistentry> 
-</variablelist> The ETOPO-5 dataset provides a few more customizable
+</variablelist> The ETOPO-2 dataset provides a few more customizable
 attributes, which allow you to choose between enhanced performance
 over appearance in the plot: 
 <variablelist> 
@@ -1456,7 +1469,7 @@ over appearance in the plot:
 <tip> 
 <para>The ETOPO-5 dataset uses a significant amount of memory on your PC, typically 30Mb, though this only gets loaded once per Debrief session,  however many plots are loaded. Writing a WMF file with ETOPO data visible requires even more memory, and can cause
                 <application>Debrief</application> to hang or crash.  This problem can be overcome by following the advice described in
-                <link linkend="starting_debrief">Starting Debrief</link>
+                <xref linkend="starting_debrief"/>
               </para> 
 <para>The ETOPO-2 dataset is many times larger than ETOPO-5, thus is not read into memory but accessed on the fly. For this reason it does not consume as much memory, but does require a fast PC to produce acceptable screen updates.</para> 
 </tip> </para> 
@@ -1466,9 +1479,7 @@ over appearance in the plot:
 <title>Adding drawing features</title> 
 <para>
 	  The
-          <guilabel>Drawing</guilabel> toolbar and menu are used to place geographic features on the plot; features which are geographically fixed.  In general, when you create them, their corners must be specified. To do this, click on the
-          <guibutton>Select Point</guibutton> button, then double-click on the
-          <glossterm linkend="g_plt">plot</glossterm> to set the point..
+          <guilabel>Drawing</guilabel> toolbar and menu are used to place geographic features on the plot; features which are geographically fixed.  In general, when you create them, their corners must be specified by copying a location from the plot and posting it into the property of the relevant corner. 
           <figure float="0">
             <title>Drawing toolbar</title>
             <screenshot>
@@ -1486,17 +1497,13 @@ over appearance in the plot:
             <indexterm>
               <primary>Annotations</primary>
               <secondary>Label</secondary>
-            </indexterm>drawing item allows you to place a labelled symbol on the plot.  Typically this may be used to annotate events on the plot, or to add an extra feature which did not warrant its own Debrief file.  Like all annotations Labels have time start and end properties.  Because of this they can be placed on the <link linkend="the_tote_area">Tote</link> and used in analysis, as you will learn later.
+            </indexterm>drawing item allows you to place a labelled symbol on the plot.  Typically this may be used to annotate events on the plot, or to add an extra feature which did not warrant its own Debrief REP entry.  Like all annotations Labels have time start and end properties.  Because of this they can be placed on the <link linkend="the_tote_area">Tote</link> and used in analysis, as you will learn later.
           </para> 
 <para>
             <tip>
               <para>A custom editor is supplied (see below) for editing locations of data items, it is used frequently in
                 <application>Debrief</application>.
  Clicking on the expand button will let you edit individual lat/long fields (shown  in figure <xref linkend="editor_expanded"/>).  Alternatively, you may set the location to a specific point on the plot.  Right-click on the plot and select <guimenuitem>Copy cursor location</guimenuitem>.  Then click once on the location editor to reveal the <guibutton>Paste</guibutton> button (shown in <xref linkend="editor_paste"/>), and click it to paste the cursor location.</para> 
-<para>labelled
-                <guibutton>Edit</guibutton> will allow you to type in the exact location of the label (useful when you have received the location in printed form), but clicking on
-                <guibutton>Select Point</guibutton> button will let you double-click on the chart to set the Label location.
-              </para> 
 <figure float="0" id="editor_initial"> 
 <title>Location Editor (initial view)</title> 
 <screenshot> 
@@ -1539,11 +1546,9 @@ over appearance in the plot:
             <indexterm>
               <primary>Annotations</primary>
               <secondary>Ellipse</secondary>
-            </indexterm> the same way as a Label, except an ellipse is drawn on the plot instead of the labelled symbol.  The size of the ellipse is dictated by the Maxima and Minima values which specify the lengths of its semi-major and semi-minor axes, expressed in kiloyards.  These values are the distances from the centre of the ellipse to the furthest and closest points on it&apos;s perimeter, respectively.  The direction of the ellipse is specified by the orientation, expressed in degrees.
+            </indexterm> the same way as a Label, except an ellipse is drawn on the plot instead of the labelled symbol.  The size of the ellipse is dictated by the Maxima and Minima values which specify the lengths of its semi-major and semi-minor axes, expressed in user-selectable distance units.  These values are the distances from the centre of the ellipse to the furthest and closest points on it&apos;s perimeter, respectively.  The direction of the ellipse is specified by the orientation, expressed in degrees.
             <application>Debrief</application> does not check that the maxima is larger that the minima, it merely plots an ellipse oriented about the semi-major axis.
-            <tip>
-              <para>If you find you have forgotten the units used to express any of the data values used in Debrief property editors, just hover your mouse over the name of the property.  The tooltip which appears will indicate the units.</para> 
-</tip> </para> 
+             </para> 
 </sect2> 
 <sect2> 
 <title>Polygon</title> 
@@ -1601,10 +1606,10 @@ button which will take you to the Path editor.  The Path editor is shown below:
 <para>To draw  a line created from an origin with values of range and bearing, first create the line, and put the start point of the line at the origin.  Now switch the mouse mode to
               <guilabel>Range/Bearing</guilabel> (
               <guiicon>
-                <inlinegraphic fileref="figures/RngBrg.gif" align="center"/>
+                <inlinegraphic fileref="figures/RngBrg.png" align="center"/>
               </guiicon>). Now click on the button labelled
               <guilabel>Select Point</guilabel> for
-              <guilabel>LineStart</guilabel>, and drag the mouse out from the origin point.  The current range and bearing will be displayed at the bottom-left of the screen.  When the mouse is at the desired range and bearing double-click on the screen, setting the correct
+              <guilabel>LineStart</guilabel>, and drag the mouse out from the origin point.  The current range and bearing will be displayed at the bottom-left of the screen.  When the mouse is at the desired range and bearing right-click and copy the position onto the clipboard. Next, paste that location into the 
               <guilabel>LineEnd</guilabel> value.
             </para> 
 </tip> 
@@ -1621,7 +1626,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
 <sect2> 
 <title>General</title> 
 <para>
-   To edit any existing annotation, left-click on it on the
+   To edit any existing annotation, double on it on the
             <glossterm linkend="g_plt">plot</glossterm> or the Layer Manager  to select it - it's attributes will then be available from the Properties View. Alternatively, right-click on an item on the Plot or Layer Manager, and editable attributes are available from the object's drop-down list. Only boolean (true/false) and list-related (top/bottom/left/right etc) are editable from the right-click menu.  </para> 
 </sect2> 
 </sect1>
@@ -1759,14 +1764,13 @@ button which will take you to the Path editor.  The Path editor is shown below:
 <para>
 	   The
             <glossterm linkend="g_tote">Tote</glossterm> area is used to show the current and relative status between two or more platform tracks. The information on the
-            <glossterm linkend="g_tote">Tote</glossterm> is dynamic, showing vessel information at the time indicated in the Stepper Control (
-            <userinput>120500.00</userinput> in this case). 
+            <glossterm linkend="g_tote">Tote</glossterm> is dynamic, showing vessel information at the time indicated in the Stepper Control. 
           </para> 
 <note> 
-<para>The primary and secondary tracks may not contain values exactly at the time in the time stepper control.  For both the tote display and the plot-highlights, Debrief uses the data values recorded on or immediately after the indicated stepper time.</para> 
+<para>The primary and secondary tracks may not contain values exactly at the time in the time stepper control.  For both the tote display and the plot-highlights, Debrief uses the data values recorded on or immediately after the indicated stepper time (see the <xref linkend="time_calc"/> for more detail).</para> 
 </note> 
 <para>One
-            <glossterm linkend="g_track">track</glossterm> currently loaded is assigned as the Primary track (the blue track in this instance), and then one or more tracks are assigned as Secondary tracks. The primary track always displays current course, speed and depth, as illustrated above. The secondary tracks displays this information, together with relative information such as Range and Bearing to the Primary track.
+            <glossterm linkend="g_track">track</glossterm> currently loaded is assigned as the Primary track (the blue track in this instance), and then one or more tracks are assigned as Secondary tracks. The primary track always displays absolute data such as current course, speed and depth, as illustrated above. The secondary tracks display this data together with relative data such as Range and Bearing to the Primary track.
           </para> 
 <para>Not only tracks can be placed on the Tote.  Buoyfields and most annotations (labels, circles, etc) can also be set as primary or secondary track.  If no time is available for an annotation it is deemed to always be valid, and calculations are shown  although the time field is displayed as "n/a".  However, if the annotation has start and end times the tote displays "n/a" when outside that period and calculated data when inside it.</para> 
 <note> 
@@ -1775,7 +1779,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             </para> 
 </note> 
 <para>There can be any number of secondary tracks.
-            <application>Debrief</application> displays calculated results of the relationship between each one and the Primary Track.  To see the relationship between secondary tracks, one of them must be set to the Primary track.
+            <application>Debrief</application> displays calculated results of the relationship between each one and the Primary Track.  To see the relationship between a pair of  secondary tracks, one of them must be set to the Primary track.
           </para> 
 <para>The following calculated data is presented, where the current point on each track is used for the calculation:
             <variablelist>
@@ -1784,7 +1788,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                 <listitem>
                   <para>The range between the current point on the secondary track and the current point on the primary track using the
                     <glossterm linkend="g_earth_model">earth model</glossterm> as described in the Glossary, displayed in the units stored in the
-                    <link linkend="debrief_props" endterm="debrief_props_title"/> section of the Maintainer&apos;s Guide.  Debrief NG introduced the option of showing <glossterm linkend="g_slant_range">slant range</glossterm>, accessible from Debrief's Preferences window.  
+                    Debrief preferences window.  Debrief NG introduced the option of showing <glossterm linkend="g_slant_range">slant range</glossterm>, accessible from Debrief's Preferences window.  
                   If you have indicated that you want to view slant range, then the range shown is a function of horizontal range and vertical separation.</para> 
 </listitem> 
 </varlistentry> 
@@ -1797,7 +1801,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <varlistentry id="RelBearingDescription"> 
 <term>Rel Bearing</term> 
 <listitem> 
-<para>The relative bearing between the heading of the participant in the secondary track, and the bearing to the primary track.   There are two formats used for relative bearing, depending on the setting of 
+<para>The relative bearing between the heading of the secondary track, and the bearing to the primary track.   There are two formats used for relative bearing, depending on the setting of 
                      <emphasis>Relative bearing format</emphasis> in the
                     <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu> dialog.  If the format is specified as UK, the R and G characters at the start of the result are short for Red and Green, which indicate that the contact is to the Port or Starboard of the secondary track. If the format is specified as US, the value uses 0 as directly ahead and continues clockwise through 180 (astern) and back round to 359.9.
                   </para> 
@@ -1827,7 +1831,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <para>The instantaneous bearing rate of the primary track as observed from the secondary track.  This value is explained in the Glossary.</para> 
 </listitem> 
 </varlistentry> 
-<varlistentry> 
+<varlistentry id="time_calc"> 
 <term>Time</term> 
 <listitem> 
 <para>Where track data is not recorded at regular steps, and tracks do not have data at the same time steps, there is a likelihood that the value displayed on the tote will not have been recorded at the current tote time.  The time field shows the actual time at which the data value was recorded for that track.</para> 
@@ -1854,7 +1858,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <title>Notes</title> 
 <para>
             <warning>
-              <para>A Circle currently only has a single "Centre" DTG value - so it will only be highlighted for 3 minutes either side of this point.  Better results are obtained by using a Label (which has a picture of a luggage label on it), since Labels have start and finish DTGs.</para> 
+              <para>A Circle currently only has a single "Centre" DTG value - so it will only be highlighted for 3 minutes either side of this point.  Better results are obtained by using a Label (which has a picture of a text label on it), since Labels have start and finish DTGs.</para> 
 </warning> 
 <note> 
 <para>It is not just tracks that can be added to the Tote, experiment with right-clicking on features on the plot and see if they have the "Set Primary Track" or "Set Secondary Track" commands available (although read the note below about these). In this way you can make a timed data point (represented by a Circle with a very small radius) the primary track, then add a number of vessel tracks as secondary tracks, and then as you move through the data you can constantly see the vessel range and bearings from this data point. This is particularly useful for seeing vessel ranges and bearings from a
@@ -1862,9 +1866,6 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                 <application>Debrief</application> will assume the "sonar buoy" is not yet active.
               </para> 
 </note> 
-<warning> 
-<para>A Circle currently only has a single "Centre" DTG value - so it will only be highlighted for 3 minutes either side of this point.  Better results are obtained by using a Label (which has a picture of a luggage label on it), since Labels have start and finish DTGs.</para> 
-</warning> 
 <note> 
 <para>The limits on the time period are the outer time limits of the visible data in the primary and secondary tracks currently displayed on the Tote,  so following a filter operation (introduced later) the start/end times will be changed to reflect the time limits specified.</para> 
 </note> 
@@ -1915,14 +1916,23 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <para>I know, I know, it's the size of the rectangle used to plot the highlight (measured in pixels)</para> 
 </listitem> 
 </varlistentry> 
-</variablelist></para> 
+</variablelist>
+<figure float="0"> 
+<title>Example of a normal trail</title> 
+<screenshot> 
+<mediaobject> 
+<imageobject> <imagedata fileref="figures/NormalTrailImage.png"/> 
+</imageobject> 
+</mediaobject> 
+</screenshot> 
+</figure></para> 
 <para>The Snail Trail is used for specific analysis tasks when you need to concentrate on the specific activities around a certain time, without the clutter of the remaining track data.</para> 
 <para><figure float="0">
               <title>Example of a snail trail</title>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/SnailTrailImage.gif"/>
+                    <imagedata fileref="figures/SnailTrailImage.png"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1992,12 +2002,12 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </sect3> 
 <sect3> 
 <title>Time display</title> 
-<para>The green digits of the time display is tied closely to the slider-bar immediately beneath it.  Dragging the slider controls the current display time together with how the current data is displayed.  Other Debrief views (such as the <link linkend="viewing_narratives">Narrative Viewer</link> and the <link linkend="show_time_vars">Time-Variable</link> graphs) update in response to time changes from the time slider.</para> 
+<para>The green digits of the time display are tied closely to the slider-bar immediately beneath them.  Dragging the slider controls the current display time together with how the current data is displayed.  Other Debrief views (such as the <link linkend="viewing_narratives">Narrative Viewer</link> and the <link linkend="show_time_vars">Time-Variable</link> graphs) update in response to time changes from the time slider.</para> 
 <para>A range of display formats are provided to make the displayed time more consistent with that in a supporting document, or of sufficient fidelity to support the current analysis.</para> 
 </sect3> 
 <sect3> 
 <title>Time slider</title> 
-<para>Beneath the time-display is the time-slider, used to quickly move through a time-period.  By default there the slider is of infinite resolution, stopping  exactly on the second/millisecond proportionate to the position of the slider.  Debrief can be configured such that the slider stops on higher resolutions by selecting the relevant  increment from the <guibutton>Time slider increment</guibutton> list in the Time Controller's drop-down menu.</para> 
+<para>Beneath the time-display is the time-slider, used to quickly move through a time-period.  By default the slider is of infinite resolution, stopping  exactly on the second/millisecond proportionate to the position of the slider.  Debrief can be configured such that the slider stops on higher resolutions by selecting the relevant  increment from the <guibutton>Time slider increment</guibutton> list in the Time Controller's drop-down menu.</para> 
 </sect3> 
 <sect3> 
 <title>Bookmarking</title> 
@@ -2009,7 +2019,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <title>Manipulating according to time period</title> 
 <para>The pair of sliders at the foot of the <guiicon>Time Controller</guiicon> view allow you to set start and finish times.  These times are not set in support of a single Debrief  operation,  but are used across a range of operations.  When dragging the sliders, hold down the shift-key to move in whole segments (hours, days, as appropriate).  Drag the shaded section to retain the period length but change its origin (again using the shift-key if appropriate).  </para> 
 </sect3> 
-<sect3> 
+<sect3 id="filter_time_period"> 
 <title>Filter to time period</title> 
 <para>When the <guibutton><inlinegraphic fileref="figures/FilterToTimePeriod.png"/>Filter to time period</guibutton> radio button is depressed the plot will automatically filter the displayed data to the indicated period.  In this mode, you can select a  6-hour period (for example), and drag it through the full serial time with shift-key depressed to view a moving "window" of data.</para> 
 </sect3> 
@@ -2020,47 +2030,47 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             </guiicon><guibutton>Time Controller</guibutton>'s drop-down menu, and it performs a series of calculations for each data-point in the indicated time period.  These calculations are then placed on the system clipboard in Comma-Separated-Variable format  for reuse in other applications, <application>Microsoft Excel</application>, for instance.</para> 
 <para>A header line is written first, indicating the contents of each column:
             <itemizedlist spacing="compact">
-              <listitem><para>Track Time(hhmmss)</para>
+              <listitem><para>Track Time(hhmmss)</para> 
 </listitem> 
-<listitem>
-<para>Depth(metres)</para>
+<listitem> 
+<para>Depth(metres)</para> 
 </listitem> 
-<listitem>
-<para>Speed(Knots)</para>
+<listitem> 
+<para>Speed(Knots)</para> 
 </listitem> 
-<listitem>
-<para>Course(degs)</para>
+<listitem> 
+<para>Course(degs)</para> 
 </listitem> 
-<listitem>
-<para>Range(yards)</para>
+<listitem> 
+<para>Range(yards)</para> 
 </listitem> 
-<listitem>
-<para>Bearing(degs)</para>
+<listitem> 
+<para>Bearing(degs)</para> 
 </listitem> 
-<listitem>
+<listitem> 
 <para>Rel Bearing(degs - using
                 <varname>Relative bearing format</varname> specified in
                 the <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>dialog)
-              </para>
+              </para> 
 </listitem> 
-<listitem>
-<para>Brg Rate(deg/min)</para>
+<listitem> 
+<para>Brg Rate(deg/min)</para> 
 </listitem> 
-<listitem>
-<para>Color (for this track point)</para>
+<listitem> 
+<para>Color (for this track point)</para> 
 </listitem> 
-<listitem>
-<para>Name</para>
+<listitem> 
+<para>Name</para> 
 </listitem> 
-<listitem>
-<para>PrimaryName</para>
+<listitem> 
+<para>PrimaryName</para> 
 </listitem> 
 </itemizedlist> </para> 
 <para>The results from the primary track are listed first, which (as in the
             <glossterm linkend="g_tote">Tote</glossterm>) do not show results of calculated operations:
             <screen>CARPET 12/Dec/95 05:00:00 000 02.00 269.7 n/a n/a n/a n/a 0500 0500</screen>
           </para> 
-<para>Lastly the secondary tracks are listed:
+<para>Then the secondary tracks are listed:
             <screen>
  BUNKUM 12/Dec/95 05:50:00 000 00.00 000.0 12381 311.0 R49.0 R0.264 F5 0550</screen>
           </para> 
@@ -2099,10 +2109,9 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             <indexterm>
               <primary>Algorithms</primary>
               <secondary>Earth Model</secondary>
-            </indexterm>
-            <indexterm>
+            </indexterm><indexterm>
               <primary>Earth Model</primary>
-            </indexterm>algorithms in the current Earth Model
+            </indexterm>algorithms in the current Earth Model, as described later in <xref linkend="rng_brg_calcs"/>.
           </para> 
 <para>The Earth Model used by the application is modular and interchangeable.  In the initial release of the application the calculations use the Rhumb-Line Formulae for Short-distance sailing, as described in
             <quote>Admiralty Manual of Navigation, Volume 2, 1973</quote>. Short-distance sailing is defined as
@@ -2324,11 +2333,6 @@ It may be useful to remember that the Primary Track is usually assigned to the T
           </para> 
 </sect2> 
 <sect2> 
-<title>Close</title> 
-<para>Click on the close-button at the top-right of the 3-d view to close the panel.
-          </para> 
-</sect2> 
-<sect2> 
 <title>Memory Leaks</title> 
 <para>The current version of the 3D libraries used in this viewer contains memory leaks.  In general memory leaks are tidied up in each revision of Java-3d, so it is in your interest to try to keep up to date with the newest releases.
             <footnote>
@@ -2342,7 +2346,7 @@ observed. New libraries will be adopted as soon as a fix is available
 </sect2> 
 <sect2> 
 <title>Plot management</title> 
-<para>The objects in the 3-d plot reflect the structure in the Layer Manager, hence, to hide/reveal a set of objects in 3-d just switch their layer off in the Layer Manager.
+<para>The objects in the 3-d plot reflect the structure in the Layer Manager. So, to hide/reveal a set of objects in 3-d just switch their layer off in the Layer Manager.
             <tip>
               <para>The objects in the 3-d view are a "cloned" set of the objects contained in the Layer Manager at the point at which
                 <guilabel>Show 3d View</guilabel> was selected. Thus is it likely that moving objects between layers once the 3-d plot is open may not be reflected in the 3-d view.  If extensive restructuring has been conducted in the Layer Manager and you wish the 3-d view to reflect this, close and re-open the view.
@@ -2357,7 +2361,7 @@ observed. New libraries will be adopted as soon as a fix is available
               </para> 
 </note> 
 <tip> 
-<para>The 3-d view contains text labels which automatically orientate themselves towards the viewer.  This orientation is computationally expensive (it is not a collection of 3-d objects being mathematically re-oriented, but a 2-d image being rescaled in 3-dimensions).  The plot will be significantly slowed down if many text labels are set to visible.  A good way of overcoming this problem is to set the parent layer to not-visible, then work through the items on that layer switching the label to not visible.  Finally switch the layer back to visible.  This method works quickly because time is not spent </para> 
+<para>The 3-d view contains text labels that automatically orientate themselves towards the viewer.  This orientation is computationally expensive (it is not a collection of 3-d objects being mathematically re-oriented, but a 2-d image being rescaled in 3-dimensions).  The plot will be significantly slowed down if many text labels are set to visible.  A good way of overcoming this problem is to set the parent layer to not-visible, then work through the items on that layer switching the label to not visible.  Finally switch the layer back to visible.  This method works quickly because time is not spent </para> 
 </tip> </para> 
 </sect2> 
 </sect1> 
@@ -2443,19 +2447,18 @@ data is not present, a gap is inserted into the data-line.
               <inlinegraphic fileref="figures/ExportToWMF.png"/>
             </guiicon> button writes the current graph to a Windows Metafile in the current WMF_Directory (as configured in the
             <link linkend="debrief_props_title">Debrief properties file</link>, described in Section
-            <xref linkend="debrief_props"/>, titled
-            <xref linkend="debrief_props" endterm="debrief_props_title"/>), and the 
+            <xref linkend="debrief_props"/>, and the 
           <guibutton>Export to Clipboard </guibutton> (<guiicon>
               <inlinegraphic fileref="figures/ExportToClipboard.png"/>
-            </guiicon>) places a copy of the plot on the Windows clipboard for onward insertion into MS Word.</para> 
+            </guiicon> places a copy of the plot on the Windows clipboard for onward insertion into MS Word.</para> 
 <para>The
             <guibutton>Configure Plot</guibutton>(<guiicon>
               <inlinegraphic fileref="figures/ConfigurePlot.png"/>
             </guiicon>) button opens a
-            <link linkend="g_property_window">property window</link> allowing you to control the presentation of the time-variable graph.
+            <link linkend="g_property_window">property window</link> allowing you to control the presentation of the time-variable graph using the following properties:
             
           </para> 
-<para>These properties control the following:
+<para>
             <informaltable>
               <tgroup cols="2">
                 <colspec colnum="1" colname="col1" colwidth="*"/>
@@ -2479,11 +2482,11 @@ data is not present, a gap is inserted into the data-line.
                     <entry colname="col1">RelativeTimes</entry>
                     <entry colname="col2">Whether to plot absolute or relative times (used when analysing time-zero data).  See
                       <xref linkend="show_time_vars_title"/>
-                    </entry>
+                    .</entry>
                   </row>
                   <row>
                     <entry colname="col1">ShowSymbols</entry>
-                    <entry colname="col2">Whether to show datum symbols (useful to indicate difference data recording rates)</entry>
+                    <entry colname="col2">Whether to show datum symbols (useful to indicate different data recording rates)</entry>
                   </row>
                   <row>
                     <entry colname="col1">Title</entry>
@@ -2590,7 +2593,7 @@ data is not present, a gap is inserted into the data-line.
               <inlinegraphic fileref="figures/ExportToWMF.png"/>
             </guiicon>) operation from the <guimenu>File</guimenu> menu.
             
-          </para> 
+           Alternatively to copy the image to the clipboard (still as a WMF) select <guibutton>Copy</guibutton> from the Edit menu whilst the Debrief plot is active.</para> 
 <para>This will place the image in a time-stamped file named
             <filename>d3_minute_second.WMF</filename>, located in the directory indicated in the
             <application>Debrief</application> properties file.  If the location is not specified in the properties file, the
@@ -2620,6 +2623,9 @@ data is not present, a gap is inserted into the data-line.
 <title>Handling Buoyfields</title> 
 <sect1> 
 <title>Introduction to buoyfields</title> 
+<note>
+<para>In the first release of Debrief NG, Buoyfields have not been implemented. It remains an intention to provide this facility.</para>
+</note>
 <sect2> 
 <title>Buoyfields</title> 
 <para>
@@ -2631,8 +2637,6 @@ data is not present, a gap is inserted into the data-line.
             <application>Debrief</application> also accepts temporal (such as time of the first buoy and buoyfield lifetime) and default formatting characteristics (such as colour and symbol to use).  After field creation, the properties used for building the field are largely unavailable, but the buoys can be repositioned or time-stamped directly.
           </para> 
 <para>Although it may not be clearly visible in the following diagrams, all of the buoyfields are located with reference to a kingpin.  This kingpin is located relative to a Jig Point (allowing for small, quick adjustments in the location of the field prior to dropping), as specified by a range and bearing.
-          </para> 
-<para>Debrief supports the following patterns of buoyfield:
           </para> 
 <sect3> 
 <title>Barrier</title> 
@@ -2860,7 +2864,7 @@ data is not present, a gap is inserted into the data-line.
 <title>Analysis</title> 
 <para>Since buoyfields are essentially handled in the same way as Tracks, the full functionality of the
             <link linkend="track_toolbox">Track &amp; Time Toolbox</link> (accessed from the
-            <guilabel>Tote</guilabel>) are available, so graphic plots can be produced and calculated data copied to the clipboard using Buoy data.
+            <guilabel>Tote</guilabel>) is available, so graphic plots can be produced and calculated data copied to the clipboard using Buoy data.
           </para> 
 </sect2> 
 </sect1> 
@@ -2921,6 +2925,9 @@ data is not present, a gap is inserted into the data-line.
 <para>By switching to Snail mode and reducing the reducing the Trail Length to zero, a GOP-type plot can be shown.
             </para> 
 </tip> 
+<note>
+<para>Unfortunately Symbol plotting mode is not provided in the initial release of Debrief NG</para>
+</note>
 </sect2> 
 </sect1> 
 </chapter> 
@@ -2928,7 +2935,7 @@ data is not present, a gap is inserted into the data-line.
 <title>External Datasets</title> 
 <sect1> 
 <title>Installing VPF Data</title> 
-<sect2> 
+<sect2 id="vpf_intro"> 
 <title>Introduction</title> 
 <para>The
             <glossterm linkend="g_vpf">VPF</glossterm>
@@ -4735,250 +4742,6 @@ course, speed, depth (m), label string
 
           </para> 
 </sect2> 
-</sect1> 
-<sect1 id="import_rng_data"> 
-<title>Importing Range Data</title> 
-<para>This page gives an overview of the import of Range Data.  Range data import is started by pressing the "Import Range Data" button:
-          <guiicon>
-            <inlinegraphic fileref="figures/ImportRangeData.gif"/>
-          </guiicon>
-        </para> 
-<para>This button causes the Import Range Data form to open:
-
-          <figure float="0">
-            <title>Importing Range Data</title>
-            <screenshot>
-              <mediaobject>
-                <imageobject>
-                  <imagedata fileref="figures/ImportRangeDataForm.gif"/>
-                </imageobject>
-              </mediaobject>
-            </screenshot>
-          </figure>
-        </para> 
-<para>The form contains instructions at the top, followed by the following elements:
-
-          <itemizedlist>
-            <listitem>
-              <para>
-                <guilabel>Filename</guilabel>: set this to the file to be imported.  It is important that PC Argos files from AUTEC end in the suffix
-                <filename>RAO</filename>, and PMRF/AFWTF (or similar) files end in the suffix
-                <filename>PRN</filename>.
-              </para> 
-</listitem> 
-<listitem> 
-<para>
-                <guilabel>Frequency</guilabel>: datafiles recorded at very high frequency may cause
-                <application>Debrief</application> performance to suffer greatly.  Selecting a datapoint frequency allows the user to select the frequency at which data points are imported from the file.
-              </para> 
-</listitem> 
-<listitem> 
-<para>
-                <guilabel>Origin</guilabel>: this records the origin of the range data.
-              </para> 
-</listitem> 
-<listitem> 
-<para>
-                <guilabel>DTG</guilabel>: where the datafile does not contain date (eg
-                <guilabel>PC Argos</guilabel>), a starting date can be provided.  Where the datafile does contain a useable date (eg PMRF) this value is ignored.
-              </para> 
-</listitem> 
-</itemizedlist> </para> 
-<para>See Importing
-          <application>PC Argos</application> data for details relating the import of
-          <application>PC Argos</application> data, and Importing PMRF data for further details regarding the import of PMRF files.
-        </para> 
-<note> 
-<para>As detailed above, for both
-            <indexterm>
-              <primary>AUTEC</primary>
-              <secondary>Range data</secondary>
-            </indexterm>AUTEC and
-            <indexterm>
-              <primary>PWFTF</primary>
-              <secondary>Range data</secondary>
-            </indexterm>PFWTF data the start date is either read form the text-box or from the data-file itself.  The track points all contain an offset from this start time (in seconds).  Unfortunately the file formats do not indicate that the data being recorded has passed into the next day.  The only indication that the time in seconds has moved to the next day is that the time effectively "restarts".  Unfortunately it has not proved sufficient to merely wait for a time which is less than the previous time (since on occasion files containing more than one track contain points which are not in chronological order, sometimes successive times are 1 or 2 seconds before the previous time).  This is overcome by Debrief adopting the following policy for day/night decisions:
-            <emphasis>if a successive data point is more than 1 hour earlier than the previous one, then Debrief decides that the data point is from the next day.</emphasis>
-          </para> 
-</note> 
-</sect1> 
-<sect1 id="autec_data"> 
-<title>AUTEC Range Data</title> 
-<para>The Range data file format is the RAO used by AUTEC to pass data to
-          <application>PC Argos</application>.  The data file contains data in the following format:
-          <screen>
-            <markup>
-??_A01451200_-124.20_36935.19_-133.40_6.58_-4.15_6.15_-9.04_1.08_1.04
-??_B02451200_-123.20_36235.19_-143.40_6.58_-4.15_6.15_-9.04_1.08_1.04
-??_A01451201_-164.20_36935.19_-137.40_6.58_-4.15_6.15_-9.04_1.08_1.04
-??_B02451201_-134.20_36335.19_-133.40_6.58_-4.15_6.15_-9.04_1.08_1.04
-            </markup>
-          </screen>
-          <note>
-            <para>Note, spaces in the above sample have been replaced by underscores.</para> 
-</note> </para> 
-<para>The file contains one line of text for each position fix for the exercise participant, and each file may contain data for more than one participant.</para> 
-<para>The columns of data represent the following:
-
-          <table frame="all">
-            <title>Columns in AUTEC range data</title>
-
-            <tgroup cols="2">
-              <thead>
-                <row>
-                  <entry>
-                    <para>Field</para> </entry> 
-<entry> 
-<para>Description</para> </entry> 
-</row> 
-</thead> 
-<tbody> 
-<row> 
-<entry> 
-<para>??</para> </entry> 
-<entry> 
-<para>Header for each row</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>AO1</para> </entry> 
-<entry> 
-<para>Unique (3 letter) identifier for track</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>451200</para> </entry> 
-<entry> 
-<para>Hours Minutes Seconds of position fix (note that there is not a space between the track identifier and the start of this part of the record</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>It is important that the above two fields are positioned adjoining each other in the datafile. The remaining fields in the line may be any size, but they must be separated by white space.</para> </entry> 
-<entry> 
-<para></para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>-124 36945.19 -123.39</para> </entry> 
-<entry> 
-<para>x, y, z in yards from the range origin</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>6.58_-4.15_6.15</para> </entry> 
-<entry> 
-<para>x,y,z velocities in yards per second</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>-9.04_1.08_1.04</para> </entry> 
-<entry> 
-<para>z,y,z accelerations in yards per second per second</para> </entry> 
-</row> 
-</tbody> 
-</tgroup> 
-</table> </para> 
-<note> 
-<para>Note that only the x,y,z positions from the data are used in Debrief; the velocities and accelerations are ignored.</para> 
-</note> 
-<important> 
-<para>The data file format does not contain course and speed data, so these are calculated using the range and bearing from the previous point, together with the time difference.   This gives values of course and speed calculated as over the ground; which obviously is not the through-the-water values the participants will be experiencing.</para> 
-</important> 
-</sect1> 
-<sect1 id="pmrf_data"> 
-<title>PMRF Range Data</title> 
-<para>The
-          <indexterm>
-            <primary>PMRF</primary>
-          </indexterm>PMRF Range data file format is the format produced by the PMRF range.  The data file contains data in the following format:
-
-
-          <figure float="0">
-            <title>Importing Range Data</title>
-            <mediaobject>
-              <imageobject>
-                <imagedata fileref="figures/PMRFStructure.gif"/>
-              </imageobject>
-            </mediaobject>
-          </figure>
-
-        </para> 
-<para>All columns in the text file are assumed to be separated by white-space (spaces or tabs).  The PRN file can be produced by saving in Excel in the "prn" format, although the resulting file should be examined to ensure that unnecessary white space does occur between the columns.</para> 
-<para>The PMRF structure starts with four lines of header information (of which the first contains a starting DTG for the
-          <glossterm linkend="g_serial">serial</glossterm>).  It is this DTG which is used as the time offset for the data.
-        </para> 
-<para>Following the header lines are groups of time stamped position fixes.  Each time stamped group begins with a line containing 13 elements.  From this line, the 3rd column (GMT) is used to calculate elapsed seconds from the starting DTG.  This elapsed time is used as the time value for any points containing only 9 elements (until a new 13-element line is read in).</para> 
-<para>For 9 element lines (and 13 element lines once the DTG info is read in) the columns are read and used as follows:
-
-
-          <table frame="all">
-            <title>Fields used from PMRF data</title>
-
-            <tgroup cols="2">
-              <colspec colname="col01" colnum="1" colwidth="1.00*"/>
-              <colspec colname="col1" colnum="2" colwidth="4.5*"/>
-              <thead>
-                <row>
-                  <entry>
-                    <para>Field</para> </entry> 
-<entry> 
-<para>Description</para> </entry> 
-</row> 
-</thead> 
-<tbody> 
-<row> 
-<entry> 
-<para>GMT</para> </entry> 
-<entry> 
-<para>Elapsed time in seconds since midnight on DTG contained in first line</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>Id</para> </entry> 
-<entry> 
-<para>Single text string surrounded by spaces</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>x</para> </entry> 
-<entry> 
-<para>x-value in yards
-                    </para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>y</para> </entry> 
-<entry> 
-<para>y-value in yards
-                    </para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>z</para> </entry> 
-<entry> 
-<para>ignored</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>height</para> </entry> 
-<entry> 
-<para>converted to yards, and used a z-value.</para> </entry> 
-</row> 
-<row> 
-<entry> 
-<para>remaining columns</para> </entry> 
-<entry> 
-<para>ignored</para> </entry> 
-</row> 
-</tbody> 
-</tgroup> 
-</table> </para> 
-<note> 
-<para>Note that only the x,y,z positions from the data are used in Debrief; the velocities and accelerations are ignored.</para> 
-</note> 
-<important> 
-<para>The data file format does not contain course and speed data, so these are calculated using the range and bearing from the previous point, together with the time difference.   This gives values of course and speed calculated as over the ground; which obviously is not the through-the-water values the participants will be experiencing.</para> 
-</important> 
 </sect1> 
 <sect1 id="intro_xml"> 
 <title>Introduction to XML</title> 
