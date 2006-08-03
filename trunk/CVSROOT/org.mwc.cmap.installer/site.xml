@@ -27,7 +27,7 @@
    <feature url="features/org.mwc.debrief.feature_1.0.9.jar" id="org.mwc.debrief.feature" version="1.0.9">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.help.feature_1.0.6.jar" id="org.mwc.debrief.help.feature" version="1.0.6">
+   <feature url="features/org.mwc.debrief.help.feature_1.0.7.jar" id="org.mwc.debrief.help.feature" version="1.0.7">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.overview.feature_1.0.1.jar" id="org.mwc.cmap.overview.feature" version="1.0.1">

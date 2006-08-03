@@ -6,7 +6,7 @@
       provider-name="MWC">
 
    <description>
-      [1.0.12] Include definition of overview chart
+      [1.0.12] Include definition of overview chart, ability to paste Locations into path editor
 [1.0.11] Include x-stream library (for xy-plot)
 [1.0.10] Include Debrief legacy content
 [1.0.9] Preps for RC1
@@ -585,9 +585,9 @@ That&apos;s all there is to it!
    <plugin
          id="org.eclipse.pde.junit.runtime"
          download-size="0"
-         unpack="false"
          install-size="0"
-         version="0.0.0"/>
+         version="0.0.0"
+         unpack="false"/>
 
    <plugin
          id="org.eclipse.swt"
