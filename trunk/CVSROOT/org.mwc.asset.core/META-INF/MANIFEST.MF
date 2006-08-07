@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Core Plug-in
+Bundle-SymbolicName: org.mwc.asset.core
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.asset.core.Activator
+Bundle-Vendor: MWC
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Eclipse-LazyStart: true
