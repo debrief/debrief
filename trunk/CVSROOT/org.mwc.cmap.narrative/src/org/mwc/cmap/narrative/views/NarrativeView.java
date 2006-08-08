@@ -16,11 +16,12 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.narrative.NarrativePlugin;
+import org.mwc.cmap.narrative.*;
+import org.mwc.cmap.narrative.IRollingNarrativeProvider.INarrativeListener;
 
-import Debrief.Wrappers.NarrativeWrapper;
-import Debrief.Wrappers.NarrativeWrapper.NarrativeEntry;
+import Debrief.Wrappers.*;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -100,6 +101,12 @@ public class NarrativeView extends ViewPart
 	 */
 	protected IEditorPart _currentEditor;
 
+	protected IRollingNarrativeProvider _myRollingNarrative;
+
+	protected INarrativeListener _myRollingNarrListener;
+
+	protected Action _trackNewNarratives;
+
 	public class Type1_Filter extends ViewerFilter
 	{
 
@@ -113,16 +120,16 @@ public class NarrativeView extends ViewPart
 		{
 			boolean res = false;
 
-			if (element instanceof NarrativeWrapper.NarrativeEntry)
+			if (element instanceof NarrativeEntry)
 			{
-				NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) element;
+				NarrativeEntry ne = (NarrativeEntry) element;
 				String thisType = ne.getType();
-				
-				// hmm, but does this include type data? 
+
+				// hmm, but does this include type data?
 				// if it does, then it's not for us to export it.
 				if (thisType != null)
 				{
-						res = true;
+					res = true;
 				}
 			}
 
@@ -168,16 +175,23 @@ public class NarrativeView extends ViewPart
 		hookDoubleClickAction();
 		contributeToActionBars();
 
-		// try to add ourselves to listen out for page changes
-		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
+		// ok, listen out for part changes
+		setupPartListeners();
 
+	}
+
+	/**
+	 * 
+	 */
+	private void setupPartListeners()
+	{
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						storeDetails(part, parentPart);
+						loadNarrative(part, parentPart);
 					}
 				});
 
@@ -188,7 +202,7 @@ public class NarrativeView extends ViewPart
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						storeDetails(part, parentPart);
+						loadNarrative(part, parentPart);
 					}
 
 				});
@@ -282,9 +296,42 @@ public class NarrativeView extends ViewPart
 					}
 				});
 
+		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						processNewRollingNarrative(part);
+					}
+				});
+		// unusually, we are also going to track the open event for narrative data
+		// so that we can start off with some data
+		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						processNewRollingNarrative(part);
+					}
+				});
+		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
+						if (newNarr == _myRollingNarrative)
+						{
+							// stop listening to old narrative
+							_myRollingNarrative.removeNarrativeListener(
+									IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
+							_myRollingNarrative = null;
+						}
+					}
+				});
+
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
-
 	}
 
 	/**
@@ -334,7 +381,8 @@ public class NarrativeView extends ViewPart
 
 		// -------------------------------------------------------
 		// Toggle filter action
-		filterToggleAction = new Action("Only show entries with Type data", Action.AS_CHECK_BOX)
+		filterToggleAction = new Action("Only show entries with Type data",
+				Action.AS_CHECK_BOX)
 		{
 
 			public void run()
@@ -423,17 +471,38 @@ public class NarrativeView extends ViewPart
 		manager.add(_followTimeToggle);
 		manager.add(_jumpToTimeToggle);
 		manager.add(_controllingTimeToggle);
+		manager.add(_trackNewNarratives);
 	}
 
 	private void makeActions()
 	{
+		_trackNewNarratives = new Action("Track new narraties", Action.AS_CHECK_BOX)
+		{
+
+			public void run()
+			{
+				if(_trackNewNarratives.isChecked())
+				{
+					// hey, user wants to start listening to narratives, fire an update so
+					// we're looking at the right one.
+					_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
+				}
+			}
+		};
+		_trackNewNarratives.setText("Track new narratives");
+		_trackNewNarratives.setChecked(true);
+		_trackNewNarratives.setToolTipText("Always show narratives for selected provider");
+		_trackNewNarratives.setImageDescriptor(NarrativePlugin
+				.getImageDescriptor("icons/synced.gif"));
+
 		_followTimeToggle = new Action("Follow time", Action.AS_CHECK_BOX)
 		{
 		};
 		_followTimeToggle.setText("Follow time");
 		_followTimeToggle.setChecked(true);
 		_followTimeToggle.setToolTipText("Highlight entry nearest current DTG");
-		_followTimeToggle.setImageDescriptor(NarrativePlugin.getImageDescriptor("icons/history.png"));
+		_followTimeToggle.setImageDescriptor(NarrativePlugin
+				.getImageDescriptor("icons/history.png"));
 
 		_jumpToTimeToggle = new Action("Jump to time", Action.AS_CHECK_BOX)
 		{
@@ -441,7 +510,8 @@ public class NarrativeView extends ViewPart
 		_jumpToTimeToggle.setText("Jump to current");
 		_jumpToTimeToggle.setChecked(true);
 		_jumpToTimeToggle.setToolTipText("Ensure highlighted entry is always visible");
-		_jumpToTimeToggle.setImageDescriptor(NarrativePlugin.getImageDescriptor("icons/magic-wand.png"));
+		_jumpToTimeToggle.setImageDescriptor(NarrativePlugin
+				.getImageDescriptor("icons/magic-wand.png"));
 
 		_controllingTimeToggle = new Action("Control time", Action.AS_CHECK_BOX)
 		{
@@ -449,7 +519,8 @@ public class NarrativeView extends ViewPart
 		_controllingTimeToggle.setText("Control time");
 		_controllingTimeToggle.setChecked(true);
 		_controllingTimeToggle.setToolTipText("Make rest of application follow our time");
-		_controllingTimeToggle.setImageDescriptor(NarrativePlugin.getImageDescriptor("icons/history_add.png"));
+		_controllingTimeToggle.setImageDescriptor(NarrativePlugin
+				.getImageDescriptor("icons/history_add.png"));
 
 		_setAsBookmarkAction = new Action("Add DTG to bookmarks", Action.AS_PUSH_BUTTON)
 		{
@@ -459,7 +530,7 @@ public class NarrativeView extends ViewPart
 				super.run();
 
 				// get the current selection
-				NarrativeWrapper.NarrativeEntry current = getCurrentEntry();
+				NarrativeEntry current = getCurrentEntry();
 
 				addMarker(current);
 			}
@@ -520,7 +591,7 @@ public class NarrativeView extends ViewPart
 				// hmm, are we controlling the narrative time?
 				if (_controllingTimeToggle.isChecked())
 				{
-					NarrativeWrapper.NarrativeEntry ne = getCurrentEntry();
+					NarrativeEntry ne = getCurrentEntry();
 					_controllableTime.setTime(this, ne.getDTG(), true);
 				}
 			}
@@ -531,11 +602,11 @@ public class NarrativeView extends ViewPart
 	/**
 	 * @return
 	 */
-	private NarrativeWrapper.NarrativeEntry getCurrentEntry()
+	private NarrativeEntry getCurrentEntry()
 	{
 		ISelection selection = viewer.getSelection();
 		Object obj = ((IStructuredSelection) selection).getFirstElement();
-		NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
+		NarrativeEntry ne = (NarrativeEntry) obj;
 		return ne;
 	}
 
@@ -551,7 +622,7 @@ public class NarrativeView extends ViewPart
 	 * @param part
 	 * @param parentPart
 	 */
-	private void storeDetails(Object part, IWorkbenchPart parentPart)
+	private void loadNarrative(Object part, IWorkbenchPart parentPart)
 	{
 		// implementation here.
 		NarrativeProvider np = (NarrativeProvider) part;
@@ -602,6 +673,57 @@ public class NarrativeView extends ViewPart
 	// //////////////////////////////
 	// selection listener bits
 	// //////////////////////////////
+
+	/**
+	 * @param part
+	 */
+	private void processNewRollingNarrative(Object part)
+	{
+		// check if we have our rolling narrative listener
+		if(_myRollingNarrListener == null)
+		{
+			_myRollingNarrListener = new INarrativeListener(){
+				public void newEntry(NarrativeEntry entry)
+				{
+					// ok, sort it.
+					viewer.add(entry);
+				}};
+		}
+		
+		IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
+		if (newNarr != _myRollingNarrative)
+		{
+			if (_trackNewNarratives.isChecked())
+			{
+				if (_myRollingNarrative != null)
+				{
+					// stop listening to old narrative
+					_myRollingNarrative.removeNarrativeListener(IRollingNarrativeProvider.ALL_CATS,
+							_myRollingNarrListener);
+				}
+
+				// store the new one
+				_myRollingNarrative = newNarr;
+
+				_myRollingNarrative.addNarrativeListener(IRollingNarrativeProvider.ALL_CATS,
+						_myRollingNarrListener);
+			}
+		}
+
+		// hey, are there any old ones?
+		NarrativeEntry[] theNarrs = _myRollingNarrative
+				.getNarrativeHistory(new String[] { IRollingNarrativeProvider.ALL_CATS });
+
+		if (theNarrs != null)
+		{
+			for (int i = 0; i < theNarrs.length; i++)
+			{
+				NarrativeEntry thisE = theNarrs[i];
+				_myRollingNarrListener.newEntry(thisE);
+
+			}
+		}
+	}
 
 	/**
 	 * The content provider class is responsible for providing objects to the
@@ -665,7 +787,7 @@ public class NarrativeView extends ViewPart
 				Iterator iter = narr.getData().iterator();
 				while (iter.hasNext())
 				{
-					NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) iter.next();
+					NarrativeEntry ne = (NarrativeEntry) iter.next();
 					theNarrs.add(ne);
 				}
 				res = theNarrs.toArray();
@@ -728,7 +850,7 @@ public class NarrativeView extends ViewPart
 		public String getColumnText(Object obj, int index)
 		{
 			String res = null;
-			NarrativeWrapper.NarrativeEntry ne = (NarrativeEntry) obj;
+			NarrativeEntry ne = (NarrativeEntry) obj;
 
 			switch (index)
 			{
