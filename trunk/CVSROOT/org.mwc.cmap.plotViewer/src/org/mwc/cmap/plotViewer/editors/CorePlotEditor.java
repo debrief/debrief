@@ -32,6 +32,7 @@ import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Chart.DblClickEdit;
 import MWC.GenericData.*;
+import MWC.TacticalData.IRollingNarrativeProvider;
 
 public abstract class CorePlotEditor extends EditorPart implements IResourceProvider,
 		IControllableViewport, ISelectionProvider, IPlotGUI
@@ -61,7 +62,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/**
 	 * handle narrative management
 	 */
-	protected NarrativeProvider _theNarrativeProvider;
+	protected IRollingNarrativeProvider _theNarrativeProvider;
 
 	/**
 	 * an object to look after all of the time bits
@@ -410,7 +411,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			if (_myLayers != null)
 				res = _myLayers;
 		}
-		else if (adapter == NarrativeProvider.class)
+		else if (adapter == IRollingNarrativeProvider.class)
 		{
 			res = _theNarrativeProvider;
 		}

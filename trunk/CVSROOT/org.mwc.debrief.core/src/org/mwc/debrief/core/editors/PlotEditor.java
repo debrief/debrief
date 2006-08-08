@@ -15,7 +15,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
-import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
@@ -36,6 +35,7 @@ import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.*;
 import MWC.GenericData.*;
+import MWC.TacticalData.IRollingNarrativeProvider;
 
 /**
  * @author ian.mayo
@@ -352,22 +352,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				_timeManager.setTime(this, timePeriod.getStartDTG(), false);
 		}
 
-		// so, do we have any narrative data?
-		Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
-
-		// did we find it?
-		// cool, cast to object
-		final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
-
-		// and put it into our narrative provider
-		_theNarrativeProvider = new NarrativeProvider()
-		{
-			public NarrativeWrapper getNarrative()
-			{
-				return wrapper;
-			}
-		};
-
 		// done - now we can process dirty calls again
 		stopIgnoringDirtyCalls();
 
@@ -400,10 +384,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		// ok, we're probably done - fire the update
 		this._myLayers.fireExtended();
-		
+
 		// and resize to make sure we're showing all the data
 		this._myChart.rescale();
-		
+
 		// hmm, we may have loaded more track data - but we don't track
 		// loading of individual tracks - just fire a "modified" flag
 		_trackDataProvider.fireTracksChanged();
@@ -454,6 +438,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		else if (adapter == ControllablePeriod.class)
 		{
 			res = _myOperations;
+		}
+		else if (adapter == IRollingNarrativeProvider.class)
+		{
+			// so, do we have any narrative data?
+			Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
+
+			if (narr != null)
+			{
+				// did we find it?
+				// cool, cast to object
+				final NarrativeWrapper wrapper = (NarrativeWrapper) narr;
+
+				res = wrapper;
+			}
 		}
 		else if (adapter == RelativeProjectionParent.class)
 		{
@@ -591,8 +589,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			IProduct prod = Platform.getProduct();
 			Bundle bund = prod.getDefiningBundle();
 			String version = "" + new Date(bund.getLastModified());
-			
-			
+
 			// ok, now write to the file
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			DebriefEclipseXMLReaderWriter.exportThis(this, bos, version);
