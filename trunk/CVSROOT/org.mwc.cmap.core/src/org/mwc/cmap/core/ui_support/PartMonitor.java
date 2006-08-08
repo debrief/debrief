@@ -9,6 +9,7 @@ import java.util.Vector;
 
 import junit.framework.TestCase;
 
+import org.eclipse.jface.action.Action;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IPartListener;
@@ -19,6 +20,7 @@ import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.IWorkbenchPartReference;
 import org.eclipse.ui.IWorkbenchPartSite;
+import org.mwc.cmap.core.CorePlugin;
 
 public class PartMonitor implements IPartListener
 {
@@ -45,6 +47,29 @@ public class PartMonitor implements IPartListener
 		partService.addPartListener(this);
 	}
 
+	public Action createSyncedAction(final String title, final String tooltip, final IWorkbenchPartSite site)
+	{
+		Action res = new Action(title, Action.AS_CHECK_BOX)
+		{
+			public void run()
+			{
+				if(isChecked())
+				{
+					// hey, user wants to start listening to narratives, fire an update so
+					// we're looking at the right one.
+					fireActivePart(site.getWorkbenchWindow().getActivePage());
+				}
+			}
+		};
+		res.setText(title);
+		res.setChecked(true);
+		res.setToolTipText(tooltip);
+		res.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
+		return res;
+	}
+	
+	
+	
 	public void dispose(IPartService partService)
 	{
 		// right stop listening
