@@ -16,7 +16,6 @@ import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.operations.*;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.interfaces.*;
 import org.mwc.cmap.core.property_support.*;

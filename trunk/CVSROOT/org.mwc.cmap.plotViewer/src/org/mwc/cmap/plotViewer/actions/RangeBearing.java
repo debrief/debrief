@@ -10,7 +10,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
-import Debrief.Tools.Tote.Calculations.rangeCalc;
+import MWC.Algorithms.Conversions;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
@@ -126,7 +126,7 @@ final public class RangeBearing extends CoreDragAction
 			String myUnits = CorePlugin.getToolParent().getProperty(
 					MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY);
 
-			double rng = rangeCalc.convertRange(sep.getRange(), myUnits);
+			double rng = Conversions.convertRange(sep.getRange(), myUnits);
 			double brg = sep.getBearing();
 			brg = brg * 180 / Math.PI;
 			String txt = "[" + (int) rng + myUnits + " " + (int) brg + "\u00b0]";

@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.34  2006-07-28 10:16:22  Ian.Mayo
+// Revision 1.35  2006-08-08 13:54:59  Ian.Mayo
+// Remove dependency on Debrief classes
+//
+// Revision 1.34  2006/07/28 10:16:22  Ian.Mayo
 // Reset normal cursor on mouse up
 //
 // Revision 1.33  2006/05/24 14:50:10  Ian.Mayo
@@ -126,7 +129,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
-import Debrief.Wrappers.*;
 import MWC.GUI.*;
 import MWC.GUI.Tools.Chart.*;
 import MWC.GUI.Tools.Chart.RightClickEdit.ObjectConstruct;
@@ -292,6 +294,10 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			public void parentFireSelectionChanged(ISelection selected)
 			{
 				chartFireSelectionChanged(selected);
+			}
+
+			public void doSupplementalRightClickProcessing(MenuManager menuManager, Plottable selected, Layer theParentLayer)
+			{
 			}
 		};
 	}
@@ -804,7 +810,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * 
 	 * @author ian.mayo
 	 */
-	private abstract class CustomisedSWTCanvas extends SWTCanvas
+	public abstract class CustomisedSWTCanvas extends SWTCanvas
 	{
 		private static final long serialVersionUID = 1L;
 
@@ -869,15 +875,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					RightClickSupport.getDropdownListFor(mmgr, new Editable[] { res },
 							new Layer[] { theParent }, new Layer[] { theParent }, getLayers(), false);
 
-					// hmm, is it a fix. if it is, also flash up the track
-					if (res instanceof FixWrapper)
-					{
-						// get the parent track
-						FixWrapper fix = (FixWrapper) res;
-						TrackWrapper parent = fix.getTrackWrapper();
-						RightClickSupport.getDropdownListFor(mmgr, new Editable[] { parent },
-								new Layer[] { theParent }, new Layer[] { theParent }, getLayers(), true);
-					}
+					doSupplementalRightClickProcessing(mmgr, res, theParent);
 				}
 			}
 			else
@@ -936,6 +934,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			mmgr.add(editProjection);
 
 		}
+
+		/**
+		 * @param menuManager
+		 * @param selected
+		 * @param theParentLayer
+		 */
+		abstract public void doSupplementalRightClickProcessing(MenuManager menuManager, Plottable selected, Layer theParentLayer);
 
 		public abstract void parentFireSelectionChanged(ISelection selected);
 	}
