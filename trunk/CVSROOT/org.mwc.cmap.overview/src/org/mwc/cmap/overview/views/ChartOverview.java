@@ -74,7 +74,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	public void createPartControl(Composite parent)
 	{
 		// hey, first create the chart
-		_myOverviewChart = new OverviewSWTChart(parent);
+		_myOverviewChart = new OverviewSWTChart(parent){
+
+			IControllableViewport getParentViewport()
+			{
+				return _targetViewport;
+			}};
 
 		// use our special dragger
 		_myOverviewChart.setDragMode(new MyZoomMode());
@@ -507,7 +512,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		}
 	}
 
-	protected class OverviewSWTChart extends SWTChart
+	abstract public static class OverviewSWTChart extends SWTChart
 	{
 
 		ChartOverview _parentView;
@@ -517,6 +522,8 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		 */
 		private static final long serialVersionUID = 1L;
 
+		abstract IControllableViewport getParentViewport();
+		
 		public OverviewSWTChart(Composite parent)
 		{
 			super(null, parent);
@@ -526,14 +533,14 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 				public void cursorDblClicked(PlainChart theChart, WorldLocation theLocation, Point thePoint)
 				{
 					// ok - got location centre plot on target loc
-					WorldArea currentArea = new WorldArea(_targetViewport.getViewport());
+					WorldArea currentArea = new WorldArea(getParentViewport().getViewport());
 					
 					currentArea.setCentre(theLocation);
 					
-					_targetViewport.setViewport(currentArea);
+					getParentViewport().setViewport(currentArea);
 					
 					// and trigger an update
-					_targetViewport.update();
+					getParentViewport().update();
 				}});
 		}
 
