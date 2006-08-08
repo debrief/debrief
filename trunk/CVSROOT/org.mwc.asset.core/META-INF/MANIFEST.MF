@@ -10,3 +10,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core
 Eclipse-LazyStart: true
+Export-Package: org.mwc.asset.core
