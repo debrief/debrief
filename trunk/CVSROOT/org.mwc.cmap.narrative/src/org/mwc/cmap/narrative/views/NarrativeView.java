@@ -13,15 +13,14 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.DataTypes.Narrative.NarrativeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.narrative.*;
-import org.mwc.cmap.narrative.IRollingNarrativeProvider.INarrativeListener;
+import org.mwc.cmap.narrative.NarrativePlugin;
 
-import Debrief.Wrappers.*;
+import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GenericData.HiResDate;
-import MWC.TacticalData.NarrativeEntry;
+import MWC.TacticalData.*;
+import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
@@ -186,7 +185,7 @@ public class NarrativeView extends ViewPart
 	private void setupPartListeners()
 	{
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.ACTIVATED,
+		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
@@ -197,7 +196,7 @@ public class NarrativeView extends ViewPart
 
 		// unusually, we are also going to track the open event for narrative data
 		// so that we can start off with some data
-		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.OPENED,
+		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.OPENED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
@@ -207,20 +206,21 @@ public class NarrativeView extends ViewPart
 
 				});
 
-		_myPartMonitor.addPartListener(NarrativeProvider.class, PartMonitor.CLOSED,
+		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.CLOSED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						// implementation here.
-						NarrativeProvider provider = (NarrativeProvider) part;
-						// yes, but is it our current one?
-						if (_content.isCurrentDocument(provider.getNarrative()))
+						IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
+						if (newNarr == _myRollingNarrative)
 						{
-							// yes, better clear the view then
+							// stop listening to old narrative
+							_myRollingNarrative.removeNarrativeListener(
+									IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
 							viewer.setInput(null);
 							_currentEditor = null;
-						}
+							_myRollingNarrative = null;
+						}						
 					}
 				});
 
@@ -293,40 +293,6 @@ public class NarrativeView extends ViewPart
 						// - since with the highlight on the narrative, we want to be able
 						// to control the time still.
 						// _controllableTime = null;
-					}
-				});
-
-		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
-				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						processNewRollingNarrative(part);
-					}
-				});
-		// unusually, we are also going to track the open event for narrative data
-		// so that we can start off with some data
-		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.OPENED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						processNewRollingNarrative(part);
-					}
-				});
-		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
-						if (newNarr == _myRollingNarrative)
-						{
-							// stop listening to old narrative
-							_myRollingNarrative.removeNarrativeListener(
-									IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-							_myRollingNarrative = null;
-						}
 					}
 				});
 
@@ -624,13 +590,45 @@ public class NarrativeView extends ViewPart
 	 */
 	private void loadNarrative(Object part, IWorkbenchPart parentPart)
 	{
-		// implementation here.
-		NarrativeProvider np = (NarrativeProvider) part;
-		viewer.setInput(np.getNarrative());
-		if (parentPart instanceof IEditorPart)
+		
+		// check if we have our rolling narrative listener
+		if(_myRollingNarrListener == null)
 		{
-			_currentEditor = (IEditorPart) parentPart;
+			_myRollingNarrListener = new INarrativeListener(){
+				public void newEntry(NarrativeEntry entry)
+				{
+					// ok, sort it.
+					viewer.add(entry);
+				}};
 		}
+	
+		// start listening to the new provider
+		IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
+		if (newNarr != _myRollingNarrative)
+		{
+			if (_trackNewNarratives.isChecked())
+			{
+				if (_myRollingNarrative != null)
+				{
+					// stop listening to old narrative
+					_myRollingNarrative.removeNarrativeListener(IRollingNarrativeProvider.ALL_CATS,
+							_myRollingNarrListener);
+				}
+
+				// store the new one
+				_myRollingNarrative = newNarr;
+
+				_myRollingNarrative.addNarrativeListener(IRollingNarrativeProvider.ALL_CATS,
+						_myRollingNarrListener);
+				
+				// and load the back-history
+				viewer.setInput(_myRollingNarrative.getNarrativeHistory(null));
+				if (parentPart instanceof IEditorPart)
+				{
+					_currentEditor = (IEditorPart) parentPart;
+				}
+			}
+		}	
 	}
 
 	// //////////////////////////////
@@ -674,56 +672,6 @@ public class NarrativeView extends ViewPart
 	// selection listener bits
 	// //////////////////////////////
 
-	/**
-	 * @param part
-	 */
-	private void processNewRollingNarrative(Object part)
-	{
-		// check if we have our rolling narrative listener
-		if(_myRollingNarrListener == null)
-		{
-			_myRollingNarrListener = new INarrativeListener(){
-				public void newEntry(NarrativeEntry entry)
-				{
-					// ok, sort it.
-					viewer.add(entry);
-				}};
-		}
-		
-		IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
-		if (newNarr != _myRollingNarrative)
-		{
-			if (_trackNewNarratives.isChecked())
-			{
-				if (_myRollingNarrative != null)
-				{
-					// stop listening to old narrative
-					_myRollingNarrative.removeNarrativeListener(IRollingNarrativeProvider.ALL_CATS,
-							_myRollingNarrListener);
-				}
-
-				// store the new one
-				_myRollingNarrative = newNarr;
-
-				_myRollingNarrative.addNarrativeListener(IRollingNarrativeProvider.ALL_CATS,
-						_myRollingNarrListener);
-			}
-		}
-
-		// hey, are there any old ones?
-		NarrativeEntry[] theNarrs = _myRollingNarrative
-				.getNarrativeHistory(new String[] { IRollingNarrativeProvider.ALL_CATS });
-
-		if (theNarrs != null)
-		{
-			for (int i = 0; i < theNarrs.length; i++)
-			{
-				NarrativeEntry thisE = theNarrs[i];
-				_myRollingNarrListener.newEntry(thisE);
-
-			}
-		}
-	}
 
 	/**
 	 * The content provider class is responsible for providing objects to the
@@ -737,7 +685,7 @@ public class NarrativeView extends ViewPart
 	private class NarrativeContentProvider implements IStructuredContentProvider,
 			PropertyChangeListener
 	{
-		private NarrativeWrapper currentNarrative;
+		private NarrativeEntry[] currentNarrative;
 
 		private StructuredViewer viewer;
 
@@ -753,20 +701,11 @@ public class NarrativeView extends ViewPart
 
 			if (newInput != oldInput)
 			{
-				if (currentNarrative != null)
-				{
-					currentNarrative.removePropertyChangeListener(
-							NarrativeWrapper.CONTENTS_CHANGED, this);
-				}
 
 				if (newInput != null)
 				{
 					// store the new narrative
-					currentNarrative = (NarrativeWrapper) newInput;
-
-					// and listen to the new one
-					currentNarrative.addPropertyChangeListener(NarrativeWrapper.CONTENTS_CHANGED,
-							this);
+					currentNarrative = (NarrativeEntry[]) newInput;
 				}
 			}
 		}
@@ -778,20 +717,8 @@ public class NarrativeView extends ViewPart
 		public Object[] getElements(Object parent)
 		{
 			Object[] res = null;
-			// ok, cn
-			if (parent != null)
-			{
-				NarrativeWrapper narr = (NarrativeWrapper) parent;
 
-				Vector theNarrs = new Vector(10, 10);
-				Iterator iter = narr.getData().iterator();
-				while (iter.hasNext())
-				{
-					NarrativeEntry ne = (NarrativeEntry) iter.next();
-					theNarrs.add(ne);
-				}
-				res = theNarrs.toArray();
-			}
+			res = (Object[]) parent;
 
 			return res;
 		}
