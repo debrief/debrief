@@ -10,9 +10,9 @@ import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 import org.mwc.cmap.core.property_support.*;
 
 import Debrief.Wrappers.*;
-import Debrief.Wrappers.NarrativeWrapper.NarrativeEntry;
 import MWC.GUI.*;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
+import MWC.TacticalData.NarrativeEntry;
 
 /**
  * nice drag-drop support for layer manager
