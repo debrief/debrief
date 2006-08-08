@@ -11,7 +11,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.narrative.IRollingNarrativeProvider.BaseNarrativeProvider;
+import org.mwc.cmap.narrative.BaseNarrativeProvider;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
@@ -293,7 +293,7 @@ public class ScenarioController extends ViewPart
 		{
 			res = _theScenario;
 		}
-		else if(adapter == org.mwc.cmap.narrative.IRollingNarrativeProvider.class)
+		else if(adapter == MWC.TacticalData.IRollingNarrativeProvider.class)
 		{
 			return _myNarrativeProvider;
 		}
