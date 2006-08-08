@@ -1,0 +1,236 @@
+<!-- units for elements are in plain text unless indicated otherwise  -->
+
+<!ELEMENT plot (session, details?)>
+<!ATTLIST plot
+  Name CDATA #REQUIRED
+  Created CDATA #REQUIRED
+>
+
+<!-- Plot Components  -->
+<!--                  -->
+<!ELEMENT details EMPTY>
+<!ATTLIST details
+  Text CDATA #REQUIRED
+>
+<!ELEMENT session (layers?,projection?, gui?)>
+
+<!-- Session Components  -->
+<!--  Type: only the single word "Flat" is currently accepted -->
+<!--  Border: floating point value                            -->
+<!ELEMENT projection (tl, br)>
+<!ATTLIST projection
+  Type CDATA #REQUIRED
+  Border CDATA "1.0"
+  Relative (TRUE|FALSE) "FALSE"
+>
+
+<!ELEMENT layers ((layer|track|field)*)>
+<!ELEMENT layer ((line|ellipse|rectangle|circle|wheel|grid|scale|coastline|textlabel)*)>
+<!ATTLIST layer
+  Name CDATA #REQUIRED
+  Visible (TRUE|FALSE) "TRUE"
+>
+
+<!ELEMENT track (colour, font?,((fix|contact)*))>
+<!ATTLIST track
+  Name CDATA #REQUIRED
+  Visible (TRUE|FALSE) "TRUE"
+  PositionsLinked (TRUE|FALSE) "TRUE"
+  NameVisible (TRUE|FALSE) "TRUE"
+  PositionsVisible (TRUE|FALSE) "TRUE"
+  NameAtStart (TRUE|FALSE) "TRUE"
+  NameLocation (Top|Left|Bottom|Centre|Right) "Right"
+  Symbol CDATA "SQUARE"
+>
+
+<!ELEMENT pattern (colour, timeRange?, font?,((textlabel)*))>
+<!ATTLIST pattern
+  Name CDATA #REQUIRED
+  Visible (TRUE|FALSE) "TRUE"
+  NameVisible (TRUE|FALSE) "TRUE"
+  NameLocation (Top|Left|Bottom|Centre|Right) "Right"
+>
+
+
+<!-- Layer  & Pattern Components  -->
+<!--                  -->
+<!ELEMENT line (colour, timeRange?, font?, tl, br)>
+<!ATTLIST line
+  Label CDATA "blank"
+  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
+>
+<!ELEMENT rectangle (colour, timeRange?, font?, tl, br)>
+<!ATTLIST rectangle
+  Label CDATA "blank"
+  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
+>
+<!ELEMENT ellipse (colour, timeRange?, font?, centre)>
+<!--  Maxima: floating point kyards                 -->
+<!--  Minima: floating point kyards                 -->
+<!--  Orient: floating point degrees                -->
+<!ATTLIST ellipse
+  Maxima CDATA #REQUIRED
+  Minima CDATA #REQUIRED
+  Orient CDATA #REQUIRED
+  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
+  Label CDATA "blank"
+>
+<!ELEMENT circle (colour, timeRange?, font?, centre)>
+<!--  Radius: floating point kyards                -->
+<!ATTLIST circle
+  Radius CDATA #REQUIRED
+  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
+  Label CDATA "blank"
+>
+<!ELEMENT wheel (colour, timeRange?, font?, centre)>
+<!--  Inner: floating point kyards                -->
+<!--  Outer: floating point kyards                -->
+<!ATTLIST wheel
+  Inner CDATA #REQUIRED
+  Outer CDATA #REQUIRED
+  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
+  Label CDATA "blank"
+>
+<!ELEMENT grid (colour)>
+<!--  Delta: floating point minutes (nautical miles) -->
+<!ATTLIST grid
+  Delta CDATA #REQUIRED
+  Visible (TRUE|FALSE) "TRUE"
+>
+<!ELEMENT scale (colour)>
+<!--  ScaleMax: floating point yards -->
+<!--  ScaleStep: floating point yards -->
+<!ATTLIST scale
+  Visible (TRUE|FALSE) "TRUE"
+  ScaleMax CDATA "0.0"
+  ScaleStep CDATA "0.0"
+  AutoMode (TRUE|FALSE) "TRUE"
+  Location (TopLeft|TopRight|BottomLeft|BottomRight) "BottomRight"
+>
+<!ELEMENT coastline (colour)>
+<!ATTLIST coastline
+  Name CDATA "World Default"
+  Visible (TRUE|FALSE) "TRUE"
+>
+<!ELEMENT textlabel (colour, timeRange?, centre)>
+<!ATTLIST textlabel
+  Label CDATA #REQUIRED
+  Symbol CDATA "SQUARE"
+  Visible (TRUE|FALSE) "TRUE"
+  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
+  SymbolVisible (TRUE|FALSE) "TRUE"
+  LabelVisible (TRUE|FALSE) "TRUE"
+  Scale (Small|Regular|Large) "Regular"
+>
+
+<!-- Track Components  -->
+<!--                  -->
+
+<!ELEMENT fix (colour?, font?, centre)>
+<!--  Course: floating point degrees -->
+<!--  Speed: floating point knots -->
+<!--  Dtg: yymmdd hhmmss.ss -->
+<!ATTLIST fix
+  Course CDATA #REQUIRED
+  Speed CDATA #REQUIRED
+  Dtg CDATA #REQUIRED
+  Visible (TRUE|FALSE) "TRUE"
+  Label CDATA #IMPLIED
+  LabelShowing (TRUE|FALSE) #IMPLIED
+  SymbolShowing (TRUE|FALSE) "TRUE"
+  LabelLocation (Top|Left|Bottom|Centre|Right) "Left"
+>
+<!ELEMENT contact (font?, centre)>
+<!--  contact data is not currently parsed by the application -->
+<!--  Dtg: yymmdd hhmmss.ss -->
+<!--  Range: floating point knots -->
+<!--  Bearing: floating point degrees -->
+<!ATTLIST contact
+  Dtg CDATA #REQUIRED
+  Range CDATA #IMPLIED
+  Bearing CDATA #IMPLIED
+>
+
+<!-- GUI Components  -->
+<!--                     -->
+<!ELEMENT gui (tote?, component?)>
+<!ELEMENT component (property*)>
+<!ATTLIST component
+  Type CDATA #REQUIRED
+>
+<!ELEMENT tote (primary?, secondary*) >
+<!ELEMENT primary EMPTY>
+<!ATTLIST primary
+  Name CDATA #REQUIRED
+>
+<!ELEMENT secondary EMPTY>
+<!ATTLIST secondary
+  Name CDATA #REQUIRED
+>
+<!ELEMENT property EMPTY>
+<!ATTLIST property
+  Name CDATA #REQUIRED
+  Value CDATA #REQUIRED
+>
+
+<!-- Utility Components  -->
+<!--                     -->
+<!ELEMENT colour EMPTY>
+<!--  CustomRed: integer component 1..255 -->
+<!--  CustomGreen: integer component 1..255 -->
+<!--  CustomBlue: integer component 1..255 -->
+<!ATTLIST colour
+  Value (WHITE|BLUE|GREEN|RED|YELLOW|PURPLE|ORANGE|BROWN|CYAN|LIGHT_GREEN|GOLD|PINK|LIGHT_GREY|GREY|DARK_GREY|WHITE|BLACK|custom) #REQUIRED
+  CustomRed CDATA #IMPLIED
+  CustomGreen CDATA #IMPLIED
+  CustomBlue CDATA #IMPLIED
+>
+<!ELEMENT centre (shortLocation|longLocation)>
+<!ELEMENT tl (shortLocation|longLocation)>
+<!ELEMENT br (shortLocation|longLocation)>
+
+<!ELEMENT shortLocation EMPTY>
+<!--  Lat: floating point degrees (+ve = north) -->
+<!--  Long: floating point degrees (+ve = east) -->
+<!--  Depth: floating point metres (+ve = down) -->
+<!ATTLIST shortLocation
+  Lat CDATA #REQUIRED
+  Long CDATA #REQUIRED
+  Depth CDATA #IMPLIED
+>
+
+<!ELEMENT longLocation EMPTY>
+<!--  LatDeg: integer degrees -->
+<!--  LatMin: integer or floating point minutes -->
+<!--  LatSec: floating point seconds -->
+<!--  LatHem: character for hemisphere -->
+<!--  Longitude as Lat -->
+<!ATTLIST longLocation
+  LatDeg CDATA #REQUIRED
+  LatMin CDATA #REQUIRED
+  LatSec CDATA #REQUIRED
+  LatHem (N|S) #REQUIRED
+  LongDeg CDATA #REQUIRED
+  LongMin CDATA #REQUIRED
+  LongSec CDATA #REQUIRED
+  LongHem (E|W) #REQUIRED
+  Depth CDATA #IMPLIED
+>
+
+<!ELEMENT timeRange EMPTY>
+<!--  Start: yymmdd hhmmss.ss -->
+<!--  End: yymmdd hhmmss.ss -->
+<!ATTLIST timeRange
+  Start CDATA #REQUIRED
+  End CDATA #IMPLIED
+>
+<!ELEMENT font EMPTY>
+<!--  Family: one of Serif, Sans Serif,  -->
+<!ATTLIST font
+  Family CDATA #REQUIRED
+  Size CDATA #REQUIRED
+  Bold (TRUE|FALSE) #IMPLIED
+  Italic (TRUE|FALSE) #IMPLIED
+>
+
+
