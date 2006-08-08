@@ -9,6 +9,7 @@ import java.util.*;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
@@ -19,7 +20,9 @@ import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
-import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart.CustomisedSWTCanvas;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -514,6 +517,36 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		// TODO Auto-generated method stub
 		SWTChart res = new SWTChart(_myLayers, parent)
 		{
+
+			public SWTCanvas createCanvas(Composite parent)
+			{
+				return new CustomisedSWTCanvas(parent)
+				{
+
+					/**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void parentFireSelectionChanged(ISelection selected)
+					{
+						chartFireSelectionChanged(selected);
+					}
+
+					public void doSupplementalRightClickProcessing(MenuManager menuManager, Plottable selected, Layer theParentLayer)
+					{
+//					 hmm, is it a fix. if it is, also flash up the track
+						if (selected instanceof FixWrapper)
+						{
+							// get the parent track
+							FixWrapper fix = (FixWrapper) selected;
+							TrackWrapper parent = fix.getTrackWrapper();
+							RightClickSupport.getDropdownListFor(menuManager, new Editable[] { parent },
+									new Layer[] { theParentLayer }, new Layer[] { theParentLayer }, getLayers(), true);
+						}
+					}
+				};
+			}
 
 			public void chartFireSelectionChanged(ISelection sel)
 			{
