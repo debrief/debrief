@@ -6,7 +6,7 @@ import ASSET.Models.Vessels.SSN;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.SupportTesting;
-import MWC.GUI.Editable;
+import MWC.GUI.*;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldDistance;
@@ -268,10 +268,16 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
    */
   public static class ParticipantListener implements ASSET.Participants.ParticipantMovedListener,
     MWC.GUI.Plottable,
-    ASSET.Participants.ParticipantDetectedListener
+    ASSET.Participants.ParticipantDetectedListener,
+    Layer
 
   {
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
      * the last location we received for this participant
      */
     private MWC.GenericData.WorldLocation _curLocation = null;
@@ -689,6 +695,56 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
 			ParticipantListener other = (ParticipantListener) arg0;
 			String otherName = other.getName();
 			return getName().compareTo(otherName);
+		}
+
+		public void add(Editable point)
+		{
+		}
+
+		public void append(Layer other)
+		{
+		}
+
+		public Enumeration elements()
+		{
+			Vector theElements = new Vector(3,1);
+
+			// ok, sort out our child elements
+			Editable performance = new PerformancePlottable(_myPart.getMovementChars());
+			theElements.add(performance);
+
+			if(_myPart.getSensorFit() != null)
+			{
+				Editable sensors = new SensorsPlottable(_myPart.getSensorFit());
+				theElements.add(sensors);
+			}
+			if(_myPart.getDecisionModel() != null)
+			{
+				Editable behaviours = new BehavioursPlottable(_myPart.getDecisionModel());
+				theElements.add(behaviours);
+			}
+			
+			
+			// ok, wrap our items
+			return theElements.elements();
+		}
+
+		public void exportShape()
+		{
+			}
+
+		public int getLineThickness()
+		{
+			// TODO Auto-generated method stub
+			return 1;
+		}
+
+		public void removeElement(Editable point)
+		{
+		}
+
+		public void setName(String val)
+		{
 		}
 
   }
