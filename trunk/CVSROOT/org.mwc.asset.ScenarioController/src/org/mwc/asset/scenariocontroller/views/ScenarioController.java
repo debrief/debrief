@@ -3,8 +3,6 @@ package org.mwc.asset.scenariocontroller.views;
 import java.io.*;
 import java.util.*;
 
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.Path;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.*;
@@ -21,7 +19,8 @@ import ASSET.Scenario.*;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.*;
-import MWC.GenericData.HiResDate;
+import MWC.GUI.Chart.Painters.GridPainter;
+import MWC.GenericData.*;
 import MWC.TacticalData.NarrativeEntry;
 
 public class ScenarioController extends ViewPart
@@ -46,7 +45,7 @@ public class ScenarioController extends ViewPart
 	/**
 	 * and that we have some layers...
 	 */
-	private Layers _theLayers;
+	final private Layers _theLayers;
 
 	/**
 	 * the set of observers which monitor this scenario
@@ -69,7 +68,7 @@ public class ScenarioController extends ViewPart
 	public ScenarioController()
 	{
 		_theScenario = new CoreScenario();
-
+		
 		_myNarrativeProvider = new BaseNarrativeProvider();
 		_theLayers = new Layers();
 
@@ -77,6 +76,14 @@ public class ScenarioController extends ViewPart
 		_myScenarioLayer = new ASSET.GUI.Workbench.Plotters.ScenarioLayer();
 		_myScenarioLayer.setScenario(_theScenario);
 		_theLayers.addThisLayer(_myScenarioLayer);
+		
+		BaseLayer decs = new BaseLayer();
+		decs.setName("Decorations");
+		GridPainter grid = new GridPainter();
+		grid.setDelta(new WorldDistanceWithUnits(5, WorldDistanceWithUnits.NM));
+		decs.add(grid);
+		
+		_theLayers.addThisLayer(decs);
 
 		// listen for scenario changes
 		_theScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
@@ -91,6 +98,23 @@ public class ScenarioController extends ViewPart
 			}
 		});
 
+		listenForScenarioChanges(_theScenario, _myScenarioLayer, _theLayers);
+		
+	}
+
+	private void listenForScenarioChanges(final CoreScenario scenario, final ScenarioLayer scenarioLayer, final Layers layers)
+	{
+		_theScenario.addScenarioSteppedListener(new ScenarioSteppedListener(){
+
+			public void restart()
+			{
+				_theLayers.fireModified(scenarioLayer);
+			}
+
+			public void step(long newTime)
+			{
+				_theLayers.fireModified(scenarioLayer);
+			}});
 	}
 
 	/**
@@ -119,14 +143,15 @@ public class ScenarioController extends ViewPart
 				doStep();
 			}
 		});
-		Button pusher3 = new Button(parent, SWT.NONE);
+		final Button pusher3 = new Button(parent, SWT.NONE);
 		pusher3.setText("Open asset plot");
 		pusher3.addSelectionListener(new SelectionAdapter()
 		{
 
 			public void widgetSelected(SelectionEvent e)
 			{
-				openEditor();
+				System.out.println("firing:" + e);
+				openASSETEditor();
 			}
 		});
 		// show a list for what's happening
@@ -142,8 +167,9 @@ public class ScenarioController extends ViewPart
 				+ (int) (Math.random() * 100));
 	}
 
-	protected void openEditor()
+	protected void openASSETEditor()
 	{
+		System.out.println("called!");
 		try
 		{
 			final IEditorInput input = new IEditorInput()
@@ -175,7 +201,12 @@ public class ScenarioController extends ViewPart
 
 				public Object getAdapter(Class adapter)
 				{
-					return null;
+					Object res = null;
+					if(adapter == Layers.class)
+					{
+						res = _theLayers;
+					}
+					return res;
 				}
 			};
 //			IWorkbench wb = PlatformUI.getWorkbench();
@@ -193,10 +224,13 @@ public class ScenarioController extends ViewPart
 							.getActiveWorkbenchWindow().getActivePage();
 					try
 					{
-						IDE.openEditor(page, input, "org.mwc.debrief.core.editors.PlotEditor");
+						System.out.println("opening editor...");
+						IDE.openEditor(page, input, "org.mwc.asset.ASSETPlotEditor");
 					}
 					catch (PartInitException e)
 					{
+						System.out.println("Init exception:");
+						e.printStackTrace();
 					}
 				}
 			});			
@@ -467,4 +501,5 @@ public class ScenarioController extends ViewPart
 		return res;
 
 	}
+	
 }
