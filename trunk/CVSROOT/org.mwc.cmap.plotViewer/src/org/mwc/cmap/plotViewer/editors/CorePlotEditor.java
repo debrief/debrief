@@ -113,6 +113,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	private CursorTracker _myTracker;
 
+	protected DataListener _listenForMods;
+
 
 	// //////////////////////////////
 	// constructor
@@ -124,7 +126,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 		_myLayers = new Layers();
 
-		DataListener listenForMods = new DataListener()
+		_listenForMods = new DataListener()
 		{
 
 			public void dataModified(Layers theData, Layer changedLayer)
@@ -144,9 +146,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			}
 
 		};
-		_myLayers.addDataExtendedListener(listenForMods);
-		_myLayers.addDataModifiedListener(listenForMods);
-		_myLayers.addDataReformattedListener(listenForMods);
+		_myLayers.addDataExtendedListener(_listenForMods);
+		_myLayers.addDataModifiedListener(_listenForMods);
+		_myLayers.addDataReformattedListener(_listenForMods);
 
 		// create the time manager. cool
 		_timeManager = new TimeManager();

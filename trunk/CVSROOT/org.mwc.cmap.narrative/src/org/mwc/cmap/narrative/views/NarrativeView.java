@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.narrative.NarrativePlugin;
@@ -161,6 +162,8 @@ public class NarrativeView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		
 		viewer = createTableWithColumns(parent);
 		viewer.setContentProvider(_content);
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -184,7 +187,6 @@ public class NarrativeView extends ViewPart
 	 */
 	private void setupPartListeners()
 	{
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -442,24 +444,8 @@ public class NarrativeView extends ViewPart
 
 	private void makeActions()
 	{
-		_trackNewNarratives = new Action("Track new narraties", Action.AS_CHECK_BOX)
-		{
-
-			public void run()
-			{
-				if(_trackNewNarratives.isChecked())
-				{
-					// hey, user wants to start listening to narratives, fire an update so
-					// we're looking at the right one.
-					_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
-				}
-			}
-		};
-		_trackNewNarratives.setText("Track new narratives");
-		_trackNewNarratives.setChecked(true);
-		_trackNewNarratives.setToolTipText("Always show narratives for selected provider");
-		_trackNewNarratives.setImageDescriptor(NarrativePlugin
-				.getImageDescriptor("icons/synced.gif"));
+		_trackNewNarratives = _myPartMonitor.createSyncedAction("Track new narratives", 
+				"Always show narratives for selected provider", getSite());
 
 		_followTimeToggle = new Action("Follow time", Action.AS_CHECK_BOX)
 		{
