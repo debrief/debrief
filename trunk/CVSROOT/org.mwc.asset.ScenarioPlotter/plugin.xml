@@ -10,7 +10,7 @@
             icon="icons/sample.gif"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="org.mwc.asset.scenarioplotter.editors.ASSETPlotEditor"
-            id="org.mwc.asset.scenarioplotter.editors.ASSETPlotEditor">
+            id="org.mwc.asset.ASSETPlotEditor">
       </editor>
    </extension>
 
