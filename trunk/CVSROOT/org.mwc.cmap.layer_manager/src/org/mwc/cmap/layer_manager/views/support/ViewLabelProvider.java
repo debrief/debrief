@@ -7,7 +7,7 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.PlottableWrapper;
+import org.mwc.cmap.core.property_support.*;
 
 import Debrief.Wrappers.*;
 import MWC.GUI.*;
@@ -22,10 +22,15 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 	 */
 	Image visImage = null;
 	
-	/** image to indicate that item isn't visible (would you believe...)
+	/** image to indicate that item is hidden (would you believe...)
 	 * 
 	 */
-	Image nonVisImage = null;
+	Image hiddenImage = null;
+
+	/** image to indicate that item isn't plottable
+	 * 
+	 */
+	Image nonVisibleImage = null;
 	
 	/**
 	 * 
@@ -37,13 +42,14 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 	{
 			// ok, retrieve the images from our own registry
 			visImage = CorePlugin.getImageFromRegistry("check2.png");
-			nonVisImage = CorePlugin.getImageFromRegistry("blank_check.png");
+			hiddenImage = CorePlugin.getImageFromRegistry("blank_check.png");
+			nonVisibleImage = CorePlugin.getImageFromRegistry("desktop.png");
 	}
 
 	public String getText(Object obj)
 	{
-		PlottableWrapper pw = (PlottableWrapper) obj;
-		return pw.getPlottable().toString();
+		EditableWrapper pw = (EditableWrapper) obj;
+		return pw.getEditable().toString();
 	}
 
 
@@ -51,8 +57,8 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 	{
 		String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
 
-		PlottableWrapper pw = (PlottableWrapper) item;
-		Editable obj = pw.getPlottable();
+		EditableWrapper pw = (EditableWrapper) item;
+		Editable obj = pw.getEditable();
 
 		if (obj instanceof TrackWrapper)
 			imageKey = "track.gif";
@@ -94,15 +100,20 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 			// hey - don't bother with this bit - just use the text-marker
 			
 			// sort out the visibility
-			PlottableWrapper pw = (PlottableWrapper) element;
-			Editable ed = pw.getPlottable();
+			EditableWrapper pw = (EditableWrapper) element;
+			Editable ed = pw.getEditable();
 			if (ed instanceof Plottable)
 			{
 				Plottable pl = (Plottable) ed;
+				
 				if (pl.getVisible())
 					res = visImage;
 				else
-					res = nonVisImage;
+					res = hiddenImage;
+			}
+			else
+			{
+				res = nonVisibleImage;
 			}
 		}
 
@@ -117,11 +128,11 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 //		else
 //		{
 //			// sort out the visibility
-//			PlottableWrapper pw = (PlottableWrapper) element;
-//			Editable ed = pw.getPlottable();
-//			if (ed instanceof Plottable)
+//			EditableWrapper pw = (EditableWrapper) element;
+//			Editable ed = pw.getEditable();
+//			if (ed instanceof Editable)
 //			{
-//				Plottable pl = (Plottable) ed;
+//				Editable pl = (Editable) ed;
 //				if (pl.getVisible())
 //					res = "Y";
 //				else

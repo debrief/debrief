@@ -242,17 +242,22 @@ public class LayerManagerView extends ViewPart
 		public int compare(Viewer viewer, Object e1, Object e2)
 		{
 			int res = 0;
-			PlottableWrapper p1 = (PlottableWrapper) e1;
-			PlottableWrapper p2 = (PlottableWrapper) e2;
-			if ((p1.getPlottable() instanceof Comparable)
-					&& (p2.getPlottable() instanceof Comparable))
+			EditableWrapper p1 = (EditableWrapper) e1;
+			EditableWrapper p2 = (EditableWrapper) e2;
+			if ((p1.getEditable() instanceof Comparable)
+					&& (p2.getEditable() instanceof Comparable))
 			{
-				Comparable w1 = (Comparable) p1.getPlottable();
-				Comparable w2 = (Comparable) p2.getPlottable();
+				Comparable w1 = (Comparable) p1.getEditable();
+				Comparable w2 = (Comparable) p2.getEditable();
 				res = w1.compareTo(w2);
 			}
 			else
-				res = super.compare(viewer, e1, e2);
+			{
+				String p1Name = p1.getEditable().getName();
+				String p2Name = p2.getEditable().getName();
+				res = p1Name.compareTo(p2Name);
+//				res = super.compare(viewer, p1.getEditable().getName(), p2.getEditable().getName());
+			}
 
 			return res;
 		}
@@ -292,7 +297,7 @@ public class LayerManagerView extends ViewPart
 			super(parent, style);
 		}
 
-		public Widget findPlottable(Plottable item)
+		public Widget findEditable(Editable item)
 		{
 			return super.findItem(item);
 		}
@@ -320,10 +325,10 @@ public class LayerManagerView extends ViewPart
 		// {
 		// TreeItem ti = (TreeItem) event.item;
 		// boolean isChecked = ti.getChecked();
-		// PlottableWrapper pw = (PlottableWrapper) ti.getData();
+		// EditableWrapper pw = (EditableWrapper) ti.getData();
 		// if (pw != null)
 		// {
-		// pw.getPlottable().setVisible(isChecked);
+		// pw.getEditable().setVisible(isChecked);
 		// Layer parent = pw.getTopLevelLayer();
 		// _myLayers.fireModified(parent);
 		// }
@@ -344,16 +349,16 @@ public class LayerManagerView extends ViewPart
 			public boolean equals(Object a, Object b)
 			{
 				// do our special case for comparing plottables
-				if (a instanceof PlottableWrapper)
+				if (a instanceof EditableWrapper)
 				{
-					PlottableWrapper pw = (PlottableWrapper) a;
-					a = pw.getPlottable();
+					EditableWrapper pw = (EditableWrapper) a;
+					a = pw.getEditable();
 				}
 
-				if (b instanceof PlottableWrapper)
+				if (b instanceof EditableWrapper)
 				{
-					PlottableWrapper pw = (PlottableWrapper) b;
-					b = pw.getPlottable();
+					EditableWrapper pw = (EditableWrapper) b;
+					b = pw.getEditable();
 				}
 
 				return a == b;
@@ -363,12 +368,12 @@ public class LayerManagerView extends ViewPart
 			{
 				int res = 0;
 
-				if (element instanceof PlottableWrapper)
+				if (element instanceof EditableWrapper)
 				{
-					PlottableWrapper pw = (PlottableWrapper) element;
-					Plottable pl = pw.getPlottable();
+					EditableWrapper pw = (EditableWrapper) element;
+					Editable pl = pw.getEditable();
 					if (pl != null)
-						res += pw.getPlottable().hashCode();
+						res += pw.getEditable().hashCode();
 				}
 				else
 					res = element.hashCode();
@@ -489,10 +494,10 @@ public class LayerManagerView extends ViewPart
 				{
 					StructuredSelection ss = (StructuredSelection) sel;
 					Object datum = ss.getFirstElement();
-					if (datum instanceof PlottableWrapper)
+					if (datum instanceof EditableWrapper)
 					{
-						PlottableWrapper pw = (PlottableWrapper) datum;
-						plottableSelected(sel, pw);
+						EditableWrapper pw = (EditableWrapper) datum;
+						editableSelected(sel, pw);
 					}
 				}
 			}
@@ -533,8 +538,8 @@ public class LayerManagerView extends ViewPart
 		boolean res = false;
 		if (ss.size() == 1)
 		{
-			PlottableWrapper pw = (PlottableWrapper) ss.getFirstElement();
-			Plottable pl = pw.getPlottable();
+			EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
+			Editable pl = pw.getEditable();
 
 			// hey, first see if it's even a candidate
 			if (pl instanceof WatchableList)
@@ -562,8 +567,8 @@ public class LayerManagerView extends ViewPart
 		boolean res = false;
 		if (ss.size() >= 1)
 		{
-			PlottableWrapper pw = (PlottableWrapper) ss.getFirstElement();
-			Plottable pl = pw.getPlottable();
+			EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
+			Editable pl = pw.getEditable();
 			if (pl instanceof WatchableList)
 			{
 				// hey, it's a maybe.
@@ -677,16 +682,16 @@ public class LayerManagerView extends ViewPart
 		Object[] oList = sel.toArray();
 		for (int i = 0; i < oList.length; i++)
 		{
-			PlottableWrapper wrapper = (PlottableWrapper) oList[i];
-			eList[i] = wrapper.getPlottable();
+			EditableWrapper wrapper = (EditableWrapper) oList[i];
+			eList[i] = wrapper.getEditable();
 
 			// sort out the parent layer
-			PlottableWrapper theParent = wrapper.getParent();
+			EditableWrapper theParent = wrapper.getParent();
 
 			// hmm, did we find one?
 			if (theParent != null)
 				// yes, store it
-				parentLayers[i] = (Layer) wrapper.getParent().getPlottable();
+				parentLayers[i] = (Layer) wrapper.getParent().getEditable();
 			else
 				// nope - store a null
 				parentLayers[i] = null;
@@ -791,7 +796,7 @@ public class LayerManagerView extends ViewPart
 			{
 				AbstractOperation doIt = new SelectionOperation("Make primary", new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
 						// is it a watchable-list?
 						if (item instanceof WatchableList)
@@ -805,7 +810,7 @@ public class LayerManagerView extends ViewPart
 					}
 				}, new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
 						// is it a watchable-list?
 						if (item instanceof WatchableList)
@@ -817,7 +822,7 @@ public class LayerManagerView extends ViewPart
 					}
 				}, new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
 						// is it a watchable-list?
 						if (item instanceof WatchableList)
@@ -834,7 +839,7 @@ public class LayerManagerView extends ViewPart
 
 				applyOperationToSelection(new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
 					}
 				});
@@ -854,7 +859,7 @@ public class LayerManagerView extends ViewPart
 				AbstractOperation doIt = new SelectionOperation("Make secondary",
 						new IOperateOn()
 						{
-							public void doItTo(Plottable item)
+							public void doItTo(Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
@@ -868,7 +873,7 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Plottable item)
+							public void doItTo(Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
@@ -882,7 +887,7 @@ public class LayerManagerView extends ViewPart
 							}
 						}, new IOperateOn()
 						{
-							public void doItTo(Plottable item)
+							public void doItTo(Editable item)
 							{
 								// is it a watchable-list?
 								if (item instanceof WatchableList)
@@ -911,21 +916,21 @@ public class LayerManagerView extends ViewPart
 			{
 				AbstractOperation doIt = new SelectionOperation("Hide item", new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
-						item.setVisible(false);
+						setPlottableVisible(item, false);
 					}
 				}, new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
-						item.setVisible(true);
+						setPlottableVisible(item, false);
 					}
 				}, new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
-						item.setVisible(false);
+						setPlottableVisible(item, false);
 					}
 				}, _treeViewer, _myLayers);
 				CorePlugin.run(doIt);
@@ -941,21 +946,21 @@ public class LayerManagerView extends ViewPart
 			{
 				AbstractOperation doIt = new SelectionOperation("reveal item", new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
-						item.setVisible(true);
+						setPlottableVisible(item, true);
 					}
 				}, new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
-						item.setVisible(false);
+						setPlottableVisible(item, true);
 					}
 				}, new IOperateOn()
 				{
-					public void doItTo(Plottable item)
+					public void doItTo(Editable item)
 					{
-						item.setVisible(true);
+						setPlottableVisible(item, true);
 					}
 				}, _treeViewer, _myLayers);
 				CorePlugin.run(doIt);
@@ -966,6 +971,15 @@ public class LayerManagerView extends ViewPart
 		_revealAction.setImageDescriptor(CorePlugin.getImageDescriptor("icons/reveal.gif"));
 	}
 
+	protected static void setPlottableVisible(Editable item, boolean on)
+	{
+		if(item instanceof Plottable)
+		{
+			Plottable pl = (Plottable) item;
+			pl.setVisible(on);
+		}
+	}
+	
 	private void hookDoubleClickAction()
 	{
 		_treeViewer.addDoubleClickListener(new IDoubleClickListener()
@@ -1146,7 +1160,7 @@ public class LayerManagerView extends ViewPart
 				{
 					Layer changedLayer = (Layer) iter.next();
 
-					changed = _treeViewer.findPlottable(changedLayer);
+					changed = _treeViewer.findEditable(changedLayer);
 					// see if we can find the element related to the indicated layer
 					TreeItem thisItem = (TreeItem) changed;
 
@@ -1159,7 +1173,7 @@ public class LayerManagerView extends ViewPart
 			{
 				// hey, all of the layers need updating.
 				// better get on with it.
-				changed = _treeViewer.findPlottable(_myLayers);
+				changed = _treeViewer.findEditable(_myLayers);
 
 				Tree theTree = (Tree) changed;
 				TreeItem[] children = theTree.getItems();
@@ -1185,7 +1199,7 @@ public class LayerManagerView extends ViewPart
 		}
 	}
 
-	private void processNewData(final Layers theData, final Plottable newItem,
+	private void processNewData(final Layers theData, final Editable newItem,
 			final Layer parentLayer)
 	{
 		if (!_treeViewer.getTree().isDisposed())
@@ -1201,14 +1215,14 @@ public class LayerManagerView extends ViewPart
 					if (newItem != null)
 					{
 						// wrap the plottable
-						PlottableWrapper parentWrapper = new PlottableWrapper(parentLayer, null,
+						EditableWrapper parentWrapper = new EditableWrapper(parentLayer, null,
 								theData);
-						PlottableWrapper wrapped = new PlottableWrapper(newItem, parentWrapper,
+						EditableWrapper wrapped = new EditableWrapper(newItem, parentWrapper,
 								theData);
 						ISelection selected = new StructuredSelection(wrapped);
 
 						// and select it
-						plottableSelected(selected, wrapped);
+						editableSelected(selected, wrapped);
 					}
 				}
 			});
@@ -1218,7 +1232,7 @@ public class LayerManagerView extends ViewPart
 
 	private static interface IOperateOn
 	{
-		public void doItTo(Plottable item);
+		public void doItTo(Editable item);
 	}
 
 	private static void applyOperation(IOperateOn operation,
@@ -1234,9 +1248,9 @@ public class LayerManagerView extends ViewPart
 		{
 			Object obj = iterator.next();
 
-			PlottableWrapper thisP = (PlottableWrapper) obj;
-			Plottable res = thisP.getPlottable();
-			Plottable thisOne = (Plottable) res;
+			EditableWrapper thisP = (EditableWrapper) obj;
+			Editable res = thisP.getEditable();
+			Editable thisOne = (Editable) res;
 			Layer thisParentLayer = null;
 
 			// ok - do the business
@@ -1302,7 +1316,7 @@ public class LayerManagerView extends ViewPart
 		myLayers.fireReformatted(changedLayer);
 	}
 
-	public void plottableSelected(ISelection sel, PlottableWrapper pw)
+	public void editableSelected(ISelection sel, EditableWrapper pw)
 	{
 		if (_followSelectionToggle.isChecked())
 			_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());

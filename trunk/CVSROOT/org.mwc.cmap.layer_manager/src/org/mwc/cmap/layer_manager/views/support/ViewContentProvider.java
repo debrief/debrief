@@ -9,12 +9,10 @@ import java.util.Vector;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.Viewer;
-import org.mwc.cmap.core.property_support.PlottableWrapper;
+import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.layer_manager.views.LayerManagerView;
 
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
+import MWC.GUI.*;
 
 /*
  * The content provider class is responsible for providing objects to the view.
@@ -63,7 +61,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 				while (numer.hasMoreElements())
 				{
 					Layer thisL = (Layer) numer.nextElement();
-					PlottableWrapper wrapper = new PlottableWrapper(thisL, null, theLayers);
+					EditableWrapper wrapper = new EditableWrapper(thisL, null, theLayers);
 					list.add(wrapper);
 				}
 				res = list.toArray();
@@ -76,10 +74,10 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	public Object getParent(Object child)
 	{
 		Object res = null;
-		if (child instanceof PlottableWrapper)
+		if (child instanceof EditableWrapper)
 		{
-			PlottableWrapper thisP = (PlottableWrapper) child;
-			PlottableWrapper parent = thisP.getParent();
+			EditableWrapper thisP = (EditableWrapper) child;
+			EditableWrapper parent = thisP.getParent();
 			res = parent;
 		}
 		return res;
@@ -88,19 +86,19 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	public Object[] getChildren(Object parent)
 	{
 		Object[] res = new Object[0];
-		if (parent instanceof PlottableWrapper)
+		if (parent instanceof EditableWrapper)
 		{
-			PlottableWrapper pl = (PlottableWrapper) parent;
+			EditableWrapper pl = (EditableWrapper) parent;
 			if (pl.hasChildren())
 			{
 
-				Layer thisL = (Layer) pl.getPlottable();
+				Layer thisL = (Layer) pl.getEditable();
 				Vector list = new Vector(0, 1);
 				Enumeration numer = thisL.elements();
 				while (numer.hasMoreElements())
 				{
-					Plottable thisP = (Plottable) numer.nextElement();
-					PlottableWrapper pw = new PlottableWrapper(thisP, pl, pl.getLayers());
+					Editable thisP = (Editable) numer.nextElement();
+					EditableWrapper pw = new EditableWrapper(thisP, pl, pl.getLayers());
 					list.add(pw);
 				}
 				res = list.toArray();
@@ -112,9 +110,9 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 	public boolean hasChildren(Object parent)
 	{
 		boolean res = false;
-		if (parent instanceof PlottableWrapper)
+		if (parent instanceof EditableWrapper)
 		{
-			PlottableWrapper pw = (PlottableWrapper) parent;
+			EditableWrapper pw = (EditableWrapper) parent;
 			res = pw.hasChildren();
 		}
 

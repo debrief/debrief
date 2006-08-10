@@ -117,8 +117,8 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 		// right, do we have a target?
 		if (ti != null)
 		{
-			PlottableWrapper pw = (PlottableWrapper) ti.getData();
-			Plottable pl = pw.getPlottable();
+			EditableWrapper pw = (EditableWrapper) ti.getData();
+			Editable pl = pw.getEditable();
 			if (pl instanceof ETOPOPainter)
 			{
 				allowDrop = false;
@@ -163,14 +163,14 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 		// cycle through the elements
 		for (Iterator iter = sel.iterator(); iter.hasNext();)
 		{
-			PlottableWrapper thisP = (PlottableWrapper) iter.next();
-			Plottable dragee = thisP.getPlottable();
+			EditableWrapper thisP = (EditableWrapper) iter.next();
+			Editable dragee = thisP.getEditable();
 
 			// right, are we cutting?
 			if ((_oldDetail & DND.DROP_MOVE) != 0)
 			{
 				// remove from current parent
-				PlottableWrapper parent = thisP.getParent();
+				EditableWrapper parent = thisP.getParent();
 
 				// is this a top-level item?
 				if (parent == null)
@@ -180,20 +180,20 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 				}
 				else
 				{
-					BaseLayer parentLayer = (BaseLayer) parent.getPlottable();
+					BaseLayer parentLayer = (BaseLayer) parent.getEditable();
 					parentLayer.removeElement(dragee);
 				}
 			}
 
 			// add to new parent
 			TreeItem ti = (TreeItem) event.item;
-			PlottableWrapper destination = (PlottableWrapper) ti.getData();
+			EditableWrapper destination = (EditableWrapper) ti.getData();
 			
 			// ok, we need to add a new instance of the dragee (so we can support multiple instances)
-			Plottable newDragee = (Plottable) RightClickPasteAdaptor.cloneThis(dragee);
+			Editable newDragee = (Editable) RightClickPasteAdaptor.cloneThis(dragee);
 			
 			// also add it to the plottable layer target
-			BaseLayer dest = (BaseLayer) destination.getPlottable();
+			BaseLayer dest = (BaseLayer) destination.getEditable();
 			dest.add(newDragee);
 		}
 
