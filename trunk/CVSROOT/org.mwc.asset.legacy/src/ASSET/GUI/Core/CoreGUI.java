@@ -213,8 +213,7 @@ abstract public class CoreGUI
 
     // setup our double-click editor
     // and add our dbl click listener
-    getChart().addCursorDblClickedListener(new DblClickEdit(_theData,
-                                                            getProperties()));
+    getChart().addCursorDblClickedListener(new DblClickEdit(getProperties()));
 
     // create our right click editor, and add it's helpers
     final RightClickEdit rc = new RightClickEdit(getProperties());
