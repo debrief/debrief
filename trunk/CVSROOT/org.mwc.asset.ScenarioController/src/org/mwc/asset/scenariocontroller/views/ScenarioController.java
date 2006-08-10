@@ -124,17 +124,17 @@ public class ScenarioController extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		_pusher = new Button(parent, SWT.NONE);
-		_pusher.setText("Tester");
+		_pusher.setText("Load scenario");
 		_pusher.addSelectionListener(new SelectionAdapter()
 		{
 
 			public void widgetSelected(SelectionEvent e)
 			{
-				btnOnePressed();
+				getTheSampleScenarioLoaded();
 			}
 		});
 		Button pusher2 = new Button(parent, SWT.NONE);
-		pusher2.setText("Tester 2");
+		pusher2.setText("Step");
 		pusher2.addSelectionListener(new SelectionAdapter()
 		{
 
@@ -258,7 +258,7 @@ public class ScenarioController extends ViewPart
 		_myNarrativeProvider.fireEntry(newEntry);
 	}
 
-	protected void btnOnePressed()
+	protected void getTheSampleScenarioLoaded()
 	{
 		// hey, have a go at loading a scenario
 		final String MY_SCENARIO = "c:\\temp\\andy_tactic\\ssn_run1.xml";
