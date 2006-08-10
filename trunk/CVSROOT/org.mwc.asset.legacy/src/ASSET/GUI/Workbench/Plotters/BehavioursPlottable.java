@@ -1,27 +1,35 @@
 package ASSET.GUI.Workbench.Plotters;
 
+import java.util.*;
+
 import ASSET.Models.DecisionType;
+import ASSET.Models.Decision.BehaviourList;
 
 public class BehavioursPlottable extends BasePlottable
 {
-	
-	final private DecisionType _myModel;
-	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public BehavioursPlottable(DecisionType decisionModel)
 	{
-		super(decisionModel.getName());
-		_myModel = decisionModel;
+		super(decisionModel);
 	}
 
-	public EditorType getInfo()
+	public Enumeration elements()
 	{
-		return _myModel.getInfo();
-	}
+		Enumeration res = null;
 
-	public boolean hasEditor()
-	{
-		// TODO Auto-generated method stub
-		return _myModel.hasEditor();
+		// hmm, do we have child behaviours?
+		if(getModel() instanceof BehaviourList)
+		{
+			BehaviourList bl = (BehaviourList) getModel();
+			Vector theModels = bl.getModels();
+			res = theModels.elements();
+		}
+		
+		return res;
 	}
 	
 	

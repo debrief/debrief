@@ -1,74 +1,54 @@
 package ASSET.GUI.Workbench.Plotters;
 
 import java.beans.*;
+import java.util.Enumeration;
 
 import MWC.GUI.*;
+import MWC.GUI.Editable.EditorType;
 import MWC.GenericData.*;
 
-public class BasePlottable implements Plottable
+public class BasePlottable implements Plottable, Layer
 {
-	private String _name;
 	
-	public BasePlottable(String name)
+	/** the thing we're wrapping
+	 */
+	final private Editable _myModel;
+	
+	public BasePlottable(Editable myModel)
 	{
-		_name = name;
+		_myModel = myModel;
+	}	
+	
+	public String toString()
+	{
+		return getName();
 	}
 
-	public EditorType getInfo()
+	protected Editable getModel()
 	{
-		return new BaseEditableInfo(this);
+		return _myModel;
 	}
-
+	
 	public String getName()
 	{
-		// TODO Auto-generated method stub
-		return _name;
+		return _myModel.getName();
 	}
 	
-	public void setName(String name)
+	public EditorType getInfo()
 	{
-		_name = name;
+		return _myModel.getInfo();
 	}
 
 	public boolean hasEditor()
 	{
-		// TODO Auto-generated method stub
-		return true;
+		return _myModel.hasEditor();
 	}
 	
-	/**
-	 * class containing editable details of a track
-	 */
-	public final class BaseEditableInfo extends Editable.EditorType
+	public void setName(String name)
 	{
-
-		/**
-		 * constructor for this editor, takes the actual track as a parameter
-		 * 
-		 * @param data
-		 *          track being edited
-		 */
-		public BaseEditableInfo(final BasePlottable data)
-		{
-			super(data, data.getName(), "");
-		}
-
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res = {
-						expertProp("Name", "name of this element", FORMAT),
-				};
-				return res;
-			}
-			catch (IntrospectionException e)
-			{
-				e.printStackTrace();
-				return super.getPropertyDescriptors();
-			}
-		}
+		// ignore...
 	}
+	
 
 	public WorldArea getBounds()
 	{
@@ -98,6 +78,34 @@ public class BasePlottable implements Plottable
 	public int compareTo(Object arg0)
 	{
 		BasePlottable other = (BasePlottable) arg0;
-		return getName().compareTo(other.getName());
+		Editable otherM = other._myModel;
+		return _myModel.getName().compareTo(otherM.getName());
 	}
+
+	public void add(Editable point)
+	{
+	}
+
+	public void append(Layer other)
+	{
+	}
+
+	public Enumeration elements()
+	{
+		return null;
+	}
+
+	public void exportShape()
+	{
+	}
+
+	public int getLineThickness()
+	{
+		return 1;
+	}
+
+	public void removeElement(Editable point)
+	{
+	}
+
 }

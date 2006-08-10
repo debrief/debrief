@@ -1,13 +1,13 @@
 package ASSET.GUI.Workbench.Plotters;
 
-import ASSET.Models.Movement.MovementCharacteristics;
+import MWC.GUI.Editable;
 
 public class PerformancePlottable extends BasePlottable
 {
 
-	public PerformancePlottable(MovementCharacteristics movementChars)
+	public PerformancePlottable(Editable myModel)
 	{
-		super(movementChars.getName());
+		super(myModel);
 	}
 
 }
