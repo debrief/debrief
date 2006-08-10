@@ -76,7 +76,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		{
 
 			// ok, find the type of object we're working with
-			Class rawClass = PlottableWrapper.getPropertyClass(_thisProp);
+			Class rawClass = EditableWrapper.getPropertyClass(_thisProp);
 
 			for (Iterator iter = _myHelperList.iterator(); iter.hasNext();)
 			{
@@ -92,7 +92,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			{
 				// ok, log the error
 				String msg = "editor not found for:"
-						+ PlottableWrapper.getPropertyClass(prop) + "("
+						+ EditableWrapper.getPropertyClass(prop) + "("
 						+ prop.getDisplayName() + ")";
 				System.out.println(msg);
 			}
