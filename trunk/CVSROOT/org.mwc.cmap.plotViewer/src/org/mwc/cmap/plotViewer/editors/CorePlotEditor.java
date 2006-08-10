@@ -212,7 +212,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 		// and add our dbl click listener
 		// and add our dbl click listener
-		getChart().addCursorDblClickedListener(new DblClickEdit(_myLayers, null)
+		getChart().addCursorDblClickedListener(new DblClickEdit(null)
 		{
 			/**
 			 * 
