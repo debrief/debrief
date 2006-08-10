@@ -40,6 +40,25 @@ public class EditableWrapper implements IPropertySource
 	 */
 	static String[] _booleanTags = new String[] { "Yes", "No" };
 
+
+	/**
+	 * the parent of this object
+	 */
+	private final EditableWrapper _parent;	
+	
+	/**
+	 * constructor - ok, lets get going
+	 * 
+	 * @param plottable
+	 * @param theLayers
+	 */
+	public EditableWrapper(Editable plottable, EditableWrapper parent, Layers theLayers)
+	{
+		_editable = plottable;
+		_theLayers = theLayers;
+		_parent = parent;
+	}
+	
 	/**
 	 * constructor - ok, lets get going
 	 * 
@@ -50,8 +69,55 @@ public class EditableWrapper implements IPropertySource
 	{
 		_editable = plottable;
 		_theLayers = theLayers;
+		_parent = null;
+	}
+		
+	/**
+	 * constructor - ok, lets get going
+	 * 
+	 * @param plottable
+	 * @param theLayers
+	 */
+	public EditableWrapper(Editable plottable)
+	{
+		_editable = plottable;
+		_theLayers = null;
+		_parent = null;
+	}
+	
+
+
+	public Layer getTopLevelLayer()
+	{
+		Layer res = null;
+		// ok. we may just be changing a single layer
+		// head back up the tree to the base layer
+		EditableWrapper parent = getParent();
+
+		// just see if we are a top-level layer
+		if (parent == null)
+		{
+			res = (Layer) getEditable();
+		}
+		else
+		{
+			EditableWrapper parentParent = parent;
+			while (parent != null)
+			{
+				parent = parent.getParent();
+				if (parent != null)
+				{
+					parentParent = parent;
+				}
+			}
+
+			// sorted. previous parent should be the top-level layer
+			res = (Layer) parentParent.getEditable();
+		}
+		return res;
 	}
 
+	
 	/**
 	 * hey, where's the thing we're dealing with?
 	 * 
@@ -283,6 +349,12 @@ public class EditableWrapper implements IPropertySource
 
 		return res;
 	}
+	
+
+	public EditableWrapper getParent()
+	{
+		return _parent;
+	}	
 
 	/**
 	 * embedded class which stores a property change in an undoable operation
