@@ -41,6 +41,8 @@ public class LayerManagerView extends ViewPart
 
 	private MyTreeViewer _treeViewer;
 
+	Action _trackNewLayers;
+
 	/*
 	 * don't bother with the drill-down adapter. we've removed it to save space in
 	 * the local toolbar private DrillDownAdapter drillDownAdapter;
@@ -377,21 +379,26 @@ public class LayerManagerView extends ViewPart
 		});
 
 		_dragDropSupport = new LayerMgrDragDropSupport(_treeViewer);
-		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport.getTypes(), _dragDropSupport);
-		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport.getTypes(), _dragDropSupport);
+		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY,
+				_dragDropSupport.getTypes(), _dragDropSupport);
+		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY,
+				_dragDropSupport.getTypes(), _dragDropSupport);
 
 		// and format the tree
 		Tree tree = _treeViewer.getTree();
 		tree.setHeaderVisible(true);
 		formatTree(tree);
 
+		// declare the part monitor, we use it when we generate actions
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());		
+		
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
 
 		// and setup the part monitoring
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+
 		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -700,12 +707,17 @@ public class LayerManagerView extends ViewPart
 		manager.add(_makeSecondary);
 		manager.add(_hideAction);
 		manager.add(_revealAction);
+		manager.add(_trackNewLayers);
+		
 		// manager.add(new Separator());
 		// drillDownAdapter.addNavigationActions(manager);
 	}
 
 	private void makeActions()
 	{
+
+		_trackNewLayers = _myPartMonitor.createSyncedAction("Track new narratives",
+				"Always show narratives for selected provider", getSite());
 
 		_followSelectionToggle = new Action("Jump to selection", Action.AS_CHECK_BOX)
 		{
@@ -961,20 +973,22 @@ public class LayerManagerView extends ViewPart
 			public void doubleClick(DoubleClickEvent event)
 			{
 
-					try
-					{
-						// open the properties window
-						IWorkbench wb = PlatformUI.getWorkbench();
-						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-						IWorkbenchPage page = win.getActivePage();
+				try
+				{
+					// open the properties window
+					IWorkbench wb = PlatformUI.getWorkbench();
+					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+					IWorkbenchPage page = win.getActivePage();
 
-						// right, open the view.
-						page.showView(IPageLayout.ID_PROP_SHEET);
-					}
-					catch (PartInitException e)
-					{
-						CorePlugin.logError(Status.ERROR, "Failed to automatically open properties window on Layer Mgr double-click", e);
-					}
+					// right, open the view.
+					page.showView(IPageLayout.ID_PROP_SHEET);
+				}
+				catch (PartInitException e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"Failed to automatically open properties window on Layer Mgr double-click",
+							e);
+				}
 			}
 		});
 	}
@@ -992,41 +1006,45 @@ public class LayerManagerView extends ViewPart
 		// just check we're not already looking at it
 		if (part != _myLayers)
 		{
-			// implementation here.
-			_myLayers = (Layers) part;
-			if (_myLayersListener == null)
+			// are we tracking new layers?
+			if (_trackNewLayers.isChecked())
 			{
-				_myLayersListener = new Layers.DataListener2()
+				// implementation here.
+				_myLayers = (Layers) part;
+				if (_myLayersListener == null)
 				{
-
-					public void dataModified(Layers theData, Layer changedLayer)
+					_myLayersListener = new Layers.DataListener2()
 					{
-					}
 
-					public void dataExtended(Layers theData)
-					{
-						dataExtended(theData, null, null);
-					}
+						public void dataModified(Layers theData, Layer changedLayer)
+						{
+						}
 
-					public void dataReformatted(Layers theData, Layer changedLayer)
-					{
-						handleReformattedLayer(changedLayer);
-					}
+						public void dataExtended(Layers theData)
+						{
+							dataExtended(theData, null, null);
+						}
 
-					public void dataExtended(Layers theData, Plottable newItem, Layer parentLayer)
-					{
-						processNewData(theData, newItem, parentLayer);
-					}
-				};
+						public void dataReformatted(Layers theData, Layer changedLayer)
+						{
+							handleReformattedLayer(changedLayer);
+						}
+
+						public void dataExtended(Layers theData, Plottable newItem, Layer parentLayer)
+						{
+							processNewData(theData, newItem, parentLayer);
+						}
+					};
+				}
+				// right, listen for data being added
+				_myLayers.addDataExtendedListener(_myLayersListener);
+
+				// and listen for items being reformatted
+				_myLayers.addDataReformattedListener(_myLayersListener);
+
+				// do an initial population.
+				processNewData(_myLayers, null, null);
 			}
-			// right, listen for data being added
-			_myLayers.addDataExtendedListener(_myLayersListener);
-
-			// and listen for items being reformatted
-			_myLayers.addDataReformattedListener(_myLayersListener);
-
-			// do an initial population.
-			processNewData(_myLayers, null, null);
 		}
 	}
 
@@ -1269,7 +1287,8 @@ public class LayerManagerView extends ViewPart
 	/**
 	 * user has double-clicked on an item. process.
 	 * 
-	 * @param operation the thingy we're doing
+	 * @param operation
+	 *          the thingy we're doing
 	 */
 	private void applyOperationToSelection(IOperateOn operation)
 	{
