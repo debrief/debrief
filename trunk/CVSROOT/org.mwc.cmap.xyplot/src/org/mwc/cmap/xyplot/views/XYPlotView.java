@@ -687,7 +687,7 @@ public class XYPlotView extends ViewPart
 		// do we have any data?
 		if (_thePlotArea != null)
 		{
-			EditableWrapper wrappedEditable = new EditableWrapper(_thePlotArea, null);
+			EditableWrapper wrappedEditable = new EditableWrapper(_thePlotArea);
 			StructuredSelection _propsAsSelection = new StructuredSelection(wrappedEditable);
 
 			_selectionHelper.fireNewSelection(_propsAsSelection);
