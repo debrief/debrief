@@ -273,9 +273,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	public void selectPlottable(Plottable target, Layer parentLayer)
 	{
 		CorePlugin.logError(Status.INFO, "Double-click processed, opening property editor for:" + target, null);
-		PlottableWrapper parentP = new PlottableWrapper(parentLayer, null, getChart()
+		EditableWrapper parentP = new EditableWrapper(parentLayer, null, getChart()
 				.getLayers());
-		PlottableWrapper wrapped = new PlottableWrapper(target, parentP, getChart()
+		EditableWrapper wrapped = new EditableWrapper(target, parentP, getChart()
 				.getLayers());
 		ISelection selected = new StructuredSelection(wrapped);
 		fireSelectionChanged(selected);
