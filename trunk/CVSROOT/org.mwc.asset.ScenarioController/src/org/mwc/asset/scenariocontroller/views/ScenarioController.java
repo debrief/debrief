@@ -5,7 +5,7 @@ import java.io.*;
 import java.text.*;
 import java.util.*;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.*;
@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.asset.sample_data.SampleDataPlugin;
 import org.mwc.asset.scenariocontroller.ScenarioControllerPlugin;
 import org.mwc.asset.scenariocontroller.preferences.TimeControllerProperties;
 import org.mwc.cmap.core.CorePlugin;
@@ -451,9 +450,13 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 					{
 						res = _theLayers;
 					}
-					if (adapter == ScenarioType.class)
+					else if (adapter == ScenarioType.class)
 					{
 						res = _theScenario;
+					}
+					else if (adapter == ScenarioLayer.class)
+					{
+						res = _myScenarioLayer;
 					}
 					return res;
 				}
