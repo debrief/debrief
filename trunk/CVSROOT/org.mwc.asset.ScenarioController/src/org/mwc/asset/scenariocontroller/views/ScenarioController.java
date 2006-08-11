@@ -1,16 +1,27 @@
 package org.mwc.asset.scenariocontroller.views;
 
+import java.beans.*;
 import java.io.*;
+import java.text.*;
 import java.util.*;
 
+import org.eclipse.core.runtime.*;
+import org.eclipse.jface.action.*;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.ide.IDE;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.asset.sample_data.SampleDataPlugin;
+import org.mwc.asset.scenariocontroller.ScenarioControllerPlugin;
+import org.mwc.asset.scenariocontroller.preferences.TimeControllerProperties;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.narrative.BaseNarrativeProvider;
 
 import ASSET.ScenarioType;
@@ -23,7 +34,7 @@ import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.*;
 import MWC.TacticalData.NarrativeEntry;
 
-public class ScenarioController extends ViewPart
+public class ScenarioController extends ViewPart implements ISelectionProvider
 {
 	/**
 	 * the type of message we send when loading/managing the scenario
@@ -34,8 +45,6 @@ public class ScenarioController extends ViewPart
 	 * hey, it's our scenario
 	 */
 	private CoreScenario _theScenario;
-
-	private Button _pusher;
 
 	/**
 	 * remember that we can load files
@@ -58,17 +67,36 @@ public class ScenarioController extends ViewPart
 	private BaseNarrativeProvider _myNarrativeProvider;
 
 	/**
+	 * the people listening to us
+	 */
+	private Vector _selectionListeners;
+
+	/**
 	 * represent the scenario as a layer
 	 */
 	private ScenarioLayer _myScenarioLayer;
+
+	private Label _timeLabel;
+
+	private Composite _holder;
+
+	private Action _editProperties;
+
+	protected StructuredSelection _propsAsSelection;
+
+	private TimeControllerProperties _myStepperProperties;
+
+	private PropertyChangeListener _myPropertyListener;
 
 	/**
 	 * The constructor.
 	 */
 	public ScenarioController()
 	{
+		_selectionListeners = new Vector(0, 1);
+
 		_theScenario = new CoreScenario();
-		
+
 		_myNarrativeProvider = new BaseNarrativeProvider();
 		_theLayers = new Layers();
 
@@ -76,45 +104,74 @@ public class ScenarioController extends ViewPart
 		_myScenarioLayer = new ASSET.GUI.Workbench.Plotters.ScenarioLayer();
 		_myScenarioLayer.setScenario(_theScenario);
 		_theLayers.addThisLayer(_myScenarioLayer);
-		
+
 		BaseLayer decs = new BaseLayer();
 		decs.setName("Decorations");
 		GridPainter grid = new GridPainter();
 		grid.setDelta(new WorldDistanceWithUnits(5, WorldDistanceWithUnits.NM));
 		decs.add(grid);
-		
+
 		_theLayers.addThisLayer(decs);
 
 		// listen for scenario changes
-		_theScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
-		{
-			public void restart()
-			{
-			}
-
-			public void step(long newTime)
-			{
-				fireMessage("Stepped", new HiResDate(newTime), "Stepped");
-			}
-		});
-
 		listenForScenarioChanges(_theScenario, _myScenarioLayer, _theLayers);
-		
+
+		// ok, initialise the time step
+		_myStepperProperties = new TimeControllerProperties();
+
+		_myPropertyListener = new PropertyChangeListener()
+		{
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				System.out.println("stepper changed!");
+				_theScenario.setScenarioStepTime(_myStepperProperties.getSmallStep());
+				_theScenario.setStepTime(_myStepperProperties.getAutoInterval());
+			}
+		};
+		// listen for property changes
+		_myStepperProperties.addPropertyChangeListener(_myPropertyListener);
+
+		// fire it once to get us started
+		_myPropertyListener.propertyChange(new PropertyChangeEvent(this, "test", this, this));
+
 	}
 
-	private void listenForScenarioChanges(final CoreScenario scenario, final ScenarioLayer scenarioLayer, final Layers layers)
+	public void dispose()
 	{
-		_theScenario.addScenarioSteppedListener(new ScenarioSteppedListener(){
+		super.dispose();
+
+		// do some tidying
+		_myStepperProperties.removePropertyChangeListener(_myPropertyListener);
+	}
+
+	private void listenForScenarioChanges(final CoreScenario scenario,
+			final ScenarioLayer scenarioLayer, final Layers layers)
+	{
+		_theScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
+		{
 
 			public void restart()
 			{
-				_theLayers.fireModified(scenarioLayer);
 			}
 
 			public void step(long newTime)
 			{
-				_theLayers.fireModified(scenarioLayer);
-			}});
+				HiResDate dtg = new HiResDate(newTime);
+				fireMessage("Stepped", dtg, "Stepped");
+				final String newVal = toStringHiRes(dtg, "yy/MM/dd HH:mm");
+
+				Display.getDefault().asyncExec(new Runnable()
+				{
+					public void run()
+					{
+						if (!_holder.isDisposed())
+						{
+							_timeLabel.setText(newVal);
+						}
+					}
+				});
+			}
+		});
 	}
 
 	/**
@@ -123,7 +180,61 @@ public class ScenarioController extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		_pusher = new Button(parent, SWT.NONE);
+
+		_holder = new Composite(parent, SWT.NONE);
+		GridLayout grid = new GridLayout(1, false);
+		_holder.setLayout(grid);
+
+		// put the time at the top
+		createTimeLabel();
+
+		// put in the control buttons
+		createControlButtons(_holder);
+
+		// and now the useful buttons
+		Composite bottomRow = new Composite(_holder, SWT.NONE);
+		bottomRow.setLayout(new RowLayout());
+
+		Button _pusher = createOurOtherButtons(bottomRow);
+		// show a list for what's happening
+
+		// and get ready for drop
+		configureFileDropSupport(_pusher);
+
+		// and the buttons
+		makeActions();
+
+		// and store them
+		contributeToActionBars();
+
+		// say that we're a selection provider
+		getSite().setSelectionProvider(this);
+	}
+
+	/**
+	 * 
+	 */
+	private void createTimeLabel()
+	{
+		_timeLabel = new Label(_holder, SWT.NONE);
+		GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
+		_timeLabel.setLayoutData(labelGrid);
+		_timeLabel.setAlignment(SWT.CENTER);
+		_timeLabel.setText("--------------------------");
+		// _timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended", 16,
+		// SWT.NONE));
+		_timeLabel.setFont(new Font(Display.getDefault(), "Arial", 16, SWT.NONE));
+		_timeLabel.setForeground(new Color(Display.getDefault(), 33, 255, 22));
+		_timeLabel.setBackground(new Color(Display.getDefault(), 0, 0, 0));
+	}
+
+	/**
+	 * @param bottomRow
+	 * @return
+	 */
+	private Button createOurOtherButtons(Composite bottomRow)
+	{
+		Button _pusher = new Button(bottomRow, SWT.NONE);
 		_pusher.setText("Load scenario");
 		_pusher.addSelectionListener(new SelectionAdapter()
 		{
@@ -133,7 +244,7 @@ public class ScenarioController extends ViewPart
 				getTheSampleScenarioLoaded();
 			}
 		});
-		Button pusher2 = new Button(parent, SWT.NONE);
+		Button pusher2 = new Button(bottomRow, SWT.NONE);
 		pusher2.setText("Step");
 		pusher2.addSelectionListener(new SelectionAdapter()
 		{
@@ -143,21 +254,156 @@ public class ScenarioController extends ViewPart
 				doStep();
 			}
 		});
-		final Button pusher3 = new Button(parent, SWT.NONE);
+		final Button pusher3 = new Button(bottomRow, SWT.NONE);
 		pusher3.setText("Open asset plot");
 		pusher3.addSelectionListener(new SelectionAdapter()
 		{
 
 			public void widgetSelected(SelectionEvent e)
 			{
-				System.out.println("firing:" + e);
 				openASSETEditor();
 			}
 		});
-		// show a list for what's happening
+		return _pusher;
+	}
 
-		// and get ready for drop
-		configureFileDropSupport();
+	private void makeActions()
+	{
+		final ISelectionProvider provider = this;
+		_editProperties = new Action("Properties")
+		{
+
+			public void run()
+			{
+				super.run();
+				// get the editable thingy
+				if (_propsAsSelection == null)
+					_propsAsSelection = new StructuredSelection(_myStepperProperties);
+
+				CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection, provider);
+				_propsAsSelection = null;
+			}
+
+		};
+	}
+
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		if (_selectionListeners == null)
+			_selectionListeners = new Vector(0, 1);
+
+		// see if we don't already contain it..
+		if (!_selectionListeners.contains(listener))
+			_selectionListeners.add(listener);
+	}
+
+	private void contributeToActionBars()
+	{
+		IActionBars bars = getViewSite().getActionBars();
+		fillLocalPullDown(bars.getMenuManager());
+		fillLocalToolBar(bars.getToolBarManager());
+	}
+
+	private void fillLocalToolBar(IToolBarManager toolBarManager)
+	{
+		toolBarManager.add(_editProperties);
+	}
+
+	private void fillLocalPullDown(IMenuManager menuManager)
+	{
+		menuManager.add(_editProperties);
+	}
+
+	protected void createControlButtons(Composite parent)
+	{
+		// first create the button holder
+		Composite _btnPanel = new Composite(parent, SWT.NONE);
+		GridData btnGrid = new GridData(GridData.FILL_HORIZONTAL);
+		_btnPanel.setLayoutData(btnGrid);
+		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
+		btnFiller.marginHeight = 0;
+		_btnPanel.setLayout(btnFiller);
+
+		Button restartBtn = new Button(_btnPanel, SWT.NONE);
+		restartBtn.addSelectionListener(new SelectionListener()
+		{
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			public void widgetSelected(SelectionEvent e)
+			{
+				_theScenario.restart();
+			}
+		});
+		restartBtn.setImage(ScenarioControllerPlugin.getImage("icons/media_beginning.png"));
+		restartBtn.setToolTipText("Restart the scenario");
+
+		Button stepBtn = new Button(_btnPanel, SWT.NONE);
+		stepBtn.addSelectionListener(new SelectionListener()
+		{
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			public void widgetSelected(SelectionEvent e)
+			{
+				_theScenario.step();
+			}
+		});
+		stepBtn.setImage(ScenarioControllerPlugin.getImage("icons/media_forward.png"));
+		stepBtn.setToolTipText("Step the scenario forward");
+
+		final Button playBtn = new Button(_btnPanel, SWT.TOGGLE);
+		playBtn.addSelectionListener(new SelectionListener()
+		{
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			public void widgetSelected(SelectionEvent e)
+			{
+				Display.getDefault().asyncExec(new Runnable()
+				{
+					public void run()
+					{
+						if (!_holder.isDisposed())
+						{
+							boolean paused = playBtn.getSelection();
+							ImageDescriptor thisD;
+							if (paused)
+							{
+								thisD = ScenarioControllerPlugin
+										.getImageDescriptor("icons/media_pause.png");
+								playBtn.setToolTipText("Pause play");
+								_theScenario.start();
+							}
+							else
+							{
+								thisD = ScenarioControllerPlugin
+										.getImageDescriptor("icons/media_play.png");
+								playBtn.setToolTipText("auto-step");
+								_theScenario.pause();
+							}
+							playBtn.setImage(thisD.createImage());
+						}
+					}
+				});
+			}
+		});
+		playBtn.setImage(ScenarioControllerPlugin.getImage("icons/media_play.png"));
+		playBtn.setToolTipText("Play the scenario");
+
+		// eBwd.setImage(TimeControllerPlugin.getImage("icons/control_start_blue.png"));
+
+	}
+
+	protected void stepScenario()
+	{
+	}
+
+	protected void restartScenario()
+	{
 	}
 
 	protected void doStep()
@@ -169,7 +415,6 @@ public class ScenarioController extends ViewPart
 
 	protected void openASSETEditor()
 	{
-		System.out.println("called!");
 		try
 		{
 			final IEditorInput input = new IEditorInput()
@@ -202,26 +447,30 @@ public class ScenarioController extends ViewPart
 				public Object getAdapter(Class adapter)
 				{
 					Object res = null;
-					if(adapter == Layers.class)
+					if (adapter == Layers.class)
 					{
 						res = _theLayers;
+					}
+					if (adapter == ScenarioType.class)
+					{
+						res = _theScenario;
 					}
 					return res;
 				}
 			};
-//			IWorkbench wb = PlatformUI.getWorkbench();
-//			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-//			IWorkbenchPage page = win.getActivePage();			
-//			
-//			
-//			page.openEditor(input, "org.mwc.asset.ASSETPlotEditor");
-			
+			// IWorkbench wb = PlatformUI.getWorkbench();
+			// IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			// IWorkbenchPage page = win.getActivePage();
+			//			
+			//			
+			// page.openEditor(input, "org.mwc.asset.ASSETPlotEditor");
+
 			Display.getCurrent().asyncExec(new Runnable()
 			{
 				public void run()
 				{
-					IWorkbenchPage page = PlatformUI.getWorkbench()
-							.getActiveWorkbenchWindow().getActivePage();
+					IWorkbenchPage page = PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+							.getActivePage();
 					try
 					{
 						System.out.println("opening editor...");
@@ -233,8 +482,8 @@ public class ScenarioController extends ViewPart
 						e.printStackTrace();
 					}
 				}
-			});			
-			
+			});
+
 		}
 		catch (Exception e)
 		{
@@ -266,11 +515,21 @@ public class ScenarioController extends ViewPart
 
 		try
 		{
-			loadThisScenario(new FileInputStream(MY_SCENARIO), MY_SCENARIO);
+			File theFile = new File(
+					"d:/dev/eclipse2/org.mwc.asset.sample_data/data/force_prot_scenario_area.xml");
+			// final SampleDataPlugin thePlugin = SampleDataPlugin.getDefault();
+			InputStream theStream = new FileInputStream(theFile);// thePlugin.getResource(thePath);
+			loadThisScenario(theStream, MY_SCENARIO);
 		}
-		catch (FileNotFoundException e)
+		catch (IOException e)
 		{
 			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR, "Failed to load sample data", e);
+		}
+		catch (NullPointerException e)
+		{
+			e.printStackTrace();
+			CorePlugin.logError(Status.ERROR, "The sample-data plugin isn't loaded", e);
 		}
 
 		// next, go for the observers
@@ -401,7 +660,7 @@ public class ScenarioController extends ViewPart
 	/**
 	 * sort out the file-drop target
 	 */
-	private void configureFileDropSupport()
+	private void configureFileDropSupport(Button _pusher)
 	{
 		int dropOperation = DND.DROP_COPY;
 		Transfer[] dropTypes = { FileTransfer.getInstance() };
@@ -501,5 +760,68 @@ public class ScenarioController extends ViewPart
 		return res;
 
 	}
-	
+
+	public static String toStringHiRes(HiResDate time, String pattern)
+			throws IllegalArgumentException
+	{
+		// so, have a look at the data
+		long micros = time.getMicros();
+		// long wholeSeconds = micros / 1000000;
+
+		StringBuffer res = new StringBuffer();
+
+		java.util.Date theTime = new java.util.Date(micros / 1000);
+
+		SimpleDateFormat _myFormat = new SimpleDateFormat(pattern);
+		_myFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+
+		res.append(_myFormat.format(theTime));
+
+		DecimalFormat microsFormat = new DecimalFormat("000000");
+		DecimalFormat millisFormat = new DecimalFormat("000");
+
+		// do we have micros?
+		if (micros % 1000 > 0)
+		{
+			// yes
+			res.append(".");
+			res.append(microsFormat.format(micros % 1000000));
+		}
+		else
+		{
+			// do we have millis?
+			if (micros % 1000000 > 0)
+			{
+				// yes, convert the value to millis
+
+				long millis = micros = (micros % 1000000) / 1000;
+
+				res.append(".");
+				res.append(millisFormat.format(millis));
+			}
+			else
+			{
+				// just use the normal output
+			}
+		}
+
+		return res.toString();
+	}
+
+	public ISelection getSelection()
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionListeners.remove(listener);
+	}
+
+	public void setSelection(ISelection selection)
+	{
+		// ignore...
+	}
+
 }
