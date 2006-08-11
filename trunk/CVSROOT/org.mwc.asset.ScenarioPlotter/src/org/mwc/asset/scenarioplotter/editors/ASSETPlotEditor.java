@@ -1,14 +1,16 @@
 package org.mwc.asset.scenarioplotter.editors;
 
-import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.*;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
+import org.mwc.asset.core.ASSETActivator;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
 import ASSET.ScenarioType;
+import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.*;
 import MWC.GUI.Layers;
 
@@ -26,10 +28,13 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	protected ParticipantsChangedListener _myChangeListener;
 	
+	
 	/** use our own layers object - not the one in the parent, silly.
 	 * 
 	 */
 	private Layers _assetLayers;
+
+	private ScenarioLayer _theScenarioLayers;
 	
 	public ASSETPlotEditor()
 	{
@@ -78,129 +83,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 		
 		// sort out the part monitor
 	//	_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-
-		// and start listening
-		listenToMyParts();
-	}
-
-	/**
-	 * listen out for part changes
-	 */
-	private void listenToMyParts()
-	{
-//		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-//					{
-//						Layers newLayers = (Layers) part;
-//						if (newLayers != _myLayers)
-//						{
-//							// stop listening to the old layesr
-//							_myLayers.removeDataExtendedListener(_listenForMods);
-//							_myLayers.removeDataModifiedListener(_listenForMods);
-//							_myLayers.removeDataReformattedListener(_listenForMods);
-//
-//							_myLayers = newLayers;
-//
-//							// start listening to the new layers
-//							_myLayers.addDataExtendedListener(_listenForMods);
-//							_myLayers.addDataModifiedListener(_listenForMods);
-//							_myLayers.addDataReformattedListener(_listenForMods);
-//
-//							// tell the chart about the new layers
-//							getChart().setLayers(_myLayers);
-//
-//						}
-//					}
-//
-//				});
-//
-//		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-//					{
-//						if (part == _myLayers)
-//						{
-//							// ok, stop listening out.
-//							_myLayers.removeDataExtendedListener(_listenForMods);
-//							_myLayers.removeDataModifiedListener(_listenForMods);
-//							_myLayers.removeDataReformattedListener(_listenForMods);
-//							_myLayers = null;
-//
-//							getChart().setLayers(null);
-//
-//							// and do chart update
-//							getChart().update();
-//
-//						}
-//					}
-//				});
-//		
-//		_myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.ACTIVATED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-//					{
-//						if(part != _myScenario)
-//						{
-//							// sort out our listeners
-//							if(_myStepListener == null)
-//							{
-//								_myStepListener = new ScenarioSteppedListener(){
-//
-//									public void restart()
-//									{
-//									}
-//
-//									public void step(long newTime)
-//									{
-//										_myLayers.fireModified(_theScenarioLayer);
-//									}};
-//							}
-//							if(_myChangeListener == null)
-//							{
-//								_myStepListener = new ScenarioSteppedListener(){
-//									public void restart()
-//									{
-//									}
-//
-//									public void step(long newTime)
-//									{
-//										_myLayers.fireModified(_theScenarioLayer);
-//									}};
-//							}
-//							
-//							// stop listening to my scenario
-//							_myScenario.removeScenarioSteppedListener(_myStepListener);
-//							_myScenario.removeParticipantsChangedListener(_myChangeListener);
-//							
-//							// ok, forget about that one.
-//							_myScenario = null;
-//							
-//							_myScenario = (ScenarioType) part;
-//							_myScenario.addScenarioSteppedListener(_myStepListener);
-//							_myScenario.addParticipantsChangedListener(_myChangeListener);
-//						}
-//					}
-//				});		
-//		_myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.CLOSED,
-//				new PartMonitor.ICallback()
-//				{
-//					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-//					{
-//						if(part == _myScenario)
-//						{
-//							// stop listening to my scenario
-//							_myScenario.removeScenarioSteppedListener(_myStepListener);
-//							_myScenario.removeParticipantsChangedListener(_myChangeListener);
-//							
-//							// ok, forget about that one.
-//							_myScenario = null;
-//						}
-//					}
-//				});		
 	}
 
 	// /////////////////////////////////////////////////////////
@@ -230,11 +112,54 @@ public class ASSETPlotEditor extends CorePlotEditor
 			storeLayers(newLayers);
 		}
 		
+		// hmm, do we have a scenario
+		Object tryScenario = input.getAdapter(ScenarioType.class);
+		if(tryScenario != null)
+		{
+			ScenarioType scenario = (ScenarioType) tryScenario;
+			listenToTheScenario(scenario);
+			
+			// update our title
+			setPartName(scenario.getName());
+		}
+		
+		// and the scenario layers object (it's the one we update when time moves forward
+		Object tryScenarioLayers = input.getAdapter(ScenarioLayer.class);
+		if(tryScenarioLayers != null)
+		{
+			ScenarioLayer scenario = (ScenarioLayer) tryScenarioLayers;
+			_theScenarioLayers = scenario;
+		}
+		else
+		{
+			ASSETActivator.logError(Status.WARNING, "Our init message isn't providing us with the scenario layers", null);
+		}
+		
+		
 		// ok, create some actions
 		// Create Action instances
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
+	}
+
+	private void listenToTheScenario(ScenarioType scenario)
+	{
+		scenario.addScenarioSteppedListener(new ScenarioSteppedListener(){
+			public void restart()
+			{
+				doUpdate();
+			}
+
+			public void step(long newTime)
+			{
+				doUpdate();
+			}});
+		
+	}
+	protected void doUpdate()
+	{
+			_assetLayers.fireModified(_theScenarioLayers);	
 	}
 
 	/**
