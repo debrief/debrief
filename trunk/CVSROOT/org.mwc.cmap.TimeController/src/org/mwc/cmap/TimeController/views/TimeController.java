@@ -1122,7 +1122,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			if (_propsAsSelection == null)
 				_propsAsSelection = new StructuredSelection(_myStepperProperties);
 
-			editThisInProperties(_propsAsSelection);
+			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection, this);
 			_propsAsSelection = null;
 		}
 		else
@@ -1130,47 +1130,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			System.out.println("we haven't got any properties yet");
 		}
 	}
-
-	/**
-	 * @param asSelection
-	 */
-	private void editThisInProperties(StructuredSelection asSelection)
-	{
-		if (_selectionListeners != null)
-		{
-			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, asSelection);
-			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
-			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
-				if (thisL != null)
-				{
-					thisL.selectionChanged(sEvent);
-				}
-			}
-		}
-
-		// hey, better make sure the properties window is open
-		IWorkbench wb = PlatformUI.getWorkbench();
-		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
-
-		// get ready for the start/end times
-		// right, we need the time controller if we're going to get the
-		// times
-		try
-		{
-			page.showView(IPageLayout.ID_PROP_SHEET, null, IWorkbenchPage.VIEW_VISIBLE);
-		}
-		catch (PartInitException e)
-		{
-			CorePlugin.logError(Status.ERROR,
-					"Failed to open properties view when showing timer properties", e);
-		}
-	}
-
-	// //////////////////////////////
-	// temporal data management
-	// //////////////////////////////
 
 	/**
 	 * the data we are looking at has updated. If we're set to follow that time,
@@ -1663,6 +1622,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		{
 			// ok, next painter
 			final TemporalLayerPainter painter = painterList[i];
+			
+			final ISelectionProvider provider = this;
 
 			// create an action for it
 			Action thistoolboxProperties = new Action(painter.getName(), Action.AS_PUSH_BUTTON)
@@ -1673,7 +1634,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					if (painter.hasEditor())
 					{
 						EditableWrapper pw = new EditableWrapper(painter, _myLayers);
-						editThisInProperties(new StructuredSelection(pw));
+						CorePlugin.editThisInProperties(_selectionListeners, new StructuredSelection(pw), provider);
 					}
 				}
 			};
