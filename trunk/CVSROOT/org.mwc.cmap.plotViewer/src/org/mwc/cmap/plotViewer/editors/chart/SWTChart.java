@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.35  2006-08-08 13:54:59  Ian.Mayo
+// Revision 1.36  2006-08-11 08:24:31  Ian.Mayo
+// Don't let repaints stack up
+//
+// Revision 1.35  2006/08/08 13:54:59  Ian.Mayo
 // Remove dependency on Debrief classes
 //
 // Revision 1.34  2006/07/28 10:16:22  Ian.Mayo
@@ -183,6 +186,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * keep a cached copy of the image - to reduce replotting time
 	 */
 	protected ImageData _myImageTemplate = null;
+	
+
+	/** keep track of if we're repainting, don't stack them up
+	 * 
+	 */
+	private boolean _repainting = false;	
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -362,7 +371,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			_theCanvas.updateMe();
 		}
 	}
-
+	
 	/**
 	 * over-ride the parent's version of paint, so that we can try to do it by
 	 * layers.
@@ -373,7 +382,18 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// chart, we may not have...)
 		if (_theLayers == null)
 			return;
+		
+		if(_repainting)
+		{
+			return;
+		}
+		else
+		{
+			_repainting = true;
+		}
 
+		try{
+			
 		// check that we have a valid canvas (that the sizes are set)
 		final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
 		if (sArea != null)
@@ -498,6 +518,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 			}
 		}
+		}
+		finally
+		{
+			_repainting = false;
+		}
+		
 
 	}
 
