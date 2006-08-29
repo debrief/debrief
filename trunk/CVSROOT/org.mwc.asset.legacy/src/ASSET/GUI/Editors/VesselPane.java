@@ -77,11 +77,11 @@ public class VesselPane extends MWC.GUI.Properties.Swing.SwingCustomEditor
     _myParticipant = null;
 
     //
-    if(value instanceof ScenarioLayer.ParticipantListener)
+    if(value instanceof ScenarioLayer.ScenarioParticipantWrapper)
     {
 
       // remember this participant
-      final ScenarioLayer.ParticipantListener wrapper = (ScenarioLayer.ParticipantListener)value;
+      final ScenarioLayer.ScenarioParticipantWrapper wrapper = (ScenarioLayer.ScenarioParticipantWrapper)value;
 
       // listen to movements of the participant
       _myParticipant =  wrapper.getParticipant();
