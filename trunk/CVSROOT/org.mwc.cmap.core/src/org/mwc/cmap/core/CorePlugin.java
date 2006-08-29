@@ -9,9 +9,11 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.*;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.*;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.ui_support.LineItem;
@@ -213,6 +215,45 @@ public class CorePlugin extends AbstractUIPlugin
 			resourceBundle = null;
 		}
 		return resourceBundle;
+	}
+
+	/**
+	 * @param asSelection
+	 */
+	public static void editThisInProperties(Vector selectionListeners, 
+			StructuredSelection asSelection,
+			ISelectionProvider selectionProvider)
+	{
+		if (selectionListeners != null)
+		{
+			SelectionChangedEvent sEvent = new SelectionChangedEvent(selectionProvider, asSelection);
+			for (Iterator stepper = selectionListeners.iterator(); stepper.hasNext();)
+			{
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				if (thisL != null)
+				{
+					thisL.selectionChanged(sEvent);
+				}
+			}
+		}
+	
+		// hey, better make sure the properties window is open
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		IWorkbenchPage page = win.getActivePage();
+	
+		// get ready for the start/end times
+		// right, we need the time controller if we're going to get the
+		// times
+		try
+		{
+			page.showView(IPageLayout.ID_PROP_SHEET, null, IWorkbenchPage.VIEW_VISIBLE);
+		}
+		catch (PartInitException e)
+		{
+			logError(Status.ERROR,
+					"Failed to open properties view when showing timer properties", e);
+		}
 	}
 
 	/**
