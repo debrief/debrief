@@ -147,6 +147,35 @@ public class DebriefProperty implements IPropertyDescriptor
 				}
 
 			});
+			_myHelperList.add(new EditorHelper(Integer.class)
+			{
+
+				public CellEditor getCellEditorFor(Composite parent)
+				{
+					return new TextCellEditor(parent);
+				}
+
+				public Object translateToSWT(Object value)
+				{
+					String res = " ";
+					Integer val = (Integer) value;
+					if (val != null)
+					{
+						int thisInt = val.intValue();
+						res = "" + thisInt;
+					}
+					return res;
+				}
+
+				public Object translateFromSWT(Object value)
+				{
+					String val = (String) value;
+					Integer res = null;
+					res = new Integer(val);
+					return res;
+				}
+
+			});			
 			_myHelperList.add(new BooleanHelper());
 			_myHelperList.add(new FontHelper());
 			_myHelperList.add(new DTGHelper());
