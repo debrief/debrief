@@ -26,6 +26,10 @@ public class RectangleWander extends Wander
   ////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the area we wander around
    */
   WorldArea _ourArea;
@@ -138,17 +142,19 @@ public class RectangleWander extends Wander
 
   public WorldLocation getBottomRight()
   {
-    return _ourArea.getTopRight();
+    return _ourArea.getBottomRight();
   }
 
   public void setTopLeft(WorldLocation val)
   {
     _ourArea.setTopLeft(val);
+    _ourArea.normalise();
   }
 
   public void setBottomRight(WorldLocation val)
   {
     _ourArea.setBottomRight(val);
+    _ourArea.normalise();
   }
 
   //////////////////////////////////////////////////

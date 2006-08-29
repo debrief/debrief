@@ -35,6 +35,11 @@ public class Wander extends CoreDecision implements Response,
    ***********************************************************************/
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * when we are still in our wander area
    */
   protected static final String IN_AREA = "Still in area";
@@ -407,7 +412,10 @@ public class Wander extends CoreDecision implements Response,
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:29  Ian.Mayo
+   * Revision 1.2  2006-08-29 13:12:38  Ian.Mayo
+   * Debugging, tidying, fix getter for BottomRight corner
+   *
+   * Revision 1.1  2006/08/08 14:21:29  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:38  Ian.Mayo
