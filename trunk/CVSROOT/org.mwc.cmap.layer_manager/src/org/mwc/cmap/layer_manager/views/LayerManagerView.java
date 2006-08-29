@@ -256,7 +256,8 @@ public class LayerManagerView extends ViewPart
 				String p1Name = p1.getEditable().getName();
 				String p2Name = p2.getEditable().getName();
 				res = p1Name.compareTo(p2Name);
-//				res = super.compare(viewer, p1.getEditable().getName(), p2.getEditable().getName());
+				// res = super.compare(viewer, p1.getEditable().getName(),
+				// p2.getEditable().getName());
 			}
 
 			return res;
@@ -309,33 +310,6 @@ public class LayerManagerView extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-
-		//
-		// =================================
-		// NOTE: the following block of commented out code shows tick-boxes by the
-		// Tree myTree = new Tree(parent, SWT.CHECK | SWT.MULTI | SWT.H_SCROLL |
-		// SWT.V_SCROLL);
-		//
-		// // listen out for selection events
-		// myTree.addListener(SWT.Selection, new Listener()
-		// {
-		// public void handleEvent(Event event)
-		// {
-		// if (event.detail == SWT.CHECK)
-		// {
-		// TreeItem ti = (TreeItem) event.item;
-		// boolean isChecked = ti.getChecked();
-		// EditableWrapper pw = (EditableWrapper) ti.getData();
-		// if (pw != null)
-		// {
-		// pw.getEditable().setVisible(isChecked);
-		// Layer parent = pw.getTopLevelLayer();
-		// _myLayers.fireModified(parent);
-		// }
-		// }
-		// }
-		// });
-		// _treeViewer = new MyTreeViewer(myTree);
 
 		_treeViewer = new MyTreeViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
 		_treeViewer.setUseHashlookup(true);
@@ -395,90 +369,15 @@ public class LayerManagerView extends ViewPart
 		formatTree(tree);
 
 		// declare the part monitor, we use it when we generate actions
-		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());		
-		
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+
 		makeActions();
 		hookContextMenu();
 		hookDoubleClickAction();
 		contributeToActionBars();
 
 		// and setup the part monitoring
-
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						processNewLayers(part);
-					}
-				});
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.OPENED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						processNewLayers(part);
-					}
-				});
-		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						// is this our set of layers?
-						if (part == _myLayers)
-						{
-							// stop listening to this layer
-							clearLayerListener();
-
-							// and clear the tree
-							if (_treeViewer.getContentProvider() != null)
-								_treeViewer.setInput(null);
-						}
-					}
-
-				});
-
-		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						ISelectionProvider iS = (ISelectionProvider) part;
-						iS.addSelectionChangedListener(_selectionChangeListener);
-					}
-				});
-		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.DEACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						ISelectionProvider iS = (ISelectionProvider) part;
-						iS.removeSelectionChangedListener(_selectionChangeListener);
-					}
-				});
-
-		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						// cool, remember about it.
-						_theTrackDataListener = (TrackManager) part;
-					}
-				});
-		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
-				new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
-					{
-						// ok, ditch it.
-						_theTrackDataListener = null;
-					}
-				});
-
-		// ok we're all ready now. just try and see if the current part is valid
-		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
+		listenToMyParts();
 
 		// set ourselves as selection source
 		getSite().setSelectionProvider(_treeViewer);
@@ -525,6 +424,118 @@ public class LayerManagerView extends ViewPart
 
 		});
 
+	}
+
+	/**
+	 * hey, at least we can be adaptable!
+	 * 
+	 * @param adapter
+	 * @return
+	 */
+	public Object getAdapter(Class adapter)
+	{
+		Object res = null;
+
+		if (adapter == ISelectionProvider.class)
+		{
+			res = _treeViewer;
+		}
+		else
+		{
+			res = super.getAdapter(adapter);
+		}
+
+		return res;
+	}
+
+	/**
+	 * 
+	 */
+	private void listenToMyParts()
+	{
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						processNewLayers(part);
+					}
+				});
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.OPENED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						processNewLayers(part);
+					}
+				});
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// is this our set of layers?
+						if (part == _myLayers)
+						{
+							// stop listening to this layer
+							clearLayerListener();
+
+							// and clear the tree
+							if (_treeViewer.getContentProvider() != null)
+								_treeViewer.setInput(null);
+						}
+					}
+
+				});
+
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not is
+						if (part != _treeViewer)
+						{
+							ISelectionProvider iS = (ISelectionProvider) part;
+							iS.addSelectionChangedListener(_selectionChangeListener);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.DEACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not is
+						if (part != _treeViewer)
+						{
+							ISelectionProvider iS = (ISelectionProvider) part;
+							iS.removeSelectionChangedListener(_selectionChangeListener);
+						}
+					}
+				});
+
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// cool, remember about it.
+						_theTrackDataListener = (TrackManager) part;
+					}
+				});
+		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
+					{
+						// ok, ditch it.
+						_theTrackDataListener = null;
+					}
+				});
+
+		// ok we're all ready now. just try and see if the current part is valid
+		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 	}
 
 	/**
@@ -713,7 +724,7 @@ public class LayerManagerView extends ViewPart
 		manager.add(_hideAction);
 		manager.add(_revealAction);
 		manager.add(_trackNewLayers);
-		
+
 		// manager.add(new Separator());
 		// drillDownAdapter.addNavigationActions(manager);
 	}
@@ -973,13 +984,13 @@ public class LayerManagerView extends ViewPart
 
 	protected static void setPlottableVisible(Editable item, boolean on)
 	{
-		if(item instanceof Plottable)
+		if (item instanceof Plottable)
 		{
 			Plottable pl = (Plottable) item;
 			pl.setVisible(on);
 		}
 	}
-	
+
 	private void hookDoubleClickAction()
 	{
 		_treeViewer.addDoubleClickListener(new IDoubleClickListener()
@@ -1217,8 +1228,7 @@ public class LayerManagerView extends ViewPart
 						// wrap the plottable
 						EditableWrapper parentWrapper = new EditableWrapper(parentLayer, null,
 								theData);
-						EditableWrapper wrapped = new EditableWrapper(newItem, parentWrapper,
-								theData);
+						EditableWrapper wrapped = new EditableWrapper(newItem, parentWrapper, theData);
 						ISelection selected = new StructuredSelection(wrapped);
 
 						// and select it
