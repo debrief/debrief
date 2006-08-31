@@ -163,7 +163,7 @@ public class NarrativeView extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
-		
+
 		viewer = createTableWithColumns(parent);
 		viewer.setContentProvider(_content);
 		viewer.setLabelProvider(new ViewLabelProvider());
@@ -187,8 +187,8 @@ public class NarrativeView extends ViewPart
 	 */
 	private void setupPartListeners()
 	{
-		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class, PartMonitor.ACTIVATED,
-				new PartMonitor.ICallback()
+		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
@@ -222,7 +222,7 @@ public class NarrativeView extends ViewPart
 							viewer.setInput(null);
 							_currentEditor = null;
 							_myRollingNarrative = null;
-						}						
+						}
 					}
 				});
 
@@ -444,7 +444,7 @@ public class NarrativeView extends ViewPart
 
 	private void makeActions()
 	{
-		_trackNewNarratives = _myPartMonitor.createSyncedAction("Track new narratives", 
+		_trackNewNarratives = _myPartMonitor.createSyncedAction("Track new narratives",
 				"Always show narratives for selected provider", getSite());
 
 		_followTimeToggle = new Action("Follow time", Action.AS_CHECK_BOX)
@@ -576,18 +576,26 @@ public class NarrativeView extends ViewPart
 	 */
 	private void loadNarrative(Object part, IWorkbenchPart parentPart)
 	{
-		
+
 		// check if we have our rolling narrative listener
-		if(_myRollingNarrListener == null)
+		if (_myRollingNarrListener == null)
 		{
-			_myRollingNarrListener = new INarrativeListener(){
-				public void newEntry(NarrativeEntry entry)
+			_myRollingNarrListener = new INarrativeListener()
+			{
+				public void newEntry(final NarrativeEntry entry)
 				{
-					// ok, sort it.
-					viewer.add(entry);
-				}};
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							// ok, sort it.
+							viewer.add(entry);
+						}
+					});
+				}
+			};
 		}
-	
+
 		// start listening to the new provider
 		IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
 		if (newNarr != _myRollingNarrative)
@@ -606,7 +614,7 @@ public class NarrativeView extends ViewPart
 
 				_myRollingNarrative.addNarrativeListener(IRollingNarrativeProvider.ALL_CATS,
 						_myRollingNarrListener);
-				
+
 				// and load the back-history
 				viewer.setInput(_myRollingNarrative.getNarrativeHistory(null));
 				if (parentPart instanceof IEditorPart)
@@ -614,7 +622,7 @@ public class NarrativeView extends ViewPart
 					_currentEditor = (IEditorPart) parentPart;
 				}
 			}
-		}	
+		}
 	}
 
 	// //////////////////////////////
@@ -657,7 +665,6 @@ public class NarrativeView extends ViewPart
 	// //////////////////////////////
 	// selection listener bits
 	// //////////////////////////////
-
 
 	/**
 	 * The content provider class is responsible for providing objects to the
