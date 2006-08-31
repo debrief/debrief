@@ -21,7 +21,6 @@ import MWC.GenericData.WorldVector;
  *
  * @author
  * @version 1.0
- * @deprecated
  */
 
 public class OpticSensor extends ASSET.Models.Sensor.Initial.InitialSensor
@@ -32,6 +31,11 @@ public class OpticSensor extends ASSET.Models.Sensor.Initial.InitialSensor
   ////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the loss we return when there's no line of sight
    */
   private static final double _LOSS_NOT_IN_LINE_OF_SIGHT = 6000d;
@@ -273,7 +277,10 @@ public class OpticSensor extends ASSET.Models.Sensor.Initial.InitialSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:56  Ian.Mayo
+   * Revision 1.2  2006-08-31 14:34:09  Ian.Mayo
+   * Undeprecate old models = we'll no longer rely on lookup sensors
+   *
+   * Revision 1.1  2006/08/08 14:21:56  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:04  Ian.Mayo

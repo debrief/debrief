@@ -31,6 +31,11 @@ public class NarrowbandSensor extends InitialSensor
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * time it takes this sensor to steady
    */
   private Duration _mySteadyTime;
@@ -299,7 +304,10 @@ public class NarrowbandSensor extends InitialSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:55  Ian.Mayo
+   * Revision 1.2  2006-08-31 14:34:08  Ian.Mayo
+   * Undeprecate old models = we'll no longer rely on lookup sensors
+   *
+   * Revision 1.1  2006/08/08 14:21:55  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:03  Ian.Mayo
