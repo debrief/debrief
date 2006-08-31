@@ -22,6 +22,11 @@ import MWC.GenericData.WorldSpeed;
 public class CoreParticipant implements ParticipantType, java.io.Serializable
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	// //////////////////////////////////////////////////////
 	// member variables
 	// /////////////////////////////////////////////////////
