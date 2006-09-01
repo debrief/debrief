@@ -1,13 +1,13 @@
 package ASSET.GUI.Editors;
 
-import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
-import ASSET.Participants.Status;
-
 import java.awt.*;
+
+import javax.swing.BorderFactory;
+
+import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
+import ASSET.Participants.Status;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
-
-import javax.swing.*;
 
 /**
  * Title:
@@ -25,7 +25,13 @@ public class VesselPane extends MWC.GUI.Properties.Swing.SwingCustomEditor
                  MyMetalToolBarUI.ToolbarOwner
 {
 
-  static final public String GUI        = "GUI";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	
+	static final public String GUI        = "GUI";
   static final public String STATUS     = "STATUS";
   static final public String DEM_STATUS = "DEM_STATUS";
   static final public String DETECTIONS = "DETECTIONS";
@@ -77,11 +83,11 @@ public class VesselPane extends MWC.GUI.Properties.Swing.SwingCustomEditor
     _myParticipant = null;
 
     //
-    if(value instanceof ScenarioLayer.ScenarioParticipantWrapper)
+    if(value instanceof ScenarioParticipantWrapper)
     {
 
       // remember this participant
-      final ScenarioLayer.ScenarioParticipantWrapper wrapper = (ScenarioLayer.ScenarioParticipantWrapper)value;
+      final ScenarioParticipantWrapper wrapper = (ScenarioParticipantWrapper)value;
 
       // listen to movements of the participant
       _myParticipant =  wrapper.getParticipant();
