@@ -23,6 +23,7 @@
       <view
             allowMultiple="true"
             class="org.mwc.cmap.plot3d.views.Plot3dView"
+            category="org.mwc.cmap.plotViewer.CMAP"
             icon="icons/view3d.gif"
             id="org.mwc.cmap.plot3d.views.Plot3dView"                
             name="3D Plot">
