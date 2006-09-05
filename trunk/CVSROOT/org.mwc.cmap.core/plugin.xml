@@ -108,6 +108,7 @@
          point="org.eclipse.ui.views">
       <view
             allowMultiple="true"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.core.editor_views.PolygonEditorView"
             icon="icons/document_chart.png"
             id="org.mwc.cmap.core.editor_views.PolygonEditorView"
