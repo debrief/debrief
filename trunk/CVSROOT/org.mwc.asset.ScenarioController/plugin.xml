@@ -6,7 +6,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Scenario Controller"
-            icon="icons/sample.gif"
+            icon="icons/gears_run.png"
             category="org.mwc.asset.core.simulation.category"
             class="org.mwc.asset.scenariocontroller.views.ScenarioController"
             id="org.mwc.asset.ScenarioController">
