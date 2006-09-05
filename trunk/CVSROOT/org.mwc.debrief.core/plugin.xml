@@ -343,8 +343,7 @@
            id="org.mwc.debrief.core.wizards.NewPlotWizard"
            name="Debrief Plot"/>
   </extension>
-  <extension
-        id="Debrief"
+  <extension id="Debrief" 
         point="org.eclipse.core.runtime.products">
      <product
            application="org.eclipse.ui.ide.workbench"
@@ -359,6 +358,23 @@
               name="windowImages"
               value="icons/icon.gif"/>
      </product>
+     </extension>
+  <extension id="ASSET" 
+        point="org.eclipse.core.runtime.products">
+     <product
+           application="org.eclipse.ui.ide.workbench"
+           name="ASSET">
+        <property
+              name="aboutImage"
+              value="icons/new_logo2.gif"/>
+        <property
+              name="aboutText"
+              value="Welcome to ASSET, from the Maritime Warfare Centre"/>
+        <property
+              name="windowImages"
+              value="icons/icon.gif"/>
+     </product>
+     
   </extension>
   <extension
         id="debrief.intro"
