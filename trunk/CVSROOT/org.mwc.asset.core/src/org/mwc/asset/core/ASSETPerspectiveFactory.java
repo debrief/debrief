@@ -25,18 +25,16 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		IFolderLayout topLeft = layout.createFolder("topLeft", IPageLayout.LEFT, 0.25f,
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
-//		topLeft.addView(CorePlugin.TIME_CONTROLLER);
+		topLeft.addView(
+				ASSETActivator.SCENARIO_CONTROLLER);		
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
 		IFolderLayout midLeft = layout.createFolder("midLeft", IPageLayout.BOTTOM, 0.3f,
 				"topLeft");
-//		midLeft.addView(CorePlugin.TOTE);
-		midLeft.addPlaceholder(CorePlugin.STACKED_DOTS);
-//		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
+		midLeft.addPlaceholder(CorePlugin.OVERVIEW_PLOT);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
-		midLeft.addView(
-				ASSETActivator.SCENARIO_CONTROLLER);		
+		midLeft.addView(ASSETActivator.VESSEL_MONITOR);		
 		
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
@@ -57,12 +55,10 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		// and our view shortcuts
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
 		layout.addShowViewShortcut(CorePlugin.NARRATIVES);
-//		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
-//		layout.addShowViewShortcut(CorePlugin.TOTE);
-//		layout.addShowViewShortcut(CorePlugin.STACKED_DOTS);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
-		// layout.addShowViewShortcut(CorePlugin.PLOT_3d); -- don't show shortcut for 3d, we only open
-		// it via action (so we can populate it)  
+		layout.addShowViewShortcut(ASSETActivator.SCENARIO_CONTROLLER);
+		layout.addShowViewShortcut(ASSETActivator.VESSEL_MONITOR);
+		
 
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
@@ -71,10 +67,10 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		
 		// hey - try to add the 'new plot' to the New menu
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
-		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
+//		layout.addNewWizardShortcut("org.mwc.debrief.core.wizards.NewPlotWizard");
 		
 		// ok - make sure the debrief action sets are visible
-//		layout.addActionSet("org.mwc.debrief.core");
+		layout.addActionSet("org.mwc.debrief.core");
 		layout.addActionSet("org.mwc.cmap.plot3d");
 //		layout.addActionSet("org.mwc.debrief.track_shift");
 	}
