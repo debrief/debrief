@@ -9,7 +9,7 @@
             icon="icons/gears_view.png"
             category="org.mwc.asset.core.simulation.category"
             class="org.mwc.asset.vesselmonitor.views.VesselMonitor"
-            id="org.mwc.asset.vesselmonitor.views.VesselMonitor">
+            id="org.mwc.asset.VesselMonitor">
       </view>
    </extension>
 
