@@ -7,18 +7,18 @@
          point="org.eclipse.core.runtime.products">
       <product
             application="org.eclipse.ui.ide.workbench"
-            name="AssetNG">
+            name="CMAP">
          <property
                name="windowImages"
-               value="platform:/plugin/org.mwc.asset.core/icons/components.gif">
+               value="platform:/plugin/org.mwc.debrief.core/icons/icon.gif">
          </property>
          <property
                name="aboutText"
-               value="Welcome to ASSET NG, from the Maritime Warfare Centre">
+               value="Welcome to Debrief NG, from the Maritime Warfare Centre">
          </property>
          <property
                name="aboutImage"
-               value="platform:/plugin/org.mwc.asset.core/icons/components.gif">
+               value="platform:/plugin/org.mwc.debrief.core/icons/new_logo2.gif">
          </property>
       </product>
    </extension>
@@ -36,5 +36,11 @@
             id="org.mwc.asset.core.simulation.category"
             name="Tactical Simulation"/>
    </extension>
-
+   <extension
+         id="CMAP"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="CMAP"/>
+   </extension>
 </plugin>
