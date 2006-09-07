@@ -205,7 +205,7 @@ public class DragFeature extends CoreDragAction
 			// check we're not currently dragging something
 			if (_lastPoint != null)
 				return;
-			
+
 			// clear our bits
 			_hoverTarget = null;
 			_parentLayer = null;
@@ -255,9 +255,8 @@ public class DragFeature extends CoreDragAction
 					if (_newCursor != null)
 						_newCursor.dispose();
 
-					_newCursor = new Cursor(Display.getDefault(), 
-							DebriefPlugin.getImageDescriptor("icons/SelectFeatureHit.ico").getImageData(), 
-							4, 2);
+					_newCursor = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+							"icons/SelectFeatureHit.ico").getImageData(), 4, 2);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);
@@ -290,6 +289,11 @@ public class DragFeature extends CoreDragAction
 		final public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
 				Layers theLayers, SWTCanvas theCanvas)
 		{
+			
+			// do we have something selected?
+			if(_hoverTarget == null)
+				return;
+			
 			if (_startPoint != null)
 			{
 				GC gc = new GC(_myCanvas.getCanvas());
@@ -308,14 +312,14 @@ public class DragFeature extends CoreDragAction
 					// we're drawing for the first time. make the last location equal the
 					// start location
 					_lastLocation = _startLocation;
-					
+
 					// also override the cursor, if we have to.
-					if(_newCursor != null)
+					if (_newCursor != null)
 					{
 						_newCursor.dispose();
-						_newCursor = new Cursor(Display.getDefault(), 
-								DebriefPlugin.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 
-								4,2);
+						_newCursor = new Cursor(Display.getDefault(), DebriefPlugin
+								.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 4,
+								2);
 						theCanvas.getCanvas().setCursor(_newCursor);
 					}
 				}
@@ -365,7 +369,10 @@ public class DragFeature extends CoreDragAction
 
 		final public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
 		{
-			if(_myCanvas == null)
+			if(_hoverTarget == null)
+				return;
+			
+			if (_myCanvas == null)
 			{
 				System.out.println("canvas is null!");
 				return;
@@ -426,15 +433,13 @@ public class DragFeature extends CoreDragAction
 			_myChart = theChart;
 		}
 
-		
 		public Cursor getNormalCursor()
 		{
-			Cursor res = new Cursor(Display.getDefault(), 
-					DebriefPlugin.getImageDescriptor("icons/SelectFeature.ico").getImageData(), 
-					4,2);			
+			Cursor res = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+					"icons/SelectFeature.ico").getImageData(), 4, 2);
 			return res;
 		}
-		
+
 		/**
 		 * dragging happening. Either draw (or erase) the previous point
 		 * 
@@ -449,40 +454,46 @@ public class DragFeature extends CoreDragAction
 
 			// ok, move the target ot the new location...
 			if (newVector != null)
-				_hoverTarget.shift(newVector);
-
-			// TrackWrapper tw = (TrackWrapper) _hoverTarget;
-			SWTCanvasAdapter ca = new SWTCanvasAdapter(_myCanvas.getProjection())
 			{
-				private static final long serialVersionUID = 1L;
+				_hoverTarget.shift(newVector);
+			}
 
-				public void setColor(Color theCol)
+			if (_hoverTarget != null)
+			{
+				// TrackWrapper tw = (TrackWrapper) _hoverTarget;
+				SWTCanvasAdapter ca = new SWTCanvasAdapter(_myCanvas.getProjection())
 				{
-					// ignore the color change, we just want to keep it white...
-				}
+					private static final long serialVersionUID = 1L;
 
-				protected void switchAntiAliasOn(boolean val)
-				{
-					// ignore this, we won't be anti-aliasing
-				}
+					public void setColor(Color theCol)
+					{
+						// ignore the color change, we just want to keep it white...
+					}
 
-				public void drawImage(Image image, int x, int y, int width, int height)
-				{
-				}
+					protected void switchAntiAliasOn(boolean val)
+					{
+						// ignore this, we won't be anti-aliasing
+					}
 
-				public void drawText(Font theFont, String theStr, int x, int y)
-				{
-				}
+					public void drawImage(Image image, int x, int y, int width, int height)
+					{
+					}
 
-				public void drawText(String theStr, int x, int y)
-				{
-				}
+					public void drawText(Font theFont, String theStr, int x, int y)
+					{
+					}
 
-			};
-			// change the color by hand
-			ca.startDraw(graphics);
-			_hoverTarget.paint(ca);
-			ca.endDraw(null);
+					public void drawText(String theStr, int x, int y)
+					{
+					}
+
+				};
+				// change the color by hand
+				ca.startDraw(graphics);
+				_hoverTarget.paint(ca);
+				ca.endDraw(null);
+			}
+
 		}
 
 	}
