@@ -44,6 +44,7 @@ public class ASSETActivator extends AbstractUIPlugin {
 		org.mwc.cmap.layer_manager.views.support.ViewLabelProvider.addImageHelper(_myImageHelper  );
 	}
 
+
 	/*
 	 * (non-Javadoc)
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
