@@ -18,6 +18,7 @@ import MWC.GenericData.WorldVector;
 abstract public class CoreEnvironment implements EnvironmentType, java.io.Serializable, MWCModel
 {
 
+	private String _myName;
 
   /**
    * store the maximum number of mediums we will need to work with
@@ -56,6 +57,7 @@ abstract public class CoreEnvironment implements EnvironmentType, java.io.Serial
   public CoreEnvironment()
   {
     _myMediums[EnvironmentType.BROADBAND_PASSIVE] = new ASSET.Models.Environment.Mediums.BroadbandMedium();
+    _myName = "Core";
   }
 
   ////////////////////////////////////////////////////////////
@@ -65,9 +67,14 @@ abstract public class CoreEnvironment implements EnvironmentType, java.io.Serial
 
   public String getName()
   {
-    return "Core";
+    return _myName;
   }
 
+  public void setName(String name)
+  {
+  	_myName = name;
+  }
+  
   public double getResultantEnergyAt(final int medium,
                                      final WorldLocation origin,
                                      final WorldLocation destination,
@@ -220,7 +227,10 @@ abstract public class CoreEnvironment implements EnvironmentType, java.io.Serial
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:43  Ian.Mayo
+   * Revision 1.2  2006-09-11 15:15:01  Ian.Mayo
+   * Give environments a name
+   *
+   * Revision 1.1  2006/08/08 14:21:43  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:51  Ian.Mayo

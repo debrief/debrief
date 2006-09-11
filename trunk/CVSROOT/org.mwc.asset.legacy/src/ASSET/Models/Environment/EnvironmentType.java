@@ -58,6 +58,11 @@ public interface EnvironmentType
    * get the name of this environment
    */
   public String getName();
+  
+  /** and set it
+   * 
+   */
+  public void setName(String name);
 
   /**
    * get the loss in indicated medium between the indicated points

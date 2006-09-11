@@ -10,15 +10,9 @@ package ASSET.Util.XML.Utils;
  * @version 1.0
  */
 
-import ASSET.Models.Environment.CoreEnvironment;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Environment.SimpleEnvironment;
-import ASSET.Models.Sensor.Lookup.MADLookupSensor;
-import ASSET.Models.Sensor.Lookup.OpticLookupSensor;
-import ASSET.Models.Sensor.Lookup.RadarLookupSensor;
-import ASSET.Util.XML.Utils.LookupEnvironment.MADLookupTableHandler;
-import ASSET.Util.XML.Utils.LookupEnvironment.OpticLookupTableHandler;
-import ASSET.Util.XML.Utils.LookupEnvironment.RadarLookupTableHandler;
+import ASSET.Models.Environment.*;
+import ASSET.Models.Sensor.Lookup.*;
+import ASSET.Util.XML.Utils.LookupEnvironment.*;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
@@ -26,10 +20,12 @@ abstract public class EnvironmentHandler extends MWCXMLReader
 {
 
   private static String type = "Environment";
-
+  public static final String NAME = "Name";
+  
   private int _seaState;
   private String _atmos;
   private String _light;
+  private String _myName;
   private static final String SEA_STATE = "SeaState";
   private static final String ATMOS_ATTEN = "AtmosphericAttenuation";
   private static final String LIGHT_LEVEL = "LightLevel";
@@ -48,11 +44,20 @@ abstract public class EnvironmentHandler extends MWCXMLReader
   {
     this(type);
   }
+  
+  
 
   public EnvironmentHandler(final String theType)
   {
     super(theType);
 
+    addAttributeHandler(new HandleAttribute(NAME)
+    {
+      public void setValue(String name, final String val)
+      {
+        _myName = val;
+      }
+    });    
     addAttributeHandler(new HandleIntegerAttribute(SEA_STATE)
     {
       public void setValue(String name, int val)
@@ -122,6 +127,7 @@ abstract public class EnvironmentHandler extends MWCXMLReader
 
     // produce a value using these units
     CoreEnvironment newEnv = getNewEnvironment(atmosId, lightId);
+    newEnv.setName(_myName);
 
     // also set our other values
     if (_radarEnv != null)
@@ -206,6 +212,7 @@ abstract public class EnvironmentHandler extends MWCXMLReader
     lightConverter.setIndex(environment.getLightLevelFor(0, null));
     String lightStr = lightConverter.getAsText();
 
+    envElement.setAttribute(NAME, environment.getName());
     envElement.setAttribute(SEA_STATE, writeThis(environment.getSeaStateFor(0, null)));
     envElement.setAttribute(ATMOS_ATTEN, atmosStr);
     envElement.setAttribute(LIGHT_LEVEL, lightStr);
