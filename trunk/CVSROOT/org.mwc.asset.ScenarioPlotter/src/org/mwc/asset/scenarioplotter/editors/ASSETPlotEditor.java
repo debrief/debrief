@@ -1,7 +1,6 @@
 package org.mwc.asset.scenarioplotter.editors;
 
 import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.Action;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
@@ -16,12 +15,6 @@ import MWC.GUI.Layers;
 
 public class ASSETPlotEditor extends CorePlotEditor
 {
-//	private PartMonitor _myPartMonitor;
-
-	private Action _fitToWin;
-
-	private Action _zoomOut;
-
 	protected ScenarioType _myScenario;
 
 	protected ScenarioSteppedListener _myStepListener;
@@ -176,9 +169,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	private void contributeToActionBars()
 	{
-		IActionBars bars = getEditorSite().getActionBars();  
-		bars.getToolBarManager().add(_fitToWin);
-		bars.getToolBarManager().add(_zoomOut);
 	}
 
 	private void hookContextMenu()
@@ -187,20 +177,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	private void makeActions()
 	{
-		_fitToWin = new Action(){
-			public void run()
-			{
-				getChart().getCanvas().getProjection().zoom(0.0);
-				getChart().update();
-			}};
-		_fitToWin.setText("Fit");
-		_zoomOut = new Action(){
-			public void run()
-			{
-				getChart().getCanvas().getProjection().zoom(2.0);
-				getChart().update();
-			}};
-		_zoomOut.setText("Zoom out");
 	}
 
 	public boolean isSaveAsAllowed()
