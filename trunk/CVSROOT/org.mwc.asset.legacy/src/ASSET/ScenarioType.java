@@ -7,6 +7,7 @@ import ASSET.Scenario.ParticipantsChangedListener;
 import ASSET.Scenario.ScenarioActivityMonitor;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
+import MWC.GUI.Layer;
 import MWC.GenericData.Duration;
 
 import java.util.Collection;
@@ -198,4 +199,18 @@ public interface ScenarioType extends ScenarioActivityMonitor
    * @param myCaseId
    */
   void setCaseId(String myCaseId);
+  
+  /** find out what is plotted in the background
+   * 
+   * @return
+   */
+  public Layer getBackdrop();
+  
+  /** set what we see in the backdrop
+   * 
+   * @param layer
+   */
+  public void setBackdrop(Layer layer);
+  
+  
 }
