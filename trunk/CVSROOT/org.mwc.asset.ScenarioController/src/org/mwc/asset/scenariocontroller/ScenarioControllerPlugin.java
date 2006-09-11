@@ -1,8 +1,12 @@
 package org.mwc.asset.scenariocontroller;
 
+import java.util.Vector;
+
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.asset.core.property_support.TargetTypeHelper;
+import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -29,6 +33,20 @@ public class ScenarioControllerPlugin extends AbstractUIPlugin {
 	 */
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
+		// sort out the additional helpers for asset-related items
+		Vector myHelpers = getHelpers();
+		DebriefProperty.addSupplementalHelpers(myHelpers);
+	}
+
+	/** sort out the ASSET specific helpers
+	 * 
+	 * @return
+	 */
+	private Vector getHelpers()
+	{
+		Vector res = new Vector(1,1);
+		res.add(new TargetTypeHelper());
+		return res;
 	}
 
 	/*
