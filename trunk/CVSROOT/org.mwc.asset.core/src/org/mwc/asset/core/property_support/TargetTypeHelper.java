@@ -9,6 +9,7 @@ import java.util.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.List;
 import org.mwc.cmap.core.property_support.EditorHelper;
@@ -96,7 +97,9 @@ public class TargetTypeHelper extends EditorHelper
 		 */
 		final private String _forceTip = "the force of the subject participant(s)";
 		final private String _environmentTip = "the environment of the subject participant(s)";
-		final private String _typeTip = "the type of the subject participant(s)";		
+		final private String _typeTip = "the type of the subject participant(s)";
+
+		private TargetType _newResult;		
 		
 		public TargetTypeDialog(TargetType current, Shell parent)
 		{
@@ -106,36 +109,65 @@ public class TargetTypeHelper extends EditorHelper
 
 		/**
 		 * @param parent
-		 * @return
+		 * @return the contents of the dialog (our controls)
 		 */
 		protected Control createDialogArea(Composite parent)
 		{
 			Composite composite = (Composite) super.createDialogArea(parent);
-			_myForce = new List(composite, SWT.NONE);
+			
+			GridLayout labels = new GridLayout();
+			labels.numColumns = 3;
+	//		labels.type = SWT.HORIZONTAL;
+			GridLayout lists = new GridLayout();
+			lists.numColumns = 3;
+			
+	//		lists.type = SWT.HORIZONTAL;
+			RowLayout stack = new RowLayout();
+			stack.type = SWT.VERTICAL;
+			
+			Composite labelHolder = new Composite(composite, SWT.NONE);
+			labelHolder.setLayout(labels);
+			Label force = new Label(labelHolder, SWT.NONE);
+			force.setText("Force");
+			Label env = new Label(labelHolder, SWT.NONE);
+			env.setText("Environment");
+			Label type = new Label(labelHolder, SWT.NONE);
+			type.setText("Type");
+			
+			composite.setLayout(stack);
+
+			Composite listHolder = new Composite(composite, SWT.NONE);
+			listHolder.setLayout(lists);
+
+			_myForce = new List(labelHolder, SWT.MULTI);
 			_myForce.setToolTipText(_forceTip);
 			_myForce.setItems(getForces());
 
-			_myEnvironment = new List(composite, SWT.DROP_DOWN);
+			_myEnvironment = new List(labelHolder, SWT.MULTI);
 			_myEnvironment.setToolTipText(_environmentTip);
 			_myEnvironment.setItems(getEnvironments());
 
-			_myType = new List(composite, SWT.DROP_DOWN);
+			_myType = new List(labelHolder, SWT.MULTI);
 			_myType.setToolTipText(_typeTip);
 			_myType.setItems(getTypes());
+			
+			// ok, select the right items
+			setCurrentValues();
+			
 			return  composite;
 		}
-		
 
-		protected void doSetValue(Object value)
+		/**
+		 * 
+		 */
+		private void setCurrentValues()
 		{
-			TargetType _myCat = (TargetType) value;
-
 			Vector forces = new Vector(0,1);
 			Vector types = new Vector(0,1);
 			Vector envs = new Vector(0,1);
 			
 			// ok, sort out the forces
-			Collection targetTypes = _myCat.getTargets();
+			Collection targetTypes = _current.getTargets();
 			for (Iterator iter = targetTypes.iterator(); iter.hasNext();)
 			{
 				String type = (String) iter.next();
@@ -157,34 +189,54 @@ public class TargetTypeHelper extends EditorHelper
 			
 			String[] template = new String[]{""};
 			if(forces.size() > 0)
-				_myForce.setSelection((String[]) forces.toArray(template));
+			{
+				String [] vals = (String[]) forces.toArray(template);
+				_myForce.setSelection(vals);
+			}
 			if(types.size() > 0)
-				_myType.setSelection((String[]) types.toArray(template));
+			{
+				String [] vals = (String[]) types.toArray(template);
+				_myType.setSelection(vals);
+			}
 			if(envs.size() > 0)
-				_myEnvironment.setSelection((String[]) envs.toArray(template));
-			
+			{
+				String[] vals = (String[]) envs.toArray(template);
+				_myEnvironment.setSelection(vals);
+			}
 		}
 		
+
+		
+		/**
+		 * 
+		 */
+		protected void okPressed()
+		{
+			// hey, store the data
+			_newResult = new TargetType();
+			
+			setTypes(_myForce, _newResult);
+			setTypes(_myType, _newResult);
+			setTypes(_myEnvironment, _newResult);
+			
+			super.okPressed();
+		}	
 
 		protected void setTypes(List holder, TargetType tt)
 		{
 			int[] forces = holder.getSelectionIndices();
 			for (int thisI = 0; thisI < forces.length; thisI++)
 			{
-				String f = holder.getItem(thisI);
+				int index = forces[thisI];
+				String f = holder.getItem(index);
 				tt.addTargetType(f);
 			}
 		}
 
 		protected TargetType getResult()
 		{
-			TargetType tt = new TargetType();
 			
-			setTypes(_myForce, tt);
-			setTypes(_myType, tt);
-			setTypes(_myEnvironment, tt);
-			
-			return tt;
+			return _newResult;
 		}
 		
 
@@ -245,9 +297,9 @@ public class TargetTypeHelper extends EditorHelper
 		 */
 		protected Object openDialogBox(Control cellEditorWindow)
 		{
-			TargetType res = null;
-			
-			TargetTypeDialog dialog = new TargetTypeDialog(null, cellEditorWindow.getShell());
+			TargetType res = null;			
+						
+			TargetTypeDialog dialog = new TargetTypeDialog((TargetType) super.getValue(), cellEditorWindow.getShell());
 			
 			int response = dialog.open();
 			
