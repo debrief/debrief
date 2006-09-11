@@ -17,7 +17,7 @@ import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Movement.*;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
-import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.*;
 
 public class CoreParticipant implements ParticipantType, java.io.Serializable
 {
@@ -583,7 +583,11 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	public int getNumSensors()
 	{
-		return _mySensors.getNumSensors();
+		int res = 0;
+		if(_mySensors != null)
+			res = _mySensors.getNumSensors();
+		
+		return res;
 	}
 
 	/**
@@ -873,9 +877,14 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			final ParticipantType part = new CoreParticipant(12);
 			part.setMovementModel(new ASSET.Models.Movement.CoreMovement());
-			part.setMovementChars(new SSMovementCharacteristics("here", 1, 1, 0, 20, 1, 200, 1,
-					1, 100, 1));
-
+			part.setMovementChars(new SSMovementCharacteristics("here", 
+					new WorldAcceleration(1, WorldAcceleration.M_sec_sec),
+	         new WorldAcceleration(1, WorldAcceleration.M_sec_sec),
+	         0, new WorldSpeed(20, WorldSpeed.M_sec),
+	         new WorldSpeed(1, WorldSpeed.M_sec), new WorldDistance(200, WorldDistance.METRES),
+	         new WorldSpeed(1, WorldSpeed.M_sec), new WorldSpeed(1, WorldSpeed.M_sec),
+	         new WorldDistance(100, WorldDistance.METRES), new WorldDistance(1, WorldDistance.METRES)));
+			
 			// initialise the participant
 			final Status newStat = new Status(part.getId(), 0);
 			newStat.setLocation(new MWC.GenericData.WorldLocation(0.0, 0.0, 0));

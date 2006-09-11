@@ -12,18 +12,13 @@ package ASSET.Util.XML.Decisions;
 import ASSET.Models.Decision.*;
 import ASSET.Models.Decision.Movement.*;
 import ASSET.Models.Decision.Tactical.*;
-import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
-import ASSET.Util.XML.Decisions.Tactical.InterceptHandler;
-import ASSET.Util.XML.Decisions.Tactical.InvestigateHandler;
+import ASSET.Util.XML.Decisions.Tactical.*;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class WaterfallHandler extends CoreDecisionHandler
 {
 
   private final static String type = "Waterfall";
-  private final static String NAME = "Name";
-  private final static String ACTIVE = "isActive";
-
 
   protected BehaviourList _myList;
 
@@ -327,7 +322,7 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
     else if (dec instanceof MarkDip)
       MarkDipHandler.exportThis(dec, thisPart, doc);
     else if (dec instanceof Investigate)
-      MarkDipHandler.exportThis(dec, thisPart, doc);
+      InvestigateHandler.exportThis(dec, thisPart, doc);
     else if (dec instanceof Evade)
       EvadeHandler.exportThis(dec, thisPart, doc);
     else if (dec instanceof SternArcClearance)
