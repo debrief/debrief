@@ -22,7 +22,6 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.plotViewer.editors.chart.*;
-import org.mwc.cmap.plotViewer.editors.chart.SWTChart.CustomisedSWTCanvas;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
