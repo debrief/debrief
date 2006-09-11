@@ -18,6 +18,10 @@ public class SSMovementCharacteristics extends ThreeDimMovementCharacteristics
   //////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the turning circle for this vessel
    */
   private WorldDistance _turningCircleDiameter;
