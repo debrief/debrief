@@ -105,7 +105,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		_theLayers.addThisLayer(_myScenarioLayer);
 
 		BaseLayer decs = new BaseLayer();
-		decs.setName("Decorations");
+		decs.setName(Layers.CHART_FEATURES);
 		GridPainter grid = new GridPainter();
 		grid.setDelta(new WorldDistanceWithUnits(5, WorldDistanceWithUnits.NM));
 		decs.add(grid);
@@ -513,10 +513,10 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	protected void getTheSampleScenarioLoaded()
 	{
 		// hey, have a go at loading a scenario
-		final String MY_SCENARIO = "d:/dev/eclipse2/org.mwc.asset.sample_data/data/herd_scenario_1.xml";// "c:\\temp\\andy_tactic\\ssn_run1.xml";
-		final String MY_CONTROL = "d:/dev/eclipse2/org.mwc.asset.sample_data/data/herd_control_1.xml"; //"c:\\temp\\andy_tactic\\ssn_observers.xml";
+//		final String MY_SCENARIO = "d:/dev/eclipse2/org.mwc.asset.sample_data/data/herd_scenario_1.xml";// "c:\\temp\\andy_tactic\\ssn_run1.xml";
+		final String MY_SCENARIO = "d:/dev/eclipse2/org.mwc.asset.sample_data/data/force_prot_scenario_area.xml";
+	//	final String MY_CONTROL = "d:/dev/eclipse2/org.mwc.asset.sample_data/data/herd_control_1.xml"; //"c:\\temp\\andy_tactic\\ssn_observers.xml";
 
-		 
 		 
 		try
 		{
