@@ -28,6 +28,11 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
   ////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * handle my listeners
    */
   private java.beans.PropertyChangeSupport _pSupport = new java.beans.PropertyChangeSupport(this);
@@ -224,7 +229,10 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:41  Ian.Mayo
+   * Revision 1.2  2006-09-11 15:15:48  Ian.Mayo
+   * Tidy to better reflect schema
+   *
+   * Revision 1.1  2006/08/08 14:21:41  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:50  Ian.Mayo

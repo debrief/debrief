@@ -11,6 +11,7 @@ import ASSET.ParticipantType;
 import ASSET.Participants.Status;
 import ASSET.ScenarioType;
 import ASSET.Util.RandomGenerator;
+import MWC.GUI.Layer;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -256,6 +257,11 @@ public class CoreScenario implements ScenarioType
   }
 
   boolean _firstPass = true;
+
+  /** the information we plot as a backdrop
+   * 
+   */
+	private Layer _myBackdrop;
 
   /**
    * Move the scenario through a single step
@@ -1310,7 +1316,12 @@ public class CoreScenario implements ScenarioType
 
       ssn_A.addSensor(new BroadbandSensor(12)
       {
-        // what is the detection strength for this target?
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				// what is the detection strength for this target?
         protected DetectionEvent detectThis(EnvironmentType environment,
                                             ParticipantType host,
                                             ParticipantType target,
@@ -1324,7 +1335,12 @@ public class CoreScenario implements ScenarioType
 
       ssn_D.addSensor(new BroadbandSensor(19)
       {
-        // what is the detection strength for this target?
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				// what is the detection strength for this target?
         protected DetectionEvent detectThis(EnvironmentType environment,
                                             ParticipantType host,
                                             ParticipantType target,
@@ -1425,4 +1441,16 @@ public class CoreScenario implements ScenarioType
     stt.testScenarioTimes();
 
   }
+
+
+	public Layer getBackdrop()
+	{
+		return _myBackdrop;
+	}
+
+
+	public void setBackdrop(Layer layer)
+	{
+		_myBackdrop = layer;
+	}
 }

@@ -9,7 +9,10 @@ package ASSET.Util.XML.Decisions;
  * @version 1.0
  * Log:
  *   $Log$
- *   Revision 1.1  2006-08-08 14:22:48  Ian.Mayo
+ *   Revision 1.2  2006-09-11 15:15:49  Ian.Mayo
+ *   Tidy to better reflect schema
+ *
+ *   Revision 1.1  2006/08/08 14:22:48  Ian.Mayo
  *   Second import
  *
  *   Revision 1.1  2006/08/07 12:26:57  Ian.Mayo
@@ -141,12 +144,12 @@ abstract class RectangleWanderHandler extends CoreDecisionHandler
     // output the parent bits
     CoreDecisionHandler.exportThis(bb, thisPart, doc);
 
-    if (bb.getHeight() != null)
-      WorldDistanceHandler.exportDistance(WANDER_HEIGHT, bb.getHeight(), thisPart, doc);
-    if (bb.getSpeed() != null)
-      WorldSpeedHandler.exportSpeed(WANDER_SPEED, bb.getSpeed(), thisPart, doc);
 
     ASSETWorldAreaHandler.exportThis(WANDER_AREA, bb.getArea(), thisPart, doc);
+    if (bb.getSpeed() != null)
+      WorldSpeedHandler.exportSpeed(WANDER_SPEED, bb.getSpeed(), thisPart, doc);
+    if (bb.getHeight() != null)
+      WorldDistanceHandler.exportDistance(WANDER_HEIGHT, bb.getHeight(), thisPart, doc);
 
     parent.appendChild(thisPart);
 

@@ -106,12 +106,11 @@ abstract public class StatusHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     // set the attributes
     stat.setAttribute("Id", writeThis(toExport.getId()));
     stat.setAttribute("Course", writeThis(toExport.getCourse()));
-    WorldSpeedHandler.exportSpeed(toExport.getSpeed(), stat, doc);
-    ;
     stat.setAttribute("Fuel", writeThis(toExport.getFuelLevel()));
     stat.setAttribute("Time", writeThisInXML(new java.util.Date(toExport.getTime())));
-
     ASSETLocationHandler.exportLocation(toExport.getLocation(), "Location", stat, doc);
+    WorldSpeedHandler.exportSpeed(toExport.getSpeed(), stat, doc);
+
 
     // add to parent
     parent.appendChild(stat);
