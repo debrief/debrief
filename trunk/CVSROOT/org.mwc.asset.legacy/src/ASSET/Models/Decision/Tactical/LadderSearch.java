@@ -7,7 +7,10 @@ package ASSET.Models.Decision.Tactical;
  * Time: $Time:$
  * Log:
  *  $Log$
- *  Revision 1.1  2006-08-08 14:21:34  Ian.Mayo
+ *  Revision 1.2  2006-09-11 09:36:04  Ian.Mayo
+ *  Fix dodgy accessor
+ *
+ *  Revision 1.1  2006/08/08 14:21:34  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:43  Ian.Mayo
@@ -103,7 +106,12 @@ import java.io.Serializable;
 public final class LadderSearch extends CoreDecision implements Serializable
 {
 
-  //////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////
 
@@ -536,7 +544,10 @@ public final class LadderSearch extends CoreDecision implements Serializable
    */
   final public WorldPath getRoute()
   {
-    return _myRoute.getDestinations();
+  	WorldPath res =null;
+  	if(_myRoute != null)
+  		res = _myRoute.getDestinations();
+    return res;
   }
 
   /**
@@ -637,7 +648,10 @@ public final class LadderSearch extends CoreDecision implements Serializable
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:34  Ian.Mayo
+   * Revision 1.2  2006-09-11 09:36:04  Ian.Mayo
+   * Fix dodgy accessor
+   *
+   * Revision 1.1  2006/08/08 14:21:34  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:43  Ian.Mayo
