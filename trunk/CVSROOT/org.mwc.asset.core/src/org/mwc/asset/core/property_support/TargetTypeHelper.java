@@ -46,7 +46,6 @@ public class TargetTypeHelper extends EditorHelper
 		return res;
 	}
 
-
 	public ILabelProvider getLabelFor(Object currentValue)
 	{
 		ILabelProvider label1 = new LabelProvider()
@@ -88,24 +87,31 @@ public class TargetTypeHelper extends EditorHelper
 		/**
 		 * and the drop-down units bit
 		 */
-		List _myType;		
-		
+		List _myType;
+
 		final TargetType _current;
-		
+
 		/**
 		 * our tooltips
 		 */
 		final private String _forceTip = "the force of the subject participant(s)";
+
 		final private String _environmentTip = "the environment of the subject participant(s)";
+
 		final private String _typeTip = "the type of the subject participant(s)";
 
-		private TargetType _newResult;		
-		
+		private TargetType _newResult;
+
 		public TargetTypeDialog(TargetType current, Shell parent)
 		{
 			super(parent);
 			_current = current;
 		}
+		
+	   protected void configureShell(Shell newShell) {
+	      super.configureShell(newShell);
+	      newShell.setText("Select Target Types");
+	   }
 
 		/**
 		 * @param parent
@@ -114,47 +120,52 @@ public class TargetTypeHelper extends EditorHelper
 		protected Control createDialogArea(Composite parent)
 		{
 			Composite composite = (Composite) super.createDialogArea(parent);
-			
-			GridLayout labels = new GridLayout();
-			labels.numColumns = 3;
-	//		labels.type = SWT.HORIZONTAL;
-			GridLayout lists = new GridLayout();
-			lists.numColumns = 3;
-			
-	//		lists.type = SWT.HORIZONTAL;
-			RowLayout stack = new RowLayout();
-			stack.type = SWT.VERTICAL;
-			
-			Composite labelHolder = new Composite(composite, SWT.NONE);
-			labelHolder.setLayout(labels);
-			Label force = new Label(labelHolder, SWT.NONE);
-			force.setText("Force");
-			Label env = new Label(labelHolder, SWT.NONE);
-			env.setText("Environment");
-			Label type = new Label(labelHolder, SWT.NONE);
-			type.setText("Type");
-			
-			composite.setLayout(stack);
 
-			Composite listHolder = new Composite(composite, SWT.NONE);
-			listHolder.setLayout(lists);
+			GridLayout thisLayout = new GridLayout();
+			thisLayout.numColumns = 3;
+			thisLayout.makeColumnsEqualWidth = true;
 
-			_myForce = new List(labelHolder, SWT.MULTI);
+			composite.setLayout(thisLayout);
+			Label label1 = new Label(composite, SWT.NONE);
+			label1.setText("Force");
+
+			Label label2 = new Label(composite, SWT.NONE);
+			label2.setText("Environment");
+
+			Label label3 = new Label(composite, SWT.NONE);
+			label3.setText("Type");
+
+			_myForce = new List(composite, SWT.MULTI);
 			_myForce.setToolTipText(_forceTip);
-			_myForce.setItems(getForces());
+			GridData forceListLData = new GridData();
+			forceListLData.grabExcessHorizontalSpace = true;
+			forceListLData.verticalAlignment = GridData.BEGINNING;
+			forceListLData.horizontalAlignment = GridData.FILL;
+			_myForce.setLayoutData(forceListLData);
 
-			_myEnvironment = new List(labelHolder, SWT.MULTI);
-			_myEnvironment.setToolTipText(_environmentTip);
-			_myEnvironment.setItems(getEnvironments());
-
-			_myType = new List(labelHolder, SWT.MULTI);
+			_myType = new List(composite, SWT.MULTI);
 			_myType.setToolTipText(_typeTip);
+			GridData typeListLData = new GridData();
+			typeListLData.verticalAlignment = GridData.BEGINNING;
+			typeListLData.horizontalAlignment = GridData.FILL;
+			_myType.setLayoutData(typeListLData);
+
+			_myEnvironment = new List(composite, SWT.MULTI);
+			_myEnvironment.setToolTipText(_environmentTip);
+			GridData envListLData = new GridData();
+			envListLData.grabExcessHorizontalSpace = true;
+			envListLData.verticalAlignment = GridData.BEGINNING;
+			envListLData.horizontalAlignment = GridData.FILL;
+			_myEnvironment.setLayoutData(envListLData);
+
+			_myForce.setItems(getForces());
 			_myType.setItems(getTypes());
+			_myEnvironment.setItems(getEnvironments());
 			
 			// ok, select the right items
 			setCurrentValues();
-			
-			return  composite;
+
+			return composite;
 		}
 
 		/**
@@ -162,10 +173,10 @@ public class TargetTypeHelper extends EditorHelper
 		 */
 		private void setCurrentValues()
 		{
-			Vector forces = new Vector(0,1);
-			Vector types = new Vector(0,1);
-			Vector envs = new Vector(0,1);
-			
+			Vector forces = new Vector(0, 1);
+			Vector types = new Vector(0, 1);
+			Vector envs = new Vector(0, 1);
+
 			// ok, sort out the forces
 			Collection targetTypes = _current.getTargets();
 			for (Iterator iter = targetTypes.iterator(); iter.hasNext();)
@@ -186,27 +197,25 @@ public class TargetTypeHelper extends EditorHelper
 					envs.add(type);
 				}
 			}
-			
-			String[] template = new String[]{""};
-			if(forces.size() > 0)
+
+			String[] template = new String[] { "" };
+			if (forces.size() > 0)
 			{
-				String [] vals = (String[]) forces.toArray(template);
+				String[] vals = (String[]) forces.toArray(template);
 				_myForce.setSelection(vals);
 			}
-			if(types.size() > 0)
+			if (types.size() > 0)
 			{
-				String [] vals = (String[]) types.toArray(template);
+				String[] vals = (String[]) types.toArray(template);
 				_myType.setSelection(vals);
 			}
-			if(envs.size() > 0)
+			if (envs.size() > 0)
 			{
 				String[] vals = (String[]) envs.toArray(template);
 				_myEnvironment.setSelection(vals);
 			}
 		}
-		
 
-		
 		/**
 		 * 
 		 */
@@ -214,13 +223,13 @@ public class TargetTypeHelper extends EditorHelper
 		{
 			// hey, store the data
 			_newResult = new TargetType();
-			
+
 			setTypes(_myForce, _newResult);
 			setTypes(_myType, _newResult);
 			setTypes(_myEnvironment, _newResult);
-			
+
 			super.okPressed();
-		}	
+		}
 
 		protected void setTypes(List holder, TargetType tt)
 		{
@@ -235,10 +244,9 @@ public class TargetTypeHelper extends EditorHelper
 
 		protected TargetType getResult()
 		{
-			
+
 			return _newResult;
 		}
-		
 
 		/**
 		 * @return our list of values
@@ -269,10 +277,8 @@ public class TargetTypeHelper extends EditorHelper
 			res = (String[]) Category.getTypes().toArray(res);
 			return res;
 		}
-		
-		
+
 	}
-	
 
 	private static class TargetTypeCellEditor extends DialogCellEditor
 	{
@@ -297,50 +303,50 @@ public class TargetTypeHelper extends EditorHelper
 		 */
 		protected Object openDialogBox(Control cellEditorWindow)
 		{
-			TargetType res = null;			
-						
-			TargetTypeDialog dialog = new TargetTypeDialog((TargetType) super.getValue(), cellEditorWindow.getShell());
-			
+			TargetType res = null;
+
+			TargetTypeDialog dialog = new TargetTypeDialog((TargetType) super.getValue(),
+					cellEditorWindow.getShell());
+
 			int response = dialog.open();
-			
-			if(response == org.eclipse.jface.dialogs.Dialog.OK)
+
+			if (response == org.eclipse.jface.dialogs.Dialog.OK)
 			{
 				res = dialog.getResult();
 			}
-			
-			
+
 			// ok - create our popup window
-//			
-//			LatLongPropertySource output = null;
-//
-//			// right, see what's on the clipboard
-//			// right, copy the location to the clipboard
-//			Clipboard clip = CorePlugin.getDefault().getClipboard();
-//			Object val = clip.getContents(TextTransfer.getInstance());
-//			if (val != null)
-//			{
-//				String txt = (String) val;
-//				if (CorePlugin.isLocation(txt))
-//				{
-//					// cool, get the text
-//					WorldLocation loc = CorePlugin.fromClipboard(txt);
-//
-//					// create the output value
-//					output = new LatLongPropertySource(loc);
-//				}
-//				else
-//				{
-//					CorePlugin.showMessage("Paste location",
-//							"Sorry the clipboard text is not in the right format." + "\nContents:"
-//									+ txt);
-//				}
-//			}
-//			else
-//			{
-//				CorePlugin.showMessage("Paste location",
-//						"Sorry, there is no suitable text on the clipboard");
-//			}
-			
+			//			
+			// LatLongPropertySource output = null;
+			//
+			// // right, see what's on the clipboard
+			// // right, copy the location to the clipboard
+			// Clipboard clip = CorePlugin.getDefault().getClipboard();
+			// Object val = clip.getContents(TextTransfer.getInstance());
+			// if (val != null)
+			// {
+			// String txt = (String) val;
+			// if (CorePlugin.isLocation(txt))
+			// {
+			// // cool, get the text
+			// WorldLocation loc = CorePlugin.fromClipboard(txt);
+			//
+			// // create the output value
+			// output = new LatLongPropertySource(loc);
+			// }
+			// else
+			// {
+			// CorePlugin.showMessage("Paste location",
+			// "Sorry the clipboard text is not in the right format." + "\nContents:"
+			// + txt);
+			// }
+			// }
+			// else
+			// {
+			// CorePlugin.showMessage("Paste location",
+			// "Sorry, there is no suitable text on the clipboard");
+			// }
+
 			return res;
 		}
 
