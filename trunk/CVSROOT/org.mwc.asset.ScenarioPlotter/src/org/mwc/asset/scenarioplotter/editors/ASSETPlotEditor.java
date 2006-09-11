@@ -1,9 +1,15 @@
 package org.mwc.asset.scenarioplotter.editors;
 
+import java.io.*;
+
+import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
+import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
+import org.eclipse.ui.dialogs.SaveAsDialog;
+import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.asset.core.ASSETActivator;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
@@ -11,6 +17,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.*;
+import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.Layers;
 
 public class ASSETPlotEditor extends CorePlotEditor
@@ -20,15 +27,14 @@ public class ASSETPlotEditor extends CorePlotEditor
 	protected ScenarioSteppedListener _myStepListener;
 
 	protected ParticipantsChangedListener _myChangeListener;
-	
-	
-	/** use our own layers object - not the one in the parent, silly.
-	 * 
+
+	/**
+	 * use our own layers object - not the one in the parent, silly.
 	 */
 	private Layers _assetLayers;
 
 	private ScenarioLayer _theScenarioLayers;
-	
+
 	public ASSETPlotEditor()
 	{
 		super();
@@ -41,7 +47,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 		super.dispose();
 	}
 
-	
 	/**
 	 * create the chart we're after
 	 * 
@@ -50,7 +55,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 	 */
 	protected SWTChart createTheChart(Composite parent)
 	{
-		SWTChart res = new SWTChart(_assetLayers, parent){
+		SWTChart res = new SWTChart(_assetLayers, parent)
+		{
 
 			/**
 			 * 
@@ -61,21 +67,22 @@ public class ASSETPlotEditor extends CorePlotEditor
 			{
 				// TODO Auto-generated method stub
 				fireSelectionChanged(sel);
-			}};
+			}
+		};
 		return res;
-	}	
-	
-	
+	}
+
 	public void createPartControl(Composite parent)
 	{
 		// do the parent bits...
 		super.createPartControl(parent);
 
 		// override the layers bit
-	//	getChart().setLayers(_myLayers);
-		
+		// getChart().setLayers(_myLayers);
+
 		// sort out the part monitor
-	//	_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		// _myPartMonitor = new
+		// PartMonitor(getSite().getWorkbenchWindow().getPartService());
 	}
 
 	// /////////////////////////////////////////////////////////
@@ -85,50 +92,42 @@ public class ASSETPlotEditor extends CorePlotEditor
 	{
 	}
 
-	public void doSave(IProgressMonitor monitor)
-	{
-	}
-
-	public void doSaveAs()
-	{
-	}
-
 	public void init(IEditorSite site, IEditorInput input) throws PartInitException
 	{
 		setSite(site);
 		setInputWithNotify(input);
-		
+
 		// hey, get the layers out
 		Object newLayers = input.getAdapter(Layers.class);
-		if(newLayers != null)
+		if (newLayers != null)
 		{
 			storeLayers(newLayers);
 		}
-		
+
 		// hmm, do we have a scenario
 		Object tryScenario = input.getAdapter(ScenarioType.class);
-		if(tryScenario != null)
+		if (tryScenario != null)
 		{
-			ScenarioType scenario = (ScenarioType) tryScenario;
-			listenToTheScenario(scenario);
-			
+			listenToTheScenario((ScenarioType) tryScenario);
+
 			// update our title
-			setPartName(scenario.getName());
+			setPartName(_myScenario.getName());
 		}
-		
-		// and the scenario layers object (it's the one we update when time moves forward
+
+		// and the scenario layers object (it's the one we update when time moves
+		// forward
 		Object tryScenarioLayers = input.getAdapter(ScenarioLayer.class);
-		if(tryScenarioLayers != null)
+		if (tryScenarioLayers != null)
 		{
 			ScenarioLayer scenario = (ScenarioLayer) tryScenarioLayers;
 			_theScenarioLayers = scenario;
 		}
 		else
 		{
-			ASSETActivator.logError(Status.WARNING, "Our init message isn't providing us with the scenario layers", null);
+			ASSETActivator.logError(Status.WARNING,
+					"Our init message isn't providing us with the scenario layers", null);
 		}
-		
-		
+
 		// ok, create some actions
 		// Create Action instances
 		makeActions();
@@ -138,7 +137,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	private void listenToTheScenario(ScenarioType scenario)
 	{
-		scenario.addScenarioSteppedListener(new ScenarioSteppedListener(){
+		_myScenario = scenario;
+		scenario.addScenarioSteppedListener(new ScenarioSteppedListener()
+		{
 			public void restart()
 			{
 				doUpdate();
@@ -147,12 +148,14 @@ public class ASSETPlotEditor extends CorePlotEditor
 			public void step(long newTime)
 			{
 				doUpdate();
-			}});
-		
+			}
+		});
+
 	}
+
 	protected void doUpdate()
 	{
-			_assetLayers.fireModified(_theScenarioLayers);	
+		_assetLayers.fireModified(_theScenarioLayers);
 	}
 
 	/**
@@ -161,10 +164,10 @@ public class ASSETPlotEditor extends CorePlotEditor
 	private void storeLayers(Object tryLayers)
 	{
 		_assetLayers = (Layers) tryLayers;
-		
+
 		_myLayers.addDataExtendedListener(_listenForMods);
 		_myLayers.addDataModifiedListener(_listenForMods);
-		_myLayers.addDataReformattedListener(_listenForMods);		
+		_myLayers.addDataReformattedListener(_listenForMods);
 	}
 
 	private void contributeToActionBars()
@@ -177,12 +180,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	private void makeActions()
 	{
-	}
-
-	public boolean isSaveAsAllowed()
-	{
-
-		return false;
 	}
 
 	public Object getAdapter(Class adapter)
@@ -201,4 +198,127 @@ public class ASSETPlotEditor extends CorePlotEditor
 		return res;
 	}
 
+	/**
+	 * @see org.eclipse.ui.IEditorPart#doSave(IProgressMonitor)
+	 */
+	public void doSave(IProgressMonitor monitor)
+	{
+
+		IEditorInput input = getEditorInput();
+
+		if (input.exists())
+		{
+			// is this the correct type of file?
+			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+			doSaveTo(file, monitor);
+		}
+	}
+
+	/**
+	 * save our plot to the indicated location
+	 * 
+	 * @param destination
+	 *          where to save plot to
+	 * @param monitor
+	 *          somebody/something to be informed about progress
+	 */
+	private void doSaveTo(IFile destination, IProgressMonitor monitor)
+	{
+		boolean itWorked = false;
+
+		if (destination != null)
+		{
+			// ok, now write to the file
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
+			ASSETReaderWriter.exportThis(_myScenario, bos);
+
+			// now convert to String
+			byte[] output = bos.toByteArray();
+			InputStream is = new ByteArrayInputStream(output);
+
+			try
+			{
+				destination.setContents(is, true, false, monitor);
+
+				itWorked = true;
+			}
+			catch (CoreException e)
+			{
+				e.printStackTrace();
+			}
+
+			// ok, lastly indicate that the save worked (if it did!)
+			_plotIsDirty = !itWorked;
+			firePropertyChange(PROP_DIRTY);
+		}
+		else
+		{
+			ASSETActivator.logError(Status.ERROR, "Unable to identify source file for plot",
+					null);
+		}
+
+	}
+
+	public void doSaveAs()
+	{
+		String message = "Save as";
+		SaveAsDialog dialog = new SaveAsDialog(getEditorSite().getShell());
+		dialog.setTitle("Save Plot As");
+		if (getEditorInput() instanceof FileEditorInput)
+		{
+			IFile oldFile = ((FileEditorInput) getEditorInput()).getFile();
+			// dialog.setOriginalFile(oldFile);
+
+			IPath oldPath = oldFile.getFullPath();
+			IPath newStart = oldPath.removeFileExtension();
+			IPath newPath = newStart.addFileExtension("xml");
+			File asFile = newPath.toFile();
+			String newName = asFile.getName();
+			// dialog.setOriginalFile(newName);
+			dialog.setOriginalName(newName);
+		}
+		dialog.create();
+		if (message != null)
+			dialog.setMessage(message, IMessageProvider.WARNING);
+		else
+			dialog.setMessage("Save file to another location.");
+		dialog.open();
+		IPath path = dialog.getResult();
+
+		if (path == null)
+		{
+			return;
+		}
+		else
+		{
+			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
+			if (!file.exists())
+				try
+				{
+					System.out.println("creating:" + file.getName());
+					file.create(new ByteArrayInputStream(new byte[] {}), false, null);
+				}
+				catch (CoreException e)
+				{
+					ASSETActivator.logError(IStatus.ERROR,
+							"Failed trying to create new file for save-as", e);
+					return;
+				}
+
+			// ok, write to the file
+			doSaveTo(file, new NullProgressMonitor());
+
+			// also make this new file our input
+			IFileEditorInput newInput = new FileEditorInput(file);
+			setInputWithNotify(newInput);
+		}
+
+		_plotIsDirty = false;
+		firePropertyChange(PROP_DIRTY);
+	}
+
+	public boolean isSaveAsAllowed()
+	{
+		return true;
+	}
 }
