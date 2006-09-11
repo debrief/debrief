@@ -100,8 +100,21 @@ public class DebriefProperty implements IPropertyDescriptor
 		}
 		return res;
 	}
+	
+	public static void addSupplementalHelpers(Vector newHelpers)
+	{
+		// make sure our starter list is created
+		initialiseHelpers();
+		
+		// now add the new ones
+		for (Iterator iter = newHelpers.iterator(); iter.hasNext();)
+		{
+			Object thisHelper = (Object) iter.next();
+			_myHelperList.add(thisHelper);
+		}
+	}
 
-	private void initialiseHelpers()
+	private static void initialiseHelpers()
 	{
 		if (_myHelperList == null)
 		{
@@ -275,6 +288,9 @@ public class DebriefProperty implements IPropertyDescriptor
 		{
 			// find out the type of the editor
 			Method m = _thisProp.getReadMethod();
+			
+			if(m == null)
+				System.out.println("tripped, prop was:" + _thisProp.getDisplayName());
 
 			res = m.invoke(_subject, null);
 		} catch (Exception e)

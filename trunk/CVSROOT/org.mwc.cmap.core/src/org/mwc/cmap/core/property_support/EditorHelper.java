@@ -9,7 +9,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
 
-abstract class EditorHelper
+public abstract class EditorHelper
 {
 	final protected Class _myTargetClass;
 
