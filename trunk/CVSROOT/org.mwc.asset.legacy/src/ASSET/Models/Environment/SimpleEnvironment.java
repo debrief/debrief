@@ -17,6 +17,11 @@ public class SimpleEnvironment extends CoreEnvironment
 
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * our atmospheric attenuation
    */
   private int _atmosAtten;
@@ -99,7 +104,10 @@ public class SimpleEnvironment extends CoreEnvironment
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:44  Ian.Mayo
+   * Revision 1.2  2006-09-11 15:14:42  Ian.Mayo
+   * Minor tidying
+   *
+   * Revision 1.1  2006/08/08 14:21:44  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:52  Ian.Mayo
