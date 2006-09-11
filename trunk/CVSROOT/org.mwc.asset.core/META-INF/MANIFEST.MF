@@ -13,6 +13,8 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.asset.legacy,
  org.mwc.cmap.plotViewer,
  org.mwc.debrief.core,
- org.mwc.asset.sample_data
+ org.mwc.asset.sample_data,
+ org.mwc.cmap.legacy
 Eclipse-LazyStart: true
-Export-Package: org.mwc.asset.core
+Export-Package: org.mwc.asset.core,
+ org.mwc.asset.core.property_support
