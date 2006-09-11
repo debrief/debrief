@@ -18,7 +18,7 @@ public class Category implements java.io.Serializable
   /**
    * the serializable id of this type
    */
-  private static long serialVersionUID = 33;
+  private static final long serialVersionUID = 33;
 
   public interface Force
   {

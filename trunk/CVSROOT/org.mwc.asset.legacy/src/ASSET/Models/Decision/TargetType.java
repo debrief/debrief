@@ -21,7 +21,11 @@ public class TargetType implements java.io.Serializable
   // member variables
   //////////////////////////////////////////////////////////////////////
 
-  private java.util.Vector _myTargets;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private java.util.Vector _myTargets;
 
   //////////////////////////////////////////////////////////////////////
   // constructors
