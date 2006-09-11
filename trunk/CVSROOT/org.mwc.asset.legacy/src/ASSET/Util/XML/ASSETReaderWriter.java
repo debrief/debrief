@@ -10,6 +10,7 @@ import ASSET.ScenarioType;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
+import MWC.GUI.Layer;
 import MWC.Utilities.ReaderWriter.XML.LayersHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
@@ -339,14 +340,15 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
   /**
    * exporting the session
+   * @param theDecorations a layer of graphic backdrops to export
    */
-  static public void exportThis(final ScenarioType scenario, final java.io.OutputStream os)
+  static public void exportThis(final ScenarioType scenario, Layer theDecorations, final java.io.OutputStream os)
   {
     // output the XML header stuff
     // output the plot
 //    final com.sun.xml.tree.XmlDocument doc = new com.sun.xml.tree.XmlDocument();
     final Document doc = new DocumentImpl();
-    final org.w3c.dom.Element plot = ScenarioHandler.exportScenario(scenario, doc);
+    final org.w3c.dom.Element plot = ScenarioHandler.exportScenario(scenario, theDecorations, doc);
     doc.appendChild(plot);
     
     // and now export it.

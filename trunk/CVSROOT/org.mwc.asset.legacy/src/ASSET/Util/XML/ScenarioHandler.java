@@ -12,16 +12,21 @@ package ASSET.Util.XML;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.ScenarioType;
-import ASSET.Util.XML.Utils.EnvironmentHandler;
+import ASSET.Util.XML.Utils.*;
+import MWC.GUI.*;
 import MWC.GenericData.Duration;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 
-import java.util.Date;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private ScenarioType _theScenario;
+  private static final String DEBRIEF_LAYER_NAME = "DebriefLayer";
+
+	private ScenarioType _theScenario;
 
   static final public String SCENARIO_NAME = "Scenario";
   static final private String TIME = "StartTime";
@@ -89,13 +94,22 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
         _theScenario.setStepTime((int) res.getMillis());
       }
     });
-
+    addHandler(new MockLayerHandler(DEBRIEF_LAYER_NAME)
+    {
+      public void setLayer(BaseLayer theLayer)
+      {
+      	_theScenario.setBackdrop(theLayer);
+      }
+    });
+    
   }
 
-  public static org.w3c.dom.Element exportScenario(final ScenarioType scenario, final org.w3c.dom.Document doc)
+  public static org.w3c.dom.Element exportScenario(final ScenarioType scenario, Layer theDecorations, final org.w3c.dom.Document doc)
   {
     final org.w3c.dom.Element scen = doc.createElement(SCENARIO_NAME);
-    scen.setAttribute("Created", new java.util.Date().toString());
+    SimpleDateFormat xmlFormatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+    xmlFormatter.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+    scen.setAttribute("Created",xmlFormatter.format(new java.util.Date()));
     scen.setAttribute(NAME_ATTRIBUTE, "ASSET Scenario");
     scen.setAttribute(TIME, writeThisInXML(new Date(scenario.getTime())));
     DurationHandler.exportDuration(SCENARIO_STEP_TIME, new Duration(scenario.getScenarioStepTime(), Duration.MILLISECONDS), scen, doc);
@@ -109,6 +123,11 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
       EnvironmentHandler.exportEnvironment((SimpleEnvironment) env, scen, doc);
 
     ParticipantsHandler.exportThis(scenario, scen, doc);
+    
+    // and now the graphic layers item
+    final org.w3c.dom.Element layerHolder = doc.createElement(DEBRIEF_LAYER_NAME);
+    scen.appendChild(layerHolder);
+    LayerHandler.exportLayer((BaseLayer) scenario.getBackdrop(), layerHolder, doc);
 
     return scen;
   }
