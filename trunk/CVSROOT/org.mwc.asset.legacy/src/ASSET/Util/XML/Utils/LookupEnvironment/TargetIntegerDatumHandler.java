@@ -1,5 +1,7 @@
 package ASSET.Util.XML.Utils.LookupEnvironment;
 
+import java.util.Vector;
+
 import ASSET.Models.Sensor.Lookup.LookupSensor;
 
 /**
@@ -14,10 +16,10 @@ abstract public class TargetIntegerDatumHandler extends IntegerDatumHandler
   public final static String TYPE = "Type";
 
   String _myType;
-
-  public TargetIntegerDatumHandler(final String myType, final String[] headings)
+  
+  public TargetIntegerDatumHandler(final String myType, final String[] categories)
   {
-    super(myType, headings);
+    super(myType, categories);
 
     addAttributeHandler(new HandleAttribute(TYPE)
     {
@@ -28,21 +30,29 @@ abstract public class TargetIntegerDatumHandler extends IntegerDatumHandler
     });
 
   }
-
+  
   public void elementClosed()
   {
     // ok, create the results object
-    IntegerTargetTypeLookupHandler.SingleDatum datum = new IntegerTargetTypeLookupHandler.SingleDatum();
+    LookupSensor.NamedList datum = new LookupSensor.NamedList();
     datum._myType = _myType;
-    datum._myValues = _myValues;
+    
+    // ok, extract the values
+    Vector theValues = new Vector(0,1);
+   for (int i=0;i<_theCategories.length;i++)
+		{
+			Double val = _res.find(i);
+			theValues.add(val);
+		}
+    
+    datum._myValues = theValues;
 
     setDatum(datum);
 
     _myType = null;
-    _myValues = null;
   }
 
-  abstract public void setDatum(IntegerTargetTypeLookupHandler.SingleDatum value);
+  abstract public void setDatum(LookupSensor.NamedList value);
 
   public void setDatums(LookupSensor.IntegerLookup res)
   {

@@ -1,6 +1,6 @@
 package ASSET.Util.XML.Vessels;
 
-import ASSET.Models.Movement.MovementCharacteristics;
+import ASSET.Models.Movement.*;
 import ASSET.Models.Vessels.Helo;
 import ASSET.Util.XML.Movement.HeloMovementCharsHandler;
 
@@ -48,7 +48,7 @@ abstract public class HeloHandler extends ParticipantHandler{
     Helo theHelo = (Helo)toExport;
 
     // export the movement chars
-    MovementCharacteristics chars = theHelo.getMovementChars();
+    HeloMovementCharacteristics chars = (HeloMovementCharacteristics) theHelo.getMovementChars();
     HeloMovementCharsHandler.exportThis(chars, thisPart, doc);
 
     // and the whole participant

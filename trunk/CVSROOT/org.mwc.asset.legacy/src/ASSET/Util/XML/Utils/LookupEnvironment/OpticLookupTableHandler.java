@@ -2,6 +2,7 @@ package ASSET.Util.XML.Utils.LookupEnvironment;
 
 import ASSET.Models.Sensor.Lookup.LookupSensor;
 import ASSET.Models.Sensor.Lookup.OpticLookupSensor;
+import ASSET.Models.Sensor.Lookup.LookupSensor.*;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -113,10 +114,22 @@ abstract public class OpticLookupTableHandler extends MWCXMLReader
     envElement.setAttribute(NAME_ATTRIBUTE, optic.getName());
 
     // now the child bits
-    IntegerDatumHandler.exportThis(VIS_ATTEN, optic.get_attenuation(), envElement, doc);
-    IntegerDatumHandler.exportThis(LIGHT_LEVEL, optic.getLightLevel(), envElement, doc);
-
-
+    IntegerDatumHandler.exportThis(VIS_ATTEN, optic.get_attenuation(), envElement, doc, VIS_HEADINGS);
+    
+    StringLookup atten = optic.getVisibility();
+    if(atten != null)
+    {
+    	StringSetHandler.exportThis(TARGET_VIS, TARGET_VIS_DATUM, VISIBILITY, atten,  envElement, doc);
+    }
+    
+    IntegerTargetTypeLookup states = optic.getSea_states();
+    if(states != null)
+    {
+    	IntegerTargetTypeLookupHandler.exportThis(TARGET_SEA_STATE_SET, TARGET_SEA_STATE_DATUM, 
+    					SEA_STATE_HEADINGS, states, envElement, doc);
+    }
+    
+    IntegerDatumHandler.exportThis(LIGHT_LEVEL, optic.getLightLevel(), envElement, doc, LIGHT_HEADINGS);
 
     // and hang us off the parent
     parent.appendChild(envElement);

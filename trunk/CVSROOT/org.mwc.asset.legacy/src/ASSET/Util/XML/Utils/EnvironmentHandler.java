@@ -217,13 +217,23 @@ abstract public class EnvironmentHandler extends MWCXMLReader
     envElement.setAttribute(ATMOS_ATTEN, atmosStr);
     envElement.setAttribute(LIGHT_LEVEL, lightStr);
 
+    
     // hey, we've also got to export our lookup tables
+//  RadarLookupSensor.RadarEnvironment radar = environment.getRadarEnvironment();
+//  if (radar != null)
+//  {
+//    RadarLookupTableHandler.exportThis(RADAR_LOOKUP, radar, envElement, doc);
+//    }
+    
     OpticLookupSensor.OpticEnvironment optic = environment.getOpticEnvironment();
     if (optic != null)
     {
-      OpticLookupTableHandler.exportThis(RADAR_LOOKUP, optic, envElement, doc);
+      OpticLookupTableHandler.exportThis(OPTIC_LOOKUP, optic, envElement, doc);
     }
 
+   
+    
+    
   }
 
 }

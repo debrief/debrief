@@ -1,6 +1,7 @@
 package ASSET.Util.XML.Vessels;
 
 import ASSET.Util.XML.Movement.SurfaceMovementCharsHandler;
+import ASSET.Models.Movement.SurfaceMovementCharacteristics;
 import ASSET.Models.Vessels.Surface;
 
 /**
@@ -46,7 +47,7 @@ abstract public class SurfaceHandler extends ParticipantHandler{
     ParticipantHandler.exportThis(toExport, thisPart, doc);
 
     Surface surf = (Surface) toExport;
-    SurfaceMovementCharsHandler.exportThis(surf.getMovementChars(), thisPart, doc);
+    SurfaceMovementCharsHandler.exportThis((SurfaceMovementCharacteristics) surf.getMovementChars(), thisPart, doc);
 
     parent.appendChild(thisPart);
 

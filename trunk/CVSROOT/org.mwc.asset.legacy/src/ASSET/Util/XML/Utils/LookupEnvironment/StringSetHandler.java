@@ -1,9 +1,10 @@
 package ASSET.Util.XML.Utils.LookupEnvironment;
 
 import ASSET.Models.Sensor.Lookup.LookupSensor;
+import ASSET.Models.Sensor.Lookup.LookupSensor.StringLookup;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
-import java.util.Vector;
+import java.util.*;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -89,18 +90,35 @@ abstract public class StringSetHandler extends MWCXMLReader
   abstract public void setDatums(LookupSensor.StringLookup res);
 
 
-  public static void exportThis(String setName, String datumName, Element parent, Document doc)
-  {
-    System.err.println("NOT EXPORTING STRING SETS yet.");
-  }
 
+	public static void exportThis(String target_vis, String target_vis_datum, String ATTRIBUTE_LABEL, StringLookup atten, Element env, Document doc)
+	{
+    // ok, put us into the element
+    org.w3c.dom.Element envElement = doc.createElement(target_vis);
+
+    // get on with the name attribute
+    Double unknownVal = atten.getUnknownResult();
+    if(unknownVal != null)
+    	envElement.setAttribute(UNKNOWN_TYPE, writeThisLong(unknownVal.doubleValue()));
+		
+    // now cycle through the elements themselves
+    Collection theIndices = atten.getIndices();
+    for (Iterator iter = theIndices.iterator(); iter.hasNext();)
+		{
+			String thisIndex = (String) iter.next();
+			Double res = atten.find(thisIndex);
+			StringDatumHandler.exportThis(target_vis_datum, thisIndex, ATTRIBUTE_LABEL,  res.doubleValue(), envElement, doc);
+		}
+    
+    env.appendChild(envElement);
+	}
 
   /**
    * *******************************************************************
    * embedded class which records pairs of type/value datums
    * *******************************************************************
    */
-  abstract public class StringDatumHandler extends MWCXMLReader
+  abstract static public class StringDatumHandler extends MWCXMLReader
   {
     String _name;
     double _value;
@@ -127,13 +145,27 @@ abstract public class StringSetHandler extends MWCXMLReader
 
     }
 
-    public void elementClosed()
+    public static void exportThis(String target_vis_datum, String thisIndex, String attribute_label, double d, Element envElement, Document doc)
+		{
+      // ok, put us into the element
+      org.w3c.dom.Element datum = doc.createElement(target_vis_datum);
+      datum.setAttribute(NAME, thisIndex);
+      datum.setAttribute(attribute_label, writeThisLong(d));
+      
+      envElement.appendChild(datum);
+
+			
+		}
+
+		public void elementClosed()
     {
       setDatum(_name, _value);
       _name = null;
     }
 
     abstract public void setDatum(String name, double value);
+
   }
+
 
 }
