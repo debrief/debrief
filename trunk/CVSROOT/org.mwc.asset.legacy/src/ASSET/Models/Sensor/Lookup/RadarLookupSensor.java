@@ -26,6 +26,7 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
+import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,6 +44,10 @@ public class RadarLookupSensor extends LookupSensor
   ////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * list of integer values detailing a relative bearing
    */
   public static final int DEAD_AHEAD = 0;
@@ -91,39 +96,49 @@ public class RadarLookupSensor extends LookupSensor
   private void setDefaultLookups()
   {
 
-    // start off with the sea state
-    IntegerTargetTypeLookup seaStates = new IntegerTargetTypeLookup(new int[]{0, 1, 2, 3, 4, 5, 6},
-                                                                    new StringLookup[]{
-                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                       new double[]{1, 1, 1, 1}, null),
-                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                       new double[]{1, 1, 1, 1}, null),
-                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                       new double[]{1, 1, 0.8, 0.9}, null),
-                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                       new double[]{1, 1, 0.75, 0.8}, null),
-                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                       new double[]{1, 1, 0.7, 0.75}, null),
-                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                       new double[]{0.95, 1, 0.5, 0.7}, null),
-                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                       new double[]{0.9, 0.95, 0.3, 0.5}, null),
-                                                                    }, new Double(1.0));
+    // start off with the aspect dependency 
+  	Vector aspects = new Vector(0,1);
+//  	datums.add(new Double())
 
+  	aspects.add(new NamedList(Category.Type.CARRIER, new double[]{2000, 8000, 10000, 8000, 2000}));
+  	aspects.add( new NamedList(Category.Type.FRIGATE, new double[]{1000, 3000, 4000, 3000, 1000}));
+  	aspects.add(new NamedList(Category.Type.SUBMARINE, new double[]{0.5, 0.5, 0.5, 0.5, 0.5}));
+  	aspects.add(new NamedList(Category.Type.FISHING_VESSEL, new double[]{5,8,10,8,5}));
+  	
     // setup the sigma values
-    IntegerTargetTypeLookup sigmaValues = new IntegerTargetTypeLookup(new int[]{DEAD_AHEAD, BOW, BEAM, QUARTER, ASTERN},
-                                                                      new StringLookup[]{
-                                                                        new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                         new double[]{1000, 2000, 0.5, 5}, null),
-                                                                        new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                         new double[]{3000, 8000, 0.5, 8}, null),
-                                                                        new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                         new double[]{4000, 10000, 0.5, 10}, null),
-                                                                        new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                         new double[]{3000, 8000, 0.5, 8}, null),
-                                                                        new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
-                                                                                         new double[]{1000, 2000, 0.5, 5}, null)
-                                                                      }, new Double(1000));
+    IntegerTargetTypeLookup sigmaValues = new IntegerTargetTypeLookup(aspects, new Double(1000d));
+
+    // start off with the sea state
+  	Vector states = new Vector(0,1);
+
+  	states.add(new NamedList(Category.Type.FRIGATE, new double[]{1.00, 1.00, 1.00, 1.00, 1.00, 0.95, 0.90}));
+  	states.add(new NamedList(Category.Type.CARRIER, new double[]{1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.95}));
+  	states.add(new NamedList(Category.Type.SUBMARINE, new double[]{1.00, 1.00, 0.80, 0.75, 0.70, 0.50, 0.30}));
+  	states.add(new NamedList(Category.Type.FISHING_VESSEL, new double[]{1.00, 1.00, 0.96, 0.80, 0.75, 0.70, 0.50, 0.90}));
+    
+
+  IntegerTargetTypeLookup seaStates = new IntegerTargetTypeLookup(states, new Double(1.0));
+  	
+//  	
+//  	
+//    IntegerTargetTypeLookup seaStates = new IntegerTargetTypeLookup(new int[]{0, 1, 2, 3, 4, 5, 6},
+//                                                                    new StringLookup[]{
+//                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
+//                                                                                       new double[]{1, 1, 1, 1}, null),
+//                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
+//                                                                                       new double[]{1, 1, 1, 1}, null),
+//                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
+//                                                                                       new double[]{1, 1, 0.8, 0.9}, null),
+//                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
+//                                                                                       new double[]{1, 1, 0.75, 0.8}, null),
+//                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
+//                                                                                       new double[]{1, 1, 0.7, 0.75}, null),
+//                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
+//                                                                                       new double[]{0.95, 1, 0.5, 0.7}, null),
+//                                                                      new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
+//                                                                                       new double[]{0.9, 0.95, 0.3, 0.5}, null),
+//                                                                    }, new Double(1.0));
+
 
     _defaultLookups = new RadarEnvironment("sample", seaStates, sigmaValues);
 
@@ -316,7 +331,10 @@ public class RadarLookupSensor extends LookupSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:58  Ian.Mayo
+   * Revision 1.2  2006-09-12 15:15:34  Ian.Mayo
+   * Sorting out XML import/export & lookup data structures
+   *
+   * Revision 1.1  2006/08/08 14:21:58  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:06  Ian.Mayo
@@ -494,7 +512,11 @@ public class RadarLookupSensor extends LookupSensor
 
     private class MyEnvironment extends CoreEnvironment
     {
-      protected int _lightLevel = 1;
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			protected int _lightLevel = 1;
       protected int _seaState = 4;
       protected int _atten = EnvironmentType.VERY_CLEAR;
 
@@ -607,7 +629,7 @@ public class RadarLookupSensor extends LookupSensor
     public void testRead()
     {
       String fileName = "lookup_test_scenario.xml";
-      fileName = "../src/java/asset_src/asset/models/sensor/lookup/" + fileName;
+      fileName = "d:/dev/asset/src/java/asset_src/asset/models/sensor/lookup/" + fileName;
 
       CoreScenario scen = new CoreScenario();
       try
