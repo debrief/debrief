@@ -18,7 +18,7 @@ import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.*;
 import ASSET.Util.XML.ASSETReaderWriter;
-import MWC.GUI.Layers;
+import MWC.GUI.*;
 
 public class ASSETPlotEditor extends CorePlotEditor
 {
@@ -228,9 +228,15 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		if (destination != null)
 		{
+			// hey, get the decorations layer
+			Layer theDecs = _assetLayers.findLayer(Layers.CHART_FEATURES);
+			
+			// put the decs into the scenario
+			_myScenario.setBackdrop(theDecs);
+			
 			// ok, now write to the file
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			ASSETReaderWriter.exportThis(_myScenario, bos);
+			ASSETReaderWriter.exportThis(_myScenario, theDecs, bos);
 
 			// now convert to String
 			byte[] output = bos.toByteArray();
