@@ -657,6 +657,14 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		// ok, tell everybody we've got some new participants
 		fireMessage(SCENARIO_CONFIG, new HiResDate(), "Scenario loaded from:" + fileName);
 
+		// right, does it have a backdrop?
+		if(_theScenario.getBackdrop() != null)
+		{
+			_theLayers.removeThisLayer(_theLayers.findLayer(Layers.CHART_FEATURES));
+			_theLayers.addThisLayer(_theScenario.getBackdrop());
+		}
+		
+		
 		// fire the layers change for new scenario data
 		_theLayers.fireExtended(null, _myScenarioLayer);
 	}
