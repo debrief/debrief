@@ -100,7 +100,7 @@
 						<xs:documentation>The list of vessels/aircraft to be modelled in this scenario</xs:documentation>
 					</xs:annotation>
 				</xs:element>
-				<xs:element name="DebriefLayer" type="DebriefLayerType" minOccurs="0" maxOccurs="1">
+				<xs:element name="DebriefLayer" type="DebriefLayerType" minOccurs="0">
 					<xs:annotation>
 						<xs:documentation>The backdrop layers to show</xs:documentation>
 					</xs:annotation>
@@ -599,7 +599,7 @@
 					</xs:annotation>
 				</xs:element>
 			</xs:choice>
-			<xs:element name="RadiatedCharacteristics" type="RadiatedCharacteristicsType">
+			<xs:element name="RadiatedCharacteristics" type="RadiatedCharacteristicsType" minOccurs="0" maxOccurs="unbounded">
 				<xs:annotation>
 					<xs:documentation>The types of radiated noise produced by this participant</xs:documentation>
 				</xs:annotation>
@@ -607,6 +607,11 @@
 			<xs:element name="SelfNoiseCharacteristics" type="SelfNoiseCharacteristicsType" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>What type of self-noise encountered by this participant</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="Movement" type="MovementType" minOccurs="0">
+				<xs:annotation>
+					<xs:documentation>The movement model for this type of participant</xs:documentation>
 				</xs:annotation>
 			</xs:element>
 		</xs:sequence>
@@ -715,7 +720,11 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="Surface" type="SurfaceType"/>
+	<xs:element name="Surface" type="SurfaceType">
+		<xs:annotation>
+			<xs:documentation>A surface vessel</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="SurfaceType">
 		<xs:annotation>
 			<xs:documentation>Representation of a Surface vessel</xs:documentation>
@@ -1183,6 +1192,11 @@
 		<xs:attribute name="IsAlive" type="xs:boolean" use="optional" default="true">
 			<xs:annotation>
 				<xs:documentation>Whether this decision model model is active</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="StayAlive" type="xs:boolean" use="optional" default="true">
+			<xs:annotation>
+				<xs:documentation>Whether this decision model stays alive on completion</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
 		<xs:attribute name="Name" type="xs:string" use="required">
