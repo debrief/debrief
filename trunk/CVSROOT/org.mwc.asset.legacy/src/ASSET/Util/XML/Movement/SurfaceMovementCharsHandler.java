@@ -65,13 +65,13 @@ abstract public class SurfaceMovementCharsHandler extends MovementCharsHandler
     stat.setAttribute(FUEL, writeThis(toExport.getFuelUsageRate()));
     //    stat.setAttribute(TURN_CIRCLE, writeThis(toExport.getTurningCircleDiameter(1)));
 
-    WorldDistanceHandler.exportDistance(TURN_CIRCLE,
-                                        new WorldDistance(toExport.getTurningCircleDiameter(1), WorldDistance.METRES),
-                                        stat, doc);
+    WorldSpeedHandler.exportSpeed(MIN_SPEED, toExport.getMinSpeed(), stat, doc);
+    WorldSpeedHandler.exportSpeed(MAX_SPEED, toExport.getMaxSpeed(), stat, doc);
     WorldAccelerationHandler.exportAcceleration(ACCEL, toExport.getAccelRate(), stat, doc);
     WorldAccelerationHandler.exportAcceleration(DECEL, toExport.getDecelRate(), stat, doc);
-    WorldSpeedHandler.exportSpeed(MAX_SPEED, toExport.getMaxSpeed(), stat, doc);
-    WorldSpeedHandler.exportSpeed(MIN_SPEED, toExport.getMinSpeed(), stat, doc);
+    WorldDistanceHandler.exportDistance(TURN_CIRCLE,
+        new WorldDistance(toExport.getTurningCircleDiameter(1), WorldDistance.METRES),
+        stat, doc);
 
 
     // add to parent

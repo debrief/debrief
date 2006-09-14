@@ -2,8 +2,7 @@ package ASSET.Util.XML.Movement;
 
 import MWC.GenericData.WorldSpeed;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import MWC.Utilities.ReaderWriter.XML.Util.WorldAccelerationHandler;
-import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -103,10 +102,14 @@ abstract public class HeloMovementCharsHandler extends ThreeDimMovementCharsHand
     stat.setAttribute(FUEL, writeThis(toExport.getFuelUsageRate()));
     stat.setAttribute(DEFAULT_TURN_RATE, writeThis(toExport.getTurnRate()));
 
+    WorldSpeedHandler.exportSpeed(MIN_SPEED, toExport.getMinSpeed(), stat, doc);
+    WorldSpeedHandler.exportSpeed(MAX_SPEED, toExport.getMaxSpeed(), stat, doc);
     WorldAccelerationHandler.exportAcceleration(ACCEL, toExport.getAccelRate(), stat, doc);
     WorldAccelerationHandler.exportAcceleration(DECEL, toExport.getDecelRate(), stat, doc);
-    WorldSpeedHandler.exportSpeed(MAX_SPEED, toExport.getMaxSpeed(), stat, doc);
-    WorldSpeedHandler.exportSpeed(MIN_SPEED, toExport.getMinSpeed(), stat, doc);
+    WorldDistanceHandler.exportDistance(MIN_Height, toExport.getMinHeight(), stat, doc);
+    WorldDistanceHandler.exportDistance(MAX_Height, toExport.getMaxHeight(), stat, doc);
+    WorldSpeedHandler.exportSpeed(DEFAULT_CLIMB_RATE, toExport.getDefaultClimbRate(), stat, doc);
+    WorldSpeedHandler.exportSpeed(DEFAULT_DIVE_RATE, toExport.getDefaultDiveRate(), stat, doc);
     WorldSpeedHandler.exportSpeed(DEFAULT_CLIMB_SPEED, toExport.getDefaultClimbSpeed(), stat, doc);
     WorldSpeedHandler.exportSpeed(DEFAULT_DIVE_SPEED, toExport.getDefaultDiveSpeed(), stat, doc);
 

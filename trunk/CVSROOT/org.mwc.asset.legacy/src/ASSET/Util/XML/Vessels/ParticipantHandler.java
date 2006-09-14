@@ -1,5 +1,6 @@
 package ASSET.Util.XML.Vessels;
 
+import ASSET.Models.MovementType;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
 
 /**
@@ -30,7 +31,8 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
   private ASSET.Models.Vessels.Radiated.RadiatedCharacteristics _mySelfNoise;
 
   // MOVEMENT CHARACTERISTICS - retrieved by child classes
-  protected ASSET.Models.Movement.MovementCharacteristics _myMoves;
+  protected ASSET.Models.Movement.MovementCharacteristics _myMoveChars;
+	protected MovementType _myMovement;
 
   ParticipantHandler(final String type)
   {
@@ -135,6 +137,13 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
         _mySelfNoise = chars;
       }
     });
+    addHandler(new ASSET.Util.XML.Vessels.Util.MovementHandler()
+    {
+      public void setMovement(final ASSET.Models.MovementType movement)
+      {
+        _myMovement = movement;
+      }
+    });    
 
   }
 
@@ -167,9 +176,12 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
     thisPart.setDemandedStatus(_myDemandedStatus);
     thisPart.setSensorFit(_mySensorList);
     thisPart.setDecisionModel(_myDecisionModel);
-    thisPart.setMovementChars(_myMoves);
+    thisPart.setMovementChars(_myMoveChars);
     thisPart.setRadiatedChars(_myRads);
     thisPart.setSelfNoise(_mySelfNoise);
+    
+    if(_myMovement != null)
+    	thisPart.setMovementModel(_myMovement);
 
     // allow the child classes to finish off the participant
     finishParticipant(thisPart);
@@ -186,7 +198,7 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
     _myDemandedStatus = null;
     _mySensorList = null;
     _myDecisionModel = null;
-    _myMoves = null;
+    _myMoveChars = null;
     _myRads = null;
     _mySelfNoise = null;
 

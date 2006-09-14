@@ -11,7 +11,7 @@ import ASSET.Models.Decision.CoreDecision;
  */
 public class CoreDecisionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  protected final static String IS_ACTIVE = "isActive";
+  protected final static String IS_ACTIVE = "IsActive";
   protected final static String NAME = "Name";
 
   private String _myName;

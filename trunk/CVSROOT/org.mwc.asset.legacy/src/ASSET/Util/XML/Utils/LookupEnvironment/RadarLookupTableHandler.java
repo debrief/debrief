@@ -1,7 +1,9 @@
 package ASSET.Util.XML.Utils.LookupEnvironment;
 
-import ASSET.Models.Sensor.Lookup.LookupSensor;
-import ASSET.Models.Sensor.Lookup.RadarLookupSensor;
+import org.w3c.dom.*;
+
+import ASSET.Models.Sensor.Lookup.*;
+import ASSET.Models.Sensor.Lookup.LookupSensor.*;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 /**
@@ -13,7 +15,8 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
  */
 abstract public class RadarLookupTableHandler extends MWCXMLReader
 {
-  public static final String TARGET_ASPECT_SET = "TargetAspectSet";
+  private static final String NAME_ATTRIBUTE = "Name";
+	public static final String TARGET_ASPECT_SET = "TargetAspectSet";
   private static final String TARGET_ASPECT_DATUM = "TargetAspectDatum";
   public static final String[] ASPECT_HEADINGS = {"DeadAhead", "Bow", "Beam", "Quarter", "Astern"};
 
@@ -37,7 +40,7 @@ abstract public class RadarLookupTableHandler extends MWCXMLReader
   {
     super(myType);
 
-    addAttributeHandler(new HandleAttribute("Name")
+    addAttributeHandler(new HandleAttribute(NAME_ATTRIBUTE)
     {
       public void setValue(String name, String value)
       {
@@ -74,4 +77,36 @@ abstract public class RadarLookupTableHandler extends MWCXMLReader
   }
 
   abstract public void setRadarEnvironment(RadarLookupSensor.RadarEnvironment env);
+  
+
+  public static void exportThis(String type, RadarLookupSensor.RadarEnvironment radar, Element parent,
+                                Document doc)
+  {
+    // ok, put us into the element
+    org.w3c.dom.Element envElement = doc.createElement(type);
+
+    // get on with the name attribute
+    envElement.setAttribute(NAME_ATTRIBUTE, radar.getName());
+
+    // and the child components
+    IntegerTargetTypeLookup aspects = radar.getSigmaValues();
+    if(aspects != null)
+    {
+    	IntegerTargetTypeLookupHandler.exportThis(TARGET_ASPECT_SET, TARGET_ASPECT_DATUM, 
+    					ASPECT_HEADINGS, aspects, envElement, doc);
+    }
+    
+    IntegerTargetTypeLookup states = radar.getSeaStates();
+    if(states != null)
+    {
+    	IntegerTargetTypeLookupHandler.exportThis(TARGET_SEA_STATE_SET, TARGET_SEA_STATE_DATUM, 
+    					SEA_STATE_HEADINGS, states, envElement, doc);
+    }
+
+    // and hang us off the parent
+    parent.appendChild(envElement);
+
+  }  
+  
+  
 }

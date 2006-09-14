@@ -67,7 +67,7 @@ public class SaveScenarioAsXML extends MWC.GUI.Tools.Operations.Save
       // _theScenario.setFileName(filename); /** @todo store filename in scenario */
 
       // pass all of this to the XML exporter
-      ASSET.Util.XML.ASSETReaderWriter.exportThis(_theScenario, os);
+      ASSET.Util.XML.ASSETReaderWriter.exportThis(_theScenario, null, os);
 
       os.close();
 

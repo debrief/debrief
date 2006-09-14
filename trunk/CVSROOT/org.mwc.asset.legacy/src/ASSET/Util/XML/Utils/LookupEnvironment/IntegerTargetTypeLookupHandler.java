@@ -59,52 +59,9 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 
 	public void elementClosed()
 	{
-		
-		LookupSensor.IntegerTargetTypeLookup res = new LookupSensor.IntegerTargetTypeLookup(
-				_myDatums, _defaultValue);		
-		
-//		// SORT OUT THE INT HEADINGS
-//		// get a datum so we can count how many ints were read in
-//		SingleDatum single = (SingleDatum) _myDatums.elementAt(0);
-//		int[] headingInts = new int[single._myValues.size()];
-//		for (int i = 0; i < single._myValues.size(); i++)
-//		{
-//			headingInts[i] = i;
-//		}
-//
-//		// now the text versions of the strings
-//		String[] targetStrings = new String[_myDatums.size()];
-//
-//		// first collate the headings
-//		for (int i = 0; i < _myDatums.size(); i++)
-//		{
-//			SingleDatum sd = (SingleDatum) _myDatums.elementAt(i);
-//			targetStrings[i] = sd._myType;
-//		}
-//
-//		// and now the string lookups
-//		LookupSensor.StringLookup[] vals = new LookupSensor.StringLookup[single._myValues
-//				.size()];
-//
-//		// and now the values themselves
-//		for (int i = 0; i < headingInts.length; i++)
-//		{
-//			double[] myValues = new double[_myDatums.size()];
-//
-//			for (int j = 0; j < _myDatums.size(); j++)
-//			{
-//				SingleDatum datum = (SingleDatum) _myDatums.elementAt(j);
-//				Double thisVal = (Double) datum._myValues.elementAt(i);
-//				if (thisVal != null)
-//					myValues[j] = thisVal.doubleValue();
-//			}
-//
-//			vals[i] = new LookupSensor.StringLookup(targetStrings, myValues, null);
-//
-//		}
 
-//		LookupSensor.IntegerTargetTypeLookup res = new LookupSensor.IntegerTargetTypeLookup(
-//				headingInts, vals, _defaultValue);
+		LookupSensor.IntegerTargetTypeLookup res = new LookupSensor.IntegerTargetTypeLookup(
+				_myDatums, _defaultValue);
 
 		// and store it
 		setLookup(res);
@@ -136,33 +93,41 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 		Collection keys = states.getNames();
 		for (Iterator iter = keys.iterator(); iter.hasNext();)
 		{
-			NamedList thisS = (NamedList) iter.next();
-			
-			// ok, cycle through the sea states for this participant			
-			NamedList thisList = states.getThisSeries(thisS.getName());
-			exportThisSeries(thisS, target_sea_state_datum, thisList, sea_state_headings, itt,
+			Object obj = (Object) iter.next();
+			String thisN = (String) obj;
+
+			// ok, cycle through the sea states for this participant
+			NamedList thisList = states.getThisSeries(thisN);
+			exportThisSeries(thisN, target_sea_state_datum, thisList, sea_state_headings, itt,
 					doc);
 		}
-		
+
 		envElement.appendChild(itt);
 	}
 
-	private static void exportThisSeries(NamedList thisS, String target_sea_state_datum,
+	private static void exportThisSeries(String name, String target_sea_state_datum,
 			NamedList thisList, String[] sea_state_headings, Element itt, Document doc)
 	{
 		// ok, put us into the element
 		org.w3c.dom.Element datum = doc.createElement(target_sea_state_datum);
-
+		
+		datum.setAttribute("Type", name);
+		
 		// and step through its values
 		Collection indices = thisList.getValues();
 		int ctr = 0;
 		for (Iterator iter = indices.iterator(); iter.hasNext();)
-		{			
-			Double val = (Double) iter.next();			
-			datum.setAttribute(sea_state_headings[ctr], writeThis(val.doubleValue()));
-			ctr++;
+		{
+			Double val = (Double) iter.next();
+			if (val != null)
+			{
+				datum.setAttribute(sea_state_headings[ctr], writeThis(val.doubleValue()));
+				ctr++;
+			}
+			else
+				break;
 		}
-		
+
 		itt.appendChild(datum);
 	}
 

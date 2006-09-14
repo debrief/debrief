@@ -27,7 +27,7 @@ abstract public class SurfaceHandler extends ParticipantHandler{
     {
       public void setMovement(final ASSET.Models.Movement.MovementCharacteristics chars)
       {
-        _myMoves = chars;
+        _myMoveChars = chars;
       }
     });
 

@@ -27,7 +27,7 @@ abstract public class HeloHandler extends ParticipantHandler{
     {
       public void setMovement(final ASSET.Models.Movement.MovementCharacteristics chars)
       {
-        _myMoves = chars;
+        _myMoveChars = chars;
       }
     });
 
@@ -48,12 +48,13 @@ abstract public class HeloHandler extends ParticipantHandler{
     Helo theHelo = (Helo)toExport;
 
     // export the movement chars
-    HeloMovementCharacteristics chars = (HeloMovementCharacteristics) theHelo.getMovementChars();
-    HeloMovementCharsHandler.exportThis(chars, thisPart, doc);
-
     // and the whole participant
     ParticipantHandler.exportThis(toExport, thisPart, doc);
 
+    HeloMovementCharacteristics chars = (HeloMovementCharacteristics) theHelo.getMovementChars();
+    HeloMovementCharsHandler.exportThis(chars, thisPart, doc);
+
+    
     parent.appendChild(thisPart);
 
   }

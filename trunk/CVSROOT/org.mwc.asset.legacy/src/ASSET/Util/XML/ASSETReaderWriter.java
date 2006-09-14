@@ -6,22 +6,22 @@
 
 package ASSET.Util.XML;
 
-import ASSET.ScenarioType;
-import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
-import ASSET.Util.XML.Control.StandaloneObserverListHandler;
-import ASSET.Util.XML.Decisions.WaterfallHandler;
-import MWC.GUI.Layer;
-import MWC.Utilities.ReaderWriter.XML.LayersHandler;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-
-import org.apache.xerces.dom.DocumentImpl;
-import org.apache.xml.serialize.*;
-import org.jdom.input.SAXBuilder;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
-
 import java.io.*;
 import java.util.Vector;
+
+import javax.xml.parsers.ParserConfigurationException;
+
+import org.apache.xml.serialize.*;
+import org.jdom.input.SAXBuilder;
+import org.w3c.dom.*;
+import org.xml.sax.InputSource;
+
+import ASSET.ScenarioType;
+import ASSET.Util.XML.Control.StandaloneObserverListHandler;
+import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
+import ASSET.Util.XML.Decisions.WaterfallHandler;
+import MWC.GUI.Layer;
+import MWC.Utilities.ReaderWriter.XML.*;
 
 /**
  * @author IAN MAYO
@@ -346,28 +346,44 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
   {
     // output the XML header stuff
     // output the plot
-//    final com.sun.xml.tree.XmlDocument doc = new com.sun.xml.tree.XmlDocument();
-    final Document doc = new DocumentImpl();
-    final org.w3c.dom.Element plot = ScenarioHandler.exportScenario(scenario, theDecorations, doc);
-    doc.appendChild(plot);
+//    final Document doc2 = new DocumentImpl();
     
-    // and now export it.
-    // this way of exporting the dom came from sample code in the Xerces 2.6.2 download
     try
-    {
-      final OutputFormat format = new OutputFormat(doc,"UTF-8", true);   //Serialize DOM
-      format.setLineSeparator(System.getProperty("line.separator")); // use windows line separator
-      format.setLineWidth(0); // don't wrap any lines
-      format.setIndent(2); // only use a small indentation for pretty-printing
-      final XMLSerializer serial = new XMLSerializer(os, format);
-      serial.asDOMSerializer();                            // As a DOM Serializer
-      serial.serialize(doc.getDocumentElement());
-    }
-    catch (IOException e)
-    {
-      MWC.Utilities.Errors.Trace.trace("Debrief failed to save this file correctly.  Please investigate the trace file", true);
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-    }
+		{
+			DOMImplementation domI = javax.xml.parsers.DocumentBuilderFactory.newInstance().newDocumentBuilder().getDOMImplementation();
+			Document doc = domI.createDocument(null,null,null);
+			
+
+	    final org.w3c.dom.Element plot = ScenarioHandler.exportScenario(scenario, theDecorations, doc);
+	    doc.appendChild(plot);
+	    
+	    // and now export it.
+	    // this way of exporting the dom came from sample code in the Xerces 2.6.2 download
+	    try
+	    {
+	      final OutputFormat format = new OutputFormat(doc,"UTF-8", true);   //Serialize DOM
+	      format.setLineSeparator(System.getProperty("line.separator")); // use windows line separator
+	      format.setLineWidth(0); // don't wrap any lines
+	      format.setIndent(2); // only use a small indentation for pretty-printing
+	      final XMLSerializer serial = new XMLSerializer(os, format);
+	      serial.asDOMSerializer();                            // As a DOM Serializer
+	      serial.serialize(doc.getDocumentElement());
+	    }
+	    catch (IOException e)
+	    {
+	      MWC.Utilities.Errors.Trace.trace("Debrief failed to save this file correctly.  Please investigate the trace file", true);
+	      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+	    }			
+			
+		}
+		catch (ParserConfigurationException e1)
+		{
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+    
+    
+    
 //    
 //    doc.changeNodeOwner(plot);
 //    doc.setSystemId("ASSET XML Version 1.0");

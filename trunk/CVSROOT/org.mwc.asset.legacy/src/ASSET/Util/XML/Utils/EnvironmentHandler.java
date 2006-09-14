@@ -219,11 +219,11 @@ abstract public class EnvironmentHandler extends MWCXMLReader
 
     
     // hey, we've also got to export our lookup tables
-//  RadarLookupSensor.RadarEnvironment radar = environment.getRadarEnvironment();
-//  if (radar != null)
-//  {
-//    RadarLookupTableHandler.exportThis(RADAR_LOOKUP, radar, envElement, doc);
-//    }
+  RadarLookupSensor.RadarEnvironment radar = environment.getRadarEnvironment();
+  if (radar != null)
+  {
+    RadarLookupTableHandler.exportThis(RADAR_LOOKUP, radar, envElement, doc);
+    }
     
     OpticLookupSensor.OpticEnvironment optic = environment.getOpticEnvironment();
     if (optic != null)

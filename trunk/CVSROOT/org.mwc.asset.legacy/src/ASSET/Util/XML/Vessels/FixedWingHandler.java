@@ -30,7 +30,7 @@ abstract public class FixedWingHandler extends ParticipantHandler
     {
       public void setMovement(final MovementCharacteristics chars)
       {
-        _myMoves = chars;
+        _myMoveChars = chars;
       }
     });
 

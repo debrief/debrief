@@ -9,44 +9,41 @@ package ASSET.Util.XML.Utils;
  * @version 1.0
  */
 
-import MWC.GUI.BaseLayer;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import org.xml.sax.Attributes;
+import MWC.GUI.*;
+import MWC.Utilities.ReaderWriter.XML.*;
 
 abstract public class MockLayerHandler extends MWCXMLReader
 {
 	BaseLayer _res = null;
 
-  public MockLayerHandler(String name)
-  {
-    // inform our parent what type of class we are
-    super(name);
-  }
+	public MockLayerHandler(String elementName)
+	{
+		// inform our parent what type of class we are
+		super(elementName);
 
-  // this is one of ours, so get on with it!
-  protected void handleOurselves(String name, Attributes attributes)
-  {
-  	// right, get the guts of the element
-  }
+		// and add the layer handler...
+		addHandler(new LayerHandler(null)
+		{
+			public void elementClosed()
+			{
+				// pass on the layer
+				setLayer(_myLayer);
+				// and empty it
+				_myLayer = null;
+			}
 
+		});
+	}
 
-  public void elementClosed()
-  {
-    // pass on to the listener class
-    setLayer(_res);
-  }
+	abstract public void setLayer(BaseLayer theLayer);
 
-  abstract public void setLayer(BaseLayer theLayer);
-
-
-  public static void exportLocation(MWC.GenericData.WorldLocation loc, String title, org.w3c.dom.Element parent,
-                                    org.w3c.dom.Document doc)
-  {
-    org.w3c.dom.Element eLoc = doc.createElement(title);
-    // for now, stick with exporting locations in short form
-    ASSETShortLocationHandler.exportLocation(loc, eLoc, doc);
-    parent.appendChild(eLoc);
-  }
-
+	public static void exportLocation(MWC.GenericData.WorldLocation loc, String title,
+			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
+	{
+		org.w3c.dom.Element eLoc = doc.createElement(title);
+		// for now, stick with exporting locations in short form
+		ASSETShortLocationHandler.exportLocation(loc, eLoc, doc);
+		parent.appendChild(eLoc);
+	}
 
 }

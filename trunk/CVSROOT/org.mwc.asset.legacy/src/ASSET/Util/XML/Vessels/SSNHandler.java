@@ -21,7 +21,7 @@ abstract public class SSNHandler extends ParticipantHandler{
     {
       public void setMovement(final ASSET.Models.Movement.MovementCharacteristics chars)
       {
-        _myMoves = chars;
+        _myMoveChars = chars;
       }
     });
 

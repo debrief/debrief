@@ -12,10 +12,10 @@ abstract public class ThreeDimMovementCharsHandler extends MovementCharsHandler
 {
   private final static String type = "ThreeDimMovementCharacteristicsType";
 
-  private final static String MIN_Height = "MinHeight";
-  private final static String MAX_Height = "MaxHeight";
-  private final static String DEFAULT_CLIMB_RATE = "DefaultClimbRate";
-  private final static String DEFAULT_DIVE_RATE = "DefaultDiveRate";
+  protected final static String MIN_Height = "MinHeight";
+  protected final static String MAX_Height = "MaxHeight";
+  protected final static String DEFAULT_CLIMB_RATE = "DefaultClimbRate";
+  protected final static String DEFAULT_DIVE_RATE = "DefaultDiveRate";
 
   protected WorldDistance _minHeight = null;
   protected WorldDistance _maxHeight = null;

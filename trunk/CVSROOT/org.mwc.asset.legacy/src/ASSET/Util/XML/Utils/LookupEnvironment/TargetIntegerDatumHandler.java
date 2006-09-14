@@ -33,10 +33,6 @@ abstract public class TargetIntegerDatumHandler extends IntegerDatumHandler
   
   public void elementClosed()
   {
-    // ok, create the results object
-    LookupSensor.NamedList datum = new LookupSensor.NamedList();
-    datum._myType = _myType;
-    
     // ok, extract the values
     Vector theValues = new Vector(0,1);
    for (int i=0;i<_theCategories.length;i++)
@@ -45,7 +41,8 @@ abstract public class TargetIntegerDatumHandler extends IntegerDatumHandler
 			theValues.add(val);
 		}
     
-    datum._myValues = theValues;
+   // ok, create the results object
+   LookupSensor.NamedList datum = new LookupSensor.NamedList(_myType, theValues);
 
     setDatum(datum);
 
