@@ -32,6 +32,10 @@ public class CoreMovement implements MovementType, java.io.Serializable
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the turn algorithm we're using
    */
   private static TurnAlgorithm _turner = new TurnAlgorithm();
@@ -96,7 +100,10 @@ public class CoreMovement implements MovementType, java.io.Serializable
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:46  Ian.Mayo
+   * Revision 1.2  2006-09-14 14:11:10  Ian.Mayo
+   * Source tidying
+   *
+   * Revision 1.1  2006/08/08 14:21:46  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:54  Ian.Mayo

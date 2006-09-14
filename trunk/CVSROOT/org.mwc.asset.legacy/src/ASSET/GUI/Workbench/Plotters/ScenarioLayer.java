@@ -1,20 +1,12 @@
 package ASSET.GUI.Workbench.Plotters;
 
-import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Detection.DetectionList;
+import java.util.*;
+
 import ASSET.Models.Vessels.SSN;
-import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.SupportTesting;
-import MWC.GUI.*;
-import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
-
-import java.awt.*;
-import java.util.*;
 
 /**
  * class providing scenario plotting, together with scenario controls

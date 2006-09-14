@@ -9,22 +9,15 @@ package ASSET.Models.Sensor;
  * @version 1.0
  */
 
-import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Detection.DetectionList;
+import java.beans.PropertyChangeListener;
+import java.util.*;
+
 import ASSET.Models.SensorType;
-import ASSET.Participants.DemandedSensorStatus;
-import ASSET.Participants.DemandedStatus;
-import ASSET.Participants.ParticipantDetectedListener;
-import ASSET.Participants.Status;
+import ASSET.Models.Detection.*;
+import ASSET.Participants.*;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
-
-import java.beans.PropertyChangeListener;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
 
 public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
 {
