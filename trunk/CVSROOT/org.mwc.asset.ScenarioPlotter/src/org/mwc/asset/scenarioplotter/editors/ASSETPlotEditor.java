@@ -14,10 +14,8 @@ import org.mwc.asset.core.ASSETActivator;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
-import ASSET.*;
+import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
-import ASSET.Participants.*;
-import ASSET.Participants.Status;
 import ASSET.Scenario.*;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.*;
@@ -161,29 +159,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 			{			
 				// fire modified
 				fireDirty();
-				
-				// listen to this participant
-				ParticipantType cp = _myScenario.getThisParticipant(index);
-				
-				if(_participantMovedListener == null)
-					_participantMovedListener= new ParticipantMovedListener(){
-						public void moved(Status newStatus)
-						{
-							fireDirty();
-						}
-
-						public void restart()
-						{
-							fireDirty();
-						}};
-				
-				cp.addParticipantMovedListener(_participantMovedListener);
 			}
 			public void participantRemoved(int index)
 			{		
-				// stop listening to this participant
-				ParticipantType cp = _myScenario.getThisParticipant(index);
-				cp.removeParticipantMovedListener(_participantMovedListener);
 				
 				// fire modified
 				fireDirty();
@@ -192,8 +170,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 			{			}});
 		
 	}
-	
-	ParticipantMovedListener _participantMovedListener = null;
 
 	protected void doUpdate()
 	{
@@ -207,9 +183,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 	{
 		_assetLayers = (Layers) tryLayers;
 
-		_myLayers.addDataExtendedListener(_listenForMods);
-		_myLayers.addDataModifiedListener(_listenForMods);
-		_myLayers.addDataReformattedListener(_listenForMods);
+		_assetLayers.addDataExtendedListener(_listenForMods);
+		_assetLayers.addDataModifiedListener(_listenForMods);
+		_assetLayers.addDataReformattedListener(_listenForMods);
 	}
 
 	private void contributeToActionBars()
@@ -250,9 +226,21 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		if (input.exists())
 		{
+			IFile file = null;
+
 			// is this the correct type of file?
-			IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-			doSaveTo(file, monitor);
+			if(input instanceof IFileEditorInput)
+			{
+				file = ((IFileEditorInput) input).getFile();
+			}
+			else
+			{
+				// try to get a file handle
+			  file = (IFile) input.getAdapter(IFile.class);
+			}
+			
+			if(file != null)
+				doSaveTo(file, monitor);
 		}
 	}
 
