@@ -96,13 +96,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/**
 	 * keep track of whether the current plot is dirty...
 	 */
-	protected boolean _plotIsDirty = false;
-
-	/**
-	 * whether to ignore firing dirty events for the time being (such as when
-	 * we're loading data)
-	 */
-	protected boolean _ignoreDirtyCalls = false;
+	public boolean _plotIsDirty = false;
 
 	// ///////////////////////////////////////////////
 	// dummy bits applicable for our dummy interface
@@ -114,6 +108,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	private CursorTracker _myTracker;
 
 	protected DataListener _listenForMods;
+
+	private boolean _ignoreDirtyCalls;
 
 
 	// //////////////////////////////
@@ -609,7 +605,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/**
 	 * make a note that the data is now dirty, and needs saving.
 	 */
-	protected void fireDirty()
+	public void fireDirty()
 	{
 		if (!_ignoreDirtyCalls)
 		{
@@ -637,7 +633,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 * start ignoring dirty calls, since we're loading the initial data (for
 	 * instance)
 	 */
-	protected void startIgnoringDirtyCalls()
+	public void startIgnoringDirtyCalls()
 	{
 		_ignoreDirtyCalls = true;
 	}
@@ -646,7 +642,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 * start ignoring dirty calls, since we're loading the initial data (for
 	 * instance)
 	 */
-	protected void stopIgnoringDirtyCalls()
+	public void stopIgnoringDirtyCalls()
 	{
 		_ignoreDirtyCalls = false;
 	}
