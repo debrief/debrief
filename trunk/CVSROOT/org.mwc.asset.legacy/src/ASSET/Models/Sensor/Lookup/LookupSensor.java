@@ -808,13 +808,12 @@ public abstract class LookupSensor extends CoreSensor
 		 * 
 		 * @param index
 		 *          the integer to index against
-		 * @return the matching double value (or null)
+		 * @return the matching double value (or our null value)
 		 */
 		public Double find(int index, String type)
 		{
-			Double res = null;
+			Double res = _defaultValue;
 			// right, first get the correct set of datums
-			Iterator iter = _datums.iterator();
 			for (Iterator iterator = _datums.iterator(); iterator.hasNext();)
 			{
 				// get the next series
@@ -824,11 +823,11 @@ public abstract class LookupSensor extends CoreSensor
 				if (thisList._myType == type)
 				{
 					// cool, here we are, get the correct type
-					res = (Double) thisList._myValues.get(index);
-					if (res == null)
-						res = _defaultValue;
+					Double val = (Double) thisList._myValues.get(index);
+					if (val != null)
+						res = val;
+					break;
 				}
-				break;
 			}
 
 			return res;
@@ -841,10 +840,10 @@ public abstract class LookupSensor extends CoreSensor
 			for (Iterator iterator = _datums.iterator(); iterator.hasNext();)
 			{
 				// get the next series
-				NamedList thisList = (NamedList) iterator.next();
+				thisSet = (NamedList) iterator.next();
 
 				// is this the correct one
-				if (thisList._myType == name)
+				if (thisSet._myType == name)
 					break;
 			}
 
@@ -1152,6 +1151,11 @@ public abstract class LookupSensor extends CoreSensor
 	private static class TestSensor extends LookupSensor
 	{
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public static Vector myParams = new Vector();
 
 		double _rp_m;
@@ -1181,7 +1185,10 @@ public abstract class LookupSensor extends CoreSensor
 		 * 
 		 * <pre>
 		 *  $Log$
-		 *  Revision 1.2  2006-09-12 15:15:32  Ian.Mayo
+		 *  Revision 1.3  2006-09-14 14:11:33  Ian.Mayo
+		 *  Improve how we manage some lists
+		 *
+		 *  Revision 1.2  2006/09/12 15:15:32  Ian.Mayo
 		 *  Sorting out XML import/export & lookup data structures
 		 *
 		 *  Revision 1.1  2006/08/08 14:21:56  Ian.Mayo
@@ -1563,7 +1570,7 @@ public abstract class LookupSensor extends CoreSensor
 
 			Vector newParams = new Vector();
 			newParams.add(new Integer(12));
-			ts.myParams = newParams;
+			TestSensor.myParams = newParams;
 
 			DetectionList res = new DetectionList();
 			ts.detects(env, res, alpha, scenario, time);
@@ -1760,7 +1767,7 @@ public abstract class LookupSensor extends CoreSensor
 
 			Vector newParams = new Vector();
 			newParams.add(new Integer(12));
-			ts.myParams = newParams;
+			TestSensor.myParams = newParams;
 
 			DetectionList res = new DetectionList();
 			ts.detects(env, res, test2alpha, scenario, time);
@@ -1928,8 +1935,6 @@ public abstract class LookupSensor extends CoreSensor
 			alpha.addParticipantDetectedListener(new ParticipantDetectedListener()
 			{
 
-				long lastTime = 0;
-
 				int lastState = DetectionEvent.UNDETECTED;
 
 				public void newDetections(DetectionList detections)
@@ -1937,8 +1942,6 @@ public abstract class LookupSensor extends CoreSensor
 					if (detections.size() > 0)
 					{
 						DetectionEvent de = detections.getDetection(0);
-
-						lastTime = de.getTime();
 
 						if (de.getDetectionState() != lastState)
 						{
@@ -2021,7 +2024,7 @@ public abstract class LookupSensor extends CoreSensor
 
 			Vector newParams = new Vector();
 			newParams.add(new Integer(12));
-			ts.myParams = newParams;
+			TestSensor.myParams = newParams;
 
 			DetectionList res = new DetectionList();
 			ts.detects(env, res, alpha, scenario, time);
@@ -2056,7 +2059,7 @@ public abstract class LookupSensor extends CoreSensor
 
 			// change the detection parameters
 			newParams.add(new Integer(32));
-			ts.myParams = newParams;
+			TestSensor.myParams = newParams;
 			ts._ri_m = 3300;
 
 			// find out what the current RI is.
@@ -2082,7 +2085,7 @@ public abstract class LookupSensor extends CoreSensor
 			CoreScenario cs = new CoreScenario();
 			try
 			{
-				String fName = "../src/test_data/lookup_tutorial_scenario.xml";
+				String fName = "d:/dev/asset/src/test_data/lookup_tutorial_scenario.xml";
 				java.io.FileInputStream fis = new java.io.FileInputStream(fName);
 				ASSET.Util.XML.ASSETReaderWriter.importThis(cs, fName, fis);
 			}
@@ -2133,9 +2136,9 @@ public abstract class LookupSensor extends CoreSensor
 	// ////////////////////////////////////////////////
 	public static class NamedList
 	{
-		private  String _myType;
+		final private  String _myType;
 
-		private Vector _myValues;
+		final private Vector _myValues;
 		
 		public NamedList(String type, Vector values)
 		{
@@ -2145,7 +2148,13 @@ public abstract class LookupSensor extends CoreSensor
 		
 		public NamedList(String type, double[] vals)
 		{
-			
+			_myType = type;
+			_myValues = new Vector(0,1);
+			for (int i = 0; i < vals.length; i++)
+			{
+				Double thisD = new Double(vals[i]);
+				_myValues.add(thisD);
+			}
 		}
 		public String getName()
 		{
