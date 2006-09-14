@@ -14,8 +14,10 @@ import org.mwc.asset.core.ASSETActivator;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
-import ASSET.ScenarioType;
+import ASSET.*;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
+import ASSET.Participants.*;
+import ASSET.Participants.Status;
 import ASSET.Scenario.*;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.*;
@@ -38,12 +40,10 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public ASSETPlotEditor()
 	{
 		super();
-
 	}
 
 	public void dispose()
 	{
-
 		super.dispose();
 	}
 
@@ -124,7 +124,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		}
 		else
 		{
-			ASSETActivator.logError(Status.WARNING,
+			ASSETActivator.logError(org.eclipse.core.runtime.Status.WARNING,
 					"Our init message isn't providing us with the scenario layers", null);
 		}
 
@@ -143,15 +143,57 @@ public class ASSETPlotEditor extends CorePlotEditor
 			public void restart()
 			{
 				doUpdate();
+				// fire modified
+				fireDirty();
 			}
 
 			public void step(long newTime)
 			{
 				doUpdate();
+				// fire modified
+				fireDirty();
 			}
 		});
+		
+		// also listen for the scenario being modified
+		_myScenario.addParticipantsChangedListener(new ParticipantsChangedListener(){
+			public void newParticipant(int index)
+			{			
+				// fire modified
+				fireDirty();
+				
+				// listen to this participant
+				ParticipantType cp = _myScenario.getThisParticipant(index);
+				
+				if(_participantMovedListener == null)
+					_participantMovedListener= new ParticipantMovedListener(){
+						public void moved(Status newStatus)
+						{
+							fireDirty();
+						}
 
+						public void restart()
+						{
+							fireDirty();
+						}};
+				
+				cp.addParticipantMovedListener(_participantMovedListener);
+			}
+			public void participantRemoved(int index)
+			{		
+				// stop listening to this participant
+				ParticipantType cp = _myScenario.getThisParticipant(index);
+				cp.removeParticipantMovedListener(_participantMovedListener);
+				
+				// fire modified
+				fireDirty();
+			}
+			public void restart()
+			{			}});
+		
 	}
+	
+	ParticipantMovedListener _participantMovedListener = null;
 
 	protected void doUpdate()
 	{
@@ -259,7 +301,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		}
 		else
 		{
-			ASSETActivator.logError(Status.ERROR, "Unable to identify source file for plot",
+			ASSETActivator.logError(org.eclipse.core.runtime.Status.ERROR, "Unable to identify source file for plot",
 					null);
 		}
 
