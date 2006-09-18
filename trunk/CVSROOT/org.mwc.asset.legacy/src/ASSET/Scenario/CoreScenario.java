@@ -2,25 +2,18 @@
 
 package ASSET.Scenario;
 
+import java.beans.PropertyChangeListener;
+import java.util.*;
+
+import ASSET.*;
 import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Environment.SimpleEnvironment;
+import ASSET.Models.Environment.*;
 import ASSET.Models.Sensor.Initial.BroadbandSensor;
 import ASSET.Models.Vessels.SSN;
-import ASSET.ParticipantType;
 import ASSET.Participants.Status;
-import ASSET.ScenarioType;
 import ASSET.Util.RandomGenerator;
-import MWC.GUI.Layer;
-import MWC.GenericData.Duration;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
-
-import java.beans.PropertyChangeListener;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
+import MWC.GUI.*;
+import MWC.GenericData.*;
 
 public class CoreScenario implements ScenarioType
 {
@@ -204,6 +197,15 @@ public class CoreScenario implements ScenarioType
 
   }
 
+  /** find out if the timer is currently auto-stepping
+   * 
+   * @return
+   */
+  public boolean isRunning()
+  {
+  	return _myTimer.isRunning();
+  }
+  
   /**
    * let anybody request that the scenario stop,
    * though note that we only process this at the end of a step.
@@ -261,7 +263,7 @@ public class CoreScenario implements ScenarioType
   /** the information we plot as a backdrop
    * 
    */
-	private Layer _myBackdrop;
+	private BaseLayer _myBackdrop;
 
   /**
    * Move the scenario through a single step
@@ -562,7 +564,15 @@ public class CoreScenario implements ScenarioType
    */
   public void close()
   {
-    //
+    // 
+  	_myEnvironment = null;
+  	if(_myBackdrop != null)
+  		_myBackdrop.removeAllElements();
+  	if(_myInvisibleParticipants != null)
+  		_myInvisibleParticipants.clear();
+  	if(_myVisibleParticipants != null)
+    	_myVisibleParticipants.clear();
+  	_myName = "empty";
   }
 
   /////////////////////////////////////////////////////
@@ -1449,7 +1459,7 @@ public class CoreScenario implements ScenarioType
 	}
 
 
-	public void setBackdrop(Layer layer)
+	public void setBackdrop(BaseLayer layer)
 	{
 		_myBackdrop = layer;
 	}
