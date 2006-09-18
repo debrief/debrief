@@ -2,15 +2,12 @@
 
 package ASSET;
 
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Scenario.ParticipantsChangedListener;
-import ASSET.Scenario.ScenarioActivityMonitor;
-import ASSET.Scenario.ScenarioRunningListener;
-import ASSET.Scenario.ScenarioSteppedListener;
-import MWC.GUI.Layer;
-import MWC.GenericData.Duration;
-
 import java.util.Collection;
+
+import ASSET.Models.Environment.EnvironmentType;
+import ASSET.Scenario.*;
+import MWC.GUI.*;
+import MWC.GenericData.Duration;
 
 public interface ScenarioType extends ScenarioActivityMonitor
 {
@@ -40,11 +37,22 @@ public interface ScenarioType extends ScenarioActivityMonitor
    * If the step time is set to zero, it will automatically step after the completion of the previous step.
    */
   public void start();
+  
+  /** find out if the scenario is currently auto-stepping
+   * 
+   * @return yes/no, of course
+   */
+  public boolean isRunning();  
 
   /**
-   * Stop the scenario from auto-stepping
+   * pause the auto-play through a scenario
+   */
+  public void pause();  
+
+  /**
+   * Finish the scenario, stopping recording, dead.
    *
-   * @param reason
+   * @param reason why the scenario has been stopped
    */
   public void stop(String reason);
 
@@ -210,7 +218,7 @@ public interface ScenarioType extends ScenarioActivityMonitor
    * 
    * @param layer
    */
-  public void setBackdrop(Layer layer);
+  public void setBackdrop(BaseLayer layer);
   
   
 }
