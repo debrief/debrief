@@ -367,21 +367,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		for (int i = 0; i < fileNames.length; i++)
 		{
 			final String thisFilename = fileNames[i];
-			System.out.println("should be loading:" + thisFilename);
 			loadThisFile(thisFilename);
-
-			// File newFile = new java.io.File(thisFilename);
-			// File thisFile = new File(thisFilename);
-			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage localF
-			// = new
-			// org.eclipse.debug.core.sourcelookup.containers.LocalFileStorage(thisFile);
-			// IFile theFile = (IFile) localF.getAdapter(IFile.class);
-
-			// IEditorInput theInput = new JavaFileEditorInput(newFile);
-			// this.loadThisFile(theInput);
-			// DialogFactory.showMessage("Load plot", "Sorry, plots must be loaded
-			// from a project");
-
 		}
 
 		// ok, we're probably done - fire the update

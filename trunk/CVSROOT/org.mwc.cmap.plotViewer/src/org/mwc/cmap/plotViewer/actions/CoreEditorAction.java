@@ -10,6 +10,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.interfaces.IResourceProvider;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
 import MWC.GUI.PlainChart;
@@ -64,7 +65,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 		return _myEditor;
 	}
 
-	protected CorePlotEditor getPlot()
+	protected IResourceProvider getPlot()
 	{
 		return getEditor();
 	}
