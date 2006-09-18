@@ -26,7 +26,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 			editorArea);
 		topLeft.addView(IPageLayout.ID_RES_NAV);
 		topLeft.addView(
-				ASSETActivator.SCENARIO_CONTROLLER);		
+				ASSETPlugin.SCENARIO_CONTROLLER);		
 		
 		// split the time one - so we can insert the track tote
 		// Top left: Resource Navigator view and Bookmarks view placeholder
@@ -34,7 +34,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 				"topLeft");
 		midLeft.addPlaceholder(CorePlugin.OVERVIEW_PLOT);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
-		midLeft.addView(ASSETActivator.VESSEL_MONITOR);		
+		midLeft.addView(ASSETPlugin.VESSEL_MONITOR);		
 		
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
@@ -56,8 +56,8 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
 		layout.addShowViewShortcut(CorePlugin.NARRATIVES);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
-		layout.addShowViewShortcut(ASSETActivator.SCENARIO_CONTROLLER);
-		layout.addShowViewShortcut(ASSETActivator.VESSEL_MONITOR);
+		layout.addShowViewShortcut(ASSETPlugin.SCENARIO_CONTROLLER);
+		layout.addShowViewShortcut(ASSETPlugin.VESSEL_MONITOR);
 		
 
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);

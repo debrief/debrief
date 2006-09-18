@@ -16,15 +16,15 @@ public class ASSETImageHelper implements ViewLabelImageHelper
 		final ImageDescriptor res;
 		if ((subject instanceof SensorType) || (subject instanceof SensorsPlottable))
 		{
-			res = ASSETActivator.getImageDescriptor("icons\\satellite_dish.png");
+			res = ASSETPlugin.getImageDescriptor("icons\\satellite_dish.png");
 		}
 		else if ((subject instanceof MovementType) || (subject instanceof PerformancePlottable))
 		{
-			res = ASSETActivator.getImageDescriptor("icons\\gear.png");
+			res = ASSETPlugin.getImageDescriptor("icons\\gear.png");
 		}
 		else if ((subject instanceof DecisionType) || (subject instanceof BehavioursPlottable))
 		{
-			res = ASSETActivator.getImageDescriptor("icons\\user_comment.png");
+			res = ASSETPlugin.getImageDescriptor("icons\\user_comment.png");
 		}
 		else if (subject instanceof ScenarioParticipantWrapper)
 		{
@@ -32,11 +32,11 @@ public class ASSETImageHelper implements ViewLabelImageHelper
 			ParticipantType part = sw.getParticipant();
 			String force = part.getCategory().getForce();
 			if(force == Force.RED)
-				res = ASSETActivator.getImageDescriptor("icons\\flag_red.png");
+				res = ASSETPlugin.getImageDescriptor("icons\\flag_red.png");
 			else if(force == Force.GREEN)
-				res = ASSETActivator.getImageDescriptor("icons\\flag_green.png");
+				res = ASSETPlugin.getImageDescriptor("icons\\flag_green.png");
 			else if(force == Force.BLUE)
-				res = ASSETActivator.getImageDescriptor("icons\\flag_blue.png");
+				res = ASSETPlugin.getImageDescriptor("icons\\flag_blue.png");
 			else
 				res = null;
 		}
