@@ -998,22 +998,7 @@ public class LayerManagerView extends ViewPart
 			public void doubleClick(DoubleClickEvent event)
 			{
 
-				try
-				{
-					// open the properties window
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-					IWorkbenchPage page = win.getActivePage();
-
-					// right, open the view.
-					page.showView(IPageLayout.ID_PROP_SHEET);
-				}
-				catch (PartInitException e)
-				{
-					CorePlugin.logError(Status.ERROR,
-							"Failed to automatically open properties window on Layer Mgr double-click",
-							e);
-				}
+				CorePlugin.openView(IPageLayout.ID_PROP_SHEET);
 			}
 		});
 	}
