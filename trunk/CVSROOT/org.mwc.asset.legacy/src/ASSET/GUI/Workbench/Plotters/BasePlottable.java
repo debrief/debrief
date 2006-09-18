@@ -1,15 +1,17 @@
 package ASSET.GUI.Workbench.Plotters;
 
-import java.beans.*;
 import java.util.Enumeration;
 
 import MWC.GUI.*;
-import MWC.GUI.Editable.EditorType;
 import MWC.GenericData.*;
 
 public class BasePlottable implements Plottable, Layer
 {
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	/** the thing we're wrapping
 	 */
 	final private Editable _myModel;
