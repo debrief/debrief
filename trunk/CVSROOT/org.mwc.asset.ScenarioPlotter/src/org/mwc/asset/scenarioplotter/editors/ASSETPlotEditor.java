@@ -10,7 +10,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
-import org.mwc.asset.core.ASSETActivator;
+import org.mwc.asset.core.ASSETPlugin;
+import org.mwc.cmap.narrative.BaseNarrativeProvider;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 
@@ -19,25 +20,54 @@ import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.*;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.*;
+import MWC.GenericData.HiResDate;
+import MWC.TacticalData.NarrativeEntry;
 
 public class ASSETPlotEditor extends CorePlotEditor
 {
-	protected ScenarioType _myScenario;
+	/**
+	 * the type of message we send when loading/managing the scenario
+	 */
+	public static final String SCENARIO_CONFIG = "SCENARIO_CONFIG";
+
+	protected final CoreScenario _myScenario;
 
 	protected ScenarioSteppedListener _myStepListener;
 
 	protected ParticipantsChangedListener _myChangeListener;
 
 	/**
+	 * narrative utility support
+	 */
+	private BaseNarrativeProvider _myNarrativeProvider;
+
+	/**
 	 * use our own layers object - not the one in the parent, silly.
 	 */
 	private Layers _assetLayers;
 
-	private ScenarioLayer _theScenarioLayers;
+	private ScenarioLayer _myScenarioLayer;
 
 	public ASSETPlotEditor()
 	{
 		super();
+
+		_myNarrativeProvider = new BaseNarrativeProvider();
+		_assetLayers = new Layers();
+
+		_myScenario = new CoreScenario();
+		listenToTheScenario();
+
+		// add the chart plotter
+		_myScenarioLayer = new ASSET.GUI.Workbench.Plotters.ScenarioLayer();
+		_myScenarioLayer.setScenario(_myScenario);
+		_assetLayers.addThisLayer(_myScenarioLayer);
+	
+		/** and listen out for changes to the layers (mostly property edits)
+		 * 
+		 */
+		listenToLayerChanges();
+
 	}
 
 	public void dispose()
@@ -86,6 +116,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 	// /////////////////////////////////////////////////////////
 	// core plot editor member methods
 	// ////////////////////////////////////////////////////////
+
 	public void loadingComplete(Object source)
 	{
 	}
@@ -95,35 +126,40 @@ public class ASSETPlotEditor extends CorePlotEditor
 		setSite(site);
 		setInputWithNotify(input);
 
-		// hey, get the layers out
-		Object newLayers = input.getAdapter(Layers.class);
-		if (newLayers != null)
+		// right, is this a file editor input?
+		if (input instanceof IFileEditorInput)
 		{
-			storeLayers(newLayers);
-		}
+			try
+			{
+				IFileEditorInput ife = (IFileEditorInput) input;
+				InputStream is;
+				is = ife.getFile().getContents();
+				// ok, load the file.
+				ASSETReaderWriter.importThis(_myScenario, ife.getName(), is);
 
-		// hmm, do we have a scenario
-		Object tryScenario = input.getAdapter(ScenarioType.class);
-		if (tryScenario != null)
-		{
-			listenToTheScenario((ScenarioType) tryScenario);
+				// ok, tell everybody we've got some new participants
+				fireMessage(SCENARIO_CONFIG, new HiResDate(), "Scenario loaded from:"
+						+ ife.getName());
 
-			// update our title
-			setPartName(_myScenario.getName());
-		}
+				// right, does it have a backdrop?
+				if (_myScenario.getBackdrop() != null)
+				{
+					_assetLayers.removeThisLayer(_assetLayers.findLayer(Layers.CHART_FEATURES));
+					_assetLayers.addThisLayer(_myScenario.getBackdrop());
+				}
 
-		// and the scenario layers object (it's the one we update when time moves
-		// forward
-		Object tryScenarioLayers = input.getAdapter(ScenarioLayer.class);
-		if (tryScenarioLayers != null)
-		{
-			ScenarioLayer scenario = (ScenarioLayer) tryScenarioLayers;
-			_theScenarioLayers = scenario;
-		}
-		else
-		{
-			ASSETActivator.logError(org.eclipse.core.runtime.Status.WARNING,
-					"Our init message isn't providing us with the scenario layers", null);
+				// fire the layers change for new scenario data
+				_assetLayers.fireExtended(null, _myScenarioLayer);
+
+				// update our title
+				setPartName(_myScenario.getName());
+			}
+			catch (CoreException e)
+			{
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
 		}
 
 		// ok, create some actions
@@ -133,10 +169,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 		contributeToActionBars();
 	}
 
-	private void listenToTheScenario(ScenarioType scenario)
+	private void listenToTheScenario()
 	{
-		_myScenario = scenario;
-		scenario.addScenarioSteppedListener(new ScenarioSteppedListener()
+		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
 		{
 			public void restart()
 			{
@@ -152,37 +187,41 @@ public class ASSETPlotEditor extends CorePlotEditor
 				fireDirty();
 			}
 		});
-		
+
 		// also listen for the scenario being modified
-		_myScenario.addParticipantsChangedListener(new ParticipantsChangedListener(){
+		_myScenario.addParticipantsChangedListener(new ParticipantsChangedListener()
+		{
 			public void newParticipant(int index)
-			{			
+			{
 				// fire modified
 				fireDirty();
 			}
+
 			public void participantRemoved(int index)
-			{		
-				
+			{
 				// fire modified
 				fireDirty();
 			}
+
 			public void restart()
-			{			}});
-		
+			{
+				// fire modified
+				fireDirty();
+			}
+		});
+
 	}
 
 	protected void doUpdate()
 	{
-		_assetLayers.fireModified(_theScenarioLayers);
+		_assetLayers.fireModified(_myScenarioLayer);
 	}
 
 	/**
 	 * @param tryLayers
 	 */
-	private void storeLayers(Object tryLayers)
+	private void listenToLayerChanges()
 	{
-		_assetLayers = (Layers) tryLayers;
-
 		_assetLayers.addDataExtendedListener(_listenForMods);
 		_assetLayers.addDataModifiedListener(_listenForMods);
 		_assetLayers.addDataReformattedListener(_listenForMods);
@@ -208,6 +247,10 @@ public class ASSETPlotEditor extends CorePlotEditor
 		{
 			res = _assetLayers;
 		}
+		else if(adapter == ScenarioType.class)
+		{
+			res = _myScenario;
+		}
 
 		if (res == null)
 		{
@@ -221,7 +264,6 @@ public class ASSETPlotEditor extends CorePlotEditor
 	 */
 	public void doSave(IProgressMonitor monitor)
 	{
-
 		IEditorInput input = getEditorInput();
 
 		if (input.exists())
@@ -229,17 +271,12 @@ public class ASSETPlotEditor extends CorePlotEditor
 			IFile file = null;
 
 			// is this the correct type of file?
-			if(input instanceof IFileEditorInput)
+			if (input instanceof IFileEditorInput)
 			{
 				file = ((IFileEditorInput) input).getFile();
 			}
-			else
-			{
-				// try to get a file handle
-			  file = (IFile) input.getAdapter(IFile.class);
-			}
-			
-			if(file != null)
+
+			if (file != null)
 				doSaveTo(file, monitor);
 		}
 	}
@@ -259,11 +296,11 @@ public class ASSETPlotEditor extends CorePlotEditor
 		if (destination != null)
 		{
 			// hey, get the decorations layer
-			Layer theDecs = _assetLayers.findLayer(Layers.CHART_FEATURES);
-			
+			BaseLayer theDecs = (BaseLayer) _assetLayers.findLayer(Layers.CHART_FEATURES);
+
 			// put the decs into the scenario
 			_myScenario.setBackdrop(theDecs);
-			
+
 			// ok, now write to the file
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			ASSETReaderWriter.exportThis(_myScenario, theDecs, bos);
@@ -289,8 +326,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 		}
 		else
 		{
-			ASSETActivator.logError(org.eclipse.core.runtime.Status.ERROR, "Unable to identify source file for plot",
-					null);
+			ASSETPlugin.logError(org.eclipse.core.runtime.Status.ERROR,
+					"Unable to identify source file for plot", null);
 		}
 
 	}
@@ -336,7 +373,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 				}
 				catch (CoreException e)
 				{
-					ASSETActivator.logError(IStatus.ERROR,
+					ASSETPlugin.logError(IStatus.ERROR,
 							"Failed trying to create new file for save-as", e);
 					return;
 				}
@@ -357,4 +394,20 @@ public class ASSETPlotEditor extends CorePlotEditor
 	{
 		return true;
 	}
+
+	/**
+	 * fire off the message to any listeners
+	 * 
+	 * @param type
+	 *          the type of message we're sending out
+	 * @param dtg
+	 *          the DTG of the message
+	 * @param message
+	 */
+	protected void fireMessage(String type, HiResDate dtg, String message)
+	{
+		NarrativeEntry newEntry = new NarrativeEntry("Controller", type, dtg, message);
+		_myNarrativeProvider.fireEntry(newEntry);
+	}
+
 }
