@@ -220,13 +220,13 @@ public class CorePlugin extends AbstractUIPlugin
 	/**
 	 * @param asSelection
 	 */
-	public static void editThisInProperties(Vector selectionListeners, 
-			StructuredSelection asSelection,
-			ISelectionProvider selectionProvider)
+	public static void editThisInProperties(Vector selectionListeners,
+			StructuredSelection asSelection, ISelectionProvider selectionProvider)
 	{
 		if (selectionListeners != null)
 		{
-			SelectionChangedEvent sEvent = new SelectionChangedEvent(selectionProvider, asSelection);
+			SelectionChangedEvent sEvent = new SelectionChangedEvent(selectionProvider,
+					asSelection);
 			for (Iterator stepper = selectionListeners.iterator(); stepper.hasNext();)
 			{
 				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
@@ -236,12 +236,12 @@ public class CorePlugin extends AbstractUIPlugin
 				}
 			}
 		}
-	
+
 		// hey, better make sure the properties window is open
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		IWorkbenchPage page = win.getActivePage();
-	
+
 		// get ready for the start/end times
 		// right, we need the time controller if we're going to get the
 		// times
@@ -407,6 +407,25 @@ public class CorePlugin extends AbstractUIPlugin
 			{
 				logError(Status.ERROR, "Whilst adding new action to history buffer", e);
 			}
+		}
+	}
+
+	public static void openView(String viewName)
+	{
+
+		try
+		{
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = win.getActivePage();
+			// right, open the view.
+			page.showView(viewName);
+		}
+		catch (PartInitException e)
+		{
+			e.printStackTrace();
+			logError(Status.ERROR, "Failed to open " + viewName + "view", e);
+
 		}
 	}
 
