@@ -35,6 +35,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		midLeft.addPlaceholder(CorePlugin.OVERVIEW_PLOT);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
 		midLeft.addView(ASSETPlugin.VESSEL_MONITOR);		
+		midLeft.addPlaceholder(ASSETPlugin.SENSOR_MONITOR);		
 		
 		// Bottom left: Outline view and Property Sheet view
 		IFolderLayout bottomLeft = layout.createFolder("bottomLeft", IPageLayout.BOTTOM, 0.40f,
