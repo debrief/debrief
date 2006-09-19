@@ -73,6 +73,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		// and the narrative.
 		_myNarrativeProvider = new BaseNarrativeProvider();
 
+
 	}
 
 	public void dispose()
@@ -125,7 +126,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				{
 					public void eventTriggered(String type, Object part, IWorkbenchPart parentPart)
 					{
-						stopListeningToCurrentScenario();
+						if(part == _theScenario)
+							stopListeningToCurrentScenario();
 					}
 				});
 
@@ -213,10 +215,10 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		// and store them
 		contributeToActionBars();
 
-		// say that we're a selection provider
-		// getSite().setSelectionProvider(this);
-
 		listenToMyParts();
+		
+		// declare fact that we can provide selections
+		getSite().setSelectionProvider(this);		
 	}
 
 	/**
@@ -746,7 +748,6 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 	public ISelection getSelection()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
