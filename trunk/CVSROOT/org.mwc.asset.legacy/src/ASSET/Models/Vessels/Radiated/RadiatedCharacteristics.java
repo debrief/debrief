@@ -224,6 +224,8 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
     public double radiatedEnergyFor(ASSET.Participants.Status status, double absBearingDegs);
 
     public double reflectedEnergyFor(ASSET.Participants.Status status, double absBearingDegs);
+    
+    public String getName();
   }
 
   static public class NoiseComponent
