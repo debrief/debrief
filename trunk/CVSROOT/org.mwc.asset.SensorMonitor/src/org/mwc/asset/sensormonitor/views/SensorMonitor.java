@@ -3,20 +3,17 @@ package org.mwc.asset.sensormonitor.views;
 import java.beans.*;
 import java.util.Iterator;
 
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.part.*;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.ui.*;
-import org.eclipse.swt.widgets.Menu;
+import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.ui.*;
+import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
-import ASSET.ParticipantType;
-import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
 import ASSET.Models.SensorType;
 import ASSET.Models.Detection.*;
 import ASSET.Participants.ParticipantDetectedListener;
