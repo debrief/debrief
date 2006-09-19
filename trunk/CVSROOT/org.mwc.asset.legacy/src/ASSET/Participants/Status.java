@@ -146,11 +146,13 @@ public class Status implements java.io.Serializable
     String res;
     if (thisDepth < 0.001)
     {
-      res = _df.format(this.getCourse()) + "° " + _df.format(this.getSpeed().getValueIn(WorldSpeed.M_sec)) + "m_sec ";
+      res = _df.format(this.getCourse()) + "° " +
+      _df.format(this.getSpeed().getValueIn(WorldSpeed.Kts)) + "kts";
     }
     else
     {
-      res = _df.format(this.getCourse()) + "° " + _df.format(this.getSpeed().getValueIn(WorldSpeed.M_sec)) + "m_sec " + _df.format(-this.getLocation().getDepth()) + "m";
+      res = _df.format(this.getCourse()) + "° " +
+      _df.format(this.getSpeed().getValueIn(WorldSpeed.Kts)) + "kts " + _df.format(-this.getLocation().getDepth()) + "m";
     }
     return res;
   }

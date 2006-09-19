@@ -252,7 +252,8 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
         if (_myParent.getShowActivity())
         {
           final String act = _myPart.getActivity();
-          dest.drawText(act, pt.x + 8, pt.y + 2);
+          final int ht = dest.getStringHeight(null);
+          dest.drawText(act, pt.x + 16, pt.y - ht/2);
         }
 
         // and the name
@@ -260,7 +261,8 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
         {
           final String nm = _myPart.getName();
           final int wid = dest.getStringWidth(null, nm);
-          dest.drawText(nm, pt.x - wid / 2, pt.y + 16);
+          final int ht = dest.getStringHeight(null);
+          dest.drawText(nm, pt.x - wid / 2, pt.y + ht - 2);
         }
 
         // and the name
@@ -269,7 +271,7 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
           final Status theStat = _myPart.getStatus();
           final String statString = theStat.statusString();
           final int wid = dest.getStringWidth(null, statString);
-          dest.drawText(statString, pt.x - wid / 2, pt.y - 12);
+          dest.drawText(statString, pt.x - wid / 2, pt.y - 22);
         }
 
         // lastly the detections
@@ -345,7 +347,8 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
    */
   public String getName()
   {
-    return _myPart.getName() + ":" + _myPart.getActivity() + " " + _myPart.getStatus().statusString();
+    return _myPart.getName();
+    // + ":" + _myPart.getActivity() + " " + _myPart.getStatus().statusString();
   }
 
   public String getParticipantName()
@@ -424,6 +427,7 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
         final java.beans.PropertyDescriptor[] res = {
           prop("ShowContacts", "show contacts for this participant"),
           prop("Visible", "whether to show this participant"),
+          prop("Name", "name of this participant"),
         };
         return res;
       }
@@ -506,6 +510,7 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
 
 	public void setName(String val)
 	{
+		_myPart.setName(val);
 	}
 
 }

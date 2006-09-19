@@ -179,6 +179,7 @@ public abstract class ThreeDimMovementCharacteristics extends MovementCharacteri
       {
         final PropertyDescriptor[] res = {
           prop("AccelRate", "the rate of acceleration for this vessel (kts/sec)"),
+          prop("DecelRate", "the rate of acceleration for this vessel (kts/sec)"),
           prop("FuelUsageRate", "the rate of fuel usage for this vessel (%/kt/sec)"),
           prop("MaxHeight", "the maximum Height which this vessel travels to (m)"),
           prop("MaxSpeed", "the rate of acceleration for this vessel (kts/sec)"),
