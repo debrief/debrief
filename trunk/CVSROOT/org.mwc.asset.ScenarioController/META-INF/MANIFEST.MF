@@ -16,5 +16,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.TimeController,
  org.mwc.cmap.core,
  org.eclipse.ui.views,
- org.mwc.asset.sample_data
+ org.mwc.asset.sample_data,
+ org.eclipse.debug.core
 Eclipse-LazyStart: true
+Export-Package: org.mwc.asset.scenariocontroller.views
