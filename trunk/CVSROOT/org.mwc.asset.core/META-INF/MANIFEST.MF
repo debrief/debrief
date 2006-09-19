@@ -3,7 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Core Plug-in
 Bundle-SymbolicName: org.mwc.asset.core;singleton:=true
 Bundle-Version: 1.0.0
-Bundle-Activator: org.mwc.asset.core.ASSETActivator
+Bundle-Activator: org.mwc.asset.core.ASSETPlugin
 Bundle-Vendor: MWC
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
