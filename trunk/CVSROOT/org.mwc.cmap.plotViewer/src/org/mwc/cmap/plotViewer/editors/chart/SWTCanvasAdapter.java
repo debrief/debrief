@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.22  2006-05-17 15:20:07  Ian.Mayo
+// Revision 1.23  2006-09-19 10:41:59  Ian.Mayo
+// Handle omitted font
+//
+// Revision 1.22  2006/05/17 15:20:07  Ian.Mayo
 // We need the bkgnd color for filled shapes to work
 //
 // Revision 1.21  2006/05/17 08:35:08  Ian.Mayo
@@ -400,7 +403,10 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		// set the font to start with,
 		if (!_theDest.isDisposed())
 		{
-			_theDest.setFont(FontHelper.convertFont(theFont));
+			if(theFont != null)
+			{
+				_theDest.setFont(FontHelper.convertFont(theFont));
+			}
 
 			// res = _theDest.textExtent(theString).x;
 			res = _theDest.getFontMetrics().getAverageCharWidth() * theString.length();
