@@ -4,6 +4,7 @@ import java.awt.Point;
 import java.util.*;
 
 import ASSET.Models.Detection.*;
+import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.Participants.Status;
 import MWC.GUI.*;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
@@ -462,15 +463,26 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
 		Editable performance = new PerformancePlottable(_myPart.getMovementChars());
 		theElements.add(performance);
 
+		// sensors
 		if(_myPart.getSensorFit() != null)
 		{
 			Editable sensors = new SensorsPlottable(_myPart.getSensorFit());
 			theElements.add(sensors);
 		}
+		
+		// decision model
 		if(_myPart.getDecisionModel() != null)
 		{
 			Editable behaviours = new BehavioursPlottable(_myPart.getDecisionModel());
 			theElements.add(behaviours);
+		}
+		
+		// rad noise model
+		if(_myPart.getRadiatedChars() != null)
+		{
+			RadiatedCharacteristics chars = _myPart.getRadiatedChars();
+			Editable wrappedChart = new RadCharsPlottable(chars);
+			theElements.add(wrappedChart);
 		}
 		
 		
