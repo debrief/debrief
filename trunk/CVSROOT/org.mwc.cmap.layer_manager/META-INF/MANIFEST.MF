@@ -16,4 +16,5 @@ Require-Bundle: org.mwc.cmap.xyplot,
  org.eclipse.ui.views
 Eclipse-LazyStart: true
 Export-Package: org.mwc.cmap.layer_manager,
+ org.mwc.cmap.layer_manager.views,
  org.mwc.cmap.layer_manager.views.support
