@@ -1,7 +1,7 @@
 package org.mwc.cmap.layer_manager.views;
 
 import java.io.*;
-import java.util.Iterator;
+import java.util.*;
 
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.*;
@@ -35,6 +35,11 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	 * that's all/
 	 */
 	private int _oldDetail = -1;
+	
+	/** a list of helper classes - that allow more items to be dropped onto us.
+	 * 
+	 */
+	private static Vector _myDropHelpers;
 
 	/**
 	 * constructor - something that tells us about the current selection
@@ -44,6 +49,19 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	public LayerMgrDragDropSupport(StructuredViewer parent)
 	{
 		_parent = parent;
+	}
+	
+	/** provide another class to assist with loaded dropped files
+	 * 
+	 * @param handler
+	 */
+	public static void addDropHelper(XMLFileDropHandler handler)
+	{
+		if(_myDropHelpers == null)
+		{
+			_myDropHelpers = new Vector(1,1);
+		}
+		_myDropHelpers.add(handler);
 	}
 
 	public void dragFinished(DragSourceEvent event)
@@ -159,7 +177,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 		}
 	}
 
-	public static class XMLFileDropHandler
+	abstract public static class XMLFileDropHandler
 	{
 		/** the type of elements we're interested in
 		 * 
@@ -181,7 +199,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			_elements = elementTypes;
 			targets = targetTypes;
 		}
-		
+				
 		public boolean handlesThis(String firstElement)
 		{
 			boolean res = false;
@@ -197,13 +215,13 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			return res;
 		}
 		
-		public boolean dropsOn(Class targetElement)
+		public boolean canBeDroppedOn(Editable targetElement)
 		{
 			boolean res = false;
 			for (int i = 0; i < targets.length; i++)
 			{
 				Class thisE = targets[i];
-				if(targetElement instanceof thisE)
+				if(targetElement.getClass() == thisE)
 				{
 					res = true;
 					break;
@@ -212,10 +230,13 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			return res;
 		}
 		
-		public void handleDrop(BufferedReader source)
-		{
-			
-		}
+		/** ok, load the item, and add it to the indicated layer
+		 * 
+		 * @param source
+		 * @param targetElemet
+		 * @param parent TODO
+		 */
+		abstract public void handleDrop(InputStream source, Editable targetElemet, Layers parent);
 	}
 	
 	public void drop(DropTargetEvent event)
@@ -270,17 +291,41 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 						// now, find the end of this XML item
 						int endOfElement = firstLine.indexOf(" ", index);
 						String thisElement = firstLine.substring(index+1, endOfElement);
-						System.out.println("is:" +  thisElement);
 						
+						// do we have any loaders?
+						if(_myDropHelpers != null)
+						{
+							for (Iterator iter = _myDropHelpers.iterator(); iter.hasNext();)
+							{
+								XMLFileDropHandler	handler = (XMLFileDropHandler) iter.next();
+								
+								// right, does it handle this kind of element?
+								if(handler.handlesThis(thisElement))
+								{
+									// yup, can it drop on our target?
+									Object tgt = event.item.getData();
+									if(tgt instanceof EditableWrapper)
+									{
+										EditableWrapper ew = (EditableWrapper) tgt;
+									if(handler.canBeDroppedOn(ew.getEditable()))
+									{
+										// yes, go for it!
+										handler.handleDrop(new FileInputStream(theFile), 
+												ew.getEditable(), ew.getLayers());
+										break;
+									}
+									}
+								}								
+							}
+						}						
+						System.out.println("is:" +  thisElement);						
 					}
 					catch (FileNotFoundException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					catch (IOException e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
