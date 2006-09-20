@@ -32,4 +32,8 @@
               value="icons/security_agent.png"/>
       </product>
    </extension>
+   <extension
+         point="org.eclipse.ui.startup">
+      <startup class="org.mwc.asset.core.ASSETPlugin"/>
+   </extension>
 </plugin>
