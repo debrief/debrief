@@ -1,69 +1,84 @@
 package org.mwc.asset.core;
 
+import java.io.*;
+
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.layer_manager.views.LayerMgrDragDropSupport;
+import org.mwc.cmap.layer_manager.views.LayerMgrDragDropSupport.XMLFileDropHandler;
 import org.osgi.framework.BundleContext;
+
+import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
+import ASSET.Models.Vessels.SSN;
+import ASSET.Scenario.CoreScenario;
+import ASSET.Util.XML.ASSETReaderWriter;
+import MWC.GUI.Layers;
 
 /**
  * The activator class controls the plug-in life cycle
  */
-public class ASSETPlugin extends AbstractUIPlugin {
+public class ASSETPlugin extends AbstractUIPlugin implements IStartup
+{
 
 	// The plug-in ID
 	public static final String PLUGIN_ID = "org.mwc.asset.core";
 
 	public static final String SCENARIO_CONTROLLER = "org.mwc.asset.ScenarioController";
+
 	public static final String VESSEL_MONITOR = "org.mwc.asset.VesselMonitor";
+
 	public static final String SENSOR_MONITOR = "org.mwc.asset.sensormonitor.views.SensorMonitor";
-	
 
 	// The shared instance
 	private static ASSETPlugin plugin;
 
-	/** somebody to help create images
-	 * 
+	/**
+	 * somebody to help create images
 	 */
 	private ASSETImageHelper _myImageHelper;
-	
+
 	/**
 	 * The constructor
 	 */
-	public ASSETPlugin() {
+	public ASSETPlugin()
+	{
 		plugin = this;
+
 	}
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
 	 */
-	public void start(BundleContext context) throws Exception {
+	public void start(BundleContext context) throws Exception
+	{
 		super.start(context);
-		
-		_myImageHelper  = new ASSETImageHelper();
-		// give the LayerManager our image creator.
-		org.mwc.cmap.layer_manager.views.support.ViewLabelProvider.addImageHelper(_myImageHelper  );
 	}
-
 
 	/*
 	 * (non-Javadoc)
+	 * 
 	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
 	 */
-	public void stop(BundleContext context) throws Exception {
+	public void stop(BundleContext context) throws Exception
+	{
 		plugin = null;
 		super.stop(context);
 	}
 
 	/**
 	 * Returns the shared instance
-	 *
+	 * 
 	 * @return the shared instance
 	 */
-	public static ASSETPlugin getDefault() {
+	public static ASSETPlugin getDefault()
+	{
 		return plugin;
 	}
-	
+
 	/**
 	 * error logging utility
 	 * 
@@ -78,9 +93,10 @@ public class ASSETPlugin extends AbstractUIPlugin {
 	 */
 	public static void logError(int severity, String message, Throwable exception)
 	{
-		Status stat = new Status(severity, "org.mwc.asset.core", Status.OK, message, exception);
+		Status stat = new Status(severity, "org.mwc.asset.core", Status.OK, message,
+				exception);
 		getDefault().getLog().log(stat);
-	}	
+	}
 
 	/**
 	 * Returns an image descriptor for the image file at the given plug-in
@@ -93,5 +109,34 @@ public class ASSETPlugin extends AbstractUIPlugin {
 	public static ImageDescriptor getImageDescriptor(String path)
 	{
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.asset.core", path);
-	}	
+	}
+
+	public void earlyStartup()
+	{
+		System.out.println("adding ASSET loaders");
+
+		XMLFileDropHandler gg = new XMLFileDropHandler(new String[] { "SSN" },
+				new Class[] { ScenarioLayer.class })
+		{
+			public void handleDrop(InputStream source, MWC.GUI.Editable targetElement, 
+					Layers parent)
+			{
+				SSN ssn = (SSN) ASSETReaderWriter.importParticipant("unknown", source);
+				ScenarioLayer layer = (ScenarioLayer) targetElement;
+				CoreScenario cs = (CoreScenario) layer.getScenario();
+				cs.addParticipant(ssn.getId(), ssn);
+				// fire modified on the layer
+				parent.fireModified(layer);
+	
+			}
+		};
+		LayerMgrDragDropSupport.addDropHelper(gg);
+
+		_myImageHelper = new ASSETImageHelper();
+		// give the LayerManager our image creator.
+		org.mwc.cmap.layer_manager.views.support.ViewLabelProvider
+				.addImageHelper(_myImageHelper);
+
+		System.out.println("added ASSET loaders");
+	}
 }
