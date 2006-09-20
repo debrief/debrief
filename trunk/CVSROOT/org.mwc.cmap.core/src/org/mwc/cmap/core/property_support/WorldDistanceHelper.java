@@ -3,6 +3,8 @@
  */
 package org.mwc.cmap.core.property_support;
 
+import java.io.Serializable;
+
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
@@ -11,8 +13,13 @@ import org.eclipse.swt.widgets.*;
 
 import MWC.GenericData.*;
 
-public class WorldDistanceHelper extends EditorHelper
+public class WorldDistanceHelper extends EditorHelper implements Serializable
 {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
 	/**
 	 * constructor..
