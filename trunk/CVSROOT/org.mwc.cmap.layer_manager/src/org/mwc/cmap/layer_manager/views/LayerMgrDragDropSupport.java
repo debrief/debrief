@@ -1,5 +1,6 @@
 package org.mwc.cmap.layer_manager.views;
 
+import java.io.*;
 import java.util.Iterator;
 
 import org.eclipse.jface.viewers.*;
@@ -27,13 +28,13 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	 */
 	private StructuredViewer _parent;
 
-	/** it appears that the copy/move operations gets cancelled after we mark
-	 * something as "don't drop".  remember the previous setting, so that when
-	 * we want to indicate that something is a valid drop-target, it can be dropped.
+	/**
+	 * it appears that the copy/move operations gets cancelled after we mark
+	 * something as "don't drop". remember the previous setting, so that when we
+	 * want to indicate that something is a valid drop-target, it can be dropped.
 	 * that's all/
 	 */
 	private int _oldDetail = -1;
-	
 
 	/**
 	 * constructor - something that tells us about the current selection
@@ -59,7 +60,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	{
 		// ok, clear the old detail flag
 		_oldDetail = -1;
-		
+
 		boolean res = true;
 
 		// get what's selected
@@ -113,6 +114,8 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	public void dragOver(DropTargetEvent event)
 	{
 		boolean allowDrop = false;
+
+		// hmm, do we want to accept this?
 		TreeItem ti = (TreeItem) event.item;
 		// right, do we have a target?
 		if (ti != null)
@@ -135,68 +138,203 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			if (allowDrop)
 			{
 				// restore what we were looking at...
-				if(event.detail == DND.DROP_NONE)
+				if (event.detail == DND.DROP_NONE)
 				{
 					event.detail = _oldDetail;
-				}			
+				}
 
 				// ok - and the update status of the component under the cursor
 				event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
 			}
 			else
 			{
-				if(event.detail != DND.DROP_NONE)
+				if (event.detail != DND.DROP_NONE)
 				{
 					_oldDetail = event.detail;
 				}
-				
+
 				event.feedback = DND.FEEDBACK_NONE;
 				event.detail = DND.DROP_NONE;
 			}
 		}
 	}
 
+	public static class XMLFileDropHandler
+	{
+		/** the type of elements we're interested in
+		 * 
+		 */
+		private final String[] _elements;
+		
+		/** the types of object we can drop onto
+		 * 
+		 */
+		private final Class[] targets;
+		
+		/** constructor
+		 * 
+		 * @param elementTypes the top-level XML elements we can process
+		 * @param targetTypes the types of thing we drop onto
+		 */
+		public XMLFileDropHandler(String[] elementTypes, Class [] targetTypes)
+		{
+			_elements = elementTypes;
+			targets = targetTypes;
+		}
+		
+		public boolean handlesThis(String firstElement)
+		{
+			boolean res = false;
+			for (int i = 0; i < _elements.length; i++)
+			{
+				String thisE = _elements[i];
+				if(thisE.toUpperCase().equals(firstElement.toUpperCase()))
+				{
+					res = true;
+					break;
+				}
+			}
+			return res;
+		}
+		
+		public boolean dropsOn(Class targetElement)
+		{
+			boolean res = false;
+			for (int i = 0; i < targets.length; i++)
+			{
+				Class thisE = targets[i];
+				if(targetElement instanceof thisE)
+				{
+					res = true;
+					break;
+				}
+			}
+			return res;
+		}
+		
+		public void handleDrop(BufferedReader source)
+		{
+			
+		}
+	}
+	
 	public void drop(DropTargetEvent event)
 	{
-		StructuredSelection sel = getSelection();
-
-		// cycle through the elements
-		for (Iterator iter = sel.iterator(); iter.hasNext();)
+		// hmm, what type of data are we receiving, is it a file?
+		if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
 		{
-			EditableWrapper thisP = (EditableWrapper) iter.next();
-			Editable dragee = thisP.getEditable();
-
-			// right, are we cutting?
-			if ((_oldDetail & DND.DROP_MOVE) != 0)
+			String[] names = (String[]) event.data;
+			String fileName  = names[0];
+			File theFile = new File(fileName);
+			if(theFile.exists())
 			{
-				// remove from current parent
-				EditableWrapper parent = thisP.getParent();
-
-				// is this a top-level item?
-				if (parent == null)
+				// right, is it our correct type?
+				
+				// is it an xml file
+				int fileSep = fileName.lastIndexOf('.');
+				String suffix = fileName.substring(fileSep + 1);
+				String uSuffix = suffix.toUpperCase();
+				if(uSuffix.equals("XML"))
 				{
-					Layers layers = thisP.getLayers();
-					layers.removeThisLayer((Layer) dragee);
+					// hey, could be. Extract the first 100 characters
+					try
+					{
+						FileReader fr = new FileReader(theFile);
+						BufferedReader re = new BufferedReader(fr);
+						String firstLine = re.readLine();
+						
+						// get some more data
+						boolean inComplete = true;
+						while((firstLine.length() < 200) && (inComplete))
+						{
+							String newLine = re.readLine();
+							if(newLine == null)
+								inComplete = false;
+							
+							firstLine += newLine;
+						}
+					
+						// our text (called firstLine) should have around 200 chars in it now.
+						
+						// does it have an xml declaration
+						int index = firstLine.indexOf("<?");
+						
+						// hey, either the number is looking at the first occurence
+						// of the declaration, or it's looking at minus one. switch
+						// minus one to zero, so we can get started
+						index = Math.max(1, index);
+						
+						// now find the next xml marker
+						index = firstLine.indexOf('<', index+1);
+						
+						// now, find the end of this XML item
+						int endOfElement = firstLine.indexOf(" ", index);
+						String thisElement = firstLine.substring(index+1, endOfElement);
+						System.out.println("is:" +  thisElement);
+						
+					}
+					catch (FileNotFoundException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					catch (IOException e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				else
 				{
-					BaseLayer parentLayer = (BaseLayer) parent.getEditable();
-					parentLayer.removeElement(dragee);
+					// no chance
 				}
+				
+				// hmm, does it start off with <SC
 			}
-
-			// add to new parent
-			TreeItem ti = (TreeItem) event.item;
-			EditableWrapper destination = (EditableWrapper) ti.getData();
-			
-			// ok, we need to add a new instance of the dragee (so we can support multiple instances)
-			Editable newDragee = (Editable) RightClickPasteAdaptor.cloneThis(dragee);
-			
-			// also add it to the plottable layer target
-			BaseLayer dest = (BaseLayer) destination.getEditable();
-			dest.add(newDragee);
 		}
+		else
+		{
 
+			StructuredSelection sel = getSelection();
+
+			// cycle through the elements
+			for (Iterator iter = sel.iterator(); iter.hasNext();)
+			{
+				EditableWrapper thisP = (EditableWrapper) iter.next();
+				Editable dragee = thisP.getEditable();
+
+				// right, are we cutting?
+				if ((_oldDetail & DND.DROP_MOVE) != 0)
+				{
+					// remove from current parent
+					EditableWrapper parent = thisP.getParent();
+
+					// is this a top-level item?
+					if (parent == null)
+					{
+						Layers layers = thisP.getLayers();
+						layers.removeThisLayer((Layer) dragee);
+					}
+					else
+					{
+						BaseLayer parentLayer = (BaseLayer) parent.getEditable();
+						parentLayer.removeElement(dragee);
+					}
+				}
+
+				// add to new parent
+				TreeItem ti = (TreeItem) event.item;
+				EditableWrapper destination = (EditableWrapper) ti.getData();
+
+				// ok, we need to add a new instance of the dragee (so we can support
+				// multiple instances)
+				Editable newDragee = (Editable) RightClickPasteAdaptor.cloneThis(dragee);
+
+				// also add it to the plottable layer target
+				BaseLayer dest = (BaseLayer) destination.getEditable();
+				dest.add(newDragee);
+			}
+		}
 		// fire update
 		Layers destL = (Layers) _parent.getInput();
 		destL.fireExtended();
@@ -205,11 +343,13 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	public void dropAccept(DropTargetEvent event)
 	{
 		// right, is htis
+		System.out.println("drop accept?");
 	}
 
 	public Transfer[] getTypes()
 	{
-		Transfer[] res = new Transfer[] { EditableTransfer.getInstance() };
+		Transfer[] res = new Transfer[] { EditableTransfer.getInstance(),
+				FileTransfer.getInstance() };
 		return res;
 	}
 
