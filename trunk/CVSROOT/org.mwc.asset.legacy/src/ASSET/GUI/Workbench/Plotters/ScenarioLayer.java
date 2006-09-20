@@ -2,6 +2,7 @@ package ASSET.GUI.Workbench.Plotters;
 
 import java.util.*;
 
+import ASSET.ScenarioType;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.SupportTesting;
@@ -202,6 +203,10 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
     return new Duration(_myScenario.getStepTime(), Duration.MILLISECONDS);
   }
 
+  public ScenarioType getScenario()
+  {
+  	return _myScenario;
+  }
 
   /***************************************************************
    *  editable data for this plotter
