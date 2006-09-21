@@ -59,6 +59,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		layout.addShowViewShortcut(ASSETPlugin.SCENARIO_CONTROLLER);
 		layout.addShowViewShortcut(ASSETPlugin.VESSEL_MONITOR);
+		layout.addShowViewShortcut(ASSETPlugin.SENSOR_MONITOR);
 		
 
 		layout.addShowViewShortcut(IPageLayout.ID_RES_NAV);
