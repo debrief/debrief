@@ -350,7 +350,7 @@
            name="DebriefNG">
         <property
               name="aboutImage"
-              value="icons/new_logo2.gif"/>
+              value="icons/DebriefNGlogo.gif"/>
         <property
               name="aboutText"
               value="Welcome to Debrief NG, from the Maritime Warfare Centre"/>

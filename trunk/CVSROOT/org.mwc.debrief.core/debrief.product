@@ -4,10 +4,7 @@
 <product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="true">
 
    <aboutInfo>
-      <image path="/org.mwc.debrief.core/icons/new_logo2.gif"/>
-      <text>
-         Welcome to Debrief NG, from the Maritime Warfare Centre
-      </text>
+      <image path="/org.mwc.debrief.core/icons/DebriefNGlogo.gif"/>
    </aboutInfo>
 
    <configIni use="default"/>
@@ -20,6 +17,11 @@
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
 
+   <splash
+      location="org.mwc.debrief.core"
+      startupProgressRect="0,0,0,0"
+      startupMessageRect="0,0,0,0"
+      startupForegroundColor="000000" />
    <launcher name="debriefNG">
       <solaris/>
       <win useIco="true">
