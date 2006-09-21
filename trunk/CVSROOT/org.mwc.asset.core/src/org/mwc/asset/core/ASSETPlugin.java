@@ -1,6 +1,6 @@
 package org.mwc.asset.core;
 
-import java.io.*;
+import java.io.InputStream;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
@@ -10,8 +10,10 @@ import org.mwc.cmap.layer_manager.views.LayerMgrDragDropSupport;
 import org.mwc.cmap.layer_manager.views.LayerMgrDragDropSupport.XMLFileDropHandler;
 import org.osgi.framework.BundleContext;
 
-import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
-import ASSET.Models.Vessels.SSN;
+import ASSET.ParticipantType;
+import ASSET.GUI.Workbench.Plotters.*;
+import ASSET.Models.Decision.BehaviourList;
+import ASSET.Models.Sensor.SensorList;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.Layers;
@@ -111,32 +113,76 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.asset.core", path);
 	}
 
+	protected static class XMLParticipantDropHandler extends XMLFileDropHandler
+	{
+		public XMLParticipantDropHandler(String[] elementTypes, Class[] targetTypes)
+		{
+			super(elementTypes, targetTypes);
+		}
+
+		public void handleDrop(InputStream source, MWC.GUI.Editable targetElement,
+				Layers parent)
+		{
+			ParticipantType part = ASSETReaderWriter.importParticipant("unknown", source);
+			ScenarioLayer layer = (ScenarioLayer) targetElement;
+			CoreScenario cs = (CoreScenario) layer.getScenario();
+			cs.addParticipant(part.getId(), part);
+			// fire modified on the layer
+			parent.fireModified(layer);
+		}
+	}
+
+	/**
+	 * do our pre-startup processing
+	 */
 	public void earlyStartup()
 	{
-		System.out.println("adding ASSET loaders");
+		XMLFileDropHandler parts = new XMLParticipantDropHandler(new String[] { "SSK",
+				"FixedWing", "Torpedo", "SSN", "Helo", "Surface" },
+				new Class[] { ScenarioLayer.class });
 
-		XMLFileDropHandler gg = new XMLFileDropHandler(new String[] { "SSN" },
-				new Class[] { ScenarioLayer.class })
+		XMLFileDropHandler behaviours = new XMLFileDropHandler(new String[] { "Waterfall",
+				"Sequence", "Switch" }, new Class[] { BehavioursPlottable.class })
 		{
-			public void handleDrop(InputStream source, MWC.GUI.Editable targetElement, 
+			public void handleDrop(InputStream source, MWC.GUI.Editable targetElement,
 					Layers parent)
 			{
-				SSN ssn = (SSN) ASSETReaderWriter.importParticipant("unknown", source);
-				ScenarioLayer layer = (ScenarioLayer) targetElement;
-				CoreScenario cs = (CoreScenario) layer.getScenario();
-				cs.addParticipant(ssn.getId(), ssn);
-				// fire modified on the layer
-				parent.fireModified(layer);
-	
+				// get the model for this element
+				BehavioursPlottable bp = (BehavioursPlottable) targetElement;
+
+				if (bp.getDecisionModel() instanceof BehaviourList)
+				{
+					BehaviourList bl = (BehaviourList) bp.getDecisionModel();
+					ASSETReaderWriter.importThis(bl, null, source);
+					parent.fireModified(bp.getTopLevelLayer());
+				}
 			}
 		};
-		LayerMgrDragDropSupport.addDropHelper(gg);
+
+		XMLFileDropHandler sensors = new XMLFileDropHandler(new String[] { "BroadbandSensor",
+				"ActiveBroadbandSensor", "DippingActiveBroadbandSensor", "NarrowbandSensor",
+				"OpticLookupSensor", "RadarLookupSensor", "MADLookupSensor",
+				"ActiveInterceptSensor", }, new Class[] { SensorsPlottable.class })
+		{
+			public void handleDrop(InputStream source, MWC.GUI.Editable targetElement,
+					Layers parent)
+			{
+				// get the model for this element
+				SensorsPlottable bp = (SensorsPlottable) targetElement;
+
+				SensorList sl = bp.getSensorFit();
+				ASSETReaderWriter.importThis(sl, null, source);
+				parent.fireModified(bp.getTopLevelLayer());
+			}
+		};
+
+		LayerMgrDragDropSupport.addDropHelper(parts);
+		LayerMgrDragDropSupport.addDropHelper(behaviours);
+		LayerMgrDragDropSupport.addDropHelper(sensors);
 
 		_myImageHelper = new ASSETImageHelper();
 		// give the LayerManager our image creator.
 		org.mwc.cmap.layer_manager.views.support.ViewLabelProvider
 				.addImageHelper(_myImageHelper);
-
-		System.out.println("added ASSET loaders");
 	}
 }
