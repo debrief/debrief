@@ -1,13 +1,10 @@
 package ASSET.Models.Vessels;
 
-import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.MovementType;
+import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Movement.MovementCharacteristics;
-import ASSET.Participants.Status;
-import ASSET.Participants.DemandedStatus;
-import ASSET.ScenarioType;
-import MWC.GenericData.WorldSpeed;
-import MWC.GenericData.WorldDistance;
+import ASSET.Participants.*;
+import MWC.GenericData.*;
 
 /**
  * Title:
@@ -21,7 +18,13 @@ import MWC.GenericData.WorldDistance;
 public class Helo extends ASSET.Participants.CoreParticipant {
 
 
-  public Helo(final int id) {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	public Helo(final int id) {
     this(id, null,null,null);
 
     // give it a dummy name
@@ -97,7 +100,10 @@ public class Helo extends ASSET.Participants.CoreParticipant {
     /** get the version details for this model.
      * <pre>
      * $Log$
-     * Revision 1.1  2006-08-08 14:22:01  Ian.Mayo
+     * Revision 1.2  2006-09-21 15:27:51  Ian.Mayo
+     * Eclipse tidying
+     *
+     * Revision 1.1  2006/08/08 14:22:01  Ian.Mayo
      * Second import
      *
      * Revision 1.1  2006/08/07 12:26:10  Ian.Mayo

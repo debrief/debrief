@@ -10,11 +10,13 @@ package ASSET.GUI.Editors.Sensors;
  */
 
 import ASSET.Models.Decision.Movement.Wander;
-import ASSET.Models.Environment.EnvironmentType;
+import ASSET.Models.Environment.*;
+import ASSET.Models.Movement.*;
 import ASSET.Models.Sensor.Initial.BroadbandSensor;
 import ASSET.Models.Sensor.Lookup.LookupSensor;
 import ASSET.Models.Sensor.Lookup.OpticLookupSensor;
 import ASSET.Models.SensorType;
+import ASSET.Participants.Category;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -35,6 +37,11 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
 
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the table we show our data in
    */
   private JTable _myTable;
@@ -137,8 +144,9 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
     ASSET.Models.Vessels.SSK ssk = new ASSET.Models.Vessels.SSK(12);
     ASSET.Participants.Status sskStat = new ASSET.Participants.Status(12, 0);
     WorldLocation origin = new WorldLocation(0, 0, 0);
-    sskStat.setLocation(origin.add(new WorldVector(0, MWC.Algorithms.Conversions.Nm2Degs(350), 40)));
+    sskStat.setLocation(origin.add(new WorldVector(0, MWC.Algorithms.Conversions.Nm2Degs(3), 40)));
     sskStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+    ssk.setMovementChars(SSMovementCharacteristics.getSampleChars());
     ssk.setStatus(sskStat);
     ssk.setDecisionModel(wander);
     ssk.setName("SSK");
@@ -152,8 +160,10 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
 
     // now setup the helo
     final ASSET.Models.Vessels.Helo merlin = new ASSET.Models.Vessels.Helo(33);
+    merlin.setMovementChars(HeloMovementCharacteristics.getSampleChars());
     ASSET.Participants.Status merlinStat = new ASSET.Participants.Status(33, 0);
-    merlinStat.setLocation(origin);
+    merlinStat.setLocation(origin.add(new WorldVector(0, MWC.Algorithms.Conversions.Nm2Degs(1), -400)));
+    merlinStat.setSpeed(new WorldSpeed(60, WorldSpeed.M_sec));
     merlin.setStatus(merlinStat);
     merlin.setDecisionModel(wander);
     merlin.setName("Merlin");
@@ -163,12 +173,15 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
     final OpticLookupSensor optic = OpticLookupSensor.OpticLookupTest.getTestOpticSensor();
     fit.add(optic);
     merlin.setSensorFit(fit);
+    merlin.setCategory(new Category(Category.Force.BLUE, Category.Environment.AIRBORNE, Category.Type.HELO));
 
     // now setup the su
     ASSET.Models.Vessels.Surface ff = new ASSET.Models.Vessels.Surface(31);
     ASSET.Participants.Status ffStat = new ASSET.Participants.Status(31, 0);
     WorldLocation sskLocation = ssk.getStatus().getLocation();
     ffStat.setLocation(sskLocation.add(new WorldVector(0, MWC.Algorithms.Conversions.Nm2Degs(4), -40)));
+    ffStat.setSpeed(new WorldSpeed(6, WorldSpeed.M_sec));
+    ff.setMovementChars(MovementCharacteristics.getSampleChars());
     ff.setStatus(ffStat);
 
     ASSET.Models.Sensor.SensorList fit2 = new ASSET.Models.Sensor.SensorList();
@@ -183,12 +196,14 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
     ff.setDecisionModel(wander);
     ff.setRadiatedChars(rc);
     ff.setName("FF");
+    ff.setCategory(new Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.FRIGATE));
 
     // setup the scenario
     final ASSET.Scenario.CoreScenario cs = new ASSET.Scenario.CoreScenario();
     cs.addParticipant(ff.getId(), ff);
     cs.addParticipant(merlin.getId(), merlin);
     cs.addParticipant(ssk.getId(), ssk);
+    cs.setEnvironment(new SimpleEnvironment(0,1,0));
 
     // and the viewer!!
     JFrame viewer = new JFrame();
@@ -198,7 +213,15 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
     MWC.GUI.Properties.Swing.SwingPropertiesPanel props =
       new MWC.GUI.Properties.Swing.SwingPropertiesPanel(null, null, null, null);
 
-    props.addEditor(optic.getInfo(), null);
+    
+    
+////    props.addEditor(optic.getInfo(), null);
+    
+    LookupSensorComponentViewer sv = new LookupSensorComponentViewer();
+    sv.setName("optic");
+    sv.setObject(new SensorFitEditor.WrappedSensor(optic));
+    props.add(sv);
+    
 
     viewer.getContentPane().setLayout(new BorderLayout());
     viewer.getContentPane().add(props, BorderLayout.CENTER);
@@ -219,6 +242,7 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
 
     viewer.doLayout();
     viewer.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    viewer.pack();
 
   }
 

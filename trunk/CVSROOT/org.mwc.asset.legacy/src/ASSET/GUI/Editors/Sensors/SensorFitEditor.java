@@ -239,7 +239,11 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   ////////////////////////////////////////////////////
   private class SensorItem extends JPanel
   {
-    private SensorType _mySensor;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private SensorType _mySensor;
 
     public SensorItem(SensorType thisSensor)
     {

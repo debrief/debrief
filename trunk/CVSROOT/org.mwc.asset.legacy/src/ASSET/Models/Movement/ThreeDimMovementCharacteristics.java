@@ -128,6 +128,11 @@ public abstract class ThreeDimMovementCharacteristics extends MovementCharacteri
     return _myEditor;
   }
 
+  /** get a set of movement chars
+   * 
+   * @param i the turning circle to use.
+   * @return
+   */
   public static MovementCharacteristics getSampleChars(final float i)
   {
     return new ThreeDimMovementCharacteristics("the moves",
@@ -143,6 +148,11 @@ public abstract class ThreeDimMovementCharacteristics extends MovementCharacteri
                                        )
     {
       /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			/**
        * get the turning circle diameter (m) at this speed (in m/sec)
        */
       public double getTurningCircleDiameter(double m_sec)
@@ -212,6 +222,11 @@ public abstract class ThreeDimMovementCharacteristics extends MovementCharacteri
       return new ThreeDimMovementCharacteristics("", null, null, 12, null, null, null, null, null, null)
       {
         /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				/**
          * get the turning circle diameter (m) at this speed (in m/sec)
          */
         public double getTurningCircleDiameter(double m_sec)
