@@ -9,27 +9,45 @@ package ASSET.Util.XML.Sensors;
  * @version 1.0
  */
 
-import ASSET.Models.Sensor.Lookup.MADLookupSensor;
-import ASSET.Models.Sensor.Lookup.OpticLookupSensor;
-import ASSET.Models.Sensor.Lookup.RadarLookupSensor;
-import ASSET.Models.SensorType;
-import ASSET.Util.XML.Sensors.Lookup.MADLookupSensorHandler;
-import ASSET.Util.XML.Sensors.Lookup.OpticLookupSensorHandler;
-import ASSET.Util.XML.Sensors.Lookup.RadarLookupSensorHandler;
 import org.w3c.dom.Element;
+
+import ASSET.Models.SensorType;
+import ASSET.Models.Sensor.Lookup.*;
+import ASSET.Util.XML.Sensors.Lookup.*;
 
 
 abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   private final static String type = "SensorFit";
+  private final static String NAME = "Name";
+	private final static String WORKING = "Working";
 
   private ASSET.Models.Sensor.SensorList _myList;
+	
+	private Boolean _isWorking = null;
+	private String _myName = null;
 
   public SensorFitHandler()
   {
     // inform our parent what type of class we are
     super(type);
 
+
+    super.addAttributeHandler(new HandleBooleanAttribute(WORKING )
+    {
+			public void setValue(String name, boolean value)
+			{
+				_isWorking = new Boolean(value);
+			}
+    });    
+    super.addAttributeHandler(new HandleAttribute(NAME)
+    {
+			public void setValue(String name, String value)
+			{
+				_myName = value;
+			}
+    });    
+    
     addHandler(new ASSET.Util.XML.Sensors.OpticSensorHandler()
     {
       public void addSensor(final SensorType sensor)
@@ -98,8 +116,16 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
 
   public void elementClosed()
   {
+  	if(_isWorking != null)
+  		_myList.setWorking(_isWorking.booleanValue());
+  	if(_myName != null)
+  		_myList.setName(_myName);
+  	
     setSensorFit(_myList);
+    
     _myList = null;
+    _myName = null;
+    _isWorking = null;
   }
 
   private void addThisSensor(final SensorType sensor)
@@ -118,6 +144,10 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
   {
     // create ourselves
     final Element sens = doc.createElement(type);
+    
+    // store it's name
+    sens.setAttribute(WORKING, writeThis(participant.getSensorFit().isWorking()));
+    sens.setAttribute(NAME, participant.getSensorFit().getName());
 
     // step through data
     final int len = participant.getNumSensors();
