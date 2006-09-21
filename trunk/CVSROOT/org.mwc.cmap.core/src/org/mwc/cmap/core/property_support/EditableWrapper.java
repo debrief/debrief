@@ -40,12 +40,11 @@ public class EditableWrapper implements IPropertySource
 	 */
 	static String[] _booleanTags = new String[] { "Yes", "No" };
 
-
 	/**
 	 * the parent of this object
 	 */
-	private final EditableWrapper _parent;	
-	
+	private final EditableWrapper _parent;
+
 	/**
 	 * constructor - ok, lets get going
 	 * 
@@ -58,7 +57,7 @@ public class EditableWrapper implements IPropertySource
 		_theLayers = theLayers;
 		_parent = parent;
 	}
-	
+
 	/**
 	 * constructor - ok, lets get going
 	 * 
@@ -71,7 +70,7 @@ public class EditableWrapper implements IPropertySource
 		_theLayers = theLayers;
 		_parent = null;
 	}
-		
+
 	/**
 	 * constructor - ok, lets get going
 	 * 
@@ -84,8 +83,6 @@ public class EditableWrapper implements IPropertySource
 		_theLayers = null;
 		_parent = null;
 	}
-	
-
 
 	public Layer getTopLevelLayer()
 	{
@@ -117,7 +114,6 @@ public class EditableWrapper implements IPropertySource
 		return res;
 	}
 
-	
 	/**
 	 * hey, where's the thing we're dealing with?
 	 * 
@@ -159,7 +155,7 @@ public class EditableWrapper implements IPropertySource
 	 */
 	final public IPropertyDescriptor[] getPropertyDescriptors()
 	{
-
+		
 		if (_myDescriptors == null)
 		{
 			Vector list = new Vector(0, 1);
@@ -170,21 +166,24 @@ public class EditableWrapper implements IPropertySource
 				PropertyDescriptor[] properties = editor.getPropertyDescriptors();
 				// _myDescriptors = new IPropertyDescriptor[properties.length];
 
-				for (int i = 0; i < properties.length; i++)
+				if (properties != null)
 				{
-					final PropertyDescriptor thisProp = properties[i];
+					for (int i = 0; i < properties.length; i++)
+					{
+						final PropertyDescriptor thisProp = properties[i];
 
-					// hmm, is it a legacy property?
-					if (thisProp instanceof DeprecatedPropertyDescriptor)
-					{
-						// right, just give it a stiff ignoring, it's deprecated
-					}
-					else
-					{
-						// ok, wrap it, and add it to our list.
-						IPropertyDescriptor newProp = new DebriefProperty(thisProp, (Editable) editor
-								.getData(), null);
-						list.add(newProp);
+						// hmm, is it a legacy property?
+						if (thisProp instanceof DeprecatedPropertyDescriptor)
+						{
+							// right, just give it a stiff ignoring, it's deprecated
+						}
+						else
+						{
+							// ok, wrap it, and add it to our list.
+							IPropertyDescriptor newProp = new DebriefProperty(thisProp,
+									(Editable) editor.getData(), null);
+							list.add(newProp);
+						}
 					}
 				}
 
@@ -349,12 +348,11 @@ public class EditableWrapper implements IPropertySource
 
 		return res;
 	}
-	
 
 	public EditableWrapper getParent()
 	{
 		return _parent;
-	}	
+	}
 
 	/**
 	 * embedded class which stores a property change in an undoable operation
@@ -371,8 +369,9 @@ public class EditableWrapper implements IPropertySource
 
 		private final Layers _wholeLayers;
 
-		/** the parent plottable for this item - the layer that we fire an
-		 * update for after a change
+		/**
+		 * the parent plottable for this item - the layer that we fire an update for
+		 * after a change
 		 */
 		private Layer _topLevelLayer;
 
