@@ -192,25 +192,37 @@
 	<!--                                -->
 	<!--Sensors-->
 	<!--                                -->
+	<xs:element name="BroadbandSensor" type="BroadbandSensorType"/>
+	<xs:element name="ActiveBroadbandSensor" type="ActiveBroadbandSensorType"/>
+	<xs:element name="DippingActiveBroadbandSensor" type="DippingActiveBroadbandSensorType"/>
+	<xs:element name="NarrowbandSensor" type="NarrowbandSensorType"/>
+	<xs:element name="OpticLookupSensor" type="OpticLookupSensorType"/>
+	<xs:element name="RadarLookupSensor" type="RadarLookupSensorType"/>
+	<xs:element name="MADLookupSensor" type="MADLookupSensorType"/>
+	<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType"/>
 	<xs:complexType name="SensorFitType">
-		<xs:choice minOccurs="0" maxOccurs="unbounded">
-			<xs:element name="BroadbandSensor" type="BroadbandSensorType" minOccurs="0"/>
-			<xs:element name="ActiveBroadbandSensor" type="ActiveBroadbandSensorType" minOccurs="0"/>
-			<xs:element name="DippingActiveBroadbandSensor" type="DippingActiveBroadbandSensorType" minOccurs="0"/>
-			<xs:element name="NarrowbandSensor" type="NarrowbandSensorType" minOccurs="0"/>
-			<xs:element name="OpticLookupSensor" type="OpticLookupSensorType" minOccurs="0"/>
-			<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
-			<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
-			<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType" minOccurs="0"/>
-		</xs:choice>
+		<xs:complexContent>
+			<xs:extension base="CoreSensorType">
+				<xs:choice minOccurs="0" maxOccurs="unbounded">
+					<xs:element name="BroadbandSensor" type="BroadbandSensorType" minOccurs="0"/>
+					<xs:element name="ActiveBroadbandSensor" type="ActiveBroadbandSensorType" minOccurs="0"/>
+					<xs:element name="DippingActiveBroadbandSensor" type="DippingActiveBroadbandSensorType" minOccurs="0"/>
+					<xs:element name="NarrowbandSensor" type="NarrowbandSensorType" minOccurs="0"/>
+					<xs:element name="OpticLookupSensor" type="OpticLookupSensorType" minOccurs="0"/>
+					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
+					<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
+					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType" minOccurs="0"/>
+				</xs:choice>
+			</xs:extension>
+		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="CoreSensorType">
-		<xs:attribute name="Name" type="xs:string" use="required">
+		<xs:attribute name="Name" type="xs:string" use="optional">
 			<xs:annotation>
 				<xs:documentation>The name of this sensor</xs:documentation>
 			</xs:annotation>
 		</xs:attribute>
-		<xs:attribute name="Working" type="xs:boolean">
+		<xs:attribute name="Working" type="xs:boolean" use="optional">
 			<xs:annotation>
 				<xs:documentation>Whether this sensor is currently working</xs:documentation>
 			</xs:annotation>
@@ -635,6 +647,15 @@
 	<!-- declare instances of the vessel types so we can create them externally -->
 	<!--            -->
 	<xs:element name="FixedWing" type="FixedWingType"/>
+	<xs:element name="Helo" type="HeloType"/>
+	<xs:element name="SSN" type="SSNType"/>
+	<xs:element name="SSK" type="SSKType"/>
+	<xs:element name="Torpedo" type="TorpedoType"/>
+	<xs:element name="Surface" type="SurfaceType">
+		<xs:annotation>
+			<xs:documentation>A surface vessel</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="FixedWingType">
 		<xs:annotation>
 			<xs:documentation>Representation of a Fixed Wing aircraft</xs:documentation>
@@ -651,7 +672,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="Helo" type="HeloType"/>
 	<xs:complexType name="HeloType">
 		<xs:annotation>
 			<xs:documentation>Representation of a Helicopter</xs:documentation>
@@ -668,7 +688,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="SSN" type="SSNType"/>
 	<xs:complexType name="SSNType">
 		<xs:annotation>
 			<xs:documentation>Representation of a SSK</xs:documentation>
@@ -681,7 +700,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="SSK" type="SSKType"/>
 	<xs:complexType name="SSKType">
 		<xs:annotation>
 			<xs:documentation>Representation of a SSN</xs:documentation>
@@ -703,7 +721,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="Torpedo" type="TorpedoType"/>
 	<xs:complexType name="TorpedoType">
 		<xs:annotation>
 			<xs:documentation>Representation of a torpedo</xs:documentation>
@@ -720,11 +737,6 @@
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
-	<xs:element name="Surface" type="SurfaceType">
-		<xs:annotation>
-			<xs:documentation>A surface vessel</xs:documentation>
-		</xs:annotation>
-	</xs:element>
 	<xs:complexType name="SurfaceType">
 		<xs:annotation>
 			<xs:documentation>Representation of a Surface vessel</xs:documentation>
@@ -1174,6 +1186,21 @@
 	<!--                                -->
 	<!--Behaviours-->
 	<!--                                -->
+	<xs:element name="Waterfall" type="WaterfallType">
+		<xs:annotation>
+			<xs:documentation>Standalone instance of a waterfall behaviour</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="Switch" type="SwitchType">
+		<xs:annotation>
+			<xs:documentation>Standalone instance of a Switch behaviour</xs:documentation>
+		</xs:annotation>
+	</xs:element>
+	<xs:element name="Sequence" type="SequenceType">
+		<xs:annotation>
+			<xs:documentation>Standalone instance of a Sequence behaviour</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:complexType name="DecisionModelType" abstract="true">
 		<xs:annotation>
 			<xs:documentation>Core description for a decision model</xs:documentation>
