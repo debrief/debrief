@@ -35,9 +35,9 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	 * that's all/
 	 */
 	private int _oldDetail = -1;
-	
-	/** a list of helper classes - that allow more items to be dropped onto us.
-	 * 
+
+	/**
+	 * a list of helper classes - that allow more items to be dropped onto us.
 	 */
 	private static Vector _myDropHelpers;
 
@@ -50,16 +50,17 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	{
 		_parent = parent;
 	}
-	
-	/** provide another class to assist with loaded dropped files
+
+	/**
+	 * provide another class to assist with loaded dropped files
 	 * 
 	 * @param handler
 	 */
 	public static void addDropHelper(XMLFileDropHandler handler)
 	{
-		if(_myDropHelpers == null)
+		if (_myDropHelpers == null)
 		{
-			_myDropHelpers = new Vector(1,1);
+			_myDropHelpers = new Vector(1, 1);
 		}
 		_myDropHelpers.add(handler);
 	}
@@ -133,80 +134,116 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	{
 		boolean allowDrop = false;
 
-		// hmm, do we want to accept this?
-		TreeItem ti = (TreeItem) event.item;
-		// right, do we have a target?
-		if (ti != null)
+		// hmm, what type of data are we receiving, is it a file?
+		if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
 		{
-			EditableWrapper pw = (EditableWrapper) ti.getData();
-			Editable pl = pw.getEditable();
-			if (pl instanceof ETOPOPainter)
+			// do we have any loaders?
+			if (_myDropHelpers != null)
 			{
-				allowDrop = false;
-			}
-			else if (pl instanceof BaseLayer)
-			{
-				allowDrop = true;
-			}
-			else
-			{
-				allowDrop = false;
-			}
-
-			if (allowDrop)
-			{
-				// restore what we were looking at...
-				if (event.detail == DND.DROP_NONE)
+				TreeItem ti = (TreeItem) event.item;
+				EditableWrapper ew = (EditableWrapper) ti.getData();
+				for (Iterator iter = _myDropHelpers.iterator(); iter.hasNext();)
 				{
-					event.detail = _oldDetail;
-				}
+					XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
 
-				// ok - and the update status of the component under the cursor
-				event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+					// right, does it handle this kind of element?
+					if (handler.canBeDroppedOn(ew.getEditable()))
+					{
+						// yup, can it drop on our target?
+						Object tgt = event.item.getData();
+						if (tgt instanceof EditableWrapper)
+						{
+							allowDrop = true;
+							break;
+						}
+					}
+				}
 			}
-			else
+		}
+		else
+		{
+			// right, we're dragging something off the layer manager itself. have a
+			// look at it.
+
+			// hmm, do we want to accept this?
+			TreeItem ti = (TreeItem) event.item;
+			// right, do we have a target?
+			if (ti != null)
 			{
-				if (event.detail != DND.DROP_NONE)
-				{
-					_oldDetail = event.detail;
-				}
+				EditableWrapper pw = (EditableWrapper) ti.getData();
+				Editable pl = pw.getEditable();
 
-				event.feedback = DND.FEEDBACK_NONE;
-				event.detail = DND.DROP_NONE;
+				if (pl instanceof ETOPOPainter)
+				{
+					allowDrop = false;
+				}
+				else if (pl instanceof BaseLayer)
+				{
+					allowDrop = true;
+				}
+				else
+				{
+					allowDrop = false;
+				}
 			}
+		}
+
+		if (allowDrop)
+		{
+			// restore what we were looking at...
+			if (event.detail == DND.DROP_NONE)
+			{
+				event.detail = _oldDetail;
+			}
+
+			// ok - and the update status of the component under the cursor
+			event.feedback = DND.FEEDBACK_SELECT | DND.FEEDBACK_SCROLL;
+		}
+		else
+		{
+			if (event.detail != DND.DROP_NONE)
+			{
+				_oldDetail = event.detail;
+			}
+
+			event.feedback = DND.FEEDBACK_NONE;
+			event.detail = DND.DROP_NONE;
 		}
 	}
 
 	abstract public static class XMLFileDropHandler
 	{
-		/** the type of elements we're interested in
-		 * 
+		/**
+		 * the type of elements we're interested in
 		 */
 		private final String[] _elements;
-		
-		/** the types of object we can drop onto
-		 * 
+
+		/**
+		 * the types of object we can drop onto
 		 */
 		private final Class[] targets;
-		
-		/** constructor
+
+		/**
+		 * constructor
 		 * 
-		 * @param elementTypes the top-level XML elements we can process
-		 * @param targetTypes the types of thing we drop onto
+		 * @param elementTypes
+		 *          the top-level XML elements we can process
+		 * @param targetTypes
+		 *          the types of thing we drop onto
 		 */
-		public XMLFileDropHandler(String[] elementTypes, Class [] targetTypes)
+		public XMLFileDropHandler(String[] elementTypes, Class[] targetTypes)
 		{
 			_elements = elementTypes;
 			targets = targetTypes;
 		}
-				
+
 		public boolean handlesThis(String firstElement)
 		{
 			boolean res = false;
 			for (int i = 0; i < _elements.length; i++)
 			{
 				String thisE = _elements[i];
-				if(thisE.toUpperCase().equals(firstElement.toUpperCase()))
+				if (thisE.toUpperCase().equals(firstElement.toUpperCase()))
 				{
 					res = true;
 					break;
@@ -214,14 +251,14 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			}
 			return res;
 		}
-		
+
 		public boolean canBeDroppedOn(Editable targetElement)
 		{
 			boolean res = false;
 			for (int i = 0; i < targets.length; i++)
 			{
 				Class thisE = targets[i];
-				if(targetElement.getClass() == thisE)
+				if (targetElement.getClass() == thisE)
 				{
 					res = true;
 					break;
@@ -229,33 +266,36 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			}
 			return res;
 		}
-		
-		/** ok, load the item, and add it to the indicated layer
+
+		/**
+		 * ok, load the item, and add it to the indicated layer
 		 * 
 		 * @param source
 		 * @param targetElemet
-		 * @param parent TODO
+		 * @param parent
+		 *          TODO
 		 */
-		abstract public void handleDrop(InputStream source, Editable targetElemet, Layers parent);
+		abstract public void handleDrop(InputStream source, Editable targetElemet,
+				Layers parent);
 	}
-	
+
 	public void drop(DropTargetEvent event)
 	{
 		// hmm, what type of data are we receiving, is it a file?
 		if (FileTransfer.getInstance().isSupportedType(event.currentDataType))
 		{
 			String[] names = (String[]) event.data;
-			String fileName  = names[0];
+			String fileName = names[0];
 			File theFile = new File(fileName);
-			if(theFile.exists())
+			if (theFile.exists())
 			{
 				// right, is it our correct type?
-				
+
 				// is it an xml file
 				int fileSep = fileName.lastIndexOf('.');
 				String suffix = fileName.substring(fileSep + 1);
 				String uSuffix = suffix.toUpperCase();
-				if(uSuffix.equals("XML"))
+				if (uSuffix.equals("XML"))
 				{
 					// hey, could be. Extract the first 100 characters
 					try
@@ -263,62 +303,66 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 						FileReader fr = new FileReader(theFile);
 						BufferedReader re = new BufferedReader(fr);
 						String firstLine = re.readLine();
-						
+
 						// get some more data
 						boolean inComplete = true;
-						while((firstLine.length() < 200) && (inComplete))
+						while ((firstLine.length() < 200) && (inComplete))
 						{
 							String newLine = re.readLine();
-							if(newLine == null)
+							if (newLine == null)
 								inComplete = false;
-							
+
 							firstLine += newLine;
 						}
-					
-						// our text (called firstLine) should have around 200 chars in it now.
-						
+
+						// our text (called firstLine) should have around 200 chars in it
+						// now.
+
 						// does it have an xml declaration
 						int index = firstLine.indexOf("<?");
-						
+
 						// hey, either the number is looking at the first occurence
 						// of the declaration, or it's looking at minus one. switch
 						// minus one to zero, so we can get started
-						index = Math.max(1, index);
-						
+						if(index == -1)
+							index = 0;
+						else
+							index = Math.max(index, 5);
+
 						// now find the next xml marker
-						index = firstLine.indexOf('<', index+1);
-						
+						index = firstLine.indexOf('<', index);
+
 						// now, find the end of this XML item
 						int endOfElement = firstLine.indexOf(" ", index);
-						String thisElement = firstLine.substring(index+1, endOfElement);
-						
+						String thisElement = firstLine.substring(index + 1, endOfElement);
+
 						// do we have any loaders?
-						if(_myDropHelpers != null)
+						if (_myDropHelpers != null)
 						{
 							for (Iterator iter = _myDropHelpers.iterator(); iter.hasNext();)
 							{
-								XMLFileDropHandler	handler = (XMLFileDropHandler) iter.next();
-								
+								XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
+
 								// right, does it handle this kind of element?
-								if(handler.handlesThis(thisElement))
+								if (handler.handlesThis(thisElement))
 								{
 									// yup, can it drop on our target?
 									Object tgt = event.item.getData();
-									if(tgt instanceof EditableWrapper)
+									if (tgt instanceof EditableWrapper)
 									{
 										EditableWrapper ew = (EditableWrapper) tgt;
-									if(handler.canBeDroppedOn(ew.getEditable()))
-									{
-										// yes, go for it!
-										handler.handleDrop(new FileInputStream(theFile), 
-												ew.getEditable(), ew.getLayers());
-										break;
+										if (handler.canBeDroppedOn(ew.getEditable()))
+										{
+											// yes, go for it!
+											handler.handleDrop(new FileInputStream(theFile), ew.getEditable(),
+													ew.getLayers());
+											break;
+										}
 									}
-									}
-								}								
+								}
 							}
-						}						
-						System.out.println("is:" +  thisElement);						
+						}
+
 					}
 					catch (FileNotFoundException e)
 					{
@@ -333,7 +377,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 				{
 					// no chance
 				}
-				
+
 				// hmm, does it start off with <SC
 			}
 		}
@@ -388,7 +432,6 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	public void dropAccept(DropTargetEvent event)
 	{
 		// right, is htis
-		System.out.println("drop accept?");
 	}
 
 	public Transfer[] getTypes()
