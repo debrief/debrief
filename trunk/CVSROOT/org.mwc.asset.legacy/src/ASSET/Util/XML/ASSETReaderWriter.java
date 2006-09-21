@@ -17,6 +17,8 @@ import org.w3c.dom.*;
 import org.xml.sax.InputSource;
 
 import ASSET.ScenarioType;
+import ASSET.Models.SensorType;
+import ASSET.Models.Sensor.SensorList;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
@@ -302,6 +304,56 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     xr.doImport(new InputSource(is), gi);
   }
 
+
+  static public void importThis(final SensorList theSensorFit,
+                                String fName,
+                                final java.io.InputStream is)
+  {
+    // create the new handler
+    final ASSETReaderWriter xr = new ASSETReaderWriter();
+
+    final SensorList thisList = theSensorFit;
+
+    final GeneralImporter gi = new GeneralImporter();
+    // first the normal handlers
+    gi.addHandler(new ASSET.Util.XML.Sensors.ActiveBroadbandHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });
+    gi.addHandler(new ASSET.Util.XML.Sensors.ActiveInterceptHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });
+    gi.addHandler(new ASSET.Util.XML.Sensors.BroadbandHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });
+    gi.addHandler(new ASSET.Util.XML.Sensors.DippingActiveBroadbandHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });
+    gi.addHandler(new ASSET.Util.XML.Sensors.NarrowbandHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });
+    gi.addHandler(new ASSET.Util.XML.Sensors.OpticSensorHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });
+    
+    
+    
+    // now the lookup handlers
+    gi.addHandler(new ASSET.Util.XML.Sensors.Lookup.OpticLookupSensorHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });   
+    gi.addHandler(new ASSET.Util.XML.Sensors.Lookup.MADLookupSensorHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });   
+    gi.addHandler(new ASSET.Util.XML.Sensors.Lookup.RadarLookupSensorHandler()
+    {			public void addSensor(SensorType sensor)
+			{				thisList.add(sensor);			}    });   
+
+
+    // import the datafile into this set of layers
+    xr.doImport(new InputSource(is), gi);
+  }
+  
+  
   static public class GeneralImporter extends MWCXMLReader
   {
     MWCXMLReader _currentHandler;
