@@ -61,10 +61,25 @@ public class ScenarioParticipantWrapper implements
 	 */
 	private boolean _visible = true;
 
-	/** utility to represent us as a vector
-	 * 
+	/**
+	 * utility to represent us as a vector
 	 */
 	private Vector _theElements;
+
+	/**
+	 * sort out if we have created sensor fit in our elements array
+	 */
+	private boolean _noSensorFit = true;
+
+	/**
+	 * sort out if we have created decision model in our elements array
+	 */
+	private boolean _noDecisionModel = true;
+
+	/**
+	 * sort out if we have created rad chars in our elements array
+	 */
+	private boolean _noRadChars = true;
 
 	/**
 	 * ************************************************************ constructor
@@ -463,33 +478,40 @@ public class ScenarioParticipantWrapper implements
 		if (_theElements == null)
 		{
 			_theElements = new Vector(3, 1);
-		}
 
-		// ok, sort out our child elements
-		Editable performance = new PerformancePlottable(_myPart.getMovementChars(), _myParent);
-		_theElements.add(performance);
+			// ok add the movement chars
+			Editable moveChars = new MoveCharsPlottable(_myPart.getMovementChars(), _myParent);
+			_theElements.add(moveChars);
+		}
 
 		// sensors
-		if (_myPart.getSensorFit() != null)
-		{
-			Editable sensors = new SensorsPlottable(_myPart.getSensorFit(), _myParent);
-			_theElements.add(sensors);
-		}
+		if (_noSensorFit)
+			if (_myPart.getSensorFit() != null)
+			{
+				Editable sensors = new SensorsPlottable(_myPart.getSensorFit(), _myParent);
+				_theElements.add(sensors);
+				_noSensorFit = false;
+			}
 
 		// decision model
-		if (_myPart.getDecisionModel() != null)
-		{
-			Editable behaviours = new BehavioursPlottable(_myPart.getDecisionModel(), _myParent);
-			_theElements.add(behaviours);
-		}
+		if (_noDecisionModel)
+			if (_myPart.getDecisionModel() != null)
+			{
+				Editable behaviours = new BehavioursPlottable(_myPart.getDecisionModel(),
+						_myParent);
+				_theElements.add(behaviours);
+				_noDecisionModel = false;
+			}
 
 		// rad noise model
-		if (_myPart.getRadiatedChars() != null)
-		{
-			RadiatedCharacteristics chars = _myPart.getRadiatedChars();
-			Editable wrappedChart = new RadCharsPlottable(chars, _myParent);
-			_theElements.add(wrappedChart);
-		}
+		if (_noRadChars)
+			if (_myPart.getRadiatedChars() != null)
+			{
+				RadiatedCharacteristics chars = _myPart.getRadiatedChars();
+				Editable wrappedChart = new RadCharsPlottable(chars, _myParent);
+				_theElements.add(wrappedChart);
+				_noRadChars = false;
+			}
 
 		// ok, wrap our items
 		return _theElements.elements();

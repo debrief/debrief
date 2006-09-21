@@ -18,7 +18,7 @@ public class ASSETImageHelper implements ViewLabelImageHelper
 		{
 			res = ASSETPlugin.getImageDescriptor("icons\\satellite_dish.png");
 		}
-		else if ((subject instanceof MovementType) || (subject instanceof PerformancePlottable))
+		else if ((subject instanceof MovementType) || (subject instanceof MoveCharsPlottable))
 		{
 			res = ASSETPlugin.getImageDescriptor("icons\\gear.png");
 		}
