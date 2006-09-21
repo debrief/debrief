@@ -201,7 +201,8 @@ public abstract class LookupSensor extends CoreSensor
 		int currentState = newParameters.getDetectionState();
 
 		// how does this compare with the IR
-		if (!actualRange.greaterThan(newParameters.getRI()))
+		WorldDistance RI = newParameters.getRI();
+		if (!actualRange.greaterThan(RI))
 		{
 			// yes - in range - handle the classification.
 
@@ -1185,7 +1186,10 @@ public abstract class LookupSensor extends CoreSensor
 		 * 
 		 * <pre>
 		 *  $Log$
-		 *  Revision 1.4  2006-09-21 12:20:43  Ian.Mayo
+		 *  Revision 1.5  2006-09-21 15:31:25  Ian.Mayo
+		 *  ease debugging
+		 *
+		 *  Revision 1.4  2006/09/21 12:20:43  Ian.Mayo
 		 *  Reflect introduction of default names
 		 *
 		 *  Revision 1.3  2006/09/14 14:11:33  Ian.Mayo
