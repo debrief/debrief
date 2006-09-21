@@ -11,439 +11,438 @@ import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.*;
 
 /**
- * ********************************************************************
- * class to handle listening to participants
+ * ******************************************************************** class to
+ * handle listening to participants
  * *********************************************************************
  */
-public class ScenarioParticipantWrapper implements ASSET.Participants.ParticipantMovedListener,
-  MWC.GUI.Plottable,
-  ASSET.Participants.ParticipantDetectedListener,
-  Layer
+public class ScenarioParticipantWrapper implements
+		ASSET.Participants.ParticipantMovedListener, MWC.GUI.Plottable,
+		ASSET.Participants.ParticipantDetectedListener, Layer
 
 {
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-   * the last location we received for this participant
-   */
-  private MWC.GenericData.WorldLocation _curLocation = null;
+	 * the last location we received for this participant
+	 */
+	private MWC.GenericData.WorldLocation _curLocation = null;
 
-  /**
-   * the participant we are watching
-   */
-  private ASSET.ParticipantType _myPart = null;
+	/**
+	 * the participant we are watching
+	 */
+	private ASSET.ParticipantType _myPart = null;
 
-  /**
-   * the editor we store
-   */
-  transient private MWC.GUI.Editable.EditorType _myEditor = null;
+	/**
+	 * the editor we store
+	 */
+	transient private MWC.GUI.Editable.EditorType _myEditor = null;
 
-  /**
-   * the scenario layer which contains us (we access the
-   * show symbol,name,activity from this layer)
-   */
-  private ScenarioLayer _myParent = null;
+	/**
+	 * the scenario layer which contains us (we access the show
+	 * symbol,name,activity from this layer)
+	 */
+	private ScenarioLayer _myParent = null;
 
-  /**
-   * the most recent list of detections
-   */
-  private DetectionList _myDetections;
+	/**
+	 * the most recent list of detections
+	 */
+	private DetectionList _myDetections;
 
-  /**
-   * whether to plot detections or not
-   */
-  private boolean _showDetections = false;
+	/**
+	 * whether to plot detections or not
+	 */
+	private boolean _showDetections = false;
 
-  /**
-   * whether we're visible
-   */
-  private boolean _visible = true;
+	/**
+	 * whether we're visible
+	 */
+	private boolean _visible = true;
 
-  /**
-   * ************************************************************
-   * constructor
-   * *************************************************************
-   */
-  public ScenarioParticipantWrapper(final ASSET.ParticipantType part, 
-  		final ScenarioLayer parent)
-  {
-    // remember the participant
-    _myPart = part;
+	/** utility to represent us as a vector
+	 * 
+	 */
+	private Vector _theElements;
 
-    // try to get the initial location
-    final ASSET.Participants.Status stat = part.getStatus();
-    if (stat != null)
-      _curLocation = stat.getLocation();
+	/**
+	 * ************************************************************ constructor
+	 * *************************************************************
+	 */
+	public ScenarioParticipantWrapper(final ASSET.ParticipantType part,
+			final ScenarioLayer parent)
+	{
+		// remember the participant
+		_myPart = part;
 
-    _myParent = parent;
-  }
+		// try to get the initial location
+		final ASSET.Participants.Status stat = part.getStatus();
+		if (stat != null)
+			_curLocation = stat.getLocation();
 
-  /**
-   * ************************************************************
-   * methods
-   * *************************************************************
-   */
-  public void startListen()
-  {
-    _myPart.addParticipantMovedListener(this);
-    _myPart.addParticipantDetectedListener(this);
-  }
+		_myParent = parent;
+	}
 
-  public void stopListen()
-  {
-    _myPart.removeParticipantMovedListener(this);
-    _myPart.removeParticipantDetectedListener(this);
-  }
+	/**
+	 * ************************************************************ methods
+	 * *************************************************************
+	 */
+	public void startListen()
+	{
+		_myPart.addParticipantMovedListener(this);
+		_myPart.addParticipantDetectedListener(this);
+	}
 
-  public int getId()
-  {
-    return _myPart.getId();
-  }
+	public void stopListen()
+	{
+		_myPart.removeParticipantMovedListener(this);
+		_myPart.removeParticipantDetectedListener(this);
+	}
 
+	public int getId()
+	{
+		return _myPart.getId();
+	}
 
-  /**
-   * the scenario has restarted
-   */
-  public void restart()
-  {
-    _curLocation = _myPart.getStatus().getLocation();
-  }
+	/**
+	 * the scenario has restarted
+	 */
+	public void restart()
+	{
+		_curLocation = _myPart.getStatus().getLocation();
+	}
 
+	/**
+	 * this participant has moved
+	 */
+	public void moved(final ASSET.Participants.Status newStatus)
+	{
+		_curLocation = newStatus.getLocation();
+	}
 
-  /**
-   * this participant has moved
-   */
-  public void moved(final ASSET.Participants.Status newStatus)
-  {
-    _curLocation = newStatus.getLocation();
-  }
+	/**
+	 * pass on the list of new detections
+	 */
+	public void newDetections(final DetectionList detections)
+	{
+		_myDetections = detections;
+	}
 
-  /**
-   * pass on the list of new detections
-   */
-  public void newDetections(final DetectionList detections)
-  {
-    _myDetections = detections;
-  }
+	public MWC.GenericData.WorldLocation getLocation()
+	{
+		return _myPart.getStatus().getLocation();
+	}
 
+	public java.awt.Color getColor()
+	{
+		if (_myPart.getCategory().getForce().equals(ASSET.Participants.Category.Force.BLUE))
+			return java.awt.Color.blue;
+		else if (_myPart.getCategory().getForce().equals(
+				ASSET.Participants.Category.Force.GREEN))
+			return java.awt.Color.green;
+		else
+			return java.awt.Color.red;
+	}
 
-  public MWC.GenericData.WorldLocation getLocation()
-  {
-    return _myPart.getStatus().getLocation();
-  }
+	public String toString()
+	{
+		return _myPart.getName();
+	}
 
-  public java.awt.Color getColor()
-  {
-    if (_myPart.getCategory().getForce().equals(ASSET.Participants.Category.Force.BLUE))
-      return java.awt.Color.blue;
-    else if (_myPart.getCategory().getForce().equals(ASSET.Participants.Category.Force.GREEN))
-      return java.awt.Color.green;
-    else
-      return java.awt.Color.red;
-  }
+	// ////////////////////////////////////////////////
+	// layer support
+	// ////////////////////////////////////////////////
 
-  public String toString()
-  {
-    return _myPart.getName();
-  }
+	// ////////////////////////////////////////////////
+	// accessors
+	// ////////////////////////////////////////////////
 
+	/**
+	 * accessor to get the participant
+	 */
+	public ASSET.ParticipantType getParticipant()
+	{
+		return _myPart;
+	}
 
-  //////////////////////////////////////////////////
-  // layer support
-  //////////////////////////////////////////////////
+	/**
+	 * the detections part of the painting
+	 */
+	private void paintDetections(final MWC.GUI.CanvasType dest, Point pt)
+	{
 
-  //////////////////////////////////////////////////
-  // accessors
-  //////////////////////////////////////////////////
+		if (_myDetections != null)
+		{
+			final int len = _myDetections.size();
+			for (int i = 0; i < len; i++)
+			{
+				final DetectionEvent de = _myDetections.getDetection(i);
 
-  /**
-   * accessor to get the participant
-   */
-  public ASSET.ParticipantType getParticipant()
-  {
-    return _myPart;
-  }
+				// do we have bearing?
+				final Float brg = de.getBearing();
+				if (brg != null)
+				{
+					// do we have range?
+					final WorldDistance rng = de.getRange();
+					if (rng != null)
+					{
+						// hey, plot it!
+						final WorldVector wv = new WorldVector(MWC.Algorithms.Conversions
+								.Degs2Rads(brg.floatValue()), rng.getValueIn(WorldDistance.YARDS), 0);
+						final WorldLocation other_end = _curLocation.add(wv);
+						// take copy of original location, since we don't want to over-write
+						// it
+						pt = new Point(pt);
+						final Point pt2 = dest.toScreen(other_end);
+						dest.drawLine(pt.x, pt.y, pt2.x, pt2.y);
+					}
+				}
 
-  /**
-   * the detections part of the painting
-   */
-  private void paintDetections(final MWC.GUI.CanvasType dest, Point pt)
-  {
+			}
+		}
+	}
 
-    if (_myDetections != null)
-    {
-      final int len = _myDetections.size();
-      for (int i = 0; i < len; i++)
-      {
-        final DetectionEvent de = _myDetections.getDetection(i);
+	/**
+	 * paint this object to the specified canvas
+	 */
+	public void paint(final MWC.GUI.CanvasType dest)
+	{
+		if (getVisible())
+		{
+			final MWC.GenericData.WorldLocation loc = getLocation();
+			if (loc != null)
+			{
+				final java.awt.Point pt = dest.toScreen(loc);
 
-        // do we have bearing?
-        final Float brg = de.getBearing();
-        if (brg != null)
-        {
-          // do we have range?
-          final WorldDistance rng = de.getRange();
-          if (rng != null)
-          {
-            // hey, plot it!
-            final WorldVector wv = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(brg.floatValue()), rng.getValueIn(WorldDistance.YARDS), 0);
-            final WorldLocation other_end = _curLocation.add(wv);
-            // take copy of original location, since we don't want to over-write it
-            pt = new Point(pt);
-            final Point pt2 = dest.toScreen(other_end);
-            dest.drawLine(pt.x, pt.y, pt2.x, pt2.y);
-          }
-        }
+				if (_myParent.getShowSymbol())
+				{
 
-      }
-    }
-  }
+					// see if we can remember this symbol
+					PlainSymbol sym = (PlainSymbol) _myParent.getSymbolRegister().get(
+							_myPart.getCategory().getType());
+					if (sym == null)
+					{
+						// bugger. we haven't had this one before. retrieve it the long way
+						sym = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(_myPart.getCategory()
+								.getType());
 
-  /**
-   * paint this object to the specified canvas
-   */
-  public void paint(final MWC.GUI.CanvasType dest)
-  {
-    if (getVisible())
-    {
-      final MWC.GenericData.WorldLocation loc = getLocation();
-      if (loc != null)
-      {
-        final java.awt.Point pt = dest.toScreen(loc);
+						// ok, and remember it
+						_myParent.getSymbolRegister().put(_myPart.getCategory().getType(), sym);
+					}
 
-        if (_myParent.getShowSymbol())
-        {
+					if (sym != null)
+					{
+						sym.setColor(getColor());
+						sym.setScaleVal(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE);
+						sym.paint(dest, loc, MWC.Algorithms.Conversions.Degs2Rads(_myPart.getStatus()
+								.getCourse()));
+					}
+					else
+					{
+						dest.setColor(getColor());
+						dest.drawRect(pt.x, pt.y, 1, 1);
+					}
+				}
+				else
+				{
+					dest.setColor(getColor());
 
-          // see if we can remember this symbol
-          PlainSymbol sym = (PlainSymbol) _myParent.getSymbolRegister().get(_myPart.getCategory().getType());
-          if (sym == null)
-          {
-            // bugger. we haven't had this one before. retrieve it the long way
-            sym = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(_myPart.getCategory().getType());
+					dest.drawRect(pt.x, pt.y, 1, 1);
+				}
 
-            // ok, and remember it
-            _myParent.getSymbolRegister().put(_myPart.getCategory().getType(), sym);
-          }
+				// now for the activity
+				if (_myParent.getShowActivity())
+				{
+					final String act = _myPart.getActivity();
+					final int ht = dest.getStringHeight(null);
+					dest.drawText(act, pt.x + 16, pt.y - ht / 2);
+				}
 
+				// and the name
+				if (_myParent.getShowName())
+				{
+					final String nm = _myPart.getName();
+					final int wid = dest.getStringWidth(null, nm);
+					final int ht = dest.getStringHeight(null);
+					dest.drawText(nm, pt.x - wid / 2, pt.y + ht - 2);
+				}
 
-          if (sym != null)
-          {
-            sym.setColor(getColor());
-            sym.setScaleVal(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE);
-            sym.paint(dest, loc, MWC.Algorithms.Conversions.Degs2Rads(_myPart.getStatus().getCourse()));
-          }
-          else
-          {
-            dest.setColor(getColor());
-            dest.drawRect(pt.x, pt.y, 1, 1);
-          }
-        }
-        else
-        {
-          dest.setColor(getColor());
+				// and the name
+				if (_myParent.getShowStatus())
+				{
+					final Status theStat = _myPart.getStatus();
+					final String statString = theStat.statusString();
+					final int wid = dest.getStringWidth(null, statString);
+					dest.drawText(statString, pt.x - wid / 2, pt.y - 22);
+				}
 
-          dest.drawRect(pt.x, pt.y, 1, 1);
-        }
+				// lastly the detections
+				if (_showDetections)
+				{
+					paintDetections(dest, pt);
+				}
+			}
+		}
+	}
 
-        // now for the activity
-        if (_myParent.getShowActivity())
-        {
-          final String act = _myPart.getActivity();
-          final int ht = dest.getStringHeight(null);
-          dest.drawText(act, pt.x + 16, pt.y - ht/2);
-        }
+	/**
+	 * find the data area occupied by this item
+	 */
+	public MWC.GenericData.WorldArea getBounds()
+	{
+		MWC.GenericData.WorldArea res = null;
+		if (_curLocation != null)
+			res = new MWC.GenericData.WorldArea(_curLocation, _curLocation);
 
-        // and the name
-        if (_myParent.getShowName())
-        {
-          final String nm = _myPart.getName();
-          final int wid = dest.getStringWidth(null, nm);
-          final int ht = dest.getStringHeight(null);
-          dest.drawText(nm, pt.x - wid / 2, pt.y + ht - 2);
-        }
+		return res;
+	}
 
-        // and the name
-        if (_myParent.getShowStatus())
-        {
-          final Status theStat = _myPart.getStatus();
-          final String statString = theStat.statusString();
-          final int wid = dest.getStringWidth(null, statString);
-          dest.drawText(statString, pt.x - wid / 2, pt.y - 22);
-        }
+	/**
+	 * it this item currently visible?
+	 */
+	public boolean getVisible()
+	{
+		return _visible;
+	}
 
-        // lastly the detections
-        if (_showDetections)
-        {
-          paintDetections(dest, pt);
-        }
-      }
-    }
-  }
+	/**
+	 * set the visibility of this item
+	 */
+	public void setVisible(boolean val)
+	{
+		_visible = val;
+	}
 
-  /**
-   * find the data area occupied by this item
-   */
-  public MWC.GenericData.WorldArea getBounds()
-  {
-    MWC.GenericData.WorldArea res = null;
-    if (_curLocation != null)
-      res = new MWC.GenericData.WorldArea(_curLocation, _curLocation);
+	/**
+	 * whether to plot contacts
+	 */
+	public void setShowContacts(boolean val)
+	{
+		_showDetections = true;
+	}
 
-    return res;
-  }
+	/**
+	 * whether to plot contacts
+	 */
+	public boolean getShowContacts()
+	{
+		return _showDetections;
+	}
 
-  /**
-   * it this item currently visible?
-   */
-  public boolean getVisible()
-  {
-    return _visible;
-  }
+	/**
+	 * how far away are we from this point. Return null if it can't be calculated
+	 */
+	public double rangeFrom(final MWC.GenericData.WorldLocation other)
+	{
+		double res = INVALID_RANGE;
+		if (_curLocation != null)
+			res = _curLocation.rangeFrom(other);
+		return res;
+	}
 
-  /**
-   * set the visibility of this item
-   */
-  public void setVisible(boolean val)
-  {
-    _visible = val;
-  }
+	/**
+	 * the name of this object
+	 * 
+	 * @return the name of this editable object
+	 */
+	public String getName()
+	{
+		return _myPart.getName();
+		// + ":" + _myPart.getActivity() + " " + _myPart.getStatus().statusString();
+	}
 
-  /**
-   * whether to plot contacts
-   */
-  public void setShowContacts(boolean val)
-  {
-    _showDetections = true;
-  }
+	public String getParticipantName()
+	{
+		return _myPart.getName();
+	}
 
-  /**
-   * whether to plot contacts
-   */
-  public boolean getShowContacts()
-  {
-    return _showDetections;
-  }
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 * 
+	 * @return yes/no
+	 */
+	public boolean hasEditor()
+	{
+		return true;
+	};
 
+	/**
+	 * get the editor for this item
+	 * 
+	 * @return the BeanInfo data for this editable object
+	 */
+	public MWC.GUI.Editable.EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new ParticipantInfo(this);
 
-  /**
-   * how far away are we from this point.
-   * Return null if it can't be calculated
-   */
-  public double rangeFrom(final MWC.GenericData.WorldLocation other)
-  {
-    double res = INVALID_RANGE;
-    if (_curLocation != null)
-      res = _curLocation.rangeFrom(other);
-    return res;
-  }
+		return _myEditor;
+	}
 
-  /**
-   * the name of this object
-   *
-   * @return the name of this editable object
-   */
-  public String getName()
-  {
-    return _myPart.getName();
-    // + ":" + _myPart.getActivity() + " " + _myPart.getStatus().statusString();
-  }
+	// //////////////////////////////////////////////////////////////////////////
+	// embedded class, used for editing the projection
+	// //////////////////////////////////////////////////////////////////////////
+	/**
+	 * the definition of what is editable about this object
+	 */
+	public class ParticipantInfo extends MWC.GUI.Editable.EditorType
+	{
 
-  public String getParticipantName()
-  {
-    return _myPart.getName();
-  }
+		/**
+		 * constructor for editable details of a set of Layers
+		 * 
+		 * @param data
+		 *          the Layers themselves
+		 */
+		public ParticipantInfo(final ScenarioParticipantWrapper data)
+		{
+			super(data, data.getParticipantName(), "");
+		}
 
-  /**
-   * whether there is any edit information for this item
-   * this is a convenience function to save creating the EditorType data
-   * first
-   *
-   * @return yes/no
-   */
-  public boolean hasEditor()
-  {
-    return true;
-  };
+		/**
+		 * return a description of this bean, also specifies the custom editor we
+		 * use
+		 * 
+		 * @return the BeanDescriptor
+		 */
+		public java.beans.BeanDescriptor getBeanDescriptor()
+		{
+			final java.beans.BeanDescriptor bp = new java.beans.BeanDescriptor(
+					ScenarioParticipantWrapper.class, ASSET.GUI.Editors.VesselPane.class);
+			bp.setDisplayName(super.getData().toString());
+			return bp;
+		}
 
-  /**
-   * get the editor for this item
-   *
-   * @return the BeanInfo data for this editable object
-   */
-  public MWC.GUI.Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new ParticipantInfo(this);
+		/**
+		 * editable GUI properties for our participant
+		 * 
+		 * @return property descriptions
+		 */
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final java.beans.PropertyDescriptor[] res = {
+						prop("ShowContacts", "show contacts for this participant"),
+						prop("Visible", "whether to show this participant"),
+						prop("Name", "name of this participant"), };
+				return res;
+			}
+			catch (java.beans.IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
 
-    return _myEditor;
-  }
-
-
-  ////////////////////////////////////////////////////////////////////////////
-  //  embedded class, used for editing the projection
-  ////////////////////////////////////////////////////////////////////////////
-  /**
-   * the definition of what is editable about this object
-   */
-  public class ParticipantInfo extends MWC.GUI.Editable.EditorType
-  {
-
-    /**
-     * constructor for editable details of a set of Layers
-     *
-     * @param data the Layers themselves
-     */
-    public ParticipantInfo(final ScenarioParticipantWrapper data)
-    {
-      super(data, data.getParticipantName(), "");
-    }
-
-
-    /**
-     * return a description of this bean, also specifies the custom editor we use
-     *
-     * @return the BeanDescriptor
-     */
-    public java.beans.BeanDescriptor getBeanDescriptor()
-    {
-      final java.beans.BeanDescriptor bp = new java.beans.BeanDescriptor(ScenarioParticipantWrapper.class,
-                                                                         ASSET.GUI.Editors.VesselPane.class);
-      bp.setDisplayName(super.getData().toString());
-      return bp;
-    }
-
-    /**
-     * editable GUI properties for our participant
-     *
-     * @return property descriptions
-     */
-    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final java.beans.PropertyDescriptor[] res = {
-          prop("ShowContacts", "show contacts for this participant"),
-          prop("Visible", "whether to show this participant"),
-          prop("Name", "name of this participant"),
-        };
-        return res;
-      }
-      catch (java.beans.IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-
-  /** do the comparison
-   * 
-   * @param arg0
-   * @return
-   */
+	/**
+	 * do the comparison
+	 * 
+	 * @param arg0
+	 * @return
+	 */
 	public int compareTo(Object arg0)
 	{
 		ScenarioParticipantWrapper other = (ScenarioParticipantWrapper) arg0;
@@ -461,42 +460,44 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
 
 	public Enumeration elements()
 	{
-		Vector theElements = new Vector(3,1);
+		if (_theElements == null)
+		{
+			_theElements = new Vector(3, 1);
+		}
 
 		// ok, sort out our child elements
-		Editable performance = new PerformancePlottable(_myPart.getMovementChars());
-		theElements.add(performance);
+		Editable performance = new PerformancePlottable(_myPart.getMovementChars(), _myParent);
+		_theElements.add(performance);
 
 		// sensors
-		if(_myPart.getSensorFit() != null)
+		if (_myPart.getSensorFit() != null)
 		{
-			Editable sensors = new SensorsPlottable(_myPart.getSensorFit());
-			theElements.add(sensors);
+			Editable sensors = new SensorsPlottable(_myPart.getSensorFit(), _myParent);
+			_theElements.add(sensors);
 		}
-		
+
 		// decision model
-		if(_myPart.getDecisionModel() != null)
+		if (_myPart.getDecisionModel() != null)
 		{
-			Editable behaviours = new BehavioursPlottable(_myPart.getDecisionModel());
-			theElements.add(behaviours);
+			Editable behaviours = new BehavioursPlottable(_myPart.getDecisionModel(), _myParent);
+			_theElements.add(behaviours);
 		}
-		
+
 		// rad noise model
-		if(_myPart.getRadiatedChars() != null)
+		if (_myPart.getRadiatedChars() != null)
 		{
 			RadiatedCharacteristics chars = _myPart.getRadiatedChars();
-			Editable wrappedChart = new RadCharsPlottable(chars);
-			theElements.add(wrappedChart);
+			Editable wrappedChart = new RadCharsPlottable(chars, _myParent);
+			_theElements.add(wrappedChart);
 		}
-		
-		
+
 		// ok, wrap our items
-		return theElements.elements();
+		return _theElements.elements();
 	}
 
 	public void exportShape()
 	{
-		}
+	}
 
 	public int getLineThickness()
 	{
@@ -514,4 +515,3 @@ public class ScenarioParticipantWrapper implements ASSET.Participants.Participan
 	}
 
 }
-

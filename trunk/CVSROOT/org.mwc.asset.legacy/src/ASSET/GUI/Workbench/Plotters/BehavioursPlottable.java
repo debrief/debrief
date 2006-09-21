@@ -12,11 +12,16 @@ public class BehavioursPlottable extends BasePlottable
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public BehavioursPlottable(DecisionType decisionModel)
+	public BehavioursPlottable(DecisionType decisionModel, ScenarioLayer parent)
 	{
-		super(decisionModel);
+		super(decisionModel, parent);
 	}
 
+	public DecisionType getDecisionModel()
+	{
+		return (DecisionType) getModel();
+	}
+	
 	public Enumeration elements()
 	{
 		Enumeration res = null;

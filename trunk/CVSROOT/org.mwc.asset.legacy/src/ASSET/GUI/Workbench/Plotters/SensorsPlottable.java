@@ -3,7 +3,7 @@ package ASSET.GUI.Workbench.Plotters;
 import java.util.Enumeration;
 
 import ASSET.Models.Sensor.SensorList;
-import MWC.GUI.Plottables;
+import MWC.GUI.*;
 
 public class SensorsPlottable extends BasePlottable
 {
@@ -13,11 +13,16 @@ public class SensorsPlottable extends BasePlottable
 	 */
 	private static final long serialVersionUID = 1L;
 
-	public SensorsPlottable(SensorList sensorFit)
+	public SensorsPlottable(SensorList sensorFit, Layer parentLayer)
 	{
-		super(sensorFit);
+		super(sensorFit, parentLayer);
 	}
 
+	public SensorList getSensorFit()
+	{
+		return (SensorList) getModel();
+	}
+	
 	public Enumeration elements()
 	{
 		Enumeration res = null;

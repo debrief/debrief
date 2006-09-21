@@ -16,9 +16,12 @@ public class BasePlottable implements Plottable, Layer
 	 */
 	final private Editable _myModel;
 	
-	public BasePlottable(Editable myModel)
+  final	private Layer _parentLayer;
+	
+	public BasePlottable(Editable myModel, Layer parentLayer)
 	{
 		_myModel = myModel;
+		_parentLayer = parentLayer;
 	}	
 	
 	public String toString()
@@ -34,6 +37,11 @@ public class BasePlottable implements Plottable, Layer
 	public String getName()
 	{
 		return _myModel.getName();
+	}
+	
+	public Layer getTopLevelLayer()
+	{
+		return _parentLayer;
 	}
 	
 	public EditorType getInfo()
