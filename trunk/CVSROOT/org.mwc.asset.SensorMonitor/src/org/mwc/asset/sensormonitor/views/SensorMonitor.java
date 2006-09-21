@@ -1,22 +1,21 @@
 package org.mwc.asset.sensormonitor.views;
 
 import java.beans.*;
-import java.util.Iterator;
 
 import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import ASSET.Models.SensorType;
-import ASSET.Models.Detection.*;
-import ASSET.Participants.ParticipantDetectedListener;
+import ASSET.Models.Sensor.Lookup.LookupSensor;
+import ASSET.Models.Sensor.Lookup.LookupSensor.LookupSensorComponentsEvent;
 import MWC.GUI.Editable;
 
 /**
@@ -36,7 +35,7 @@ import MWC.GUI.Editable;
 
 public class SensorMonitor extends ViewPart
 {
-	private TableViewer viewer;
+	private Table _table;
 
 	/**
 	 * who we're listening to.
@@ -48,8 +47,6 @@ public class SensorMonitor extends ViewPart
 	private ISelectionChangedListener _selectionChangeListener;
 
 	private SensorType _mySensor;
-
-	private ParticipantDetectedListener _detectionListener;
 
 	private PropertyChangeListener _sensorCalcListener;
 
@@ -108,16 +105,54 @@ public class SensorMonitor extends ViewPart
 	 */
 	public void createPartControl(Composite parent)
 	{
-		viewer = new TableViewer(parent, SWT.MULTI | SWT.H_SCROLL | SWT.V_SCROLL);
-		viewer.setContentProvider(new ViewContentProvider());
-		viewer.setLabelProvider(new ViewLabelProvider());
-		viewer.setInput(getViewSite());
+//		Composite holder = new Composite(parent,SWT.NONE);
+	//	holder.setLayout(new FillLayout());
+		
+		_table = new Table(parent,SWT.NONE);
+		_table.setHeaderVisible(true);
+		
+//		Button _pusher = new Button(holder, SWT.NONE);
+//		_pusher.setText("try me");
+//		_pusher.addSelectionListener(new SelectionListener(){
+//			public void widgetDefaultSelected(SelectionEvent e)
+//			{
+//			}
+//			public void widgetSelected(SelectionEvent e)
+//			{
+//				testCall();
+//			}});
+//		
+//		TableColumn tc1 = new TableColumn(_table, SWT.CENTER);
+//		TableColumn tc2 = new TableColumn(_table, SWT.CENTER);
+//		TableColumn tc3 = new TableColumn(_table, SWT.CENTER);
+//		TableColumn tc4 = new TableColumn(_table, SWT.CENTER);
+//		TableColumn tc5 = new TableColumn(_table, SWT.CENTER);
+//		// ok - do our sensor headings.
+//    tc1.setText("Name");
+//    tc1.setWidth(30);
+//    tc2.setText("State");
+//    tc2.setWidth(30);
+//    tc3.setText("RP (m)");
+//    tc3.setWidth(30);
+//    tc4.setText("RI (m)");
+//    tc4.setWidth(30);
+//    tc5.setText("Actual (m)");	
+//    tc5.setWidth(30);
+    
+//    _table.pack();
+		
 
 		makeActions();
 		hookContextMenu();
 		contributeToActionBars();
 
 		listenToMyParts();
+	}
+
+	protected void testCall()
+	{
+		TableItem t1 = new TableItem(_table, SWT.NONE);
+		t1.setText(new String[]{"a","b","c"});
 	}
 
 	private void listenToMyParts()
@@ -130,8 +165,6 @@ public class SensorMonitor extends ViewPart
 			}
 		};
 
-		// try to add ourselves to listen out for page changes
-		// getSite().getWorkbenchWindow().getPartService().addPartListener(this);
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
 		_myPartMonitor.addPartListener(ISelectionProvider.class, PartMonitor.ACTIVATED,
@@ -212,7 +245,6 @@ public class SensorMonitor extends ViewPart
 					Editable ed = ew.getEditable();
 					if (ed instanceof SensorType)
 					{
-						System.out.println("new editable:" + ed);
 						updateSensor((SensorType) ed);
 					}
 				}
@@ -222,60 +254,113 @@ public class SensorMonitor extends ViewPart
 
 	private void updateSensor(SensorType sensor)
 	{
+		
 		// is this different to our current one?
 		if (sensor != _mySensor)
 		{
 			if (_mySensor != null)
 			{
-				_mySensor.removeParticipantDetectedListener(_detectionListener);
 				_mySensor.removeSensorCalculationListener(_sensorCalcListener);
 			}
 		}
 
-		if (_detectionListener == null)
+		if (_sensorCalcListener == null)
 		{
-			_detectionListener = new ParticipantDetectedListener()
-			{
-				public void newDetections(DetectionList detections)
-				{
-					viewer.getTable().clearAll();
-					for (Iterator iter = detections.iterator(); iter.hasNext();)
-					{
-						DetectionEvent det = (DetectionEvent) iter.next();
-						String msg = "Brg:" + det.getBearing();
-						msg += " Tgt:" + det.getTarget();
-						viewer.add(msg);
-					}
-				}
-
-				public void restart()
-				{
-				}
-			};
 			_sensorCalcListener = new PropertyChangeListener(){
 				public void propertyChange(PropertyChangeEvent evt)
 				{
-					System.out.println("new calc!!!");
+					processNewDetection(evt);
 				}
 			};
 		}
 
 		_mySensor = sensor;
-		_mySensor.addParticipantDetectedListener(_detectionListener);
 		_mySensor.addSensorCalculationListener(_sensorCalcListener);
+		
+		// and update our title
+		this.setPartName(sensor.getName());
+		
+		// first, remove the existing columns
+		TableColumn[] cols = _table.getColumns();;
+		for (int i = 0; i < cols.length; i++)
+		{
+			TableColumn column = cols[i];
+			column.dispose();
+		}
+		
+		// ok, now sort out our table
+		if(sensor instanceof LookupSensor)
+		{
+			TableColumn tc1 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc2 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc3 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc4 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc5 = new TableColumn(_table, SWT.CENTER);
+			// ok - do our sensor headings.
+	   tc1.setText("Name");
+	    tc1.setWidth(130);	    
+	    tc2.setText("State");
+	    tc2.setWidth(60);	    
+	    tc3.setText("RP (m)");
+	    tc3.setWidth(60);
+	    tc4.setText("RI (m)");
+   tc4.setWidth(60);	    
+	    tc5.setText("Actual (m)");
+	    tc5.setWidth(60);
+	//    _table.pack(true);
+		}
+		else
+		{
+			TableColumn tc1 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc2 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc3 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc4 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc5 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc6 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc7 = new TableColumn(_table, SWT.CENTER);
+			TableColumn tc8 = new TableColumn(_table, SWT.CENTER);
+
+			tc1.setText("Name");
+			tc2.setText("Loss");
+			tc3.setText("Bk Noise");
+			tc4.setText("OS Noise");
+			tc5.setText("Tgt Noise");
+			tc6.setText("RD");
+			tc7.setText("DI");
+			tc8.setText("SE");			
+		}
 	}
 
-	private void showMessage(String message)
+	/** ok, extract the relevant bits
+	 * 
+	 * @param evt the event that triggered us.
+	 */
+	protected void processNewDetection(PropertyChangeEvent evt)
 	{
-		MessageDialog.openInformation(viewer.getControl().getShell(), "Sensor Monitor",
-				message);
+		// clear the table
+		_table.clearAll();
+		
+		if(evt.getNewValue() instanceof LookupSensorComponentsEvent)
+		{
+			// sort out the lookup fields
+			LookupSensorComponentsEvent ev = (LookupSensorComponentsEvent) evt.getNewValue();
+			TableItem item1 = new TableItem(_table, SWT.NONE);
+			String[] fields = new String[]{ev.getTgtName(),ev.getStateString(),  
+					"" + ev.getRP(), "" + ev.getRI(), "" + ev.getActual()};
+			item1.setText(fields);
+		}
+		else
+		{
+			// sort out the component fields
+		}
 	}
+
 
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
 	public void setFocus()
 	{
-		viewer.getControl().setFocus();
+		_table.setFocus();
 	}
 }
