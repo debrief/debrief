@@ -13,7 +13,7 @@ import ASSET.Models.SensorType;
 import MWC.GenericData.Duration;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 
-abstract class NarrowbandHandler extends CoreSensorHandler
+public abstract class NarrowbandHandler extends CoreSensorHandler
 {
 
   private final static String type = "NarrowbandSensor";

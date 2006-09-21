@@ -11,7 +11,7 @@ package ASSET.Util.XML.Sensors;
 
 import ASSET.Models.SensorType;
 
-abstract class BroadbandHandler extends CoreSensorHandler
+public abstract class BroadbandHandler extends CoreSensorHandler
 {
 
   private final static String type = "BroadbandSensor";

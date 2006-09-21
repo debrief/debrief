@@ -13,7 +13,7 @@ import ASSET.Models.SensorType;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
-abstract class OpticSensorHandler extends CoreSensorHandler
+abstract public  class OpticSensorHandler extends CoreSensorHandler
 {
 
   private final static String type = "OpticSensor";

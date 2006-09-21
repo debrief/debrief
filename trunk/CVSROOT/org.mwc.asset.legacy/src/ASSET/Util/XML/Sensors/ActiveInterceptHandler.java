@@ -11,7 +11,7 @@ package ASSET.Util.XML.Sensors;
 
 import ASSET.Models.SensorType;
 
-abstract class ActiveInterceptHandler extends CoreSensorHandler
+public abstract class ActiveInterceptHandler extends CoreSensorHandler
 {
 
   private final static String type = "ActiveInterceptSensor";

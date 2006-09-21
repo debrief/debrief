@@ -17,7 +17,7 @@ import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
  */
 
 
-abstract class DippingActiveBroadbandHandler extends ActiveBroadbandHandler
+public abstract class DippingActiveBroadbandHandler extends ActiveBroadbandHandler
 {
 
   private final static String type = "DippingActiveBroadbandSensor";

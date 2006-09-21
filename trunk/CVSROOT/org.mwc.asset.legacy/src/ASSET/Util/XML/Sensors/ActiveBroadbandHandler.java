@@ -13,7 +13,7 @@ import ASSET.Models.SensorType;
  */
 
 
-abstract class ActiveBroadbandHandler extends BroadbandHandler
+public abstract class ActiveBroadbandHandler extends BroadbandHandler
 {
 
   protected final static String type = "ActiveBroadbandSensor";

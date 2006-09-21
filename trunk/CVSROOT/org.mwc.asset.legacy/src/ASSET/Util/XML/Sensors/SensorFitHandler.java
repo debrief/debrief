@@ -19,7 +19,7 @@ import ASSET.Util.XML.Sensors.Lookup.RadarLookupSensorHandler;
 import org.w3c.dom.Element;
 
 
-abstract public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   private final static String type = "SensorFit";
 
