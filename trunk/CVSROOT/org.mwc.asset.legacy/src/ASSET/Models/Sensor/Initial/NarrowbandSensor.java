@@ -77,8 +77,7 @@ public class NarrowbandSensor extends InitialSensor
    */
   public NarrowbandSensor(final int id)
   {
-    super(id);
-    setName("NB");
+    super(id, "NB");
   }
 
 
@@ -304,7 +303,10 @@ public class NarrowbandSensor extends InitialSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.2  2006-08-31 14:34:08  Ian.Mayo
+   * Revision 1.3  2006-09-21 12:20:42  Ian.Mayo
+   * Reflect introduction of default names
+   *
+   * Revision 1.2  2006/08/31 14:34:08  Ian.Mayo
    * Undeprecate old models = we'll no longer rely on lookup sensors
    *
    * Revision 1.1  2006/08/08 14:21:55  Ian.Mayo

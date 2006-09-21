@@ -36,9 +36,9 @@ abstract public class InitialSensor extends CoreSensor
    * constructor
    * *************************************************
    */
-  public InitialSensor(final int id)
+  public InitialSensor(final int id, final String defaultName)
   {
-    super(id, 0);
+    super(id, 0, defaultName);
     // todo: we're not managing time between detection opportunities for these initial sensors
   }
 

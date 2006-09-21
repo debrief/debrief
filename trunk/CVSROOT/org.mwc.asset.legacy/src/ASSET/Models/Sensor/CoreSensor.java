@@ -92,6 +92,11 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
    */
   private Vector _participantDetectedListeners;
 
+  /** name to use as a fallback
+   * 
+   */
+	private String _defaultName;
+
   /**
    * ok, we keep track of new detections in each cycle. use a static list so that we don't forget them
    */
@@ -102,10 +107,12 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
    * constructor
    * *************************************************
    */
-  public CoreSensor(final int id, final long TBDO)
+  public CoreSensor(final int id, final long TBDO, final String defaultName)
   {
     _myId = id;
     _TBDO = TBDO;
+    
+    _defaultName = defaultName;
 
     // check our new detections listener is there
     if (_newDetections == null)
@@ -372,7 +379,18 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 
   final public String getName()
   {
-    return _myName;
+  	final String res;
+  
+  	// do we have specific name?
+  	if(_myName != null)
+  		res = _myName;
+  	else
+  	{
+  		// no, use default name for this type of sensor
+  		res = _defaultName;
+  	}
+  	
+    return res;
   }
 
   final public void setName(String name)

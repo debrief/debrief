@@ -95,12 +95,10 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
 
   public DippingActiveBroadbandSensor(final int id)
   {
-    super(id);
+    super(id, "Dipping_Active");
 
     // initialise the cable length
     _cableLength = 0;
-
-    super.setName("Dipping_Active");
   }
 
   /**
@@ -553,7 +551,10 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:54  Ian.Mayo
+   * Revision 1.2  2006-09-21 12:20:41  Ian.Mayo
+   * Reflect introduction of default names
+   *
+   * Revision 1.1  2006/08/08 14:21:54  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:03  Ian.Mayo

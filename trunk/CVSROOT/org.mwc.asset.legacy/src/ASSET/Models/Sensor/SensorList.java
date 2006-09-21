@@ -28,6 +28,11 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
 
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * our editor
    */
   protected MWC.GUI.Editable.EditorType _myEditor = null;
@@ -264,6 +269,11 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
     return _myName;
   }
 
+  public void setName(String val)
+  {
+  	_myName = val;
+  }
+  
   public String toString()
   {
     return getName();
@@ -506,6 +516,25 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
       super(data);
     }
 
+		/**
+		 * editable GUI properties for our participant
+		 * 
+		 * @return property descriptions
+		 */
+		public java.beans.PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final java.beans.PropertyDescriptor[] res = {
+						prop("Working", "whether this set of sensors are active"), };
+				return res;
+			}
+			catch (java.beans.IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+		
     /**
      * return a description of this bean, also specifies the custom editor we use
      *

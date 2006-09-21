@@ -23,8 +23,7 @@ public class ActiveInterceptSensor extends BroadbandSensor
 
   public ActiveInterceptSensor(final int id)
   {
-    super(id);
-    setName("BB Intercept");
+    super(id, "BB Intercept");
     super.setDetectionAperture(180);
   }
 
@@ -69,7 +68,10 @@ public class ActiveInterceptSensor extends BroadbandSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:54  Ian.Mayo
+   * Revision 1.2  2006-09-21 12:20:40  Ian.Mayo
+   * Reflect introduction of default names
+   *
+   * Revision 1.1  2006/08/08 14:21:54  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:02  Ian.Mayo

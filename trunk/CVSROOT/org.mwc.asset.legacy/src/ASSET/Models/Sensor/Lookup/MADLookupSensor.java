@@ -1,33 +1,20 @@
 package ASSET.Models.Sensor.Lookup;
 
-import ASSET.Models.Decision.Sequence;
-import ASSET.Models.Decision.Tactical.LadderSearch;
-import ASSET.Models.Decision.Waterfall;
-import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Environment.CoreEnvironment;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Sensor.SensorList;
+import java.io.*;
+
+import ASSET.*;
 import ASSET.Models.SensorType;
-import ASSET.Models.Vessels.Helo;
-import ASSET.Models.Vessels.Surface;
-import ASSET.ParticipantType;
-import ASSET.Participants.Category;
-import ASSET.Participants.ParticipantDetectedListener;
-import ASSET.Participants.Status;
+import ASSET.Models.Decision.*;
+import ASSET.Models.Decision.Tactical.LadderSearch;
+import ASSET.Models.Detection.*;
+import ASSET.Models.Environment.*;
+import ASSET.Models.Sensor.SensorList;
+import ASSET.Models.Vessels.*;
+import ASSET.Participants.*;
 import ASSET.Scenario.CoreScenario;
-import ASSET.ScenarioType;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
-import MWC.GenericData.Duration;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
-
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import MWC.GenericData.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -43,7 +30,12 @@ public class MADLookupSensor extends LookupSensor
   // member variables
   ////////////////////////////////////////////////////////////
 
-  MADEnvironment _defaultLookups = null;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	MADEnvironment _defaultLookups = null;
 
   private final static int VIS_INDEX = 0;
 
@@ -68,7 +60,7 @@ public class MADLookupSensor extends LookupSensor
   public MADLookupSensor(int id, String myName,
                          double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF, Duration ITP)
   {
-    super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
+    super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "MAD Sensor");
   }
 
 
@@ -257,7 +249,10 @@ public class MADLookupSensor extends LookupSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:57  Ian.Mayo
+   * Revision 1.2  2006-09-21 12:20:44  Ian.Mayo
+   * Reflect introduction of default names
+   *
+   * Revision 1.1  2006/08/08 14:21:57  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:05  Ian.Mayo

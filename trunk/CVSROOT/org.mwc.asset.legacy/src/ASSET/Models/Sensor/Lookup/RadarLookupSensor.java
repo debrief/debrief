@@ -1,32 +1,20 @@
 package ASSET.Models.Sensor.Lookup;
 
-import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Environment.CoreEnvironment;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Sensor.SensorList;
+import java.io.*;
+import java.util.Vector;
+
+import ASSET.*;
 import ASSET.Models.SensorType;
-import ASSET.Models.Vessels.Helo;
-import ASSET.Models.Vessels.Surface;
-import ASSET.ParticipantType;
-import ASSET.Participants.Category;
-import ASSET.Participants.ParticipantDetectedListener;
-import ASSET.Participants.Status;
+import ASSET.Models.Detection.*;
+import ASSET.Models.Environment.*;
+import ASSET.Models.Sensor.SensorList;
+import ASSET.Models.Vessels.*;
+import ASSET.Participants.*;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
-import ASSET.ScenarioType;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
-import MWC.GenericData.Duration;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldSpeed;
-
-import java.io.BufferedInputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.Vector;
+import MWC.GenericData.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -83,7 +71,7 @@ public class RadarLookupSensor extends LookupSensor
                            double VDR, long TBDO, double MRF, double CRF, Duration CTP, double IRF, Duration ITP,
                            double K)
   {
-    super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
+    super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Radar Lookup");
 
     // and produce the lookup tables
     setDefaultLookups();
@@ -331,7 +319,10 @@ public class RadarLookupSensor extends LookupSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.2  2006-09-12 15:15:34  Ian.Mayo
+   * Revision 1.3  2006-09-21 12:20:45  Ian.Mayo
+   * Reflect introduction of default names
+   *
+   * Revision 1.2  2006/09/12 15:15:34  Ian.Mayo
    * Sorting out XML import/export & lookup data structures
    *
    * Revision 1.1  2006/08/08 14:21:58  Ian.Mayo

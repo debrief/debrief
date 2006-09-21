@@ -28,8 +28,12 @@ public class ActiveBroadbandSensor extends BroadbandSensor implements SensorType
 
   public ActiveBroadbandSensor(final int id)
   {
-    super(id);
-    setName("Active BB");
+    super(id, "Active BB");
+  }
+
+  public ActiveBroadbandSensor(final int id, final String defaultName)
+  {
+    super(id, defaultName);
   }
 
   ////////////////////////////////////////////////////
@@ -113,7 +117,10 @@ public class ActiveBroadbandSensor extends BroadbandSensor implements SensorType
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.1  2006-08-08 14:21:53  Ian.Mayo
+   * Revision 1.2  2006-09-21 12:20:40  Ian.Mayo
+   * Reflect introduction of default names
+   *
+   * Revision 1.1  2006/08/08 14:21:53  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:02  Ian.Mayo

@@ -67,8 +67,7 @@ public class OpticSensor extends ASSET.Models.Sensor.Initial.InitialSensor
 
   public OpticSensor(final int id)
   {
-    super(id);
-    setName("Optic");
+    super(id, "Optic");
   }
 
   public int getMedium()
@@ -277,7 +276,10 @@ public class OpticSensor extends ASSET.Models.Sensor.Initial.InitialSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.2  2006-08-31 14:34:09  Ian.Mayo
+   * Revision 1.3  2006-09-21 12:20:42  Ian.Mayo
+   * Reflect introduction of default names
+   *
+   * Revision 1.2  2006/08/31 14:34:09  Ian.Mayo
    * Undeprecate old models = we'll no longer rely on lookup sensors
    *
    * Revision 1.1  2006/08/08 14:21:56  Ian.Mayo

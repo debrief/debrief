@@ -104,9 +104,9 @@ public abstract class LookupSensor extends CoreSensor
 	 *          identification time period
 	 */
 	public LookupSensor(int id, String name, double VDR, long TBDO, double MRF, double CRF,
-			Duration CTP, double IRF, Duration ITP)
+			Duration CTP, double IRF, Duration ITP, String defaultName)
 	{
-		super(id, TBDO);
+		super(id, TBDO, defaultName);
 		setName(name);
 		this.VDR = VDR;
 		this.MRF = MRF;
@@ -1172,7 +1172,7 @@ public abstract class LookupSensor extends CoreSensor
 				double IRF, Duration ITP, double rp_m, double ri_m, double cr_m, double ir_m,
 				double max_m)
 		{
-			super(12, "test", VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
+			super(12, "test", VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Test sensor");
 			_rp_m = rp_m;
 			_ri_m = ri_m;
 			_cr_m = cr_m;
@@ -1185,7 +1185,10 @@ public abstract class LookupSensor extends CoreSensor
 		 * 
 		 * <pre>
 		 *  $Log$
-		 *  Revision 1.3  2006-09-14 14:11:33  Ian.Mayo
+		 *  Revision 1.4  2006-09-21 12:20:43  Ian.Mayo
+		 *  Reflect introduction of default names
+		 *
+		 *  Revision 1.3  2006/09/14 14:11:33  Ian.Mayo
 		 *  Improve how we manage some lists
 		 *
 		 *  Revision 1.2  2006/09/12 15:15:32  Ian.Mayo

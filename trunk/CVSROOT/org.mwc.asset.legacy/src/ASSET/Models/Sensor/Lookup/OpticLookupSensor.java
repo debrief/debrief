@@ -60,7 +60,7 @@ public class OpticLookupSensor extends LookupSensor
 	public OpticLookupSensor(int id, String myName, double VDR, long TBDO, double MRF,
 			double CRF, Duration CTP, double IRF, Duration ITP)
 	{
-		super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP);
+		super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Optic Lookup");
 	}
 
 	private OpticEnvironment getDefaultLookups()
@@ -271,7 +271,10 @@ public class OpticLookupSensor extends LookupSensor
 	 * 
 	 * <pre>
 	 *   $Log$
-	 *   Revision 1.2  2006-09-14 14:11:10  Ian.Mayo
+	 *   Revision 1.3  2006-09-21 12:20:44  Ian.Mayo
+	 *   Reflect introduction of default names
+	 *
+	 *   Revision 1.2  2006/09/14 14:11:10  Ian.Mayo
 	 *   Source tidying
 	 *
 	 *   Revision 1.1  2006/08/08 14:21:57  Ian.Mayo
