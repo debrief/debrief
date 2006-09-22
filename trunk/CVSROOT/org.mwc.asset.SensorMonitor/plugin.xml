@@ -5,11 +5,12 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Sensor Monitor"
-            icon="icons/sample.gif"
+            allowMultiple="true"
             category="org.mwc.asset.core.simulation.category"
             class="org.mwc.asset.sensormonitor.views.SensorMonitor"
-            id="org.mwc.asset.sensormonitor.views.SensorMonitor">
+            icon="icons/Binocular.gif"
+            id="org.mwc.asset.sensormonitor.views.SensorMonitor"
+            name="Sensor Monitor">
       </view>
    </extension>
 
