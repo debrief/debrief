@@ -47,9 +47,11 @@ public class SensorMonitor extends ViewPart
 	 */
 	private PartMonitor _myPartMonitor;
 
-	private Action _trackParticipant;
+	private Action _followSelection;
 
 	private ISelectionChangedListener _selectionChangeListener;
+
+	private Action _keepHistory;
 
 	private SensorType _mySensor;
 
@@ -57,49 +59,10 @@ public class SensorMonitor extends ViewPart
 
 	private long _lastTime = -1;
 
-	private Action _newWindow;
-
-	/*
-	 * The content provider class is responsible for providing objects to the
-	 * view. It can wrap existing objects in adapters or simply return objects
-	 * as-is. These objects may be sensitive to the current input of the view, or
-	 * ignore it and always show the same content (like Task List, for example).
+	/**
+	 * open a new sensor monitor
 	 */
-
-	class ViewContentProvider implements IStructuredContentProvider
-	{
-		public void inputChanged(Viewer v, Object oldInput, Object newInput)
-		{
-		}
-
-		public void dispose()
-		{
-		}
-
-		public Object[] getElements(Object parent)
-		{
-			return new String[] { "One", "Two", "Three" };
-		}
-	}
-
-	class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
-	{
-		public String getColumnText(Object obj, int index)
-		{
-			return getText(obj);
-		}
-
-		public Image getColumnImage(Object obj, int index)
-		{
-			return getImage(obj);
-		}
-
-		public Image getImage(Object obj)
-		{
-			return PlatformUI.getWorkbench().getSharedImages().getImage(
-					ISharedImages.IMG_OBJ_ELEMENT);
-		}
-	}
+	private Action _newWindow;
 
 	/**
 	 * The constructor.
@@ -120,11 +83,13 @@ public class SensorMonitor extends ViewPart
 		_table = new Table(parent, SWT.NONE);
 		_table.setHeaderVisible(true);
 
-		_table.addDisposeListener(new DisposeListener(){
+		_table.addDisposeListener(new DisposeListener()
+		{
 			public void widgetDisposed(DisposeEvent e)
 			{
 				widgetClosing();
-			}});
+			}
+		});
 
 		makeActions();
 		hookContextMenu();
@@ -136,13 +101,13 @@ public class SensorMonitor extends ViewPart
 	protected void widgetClosing()
 	{
 		// we're closing - stop listening
-		if(_mySensor != null)
+		if (_mySensor != null)
 		{
 			_mySensor.removeSensorCalculationListener(_sensorCalcListener);
 			_mySensor = null;
-			_sensorCalcListener = null;			
+			_sensorCalcListener = null;
 		}
-		
+
 		_myPartMonitor.ditch();
 	}
 
@@ -205,20 +170,28 @@ public class SensorMonitor extends ViewPart
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(_trackParticipant);
+		manager.add(_keepHistory);
+		manager.add(_followSelection);
 		manager.add(_newWindow);
 	}
 
 	private void makeActions()
 	{
-		_trackParticipant = new Action("Track", SWT.TOGGLE)
+		_followSelection = new Action("Track", SWT.TOGGLE)
 		{
 		};
-		_trackParticipant.setText("Sync");
-		_trackParticipant.setChecked(true);
-		_trackParticipant.setToolTipText("Follow selected participant");
-		_trackParticipant.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/follow_selection.gif"));
+		_followSelection.setText("Sync");
+		_followSelection.setChecked(true);
+		_followSelection.setToolTipText("Follow selected participant");
+		_followSelection.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
+
+		_keepHistory = new Action("Keep History", SWT.TOGGLE)
+		{
+		};
+		_keepHistory.setText("Keep History");
+		_keepHistory.setChecked(true);
+		_keepHistory.setToolTipText("remember past detection calculations");
+		_keepHistory.setImageDescriptor(CorePlugin.getImageDescriptor("icons/history.png"));
 
 		_newWindow = new Action("New monitor", SWT.NONE)
 		{
@@ -241,7 +214,7 @@ public class SensorMonitor extends ViewPart
 	protected void newItemSelected(SelectionChangedEvent event)
 	{
 
-		if (_trackParticipant.isChecked())
+		if (_followSelection.isChecked())
 		{
 			// right, let's have a look at it.
 			ISelection theSelection = event.getSelection();
@@ -377,12 +350,16 @@ public class SensorMonitor extends ViewPart
 				{
 					if (!_table.isDisposed())
 					{
-						// is this a new DTG?
-						if (newTime > _lastTime)
+						// are we clearing the history?
+						if (!_keepHistory.isChecked())
 						{
-							// clear the table before we add new items
-							_table.removeAll();
-							_lastTime = newTime;
+							// is this a new DTG?
+							if (newTime > _lastTime)
+							{
+								// clear the table before we add new items
+								_table.removeAll();
+								_lastTime = newTime;
+							}
 						}
 						TableItem item1 = new TableItem(_table, SWT.NONE);
 						item1.setText(finalFields);
@@ -395,6 +372,11 @@ public class SensorMonitor extends ViewPart
 	private String f(WorldDistance val)
 	{
 		return GeneralFormat.formatOneDecimalPlace(val.getValueIn(WorldDistance.METRES));
+	}
+
+	public void setKeepMonitoring(boolean val)
+	{
+		_followSelection.setChecked(val);
 	}
 
 	private String f(double val)
