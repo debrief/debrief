@@ -37,6 +37,10 @@ public class DetectionList extends Vector implements Collection
   //  private Vector _list;
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the time period we cover
    */
   private TimePeriod _thePeriod;
@@ -162,7 +166,7 @@ public class DetectionList extends Vector implements Collection
     DetectionEvent res = null;
 
     // create the list to store the items
-    SortedSet ss = new TreeSet(new Comparator()
+    SortedSet<DetectionEvent> ss = new TreeSet<DetectionEvent>(new Comparator()
     {
       public int compare(Object o1, Object o2)
       {
@@ -195,7 +199,7 @@ public class DetectionList extends Vector implements Collection
     }
 
     // get the first (nearest) one
-    res = (DetectionEvent) ss.first();
+    res = ss.first();
 
     // and return it.
     return res;
