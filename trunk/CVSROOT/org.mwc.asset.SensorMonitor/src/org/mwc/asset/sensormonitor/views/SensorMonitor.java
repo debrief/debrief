@@ -200,7 +200,7 @@ public class SensorMonitor extends ViewPart
 				super.run();
 
 				// ok, open a new view
-				CorePlugin.openView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
+				CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
 						IWorkbenchPage.VIEW_VISIBLE);
 			}
 

@@ -43,7 +43,7 @@ public class Activator extends AbstractUIPlugin {
 			{
 				// open a view, based on this sensor
 				// ok, open a new view
-				IViewPart part = CorePlugin.openView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
+				IViewPart part = CorePlugin.openSecondaryView(ASSETPlugin.SENSOR_MONITOR, "" + System.currentTimeMillis(),
 						IWorkbenchPage.VIEW_VISIBLE);
 				
 				SensorMonitor sm = (SensorMonitor) part;
