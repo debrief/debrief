@@ -44,7 +44,7 @@ public abstract class LookupSensor extends CoreSensor
 	/**
 	 * our record of past detections
 	 */
-	protected Hashtable _pastContacts;
+	protected Hashtable<ParticipantType, LastTargetContact> _pastContacts;
 
 	/**
 	 * variability in detection range
@@ -115,7 +115,7 @@ public abstract class LookupSensor extends CoreSensor
 		this.IRF = IRF;
 		this.ITP = ITP;
 
-		_pastContacts = new Hashtable();
+		_pastContacts = new Hashtable<ParticipantType, LastTargetContact>();
 	}
 
 	// what is the detection strength for this target?
@@ -132,7 +132,7 @@ public abstract class LookupSensor extends CoreSensor
 		// //////////////////////////////////////////////////////////
 
 		// have we already detected this?
-		LastTargetContact oldParameters = (LastTargetContact) _pastContacts.get(target);
+		LastTargetContact oldParameters = _pastContacts.get(target);
 
 		// //////////////////////////////////////////////////////////
 		// DETERMINE THE CURRENT SET OF LOOKUP PARAMETERS
@@ -316,7 +316,7 @@ public abstract class LookupSensor extends CoreSensor
 				if (_pSupport.hasListeners(SENSOR_COMPONENT_EVENT))
 				{
 					// create the event
-					LookupSensorComponentsEvent sev = new LookupSensorComponentsEvent(newParameters
+					LookupSensorComponentsEvent sev = new LookupSensorComponentsEvent(time, newParameters
 							.getDetectionState(), newParameters.getRI(), newParameters.getRP(),
 							actualRange, target.getName());
 
@@ -560,7 +560,7 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * store the list of double values indexed by string
 		 */
-		private HashMap _myTable;
+		private HashMap<String, Double> _myTable;
 
 		/**
 		 * constructor
@@ -577,7 +577,7 @@ public abstract class LookupSensor extends CoreSensor
 				System.err.println("STRING LOOKUP PARAMETERS OF UNEQUAL LENGTH!!!");
 			}
 
-			_myTable = new HashMap();
+			_myTable = new HashMap<String, Double>();
 			for (int i = 0; i < strs.length; i++)
 			{
 				String str = strs[i];
@@ -591,7 +591,7 @@ public abstract class LookupSensor extends CoreSensor
 		 * 
 		 * @return
 		 */
-		public Collection getIndices()
+		public Collection<String> getIndices()
 		{
 			return _myTable.keySet();
 		}
@@ -636,13 +636,13 @@ public abstract class LookupSensor extends CoreSensor
 		public Double find(String index, Double defaultValue)
 		{
 			Double res = null;
-			Iterator iterator = _myTable.keySet().iterator();
+			Iterator<String> iterator = _myTable.keySet().iterator();
 			while (iterator.hasNext() && res == null)
 			{
-				String s = (String) iterator.next();
+				String s = iterator.next();
 				if (s.equals(index))
 				{
-					res = (Double) _myTable.get(index);
+					res = _myTable.get(index);
 					break;
 				}
 
@@ -682,7 +682,7 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * store the list of double values indexed by an integer
 		 */
-		private HashMap _myTable;
+		private HashMap<Integer, Double> _myTable;
 
 		/**
 		 * constructor
@@ -713,7 +713,7 @@ public abstract class LookupSensor extends CoreSensor
 		 */
 		public IntegerLookup()
 		{
-			_myTable = new HashMap();
+			_myTable = new HashMap<Integer, Double>();
 		}
 
 		public void add(int index, double value)
@@ -721,7 +721,7 @@ public abstract class LookupSensor extends CoreSensor
 			_myTable.put(new Integer(index), new Double(value));
 		}
 
-		public Collection indices()
+		public Collection<Integer> indices()
 		{
 			return _myTable.keySet();
 		}
@@ -738,13 +738,13 @@ public abstract class LookupSensor extends CoreSensor
 			Integer indexVal = new Integer(index);
 
 			Double res = null;
-			Iterator iterator = _myTable.keySet().iterator();
+			Iterator<Integer> iterator = _myTable.keySet().iterator();
 			while (iterator.hasNext() && res == null)
 			{
-				Integer s = (Integer) iterator.next();
+				Integer s = iterator.next();
 				if (s.equals(indexVal))
 				{
-					res = (Double) _myTable.get(indexVal);
+					res = _myTable.get(indexVal);
 					break;
 				}
 			}
@@ -824,7 +824,7 @@ public abstract class LookupSensor extends CoreSensor
 				if (thisList._myType == type)
 				{
 					// cool, here we are, get the correct type
-					Double val = (Double) thisList._myValues.get(index);
+					Double val = thisList._myValues.get(index);
 					if (val != null)
 						res = val;
 					break;
@@ -852,9 +852,9 @@ public abstract class LookupSensor extends CoreSensor
 
 		}
 		
-		public Collection getNames()
+		public Collection<String> getNames()
 		{
-			Vector res = new Vector(0,1);
+			Vector<String> res = new Vector<String>(0,1);
 			for (Iterator iterator = _datums.iterator(); iterator.hasNext();)
 			{
 				// get the next series
@@ -898,17 +898,17 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * the name of the target we're looking at
 		 */
-		private String _tgtName;
+		final private String _tgtName;
 
 		/**
 		 * the current detection state (string)
 		 */
-		private String _stateString;
+		final private String _stateString;
 
 		/**
 		 * the current detection state
 		 */
-		private int _state;
+		final private int _state;
 
 		/**
 		 * a utility class to convert from state to text
@@ -918,11 +918,16 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * the ranges we want
 		 */
-		private WorldDistance _RI;
+		final private WorldDistance _RI;
 
-		private WorldDistance _RP;
+		final private WorldDistance _RP;
 
-		private WorldDistance _actual;
+		final private WorldDistance _actual;
+
+		/** the time at which this was recorded
+		 * 
+		 */
+		final private long _time;
 
 		// //////////////////////////////////////////////////////////
 		// constructor
@@ -931,9 +936,10 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * constructor
 		 */
-		public LookupSensorComponentsEvent(int state, WorldDistance RI, WorldDistance RP,
+		public LookupSensorComponentsEvent(long time, int state, WorldDistance RI, WorldDistance RP,
 				WorldDistance actual, String tgtName)
 		{
+			_time = time;
 			_tgtName = tgtName;
 			converter.setIndex(state);
 			_stateString = converter.getAsText();
@@ -946,6 +952,11 @@ public abstract class LookupSensor extends CoreSensor
 		public String getTgtName()
 		{
 			return _tgtName;
+		}
+		
+		public long getTime()
+		{
+			return _time;
 		}
 
 		public String getStateString()
@@ -995,7 +1006,7 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * our list of properties
 		 */
-		private Vector _myList;
+		private Vector<Number> _myList;
 
 		/**
 		 * the instantaneous range calculated
@@ -1023,7 +1034,7 @@ public abstract class LookupSensor extends CoreSensor
 		// //////////////////////////////////////////////////////////
 		public LastTargetContact()
 		{
-			this._myList = new Vector(1, 1);
+			this._myList = new Vector<Number>(1, 1);
 		}
 
 		/**
@@ -1157,7 +1168,7 @@ public abstract class LookupSensor extends CoreSensor
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public static Vector myParams = new Vector();
+		public static Vector<Integer> myParams = new Vector<Integer>();
 
 		double _rp_m;
 
@@ -1186,7 +1197,10 @@ public abstract class LookupSensor extends CoreSensor
 		 * 
 		 * <pre>
 		 *  $Log$
-		 *  Revision 1.5  2006-09-21 15:31:25  Ian.Mayo
+		 *  Revision 1.6  2006-09-22 10:32:05  Ian.Mayo
+		 *  Provide the time with the sensor components
+		 *
+		 *  Revision 1.5  2006/09/21 15:31:25  Ian.Mayo
 		 *  ease debugging
 		 *
 		 *  Revision 1.4  2006/09/21 12:20:43  Ian.Mayo
@@ -1575,7 +1589,7 @@ public abstract class LookupSensor extends CoreSensor
 
 			EnvironmentType env = new SimpleEnvironment(1, 1, 1);
 
-			Vector newParams = new Vector();
+			Vector<Integer> newParams = new Vector<Integer>();
 			newParams.add(new Integer(12));
 			TestSensor.myParams = newParams;
 
@@ -1599,7 +1613,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// and move closer still!!
 			statB.setLocation(SupportTesting.createLocation(800, 800));
@@ -1607,7 +1621,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// do another check for when we haven't moved forward enough
 			time += 100;
@@ -1625,7 +1639,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1633,7 +1647,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// time should be elapsed by now!!!
 			statB.setLocation(SupportTesting.createLocation(800, 800));
@@ -1642,7 +1656,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1650,7 +1664,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1658,7 +1672,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1666,7 +1680,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1674,7 +1688,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1682,7 +1696,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(500, 500));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1690,7 +1704,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertEquals("detections returned", 1, res.size());
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(500, 500));
 			ts.detects(env, res, alpha, scenario, time);
@@ -1698,7 +1712,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertEquals("detections returned", 1, res.size());
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.IDENTIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// INCREASE THE RANGE AGAIN!
 			statB.setLocation(SupportTesting.createLocation(900, 900));
@@ -1707,7 +1721,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertEquals("detections returned", 1, res.size());
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.IDENTIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// AND AGAIN
 			statB.setLocation(SupportTesting.createLocation(1200, 1200));
@@ -1716,7 +1730,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertEquals("detections returned", 1, res.size());
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.IDENTIFIED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// AND YET AGAIN (out of range!)
 			statB.setLocation(SupportTesting.createLocation(5200, 5200));
@@ -1731,7 +1745,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertEquals("detections returned", 1, res.size());
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 		}
 
@@ -1772,7 +1786,7 @@ public abstract class LookupSensor extends CoreSensor
 
 			EnvironmentType env = new SimpleEnvironment(1, 1, 1);
 
-			Vector newParams = new Vector();
+			Vector<Integer> newParams = new Vector<Integer>();
 			newParams.add(new Integer(12));
 			TestSensor.myParams = newParams;
 
@@ -1788,7 +1802,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 
 			// and move closer still!!
 			statB.setLocation(SupportTesting.createLocation(800, 800));
@@ -1798,9 +1812,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			statC.setLocation(SupportTesting.createLocation(5800, 5800));
@@ -1809,7 +1823,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			statC.setLocation(SupportTesting.createLocation(500, 500));
@@ -1818,9 +1832,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			statC.setLocation(SupportTesting.createLocation(500, 500));
@@ -1829,9 +1843,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			statC.setLocation(SupportTesting.createLocation(500, 500));
@@ -1840,9 +1854,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			statC.setLocation(SupportTesting.createLocation(500, 500));
@@ -1851,9 +1865,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(4800, 4800));
 			statC.setLocation(SupportTesting.createLocation(500, 500));
@@ -1862,7 +1876,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(400, 400));
 			statC.setLocation(SupportTesting.createLocation(200, 200));
@@ -1871,9 +1885,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.CLASSIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(400, 400));
 			statC.setLocation(SupportTesting.createLocation(200, 200));
@@ -1882,9 +1896,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.IDENTIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(2400, 2400));
 			statC.setLocation(SupportTesting.createLocation(2200, 2200));
@@ -1893,9 +1907,9 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("two detections produced", 2, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(test2bravo)).getDetectionState());
+					ts._pastContacts.get(test2bravo).getDetectionState());
 			assertEquals("check detected state", DetectionEvent.IDENTIFIED,
-					((LastTargetContact) ts._pastContacts.get(test2charlie)).getDetectionState());
+					ts._pastContacts.get(test2charlie).getDetectionState());
 
 		}
 
@@ -2029,7 +2043,7 @@ public abstract class LookupSensor extends CoreSensor
 
 			EnvironmentType env = new SimpleEnvironment(1, 1, 1);
 
-			Vector newParams = new Vector();
+			Vector<Integer> newParams = new Vector<Integer>();
 			newParams.add(new Integer(12));
 			TestSensor.myParams = newParams;
 
@@ -2045,7 +2059,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// and move closer still!!
 			statB.setLocation(SupportTesting.createLocation(800, 800));
@@ -2054,7 +2068,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			statB.setLocation(SupportTesting.createLocation(800, 800));
 			ts.detects(env, res, alpha, scenario, time);
@@ -2062,7 +2076,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertNotNull("detections returned", res);
 			assertEquals("only one detection produced", 1, res.size());
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 			// change the detection parameters
 			newParams.add(new Integer(32));
@@ -2070,12 +2084,12 @@ public abstract class LookupSensor extends CoreSensor
 			ts._ri_m = 3300;
 
 			// find out what the current RI is.
-			LastTargetContact tc = (LastTargetContact) ts._pastContacts.get(bravo);
+			LastTargetContact tc = ts._pastContacts.get(bravo);
 			WorldDistance lastRI = tc.getRI();
 			ts.detects(env, res, alpha, scenario, time);
 			time += 1000;
 			// check that the RI has changed
-			tc = (LastTargetContact) ts._pastContacts.get(bravo);
+			tc = ts._pastContacts.get(bravo);
 			WorldDistance newRI = tc.getRI();
 			;
 			boolean isSame = newRI.getValueIn(WorldDistance.METRES) == lastRI
@@ -2083,7 +2097,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertTrue("RI has changed", !isSame);
 			assertNotNull("detections returned", res);
 			assertEquals("check detected state", DetectionEvent.DETECTED,
-					((LastTargetContact) ts._pastContacts.get(bravo)).getDetectionState());
+					ts._pastContacts.get(bravo).getDetectionState());
 
 		}
 
@@ -2145,9 +2159,9 @@ public abstract class LookupSensor extends CoreSensor
 	{
 		final private  String _myType;
 
-		final private Vector _myValues;
+		final private Vector<Double> _myValues;
 		
-		public NamedList(String type, Vector values)
+		public NamedList(String type, Vector<Double> values)
 		{
 			_myType = type;
 			_myValues = values;
@@ -2156,7 +2170,7 @@ public abstract class LookupSensor extends CoreSensor
 		public NamedList(String type, double[] vals)
 		{
 			_myType = type;
-			_myValues = new Vector(0,1);
+			_myValues = new Vector<Double>(0,1);
 			for (int i = 0; i < vals.length; i++)
 			{
 				Double thisD = new Double(vals[i]);
@@ -2167,7 +2181,7 @@ public abstract class LookupSensor extends CoreSensor
 		{
 			return _myType;
 		}
-		public Collection getValues()
+		public Collection<Double> getValues()
 		{
 			return _myValues;
 		}

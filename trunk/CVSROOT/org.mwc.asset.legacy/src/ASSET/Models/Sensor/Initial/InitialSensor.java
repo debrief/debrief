@@ -134,7 +134,7 @@ abstract public class InitialSensor extends CoreSensor
       {
         // create the event
         InitialSensorComponentsEvent sev =
-          new InitialSensorComponentsEvent(loss, bkNoise, osNoise, tgtNoise, rd, di, se, target.getName());
+          new InitialSensorComponentsEvent(time, loss, bkNoise, osNoise, tgtNoise, rd, di, se, target.getName());
 
         // and fire it!
         _pSupport.firePropertyChange(SENSOR_COMPONENT_EVENT,
@@ -223,19 +223,20 @@ abstract public class InitialSensor extends CoreSensor
     // member objects
     ////////////////////////////////////////////////////
     public double _loss;
-    private double _bkNoise;
-    private double _osNoise;
-    private double _tgtNoise;
-    private double _rd;
-    private double _di;
-    private double _se;
-    private String _tgtName;
+    final private double _bkNoise;
+    final private double _osNoise;
+    final private double _tgtNoise;
+    final private double _rd;
+    final private double _di;
+    final private double _se;
+    final private String _tgtName;
+    final private long _time;
 
 
     /**
      * constructor
      */
-    public InitialSensorComponentsEvent(double loss, double bkNoise,
+    public InitialSensorComponentsEvent(long time, double loss, double bkNoise,
                                         double osNoise, double tgtNoise,
                                         double rd, double di, double se, String tgtName)
     {
@@ -247,6 +248,7 @@ abstract public class InitialSensor extends CoreSensor
       _di = di;
       _tgtName = tgtName;
       _se = se;
+      _time = time;
     }
 
     public double getSE()
@@ -254,6 +256,11 @@ abstract public class InitialSensor extends CoreSensor
       return _se;
     }
 
+    public long getTime()
+    {
+    	return _time;
+    }
+    
     public String getTgtName()
     {
       return _tgtName;
