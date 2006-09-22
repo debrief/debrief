@@ -256,6 +256,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			}
 
 		};
+		_editProperties.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/properties.gif"));
 	}
 
 	private Vector _selectionListeners;
