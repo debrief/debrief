@@ -41,9 +41,12 @@ public class PartMonitor implements IPartListener
 	public final static String OPENED = "OPENED";
 
 	private HashMap _myEvents = null;
+	
+	private final IPartService _myPartService;
 
 	public PartMonitor(IPartService partService)
 	{
+		_myPartService = partService;
 		partService.addPartListener(this);
 	}
 
@@ -110,6 +113,14 @@ public class PartMonitor implements IPartListener
 			partActivated(currentPage.getActiveEditor());
 	}
 	
+	public void ditch()
+	{
+		// stop listening for part changes
+		_myPartService.removePartListener(this);
+		
+		// and clear what we're listening to
+		_myEvents.clear();
+	}
 	
 	public void addPartListener(Class Subject, String event, PartMonitor.ICallback callback)
 	{
