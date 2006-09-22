@@ -6,6 +6,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
@@ -89,8 +90,7 @@ public class VesselMonitor extends ViewPart
 		_trackParticipant.setText("Sync");
 		_trackParticipant.setChecked(true);
 		_trackParticipant.setToolTipText("Follow selected participant");
-		_trackParticipant.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
-				.getImageDescriptor(ISharedImages.IMG_OBJS_INFO_TSK));
+		_trackParticipant.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
 
 	}
 
