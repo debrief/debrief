@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.26  2006-05-31 13:40:17  Ian.Mayo
+// Revision 1.27  2006-09-22 13:25:12  Ian.Mayo
+// Don't bother reporting how long it took to do screen update
+//
+// Revision 1.26  2006/05/31 13:40:17  Ian.Mayo
 // Minor tidying
 //
 // Revision 1.25  2006/05/17 08:34:30  Ian.Mayo
@@ -303,7 +306,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		// how long was it?
 		long tNow = System.currentTimeMillis();
 		long tDelta = tNow - tThen;
-		CorePlugin.logError(Status.INFO, "Canvas update took:" + tDelta + " millis", null);
+//		CorePlugin.logError(Status.INFO, "Canvas update took:" + tDelta + " millis", null);
 
 	}
 
