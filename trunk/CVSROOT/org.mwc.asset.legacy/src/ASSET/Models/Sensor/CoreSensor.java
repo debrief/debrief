@@ -526,7 +526,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 	// //////////////////////////////////////////////////
 	// the editor object
 	// //////////////////////////////////////////////////
-	static public class BaseSensorInfo extends MWC.GUI.Editable.EditorType
+	public class BaseSensorInfo extends MWC.GUI.Editable.EditorType
 	{
 		/**
 		 * @param data
