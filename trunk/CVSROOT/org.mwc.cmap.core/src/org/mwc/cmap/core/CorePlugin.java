@@ -410,23 +410,42 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 	}
 
-	public static void openView(String viewName)
+	public static IViewPart openView(String viewName)
 	{
-
+		IViewPart res = null;
 		try
 		{
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
 			// right, open the view.
-			page.showView(viewName);
+			res = page.showView(viewName);
 		}
 		catch (PartInitException e)
 		{
 			e.printStackTrace();
 			logError(Status.ERROR, "Failed to open " + viewName + "view", e);
-
 		}
+		return res;
+	}
+
+	public static IViewPart openSecondaryView(String viewName, String secondaryId, int state)
+	{
+		IViewPart res = null;
+		try
+		{
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = win.getActivePage();
+			// right, open the view.
+			res = page.showView(viewName, secondaryId, state);
+		}
+		catch (PartInitException e)
+		{
+			e.printStackTrace();
+			logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
+		}
+		return res;
 	}
 
 }
