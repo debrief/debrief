@@ -450,5 +450,35 @@ public class EditableWrapper implements IPropertySource
 		}
 
 	}
+	
+	public static class OrderedEditableWrapper extends EditableWrapper implements Comparable
+	{
+		private final int _myIndex;
+		
+		public OrderedEditableWrapper(Editable plottable, EditableWrapper parent, Layers theLayers, int myIndex)
+		{
+			super(plottable, parent, theLayers);
+			_myIndex  = myIndex;
+		}
 
+		public int compareTo(Object o)
+		{
+			OrderedEditableWrapper other = (OrderedEditableWrapper) o;
+			int hisIndex = other._myIndex;
+			int res;
+			
+			if(_myIndex < hisIndex)
+				res = -1;
+			else if(_myIndex > hisIndex)
+				res = 1;
+			else
+				res = 0;
+			
+			return res;
+		}
+		
+		
+		
+	}
+	
 }
