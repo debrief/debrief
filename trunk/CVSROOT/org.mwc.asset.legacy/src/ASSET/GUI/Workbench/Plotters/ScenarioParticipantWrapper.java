@@ -148,7 +148,12 @@ public class ScenarioParticipantWrapper implements
 	{
 		return _myPart.getStatus().getLocation();
 	}
-
+	
+	public boolean hasOrderedChildren()
+	{
+		return false;
+	}
+	
 	public java.awt.Color getColor()
 	{
 		if (_myPart.getCategory().getForce().equals(ASSET.Participants.Category.Force.BLUE))

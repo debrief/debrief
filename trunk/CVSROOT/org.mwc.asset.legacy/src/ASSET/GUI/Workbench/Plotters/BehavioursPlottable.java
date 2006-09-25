@@ -5,8 +5,9 @@ import java.util.*;
 import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.BehaviourList;
 
-public class BehavioursPlottable extends BasePlottable
+public class BehavioursPlottable extends BasePlottable 
 {
+	
 	/**
 	 * 
 	 */
@@ -15,6 +16,11 @@ public class BehavioursPlottable extends BasePlottable
 	public BehavioursPlottable(DecisionType decisionModel, ScenarioLayer parent)
 	{
 		super(decisionModel, parent);
+	}
+	
+	public boolean hasOrderedChildren()
+	{
+		return true;
 	}
 
 	public DecisionType getDecisionModel()

@@ -24,6 +24,11 @@ public class BasePlottable implements Plottable, Layer
 		_parentLayer = parentLayer;
 	}	
 	
+	public boolean hasOrderedChildren()
+	{
+		return false;
+	}
+	
 	public String toString()
 	{
 		return getName();
