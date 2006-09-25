@@ -91,16 +91,37 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 			EditableWrapper pl = (EditableWrapper) parent;
 			if (pl.hasChildren())
 			{
+				Vector list = new Vector(0, 1);
 
 				Layer thisL = (Layer) pl.getEditable();
-				Vector list = new Vector(0, 1);
-				Enumeration numer = thisL.elements();
-				while (numer.hasMoreElements())
+				
+				// right, do they have their own order?
+				if(thisL.hasOrderedChildren())
 				{
-					Editable thisP = (Editable) numer.nextElement();
-					EditableWrapper pw = new EditableWrapper(thisP, pl, pl.getLayers());
-					list.add(pw);
+					int index = 0;
+					Enumeration numer = thisL.elements();
+					while (numer.hasMoreElements())
+					{
+						Editable thisP = (Editable) numer.nextElement();
+						EditableWrapper pw = new EditableWrapper.OrderedEditableWrapper(thisP, pl, pl.getLayers(), index);
+						list.add(pw);
+						index++;
+					}
 				}
+				else
+				{
+					Enumeration numer = thisL.elements();
+					if(numer != null)
+					{
+						while (numer.hasMoreElements())
+						{
+							Editable thisP = (Editable) numer.nextElement();
+							EditableWrapper pw = new EditableWrapper(thisP, pl, pl.getLayers());
+							list.add(pw);
+						}
+					}
+				}
+				
 				res = list.toArray();
 			}
 		}

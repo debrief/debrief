@@ -244,20 +244,31 @@ public class LayerManagerView extends ViewPart
 			int res = 0;
 			EditableWrapper p1 = (EditableWrapper) e1;
 			EditableWrapper p2 = (EditableWrapper) e2;
-			if ((p1.getEditable() instanceof Comparable)
-					&& (p2.getEditable() instanceof Comparable))
+
+			// just see if we have sorted editables
+			if ((p1 instanceof Comparable) && (p2 instanceof Comparable))
 			{
-				Comparable w1 = (Comparable) p1.getEditable();
-				Comparable w2 = (Comparable) p2.getEditable();
+				Comparable w1 = (Comparable) p1;
+				Comparable w2 = (Comparable) p2;
 				res = w1.compareTo(w2);
 			}
 			else
 			{
-				String p1Name = p1.getEditable().getName();
-				String p2Name = p2.getEditable().getName();
-				res = p1Name.compareTo(p2Name);
-				// res = super.compare(viewer, p1.getEditable().getName(),
-				// p2.getEditable().getName());
+				if ((p1.getEditable() instanceof Comparable)
+						&& (p2.getEditable() instanceof Comparable))
+				{
+					Comparable w1 = (Comparable) p1.getEditable();
+					Comparable w2 = (Comparable) p2.getEditable();
+					res = w1.compareTo(w2);
+				}
+				else
+				{
+					String p1Name = p1.getEditable().getName();
+					String p2Name = p2.getEditable().getName();
+					res = p1Name.compareTo(p2Name);
+					// res = super.compare(viewer, p1.getEditable().getName(),
+					// p2.getEditable().getName());
+				}
 			}
 
 			return res;
