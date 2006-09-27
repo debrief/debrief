@@ -65,10 +65,10 @@
 				<!-- first the plugins -->
 				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.4" />
 				<!-- now the features -->
-				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.12" />
-				<available file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.5" />
-				<available file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.1" />
-				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.5" />
+				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.13" />
+				<available file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.6" />
+				<available file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.2" />
+				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.6" />
 			</and>
 		</condition>
 
