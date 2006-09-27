@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.core"
    name="Debrief Core"
-   version="1.0.9"
+   version="1.0.10"
    provider-name="MWC"
    class="org.mwc.debrief.core.DebriefPlugin">
 
@@ -352,11 +352,17 @@
               name="aboutImage"
               value="icons/DebriefNGlogo.gif"/>
         <property
-              name="aboutText"
-              value="Welcome to Debrief NG, from the Maritime Warfare Centre"/>
-        <property
               name="windowImages"
               value="icons/icon.gif"/>
+        <property
+              name="startupForegroundColor"
+              value="000000"/>
+        <property
+              name="startupProgressRect"
+              value="0,0,0,0"/>
+        <property
+              name="startupMessageRect"
+              value="0,0,0,0"/>
      </product>
      </extension>
 

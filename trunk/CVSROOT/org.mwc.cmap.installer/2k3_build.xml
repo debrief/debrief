@@ -449,8 +449,9 @@ compile_util, compile_debrief, compile_help">
     <junit fork="true" printsummary="yes" haltonfailure="false" haltonerror="false"
       failureProperty="test_failed" dir="build/tests">
       <classpath>
-        <pathelement path="${buildDir}/Util"/>
-        <pathelement path="${buildDir}/Debrief"/>
+        <pathelement path="d:/dev/eclipse2/org.mwc.cmap.legacy"/>
+      	<!--        <pathelement path="${buildDir}/Util"/> -->
+<!--        <pathelement path="${buildDir}/Debrief"/> -->
         <!--       <pathelement location="${distDir}/lib/jdom.jar"/> -->
         <pathelement location="${libDir}/openmap.jar"/>
         <pathelement location="${libDir}/xml-apis.jar"/>

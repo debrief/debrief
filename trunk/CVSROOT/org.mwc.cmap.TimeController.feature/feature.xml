@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.3">
+      version="1.0.5">
 
    <description>
-      [1.0.3] Preps for RC5
+      [1.0.5] Preps for final release
+[1.0.3] Preps for RC5
 [1.0.2] Remove junit dependency
 CMAP Time Controller
 This view controls the time for temporal datasets.  Buttons are
@@ -523,6 +524,10 @@ necessary.  Here is a sample; alter the names:
 That&apos;s all there is to it!
    </license>
 
+   <url>
+      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+   </url>
+
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
@@ -539,8 +544,5 @@ That&apos;s all there is to it!
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-   <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
-   </url>
 
 </feature>
