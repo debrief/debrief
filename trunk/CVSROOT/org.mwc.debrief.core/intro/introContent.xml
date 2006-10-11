@@ -103,10 +103,10 @@ OVERVIEW
 				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/reference/history.html&amp;embedTarget=page-content" id="history">
 					<text>Where Debrief came from</text>
 				</link>
-				<link label="Getting data into Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="data">
+				<link label="Getting data into Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/import_range_data.html&amp;embedTarget=page-content" id="data">
 					<text>Find out how to get your data into Debrief</text>
 				</link>
-				<link label="Getting support for Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/concepts/concepts-26.htm&amp;embedTarget=page-content" id="support">
+				<link label="Getting support for Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content" id="support">
 					<text>What to do if you have any problems with Debrief</text>
 				</link>
 			</group>
@@ -130,7 +130,7 @@ TUTORIALS
 				<link label="Generating a project" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.generate_project" id="generate_project">
 					<text>Learn how to generate a folder to store you work (together with links to existing work)</text>
 				</link>
-				<link label="Getting your data into Debrief" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.finding_your_data" id="existing_data">
+				<link label="Getting your data into Debrief" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.existing_data" id="existing_data">
 					<text>Learn how to inform Debrief where your information existing plots (and data-files) are stored</text>
 				</link>
 				<link label="Creating a new plot" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.create_plot" id="create_new_plot">
@@ -141,14 +141,14 @@ TUTORIALS
 				</link>
 			</group>
 			<group id="overview-links" label="Solving Problems">
-				<link label="Viewing the error log" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.create_plot" id="view_log">
+				<link label="Viewing the error log" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/fault_diagnosis.html" id="view_log">
 					<text>Learn how to find and open the Debrief error log</text>
 				</link>
-				<link label="Reporting a bug" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.open_plot" id="report_bug">
+				<link label="Reporting a bug" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content" id="report_bug">
 					<text>Learn how to report Debrief-relatedproblems</text>
 				</link>
-			</group>
-		</group>
+			</group>  
+		</group>   
 	</page>
 	<!-- 
 SAMPLES
@@ -179,8 +179,8 @@ WHAT's NEW
 				<link label="New features" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/whatsNew/platform_whatsnew.html" id="platform-noteworthy" style-id="noteworthy-link">
 					<text>Find out about the new features in this release</text>
 				</link>
-				<link label="Change log" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/whatsNew/platform_whatsnew.html" id="platform-noteworthy" style-id="noteworthy-link">
-					<text>Read the nitty-gritty of what files have changed, &amp; why</text>
+					<link label="Change log" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help//html/history/statcvs/short/index.html" id="platform-noteworthy" style-id="noteworthy-link">
+					<text>Read the nitty-gritty of what files have changed, and why</text>
 				</link>
 			</group>
 			<group id="news-links" label="General">
@@ -189,7 +189,7 @@ WHAT's NEW
 					<text>Get the latest Debrief updates online</text>
 				</link>
 				<link label="Debrief community" url="http://www.debrief.info" id="eclipse">
-					<text>Join the community, read articles and news at www.debrief.info</text>
+					<text>Join the community, read articles and news at www.debrief.info (requires Internet connection)</text>
 				</link>
 			</group>
 		</group>
