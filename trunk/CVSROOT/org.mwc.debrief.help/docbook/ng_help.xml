@@ -169,6 +169,79 @@ included in the section entitled "GNU Free Documentation License".
 </itemizedlist> </para> 
 </sect1> 
 <sect1 id="debrief_history"> 
+<title>What's new?</title>
+<formalpara>
+<title>Adoption of Eclipse framework</title>
+<para>2006 has seen a change in direction for the delivery of Debrief.   Instead of being a standalone application build from scratch (albeit with a couple of third-party components), Debrief NG has been rehosted into an existing framework; <ulink url="www.eclipse.org">Eclipse</ulink>.  Adoption of Eclipse has bought the following benefits:<itemizedlist><listitem><para>Functionally rich user interface.  Eclipse has provided a wealth of trees, tables and slider controls to make your analysis job easier. You are now able to drag &amp; drop any window anywhere on the screen.  </para>
+</listitem>
+<listitem>
+<para>Persistent window layout.  Your modified window layout is remembered when you re-open Debrief NG.</para>
+</listitem>
+<listitem>
+<para>Online updating.  If you're connected to a suitable network (MWC or the Internet) Eclipse is able to download &amp; install it's own updates. Agencies with large numbers of Eclipse users can provide their own internal update site for Eclipse installations to download updates from.</para>
+</listitem>
+<listitem>
+<para>Extensive guidance.  Since Debrief sits "on top" of Eclipse, the broad spectrum of Eclipse online &amp; printed guidance is available.  You rely less on Debrief-specific guidance to resolve your problems.  Don't worry, all of the guidance is presented together and covered by a single search engine. </para>
+</listitem>
+<listitem>
+<para>Modular infrastructure.  It is now easier to create Debrief plug-ins, and applications based on Debrief. Developers no longer have to learn the full depth and breadth of Debrief prior to adding new features.  They just need to learn about the interfaces presented by Debrief, and how the Eclipse infrastructure works.  Eclipse development is documented online and in many off-the-shelf books, and it has a strong support community  </para>
+</listitem>
+</itemizedlist></para>
+</formalpara>
+<formalpara>
+<title>Editing multiple items</title>
+<para>It is now easy to edit multiple items at once.  As you select  them on the layer manager, their common properties are shown in the properties window.  Then just edit away...</para>
+</formalpara>
+<formalpara>
+<title>Polished user interface</title>
+<para>All of the user interface  have received a refresh. The layer manager includes contextual icons giving an extra indication of what's in each layer.updated_time_controller.jpg<figure float="0">
+              <title>Contextual icons</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/updated_layer_mgr.jpg"/>
+                  </imageobject>
+                  
+                </mediaobject>
+              </screenshot>
+            </figure>The time-controller has also received some TLC, it is now tidier, more capable, and will act as a firm foundation for many more time-related operations in the future.<figure float="0">
+              <title>Improved time controller</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/updated_time_controller.jpg"/>
+                  </imageobject>
+                  
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+</formalpara>
+<formalpara>
+<title>Bookmarks</title>
+<para>You can now bookmark significant events within an exercise.  The list of bookmarks across all of your Debrief plots are managed from the Bookmarks dialog, and generated from the  drop-down menu of the improved Time Controller.<figure float="0">
+              <title>Adding a bookmark</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/adding_bookmark.jpg"/>
+                  </imageobject>
+                  
+                </mediaobject>
+              </screenshot>
+            </figure><figure float="0">
+              <title>Managing bookmarks</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/bookmarks.jpg"/>
+                  </imageobject>
+                  
+                </mediaobject>
+              </screenshot>
+            </figure></para>
+</formalpara>
+</sect1>
+<sect1>
 <title>History</title> 
 <sect2> 
 <title>Pre-history</title> 
@@ -1110,7 +1183,7 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
               <para>The Track-shifting implementation was originally provided by Mr David Gong at
                 <link linkend="nuwc_address">NUWC</link>.
               </para> 
-</note> </para>
+</note> </para> 
 <para>Debrief NG provides two modes of track shifting - moving individual points in a track to correct a potentially erroneous data point, or moving whole tracks to overcome navigational system inaccuracies - such as during a plot-lock or tie-in. See the two modes above in <xref linkend="toggle_buttons"/>.</para> 
 <para>A
             Stacked Dots view is used to show bearing-errors when the track-shift is being conducted to line up one or two sets of
@@ -1916,7 +1989,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <para>I know, I know, it's the size of the rectangle used to plot the highlight (measured in pixels)</para> 
 </listitem> 
 </varlistentry> 
-</variablelist>
+</variablelist> 
 <figure float="0"> 
 <title>Example of a normal trail</title> 
 <screenshot> 
@@ -2623,9 +2696,9 @@ data is not present, a gap is inserted into the data-line.
 <title>Handling Buoyfields</title> 
 <sect1> 
 <title>Introduction to buoyfields</title> 
-<note>
-<para>In the first release of Debrief NG, Buoyfields have not been implemented. It remains an intention to provide this facility.</para>
-</note>
+<note> 
+<para>In the first release of Debrief NG, Buoyfields have not been implemented. It remains an intention to provide this facility.</para> 
+</note> 
 <sect2> 
 <title>Buoyfields</title> 
 <para>
@@ -2925,9 +2998,9 @@ data is not present, a gap is inserted into the data-line.
 <para>By switching to Snail mode and reducing the reducing the Trail Length to zero, a GOP-type plot can be shown.
             </para> 
 </tip> 
-<note>
-<para>Unfortunately Symbol plotting mode is not provided in the initial release of Debrief NG</para>
-</note>
+<note> 
+<para>Unfortunately Symbol plotting mode is not provided in the initial release of Debrief NG</para> 
+</note> 
 </sect2> 
 </sect1> 
 </chapter> 
@@ -4195,7 +4268,7 @@ permanent file archival, full backups, and total web-based administration.
 <para>Current error log contents</para> 
 </listitem> 
 </itemizedlist></para> 
-<para>In addition  to these configuration details is a button to <guibutton>View Error Log</guibutton>.  The Error Log is a continuous stream of comments recorded by Debrief - typically comments that are not of value to a typical user under normal usage.  The log itself is called <filename>.log</filename> and is located in the <filename class="directory">Workspace</filename> folder.  </para> 
+<para>In addition  to these configuration details is a button to <guibutton>View Error Log</guibutton>.  The Error Log is a continuous stream of comments recorded by Debrief - typically comments that are not of value to a typical user under normal usage.  The log itself is called <filename>.log</filename> and is located in the <filename class="directory">workspace/metadata</filename> folder within your Workspace (initially, this is within your Debrief NG intallation directory).  </para> 
 <para>Th error log may be examined for hints to the problem occurring.  The error trace may be viewed in a text editor, and may be forwarded back to the
             <link linkend="project_manager">Project Manager</link> via post/e-mail/fax as applicable.  The file does not contain any details of the data being edited, but the file may still be inspected before transmission
           </para> 
