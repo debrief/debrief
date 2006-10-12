@@ -20,7 +20,7 @@
             extensions="xml,rep"
             icon="icons/debrief_icon.gif"
             class="org.mwc.debrief.core.editors.PlotEditor"
-            id="org.mwc.debrief.core.editors.PlotEditor">
+            id="org.mwc.debrief.PlotEditor">
       </editor>
    </extension>
    <extension

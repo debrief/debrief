@@ -4,6 +4,7 @@ import java.util.*;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.ui.*;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 
@@ -41,6 +42,10 @@ public class DebriefPlugin extends AbstractUIPlugin {
 		
 		// and the Replay importer/exporter (used to export items from the layer-manager)
 		ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+		
+		// make Debrief the default editor for XML files
+		IEditorRegistry editorRegistry = PlatformUI.getWorkbench().getEditorRegistry();
+		editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
 		
 	}
 
