@@ -12,13 +12,18 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import ASSET.ParticipantType;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
+import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.*;
 import MWC.GUI.Editable;
+import MWC.GenericData.WorldSpeed;
+
+import com.borlander.rac525791.dashboard.Dashboard;
+import com.borlander.rac525791.dashboard.data.DashboardDataModel;
 
 public class VesselMonitor extends ViewPart
 {
 
-	StatusIndicator _myIndicator;
+	// StatusIndicator _myIndicator;
 
 	private PartMonitor _myPartMonitor;
 
@@ -35,6 +40,10 @@ public class VesselMonitor extends ViewPart
 
 	private ParticipantDecidedListener _decisionListener;
 
+	private DashboardDataModel _dashModel;
+
+	private Dashboard _dashboard;
+
 	/**
 	 * The constructor.
 	 */
@@ -49,8 +58,14 @@ public class VesselMonitor extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 
-		Composite myLayout = new Composite(parent, SWT.NONE);
-		_myIndicator = new StatusIndicator(myLayout, SWT.NONE);
+		// Composite myLayout = new Composite(parent, SWT.NONE);
+		// GridLayout rl = new GridLayout();
+		// rl.numColumns = 1;
+
+		_dashboard = new Dashboard(parent);
+		_dashModel = _dashboard.getDataModel();
+
+		// _myIndicator = new StatusIndicator(myLayout, SWT.NONE);
 
 		makeActions();
 		hookContextMenu();
@@ -90,7 +105,8 @@ public class VesselMonitor extends ViewPart
 		_trackParticipant.setText("Sync");
 		_trackParticipant.setChecked(true);
 		_trackParticipant.setToolTipText("Follow selected participant");
-		_trackParticipant.setImageDescriptor(CorePlugin.getImageDescriptor("icons/synced.gif"));
+		_trackParticipant.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/synced.gif"));
 
 	}
 
@@ -205,7 +221,7 @@ public class VesselMonitor extends ViewPart
 
 			// let's fire one off to get us started
 			updateStatus(_myPart.getStatus());
-			
+
 			// and sort out what it's dowing
 			updateDecision(_myPart.getActivity(), _myPart.getDemandedStatus());
 		}
@@ -221,9 +237,9 @@ public class VesselMonitor extends ViewPart
 		{
 			public void run()
 			{
-				if (!_myIndicator.isDisposed())
+				if (!_dashboard.isDisposed())
 				{
-					_myIndicator.setName(part.getName());
+					_dashModel.setVesselName(part.getName());
 				}
 			}
 		});
@@ -265,12 +281,87 @@ public class VesselMonitor extends ViewPart
 		{
 			public void run()
 			{
-				if (!_myIndicator.isDisposed())
+				if (!_dashboard.isDisposed())
 				{
-					_myIndicator.setDecision(description, dem_status);
+					if (dem_status instanceof ASSET.Models.Movement.SimpleDemandedStatus)
+					{
+						ASSET.Models.Movement.SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
+						WorldSpeed demSpeed = new WorldSpeed(sds.getSpeed(), WorldSpeed.M_sec);
+						double depth = sds.getHeight();
+						
+						setScaledSpeed(demSpeed.getValueIn(WorldSpeed.Kts), false);
+						setScaledHeight(depth, false);
+						_dashModel.setDemandedDirection((int) sds.getCourse());
+						
+					}
 				}
 			}
 		});
+	}
+	
+	private void setScaledSpeed(double val, boolean isActual)
+	{
+		if(isActual)
+		{
+			int mult = getScaleFactor(val);
+			_dashModel.setSpeedMultiplier(mult);
+			_dashModel.setSpeedUnits("Kts");
+			double spdVal = 100d * (double)val / (double)mult;
+			_dashModel.setActualSpeed((int)spdVal );
+		}
+		else
+		{
+			double mult = _dashModel.getSpeedMultiplier();
+			double spdVal = 100d * (double)val / (double)mult;
+			_dashModel.setDemandedSpeed((int)spdVal);
+		}
+	}
+	private void setScaledHeight(double val, boolean isActual)
+	{
+		int height = (int) Math.abs(val);
+		if(isActual)
+		{
+			int mult = getScaleFactor(val);
+			_dashModel.setDepthMultiplier(mult);
+			double altVal = 100d * (double)height / (double)mult;
+			_dashModel.setActualDepth((int) altVal);
+			
+			if(val > 0)
+				_dashModel.setDepthUnits("Alt");
+			else
+				_dashModel.setDepthUnits("Depth");
+		}
+		else
+		{
+			double mult = _dashModel.getDepthMultiplier();
+			double altVal = 100d * (double)height / (double)mult;
+			_dashModel.setDemandedDepth((int)altVal);
+		}
+	}
+
+
+
+
+	/**
+	 * @param val
+	 * @return
+	 */
+	private int getScaleFactor(double val)
+	{
+		int mult;
+		if(val > 100)
+		{
+			mult = 100;
+		}
+		else if(val > 10)
+		{
+			mult = 10;
+		}
+		else
+		{
+			mult = 1;
+		}
+		return mult;
 	}
 
 	protected void updateStatus(final Status newStatus)
@@ -279,9 +370,16 @@ public class VesselMonitor extends ViewPart
 		{
 			public void run()
 			{
-				if (!_myIndicator.isDisposed())
+				if (!_dashboard.isDisposed())
 				{
-					_myIndicator.setStatus(newStatus);
+					_dashModel.setVesselStatus(newStatus.statusString());
+
+					// do the other bits...
+					WorldSpeed ws = newStatus.getSpeed();
+					setScaledSpeed((int) ws.getValueIn(WorldSpeed.Kts), true);				
+					setScaledHeight((int) -newStatus.getLocation().getDepth(), true);
+					_dashModel.setActualDirection((int) newStatus.getCourse());
+
 				}
 			}
 		});
