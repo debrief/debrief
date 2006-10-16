@@ -321,7 +321,7 @@ public class VesselMonitor extends ViewPart
 		int height = (int) Math.abs(val);
 		if(isActual)
 		{
-			int mult = getScaleFactor(val);
+			int mult = getScaleFactor(height);
 			_dashModel.setDepthMultiplier(mult);
 			double altVal = 100d * (double)height / (double)mult;
 			_dashModel.setActualDepth((int) altVal);
@@ -376,8 +376,9 @@ public class VesselMonitor extends ViewPart
 
 					// do the other bits...
 					WorldSpeed ws = newStatus.getSpeed();
-					setScaledSpeed((int) ws.getValueIn(WorldSpeed.Kts), true);				
-					setScaledHeight((int) -newStatus.getLocation().getDepth(), true);
+					setScaledSpeed((int) ws.getValueIn(WorldSpeed.Kts), true);		
+					double theDepth = -newStatus.getLocation().getDepth();
+					setScaledHeight((int) theDepth, true);
 					_dashModel.setActualDirection((int) newStatus.getCourse());
 
 				}
