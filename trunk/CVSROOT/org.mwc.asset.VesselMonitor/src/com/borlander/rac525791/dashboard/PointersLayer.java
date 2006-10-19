@@ -34,9 +34,9 @@ import com.borlander.rac525791.draw2d.ext.RotatableDecorationExt;
  * </code>
  */
 public class PointersLayer extends InvisibleRectangle {
-	private ControlPointersLayer mySpeedArrows;
+	private ScaledControlPointersLayer mySpeedArrows;
 
-	private ControlPointersLayer myDepthArrows;
+	private ScaledControlPointersLayer myDepthArrows;
 
 	private ControlPointersLayer myDirectionArrows;
 
@@ -45,8 +45,8 @@ public class PointersLayer extends InvisibleRectangle {
 	private ImageFigure myNumbers;
 
 	public PointersLayer(DashboardUIModel uiModel) {
-		mySpeedArrows = new ControlPointersLayer(SPEED_DEPTH_FACTORY, uiModel, ControlUISuite.SPEED);
-		myDepthArrows = new ControlPointersLayer(SPEED_DEPTH_FACTORY, uiModel, ControlUISuite.DEPTH);
+		mySpeedArrows = new ScaledControlPointersLayer(SPEED_DEPTH_FACTORY, uiModel, ControlUISuite.SPEED);
+		myDepthArrows = new ScaledControlPointersLayer(SPEED_DEPTH_FACTORY, uiModel, ControlUISuite.DEPTH);
 		myDirectionArrows = new ControlPointersLayer(DIRECTION_FACTORY, uiModel, ControlUISuite.DIRECTION);
 
 		myNumbers = new SelectableImageFigure(uiModel){
@@ -84,11 +84,11 @@ public class PointersLayer extends InvisibleRectangle {
 		setLayoutManager(new Layout(uiModel));
 	}
 
-	public ControlPointersLayer getSpeedArrows() {
+	public ScaledControlPointersLayer getSpeedArrows() {
 		return mySpeedArrows;
 	}
 
-	public ControlPointersLayer getDepthArrows() {
+	public ScaledControlPointersLayer getDepthArrows() {
 		return myDepthArrows;
 	}
 

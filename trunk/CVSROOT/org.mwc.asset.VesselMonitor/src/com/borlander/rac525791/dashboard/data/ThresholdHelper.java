@@ -54,6 +54,9 @@ class ThresholdHelper {
 	}
 	
 	private boolean reloadDepthOk() {
+		if (myModel.isIgnoreDemandedDepth()){
+			return true;
+		}
 		int actual = myModel.getActualDepth();
 		int demanded = myModel.getDemandedDepth();
 		int threshold = myModel.getDepthThreshold();
@@ -61,6 +64,9 @@ class ThresholdHelper {
 	}
 
 	private boolean reloadSpeedOk() {
+		if (myModel.isIgnoreDemandedSpeed()){
+			return true;
+		}
 		int actual = myModel.getActualSpeed();
 		int demanded = myModel.getDemandedSpeed();
 		int threshold = myModel.getSpeedThreshold();
@@ -68,6 +74,9 @@ class ThresholdHelper {
 	}
 
 	private boolean reloadDirectionOk() {
+		if (myModel.isIgnoreDemandedDirection()){
+			return true;
+		}
 		int actual = myModel.getActualDirection();
 		int demanded = myModel.getDemandedDirection();
 		int threshold = myModel.getDirectionThreshold();

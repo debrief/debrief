@@ -52,12 +52,12 @@ public class ControlTextLayer extends AbstractTextLayer {
 	}
 	
 	public void setDepth(int depth){
-		myDepthText.setText(String.valueOf(depth / 10));
+		myDepthText.setText(formatValue(depth));
 		invalidate();
 	}
 	
 	public void setSpeed(int speed){
-		mySpeedText.setText(String.valueOf(speed / 10));
+		mySpeedText.setText(formatValue(speed));
 		invalidate();
 	}
 	
@@ -83,6 +83,16 @@ public class ControlTextLayer extends AbstractTextLayer {
 			rect.setBottomColor(DARK_PINK);
 		}
 		rect.invalidate();
+	}
+	
+	private static String formatValue(int value){
+		if (value < 0){
+			throw new IllegalArgumentException("Expected not negative integer: " + value);
+		}
+		if (value < 10){
+			return "." + value;
+		}
+		return String.valueOf(value / 10);
 	}
 	
 	private static class GradientRoundedRectangle extends RoundedRectangle {
@@ -174,6 +184,5 @@ public class ControlTextLayer extends AbstractTextLayer {
 			text.setBounds(RECT);
 		}
 	}
-	
 	
 }

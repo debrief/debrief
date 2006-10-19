@@ -35,19 +35,13 @@ public class DashboardFigure extends InvisibleRectangle {
 	public void setSpeed(int value){
 		getSpeedArrows().setActualValue(value);
 		myControlTextLayer.setSpeed(value);
+		updateSpeedMultiplier();
 	}
 	
 	public void setDepth(int value){
 		getDepthArrows().setActualValue(value);
 		myControlTextLayer.setDepth(value);
-	}
-	
-	public void setDemandedSpeed(int value){
-		getSpeedArrows().setDemandedValue(value);
-	}	
-	
-	public void setDemandedDepth(int value){
-		getDepthArrows().setDemandedValue(value);
+		updateDepthMultiplier();
 	}
 	
 	public void setDirection(int value){
@@ -55,8 +49,30 @@ public class DashboardFigure extends InvisibleRectangle {
 		myTextLayer.setCenterText(formatCourse(value));
 	}
 	
+	public void setDemandedSpeed(int value){
+		getSpeedArrows().setDemandedValue(value);
+		updateSpeedMultiplier();
+	}	
+	
+	public void setDemandedDepth(int value){
+		getDepthArrows().setDemandedValue(value);
+		updateDepthMultiplier();
+	}
+	
 	public void setDemandedDirection(int value){
 		getDirectionArrows().setDemandedValue(value);
+	}
+	
+	public void setIgnoreDemandedSpeed(boolean ignore){
+		getSpeedArrows().setIgnoreDemandedValue(ignore);
+	}
+
+	public void setIgnoreDemandedDepth(boolean ignore){
+		getDepthArrows().setIgnoreDemandedValue(ignore);
+	}
+
+	public void setIgnoreDemandedDirection(boolean ignore){
+		getDirectionArrows().setIgnoreDemandedValue(ignore);
 	}
 	
 	public void updateSpeedOnThreshold(boolean isOnThreshold){
@@ -75,14 +91,6 @@ public class DashboardFigure extends InvisibleRectangle {
 	
 	public void setSpeedUnits(String units){
 		myControlUnitsLayer.setSpeedUnits(units);
-	}
-	
-	public void setSpeedMultiplier(int multiplier){
-		myControlUnitsLayer.setSpeedMultiplier(multiplier);
-	}
-	
-	public void setDepthMultiplier(int multiplier){
-		myControlUnitsLayer.setDepthMultiplier(multiplier);
 	}
 	
 	public void setDepthUnits(String units){
@@ -125,16 +133,24 @@ public class DashboardFigure extends InvisibleRectangle {
 		return getCourseFormatter().format(course) + DEGREE;
 	}
 	
-	private ControlPointersLayer getSpeedArrows(){
+	private ScaledControlPointersLayer getSpeedArrows(){
 		return myPointersLayer.getSpeedArrows();
 	}
 	
-	private ControlPointersLayer getDepthArrows(){
+	private ScaledControlPointersLayer getDepthArrows(){
 		return myPointersLayer.getDepthArrows();
 	}
 	
 	private ControlPointersLayer getDirectionArrows(){
 		return myPointersLayer.getDirectionArrows();
+	}
+	
+	private void updateSpeedMultiplier(){
+		myControlUnitsLayer.setSpeedMultiplier(getSpeedArrows().getMultiplier());
+	}
+
+	private void updateDepthMultiplier(){
+		myControlUnitsLayer.setDepthMultiplier(getDepthArrows().getMultiplier());
 	}
 
 	private static NumberFormat getCourseFormatter(){

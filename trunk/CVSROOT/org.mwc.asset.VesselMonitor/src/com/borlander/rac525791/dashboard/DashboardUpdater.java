@@ -36,6 +36,7 @@ public class DashboardUpdater implements DashboardListener, ThresholdListener {
 	
 	public void demandedDepthChanged() {
 		myDashboard.setDemandedDepth(myModel.getDemandedDepth());
+		myDashboard.setIgnoreDemandedDepth(myModel.isIgnoreDemandedDepth());
 		myHost.redraw();
 	}
 	
@@ -46,6 +47,7 @@ public class DashboardUpdater implements DashboardListener, ThresholdListener {
 
 	public void demandedSpeedChanged() {
 		myDashboard.setDemandedSpeed(myModel.getDemandedSpeed());
+		myDashboard.setIgnoreDemandedSpeed(myModel.isIgnoreDemandedSpeed());
 		myHost.redraw();
 	}
 
@@ -56,21 +58,12 @@ public class DashboardUpdater implements DashboardListener, ThresholdListener {
 
 	public void demandedDirectionChanged() {
 		myDashboard.setDemandedDirection(myModel.getDemandedDirection());
-		myHost.redraw();
-	}
-
-	public void depthMultiplierChanged() {
-		myDashboard.setDepthMultiplier(myModel.getDepthMultiplier());
+		myDashboard.setIgnoreDemandedDirection(myModel.isIgnoreDemandedDirection());
 		myHost.redraw();
 	}
 
 	public void depthUnitsChanged() {
 		myDashboard.setDepthUnits(myModel.getDepthUnits());
-		myHost.redraw();
-	}
-
-	public void speedMultiplierChanged() {
-		myDashboard.setSpeedMultiplier(myModel.getSpeedMultiplier());
 		myHost.redraw();
 	}
 

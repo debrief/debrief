@@ -10,6 +10,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -72,7 +73,13 @@ public class Snippet extends Composite {
 				getDataModel().setDemandedDirection(value);
 			}
 		});
-
+    	
+    	createLabeledCheckBox("Ignore Demanded Course:", new DataChange(dataModel) {
+			public void apply(boolean value) {
+				getDataModel().setIgnoreDemandedDirection(value);
+			}
+		});
+    	
     	createLabeledSlider("Allowed Course Threshold:", 0, 10, 5, new DataChange(dataModel) {
 			public void apply(int value) {
 				getDataModel().setDirectionThreshold(value);
@@ -91,6 +98,12 @@ public class Snippet extends Composite {
 			}
 		});
     	
+    	createLabeledCheckBox("Ignore Demanded Speed:", new DataChange(dataModel) {
+			public void apply(boolean value) {
+				getDataModel().setIgnoreDemandedSpeed(value);
+			}
+		});
+    	
     	createLabeledSlider("Allowed Speed Threshold:", 0, 100, 20, new DataChange(dataModel) {
 			public void apply(int value) {
 				getDataModel().setSpeedThreshold(value);
@@ -103,12 +116,18 @@ public class Snippet extends Composite {
 			}
 		});
 
-    	createLabeledSlider("Demanded depth:", 0, 1000, 900, new DataChange(dataModel) {
+    	createLabeledSlider("Demanded Depth:", 0, 1000, 900, new DataChange(dataModel) {
 			public void apply(int value) {
 				getDataModel().setDemandedDepth(value);
 			}
 		});
     	
+    	createLabeledCheckBox("Ignore Demanded Depth:", new DataChange(dataModel) {
+			public void apply(boolean value) {
+				getDataModel().setIgnoreDemandedDepth(value);
+			}
+		});
+
     	createLabeledSlider("Allowed Depth Threshold:", 0, 100, 80, new DataChange(dataModel) {
 			public void apply(int value) {
 				getDataModel().setDepthThreshold(value);
@@ -121,23 +140,12 @@ public class Snippet extends Composite {
 			}
 		});
     	
-    	createLabeledCombo("Vertical multiplier:", new String[] {"1000", "100", "10"}, new DataChange(dataModel) {
-			public void apply(String value) {
-				getDataModel().setDepthMultiplier(Integer.valueOf(value));
-			}
-		});
-    	
     	createLabeledCombo("Horizontal units:", new String[] {"km/h", "mph", "m/sec"}, new DataChange(dataModel) {
 			public void apply(String value) {
 				getDataModel().setSpeedUnits(value);
 			}
 		});
     	
-    	createLabeledCombo("Horizontal multiplier:", new String[] {"100", "10"}, new DataChange(dataModel) {
-			public void apply(String value) {
-				getDataModel().setSpeedMultiplier(Integer.valueOf(value));
-			}
-		});
     }
     
     private Combo createLabeledCombo(String label, String[] values, DataChange change){
@@ -210,6 +218,14 @@ public class Snippet extends Composite {
     	label.setText(text);
     	label.setLayoutData(leftGD());
     	return label;
+    }
+    
+    private Button createLabeledCheckBox(String label, DataChange change){
+    	createLabel(label);
+    	Button result = new Button(this, SWT.CHECK);
+    	result.setLayoutData(rightGD());
+    	result.addSelectionListener(new CheckBoxListener(change));
+    	return result;
     }
     
     protected Dashboard createDashboardInSash(){
@@ -300,6 +316,10 @@ public class Snippet extends Composite {
     	public void apply(int value){
     		//
     	}
+    	
+    	public void apply(boolean value){
+    		//
+    	}
     }
     
     private static class TextListener implements ModifyListener {
@@ -347,6 +367,24 @@ public class Snippet extends Composite {
 		public void widgetSelected(SelectionEvent e) {
 			Combo widget = (Combo)e.widget;
 			myChange.apply(widget.getItem(widget.getSelectionIndex()));
+		}
+		
+		public void widgetDefaultSelected(SelectionEvent e) {
+			widgetSelected(e);
+		}
+		
+    }
+    
+    private static class CheckBoxListener implements SelectionListener {
+    	private final DataChange myChange;
+
+		public CheckBoxListener(DataChange change){
+			myChange = change;
+    	}
+		
+		public void widgetSelected(SelectionEvent e) {
+			Button widget = (Button)e.widget;
+			myChange.apply(widget.getSelection());
 		}
 		
 		public void widgetDefaultSelected(SelectionEvent e) {

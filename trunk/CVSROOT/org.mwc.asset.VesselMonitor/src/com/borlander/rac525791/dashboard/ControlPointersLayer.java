@@ -99,6 +99,10 @@ public class ControlPointersLayer {
 			myRedSector.setDemandedValue(myDemandedValue);
 		}
 	}
+	
+	public void setIgnoreDemandedValue(boolean ignore){
+		myDemandedPointer.setVisible(!ignore);
+	}
 
 	private double computeAngle(int value) {
 		return myMapper.computeAngle(value);

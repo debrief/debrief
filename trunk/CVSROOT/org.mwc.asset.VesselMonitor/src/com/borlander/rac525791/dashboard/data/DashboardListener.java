@@ -8,11 +8,7 @@ public interface DashboardListener {
 
 	void speedUnitsChanged();
 
-	void speedMultiplierChanged();
-
 	void depthUnitsChanged();
-
-	void depthMultiplierChanged();
 
 	void demandedSpeedChanged();
 
@@ -36,19 +32,11 @@ public interface DashboardListener {
 			// 
 		}
 	
-		public void speedMultiplierChanged() {
-			// 
-		}
-	
 		public void nameChanged() {
 			// 
 		}
 	
 		public void depthUnitsChanged() {
-			// 
-		}
-	
-		public void depthMultiplierChanged() {
 			// 
 		}
 	

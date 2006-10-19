@@ -11,11 +11,12 @@ public class DashboardDataModel {
 	private int myDepthThreshold;
 	private int myDirectionThreshold;
 	private String mySpeedUnits;
-	private int mySpeedMultiplier;
 	private String myDepthUnits;
-	private int myDepthMultiplier;
 	private String myVesselName;
 	private String myVesselStatus;
+	private boolean myIgnoreDemandedDepth;
+	private boolean myIgnoreDemandedSpeed;
+	private boolean myIgnoreDemandedDirection;
 	private DashboardListener myListener = DashboardListener.NULL;
 	private final ThresholdHelper myThresholdHelper = new ThresholdHelper(this);
 	
@@ -58,16 +59,8 @@ public class DashboardDataModel {
 		return myDemandedSpeed;
 	}
 
-	public int getDepthMultiplier() {
-		return myDepthMultiplier;
-	}
-
 	public String getDepthUnits() {
 		return myDepthUnits;
-	}
-
-	public int getSpeedMultiplier() {
-		return mySpeedMultiplier;
 	}
 
 	public String getSpeedUnits() {
@@ -142,24 +135,10 @@ public class DashboardDataModel {
 		}
 	}
 	
-	public void setDepthMultiplier(int depthMultiplier) {
-		if (!safeEquals(myDepthMultiplier, depthMultiplier)) {
-			myDepthMultiplier = depthMultiplier;
-			myListener.depthMultiplierChanged();
-		}
-	}
-
 	public void setDepthUnits(String depthUnits) {
 		if (!safeEquals(myDepthUnits, depthUnits)) {
 			myDepthUnits = depthUnits;
 			myListener.depthUnitsChanged();
-		}
-	}
-
-	public void setSpeedMultiplier(int speedMultiplier) {
-		if (!safeEquals(mySpeedMultiplier, speedMultiplier)) {
-			mySpeedMultiplier = speedMultiplier;
-			myListener.speedMultiplierChanged();
 		}
 	}
 
@@ -207,6 +186,42 @@ public class DashboardDataModel {
 			//myListener.directionThresholdChanged();
 			myThresholdHelper.directionOnThresholdMayBeChanged();
 		}
+	}
+	
+	public void setIgnoreDemandedDepth(boolean ignore) {
+		if (myIgnoreDemandedDepth != ignore){
+			myIgnoreDemandedDepth = ignore;
+			myListener.demandedDepthChanged();
+			myThresholdHelper.depthOnThresholdMayBeChanged();
+		}
+	}
+	
+	public void setIgnoreDemandedDirection(boolean ignore) {
+		if (myIgnoreDemandedDirection != ignore){
+			myIgnoreDemandedDirection = ignore;
+			myListener.demandedDirectionChanged();
+			myThresholdHelper.directionOnThresholdMayBeChanged();
+		}
+	}
+	
+	public void setIgnoreDemandedSpeed(boolean ignore) {
+		if (myIgnoreDemandedSpeed != ignore){
+			myIgnoreDemandedSpeed = ignore;
+			myListener.demandedSpeedChanged();
+			myThresholdHelper.speedOnThresholdMayBeChanged();
+		}
+	}
+
+	public boolean isIgnoreDemandedDirection() {
+		return myIgnoreDemandedDirection;
+	}
+	
+	public boolean isIgnoreDemandedDepth() {
+		return myIgnoreDemandedDepth;
+	}
+	
+	public boolean isIgnoreDemandedSpeed() {
+		return myIgnoreDemandedSpeed;
 	}
 
 	private boolean safeEquals(String first, String second){
