@@ -285,83 +285,28 @@ public class VesselMonitor extends ViewPart
 				{
 					if (dem_status instanceof ASSET.Models.Movement.SimpleDemandedStatus)
 					{
+						_dashModel.setIgnoreDemandedDepth(false);
+						_dashModel.setIgnoreDemandedDirection(false);
+						_dashModel.setIgnoreDemandedSpeed(false);
+						
 						ASSET.Models.Movement.SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
 						WorldSpeed demSpeed = new WorldSpeed(sds.getSpeed(), WorldSpeed.M_sec);
-						double depth = sds.getHeight();
+						double height = sds.getHeight();
 						
-						setScaledSpeed(demSpeed.getValueIn(WorldSpeed.Kts), false);
-						setScaledHeight(depth, false);
 						_dashModel.setDemandedDirection((int) sds.getCourse());
+						_dashModel.setDemandedSpeed((int) demSpeed.getValueIn(WorldSpeed.Kts));
+						_dashModel.setDemandedDepth((int) -height);
 						
+					}
+					else
+					{
+						_dashModel.setIgnoreDemandedDepth(true);
+						_dashModel.setIgnoreDemandedDirection(true);
+						_dashModel.setIgnoreDemandedSpeed(true);
 					}
 				}
 			}
 		});
-	}
-	
-	private void setScaledSpeed(double val, boolean isActual)
-	{
-		if(isActual)
-		{
-			int mult = getScaleFactor(val);
-			_dashModel.setSpeedMultiplier(mult);
-			_dashModel.setSpeedUnits("Kts");
-			double spdVal = 100d * (double)val / (double)mult;
-			_dashModel.setActualSpeed((int)spdVal );
-		}
-		else
-		{
-			double mult = _dashModel.getSpeedMultiplier();
-			double spdVal = 100d * (double)val / (double)mult;
-			_dashModel.setDemandedSpeed((int)spdVal);
-		}
-	}
-	private void setScaledHeight(double val, boolean isActual)
-	{
-		int height = (int) Math.abs(val);
-		if(isActual)
-		{
-			int mult = getScaleFactor(height);
-			_dashModel.setDepthMultiplier(mult);
-			double altVal = 100d * (double)height / (double)mult;
-			_dashModel.setActualDepth((int) altVal);
-			
-			if(val > 0)
-				_dashModel.setDepthUnits("Alt");
-			else
-				_dashModel.setDepthUnits("Depth");
-		}
-		else
-		{
-			double mult = _dashModel.getDepthMultiplier();
-			double altVal = 100d * (double)height / (double)mult;
-			_dashModel.setDemandedDepth((int)altVal);
-		}
-	}
-
-
-
-
-	/**
-	 * @param val
-	 * @return
-	 */
-	private int getScaleFactor(double val)
-	{
-		int mult;
-		if(val > 100)
-		{
-			mult = 100;
-		}
-		else if(val > 10)
-		{
-			mult = 10;
-		}
-		else
-		{
-			mult = 1;
-		}
-		return mult;
 	}
 
 	protected void updateStatus(final Status newStatus)
@@ -376,13 +321,28 @@ public class VesselMonitor extends ViewPart
 
 					// do the other bits...
 					WorldSpeed ws = newStatus.getSpeed();
-					setScaledSpeed((int) ws.getValueIn(WorldSpeed.Kts), true);		
-					double theDepth = -newStatus.getLocation().getDepth();
-					setScaledHeight((int) theDepth, true);
+					double theDepth = newStatus.getLocation().getDepth();
 					_dashModel.setActualDirection((int) newStatus.getCourse());
-
+					_dashModel.setActualSpeed((int)ws.getValueIn(WorldSpeed.Kts));
+					_dashModel.setActualDepth((int)theDepth);
 				}
 			}
 		});
+	}
+
+	/**
+	 * 
+	 */
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+		
+		// ok, stop listening to the old one
+		if (_myPart != null)
+		{
+			_myPart.removeParticipantMovedListener(_moveListener);
+			_myPart.removeParticipantDecidedListener(_decisionListener);
+		}
 	}
 }
