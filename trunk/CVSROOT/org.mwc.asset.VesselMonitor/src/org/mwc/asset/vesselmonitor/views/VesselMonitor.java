@@ -17,7 +17,7 @@ import ASSET.Participants.*;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldSpeed;
 
-import com.borlander.rac525791.dashboard.Dashboard;
+import com.borlander.rac525791.dashboard.*;
 import com.borlander.rac525791.dashboard.data.DashboardDataModel;
 
 public class VesselMonitor extends ViewPart
@@ -291,11 +291,14 @@ public class VesselMonitor extends ViewPart
 						
 						ASSET.Models.Movement.SimpleDemandedStatus sds = (SimpleDemandedStatus) dem_status;
 						WorldSpeed demSpeed = new WorldSpeed(sds.getSpeed(), WorldSpeed.M_sec);
+						double speed =Math.min(demSpeed.getValueIn(WorldSpeed.Kts), AutoScaler.RANGE);
 						double height = sds.getHeight();
 						
+						height = Math.min(height,AutoScaler.RANGE);
+						
 						_dashModel.setDemandedDirection((int) sds.getCourse());
-						_dashModel.setDemandedSpeed((int) demSpeed.getValueIn(WorldSpeed.Kts));
-						_dashModel.setDemandedDepth((int) -height);
+						_dashModel.setDemandedSpeed((int) speed);
+						_dashModel.setDemandedDepth((int) Math.abs(height));
 						
 					}
 					else
@@ -321,10 +324,21 @@ public class VesselMonitor extends ViewPart
 
 					// do the other bits...
 					WorldSpeed ws = newStatus.getSpeed();
-					double theDepth = newStatus.getLocation().getDepth();
 					_dashModel.setActualDirection((int) newStatus.getCourse());
-					_dashModel.setActualSpeed((int)ws.getValueIn(WorldSpeed.Kts));
+					_dashModel.setSpeedUnits("Kts");
+					double theDepth = newStatus.getLocation().getDepth();
+					if(theDepth > 0)
+						_dashModel.setDepthUnits("Depth");
+					else
+						_dashModel.setDepthUnits("Alt");
+					
+					theDepth = Math.abs(theDepth);
+					theDepth = Math.min(theDepth, AutoScaler.RANGE);
+					
 					_dashModel.setActualDepth((int)theDepth);
+					double theSpeed = ws.getValueIn(WorldSpeed.Kts);
+					theSpeed=Math.min(theSpeed, AutoScaler.RANGE);
+					_dashModel.setActualSpeed((int)theSpeed);
 				}
 			}
 		});
