@@ -6,7 +6,6 @@ import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
@@ -272,11 +271,19 @@ public class SensorMonitor extends ViewPart
 			{
 				if (!_table.isDisposed())
 				{
+					// hey, clear the existing columns
+					TableColumn[] cols = _table.getColumns();
+					for (int i = 0; i < cols.length; i++)
+					{
+						TableColumn column = cols[i];
+						column.dispose();
+					}
+					
 					// ok, now sort out our table
 					if (sensor instanceof LookupSensor)
 					{
 						// ok - do our sensor headings.
-						generateCol(_table, "Name", 130);
+						generateCol(_table, "Name", 80);
 						generateCol(_table, "State", 60);
 						generateCol(_table, "RP (m)", 60);
 						generateCol(_table, "RI (m)", 60);
@@ -284,7 +291,7 @@ public class SensorMonitor extends ViewPart
 					}
 					else
 					{
-						generateCol(_table, "Name", 130);
+						generateCol(_table, "Name", 80);
 						generateCol(_table, "Loss", 60);
 						generateCol(_table, "Bk Noise", 60);
 						generateCol(_table, "OS Noise", 60);
