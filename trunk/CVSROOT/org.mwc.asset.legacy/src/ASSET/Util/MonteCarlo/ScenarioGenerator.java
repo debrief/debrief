@@ -153,7 +153,7 @@ public final class ScenarioGenerator
       if (res == null)
       {
         // yup, go for it.
-        res = createScenarios(doc, var, results);
+        res = doScenarioGeneration(doc, var, results);
       }
 
     }
@@ -171,7 +171,7 @@ public final class ScenarioGenerator
    * @param results     vector containing the new scenarios
    * @return error message on failure, or null for success
    */
-  public String createScenarios(Document template, Document controlFile, Vector results)
+  protected String doScenarioGeneration(Document template, Document controlFile, Vector results)
   {
     String res = null;
 
@@ -474,7 +474,7 @@ public final class ScenarioGenerator
       Element el = (Element) xpath.selectSingleNode(document);
       if (el != null)
       {
-        this._scenarioGenny = new MultiScenarioGenerator(document);
+     		this._scenarioGenny = new MultiScenarioGenerator(document);
       }
 
       // can we find a scenario generator?
@@ -559,8 +559,6 @@ public final class ScenarioGenerator
     // do we have a scenario generator?
     if (_scenarioGenny != null)
     {
-
-
       System.out.println("Generating scenarios");
       System.out.println("====================");
 
@@ -866,7 +864,7 @@ public final class ScenarioGenerator
       }
 
 
-      String res = genny.createScenarios(doc, var, list);
+      String res = genny.doScenarioGeneration(doc, var, list);
 
       assertNull("success - no error", res);
 
@@ -977,7 +975,7 @@ public final class ScenarioGenerator
       }
 
 
-      String res = genny.createScenarios(doc, var, list);
+      String res = genny.doScenarioGeneration(doc, var, list);
 
       assertNull("success - no error", res);
 
