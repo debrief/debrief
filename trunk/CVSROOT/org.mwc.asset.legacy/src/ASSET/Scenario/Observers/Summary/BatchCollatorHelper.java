@@ -870,7 +870,7 @@ public class BatchCollatorHelper
      */
     private String collatedResult(String scenario_name, Object datum)
     {
-      return "(" + scenario_name + " : " + objectToString(datum) + ")";
+      return "" + scenario_name + " , " + objectToString(datum) + "" + GeneralFormat.LINE_SEPARATOR;
     }
 
     private String collatedResult(String scenario_name, double datum)
@@ -1026,7 +1026,7 @@ public class BatchCollatorHelper
         if (res == null)
           res = s;
         else
-          res += ", " + s;
+          res += " " + s;
       }
       return res;
     }
