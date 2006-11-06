@@ -9,17 +9,16 @@ package ASSET.Util.XML;
  * @version 1.0
  */
 
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Environment.SimpleEnvironment;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import ASSET.ScenarioType;
+import ASSET.Models.Environment.*;
 import ASSET.Util.XML.Utils.*;
 import MWC.GUI.*;
 import MWC.GenericData.Duration;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
-
-import java.text.SimpleDateFormat;
-import java.util.*;
 
 public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
@@ -111,7 +110,8 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     xmlFormatter.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
     scen.setAttribute("Created",xmlFormatter.format(new java.util.Date()));
     scen.setAttribute(NAME_ATTRIBUTE, "ASSET Scenario");
-    scen.setAttribute(TIME, writeThisInXML(new Date(scenario.getTime())));
+    scen.setAttribute(TIME, writeThisInXML(new Date(scenario.getTime())));   
+    
     DurationHandler.exportDuration(SCENARIO_STEP_TIME, new Duration(scenario.getScenarioStepTime(), Duration.MILLISECONDS), scen, doc);
     DurationHandler.exportDuration(SCENARIO_STEP_PAUSE, new Duration(scenario.getStepTime(), Duration.MILLISECONDS), scen, doc);
 
@@ -127,7 +127,9 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     // and now the graphic layers item
     final org.w3c.dom.Element layerHolder = doc.createElement(DEBRIEF_LAYER_NAME);
     scen.appendChild(layerHolder);
-    LayerHandler.exportLayer((BaseLayer) scenario.getBackdrop(), layerHolder, doc);
+    Layer backdropLayer = scenario.getBackdrop();
+    if(backdropLayer != null)
+    	LayerHandler.exportLayer((BaseLayer) scenario.getBackdrop(), layerHolder, doc);
 
     return scen;
   }
