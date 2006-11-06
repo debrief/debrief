@@ -135,6 +135,8 @@ public class BroadbandSensor extends InitialSensor
     // use the environment to determine the loss
     res = environment.getLossBetween(EnvironmentType.BROADBAND_PASSIVE, target, host);
 
+    res = -200;
+    
     return res;
   }
 
@@ -189,7 +191,10 @@ public class BroadbandSensor extends InitialSensor
    * get the version details for this model.
    * <pre>
    * $Log$
-   * Revision 1.2  2006-09-21 12:20:41  Ian.Mayo
+   * Revision 1.3  2006-11-06 16:08:51  Ian.Mayo
+   * Hard-code detection range so we get immediate contact
+   *
+   * Revision 1.2  2006/09/21 12:20:41  Ian.Mayo
    * Reflect introduction of default names
    *
    * Revision 1.1  2006/08/08 14:21:54  Ian.Mayo
