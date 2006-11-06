@@ -9,6 +9,7 @@ import ASSET.Util.MonteCarlo.MultiParticipantGenerator;
 import ASSET.Util.MonteCarlo.MultiScenarioGenerator;
 import ASSET.Util.SupportTesting;
 import ASSET.Util.XML.ASSETReaderWriter;
+import MWC.GenericData.WorldLocation;
 
 import java.io.*;
 import java.util.Iterator;
@@ -22,7 +23,10 @@ import java.util.Vector;
  * Class providing command line access to the ASSET engine
  * Log:
  * $Log$
- * Revision 1.1  2006-08-08 14:21:07  Ian.Mayo
+ * Revision 1.2  2006-11-06 15:00:25  Ian.Mayo
+ * Only use hard-coded if we don't receive any
+ *
+ * Revision 1.1  2006/08/08 14:21:07  Ian.Mayo
  * Second import
  *
  * Revision 1.1  2006/08/07 12:25:15  Ian.Mayo
@@ -507,13 +511,19 @@ public class CommandLine
 
     CommandLine cl = new CommandLine();
 
+    if(args.length == 0)
+    {
+    	System.out.println("Using hard-coded scenario files");
+	    args = new String[]{"D:/Dev/Eclipse2/org.mwc.asset.sample_data/data/CQB_Scenario.xml",
+	    		"D:/Dev/Eclipse2/org.mwc.asset.sample_data/data/CQB_Control.xml"};
+    }
 
     //    args = new String[]{"D:/Dev/herding/scenario_1.xml","D:/Dev/herding/control_1.xml"};
     //    args = new String[]{"D:\\Dev\\Asset\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_scenario.xml",
     //                        "D:\\Dev\\Asset\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_area.xml"};
 
     // TEMPORARILY OVERRIDE THE EARTH MODEL
-    //    WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
+    WorldLocation.setModel(new MWC.Algorithms.EarthModels.CompletelyFlatEarth());
 
     if (args.length == 2)
     {
