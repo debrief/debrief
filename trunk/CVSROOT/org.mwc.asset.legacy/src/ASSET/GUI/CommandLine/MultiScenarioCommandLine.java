@@ -95,7 +95,7 @@ public class MultiScenarioCommandLine
     // so,
     try
     {
-      String failure = _myGenny.writeTheseToFile(_myScenarios, true);
+      String failure = _myGenny.writeTheseToFile(_myScenarios, false);
       // just check for any other probs
       if (failure != null)
       {
