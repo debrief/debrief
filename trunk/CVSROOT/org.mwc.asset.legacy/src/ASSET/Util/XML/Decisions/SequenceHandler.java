@@ -13,17 +13,27 @@ import ASSET.Models.Decision.BehaviourList;
 import ASSET.Models.Decision.Sequence;
 import ASSET.Models.Decision.Waterfall;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader.HandleBooleanAttribute;
 
 abstract public class SequenceHandler extends WaterfallHandler
   {
 
   private final static String type = "Sequence";
-
+  protected final static String STAY_ALIVE = "StayAlive";
+  
   public SequenceHandler(String type, int thisDepth)
   {
     super(type, thisDepth);
 
     _myList = new Sequence();
+    
+    addAttributeHandler(new HandleBooleanAttribute(STAY_ALIVE){
+      public void setValue(String name, boolean value)
+      {
+      	Sequence seq  = (Sequence) _myList;
+      	seq.setStayAlive(value);
+      }
+    });    
   }
 
   public SequenceHandler(int thisDepth)
@@ -34,7 +44,8 @@ abstract public class SequenceHandler extends WaterfallHandler
 
   protected BehaviourList createNewList()
   {
-    return new Sequence();
+  	Sequence res = new Sequence();
+    return res;
   }
 
   abstract public void setModel(ASSET.Models.DecisionType dec);
