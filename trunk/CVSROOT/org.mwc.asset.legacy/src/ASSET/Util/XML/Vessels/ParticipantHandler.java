@@ -174,7 +174,8 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
 
     thisPart.setStatus(_myStatus);
     thisPart.setDemandedStatus(_myDemandedStatus);
-    thisPart.setSensorFit(_mySensorList);
+    if(_mySensorList != null)
+    	thisPart.setSensorFit(_mySensorList);
     thisPart.setDecisionModel(_myDecisionModel);
     thisPart.setMovementChars(_myMoveChars);
     thisPart.setRadiatedChars(_myRads);
