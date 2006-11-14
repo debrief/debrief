@@ -129,6 +129,8 @@ final public class RangeBearing extends CoreDragAction
 			double rng = Conversions.convertRange(sep.getRange(), myUnits);
 			double brg = sep.getBearing();
 			brg = brg * 180 / Math.PI;
+			if(brg < 0)
+				 brg += 360;
 			String txt = "[" + (int) rng + myUnits + " " + (int) brg + "\u00b0]";
 
 			// decide the mid-point
