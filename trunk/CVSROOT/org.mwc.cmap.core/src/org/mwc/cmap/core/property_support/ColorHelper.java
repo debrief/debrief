@@ -66,7 +66,7 @@ public class ColorHelper extends EditorHelper
 	{
 
 		// hmm, we're having trouble with white. is this white?
-		if(javaCol == java.awt.Color.WHITE)
+		if(javaCol.equals(java.awt.Color.WHITE))
 		{
 			//  right - switch White to off-white. For some reason SWT won't plot white
 			javaCol = OFF_WHITE;
