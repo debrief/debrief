@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.23  2006-09-19 10:41:59  Ian.Mayo
+// Revision 1.24  2006-11-16 08:45:51  Ian.Mayo
+// Improve text layout
+//
+// Revision 1.23  2006/09/19 10:41:59  Ian.Mayo
 // Handle omitted font
 //
 // Revision 1.22  2006/05/17 15:20:07  Ian.Mayo
@@ -390,9 +393,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	{
 		int res = 0;
 
-		if (!_theDest.isDisposed())
-			res = _theDest.getFontMetrics().getHeight();
-
+//		if (!_theDest.isDisposed())
+//			res = _theDest.getFontMetrics().getHeight();
+		res = theFont.getSize();
 		return res;
 	}
 
@@ -409,7 +412,18 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			}
 
 			// res = _theDest.textExtent(theString).x;
-			res = _theDest.getFontMetrics().getAverageCharWidth() * theString.length();
+	//		int strLen = theString.length();
+	//		int meanWidth = _theDest.getFontMetrics().getAverageCharWidth();
+			
+			int leading = _theDest.getFontMetrics().getLeading();
+			//res = meanWidth * strLen + leading * --strLen;
+
+			for(int thisC = 0;thisC<theString.length();thisC++)
+			{
+				res += _theDest.getCharWidth(theString.charAt(thisC)) + leading;
+			}
+			
+			
 		}
 		return res;
 	}
@@ -819,7 +833,15 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			return;
 
 		if (!_theDest.isDisposed())
-			_theDest.drawText(theStr, x, y, true);
+			
+		{
+			FontData[] fd = _theDest.getFont().getFontData();
+			int fontHt = fd[0].height;
+			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
+			
+			int y2 = y - fontHt;
+			_theDest.drawText(theStr, x, y2, true);
+		}
 	}
 
 	public void drawText(final java.awt.Font theFont, final String theStr, final int x,
@@ -830,15 +852,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
 		if (!_theDest.isDisposed())
 		{
-			// doDecide the anti-alias
-			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThis(theFont));
-
 			// get/set the font
 			setFont(theFont);
-
-			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
-			int y2 = y - getStringHeight(theFont);
-			_theDest.drawString(theStr, x, y2, true);
+			
+			// and plot the text
+			drawText(theStr, x, y);
 		}
 	}
 
