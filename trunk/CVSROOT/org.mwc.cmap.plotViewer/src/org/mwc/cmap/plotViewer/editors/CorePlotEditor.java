@@ -18,8 +18,8 @@ import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.interfaces.*;
-import org.mwc.cmap.core.property_support.*;
-import org.mwc.cmap.core.ui_support.LineItem;
+import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.ui_support.*;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.editors.chart.*;
@@ -111,6 +111,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	private boolean _ignoreDirtyCalls;
 
+	private PartMonitor _myPartMonitor;
+
 
 	// //////////////////////////////
 	// constructor
@@ -180,6 +182,10 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		// and clear the tracker
 		if (null != _myTracker)
 			_myTracker = null;
+		
+		// empty the part monitor
+		_myPartMonitor.ditch();
+		_myPartMonitor = null;
 	}
 	
 
@@ -257,8 +263,36 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		actionBars.setGlobalActionHandler(
 				ActionFactory.COPY.getId(),
 				_copyClipboardAction);			
+		
+		listenForMeLosingFocus();
 	}
 	
+
+	private void listenForMeLosingFocus()
+	{
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.DEACTIVATED, new PartMonitor.ICallback(){
+			public void eventTriggered(String type, Object instance, IWorkbenchPart parentPart)
+			{
+				boolean isMe = checkIfImTheSameAs(instance);
+				if(isMe)
+					_currentSelection = null;
+			}});
+
+	}
+	
+	private boolean checkIfImTheSameAs(Object target)
+	{
+		boolean res =false;
+		// is it me?
+		if(target == this)
+			res = true;
+		else
+		{
+			res = false;
+		}
+		return res;
+	}
 
 	/** ok - let somebody else select an item on the plot.  The initial reason for making this public 
 	 * was so that when a new item is created, we can select it on the plot.  The plot then fires a 
@@ -407,6 +441,10 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		{
 			if (_myLayers != null)
 				res = _myLayers;
+		}
+		else if (adapter == CorePlotEditor.class)
+		{
+			res = this;
 		}
 		else if (adapter == IRollingNarrativeProvider.class)
 		{
