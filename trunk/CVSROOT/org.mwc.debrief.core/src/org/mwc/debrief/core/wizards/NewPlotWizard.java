@@ -77,8 +77,13 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		Layer chartFeatures = _myNewLayers.findLayer(Layers.CHART_FEATURES);
 		if (chartFeatures == null)
 		{
-			chartFeatures = new BaseLayer();
-			chartFeatures.setName(Layers.CHART_FEATURES);
+			BaseLayer baseFeatures = new BaseLayer();
+			baseFeatures.setName(Layers.CHART_FEATURES);
+			
+			// make the chart-features layer double-buffered, it won't hold time
+			//   related data
+			baseFeatures.setBuffered(true);
+			
 			_myNewLayers.addThisLayer(chartFeatures);
 		}
 
