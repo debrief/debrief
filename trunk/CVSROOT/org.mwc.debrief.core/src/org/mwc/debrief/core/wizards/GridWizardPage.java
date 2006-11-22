@@ -66,10 +66,10 @@ public class GridWizardPage extends CorePlottableWizardPage
 				_myDistances = new WorldDistanceWithUnits[] {
 						new WorldDistanceWithUnits(500, WorldDistanceWithUnits.METRES),
 						new WorldDistanceWithUnits(1, WorldDistanceWithUnits.KM),
-						new WorldDistanceWithUnits(1, WorldDistanceWithUnits.NM),
-						new WorldDistanceWithUnits(5, WorldDistanceWithUnits.NM),
-						new WorldDistanceWithUnits(15, WorldDistanceWithUnits.NM),
-						new WorldDistanceWithUnits(30, WorldDistanceWithUnits.NM),
+						new WorldDistanceWithUnits(1, WorldDistanceWithUnits.MINUTES),
+						new WorldDistanceWithUnits(5, WorldDistanceWithUnits.MINUTES),
+						new WorldDistanceWithUnits(15, WorldDistanceWithUnits.MINUTES),
+						new WorldDistanceWithUnits(30, WorldDistanceWithUnits.MINUTES),
 						new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS), };
 
 				// and now convert them to strings
