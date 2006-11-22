@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.core"
    name="Debrief Core"
-   version="1.0.11"
+   version="1.0.15"
    provider-name="MWC"
    class="org.mwc.debrief.core.DebriefPlugin">
 
@@ -51,7 +51,7 @@
          point="org.mwc.debrief.core.DebriefPlotLoader">
       <loader
             class="org.mwc.debrief.core.loaders.ReplayLoader"
-            extensions="rep"
+            extensions="rep;dsf"
             name="ReplayLoader"/>
    </extension>
    <extension
