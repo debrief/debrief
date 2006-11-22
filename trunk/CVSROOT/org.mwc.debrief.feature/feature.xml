@@ -2,10 +2,13 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.11">
+      version="1.0.15">
 
    <description>
-      [1.0.11] Legacy fixes for save to file problem
+      [1.0.15] Fix bug related to plotting zero-length labels
+[1.0.14] Ensure legacy fixes incorporated
+[1.0.12] Allow drag-drop of dsf files
+[1.0.11] Legacy fixes for save to file problem
 [1.0.10] Preps for final release
 [1.0.9] Remove view 3d button
 [1.0.8] Preps for RC1
