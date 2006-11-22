@@ -58,7 +58,7 @@
          <attribute name="extensions" type="string" use="required">
             <annotation>
                <documentation>
-                  the file suffix for applicable files
+                  the file suffix-list for applicable files (semi-colon separated)
                </documentation>
             </annotation>
          </attribute>
