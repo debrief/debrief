@@ -4,6 +4,7 @@
 package org.mwc.debrief.core.interfaces;
 
 import java.io.InputStream;
+import java.util.StringTokenizer;
 
 import org.eclipse.core.runtime.*;
 import org.eclipse.ui.IEditorInput;
@@ -79,7 +80,18 @@ public interface IPlotLoader extends INamedItem
 		 */
 		public boolean canLoad(String fileName)
 		{
-			return (fileName.toUpperCase().indexOf(_fileTypes.toUpperCase()) > 0);
+			boolean res = false;
+			// now pass through our list
+			String[] mySuffixes = _fileTypes.split(";");
+			for (int i = 0; i < mySuffixes.length; i++)
+			{
+				String mySuffix = mySuffixes[i];
+				if(fileName.toUpperCase().endsWith(mySuffix.toUpperCase()))
+				{
+					res = true;
+				}
+			}
+			return res;
 		}
 		
 	
