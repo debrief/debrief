@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.27  2006-09-22 13:25:12  Ian.Mayo
+// Revision 1.28  2006-11-28 10:51:37  Ian.Mayo
+// Convert multi-line layer labels to single line
+//
+// Revision 1.27  2006/09/22 13:25:12  Ian.Mayo
 // Don't bother reporting how long it took to do screen update
 //
 // Revision 1.26  2006/05/31 13:40:17  Ian.Mayo
@@ -125,7 +128,11 @@ public class SWTCanvas extends SWTCanvasAdapter
 	private transient Image _dblBuff;
 
 	private LocationSelectedAction _copyLocation;
+	
+	
 
+	private Shell _tooltip;
+	
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -138,6 +145,42 @@ public class SWTCanvas extends SWTCanvasAdapter
 		super(null);
 
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
+		_myCanvas.addMouseTrackListener(new MouseTrackAdapter(){
+			
+			public void mouseHover(MouseEvent e)
+			{
+				String tip = getTheToolTipText(new java.awt.Point(e.x, e.y));
+				
+//				_tooltip = new Shell(Display.getCurrent());//,  SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
+//				Label bl = new Label(_tooltip,SWT.NONE);
+//				bl.setText(tip);
+//				bl.pack();
+//				Point dimen =bl.getSize();
+////				_tooltip.setBounds(e.x, e.y, dimen.x, dimen.y);
+//				System.out.println("loc is:" + e);
+//				_tooltip.setBounds(e.x, e.y, 200,50);
+//				_tooltip.setVisible(true);
+				
+				// strip out the HTML
+				tip = tip.replace("<u>", "");
+				tip = tip.replace("</u>", "");
+				tip = tip.replace("\\n", " ");
+				tip = tip.replace("<BR>", " ");
+				tip = tip.replace("<html><font face=\"sansserif\">", "");
+				tip = tip.replace("</font></html>", "");
+				
+				_myCanvas.setToolTipText(tip);
+			}});
+		_myCanvas.addMouseMoveListener(new MouseMoveListener(){
+			public void mouseMove(MouseEvent e)
+			{
+				if(_tooltip == null)
+					return;
+				
+				_tooltip.dispose();
+				_tooltip = null;
+			}});
+		
 
 		// add handler to catch canvas resizes
 		_myCanvas.addControlListener(new ControlAdapter()
@@ -152,7 +195,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		});
 
 		// switch on tooltips for this panel
-		_myCanvas.setToolTipText("blank");
+//		_myCanvas.setToolTipText("ending");
 
 		// setup our own painter
 		_myCanvas.addPaintListener(new org.eclipse.swt.events.PaintListener()
@@ -229,6 +272,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 		
 	}
+	
+
 
 	// ////////////////////////////////////////////////////
 	// screen redraw related
@@ -307,7 +352,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 		long tNow = System.currentTimeMillis();
 		long tDelta = tNow - tThen;
 //		CorePlugin.logError(Status.INFO, "Canvas update took:" + tDelta + " millis", null);
-
 	}
 
 	// ///////////////////////////////////////////////////////////
