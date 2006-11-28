@@ -315,7 +315,7 @@ public class EditableWrapper implements IPropertySource
 
 		// ok, create the action
 		PropertyChangeAction pca = new PropertyChangeAction(oldVal, value, thisProp,
-				getEditable().getName(), getLayers(), null);
+				getEditable().getName(), getLayers(), getTopLevelLayer());
 
 		// and sort it out with the history
 		CorePlugin.run(pca);
