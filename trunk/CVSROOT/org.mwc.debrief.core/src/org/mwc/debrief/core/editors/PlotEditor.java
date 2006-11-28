@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.TrackData.*;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
@@ -518,16 +519,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						chartFireSelectionChanged(selected);
 					}
 
-					public void doSupplementalRightClickProcessing(MenuManager menuManager, Plottable selected, Layer theParentLayer)
+					public void doSupplementalRightClickProcessing(MenuManager menuManager,
+							Plottable selected, Layer theParentLayer)
 					{
-//					 hmm, is it a fix. if it is, also flash up the track
+						// hmm, is it a fix. if it is, also flash up the track
 						if (selected instanceof FixWrapper)
 						{
 							// get the parent track
 							FixWrapper fix = (FixWrapper) selected;
 							TrackWrapper parent = fix.getTrackWrapper();
-							RightClickSupport.getDropdownListFor(menuManager, new Editable[] { parent },
-									new Layer[] { theParentLayer }, new Layer[] { theParentLayer }, getLayers(), true);
+							RightClickSupport.getDropdownListFor(menuManager,
+									new Editable[] { parent }, new Layer[] { theParentLayer },
+									new Layer[] { theParentLayer }, getLayers(), true);
 						}
 					}
 				};
@@ -550,14 +553,22 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			 */
 			protected void paintThisLayer(Layer thisLayer, CanvasType dest)
 			{
-				// get the current time
-				HiResDate tNow = _timeManager.getTime();
-
-				// do we know the time?
-				if (tNow != null)
+				try
 				{
-					// yes. cool, get plotting
-					_layerPainterManager.getCurrentPainter().paintThisLayer(thisLayer, dest, tNow);
+					// get the current time
+					HiResDate tNow = _timeManager.getTime();
+
+					// do we know the time?
+					if (tNow != null)
+					{
+						// yes. cool, get plotting
+						_layerPainterManager.getCurrentPainter()
+								.paintThisLayer(thisLayer, dest, tNow);
+					}
+				}
+				catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR, "Whilst repainting:" + thisLayer, e);
 				}
 			}
 
