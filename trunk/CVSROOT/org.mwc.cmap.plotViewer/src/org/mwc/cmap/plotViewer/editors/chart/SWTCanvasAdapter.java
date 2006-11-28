@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.24  2006-11-16 08:45:51  Ian.Mayo
+// Revision 1.25  2006-11-28 10:52:04  Ian.Mayo
+// Use better width measurer
+//
+// Revision 1.24  2006/11/16 08:45:51  Ian.Mayo
 // Improve text layout
 //
 // Revision 1.23  2006/09/19 10:41:59  Ian.Mayo
@@ -160,7 +163,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	/**
 	 * our tool tip handler.
 	 */
-	private CanvasType.TooltipHandler _tooltipHandler;
+	protected CanvasType.TooltipHandler _tooltipHandler;
 
 	/**
 	 * our editor.
@@ -411,19 +414,27 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 				_theDest.setFont(FontHelper.convertFont(theFont));
 			}
 
-			// res = _theDest.textExtent(theString).x;
-	//		int strLen = theString.length();
-	//		int meanWidth = _theDest.getFontMetrics().getAverageCharWidth();
-			
-			int leading = _theDest.getFontMetrics().getLeading();
-			//res = meanWidth * strLen + leading * --strLen;
-
 			for(int thisC = 0;thisC<theString.length();thisC++)
 			{
-				res += _theDest.getCharWidth(theString.charAt(thisC)) + leading;
+				final char thisChar = theString.charAt(thisC);
+				int thisWid;
+				// just check if it's a space - we're not getting the right width back
+				if(thisChar == ' ')
+				{
+						thisWid = _theDest.getFontMetrics().getAverageCharWidth();
+				}
+				else
+				{
+					// thisWid = _theDest.getCharWidth(thisChar);
+					thisWid = _theDest.getAdvanceWidth(thisChar);
+				}
+				res += thisWid;
 			}
 			
+			// add the spaces
+//			res = res + theString.length() * 2;
 			
+			 //res = (int)(res * 1.1d);
 		}
 		return res;
 	}
@@ -943,13 +954,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	/**
 	 * get a string describing the current screen & world location
 	 */
-	public final String getToolTipText(final MouseEvent p1)
+	public final String getTheToolTipText(final java.awt.Point pt)
 	{
 		String res = null;
 		if (_tooltipHandler != null)
 		{
-
-			final java.awt.Point pt = p1.getPoint();
 			// check we have a valid projection
 			final java.awt.Dimension dim = getProjection().getScreenArea();
 			if (dim != null)
@@ -964,7 +973,8 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 		}
 
 		return res;
-	}
+	}	
+	
 
 	// //////////////////////////////////////////////////////////
 	// painter handling
