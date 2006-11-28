@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.36  2006-08-11 08:24:31  Ian.Mayo
+// Revision 1.37  2006-11-28 10:52:29  Ian.Mayo
+// Improve management of double-buffering
+//
+// Revision 1.36  2006/08/11 08:24:31  Ian.Mayo
 // Don't let repaints stack up
 //
 // Revision 1.35  2006/08/08 13:54:59  Ian.Mayo
@@ -168,7 +171,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	protected WorldArea _lastDataArea = null;
 
-	private final int JITTER = 3;
+	private final int JITTER = 6;
 
 	/**
 	 * track drag operations
@@ -272,8 +275,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	// //////////////////////////////////////////////////////////
 	public void canvasResized()
 	{
-		// and clear out our buffered layers (they all need to be repainted anyway)
-		_myLayers.clear();
+		
+		clearImages();
 
 		// and ditch our image template (since it's size related)
 		_myImageTemplate = null;
@@ -282,6 +285,22 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// a repaint
 		// of the layers)
 		super.canvasResized();
+	}
+
+	/** ditch the images we're remembering
+	 * 
+	 */
+	private void clearImages()
+	{
+		// tell the images to clear themselves out
+		for (Iterator thisImage = _myLayers.entrySet().iterator(); thisImage.hasNext();)
+		{
+			Image thisI = (Image) thisImage.next();
+			thisI.dispose();
+		}
+		
+		// and clear out our buffered layers (they all need to be repainted anyway)
+		_myLayers.clear();
 	}
 
 	/**
@@ -347,6 +366,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// just check we have some data
 
 		// clear out the layers object
+		
 		_myLayers.clear();
 
 		// and start the update
@@ -361,6 +381,15 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		}
 		else
 		{
+			// get the image
+			Image theImage = (Image) _myLayers.get(changedLayer);
+			
+			// and ditch the image
+			if(theImage != null)
+			{
+				theImage.dispose();
+			}
+			
 			// just delete that layer
 			_myLayers.remove(changedLayer);
 
@@ -408,13 +437,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					_lastDataArea = _theCanvas.getProjection().getDataArea();
 
 					// clear out all of the layers we are using
-					_myLayers.clear();
+					clearImages();
 				}
 
 				// we also clear the layers if we're in relative projection mode
 				if (_theCanvas.getProjection().getRelativePlot())
 				{
-					_myLayers.clear();
+					clearImages();
 				}
 
 				int canvasHeight = _theCanvas.getSize().height;
@@ -622,7 +651,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	public void close()
 	{
 		// clear the layers
-		_myLayers.clear();
+		clearImages();
 		_myLayers = null;
 
 		// instruct the canvas to close
