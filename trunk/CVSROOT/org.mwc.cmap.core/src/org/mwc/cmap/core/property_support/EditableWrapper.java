@@ -94,7 +94,12 @@ public class EditableWrapper implements IPropertySource
 		// just see if we are a top-level layer
 		if (parent == null)
 		{
-			res = (Layer) getEditable();
+			// get the parent then
+			Editable parentE = getEditable();
+			
+			// right, is it an editable?		
+			if(parentE instanceof Layer)
+				res = (Layer) parentE;
 		}
 		else
 		{
