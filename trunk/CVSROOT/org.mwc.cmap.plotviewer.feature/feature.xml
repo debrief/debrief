@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.8">
+      version="1.0.9">
 
    <description>
-      [1.0.8] Fix display of bearing in Rng-Brg measurer
+      [1.0.9] Improve double-buffer management
+[1.0.8] Fix display of bearing in Rng-Brg measurer
 [1.0.7] Preps for final release
 [1.0.6] Support for overview chart
 [1.0.5] Preps for RC5
