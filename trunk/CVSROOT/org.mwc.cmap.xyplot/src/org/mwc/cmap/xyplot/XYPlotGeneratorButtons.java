@@ -50,17 +50,17 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 			_theOperations = new Vector(0, 1);
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new depthCalc(), new DepthFormatter(), false));
+					new depthCalc(), new DepthFormatter(), false, 0));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new courseCalc(), new CourseFormatter(), false));
+					new courseCalc(), new CourseFormatter(), false, 360));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new speedCalc(), null, false));
+					new speedCalc(), null, false, 0));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new rangeCalc(), null, true));
+					new rangeCalc(), null, true, 0));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new bearingCalc(), null, true));
+					new bearingCalc(), null, true, 360));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new bearingRateCalc(), new BearingRateFormatter(), true));
+					new bearingRateCalc(), new BearingRateFormatter(), true, 180));
 
 			// provide extra formatting to the y-axis if we're plotting in uk format
 			// (-180...+180).
@@ -75,7 +75,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 
 			// and add the relative bearing calcuation
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new relBearingCalc(), theFormatter, true));
+					new relBearingCalc(), theFormatter, true, 180));
 		}
 
 		if (_pastSelections == null)
