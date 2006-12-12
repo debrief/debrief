@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.xyplot.feature"
       label="org.mwc.cmap.xyplot.feature"
-      version="1.0.4">
+      version="1.0.5">
 
    <description>
-      [1.0.4] Fix bug where menu never shown
+      [1.0.5] Adjust plot formatting tick units
+[1.0.4] Fix bug where menu never shown
 [1.0.3] Use tidy icon for XYPlot
 [1.0.2] Sort out xyplot Manifest
 [1.0.1] Preps for RC1
