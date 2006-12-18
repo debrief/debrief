@@ -29,15 +29,16 @@ public class ZoomIn extends CoreDragAction
 
 		private PlainChart _myChart;
 
-		public void doMouseDrag(final Point pt, final int JITTER, final Layers theLayers, SWTCanvas theCanvas)
+		public void doMouseDrag(final Point pt, final int JITTER, final Layers theLayers,
+				SWTCanvas theCanvas)
 		{
-			// just do a check that we have our start point (it may have been cleared at the end of the move operation)
+			// just do a check that we have our start point (it may have been cleared
+			// at the end of the move operation)
 			if (_startPoint != null)
 			{
 				int deltaX = _startPoint.x - pt.x;
 				int deltaY = _startPoint.y - pt.y;
-				if (Math.abs(deltaX) < JITTER && Math.abs(deltaY) < JITTER)
-					return;
+
 				Tracker _dragTracker = new Tracker((Composite) _myCanvas.getCanvas(), SWT.RESIZE);
 				Rectangle rect = new Rectangle(_startPoint.x, _startPoint.y, deltaX, deltaY);
 				_dragTracker.setRectangles(new Rectangle[] { rect });
@@ -49,18 +50,25 @@ public class ZoomIn extends CoreDragAction
 					// get world area
 					java.awt.Point tl = new java.awt.Point(res.x, res.y);
 					java.awt.Point br = new java.awt.Point(res.x + res.width, res.y + res.height);
-					WorldLocation locA = new WorldLocation(_myCanvas.getProjection().toWorld(tl));
-					WorldLocation locB = new WorldLocation(_myCanvas.getProjection().toWorld(br));
-					WorldArea area = new WorldArea(locA, locB);
 
-					WorldArea oldArea = _myCanvas.getProjection().getDataArea();
-					Action theAction = 	new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(_myChart, oldArea, area);
-					
-					// and wrap it
-					DebriefActionWrapper daw = new DebriefActionWrapper(theAction, null);
-					
-					// and add it to the clipboard
-					CorePlugin.run(daw);
+					if (res.width > JITTER || res.height > JITTER)
+					{
+
+						WorldLocation locA = new WorldLocation(_myCanvas.getProjection().toWorld(tl));
+						WorldLocation locB = new WorldLocation(_myCanvas.getProjection().toWorld(br));
+						WorldArea area = new WorldArea(locA, locB);
+
+						WorldArea oldArea = _myCanvas.getProjection().getDataArea();
+						Action theAction = new MWC.GUI.Tools.Chart.ZoomIn.ZoomInAction(_myChart,
+								oldArea, area);
+
+						// and wrap it
+						DebriefActionWrapper daw = new DebriefActionWrapper(theAction, null);
+
+						// and add it to the clipboard
+						CorePlugin.run(daw);
+
+					}
 
 					_dragTracker = null;
 					_startPoint = null;
