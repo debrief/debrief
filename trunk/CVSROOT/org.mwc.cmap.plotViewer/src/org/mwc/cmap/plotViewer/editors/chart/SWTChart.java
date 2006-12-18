@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.37  2006-11-28 10:52:29  Ian.Mayo
+// Revision 1.38  2006-12-18 10:14:17  Ian.Mayo
+// Improve comment
+//
+// Revision 1.37  2006/11/28 10:52:29  Ian.Mayo
 // Improve management of double-buffering
 //
 // Revision 1.36  2006/08/11 08:24:31  Ian.Mayo
@@ -171,6 +174,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	protected WorldArea _lastDataArea = null;
 
+	/** how far the mouse has to be dragged before it's registered as a drag operation
+	 * 
+	 */
 	private final int JITTER = 6;
 
 	/**
