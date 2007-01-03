@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.layer_manager.feature"
       label="org.mwc.cmap.layer_manager.feature"
-      version="1.0.6"
+      version="1.0.7"
       provider-name="MWC">
 
    <description>
-      [1.0.6] Release preps
+      [1.0.7] Update build
+[1.0.6] Release preps
 [1.0.5] Double-click to open item in props window
 [1.0.4] Context-sensitive primary &amp; secondary buttons
 [1.0.3] Preps for RC1

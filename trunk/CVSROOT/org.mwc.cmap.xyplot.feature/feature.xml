@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.cmap.xyplot.feature"
       label="org.mwc.cmap.xyplot.feature"
-      version="1.0.5">
+      version="1.0.7">
 
    <description>
-      [1.0.5] Adjust plot formatting tick units
+      [1.0.7] Improve clipping for wrapped bearing points
+[1.0.6] Better time steps, 30 deg axis steps, remove print button
+[1.0.5] Adjust plot formatting tick units
 [1.0.4] Fix bug where menu never shown
 [1.0.3] Use tidy icon for XYPlot
 [1.0.2] Sort out xyplot Manifest

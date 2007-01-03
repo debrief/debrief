@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.19"
+      version="1.0.20"
       provider-name="MWC">
 
    <description>
-      [1.0.19] Handle storing changed Time-Controller properties
+      [1.0.20] Assorted Dave W fixes
+[1.0.19] Handle storing changed Time-Controller properties
 [1.0.18] Only update relevant layer on plot
 [1.0.17] Handle plotting zero-length text labels
 [1.0.16] Prevent white plot objects from dissappearing
