@@ -5,6 +5,7 @@ import java.beans.*;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -549,8 +550,14 @@ public class XYPlotView extends ViewPart
 		mf.setColor(mf.getBackgroundColor());
 		mf.fillRect(0, 0, dim.width, dim.height);
 
+		try{
 		// ask the canvas to paint the image
 		_chartInPanel.paintWMFComponent(mf);
+		}
+		catch(Exception e)
+		{
+			CorePlugin.logError(Status.ERROR, "Problem writing WMF", e);
+		}
 
 		// and finish
 		mf.endDraw(null);

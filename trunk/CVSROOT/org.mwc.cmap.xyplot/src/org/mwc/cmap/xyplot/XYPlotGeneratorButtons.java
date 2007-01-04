@@ -58,7 +58,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
 					new rangeCalc(), null, true, 0));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
-					new bearingCalc(), null, true, 360));
+					new bearingCalc(), new CourseFormatter(), true, 360));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
 					new bearingRateCalc(), new BearingRateFormatter(), true, 180));
 
