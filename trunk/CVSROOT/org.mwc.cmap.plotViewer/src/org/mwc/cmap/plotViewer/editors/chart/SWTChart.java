@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.38  2006-12-18 10:14:17  Ian.Mayo
+// Revision 1.39  2007-01-04 16:23:57  ian.mayo
+// Fix integration issue associated with buffer clearing
+//
+// Revision 1.38  2006/12/18 10:14:17  Ian.Mayo
 // Improve comment
 //
 // Revision 1.37  2006/11/28 10:52:29  Ian.Mayo
@@ -125,6 +128,7 @@ import java.awt.*;
 import java.awt.Color;
 import java.util.*;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
@@ -135,6 +139,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.*;
 import org.mwc.cmap.plotViewer.actions.ZoomIn;
 
@@ -166,7 +171,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	/**
 	 * our list of layered images.
 	 */
-	protected HashMap _myLayers = new HashMap();
+	protected HashMap<Layer, Image> _myLayers = new HashMap<Layer, Image>();
 
 	/**
 	 * the data area we last plotted (so that we know when a full layered repaint
@@ -174,8 +179,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 */
 	protected WorldArea _lastDataArea = null;
 
-	/** how far the mouse has to be dragged before it's registered as a drag operation
-	 * 
+	/**
+	 * how far the mouse has to be dragged before it's registered as a drag
+	 * operation
 	 */
 	private final int JITTER = 6;
 
@@ -195,12 +201,11 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	 * keep a cached copy of the image - to reduce replotting time
 	 */
 	protected ImageData _myImageTemplate = null;
-	
 
-	/** keep track of if we're repainting, don't stack them up
-	 * 
+	/**
+	 * keep track of if we're repainting, don't stack them up
 	 */
-	private boolean _repainting = false;	
+	private boolean _repainting = false;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -281,7 +286,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	// //////////////////////////////////////////////////////////
 	public void canvasResized()
 	{
-		
+
 		clearImages();
 
 		// and ditch our image template (since it's size related)
@@ -293,18 +298,27 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		super.canvasResized();
 	}
 
-	/** ditch the images we're remembering
-	 * 
+	/**
+	 * ditch the images we're remembering
 	 */
 	private void clearImages()
 	{
 		// tell the images to clear themselves out
-		for (Iterator thisImage = _myLayers.entrySet().iterator(); thisImage.hasNext();)
+		Iterator iter = _myLayers.values().iterator();
+		while(iter.hasNext())
 		{
-			Image thisI = (Image) thisImage.next();
-			thisI.dispose();
+			Object nextI = iter.next();
+			if (nextI instanceof Image)
+			{
+				Image thisI = (Image) nextI;
+				thisI.dispose();
+			}
+			else
+			{
+				CorePlugin.logError(Status.ERROR, "unexpected type of image found in buffer:" + nextI, null);
+			}
 		}
-		
+
 		// and clear out our buffered layers (they all need to be repainted anyway)
 		_myLayers.clear();
 	}
@@ -330,7 +344,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				chartFireSelectionChanged(selected);
 			}
 
-			public void doSupplementalRightClickProcessing(MenuManager menuManager, Plottable selected, Layer theParentLayer)
+			public void doSupplementalRightClickProcessing(MenuManager menuManager,
+					Plottable selected, Layer theParentLayer)
 			{
 			}
 		};
@@ -372,7 +387,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// just check we have some data
 
 		// clear out the layers object
-		
+
 		_myLayers.clear();
 
 		// and start the update
@@ -389,13 +404,13 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		{
 			// get the image
 			Image theImage = (Image) _myLayers.get(changedLayer);
-			
+
 			// and ditch the image
-			if(theImage != null)
+			if (theImage != null)
 			{
 				theImage.dispose();
 			}
-			
+
 			// just delete that layer
 			_myLayers.remove(changedLayer);
 
@@ -406,7 +421,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			_theCanvas.updateMe();
 		}
 	}
-	
+
 	/**
 	 * over-ride the parent's version of paint, so that we can try to do it by
 	 * layers.
@@ -417,8 +432,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		// chart, we may not have...)
 		if (_theLayers == null)
 			return;
-		
-		if(_repainting)
+
+		if (_repainting)
 		{
 			return;
 		}
@@ -427,138 +442,138 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			_repainting = true;
 		}
 
-		try{
-			
-		// check that we have a valid canvas (that the sizes are set)
-		final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
-		if (sArea != null)
+		try
 		{
-			if (sArea.width > 0)
+
+			// check that we have a valid canvas (that the sizes are set)
+			final java.awt.Dimension sArea = dest.getProjection().getScreenArea();
+			if (sArea != null)
 			{
-
-				// hey, we've plotted at least once, has the data area changed?
-				if (_lastDataArea != _theCanvas.getProjection().getDataArea())
+				if (sArea.width > 0)
 				{
-					// remember the data area for next time
-					_lastDataArea = _theCanvas.getProjection().getDataArea();
 
-					// clear out all of the layers we are using
-					clearImages();
-				}
-
-				// we also clear the layers if we're in relative projection mode
-				if (_theCanvas.getProjection().getRelativePlot())
-				{
-					clearImages();
-				}
-
-				int canvasHeight = _theCanvas.getSize().height;
-				int canvasWidth = _theCanvas.getSize().width;
-
-				paintBackground(dest);
-
-				// ok, pass through the layers, repainting any which need it
-				Enumeration numer = _theLayers.sortedElements();
-				while (numer.hasMoreElements())
-				{
-					final Layer thisLayer = (Layer) numer.nextElement();
-
-					boolean isAlreadyPlotted = false;
-
-					// just check if this layer is visible
-					if (thisLayer.getVisible())
+					// hey, we've plotted at least once, has the data area changed?
+					if (_lastDataArea != _theCanvas.getProjection().getDataArea())
 					{
-						// System.out.println("painting:" + thisLayer.getName());
+						// remember the data area for next time
+						_lastDataArea = _theCanvas.getProjection().getDataArea();
 
-						if (doubleBufferPlot())
+						// clear out all of the layers we are using
+						clearImages();
+					}
+
+					// we also clear the layers if we're in relative projection mode
+					if (_theCanvas.getProjection().getRelativePlot())
+					{
+						clearImages();
+					}
+
+					int canvasHeight = _theCanvas.getSize().height;
+					int canvasWidth = _theCanvas.getSize().width;
+
+					paintBackground(dest);
+
+					// ok, pass through the layers, repainting any which need it
+					Enumeration numer = _theLayers.sortedElements();
+					while (numer.hasMoreElements())
+					{
+						final Layer thisLayer = (Layer) numer.nextElement();
+
+						boolean isAlreadyPlotted = false;
+
+						// just check if this layer is visible
+						if (thisLayer.getVisible())
 						{
-							// check we're plotting to a SwingCanvas, because we don't
-							// double-buffer anything else
-							if (dest instanceof SWTCanvas)
-							{
-								// does this layer want to be double-buffered?
-								if (thisLayer instanceof BaseLayer)
-								{
-									// just check if there is a property which over-rides the
-									// double-buffering
-									final BaseLayer bl = (BaseLayer) thisLayer;
-									if (bl.isBuffered())
-									{
-										isAlreadyPlotted = true;
+							// System.out.println("painting:" + thisLayer.getName());
 
-										// do our double-buffering bit
-										// do we have a layer for this object
-										org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image) _myLayers
-												.get(thisLayer);
-										if (image == null)
+							if (doubleBufferPlot())
+							{
+								// check we're plotting to a SwingCanvas, because we don't
+								// double-buffer anything else
+								if (dest instanceof SWTCanvas)
+								{
+									// does this layer want to be double-buffered?
+									if (thisLayer instanceof BaseLayer)
+									{
+										// just check if there is a property which over-rides the
+										// double-buffering
+										final BaseLayer bl = (BaseLayer) thisLayer;
+										if (bl.isBuffered())
 										{
-											// ok - do we have an image template?
-											if (_myImageTemplate == null)
+											isAlreadyPlotted = true;
+
+											// do our double-buffering bit
+											// do we have a layer for this object
+											org.eclipse.swt.graphics.Image image = (org.eclipse.swt.graphics.Image) _myLayers
+													.get(thisLayer);
+											if (image == null)
 											{
-												// nope, better create one
-												Image template = new Image(Display.getCurrent(), canvasWidth,
-														canvasHeight);
-												// and remember it.
-												_myImageTemplate = template.getImageData();
+												// ok - do we have an image template?
+												if (_myImageTemplate == null)
+												{
+													// nope, better create one
+													Image template = new Image(Display.getCurrent(), canvasWidth,
+															canvasHeight);
+													// and remember it.
+													_myImageTemplate = template.getImageData();
+												}
+
+												// ok, and now the SWT image
+												image = createSWTImage(_myImageTemplate);
+
+												GC newGC = new GC(image);
+
+												// wrap the GC into something we know how to plot to.
+												SWTCanvasAdapter ca = new SWTCanvasAdapter(dest.getProjection());
+												ca.setScreenSize(_theCanvas.getProjection().getScreenArea());
+
+												// and store the GC
+												ca.startDraw(newGC);
+
+												// ok, paint the layer into this canvas
+												thisLayer.paint(ca);
+
+												// done.
+												ca.endDraw(null);
+
+												// store this image in our list, indexed by the layer
+												// object itself
+												_myLayers.put(thisLayer, image);
 											}
 
-											// ok, and now the SWT image
-											image = createSWTImage(_myImageTemplate);
+											// have we ended up with an image to paint?
+											if (image != null)
+											{
+												// get the graphics to paint to
+												SWTCanvas canv = (SWTCanvas) dest;
 
-											GC newGC = new GC(image);
+												// lastly add this image to our Graphics object
+												canv.drawSWTImage(image, 0, 0, canvasWidth, canvasHeight);
+											}
 
-											// wrap the GC into something we know how to plot to.
-											SWTCanvasAdapter ca = new SWTCanvasAdapter(dest.getProjection());
-											ca.setScreenSize(_theCanvas.getProjection().getScreenArea());
-
-											// and store the GC
-											ca.startDraw(newGC);
-
-											// ok, paint the layer into this canvas
-											thisLayer.paint(ca);
-
-											// done.
-											ca.endDraw(null);
-
-											// store this image in our list, indexed by the layer
-											// object itself
-											_myLayers.put(thisLayer, image);
 										}
-
-										// have we ended up with an image to paint?
-										if (image != null)
-										{
-											// get the graphics to paint to
-											SWTCanvas canv = (SWTCanvas) dest;
-
-											// lastly add this image to our Graphics object
-											canv.drawSWTImage(image, 0, 0, canvasWidth, canvasHeight);
-										}
-
 									}
-								}
-							} // whether we were plotting to a SwingCanvas (which may be
-							// double-buffered
-						} // whther we are happy to do double-buffering
+								} // whether we were plotting to a SwingCanvas (which may be
+								// double-buffered
+							} // whther we are happy to do double-buffering
 
-						// did we manage to paint it
-						if (!isAlreadyPlotted)
-						{
-							paintThisLayer(thisLayer, dest);
+							// did we manage to paint it
+							if (!isAlreadyPlotted)
+							{
+								paintThisLayer(thisLayer, dest);
 
-							isAlreadyPlotted = true;
+								isAlreadyPlotted = true;
+							}
 						}
 					}
-				}
 
+				}
 			}
-		}
 		}
 		finally
 		{
 			_repainting = false;
 		}
-		
 
 	}
 
@@ -705,7 +720,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 				if (_myDragMode != null)
 				{
 					_myDragMode.doMouseUp(new Point(e.x, e.y), e.stateMask);
-					
+
 					// and restore the mouse mode cursor
 					_theCanvas.getCanvas().setCursor(_myDragMode.getNormalCursor());
 				}
@@ -838,9 +853,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 */
 		abstract public void mouseDown(org.eclipse.swt.graphics.Point point,
 				SWTCanvas canvas, PlainChart theChart);
-		
-		
-		/** ok, assign the cursor for when we're just hovering
+
+		/**
+		 * ok, assign the cursor for when we're just hovering
 		 * 
 		 * @return the new cursor to use, silly.
 		 */
@@ -848,11 +863,12 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		{
 			// ok, return the 'normal' cursor
 			Cursor res = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-			
+
 			return res;
-		}		
-		
-		/** ok, assign the cursor for when we're just hovering
+		}
+
+		/**
+		 * ok, assign the cursor for when we're just hovering
 		 * 
 		 * @return the new cursor to use, silly.
 		 */
@@ -860,9 +876,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		{
 			// ok, return the 'normal' cursor
 			Cursor res = new Cursor(Display.getCurrent(), SWT.CURSOR_ARROW);
-			
+
 			return res;
-		}				
+		}
 
 	}
 
@@ -1001,7 +1017,8 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param selected
 		 * @param theParentLayer
 		 */
-		abstract public void doSupplementalRightClickProcessing(MenuManager menuManager, Plottable selected, Layer theParentLayer);
+		abstract public void doSupplementalRightClickProcessing(MenuManager menuManager,
+				Plottable selected, Layer theParentLayer);
 
 		public abstract void parentFireSelectionChanged(ISelection selected);
 	}
