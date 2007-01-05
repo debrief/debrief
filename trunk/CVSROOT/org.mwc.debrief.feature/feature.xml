@@ -2,10 +2,13 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.17">
+      version="1.0.19">
 
    <description>
-      [1.0.17] Improve value used for bearing-related wrapped points plotted at extremity
+      [1.0.19] Fix new plot wizard
+[1.0.18] Allow user to set line-style for shapes
+[1.0.17] Improve value used for bearing-related wrapped points
+plotted at extremity
 [1.0.16] Improve plot redraw error trapping
 [1.0.15] Fix bug related to plotting zero-length labels
 [1.0.14] Ensure legacy fixes incorporated
