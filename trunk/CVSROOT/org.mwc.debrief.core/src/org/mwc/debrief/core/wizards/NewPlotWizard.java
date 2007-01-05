@@ -84,6 +84,10 @@ public class NewPlotWizard extends Wizard implements INewWizard
 			//   related data
 			baseFeatures.setBuffered(true);
 			
+			// ok, now use the chart-features reference
+			chartFeatures = baseFeatures;
+			
+			// and store it.
 			_myNewLayers.addThisLayer(chartFeatures);
 		}
 
