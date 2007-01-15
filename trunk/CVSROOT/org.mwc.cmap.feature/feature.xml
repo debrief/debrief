@@ -2,11 +2,13 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.22"
+      version="1.0.24"
       provider-name="MWC">
 
    <description>
-      [1.0.22] Allow user to select line-styles for shapes
+      [1.0.24] Show plural units in scale
+[1.0.23] Fix how centred text appears in labels
+[1.0.22] Allow user to select line-styles for shapes
 [1.0.21] Improvements to xy plotting (inc default date ticks)
 [1.0.20] Assorted Dave W fixes
 [1.0.19] Handle storing changed Time-Controller properties
