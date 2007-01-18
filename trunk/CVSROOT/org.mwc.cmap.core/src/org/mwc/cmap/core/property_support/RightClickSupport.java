@@ -61,52 +61,54 @@ public class RightClickSupport
 			EditorType editor = p.getInfo();
 			MenuManager subMenu = null;
 
-			// and now the parameters
-			PropertyDescriptor[] pd = editor.getPropertyDescriptors();
-			for (int i = 0; i < pd.length; i++)
+			// hmm does it have anything editable?
+			if (editor != null)
 			{
-				PropertyDescriptor thisP = pd[i];
 
-				// start off with the booleans
-				if (supportsBooleanEditor(thisP))
+				// and now the parameters
+				PropertyDescriptor[] pd = editor.getPropertyDescriptors();
+				for (int i = 0; i < pd.length; i++)
 				{
-					// generate boolean editors in the sub-menu
-					subMenu = generateBooleanEditorFor(manager, subMenu, thisP, p, theLayers,
-							theTopLayer);
-				}
-				else
-				{
-					// now the drop-down lists
-					if (supportsListEditor(thisP))
+					PropertyDescriptor thisP = pd[i];
+
+					// start off with the booleans
+					if (supportsBooleanEditor(thisP))
 					{
 						// generate boolean editors in the sub-menu
-						subMenu = generateListEditorFor(manager, subMenu, thisP, p, theLayers,
+						subMenu = generateBooleanEditorFor(manager, subMenu, thisP, p, theLayers,
 								theTopLayer);
 					}
+					else
+					{
+						// now the drop-down lists
+						if (supportsListEditor(thisP))
+						{
+							// generate boolean editors in the sub-menu
+							subMenu = generateListEditorFor(manager, subMenu, thisP, p, theLayers,
+									theTopLayer);
+						}
+					}
+
 				}
 
-			}
-
-			// hmm, have a go at methods for this item
-			// ok, try the methods
-			final Editable theItem = editables[0];
-
-			MethodDescriptor[] meths = theItem.getInfo().getMethodDescriptors();
-			if (meths != null)
-			{
-				for (int i = 0; i < meths.length; i++)
+				// hmm, have a go at methods for this item
+				// ok, try the methods
+				MethodDescriptor[] meths = editor.getMethodDescriptors();
+				if (meths != null)
 				{
-					final Layer myTopLayer = theTopLayer;
+					for (int i = 0; i < meths.length; i++)
+					{
+						final Layer myTopLayer = theTopLayer;
 
-					final MethodDescriptor thisMethD = meths[i];
-					
-					// create button for this method
-					Action doThisAction = new SubjectAction(thisMethD.getDisplayName(),
-							theItem, thisMethD.getMethod(), myTopLayer, theLayers);
+						final MethodDescriptor thisMethD = meths[i];
 
+						// create button for this method
+						Action doThisAction = new SubjectAction(thisMethD.getDisplayName(), p,
+								thisMethD.getMethod(), myTopLayer, theLayers);
 
-					// ok - add to the list.
-					manager.add(doThisAction);
+						// ok - add to the list.
+						manager.add(doThisAction);
+					}
 				}
 			}
 		}
@@ -145,29 +147,36 @@ public class RightClickSupport
 		}
 	}
 
-
-	/** embedded class that encapsulates the information we need to fire an action.
+	/**
+	 * embedded class that encapsulates the information we need to fire an action.
 	 * It was really only refactored to aid debugging.
+	 * 
 	 * @author ian.mayo
-	 *
 	 */
 	private static class SubjectAction extends Action
 	{
 		private Object _subject;
+
 		private Method _method;
+
 		private Layer _topLayer;
+
 		private Layers _theLayers;
-		
+
 		/**
-		 * 
-		 * @param title what to call the action
-		 * @param subject the thing we're operating upon
-		 * @param method what we're going to run
-		 * @param topLayer the layer to update after the action is complete
-		 * @param theLayers the host for the target layer
+		 * @param title
+		 *          what to call the action
+		 * @param subject
+		 *          the thing we're operating upon
+		 * @param method
+		 *          what we're going to run
+		 * @param topLayer
+		 *          the layer to update after the action is complete
+		 * @param theLayers
+		 *          the host for the target layer
 		 */
-		public SubjectAction(String title, Object subject, Method method,
-				Layer topLayer, Layers theLayers)
+		public SubjectAction(String title, Object subject, Method method, Layer topLayer,
+				Layers theLayers)
 		{
 			super(title);
 			_subject = subject;
@@ -175,6 +184,7 @@ public class RightClickSupport
 			_topLayer = topLayer;
 			_theLayers = theLayers;
 		}
+
 		public void run()
 		{
 			try
@@ -186,22 +196,19 @@ public class RightClickSupport
 			}
 			catch (IllegalArgumentException e)
 			{
-				CorePlugin.logError(Status.ERROR,
-						"whilst firing method from right-click", e);
+				CorePlugin.logError(Status.ERROR, "whilst firing method from right-click", e);
 			}
 			catch (IllegalAccessException e)
 			{
-				CorePlugin.logError(Status.ERROR,
-						"whilst firing method from right-click", e);
+				CorePlugin.logError(Status.ERROR, "whilst firing method from right-click", e);
 			}
 			catch (InvocationTargetException e)
 			{
-				CorePlugin.logError(Status.ERROR,
-						"whilst firing method from right-click", e);
+				CorePlugin.logError(Status.ERROR, "whilst firing method from right-click", e);
 			}
-		}		
+		}
 	}
-	
+
 	/**
 	 * can we edit this property with a tick-box?
 	 * 
@@ -514,8 +521,10 @@ public class RightClickSupport
 			}
 			catch (InvocationTargetException e)
 			{
-				CorePlugin.logError(Status.ERROR, "Setter call failed:"
-						+ _subject.getName() + " Error was:" + e.getTargetException().getMessage(), e.getTargetException());
+				CorePlugin
+						.logError(Status.ERROR, "Setter call failed:" + _subject.getName()
+								+ " Error was:" + e.getTargetException().getMessage(), e
+								.getTargetException());
 				res = null;
 			}
 			catch (IllegalArgumentException e)
