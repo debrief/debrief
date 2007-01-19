@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.28  2006-11-28 10:51:37  Ian.Mayo
+// Revision 1.29  2007-01-19 11:39:28  ian.mayo
+// Eclipse-related tidying
+//
+// Revision 1.28  2006/11/28 10:51:37  Ian.Mayo
 // Convert multi-line layer labels to single line
 //
 // Revision 1.27  2006/09/22 13:25:12  Ian.Mayo
@@ -128,11 +131,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 	private transient Image _dblBuff;
 
 	private LocationSelectedAction _copyLocation;
-	
-	
 
 	private Shell _tooltip;
-	
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -145,42 +146,53 @@ public class SWTCanvas extends SWTCanvasAdapter
 		super(null);
 
 		_myCanvas = new Canvas(parent, SWT.NO_BACKGROUND);
-		_myCanvas.addMouseTrackListener(new MouseTrackAdapter(){
-			
+		_myCanvas.addMouseTrackListener(new MouseTrackAdapter()
+		{
+
 			public void mouseHover(MouseEvent e)
 			{
 				String tip = getTheToolTipText(new java.awt.Point(e.x, e.y));
-				
-//				_tooltip = new Shell(Display.getCurrent());//,  SWT.ON_TOP | SWT.NO_FOCUS | SWT.TOOL);
-//				Label bl = new Label(_tooltip,SWT.NONE);
-//				bl.setText(tip);
-//				bl.pack();
-//				Point dimen =bl.getSize();
-////				_tooltip.setBounds(e.x, e.y, dimen.x, dimen.y);
-//				System.out.println("loc is:" + e);
-//				_tooltip.setBounds(e.x, e.y, 200,50);
-//				_tooltip.setVisible(true);
-				
-				// strip out the HTML
-				tip = tip.replace("<u>", "");
-				tip = tip.replace("</u>", "");
-				tip = tip.replace("\\n", " ");
-				tip = tip.replace("<BR>", " ");
-				tip = tip.replace("<html><font face=\"sansserif\">", "");
-				tip = tip.replace("</font></html>", "");
-				
-				_myCanvas.setToolTipText(tip);
-			}});
-		_myCanvas.addMouseMoveListener(new MouseMoveListener(){
+
+				// _tooltip = new Shell(Display.getCurrent());//, SWT.ON_TOP |
+				// SWT.NO_FOCUS | SWT.TOOL);
+				// Label bl = new Label(_tooltip,SWT.NONE);
+				// bl.setText(tip);
+				// bl.pack();
+				// Point dimen =bl.getSize();
+				// // _tooltip.setBounds(e.x, e.y, dimen.x, dimen.y);
+				// System.out.println("loc is:" + e);
+				// _tooltip.setBounds(e.x, e.y, 200,50);
+				// _tooltip.setVisible(true);
+
+				if (tip.length() > 0)
+				{
+					// strip out the HTML
+					tip = tip.replace("<u>", "");
+					tip = tip.replace("</u>", "");
+					tip = tip.replace("\\n", " ");
+					tip = tip.replace("<BR>", " ");
+					tip = tip.replace("<html><font face=\"sansserif\">", "");
+					tip = tip.replace("</font></html>", "");
+
+					_myCanvas.setToolTipText(tip);
+				}
+				else
+				{
+					System.out.println("item not found for hover!!");
+				}
+			}
+		});
+		_myCanvas.addMouseMoveListener(new MouseMoveListener()
+		{
 			public void mouseMove(MouseEvent e)
 			{
-				if(_tooltip == null)
+				if (_tooltip == null)
 					return;
-				
+
 				_tooltip.dispose();
 				_tooltip = null;
-			}});
-		
+			}
+		});
 
 		// add handler to catch canvas resizes
 		_myCanvas.addControlListener(new ControlAdapter()
@@ -195,7 +207,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		});
 
 		// switch on tooltips for this panel
-//		_myCanvas.setToolTipText("ending");
+		// _myCanvas.setToolTipText("ending");
 
 		// setup our own painter
 		_myCanvas.addPaintListener(new org.eclipse.swt.events.PaintListener()
@@ -207,7 +219,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 			}
 		});
 
-//		_myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.BLUE));
+		// _myCanvas.setBackground(ColorHelper.getColor(java.awt.Color.BLUE));
 
 		_myCanvas.addMouseListener(new MouseAdapter()
 		{
@@ -238,14 +250,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * ok - insert the right-hand button related items
 	 * 
 	 * @param mmgr
-	 * @param scrPoint 
+	 * @param scrPoint
 	 */
 	protected void fillContextMenu(MenuManager mmgr, Point scrPoint, WorldLocation loc)
 	{
 		// right, we create the actions afresh each time here. We can't
 		// automatically calculate it.
-		_copyLocation = new LocationSelectedAction("Copy cursor location",
-				SWT.PUSH, loc)
+		_copyLocation = new LocationSelectedAction("Copy cursor location", SWT.PUSH, loc)
 		{
 			/**
 			 * @param loc
@@ -270,10 +281,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 		mmgr.add(_copyLocation);
 		mmgr.add(new Separator());
 
-		
 	}
-	
-
 
 	// ////////////////////////////////////////////////////
 	// screen redraw related
@@ -310,12 +318,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 		}
 
 		// finally put the required bits of the target image onto the screen
-		if(_dblBuff != null)
-			gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
-				pe.width, pe.height);
+		if (_dblBuff != null)
+			gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y, pe.width,
+					pe.height);
 		else
 		{
-			CorePlugin.logError(Status.INFO, "Double-buffering failed, no image produced", null);
+			CorePlugin
+					.logError(Status.INFO, "Double-buffering failed, no image produced", null);
 		}
 	}
 
@@ -329,7 +338,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	{
 		// what's the time Mr Wolf?
 		long tThen = System.currentTimeMillis();
-		
+
 		// go through our painters
 		final Enumeration enumer = _thePainters.elements();
 		while (enumer.hasMoreElements())
@@ -347,11 +356,12 @@ public class SWTCanvas extends SWTCanvasAdapter
 			// it must be ok
 			thisPainter.paintMe(dest);
 		}
-		
+
 		// how long was it?
 		long tNow = System.currentTimeMillis();
 		long tDelta = tNow - tThen;
-//		CorePlugin.logError(Status.INFO, "Canvas update took:" + tDelta + " millis", null);
+		// CorePlugin.logError(Status.INFO, "Canvas update took:" + tDelta + "
+		// millis", null);
 	}
 
 	// ///////////////////////////////////////////////////////////
@@ -402,7 +412,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 	/**
 	 * first repaint the plot, then trigger a screen update
 	 */
-public final void updateMe()
+	public final void updateMe()
 	{
 		if (_dblBuff != null)
 		{
@@ -410,21 +420,23 @@ public final void updateMe()
 			_dblBuff = null;
 		}
 
-		if(!_myCanvas.isDisposed())
+		if (!_myCanvas.isDisposed())
 		{
 			// called deferred redraw method
-			Display.getDefault().asyncExec(new Runnable(){
+			Display.getDefault().asyncExec(new Runnable()
+			{
 				public void run()
 				{
-					if(!_myCanvas.isDisposed())
+					if (!_myCanvas.isDisposed())
 					{
 						_myCanvas.redraw();
 					}
 				}
-				
+
 			});
 		}
 	}
+
 	/**
 	 * provide close method, clear elements.
 	 */
@@ -536,8 +548,7 @@ public final void updateMe()
 			// try southern/western location
 			theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
 			txt = CorePlugin.toClipboard(theLoc);
-			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2",
-					txt);
+			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2", txt);
 		}
 	}
 }
