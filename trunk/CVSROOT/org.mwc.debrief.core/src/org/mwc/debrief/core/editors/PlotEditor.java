@@ -709,6 +709,22 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		firePropertyChange(PROP_DIRTY);
 	}
 
+	
+	
+	/**
+	 * 
+	 */
+	@Override
+	protected void layersExtended()
+	{
+		// inform our parent
+		super.layersExtended();
+		
+		// and tell the track data manager that something's happened.  One of it's tracks may have been
+		// deleted!
+		_trackDataProvider.fireTracksChanged();
+	}
+
 	public boolean isSaveAsAllowed()
 	{
 		return true;
