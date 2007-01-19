@@ -662,7 +662,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/**
 	 * new data has been added - have a look at the times
 	 */
-	private void layersExtended()
+	protected void layersExtended()
 	{
 
 	}
