@@ -6,7 +6,8 @@
       provider-name="MWC">
 
    <description>
-      [1.0.24] Show plural units in scale
+      [1.0.25] Let tote handle tracks being deleted from layer manager
+[1.0.24] Show plural units in scale
 [1.0.23] Fix how centred text appears in labels
 [1.0.22] Allow user to select line-styles for shapes
 [1.0.21] Improvements to xy plotting (inc default date ticks)

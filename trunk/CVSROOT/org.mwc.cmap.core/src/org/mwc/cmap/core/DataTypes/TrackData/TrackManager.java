@@ -180,7 +180,7 @@ public class TrackManager implements TrackDataProvider // ,
 
 			if (secs.size() > 0)
 			{
-				_theSecondaries = new WatchableList[] { null };
+				_theSecondaries = new WatchableList[] {};
 				_theSecondaries = (WatchableList[]) secs.toArray(_theSecondaries);
 			}
 		}
@@ -253,6 +253,41 @@ public class TrackManager implements TrackDataProvider // ,
 
 	public void fireTracksChanged()
 	{
+		// bugger, just double-check that our layers are still in there...
+
+		// do we have a primary?
+		if (_thePrimary != null)
+		{
+			Layer found = _theLayers.findLayer(_thePrimary.getName());
+
+			// did we find it?
+			if (found == null)
+			{
+				// nope, better ditch the primary
+				_thePrimary = null;
+			}
+		}
+
+		// now the secondaries!!!
+		if (_theSecondaries != null)
+		{
+			Vector<WatchableList> secsFound = new Vector<WatchableList>(0, 1);
+			for (int i = 0; i < _theSecondaries.length; i++)
+			{
+				WatchableList thisSec = _theSecondaries[i];
+				String thisName = thisSec.getName();
+				// is it in our layers?
+				if (_theLayers.findLayer(thisName) != null)
+				{
+					secsFound.add(thisSec);
+				}
+			}
+
+			// and store the new secs list
+			WatchableList[] demo = new WatchableList[] {};
+			_theSecondaries = (WatchableList[]) secsFound.toArray(demo);
+		}
+
 		if (_myDataListeners != null)
 		{
 			Iterator iter = _myDataListeners.iterator();
@@ -279,7 +314,7 @@ public class TrackManager implements TrackDataProvider // ,
 	private void addSecondaryImpl(WatchableList secondary)
 	{
 		// store the new list
-		Vector newList = new Vector(1, 1);
+		Vector<WatchableList> newList = new Vector<WatchableList>(0, 1);
 
 		// copy in the old list
 		if (_theSecondaries != null)
@@ -293,7 +328,7 @@ public class TrackManager implements TrackDataProvider // ,
 		// and add the new item
 		newList.add(secondary);
 
-		WatchableList[] demo = new WatchableList[] { null };
+		WatchableList[] demo = new WatchableList[] {};
 		_theSecondaries = (WatchableList[]) newList.toArray(demo);
 	}
 
@@ -406,7 +441,7 @@ public class TrackManager implements TrackDataProvider // ,
 	private void removeSecondaryImpl(WatchableList thisSec)
 	{
 		// store the new list
-		Vector newList = new Vector(1, 1);
+		Vector<WatchableList> newList = new Vector<WatchableList>(0, 1);
 
 		// copy in the old list
 		if (_theSecondaries != null)
@@ -427,12 +462,11 @@ public class TrackManager implements TrackDataProvider // ,
 
 		if (newList.size() > 0)
 		{
-			WatchableList[] demo = new WatchableList[] { null };
+			WatchableList[] demo = new WatchableList[] {};
 			_theSecondaries = (WatchableList[]) newList.toArray(demo);
 		}
 		else
 			_theSecondaries = new WatchableList[0];
-
 	}
 
 	/**

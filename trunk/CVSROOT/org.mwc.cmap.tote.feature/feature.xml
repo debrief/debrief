@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.5">
+      version="1.0.6">
 
    <description>
-      [1.0.5] Preps for final release
+      [1.0.6] Handle tote items being removed from layer manager
+[1.0.5] Preps for final release
 [1.0.4] Add user-selectable slant-range property
 [1.0.3] Preps for RC1
 [1.0.2] Incorporate removing primary/secondary tracks

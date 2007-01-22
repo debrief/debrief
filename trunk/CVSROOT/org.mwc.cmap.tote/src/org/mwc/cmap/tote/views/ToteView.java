@@ -302,9 +302,12 @@ public class ToteView extends ViewPart
 				for (int i = 0; i < secTracks.length; i++)
 				{
 					WatchableList secTrack = secTracks[i];
-					layout.addColumnData(new ColumnWeightData(10, true));
-					TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
-					thisSec.setText(secTrack.getName());
+					if (secTrack != null)
+					{
+						layout.addColumnData(new ColumnWeightData(10, true));
+						TableColumn thisSec = new TableColumn(tbl, SWT.NONE);
+						thisSec.setText(secTrack.getName());
+					}
 				}
 			}
 
@@ -645,10 +648,7 @@ public class ToteView extends ViewPart
 		// and fire the update
 		_tableViewer.getTable().layout(true);
 
-		Color greyCol = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);// ColorHelper.getColor(new
-		// java.awt.Color(225,
-		// 225,
-		// 220));
+		Color greyCol = Display.getCurrent().getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
 		_tableViewer.getTable().setBackground(greyCol);
 
 		// hmm, check if we have any track data
@@ -669,13 +669,16 @@ public class ToteView extends ViewPart
 			for (int i = 0; i < secs.length; i++)
 			{
 				WatchableList thisSec = secs[i];
-				thisCol = ColorHelper.getColor(thisSec.getColor());
-				for (int j = 0; j < items.length; j++)
+				if (thisSec != null)
 				{
-					TableItem thisRow = items[j];
-					thisRow.setForeground(2 + i, thisCol);
-					Color whiteCol = ColorHelper.getColor(new java.awt.Color(255, 255, 255));
-					thisRow.setBackground(2 + i, whiteCol);
+					thisCol = ColorHelper.getColor(thisSec.getColor());
+					for (int j = 0; j < items.length; j++)
+					{
+						TableItem thisRow = items[j];
+						thisRow.setForeground(2 + i, thisCol);
+						Color whiteCol = ColorHelper.getColor(new java.awt.Color(255, 255, 255));
+						thisRow.setBackground(2 + i, whiteCol);
+					}
 				}
 			}
 		}
@@ -899,14 +902,17 @@ public class ToteView extends ViewPart
 							{
 								// prepare the list of secondary watchables
 								WatchableList wList = secLists[columnIndex - 2];
-								Watchable[] list = wList.getNearestTo(_theDTG);
-
-								Watchable nearest = null;
-								if (list.length > 0)
+								if (wList != null)
 								{
-									nearest = list[0];
-									if (nearest instanceof FixWrapper.InterpolatedFixWrapper)
-										isInterpolated = true;
+									Watchable[] list = wList.getNearestTo(_theDTG);
+
+									Watchable nearest = null;
+									if (list.length > 0)
+									{
+										nearest = list[0];
+										if (nearest instanceof FixWrapper.InterpolatedFixWrapper)
+											isInterpolated = true;
+									}
 								}
 							}
 						}
@@ -989,12 +995,15 @@ public class ToteView extends ViewPart
 								{
 									// prepare the list of secondary watchables
 									WatchableList wList = secLists[columnIndex - 2];
-									list = wList.getNearestTo(_theDTG);
+									if (wList != null)
+									{
+										list = wList.getNearestTo(_theDTG);
 
-									Watchable nearest = null;
-									if (list.length > 0)
-										nearest = list[0];
-									res = tc.update(pw, nearest, _theDTG);
+										Watchable nearest = null;
+										if (list.length > 0)
+											nearest = list[0];
+										res = tc.update(pw, nearest, _theDTG);
+									}
 								}
 							}
 						}
@@ -1031,12 +1040,12 @@ public class ToteView extends ViewPart
 		{
 			TableItem selection = selectedCols[0];
 			TableColumn[] tc = table.getColumns();
-			
+
 			// sort out how many c
 			int numCols = tc.length;
-			if(_showUnits.isChecked())
+			if (_showUnits.isChecked())
 				numCols--;
-			
+
 			for (int i = 1; i < numCols; i++)
 			{
 				Rectangle bounds = selection.getBounds(i);
