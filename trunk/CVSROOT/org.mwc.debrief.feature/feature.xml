@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.19">
+      version="1.0.20">
 
    <description>
-      [1.0.19] Fix new plot wizard
+      [1.0.20] Amend track manipulation such that point on or after requested DTG is returned (not on or before), to improve &quot;5 min labels&quot; when points don&apos;t all land on minute.
+[1.0.19] Fix new plot wizard
 [1.0.18] Allow user to set line-style for shapes
 [1.0.17] Improve value used for bearing-related wrapped points
 plotted at extremity
