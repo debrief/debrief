@@ -358,6 +358,9 @@ public class DragFeature extends CoreDragAction
 						}
 					}
 				}
+				
+				// ok, let's ditch the GC
+				gc.dispose();
 
 			}
 			else
@@ -452,7 +455,7 @@ public class DragFeature extends CoreDragAction
 		{
 			graphics.setForeground(ColorHelper.getColor(java.awt.Color.WHITE));
 
-			// ok, move the target ot the new location...
+			// ok, move the target to the new location...
 			if (newVector != null)
 			{
 				_hoverTarget.shift(newVector);
