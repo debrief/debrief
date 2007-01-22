@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.legacy"
    name="Legacy Plug-in"
-   version="1.0.7"
+   version="1.0.8"
    provider-name="MWC">
 
    <runtime>
