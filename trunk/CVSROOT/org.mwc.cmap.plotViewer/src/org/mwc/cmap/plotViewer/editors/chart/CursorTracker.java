@@ -8,6 +8,7 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.ui_support.LineItem;
 
 import MWC.GUI.*;
+import MWC.GUI.PlainChart.ChartCursorMovedListener;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
@@ -25,6 +26,11 @@ public class CursorTracker implements MouseMoveListener
 	 */
 	LineItem _label = null;
 
+	/** something to listen out for chart movement
+	 * 
+	 */
+	final private ChartCursorMovedListener _moveListener;
+
 	// ///////////////////////////////////////////////////
 	// constructor
 	// ///////////////////////////////////////////////////
@@ -34,17 +40,18 @@ public class CursorTracker implements MouseMoveListener
 		// ok, remember the chart
 		_myChart = myChart;
 
-		// and listen to the chart
-		_myChart.addCursorMovedListener(new PlainChart.ChartCursorMovedListener()
+		_moveListener = new PlainChart.ChartCursorMovedListener()
 		{
-
 			public void cursorMoved(WorldLocation thePos, boolean dragging,
 					Layers theData)
 			{
 				String msg = BriefFormatLocation.toString(thePos);
 				write(msg);
 			}
-		});
+		};
+		
+		// and listen to the chart
+		_myChart.addCursorMovedListener(_moveListener);
 
 		_label = theLabel;
 	}
@@ -108,6 +115,11 @@ public class CursorTracker implements MouseMoveListener
 	public void mouseDragged(MouseEvent e)
 	{
 		mouseMove(e);
+	}
+
+	public void close()
+	{
+		_myChart.removeCursorMovedListener(_moveListener);
 	}
 
 	/**
