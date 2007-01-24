@@ -97,6 +97,8 @@ public class StackedDotsView extends ViewPart
 
 	private Composite _holder;
 
+	private FormattedJFreeChart _myChart;
+
 	/**
 	 * The constructor.
 	 */
@@ -240,11 +242,13 @@ public class StackedDotsView extends ViewPart
 		_myPlot.setRenderer(new ColourStandardXYItemRenderer(
 				StandardXYItemRenderer.SHAPES_AND_LINES, tooltipGenerator, null));
 		// put the plot into a chart
-		final FormattedJFreeChart fj = new FormattedJFreeChart("Bearing error", null,
+		_myChart = new FormattedJFreeChart("Bearing error", null,
 				_myPlot, false);
-		fj.setShowSymbols(true);
+		_myChart.setShowSymbols(true);
+		// shrink the title
+		_myChart.setTitleFont(_myChart.getTitleFont().deriveFont(8));
 
-		final ChartPanel plotHolder = new ChartPanel(fj);
+		final ChartPanel plotHolder = new ChartPanel(_myChart);
 		plotHolder.setMouseZoomable(true, true);
 		plotHolder.setDisplayToolTips(false);
 
@@ -257,36 +261,6 @@ public class StackedDotsView extends ViewPart
 	 */
 	private void updateStackedDots()
 	{
-
-//		_myHelper.reset();
-//		_myHelper.initialise(_theTrackDataListener, false);
-//		
-//		if (_theTrackDataListener != null)
-//		{
-//			// check what has moved.
-//			WatchableList pri = _theTrackDataListener.getPrimaryTrack();
-//			WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
-//
-//			Watchable[] priList = pri.getNearestTo(pri.getStartDTG());
-//			if (priList.length > 0)
-//			{
-//				System.out.print("pri:" + pri.getName() + " "
-//						+ priList[0].getLocation().getLat());
-//			}
-//
-//			for (int i = 0; i < secs.length; i++)
-//			{
-//				WatchableList thisSec = secs[i];
-//				priList = thisSec.getNearestTo(thisSec.getStartDTG());
-//				if(priList.length > 0)
-//				{
-//				System.out.print(" sec:" + thisSec.getName() + " "
-//						+ priList[0].getLocation().getLat());
-//				}
-//			}
-//			System.out.println("|");
-//		}
-		// /////////////////////////////////////////////////////////////////
 
 		// get the current set of data to plot
 		final TimeSeriesCollection newData = _myHelper
@@ -329,7 +303,7 @@ public class StackedDotsView extends ViewPart
 						_theTrackDataListener = (TrackManager) part;
 
 						// ok - fire off the event for the new tracks
-						_myHelper.initialise(_theTrackDataListener, true);
+						_myHelper.initialise(_theTrackDataListener, false);
 
 					}
 				});
@@ -516,10 +490,10 @@ public class StackedDotsView extends ViewPart
 		 * @return the set of data items to plot
 		 */
 		public TimeSeriesCollection getUpdatedSeries(TrackManager tracks)
-		{
+		{		
 			// ok, find the track wrappers
 			if (_secondaryTrack == null)
-				initialise(tracks, true);
+				initialise(tracks, false);
 
 			// did it work?
 			if (_secondaryTrack == null)
@@ -635,7 +609,7 @@ public class StackedDotsView extends ViewPart
 			if (tracks == null)
 			{
 				// output error message
-				CorePlugin.logError(Status.INFO, "Not showing stacked dots, no Debrief plot",
+				showError(Status.INFO, "Please open a Debrief plot",
 						null);
 				// showMessage("Sorry, a Debrief plot must be selected", showError);
 				return;
@@ -645,18 +619,18 @@ public class StackedDotsView extends ViewPart
 			WatchableList priTrk = tracks.getPrimaryTrack();
 			if (priTrk == null)
 			{
-				showMessage(
-						"Sorry, stacked dots will not open.  A primary track must be placed on the Tote",
-						showError);
+				showError(Status.INFO,
+						"A primary track must be placed on the Tote",
+						null);
 				return;
 			}
 			else
 			{
 				if (!(priTrk instanceof TrackWrapper))
 				{
-					showMessage(
-							"Sorry, stacked dots will not open.  The primary track must be a vehicle track",
-							showError);
+					showError(Status.INFO,
+							"The primary track must be a vehicle track",
+							null);
 					return;
 				}
 				else
@@ -669,18 +643,18 @@ public class StackedDotsView extends ViewPart
 			// any?
 			if ((secs == null) || (secs.length == 0))
 			{
-				showMessage(
-						"Sorry, stacked dots will not open.  A secondary track must be present on the tote",
-						showError);
+				showError(Status.INFO,
+						"A secondary track must be present on the tote",
+						null);
 				return;
 			}
 
 			// too many?
 			if (secs.length > 1)
 			{
-				showMessage(
-						"Sorry, stacked dots will not open.  Only one secondary track may be present on the tote",
-						showError);
+				showError(Status.INFO,
+						"Only one secondary track may be present on the tote",
+						null);
 				return;
 			}
 
@@ -688,9 +662,9 @@ public class StackedDotsView extends ViewPart
 			WatchableList secTrk = secs[0];
 			if (!(secTrk instanceof TrackWrapper))
 			{
-				showMessage(
-						"Sorry, stacked dots will not open.  The secondary track must be a vehicle track",
-						showError);
+				showError(Status.INFO,
+						"The secondary track must be a vehicle track",
+						null);
 				return;
 			}
 			else
@@ -700,12 +674,15 @@ public class StackedDotsView extends ViewPart
 
 			if (_primaryTrack.getSensors() == null)
 			{
-				showMessage(
-						"Sorry, stacked dots will not open.  There must be sensor data available",
-						showError);
+				showError(Status.INFO,
+						"There must be sensor data available",
+						null);
 				return;
 			}
 
+			// hey, we've got this far. show the right title
+			_myChart.setTitle("Bearing Error");
+			
 			// ok, get the positions
 			updateDoublets();
 
@@ -895,6 +872,15 @@ public class StackedDotsView extends ViewPart
 	{
 		if (showError)
 			MessageDialog.openInformation(getSite().getShell(), "Stacked dots", message);
+	}
+
+	public void showError(int info, String string, Throwable object)
+	{
+		// somehow, put the message into the UI
+		_myChart.setTitle(string);
+		
+		// and store the problem into the log
+		CorePlugin.logError(info, string, object);
 	}
 
 }
