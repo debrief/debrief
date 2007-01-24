@@ -181,7 +181,10 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 		// and clear the tracker
 		if (null != _myTracker)
+		{
+			_myTracker.close();
 			_myTracker = null;
+		}
 		
 		// empty the part monitor
 		_myPartMonitor.ditch();
