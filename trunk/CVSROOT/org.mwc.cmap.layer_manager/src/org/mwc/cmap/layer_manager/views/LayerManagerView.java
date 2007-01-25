@@ -597,16 +597,23 @@ public class LayerManagerView extends ViewPart
 				res = true;
 
 				// ok, it's a candidate. now see if it's already one of the secondaries
-				WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
-				if (secs != null)
+				if (_theTrackDataListener == null)
 				{
-					for (int i = 0; i < secs.length; i++)
+					CorePlugin.logError(Status.INFO, "PROBLEM: Layer manager does not hold track data listener.  Maintaner to track this occurrence", null);
+				}
+				else
+				{
+					WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
+					if (secs != null)
 					{
-						WatchableList thisList = secs[i];
-						if (thisList == pl)
+						for (int i = 0; i < secs.length; i++)
 						{
-							res = false;
-							break;
+							WatchableList thisList = secs[i];
+							if (thisList == pl)
+							{
+								res = false;
+								break;
+							}
 						}
 					}
 				}
