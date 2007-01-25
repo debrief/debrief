@@ -330,6 +330,9 @@ public class DragComponent extends DragFeature
 						}
 					}
 				}
+				
+				// and ditch the GC
+				gc.dispose();
 			}
 			else
 			{
