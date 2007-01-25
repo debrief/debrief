@@ -658,6 +658,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 													// store this image in our list, indexed by the layer
 													// object itself
 													_myLayers.put(thisLayer, image);
+													
+													// and ditch the GC
+													newGC.dispose();
 												}
 
 												// have we ended up with an image to paint?
