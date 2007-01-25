@@ -653,7 +653,7 @@ public class StackedDotsView extends ViewPart
 			if (secs.length > 1)
 			{
 				showError(Status.INFO,
-						"Only one secondary track may be present on the tote",
+						"Only 1 secondary track may be on the tote",
 						null);
 				return;
 			}
