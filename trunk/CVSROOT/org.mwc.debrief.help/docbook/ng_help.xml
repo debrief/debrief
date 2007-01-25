@@ -7,16 +7,15 @@
 <title>Debrief NG User Documentation</title> 
 <mediaobject> 
 <imageobject>
-<imagedata fileref="figures/d2003_logo.gif" align="center"/> 
+<imagedata fileref="figures/DebriefNGlogo.gif" align="center"/> 
 </imageobject> 
 </mediaobject> 
 <author> 
 <firstname>Ian</firstname> 
 <surname>Mayo</surname> 
 <affiliation> 
-<orgdiv> <inlinegraphic fileref="figures/new_logo2.gif"/> </orgdiv> 
-<orgdiv> <inlinegraphic fileref="figures/mwc_crest.gif"/> </orgdiv> 
 <orgdiv> <inlinegraphic fileref="figures/planet.gif"/> </orgdiv> 
+<orgdiv> <inlinegraphic fileref="figures/mwc_crest.gif"/> </orgdiv> 
 </affiliation> 
 </author> 
 <edition>Documentation for Debrief NG</edition> 
@@ -169,31 +168,31 @@ included in the section entitled "GNU Free Documentation License".
 </itemizedlist> </para> 
 </sect1> 
 <sect1 id="debrief_history"> 
-<title>What's new?</title>
-<formalpara>
-<title>Adoption of Eclipse framework</title>
-<para>2006 has seen a change in direction for the delivery of Debrief.   Instead of being a standalone application build from scratch (albeit with a couple of third-party components), Debrief NG has been rehosted into an existing framework; <ulink url="www.eclipse.org">Eclipse</ulink>.  Adoption of Eclipse has bought the following benefits:<itemizedlist><listitem><para>Functionally rich user interface.  Eclipse has provided a wealth of trees, tables and slider controls to make your analysis job easier. You are now able to drag &amp; drop any window anywhere on the screen.  </para>
-</listitem>
-<listitem>
-<para>Persistent window layout.  Your modified window layout is remembered when you re-open Debrief NG.</para>
-</listitem>
-<listitem>
-<para>Online updating.  If you're connected to a suitable network (MWC or the Internet) Eclipse is able to download &amp; install it's own updates. Agencies with large numbers of Eclipse users can provide their own internal update site for Eclipse installations to download updates from.</para>
-</listitem>
-<listitem>
-<para>Extensive guidance.  Since Debrief sits "on top" of Eclipse, the broad spectrum of Eclipse online &amp; printed guidance is available.  You rely less on Debrief-specific guidance to resolve your problems.  Don't worry, all of the guidance is presented together and covered by a single search engine. </para>
-</listitem>
-<listitem>
-<para>Modular infrastructure.  It is now easier to create Debrief plug-ins, and applications based on Debrief. Developers no longer have to learn the full depth and breadth of Debrief prior to adding new features.  They just need to learn about the interfaces presented by Debrief, and how the Eclipse infrastructure works.  Eclipse development is documented online and in many off-the-shelf books, and it has a strong support community  </para>
-</listitem>
-</itemizedlist></para>
-</formalpara>
-<formalpara>
-<title>Editing multiple items</title>
-<para>It is now easy to edit multiple items at once.  As you select  them on the layer manager, their common properties are shown in the properties window.  Then just edit away...</para>
-</formalpara>
-<formalpara>
-<title>Polished user interface</title>
+<title>What's new?</title> 
+<formalpara> 
+<title>Adoption of Eclipse framework</title> 
+<para>2006 has seen a change in direction for the delivery of Debrief.   Instead of being a standalone application build from scratch (albeit with a couple of third-party components), Debrief NG has been rehosted into an existing framework; <ulink url="www.eclipse.org">Eclipse</ulink>.  Adoption of Eclipse has bought the following benefits:<itemizedlist><listitem><para>Functionally rich user interface.  Eclipse has provided a wealth of trees, tables and slider controls to make your analysis job easier. You are now able to drag &amp; drop any window anywhere on the screen.  </para> 
+</listitem> 
+<listitem> 
+<para>Persistent window layout.  Your modified window layout is remembered when you re-open Debrief NG.</para> 
+</listitem> 
+<listitem> 
+<para>Online updating.  If you're connected to a suitable network (MWC or the Internet) Eclipse is able to download &amp; install it's own updates. Agencies with large numbers of Eclipse users can provide their own internal update site for Eclipse installations to download updates from.</para> 
+</listitem> 
+<listitem> 
+<para>Extensive guidance.  Since Debrief sits "on top" of Eclipse, the broad spectrum of Eclipse online &amp; printed guidance is available.  You rely less on Debrief-specific guidance to resolve your problems.  Don't worry, all of the guidance is presented together and covered by a single search engine. </para> 
+</listitem> 
+<listitem> 
+<para>Modular infrastructure.  It is now easier to create Debrief plug-ins, and applications based on Debrief. Developers no longer have to learn the full depth and breadth of Debrief prior to adding new features.  They just need to learn about the interfaces presented by Debrief, and how the Eclipse infrastructure works.  Eclipse development is documented online and in many off-the-shelf books, and it has a strong support community  </para> 
+</listitem> 
+</itemizedlist></para> 
+</formalpara> 
+<formalpara> 
+<title>Editing multiple items</title> 
+<para>It is now easy to edit multiple items at once.  As you select  them on the layer manager, their common properties are shown in the properties window.  Then just edit away...</para> 
+</formalpara> 
+<formalpara> 
+<title>Polished user interface</title> 
 <para>All of the user interface  have received a refresh. The layer manager includes contextual icons giving an extra indication of what's in each layer.updated_time_controller.jpg<figure float="0">
               <title>Contextual icons</title>
               <screenshot>
@@ -214,10 +213,10 @@ included in the section entitled "GNU Free Documentation License".
                   
                 </mediaobject>
               </screenshot>
-            </figure></para>
-</formalpara>
-<formalpara>
-<title>Bookmarks</title>
+            </figure></para> 
+</formalpara> 
+<formalpara> 
+<title>Bookmarks</title> 
 <para>You can now bookmark significant events within an exercise.  The list of bookmarks across all of your Debrief plots are managed from the Bookmarks dialog, and generated from the  drop-down menu of the improved Time Controller.<figure float="0">
               <title>Adding a bookmark</title>
               <screenshot>
@@ -238,10 +237,10 @@ included in the section entitled "GNU Free Documentation License".
                   
                 </mediaobject>
               </screenshot>
-            </figure></para>
-</formalpara>
-</sect1>
-<sect1>
+            </figure></para> 
+</formalpara> 
+</sect1> 
+<sect1> 
 <title>History</title> 
 <sect2> 
 <title>Pre-history</title> 
