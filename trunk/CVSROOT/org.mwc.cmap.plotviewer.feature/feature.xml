@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.11">
+      version="1.0.12">
 
    <description>
-      [1.0.11] Fix integration issue associated with buffer clearing
+      [1.0.12] Ensure we ditch GCs
+[1.0.11] Fix integration issue associated with buffer clearing
 [1.0.10] Try to diagnose buffer clearing troubles
 [1.0.9] Improve double-buffer management
 [1.0.8] Fix display of bearing in Rng-Brg measurer

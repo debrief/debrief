@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.25  2006-11-28 10:52:04  Ian.Mayo
+// Revision 1.26  2007-01-25 15:53:57  ian.mayo
+// Better GC maangement
+//
+// Revision 1.25  2006/11/28 10:52:04  Ian.Mayo
 // Use better width measurer
 //
 // Revision 1.24  2006/11/16 08:45:51  Ian.Mayo

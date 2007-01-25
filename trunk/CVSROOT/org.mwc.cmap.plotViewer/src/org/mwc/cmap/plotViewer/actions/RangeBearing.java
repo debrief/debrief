@@ -68,6 +68,9 @@ final public class RangeBearing extends CoreDragAction
 				// Draw selection rectangle
 				_lastRect = new Rectangle(_startPoint.x, _startPoint.y, dx, dy);
 				plotUpdate(gc);
+				
+				// and ditch the GC
+				gc.dispose();
 
 			}
 			else

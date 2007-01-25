@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.39  2007-01-04 16:23:57  ian.mayo
+// Revision 1.40  2007-01-25 15:53:57  ian.mayo
+// Better GC maangement
+//
+// Revision 1.39  2007/01/04 16:23:57  ian.mayo
 // Fix integration issue associated with buffer clearing
 //
 // Revision 1.38  2006/12/18 10:14:17  Ian.Mayo
@@ -539,6 +542,9 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 												// store this image in our list, indexed by the layer
 												// object itself
 												_myLayers.put(thisLayer, image);
+												
+												// and ditch the GC
+												newGC.dispose();
 											}
 
 											// have we ended up with an image to paint?

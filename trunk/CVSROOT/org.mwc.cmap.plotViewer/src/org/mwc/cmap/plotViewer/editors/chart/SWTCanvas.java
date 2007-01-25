@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.29  2007-01-19 11:39:28  ian.mayo
+// Revision 1.30  2007-01-25 15:53:56  ian.mayo
+// Better GC maangement
+//
+// Revision 1.29  2007/01/19 11:39:28  ian.mayo
 // Eclipse-related tidying
 //
 // Revision 1.28  2006/11/28 10:51:37  Ian.Mayo
@@ -314,6 +317,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 			// all finished, close it now
 			endDraw(null);
+			
+			// and ditch the GC
+			theDest.dispose();
 
 		}
 
