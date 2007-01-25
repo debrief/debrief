@@ -26,6 +26,7 @@ public class GCProxy {
 	private GC getGC(Font font) {
 		if (myGC == null || myGC.isDisposed()) {
 			myGC = new GC(new Shell());
+	//		System.out.println("creating new GC");
 		}
 		myGC.setFont(font);
 		return myGC;

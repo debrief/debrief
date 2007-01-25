@@ -219,6 +219,11 @@ public class VesselMonitor extends ViewPart
 			_myPart.addParticipantMovedListener(_moveListener);
 			_myPart.addParticipantDecidedListener(_decisionListener);
 
+			System.out.print("new part:" + _myPart.getName()  + " depth:" + _myPart.getStatus().getLocation().getDepth());
+			SimpleDemandedStatus sds = (SimpleDemandedStatus) _myPart.getDemandedStatus();
+			if(sds != null)
+				System.out.println(" dem height: " + sds.getHeight());
+			
 			// let's fire one off to get us started
 			updateStatus(_myPart.getStatus());
 
