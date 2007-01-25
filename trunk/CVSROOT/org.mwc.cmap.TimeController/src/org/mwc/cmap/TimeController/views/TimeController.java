@@ -454,7 +454,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	}
 
-	protected void stopPlaying()
+	private void stopPlaying()
 	{
 		_theTimer.stop();
 	}
@@ -462,7 +462,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * ok, start auto-stepping forward through the serial
 	 */
-	protected void startPlaying()
+	private void startPlaying()
 	{
 		// hey - set a practical minimum step size, 1/4 second is a fair start point
 		final long delayToUse = Math.max(_myStepperProperties.getAutoInterval().getMillis(),
@@ -1800,7 +1800,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		public void widgetSelected(SelectionEvent e)
 		{
-			processClick(_large, _fwd);
+			try
+			{
+				processClick(_large, _fwd);
+			}
+			catch (RuntimeException e1)
+			{
+				CorePlugin.logError(Status.ERROR, "Failed when trying to time step", e1);
+			}
 		}
 
 		public void widgetDefaultSelected(SelectionEvent e)
