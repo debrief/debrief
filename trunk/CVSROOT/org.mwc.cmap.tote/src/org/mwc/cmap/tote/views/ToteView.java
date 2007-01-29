@@ -464,7 +464,8 @@ public class ToteView extends ViewPart
 	 */
 	protected void autoGenerate(boolean onlyAssignTracks)
 	{
-		_trackData.autoAssign(onlyAssignTracks);
+		if(_trackData != null)
+			_trackData.autoAssign(onlyAssignTracks);
 	}
 
 	/*
