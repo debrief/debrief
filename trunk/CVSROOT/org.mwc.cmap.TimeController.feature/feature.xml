@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.6">
+      version="1.0.7">
 
    <description>
-      [1.0.6] Investigate when time stepper fails
+      [1.0.7] Allow stepper to work even when outside visible time period
+[1.0.6] Investigate when time stepper fails
 [1.0.5] Preps for final release
 [1.0.3] Preps for RC5
 [1.0.2] Remove junit dependency

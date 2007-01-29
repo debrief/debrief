@@ -101,7 +101,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * the people listening to us
 	 */
-	private Vector _selectionListeners;
+	private Vector<ISelectionChangedListener> _selectionListeners;
 
 	/**
 	 * and the preferences for time control
@@ -569,10 +569,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			HiResDate newDTG = new HiResDate(0, micros);
 
 			// find the extent of the current dataset
-			// TimePeriod timeP = _myTemporalDataset.getPeriod();
+			
+/*			RIGHT, until JAN 2007 this next line had been commented out - replaced
+			  by the line immediately after it.  We've switched back to this implementation.
+			  	This implementation lets the time-slider select a time for which there aren't any 
+			  	points visible.  This makes sense because in it's successor implementation when the 
+			  	DTG slipped outside the visible time period, the event was rejected, and the time-
+			  	controller buttons appeared to break.  It remains responsive this way...  */
+			TimePeriod timeP = _myTemporalDataset.getPeriod();
 
-			TimePeriod timeP = new TimePeriod.BaseTimePeriod(_myStepperProperties
-					.getSliderStartTime(), _myStepperProperties.getSliderEndTime());
+			// TimePeriod timeP = new TimePeriod.BaseTimePeriod(_myStepperProperties
+			// .getSliderStartTime(), _myStepperProperties.getSliderEndTime());
 
 			// do we represent a valid time?
 			if (timeP.contains(newDTG))
@@ -839,7 +846,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								{
 									// ok - make sure we're seeing the full time period
 									expandTimeSliderRangeToFull();
-									
+
 									// and the controls are enabled (if we know time data)
 									checkTimeEnabled();
 								}
@@ -1404,7 +1411,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
-			_selectionListeners = new Vector(0, 1);
+			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
 		// see if we don't already contain it..
 		if (!_selectionListeners.contains(listener))
@@ -1622,7 +1629,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		{
 			// ok, next painter
 			final TemporalLayerPainter painter = painterList[i];
-			
+
 			final ISelectionProvider provider = this;
 
 			// create an action for it
@@ -1634,7 +1641,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					if (painter.hasEditor())
 					{
 						EditableWrapper pw = new EditableWrapper(painter, _myLayers);
-						CorePlugin.editThisInProperties(_selectionListeners, new StructuredSelection(pw), provider);
+						CorePlugin.editThisInProperties(_selectionListeners, new StructuredSelection(
+								pw), provider);
 					}
 				}
 			};
@@ -1763,7 +1771,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					if (content != null)
 					{
 						IMarker marker = file.createMarker(IMarker.BOOKMARK);
-						Map attributes = new HashMap(4);
+						Map<String, Object> attributes = new HashMap<String, Object>(4);
 						attributes.put(IMarker.MESSAGE, content);
 						attributes.put(IMarker.LOCATION, currentText);
 						attributes.put(IMarker.LINE_NUMBER, "" + tNow);
@@ -1952,7 +1960,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 			else
 			{
-				Vector theSecs = new Vector(0, 1);
+				Vector<WatchableList> theSecs = new Vector<WatchableList>(0, 1);
 				for (int i = 0; i < theSecList.length; i++)
 				{
 					WatchableList list = theSecList[i];
