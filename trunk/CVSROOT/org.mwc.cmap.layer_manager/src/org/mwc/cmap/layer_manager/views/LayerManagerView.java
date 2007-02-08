@@ -20,8 +20,9 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.layer_manager.Layer_managerPlugin;
 import org.mwc.cmap.layer_manager.views.support.*;
 
-import Debrief.Tools.Tote.WatchableList;
+import Debrief.Tools.Tote.*;
 import MWC.GUI.*;
+import MWC.GenericData.HiResDate;
 
 /**
  * provide a tree of items on the plot.
@@ -254,27 +255,41 @@ public class LayerManagerView extends ViewPart
 			}
 			else
 			{
-				if ((p1.getEditable() instanceof Comparable)
+				// ha. if they're watchables, sort them in time order
+				if((p1.getEditable() instanceof Watchable) && 
+						(p2.getEditable() instanceof Watchable))
+				{
+					Watchable wa = (Watchable) p1.getEditable();
+					Watchable wb = (Watchable) p2.getEditable();
+					
+					// hmm, just check we have times
+					HiResDate ha = wa.getTime();
+					HiResDate hb = wb.getTime();
+					
+					if((ha != null) && (hb != null))					
+						res = wa.getTime().compareTo(wb.getTime());
+					else
+						res = p1.getEditable().getName().compareTo(p2.getEditable().getName());
+				}
+				else if ((p1.getEditable() instanceof Comparable)
 						&& (p2.getEditable() instanceof Comparable))
 				{
-					Comparable w1 = (Comparable) p1.getEditable();
-					Comparable w2 = (Comparable) p2.getEditable();
-					res = w1.compareTo(w2);
+					String name1 = p1.getEditable().toString();
+					String name2 = p2.getEditable().toString();
+					res =  name1.compareTo(name2);
 				}
 				else
 				{
 					String p1Name = p1.getEditable().getName();
 					String p2Name = p2.getEditable().getName();
 					res = p1Name.compareTo(p2Name);
-					// res = super.compare(viewer, p1.getEditable().getName(),
-					// p2.getEditable().getName());
 				}
 			}
 
 			return res;
 		}
 	}
-
+	
 	public void dispose()
 	{
 		super.dispose();
