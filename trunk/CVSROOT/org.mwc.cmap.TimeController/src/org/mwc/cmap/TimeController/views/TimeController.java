@@ -522,6 +522,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private void processClick(Boolean large, boolean fwd)
 	{
+		
+		CorePlugin.logError(Status.INFO, "Starting step", null);
+		
 		// check that we have a current time (on initialisation some plots may not
 		// contain data)
 		HiResDate tNow = _myTemporalDataset.getTime();
@@ -588,6 +591,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				fireNewTime(newDTG);
 			}
 		}
+		
+		CorePlugin.logError(Status.INFO, "Step complete", null);
+		
 	}
 
 	private boolean _firingNewTime = false;
@@ -1531,6 +1537,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					{
 						_targetProjection.setRelativePlot(_relPlotToggle.isChecked());
 
+						
 						// and trigger redraw
 						IWorkbench wb = PlatformUI.getWorkbench();
 						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();

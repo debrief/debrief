@@ -2,10 +2,13 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.7">
+      version="1.0.9">
 
    <description>
-      [1.0.7] Allow stepper to work even when outside visible time period
+      [1.0.9] Redraw whole plot when switching out of relative mode
+[1.0.8] Include debug monitoring of steps
+[1.0.7] Allow stepper to work even when outside visible time
+period
 [1.0.6] Investigate when time stepper fails
 [1.0.5] Preps for final release
 [1.0.3] Preps for RC5
