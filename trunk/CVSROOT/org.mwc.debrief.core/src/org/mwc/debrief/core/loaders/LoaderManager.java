@@ -80,8 +80,6 @@ public abstract class LoaderManager
 
 	private void addToolActionDescriptor(IConfigurationElement configElement)
 	{
-		CorePlugin.logError(Status.INFO, "About to load tag:" + configElement.getName(), null);
-
 		String label = configElement.getAttribute(EXTENSION_TAG_LABEL_ATTRIB);
 		
 		// get menu item label
@@ -98,7 +96,6 @@ public abstract class LoaderManager
 		if (!doubleEntry) {
 			INamedItem newInstance = createInstance(configElement, label);
 			getToolActionDescriptors().add(newInstance);
-			CorePlugin.logError(Status.INFO, "Tag:" + configElement.getName() + " loaded", null);
 		} else {
 			CorePlugin.logError(Status.ERROR, "Tag:" + configElement.getName() + " failed to load. " + label + " already. Check for double-entry in plugin.xml", null);
 		}

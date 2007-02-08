@@ -2,10 +2,13 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.22">
+      version="1.0.24">
 
    <description>
-      [1.0.22] Tidy up properly after dragging
+      [1.0.24] Improve Welcome structure - direct link to composite &quot;getting started&quot;
+[1.0.23] Fix problem related to return of series of positions
+within Track
+[1.0.22] Tidy up properly after dragging
 [1.0.21] Let tote handle tracks being deleted from layer manager
 [1.0.20] Amend track manipulation such that point on or after
 requested DTG is returned (not on or before), to improve &quot;5 min

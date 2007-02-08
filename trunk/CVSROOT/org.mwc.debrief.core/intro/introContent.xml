@@ -124,7 +124,12 @@ TUTORIALS
             </group>
 			<text style-id="page-title" id="page-title" filteredFrom="html">TUTORIALS</text>
 			<text style-id="page-description" id="page-description">Learn how to be productive using Debrief by completing tutorials that will guide you along the way.</text>
-			<group id="overview-links" label="Getting Started">
+			<group id="overview-links" label="Getting started">
+				<link label="Getting started with Debrief NG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial" id="cheat_started">
+					<text>Configure Debrief NG and load your first data </text>
+				</link>
+			</group>
+			<group id="overview-links" label="Introductory tasks">
 				<text>Before you start generating and viewing plots in Debrief you have to generate a Project </text>
 				<text>A Project is a place where Debrief can find your working files (and links to existing work directories).</text>
 				<link label="Generating a project" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.generate_project" id="generate_project">
