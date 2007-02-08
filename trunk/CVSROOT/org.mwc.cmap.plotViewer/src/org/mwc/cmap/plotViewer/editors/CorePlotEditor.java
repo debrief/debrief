@@ -608,7 +608,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 */
 	public void setSelection(ISelection selection)
 	{
-		// TODO Auto-generated method stub
 		_currentSelection = selection;
 	}
 
@@ -709,7 +708,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	public void update()
 	{
-		getChart().getCanvas().updateMe();
+		_myChart.update();
 	}
 
 	/** get the chart to fit to window
