@@ -52,7 +52,7 @@
             <state>HANTS</state>
             <country>UK</country>
             <postcode>  PO16 8YE</postcode>
-            <country>e-mail: IanMayo@planetmayo.co.uk</country>
+            <country>e-mail: Ian@planetmayo.com</country>
           </address>
         </para> 
 </formalpara> </abstract> 
@@ -127,7 +127,7 @@ included in the section entitled "GNU Free Documentation License".
         <application>Debrief</application> has been produced by the Maritime Warfare Centre in Portsmouth UK, to support the analysis and reporting of maritime tactical exercises.
       </para> 
 <para>In December 2000 the Maritime Warfare Centre decided to give
-        <application>Debrief</application> an Open Source status, opening the application and its source code into the public domain.
+        <application>Debrief</application> an Open Source status, opening the application and its source code into the public domain. 
       Debrief has been made
         <indexterm>
           <primary>Open Source</primary>
@@ -171,19 +171,49 @@ included in the section entitled "GNU Free Documentation License".
 <title>What's new?</title> 
 <formalpara> 
 <title>Adoption of Eclipse framework</title> 
-<para>2006 has seen a change in direction for the delivery of Debrief.   Instead of being a standalone application build from scratch (albeit with a couple of third-party components), Debrief NG has been rehosted into an existing framework; <ulink url="www.eclipse.org">Eclipse</ulink>.  Adoption of Eclipse has bought the following benefits:<itemizedlist><listitem><para>Functionally rich user interface.  Eclipse has provided a wealth of trees, tables and slider controls to make your analysis job easier. You are now able to drag &amp; drop any window anywhere on the screen.  </para> 
+<para>2006 has seen a change in direction for the delivery of Debrief.   Instead of being a standalone application build from scratch (albeit with a couple of third-party components), Debrief NG has been rehosted into an existing framework; <ulink url="www.eclipse.org">Eclipse</ulink>.  Adoption of Eclipse has bought the following benefits:<variablelist><varlistentry><term>Functionally rich user interface</term><listitem><para>Eclipse has provided a wealth of trees, tables and slider controls to make your analysis job easier. You are now able to drag &amp; drop any window anywhere on the screen.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Persistent window layout.</term> 
+<listitem> 
+<para>Your modified window layout is remembered when you re-open Debrief NG.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Online updating.</term> 
+<listitem> 
+<para>If you're connected to a suitable network (MWC or the Internet) Eclipse is able to download &amp; install it's own updates. Agencies with large numbers of Eclipse users can provide their own internal update site for Eclipse installations to download updates from.<footnote><para>Note, </para></footnote></para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Extensive guidance.</term> 
+<listitem> 
+<para>Since Debrief sits "on top" of Eclipse, the broad spectrum of Eclipse online &amp; printed guidance is available.  You rely less on Debrief-specific guidance to resolve your problems.  Don't worry, all of the guidance is presented together and covered by a single search engine. </para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Modular infrastructure.  </term> 
+<listitem> 
+<para>It is now easier to create Debrief plug-ins, and applications based on Debrief. Developers no longer have to learn the full depth and breadth of Debrief prior to adding new features.  They just need to learn about the interfaces presented by Debrief, and how the Eclipse infrastructure works.  Eclipse development is documented online and in many off-the-shelf books, and it has a strong support community  </para> 
+</listitem> 
+</varlistentry> 
+</variablelist> 
+<itemizedlist> 
+<listitem> 
+<para><emphasis></emphasis>.    </para> 
 </listitem> 
 <listitem> 
-<para>Persistent window layout.  Your modified window layout is remembered when you re-open Debrief NG.</para> 
+<para>  </para> 
 </listitem> 
 <listitem> 
-<para>Online updating.  If you're connected to a suitable network (MWC or the Internet) Eclipse is able to download &amp; install it's own updates. Agencies with large numbers of Eclipse users can provide their own internal update site for Eclipse installations to download updates from.</para> 
+<para>  </para> 
 </listitem> 
 <listitem> 
-<para>Extensive guidance.  Since Debrief sits "on top" of Eclipse, the broad spectrum of Eclipse online &amp; printed guidance is available.  You rely less on Debrief-specific guidance to resolve your problems.  Don't worry, all of the guidance is presented together and covered by a single search engine. </para> 
+<para>  </para> 
 </listitem> 
 <listitem> 
-<para>Modular infrastructure.  It is now easier to create Debrief plug-ins, and applications based on Debrief. Developers no longer have to learn the full depth and breadth of Debrief prior to adding new features.  They just need to learn about the interfaces presented by Debrief, and how the Eclipse infrastructure works.  Eclipse development is documented online and in many off-the-shelf books, and it has a strong support community  </para> 
+<para></para> 
 </listitem> 
 </itemizedlist></para> 
 </formalpara> 
@@ -193,7 +223,7 @@ included in the section entitled "GNU Free Documentation License".
 </formalpara> 
 <formalpara> 
 <title>Polished user interface</title> 
-<para>All of the user interface  have received a refresh. The layer manager includes contextual icons giving an extra indication of what's in each layer.updated_time_controller.jpg<figure float="0">
+<para>All of the user interface  have received a refresh. The layer manager includes contextual icons giving an extra indication of what's in each layer.<figure float="0">
               <title>Contextual icons</title>
               <screenshot>
                 <mediaobject>
@@ -203,7 +233,7 @@ included in the section entitled "GNU Free Documentation License".
                   
                 </mediaobject>
               </screenshot>
-            </figure>The time-controller has also received some TLC, it is now tidier, more capable, and will act as a firm foundation for many more time-related operations in the future.<figure float="0">
+            </figure>The time-controller has also received some TLC, it is now tidier, more capable, and will act as a firm foundation for  more time-related operations in the future.<figure float="0">
               <title>Improved time controller</title>
               <screenshot>
                 <mediaobject>
@@ -269,7 +299,7 @@ apparent that real exercise data could also be viewed in the application removin
 In 1999 development of an updated version of
           <application>Debrief</application>,
           <application>Debrief</application> 2000 was started. Over the previous four years a number of fresh requirements had arisen, requirements which could not be economically met using the existing architecture. Accordingly development of the
-          <application>Debrief</application> 2000 application started from a fresh-whiteboard, adopting a modern modular approach to allow incremental implementation and insertion of future modules as they were required. The rapid maturity experienced by Java together with the availability of cheaply available development environments, rich application libraries (Serialisation, Java3D and XML in particular) and its platform independence made Java the natural choice for the application.
+          <application>Debrief</application> 2000 application started from a fresh-whiteboard, adopting a modern modular approach to allow incremental implementation and insertion of future modules as they were required. The rapid maturity experienced by Java together with the availability of cheaply available development environments, rich application libraries (serialisation, Java3D and XML in particular) and its platform independence made Java the natural choice for the application.
         </para> 
 <para>
 During 2000
@@ -291,7 +321,7 @@ licensing model affects MWC in a number of ways:
               <para>
 Organisations that are currently using
                 <application>Debrief</application> will have full access to the source code of
-                <application>Debrief</application>, allowing them to identify and correct bugs provided they have sufficiently trained staff. The licensing is such that these modifications should be again made public through the re-insertion into the central, online "code base".
+                <application>Debrief</application>, allowing them to identify and correct bugs (provided they have sufficiently trained staff). The licensing is such that these modifications can be again made public through the re-insertion into the central, online "code base".
               </para> 
 </listitem> 
 <listitem> 
@@ -352,7 +382,7 @@ The wider national/international use of
           <link linkend="nuwc_address">NUWC</link> of an algorithm and code suitable for shifting tracks.  NUWC developed a set of experimental classes used to perform
           <link linkend="track_shifting_note">track-shifting</link>.  The algorithms used in these classes were taken and modified to complement the Debrief look and feel, and to provide greater usability resulting in the track-shifting editor included in Debrief 2002.
         </para> 
-<para>Through 2003-2006 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new features.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accommodate ad-hoc analysis tools).</para> 
+<para>Through 2003-2007 PlanetMayo has continued to provide MWC with contracted support for Debrief. This support has included user guidance, bug fixes and addition of new features.  Additionally this support contract was used to deliver Debrief 2003; (including provision of a bathymetric bottom in 3-d views, presentation of TMA data, and improved time-variable graphs), and the fundamental rebuild of Debrief into Debrief NG (providing a modular architecture ready to seamlessly accommodate ad-hoc analysis tools).</para> 
 </sect2> 
 </sect1> 
 <sect1 id="users"> 
@@ -571,7 +601,7 @@ Naval Undersea Warfare Center (NUWC)
 <glossterm linkend="g_plt">Plot</glossterm> </entry> 
 </row> 
 <row> 
-<entry>Code Example</entry> 
+<entry>Source Example</entry> 
 <entry> 
 <programlisting>
                     <sgmltag class="starttag">para</sgmltag>Beginning and end of paragraph
@@ -626,7 +656,7 @@ Naval Undersea Warfare Center (NUWC)
           </para> 
 <tip> 
 <para>If you already have
-              <application>Debrief</application> installed, but just want to install an update, look at the files listed in the
+              <application>DebriefNG</application> installed, but just want to install an update, look at the files listed in the
               <guilabel>Debrief-Updates</guilabel> section of the
               <guilabel>Latest File Releases</guilabel>. For each new release of Debrief, the significant files are located individually in the
               <guilabel>Latest File Releases</guilabel>.  If you do not wish to download the full Debrief installation, just download these individual files and replace your existing copies with these.  It is important to download and use all of the files provided to ensure compatibility.
@@ -640,7 +670,7 @@ Naval Undersea Warfare Center (NUWC)
 </sect2> 
 <sect2> 
 <title>Where to get Help on Debrief</title> 
-<para>If you get stuck with Debrief, the following sources of information are available:<orderedlist><listitem><formalpara><title>This document</title><para>The Debrief NG User guide is a useful reference for determining where to find something, the overall capabilities of the tool, and assorted reference guidance</para> 
+<para>If you get stuck with Debrief, the following sources of information are available:<orderedlist><listitem><formalpara><title>This document</title><para>The Debrief NG User guide is a useful reference for determining where to find something, the overall capabilities of the tool, and assorted reference guidance.  It's presented online as part of Debrief NG help within a help browser (accessed via <guimenuitem>Help Contents</guimenuitem> on the <guimenu>Help</guimenu> menu.</para> 
 </formalpara> 
 </listitem> 
 <listitem> 
@@ -669,7 +699,7 @@ Naval Undersea Warfare Center (NUWC)
 <title>Running installation</title> 
 <warning> 
 <para>If you already have
-              <application>Debrief NG</application>  installed   on your machine you should attempt to remove it using the
+              <application>Debrief NG</application>  installed   on your machine you should  remove it using the
               <guibutton>Add/Remove Programs</guibutton> button from the
               <guibutton>Settings</guibutton> button on the
               <application>Windows</application>
@@ -709,7 +739,7 @@ Naval Undersea Warfare Center (NUWC)
               </screenshot>
             </figure> Next you will see the
             <guilabel>Pre-Installation Summary</guilabel> dialog
-	    which will allow you step backwards to review installation settings prior to conducting the install.<figure float="0">
+	    which will allow you to step backwards to review installation settings prior to conducting the install.<figure float="0">
               <title>Pre-installation summary</title>
               <screenshot>
                 <mediaobject>
@@ -774,13 +804,7 @@ Naval Undersea Warfare Center (NUWC)
 </mediaobject> 
 </screenshot> 
 </figure> 
-<para>When opened for the very first time Debrief shows its Welcome page.  This page (shown above) includes a series of links to high-level introductory information.  The Overview page contains guidance for  new-adopters of Debrief, whereas the Tutorials page contains leads users through more specific tasks through the use of <glossterm linkend="g_cheat">cheat-sheets</glossterm> - small pages breaking a task down into a series of tasks. The buttons at the top-left of each page navigate you around the welcome guidance.  Two tutorials in particular will help new Debrief-adopters:<variablelist><varlistentry><term>Generating a project</term><listitem><para>Debrief NG likes to store your work in specific folders designated as <emphasis>projects</emphasis>.   Once created, the project can contain sub-folders, or links to other folders as described below.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Getting your data into Debrief</term> 
-<listitem> 
-<para>In addition to storing your data in a Debrief NG project, you can provide a link to your existing data-directory, and pull files directly from there.</para> 
+<para>When opened for the very first time Debrief shows its Welcome page.  This page (shown above) includes a series of links to high-level introductory information.  The Overview page contains guidance for  new-adopters of Debrief, whereas the Tutorials page contains leads users through more specific tasks through the use of <glossterm linkend="g_cheat">cheat-sheets</glossterm> - small pages breaking a task down into a series of tasks. The buttons at the top-left of each page navigate you around the welcome guidance.  On the <guilabel>Tutorials</guilabel> page one cheat-sheet in particular will help new Debrief-adopters:<variablelist><varlistentry><term>Getting started with Debrief NG</term><listitem><para>Walking you through loading your first data into Debrief</para> 
 </listitem> 
 </varlistentry> 
 </variablelist></para> 
@@ -823,7 +847,7 @@ By default, editors are stacked in the editor area, but you can choose to tile t
 <para>Views support editors and provide alternative presentations as well as ways to navigate the information in your Workbench.  For example, the <link linkend="navigating_debrief">Navigator</link> displays projects and other resources that you are working with, and the <link linkend="layer_mgr">Layer Manager</link> shows a list of selectable items within the current plot.
 
 </para> 
-<para>Views also have their own menus. To open the menu for a view, click the icon at the right end of the view's title bar. Some views also have their own toolbars. The actions represented by buttons on view toolbars only affect the items within that view. 
+<para>Views also have their own drop-down menus. To open the menu for a view, click the icon at the right end of the view's title bar. Some views also have their own toolbars. The actions represented by buttons on view toolbars only affect the items within that view. 
 
 </para> 
 <para>A view might appear by itself, or stacked with other views in a tabbed notebook. You can change the layout of a perspective by opening and closing views and by docking them in different positions in the Workbench window.  
@@ -1134,7 +1158,7 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
       <note>
               <para>Apologies in advance to the British users of
                 <application>Debrief</application> for the American-spelling of colour.  The software environment within which
-                <application>Debrief</application> is developed is American, and in this case superimposing the UK spelling upon it&apos;s not a battle worth fighting.
+                <application>Debrief</application> is developed is American, and in this case superimposing the UK spelling upon it is not a battle worth fighting.
               </para> 
 </note></para> 
 <sect1 id="property_editing"> 
@@ -1192,9 +1216,9 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
             <application>Debrief</application> calculates the error between the sensor bearing and the current measured bearing, showing these in a plot (bearing error against time).
           </para> 
 <para>
-            <application>Debrief</application> displays a symbol for each visible sensor data, with the symbol being plotted the same colour as the sensor data.  When track-shifting a long exercise serial, the time-variable plot may become difficult to use due to the y-axis always auto-scaling to accommodate all available data.  Overcome this by using Debrief to
+            <application>Debrief</application> displays a symbol for each visible sensor data, with the symbol being plotted the same colour as the sensor data.  When track-shifting a long exercise serial, the time-variable plot may become difficult to use due to the y-axis always auto-scaling to accommodate all available data.  Overcome this by instruction Debrief to
             <link linkend="filter_to_time_period">filter-to-time-period</link> (from the
-            <link linkend="track_toolbox">track time toolbox</link>) for the plot-lock period, thus viewing a much smaller data-set in the time-variable plot.   Additionally, you can zoom in on a particular area (by dragging an area downward and to the right) of the time-variable plot for detailed analysis, dragging the mouse up and to the left to clear the zoom.
+            <link linkend="time_controller">time controller</link>, <xref linkend="time_controller"/>) for the plot-lock period, thus viewing a much smaller data-set in the time-variable plot.   Additionally, you can zoom in on a particular area (by dragging an area downward and to the right) of the time-variable plot for detailed analysis, dragging the mouse up and to the left to clear the zoom.
           </para> 
 <figure float="0" id="stacked_dots_view"> 
 <title>Stacked Dots View</title> 
@@ -1205,6 +1229,21 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
 </mediaobject> 
 </screenshot> 
 </figure> 
+<para>For the track-shifting to work, your data must be configured as follows:<orderedlist><listitem><para>You must have a Debrief plot open (duh)</para>
+</listitem>
+<listitem>
+<para>You must have a vessel track as the <link linkend="primary_track">primary track</link> (<xref linkend="primary_track"/>) on the <link linkend="the_tote_area">Tote</link> (not an annotation or other time-related object)</para>
+</listitem>
+<listitem>
+<para>You must have a secondary track on the Tote, but only one secondary track.  This must also be a vehicle track.</para>
+</listitem>
+<listitem>
+<para>The primary track must have <link linkend="sensor_data">sensor data</link>.</para>
+</listitem>
+<listitem>
+<para></para>
+</listitem>
+</orderedlist></para>
 </sect2> 
 </sect1> 
 <sect1 id="new_chart_features"> 
@@ -1419,132 +1458,6 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
               </screenshot>
             </figure>
           </para> 
-<para>
-            <note id="etopo_description">
-              <para>The 'ETOPO-5' data set is originally from the U.S. National Geophysical Data Center (NGDC) in Boulder, Colorado (USA), and represents the "best" available digital terrain values as integrated from existing five and ten-minute digital sources. The data set has elevation values spaced at every five-minute latitude/longitude crossing on the global grid (approx. nine km.-sq. spatial resolution, or 12 x 12 pixels/degree), and a one-meter contour interval. Bathymetric values are included in this data set, starting at approximately 10,000 meters below sea level, while the elevation values extend up to heights of approximately 8,000 meters above sea level. Some original sources of the data used include the U. S. Defense Mapping Agency for the conterminous USA, Japan and Western Europe; the Australian Bureau of Mineral Resources, and the New Zealand Department of Scientific and Industrial Research.
-
-              </para> 
-<para>GRID has reformatted the original NGDC data file to place the origin at 180 degrees West longitude, instead of at 0 degrees Greenwich Meridian. The 'ETOPO-5' data file has 2160 records of data with a length of 8640 bytes each: the size of the data array is 2160 lines by 4320 elements, but this is a l6-bit or two bytes per element data file. The origin of the data file is at 90 degrees North latitude and 180 West longitude, and it extends to 90 degrees South latitude and 180 degrees East longitude. The data file comprises 18.66 Megabytes. The version of this data file at GRID has been discovered to contain two records (lines) of flawed data values; that is, portions of lines 2055 and 2056, beginning at the Weddell Sea north of Antarctica and continuing eastward. GRID is currently waiting for a response from the data supplier (NGDC) before attempting any replacement of what appear to be anomalous data values.
-
-              </para> 
-<para>There are two useful references for the 'ETOPO-5' data set. These are: "Edwards, Margaret Helen, 1986. Digital Image Processing of Local and Global Bathymetric Data. Master's Thesis. Department of Earth and Planetary Sciences, Washington Univ., St. Louis, Missouri, USA, 106 p." and "Haxby, W. F. et al., 1983. Digital Images of Combined Oceanic and Continental Data Sets and their Use in Tectonic Studies. EOS Trans- actions of the American Physical Union, vol. 64, no. 52, pp. 995-1004."
-              </para> 
-</note> </para> 
-<para>
-            <note id="etopo2_description">
-              <para>In November 2002 the capability to read the US NOAA 'ETOPO-2' data set has been added to
-                <application>Debrief</application>.  The ETOPO-2 dataset may be purchased from the
-                <ulink url="http://www.ngdc.noaa.gov/mgg/gdas/gx_announce.Html">NOAA</ulink>, and is delivered on CD-ROM.  The ETOPO-2 CD-ROM itself contains several datasets.  The Dataset supported by Debrief is the
-                <filename>ETOPO2.RAW	</filename> file containing data in the
-                <emphasis>big-endian</emphasis> format.  This file must be copied into an
-                <filename>plugins\org.mwc.cmap.static_resources_1.0.0\data</filename> sub-directory of the Debrief installation. This 2-minute dataset offers more than 6 times the detail of the ETOPO-5 dataset. This 2-minute data is derived from the following sources:
-                <itemizedlist>
-                  <listitem>
-                    <para>The seafloor data between latitides 64 North and 72 South is from the work of
-                      <emphasis>Smith and Sandwell, 1997</emphasis>. These data were obtained from satellite altimetry observations combined with shipboard echo-sounding measurements.
-                    </para> 
-</listitem> 
-<listitem> 
-<para>Seafloor data southward of 72 South are from the US Naval Oceanographic (NAVOCEANO) DBDBV version 4.1 at 5 minute spacing.</para> 
-</listitem> 
-<listitem> 
-<para>Seafloor data northward from 64 North are from the new International Bathymetric Chart of the Arctic Ocean (IBCAO) Version 1.</para> 
-</listitem> 
-<listitem> 
-<para>Land data is from the GLOBE Project, an internationally designed, and independently peer-reviewed global digital elevation model (DEM).</para> 
-</listitem> 
-</itemizedlist> </para> 
-<para>These sources are summarised below:
-                <figure float="0">
-                  <title>ETOPO2 Data Sources</title>
-                  <screenshot>
-                    <mediaobject>
-                      <imageobject>
-                        <imagedata fileref="figures/etopo2src.jpg"/>
-                      </imageobject>
-
-                    </mediaobject>
-                  </screenshot>
-                </figure>
-              </para> 
-<para>This information has been taken from the
-                <ulink url="http://www.ngdc.noaa.gov/mgg/fliers/01mgg04.html">NOAA Web-site</ulink>
-              </para> 
-</note> </para> 
-<para>The following options are provided for plotting ETOPO data:
-            <variablelist>
-              <varlistentry>
-                <term>Color</term>
-                <listitem>
-                  <para>The color to plot the key itself.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Key location</term> 
-<listitem> 
-<para>This option determines where (and whether) to show the key for the depth data.  Note that the ETOPO data will always appear behind other data, so it may be necessary to experiment with the key location.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Show land</term> 
-<listitem> 
-<para>Whether to plot land as land, or as very shallow water.  Plotting the land as very shallow water is the favoured way of combining ETOPO data with VPF data.  The VPF coastline data is of much higher resolution, differences being highlighted when ETOPO land is shown.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Visible</term> 
-<listitem> 
-<para>Whether to plot the ETOPO data</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> The ETOPO-2 dataset provides a few more customizable
-attributes, which allow you to choose between enhanced performance
-over appearance in the plot: 
-<variablelist> 
-<varlistentry> 
-<term>Bathy Res</term> 
-<listitem> 
-<para>This is the size of each bathy square to be plotted in screen pixels.  A resolution (Res) of 1 pixel provides the most detailed bathymetric plot, though it takes the longest time.  Frequently it is possible to increase the bathy-res without any visible degradation in the data displayed - whilst providing performance benefits</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term> Bathy Visible</term> 
-<listitem> 
-<para>This flag indicates whether the bathymetric plot should be shown or not (sometimes the set of contours are sufficient).</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Contour Depths</term> 
-<listitem> 
-<para>Into this box provide a comma-separated list of depth contours (in metres) to plot.  The values should expressed in ascending order as whole numbers.  If Debrief encounters a problem whilst reading the values it will return to the last valid set of depths</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Contour Grid Interval</term> 
-<listitem> 
-<para>The contour plotting algorithm is very processor-intensive, calculating the contours when zoomed out over a large area can take many minutes.  The contour plotting algorithm inspects every depth datum in the data area whilst finding contours.  The speed of calculation can be improved by directing the algorithm to skip a number of depth values before performing the next calculation.  This may make the contours themselves very slightly more blocky, though still useable.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Contour Optimise Grid</term> 
-<listitem> 
-<para>Setting this switch instructs Debrief to automatically increase the Contour Grid Interval as you zoom from the plot.  This prevents the exponential increase in time take to conduct the contouring, ensuring that no more than 10000 calculations are performed, and when zooming in it ensures that where applicable at least 2000 calculations are performed.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>Contours Visible</term> 
-<listitem> 
-<para>This flag indicates whether the contours should be plotted or not - not showing contours substantially speeds up the redraw time.</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> 
-<tip> 
-<para>The ETOPO-5 dataset uses a significant amount of memory on your PC, typically 30Mb, though this only gets loaded once per Debrief session,  however many plots are loaded. Writing a WMF file with ETOPO data visible requires even more memory, and can cause
-                <application>Debrief</application> to hang or crash.  This problem can be overcome by following the advice described in
-                <xref linkend="starting_debrief"/>
-              </para> 
-<para>The ETOPO-2 dataset is many times larger than ETOPO-5, thus is not read into memory but accessed on the fly. For this reason it does not consume as much memory, but does require a fast PC to produce acceptable screen updates.</para> 
-</tip> </para> 
 </sect2> 
 </sect1> 
 <sect1 id="drawing_features"> 
@@ -1841,7 +1754,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
 <note> 
 <para>The primary and secondary tracks may not contain values exactly at the time in the time stepper control.  For both the tote display and the plot-highlights, Debrief uses the data values recorded on or immediately after the indicated stepper time (see the <xref linkend="time_calc"/> for more detail).</para> 
 </note> 
-<para>One
+<para id="primary_track">One
             <glossterm linkend="g_track">track</glossterm> currently loaded is assigned as the Primary track (the blue track in this instance), and then one or more tracks are assigned as Secondary tracks. The primary track always displays absolute data such as current course, speed and depth, as illustrated above. The secondary tracks display this data together with relative data such as Range and Bearing to the Primary track.
           </para> 
 <para>Not only tracks can be placed on the Tote.  Buoyfields and most annotations (labels, circles, etc) can also be set as primary or secondary track.  If no time is available for an annotation it is deemed to always be valid, and calculations are shown  although the time field is displayed as "n/a".  However, if the annotation has start and end times the tote displays "n/a" when outside that period and calculated data when inside it.</para> 
@@ -1922,7 +1835,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
           </para> 
 <tip> 
 <para>If you have more than two tracks, it can be quicker to assign the primary track manually and then press
-              <guibutton>Auto Generate</guibutton> to assign the remaining tracks as secondary.
+              <guibutton>Auto Populate</guibutton> to assign the remaining tracks as secondary.
             </para> 
 </tip> 
 </sect2> 
@@ -1943,22 +1856,31 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </note> 
 <note> 
 <para>The keyboard can also be used for moving backwards and forwards, although
-                <application>Debrief</application> has to know that it&apos;s the Stepper that you want the keys to control.  So, after clicking on one of the forward/backward buttons you can then switch to keyboard control of the Tote as follows:
+                <application>Debrief</application> has to know that it&apos;s the Stepper that you want the keys to control.  So, after clicking on the time-slider control you can then switch to keyboard control of the Tote as follows:
 
                 <itemizedlist spacing="compact">
                   <listitem>
                     <para>Page Up/Down keys: these control small step backward/forward resp.</para> 
 </listitem> 
 <listitem> 
-<para>Shift-Page Up/Down arrows:  these control large step backward/forward resp.</para> 
+<para>Page Up/Down arrows:  these control large step backward/forward resp.</para> 
 </listitem> 
 <listitem> 
-<para>Shift-Home/End keys: these control goto First/Last resp.</para> 
+<para>Home/End keys: these control goto First/Last resp.</para> 
 </listitem> 
 </itemizedlist> </para> 
 </note> 
 <tip> 
-<para>In Autumn 2005 the Interpolate Points property was added to tracks.  When ticked, Debrief interpolates positions between actual data points.  The highlight cursor changes appearance when on an interpolated data point.</para> 
+<para>In Autumn 2005 the Interpolate Points property was added to tracks.  When ticked, Debrief interpolates positions between actual data points.  The highlight cursor changes appearance when on an interpolated data point.<figure float="0">
+              <title>Display of an interpolated point</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/interpolated_position.png"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para> 
 </tip> </para> 
 </sect2> 
 </sect1> 
@@ -3582,6 +3504,130 @@ different vectored databases. </para>
           <application>Debrief 2002</application> added the capability to view gridded bathymetric data, provided through the ETOPO dataset.  The ETOPO dataset and its use is explained in more detail in
           <link linkend="etopo_gridded_bathy">ETOPO gridded bathy</link>
         </para> 
+<note id="etopo_description"> 
+<para>The 'ETOPO-5' data set is originally from the U.S. National Geophysical Data Center (NGDC) in Boulder, Colorado (USA), and represents the "best" available digital terrain values as integrated from existing five and ten-minute digital sources. The data set has elevation values spaced at every five-minute latitude/longitude crossing on the global grid (approx. nine km.-sq. spatial resolution, or 12 x 12 pixels/degree), and a one-meter contour interval. Bathymetric values are included in this data set, starting at approximately 10,000 meters below sea level, while the elevation values extend up to heights of approximately 8,000 meters above sea level. Some original sources of the data used include the U. S. Defense Mapping Agency for the conterminous USA, Japan and Western Europe; the Australian Bureau of Mineral Resources, and the New Zealand Department of Scientific and Industrial Research.
+
+              </para> 
+<para>GRID has reformatted the original NGDC data file to place the origin at 180 degrees West longitude, instead of at 0 degrees Greenwich Meridian. The 'ETOPO-5' data file has 2160 records of data with a length of 8640 bytes each: the size of the data array is 2160 lines by 4320 elements, but this is a l6-bit or two bytes per element data file. The origin of the data file is at 90 degrees North latitude and 180 West longitude, and it extends to 90 degrees South latitude and 180 degrees East longitude. The data file comprises 18.66 Megabytes. The version of this data file at GRID has been discovered to contain two records (lines) of flawed data values; that is, portions of lines 2055 and 2056, beginning at the Weddell Sea north of Antarctica and continuing eastward. GRID is currently waiting for a response from the data supplier (NGDC) before attempting any replacement of what appear to be anomalous data values.
+
+              </para> 
+<para>There are two useful references for the 'ETOPO-5' data set. These are: "Edwards, Margaret Helen, 1986. Digital Image Processing of Local and Global Bathymetric Data. Master's Thesis. Department of Earth and Planetary Sciences, Washington Univ., St. Louis, Missouri, USA, 106 p." and "Haxby, W. F. et al., 1983. Digital Images of Combined Oceanic and Continental Data Sets and their Use in Tectonic Studies. EOS Trans- actions of the American Physical Union, vol. 64, no. 52, pp. 995-1004."
+              </para> 
+</note> 
+<note id="etopo2_description"> 
+<para>In November 2002 the capability to read the US NOAA 'ETOPO-2' data set was been added to
+                <application>Debrief</application>.  The ETOPO-2 dataset may be purchased from the
+                <ulink url="http://www.ngdc.noaa.gov/mgg/gdas/gx_announce.Html">NOAA</ulink>, and is delivered on CD-ROM.  The ETOPO-2 CD-ROM itself contains several datasets.  The Dataset supported by Debrief is the
+                <filename>ETOPO2.RAW	</filename> file containing data in the
+                <emphasis>big-endian</emphasis> format.  This file must be copied into an
+                <filename>plugins\org.mwc.cmap.static_resources_1.0.0\data</filename> sub-directory of the Debrief installation. This 2-minute dataset offers more than 6 times the detail of the ETOPO-5 dataset. This 2-minute data is derived from the following sources:
+                <itemizedlist>
+                  <listitem>
+                    <para>The seafloor data between latitides 64 North and 72 South is from the work of
+                      <emphasis>Smith and Sandwell, 1997</emphasis>. These data were obtained from satellite altimetry observations combined with shipboard echo-sounding measurements.
+                    </para> 
+</listitem> 
+<listitem> 
+<para>Seafloor data southward of 72 South are from the US Naval Oceanographic (NAVOCEANO) DBDBV version 4.1 at 5 minute spacing.</para> 
+</listitem> 
+<listitem> 
+<para>Seafloor data northward from 64 North are from the new International Bathymetric Chart of the Arctic Ocean (IBCAO) Version 1.</para> 
+</listitem> 
+<listitem> 
+<para>Land data is from the GLOBE Project, an internationally designed, and independently peer-reviewed global digital elevation model (DEM).</para> 
+</listitem> 
+</itemizedlist> </para> 
+<para>These sources are summarised below:
+                <figure float="0">
+                  <title>ETOPO2 Data Sources</title>
+                  <screenshot>
+                    <mediaobject>
+                      <imageobject>
+                        <imagedata fileref="figures/etopo2src.jpg"/>
+                      </imageobject>
+
+                    </mediaobject>
+                  </screenshot>
+                </figure>
+              </para> 
+<para>This information has been taken from the
+                <ulink url="http://www.ngdc.noaa.gov/mgg/fliers/01mgg04.html">NOAA Web-site</ulink>
+              </para> 
+</note> 
+<para>The following options are provided for plotting ETOPO data:
+            <variablelist>
+              <varlistentry>
+                <term>Color</term>
+                <listitem>
+                  <para>The color to plot the key itself.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Key location</term> 
+<listitem> 
+<para>This option determines where (and whether) to show the key for the depth data.  Note that the ETOPO data will always appear behind other data, so it may be necessary to experiment with the key location.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Show land</term> 
+<listitem> 
+<para>Whether to plot land as land, or as very shallow water.  Plotting the land as very shallow water is the favoured way of combining ETOPO data with VPF data.  The VPF coastline data is of much higher resolution, differences being highlighted when ETOPO land is shown.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Visible</term> 
+<listitem> 
+<para>Whether to plot the ETOPO data</para> 
+</listitem> 
+</varlistentry> 
+</variablelist> The ETOPO-2 dataset provides a few more customizable
+attributes, which allow you to choose between enhanced performance
+over appearance in the plot: 
+<variablelist> 
+<varlistentry> 
+<term>Bathy Res</term> 
+<listitem> 
+<para>This is the size of each bathy square to be plotted in screen pixels.  A resolution (Res) of 1 pixel provides the most detailed bathymetric plot, though it takes the longest time.  Frequently it is possible to increase the bathy-res without any visible degradation in the data displayed - whilst providing performance benefits</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term> Bathy Visible</term> 
+<listitem> 
+<para>This flag indicates whether the bathymetric plot should be shown or not (sometimes the set of contours are sufficient).</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Contour Depths</term> 
+<listitem> 
+<para>Into this box provide a comma-separated list of depth contours (in metres) to plot.  The values should expressed in ascending order as whole numbers.  If Debrief encounters a problem whilst reading the values it will return to the last valid set of depths</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Contour Grid Interval</term> 
+<listitem> 
+<para>The contour plotting algorithm is very processor-intensive, calculating the contours when zoomed out over a large area can take many minutes.  The contour plotting algorithm inspects every depth datum in the data area whilst finding contours.  The speed of calculation can be improved by directing the algorithm to skip a number of depth values before performing the next calculation.  This may make the contours themselves very slightly more blocky, though still useable.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Contour Optimise Grid</term> 
+<listitem> 
+<para>Setting this switch instructs Debrief to automatically increase the Contour Grid Interval as you zoom from the plot.  This prevents the exponential increase in time take to conduct the contouring, ensuring that no more than 10000 calculations are performed, and when zooming in it ensures that where applicable at least 2000 calculations are performed.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Contours Visible</term> 
+<listitem> 
+<para>This flag indicates whether the contours should be plotted or not - not showing contours substantially speeds up the redraw time.</para> 
+</listitem> 
+</varlistentry> 
+</variablelist> 
+<tip> 
+<para>The ETOPO-5 dataset uses a significant amount of memory on your PC, typically 30Mb, though this only gets loaded once per Debrief session,  however many plots are loaded. Writing a WMF file with ETOPO data visible requires even more memory, and can cause
+                <application>Debrief</application> to hang or crash.  This problem can be overcome by following the advice described in
+                <xref linkend="starting_debrief"/>
+              </para> 
+<para>The ETOPO-2 dataset is many times larger than ETOPO-5, thus is not read into memory but accessed on the fly. For this reason it does not consume as much memory, but does require a fast PC to produce acceptable screen updates.</para> 
+</tip> </para> 
 </sect1> 
 </chapter> 
 <chapter id="viewing_narratives"> 

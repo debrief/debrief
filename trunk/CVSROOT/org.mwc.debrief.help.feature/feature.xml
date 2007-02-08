@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.8">
+      version="1.0.9">
 
    <description>
-      [1.0.8] Updated change logs
+      [1.0.9] Updated change logs
+[1.0.8] Updated change logs
 [1.0.7] Final NG review
 [1.0.6] Update legacy help to NG
 [1.0.5] Import legacy help guidance

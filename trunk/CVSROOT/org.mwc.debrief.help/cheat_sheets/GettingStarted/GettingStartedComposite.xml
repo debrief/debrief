@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <compositeCheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../compositeContentFile.xsd" name="Getting some data into Debrief NG">
 	<taskGroup name="Getting started with Debrief NG">
-		<taskGroup name="Extending your workspace" kind="sequence">
+		<taskGroup name="Defining your workspace" kind="sequence">
 			<task kind="cheatsheet" name="Generating a project">
 				<intro>Right, we'll start off by creating a Project that will contain our work</intro>
 				<onCompletion>You've now created a project into which you can store your Debrief data</onCompletion>
