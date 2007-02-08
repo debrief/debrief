@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.40  2007-01-25 15:53:57  ian.mayo
+// Revision 1.41  2007-02-08 09:02:38  ian.mayo
+// Minor tidying
+//
+// Revision 1.40  2007/01/25 15:53:57  ian.mayo
 // Better GC maangement
 //
 // Revision 1.39  2007/01/04 16:23:57  ian.mayo
@@ -818,7 +821,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param pt
 		 *          the new cursor location
 		 * @param theCanvas
-		 *          TODO
 		 */
 		abstract public void doMouseDrag(final org.eclipse.swt.graphics.Point pt,
 				final int JITTER, final Layers theLayers, SWTCanvas theCanvas);
@@ -829,7 +831,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param pt
 		 *          the new cursor location
 		 * @param theCanvas
-		 *          TODO
 		 */
 		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
 				final Layers theLayers, SWTCanvas theCanvas)
@@ -841,7 +842,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * handle the mouse drag finishing
 		 * 
 		 * @param keyState
-		 *          TODO
 		 * @param pt
 		 *          the final cursor location
 		 */
@@ -853,7 +853,6 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 		 * @param canvas
 		 *          the control it's dragging over
 		 * @param theChart
-		 *          TODO
 		 * @param pt
 		 *          the first cursor location
 		 */
@@ -1031,25 +1030,19 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public ISelection getSelection()
 	{
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
 	{
-		// TODO Auto-generated method stub
-
 	}
 
 	public void setSelection(ISelection selection)
 	{
-		// TODO Auto-generated method stub
 	}
 
 }
