@@ -49,7 +49,7 @@
       <feature id="org.mwc.cmap.tote.feature" version="1.0.7"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.8"/>
       <feature id="org.mwc.debrief.feature" version="1.0.24"/>
-      <feature id="org.mwc.debrief.help.feature" version="1.0.9"/>
+      <feature id="org.mwc.debrief.help.feature" version="1.0.10"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.3"/>
    </features>
 
