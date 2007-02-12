@@ -9,7 +9,7 @@
 				<param name="showIntro" value="true"/>
 			</task>
 			<task kind="cheatsheet" name="Finding your data">
-				<intro>If you already have one or more folders containing Debrief data, you can add them to your Debrief NG project</intro>
+				<intro>If you already have one or more folders containing Debrief data, you can add them to your Debrief NG project (or load sample data that was installed within Debrief NG)</intro>
 				<onCompletion>You can now repeat this process to create links to your other Debrief data directories.</onCompletion>
 				<param name="id" value="org.mwc.debrief.help.started.existing_data"/>
 			</task>
@@ -17,7 +17,6 @@
 			<onCompletion>Right, Debrief now knows where to find your data.  In the next series of steps you will load and examine some data.</onCompletion>
 		</taskGroup>
 		<taskGroup name="Viewing some data" kind="sequence">
-			<intro>This series of steps will guide you through creating then populating a new Debrief plot.</intro>
 			<task kind="cheatsheet" name="Creating a new plot">
 				<intro>We will now use Debrief's New Plot wizard to create a plot ready for import of data-files.</intro>
 				<onCompletion>Note that we didn't have to use the wizard steps, we could have inserted chart features into our Plot by hand using the Chart Features menu.  </onCompletion>
@@ -27,6 +26,7 @@
 				<intro>Debrief NG stores it's user data in collections named projects.</intro>
 				<param name="id" value="org.mwc.debrief.help.started.loading_data"/>
 			</task>
+			<intro>This series of steps will guide you through creating then populating a new Debrief plot.</intro>
 		</taskGroup>
 		<intro>This series of cheatsheets will guide you through creating your Debrief working environment, customising it according to your preferred file locations, and loading some analysis data.</intro>
 	</taskGroup>

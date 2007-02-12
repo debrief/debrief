@@ -89,9 +89,7 @@
 			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/ng_help.xml" />
 			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
 		</java> 
-	
-		
-		
+			
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
 		  into the top-level of the docbook output directories -->
 		<copy todir="${helpDest}\" preservelastmodified="yes">
@@ -122,6 +120,45 @@
 		
 	</target>
 
+
+	<target name="docbook_to_pdf" description="Generate html from docbook">
+
+	  <property name="fopVersion" value="fop-0.20.5rc" description="the current version of FOP"/>
+	  <property name="fopDir" value="C:\docbook\${fopVersion}" description="where the fop libraries are located"/>
+	  <property name="docName" value="Debrief User Guide.pdf" description="The Debrief document file"/>
+
+    <!-- produce the FO file, ready for PDF-->
+    <java classpath="c:\docbook\saxon6_5_2\saxon.jar" fork="yes" dir="${pdfDest}"
+      classname="com.icl.saxon.StyleSheet" maxmemory="512m">
+      <arg value="-o"/>
+      <arg value="out.fo"/>
+			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/ng_help.xml" />
+			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/fo_style.xsl" />
+    </java>
+		
+		<echo message="fo complete, now going to pdf"/>	
+		
+    <!-- now convert the fo file to PDF format-->
+    <java classpath="${fopDir}\build\fop.jar;${fopDir}\lib\batik.jar;${fopDir}\lib\xalan-2.4.1.jar;${fopDir}\lib\xercesImpl-2.2.1.jar;${fopDir}\lib\xml-apis.jar;${fopDir}\lib\avalon-framework-cvs-20020806.jar;${fopDir}\lib\logkit-1.0.jar;${fopDir}\lib\jimi-1.0.jar"
+      fork="yes" dir="${pdfDest}"
+      classname="org.apache.fop.apps.Fop" maxmemory="512m">
+      <sysproperty key="FOPD" value="c:\docbook\${fopVersion}\"/>
+      <arg value="-d"/>
+      <arg value="out.fo"/>
+      <arg value="${docName}"/>
+    </java>
+		
+		
+		<!-- also copy the images to the target directory -->
+		<copy todir="${helpDest}\figures" preservelastmodified="yes">
+			<fileset dir="${helpDir}\docbook/figures" />
+		</copy>
+		<copy todir="${helpDest}\images" preservelastmodified="yes">
+			<fileset dir="${helpDir}\docbook/images" />
+		</copy>
+		
+	</target>	
+	
 	<!-- now, how do we tie the two together? -->
 	<target name="insert_history_link">
 		<property name="dupFile" value="${helpDest}\toc2.xml" />
