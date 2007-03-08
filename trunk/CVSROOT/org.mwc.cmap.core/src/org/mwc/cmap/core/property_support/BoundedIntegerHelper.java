@@ -117,15 +117,14 @@ public class BoundedIntegerHelper extends EditorHelper
 		
 		protected void doSetValue(Object value)
 		{
-			
-			// TODO Auto-generated method stub
 			BoundedInteger curr = (BoundedInteger) value;
 			if(_myLabel != null) 
 				_myLabel.setText(formatMe(curr.getCurrent()));
 			if(_theSlider != null)
 			{
 				_theSlider.setMinimum(curr.getMin());
-				_theSlider.setMaximum(curr.getMax());
+				// we have to add one to the max value, since it appears to be exclusive of the max value
+				_theSlider.setMaximum(curr.getMax() + 1);
 				_theSlider.setSelection(curr.getCurrent());
 				_theSlider.setThumb(1);
 			}
@@ -241,7 +240,8 @@ public class BoundedIntegerHelper extends EditorHelper
 			if(_theSlider != null)
 			{
 				_theSlider.setMinimum(curr.getMin());
-				_theSlider.setMaximum(curr.getMax());
+				// we have to add one to the max value, since it appears to be exclusive of the max value
+				_theSlider.setMaximum(curr.getMax() + 1);
 				_theSlider.setSelection(curr.getCurrent());
 				_theSlider.setIncrement(curr.getStep());
 				_theSlider.setThumb(1);
