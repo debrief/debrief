@@ -31,6 +31,7 @@ import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 import org.mwc.debrief.core.operations.PlotOperations;
 import org.osgi.framework.Bundle;
 
+import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.*;
@@ -564,7 +565,38 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						// yes. cool, get plotting
 						_layerPainterManager.getCurrentPainter()
 								.paintThisLayer(thisLayer, dest, tNow);
-					}
+						
+						// ok, now sort out the highlight
+						
+						// right, what are the watchables
+						final Vector watchables = SnailPainter.getWatchables(thisLayer);
+
+						// cycle through them
+						final Enumeration watches = watchables.elements();
+						while (watches.hasMoreElements())
+						{
+							final WatchableList list = (WatchableList) watches.nextElement();
+							// is the primary an instance of layer (with it's own line thickness?)
+							if (list instanceof Layer)
+							{
+								final Layer ly = (Layer) list;
+								int thickness = ly.getLineThickness();
+								dest.setLineWidth(thickness);
+							}
+
+							// ok, clear the nearest items
+							Watchable[] wList = list.getNearestTo(tNow);
+							Watchable watch = null;
+							if (wList.length > 0)
+								watch = wList[0];
+
+							if (watch != null)
+							{
+								// plot it
+								_layerPainterManager.getCurrentHighlighter().highlightIt(dest.getProjection(), dest, list, watch);
+							}
+						}
+					}						
 				}
 				catch (Exception e)
 				{

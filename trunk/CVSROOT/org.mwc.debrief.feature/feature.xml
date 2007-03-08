@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.24">
+      version="1.0.25">
 
    <description>
-      [1.0.24] Improve Welcome structure - direct link to composite &quot;getting started&quot;
+      [1.0.25] Lots of tidying, esp to highlighters, snails, etc.
+[1.0.24] Improve Welcome structure - direct link to composite
+&quot;getting started&quot;
 [1.0.23] Fix problem related to return of series of positions
 within Track
 [1.0.22] Tidy up properly after dragging

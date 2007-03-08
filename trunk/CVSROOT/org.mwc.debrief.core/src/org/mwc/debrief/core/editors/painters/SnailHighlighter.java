@@ -49,7 +49,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 	/**
 	 * the highlight plotters we know about
 	 */
-	private final Vector _myHighlightPlotters;
+	private final Vector<drawSWTHighLight> _myHighlightPlotters;
 
 	/**
 	 * the snail track plotter to use
@@ -73,7 +73,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 		_mySnailPlotter = new SnailDrawSWTFix("Snail");
 		_mySnailBuoyPlotter = new SnailDrawSWTBuoyPattern();
 
-		_myHighlightPlotters = new Vector(0, 1);
+		_myHighlightPlotters = new Vector<drawSWTHighLight>(0, 1);
 		_myHighlightPlotters.addElement(_mySnailPlotter);
 		_myHighlightPlotters.addElement(_mySnailBuoyPlotter);
 		_myHighlightPlotters.addElement(new SnailDrawSWTAnnotation());
@@ -102,6 +102,14 @@ public class SnailHighlighter implements TemporalLayerPainter
 		_mySnailPlotter.setVectorStretch(val);
 	}
 
+	/** accessor for the snail properties
+	 * 
+	 */
+	public SnailDrawSWTFix getSnailProperties()
+	{
+		return _mySnailPlotter;
+	}
+	
 	/**
 	 * ok, paint this layer, adding highlights where applicable
 	 * 
@@ -154,12 +162,6 @@ public class SnailHighlighter implements TemporalLayerPainter
 				highlightIt(dest.getProjection(), dest, list, watch, newDTG, java.awt.Color.black);
 			}
 		}
-
-		// paint it, to start off with
-		// theLayer.paint(dest);
-
-		// now think about the highlight
-
 	}
 
 	private void highlightIt(PlainProjection projection, CanvasType dest,
@@ -188,20 +190,6 @@ public class SnailHighlighter implements TemporalLayerPainter
 				}
 
 				plotter.drawMe(projection, dest, list, watch, this, newDTG, backgroundColor);
-
-				// // add this to the list to be hidden at a later date
-				// if (!_paintingOldies)
-				// _oldWatchables.put(watch, list);
-				//
-				// // just check if a rectangle got returned at all (there may not
-				// // have been any valid data
-				// if (rec != null)
-				// {
-				// if (_areaCovered == null)
-				// _areaCovered = rec;
-				// else
-				// _areaCovered.add(rec);
-				// }
 
 				// and drop out of the loop
 				break;

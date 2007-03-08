@@ -71,13 +71,21 @@ public class LayerPainterManager extends PropertyChangeSupport
 	/**
 	 * get the list of painters
 	 */
-	public TemporalLayerPainter[] getList()
+	public TemporalLayerPainter[] getPainterList()
 	{
 		TemporalLayerPainter[] res = new TemporalLayerPainter[]{null};
 		return (TemporalLayerPainter[])_myPainterList.toArray(res);
 	}
 	
-
+	/**
+	 * get the list of painters
+	 */
+	public SWTPlotHighlighter[] getHighlighterList()
+	{
+		SWTPlotHighlighter[] res = new SWTPlotHighlighter[]{null};
+		return (SWTPlotHighlighter[])_myHighlighterList.toArray(res);
+	}
+	
 	/**
 	 * find out which is the currently selected painter
 	 * 

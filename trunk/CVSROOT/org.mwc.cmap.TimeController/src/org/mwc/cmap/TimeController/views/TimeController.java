@@ -31,6 +31,7 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.editors.painters.*;
+import org.mwc.debrief.core.editors.painters.highlighters.*;
 
 import Debrief.Tools.Tote.WatchableList;
 import MWC.Algorithms.PlainProjection;
@@ -522,9 +523,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private void processClick(Boolean large, boolean fwd)
 	{
-		
+
 		CorePlugin.logError(Status.INFO, "Starting step", null);
-		
+
 		// check that we have a current time (on initialisation some plots may not
 		// contain data)
 		HiResDate tNow = _myTemporalDataset.getTime();
@@ -572,13 +573,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			HiResDate newDTG = new HiResDate(0, micros);
 
 			// find the extent of the current dataset
-			
-/*			RIGHT, until JAN 2007 this next line had been commented out - replaced
-			  by the line immediately after it.  We've switched back to this implementation.
-			  	This implementation lets the time-slider select a time for which there aren't any 
-			  	points visible.  This makes sense because in it's successor implementation when the 
-			  	DTG slipped outside the visible time period, the event was rejected, and the time-
-			  	controller buttons appeared to break.  It remains responsive this way...  */
+
+			/*
+			 * RIGHT, until JAN 2007 this next line had been commented out - replaced
+			 * by the line immediately after it. We've switched back to this
+			 * implementation. This implementation lets the time-slider select a time
+			 * for which there aren't any points visible. This makes sense because in
+			 * it's successor implementation when the DTG slipped outside the visible
+			 * time period, the event was rejected, and the time- controller buttons
+			 * appeared to break. It remains responsive this way...
+			 */
 			TimePeriod timeP = _myTemporalDataset.getPeriod();
 
 			// TimePeriod timeP = new TimePeriod.BaseTimePeriod(_myStepperProperties
@@ -591,9 +595,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				fireNewTime(newDTG);
 			}
 		}
-		
+
 		CorePlugin.logError(Status.INFO, "Step complete", null);
-		
+
 	}
 
 	private boolean _firingNewTime = false;
@@ -1483,47 +1487,29 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		menuManager.removeAll();
 		toolManager.removeAll();
 
-		// ok, what are the painters we know about
-		TemporalLayerPainter[] painterList = myLayerPainterManager.getList();
-
-		// add the items
-		for (int i = 0; i < painterList.length; i++)
-		{
-			// ok, next painter
-			final TemporalLayerPainter painter = painterList[i];
-
-			// create an action for it
-			Action thisOne = new Action(painter.toString(), Action.AS_RADIO_BUTTON)
-			{
-				public void runWithEvent(Event event)
-				{
-					myLayerPainterManager.setCurrentPainter(painter);
-				}
-			};
-			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
-			thisOne.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
-					.getImageDescriptor(descPath));
-
-			// hmm, and see if this is our current painter
-			if (painter.getName().equals(myLayerPainterManager.getCurrentPainter().getName()))
-			{
-				thisOne.setChecked(true);
-			}
-
-			// and store it on both menus
-			menuManager.add(thisOne);
-			toolManager.add(thisOne);
-		}
-
+		// create a host for when we're populating the properties window
+		final ISelectionProvider provider = this;
+		
+		// ok - add the painter selectors/editors
+		createPainterOptions(myLayerPainterManager, menuManager, toolManager, provider);		
+		
 		// ok, let's have a separator
-		menuManager.add(new Separator());
 		toolManager.add(new Separator());
+
+		// now add the highlighter options/editors
+		createHighlighterOptions(myLayerPainterManager, menuManager, provider);		
+
+		// and another separator
+		menuManager.add(new Separator());
 
 		// add the list of DTG formats for the DTG slider
 		addDateFormats(menuManager);
 
 		// add the list of DTG formats for the DTG slider
 		addBiSliderResolution(menuManager);
+		
+		// and another separator
+		menuManager.add(new Separator());		
 
 		// start off with the relative painter setting, if we have to
 		if (_relPlotToggle == null)
@@ -1537,7 +1523,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					{
 						_targetProjection.setRelativePlot(_relPlotToggle.isChecked());
 
-						
 						// and trigger redraw
 						IWorkbench wb = PlatformUI.getWorkbench();
 						IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
@@ -1590,7 +1575,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				.getImageDescriptor("icons/filter_to_period.gif"));
 		_filterToSelectionAction.setToolTipText("Filter plot data to selected time period");
 		menuManager.add(_filterToSelectionAction);
-		toolManager.add(_filterToSelectionAction);
 
 		// hmm, what about our export to clipboard action
 		if (_exportDataToClipboard == null)
@@ -1612,13 +1596,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// ok, stick it on the clipboard
 		menuManager.add(_exportDataToClipboard);
 
-		// and a list of properties editors
-		// first - setup the parent menu item
-		IMenuManager mgr = new MenuManager("Properties");
-		menuManager.add(mgr);
-
 		// now our own menu editor
-		Action toolboxProperties = new Action("Time controller", Action.AS_PUSH_BUTTON)
+		Action toolboxProperties = new Action("Edit Time controller properties", Action.AS_PUSH_BUTTON)
 		{
 			public void runWithEvent(Event event)
 			{
@@ -1629,41 +1608,173 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/properties.gif"));
 
-		mgr.add(toolboxProperties);
+		menuManager.add(toolboxProperties);
+		toolManager.add(toolboxProperties);
 
-		// now properties boxes for our child properties windows
+
+		// ok - get the action bars to re-populate themselves, otherwise we don't
+		// see our changes
+		getViewSite().getActionBars().updateActionBars();
+	}
+
+	/**
+	 * @param myLayerPainterManager
+	 * @param menuManager
+	 * @param provider
+	 */
+	private void createHighlighterOptions(final LayerPainterManager myLayerPainterManager, final IMenuManager menuManager, final ISelectionProvider provider)
+	{
+		// right, first the drop-down for the display-er
+		// ok, second menu for the DTG formats
+		MenuManager highlighterMenu = new MenuManager("Current position highlight");
+
+		// and store it
+		menuManager.add(highlighterMenu);		
+		
+		// and the range highlighters
+		SWTPlotHighlighter[] highlighterList = myLayerPainterManager.getHighlighterList();
+		String curHighlighterName = myLayerPainterManager.getCurrentHighlighter().getName();
+
+		// add the items
+		for (int i = 0; i < highlighterList.length; i++)
+		{
+			// ok, next painter
+			final SWTPlotHighlighter highlighter = highlighterList[i];
+
+			// create an action for it
+			Action thisOne = new Action(highlighter.toString(), Action.AS_RADIO_BUTTON)
+			{
+				public void runWithEvent(Event event)
+				{
+					myLayerPainterManager.setCurrentHighlighter(highlighter);
+
+					// and redo this list (deferred until the current processing is complete...
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
+						{
+							populateDropDownList(myLayerPainterManager);
+						}
+					});
+					
+				}
+			};
+			String descPath = "icons/" + highlighter.toString().toLowerCase() + ".gif";
+			thisOne.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+					.getImageDescriptor(descPath));
+
+			// hmm, and see if this is our current painter
+			if (highlighter.getName().equals(curHighlighterName))
+				thisOne.setChecked(true);
+
+			// and store it on both menus
+			highlighterMenu.add(thisOne);
+		}
+
+		// ok, now for the current highlighter
+		final SWTPlotHighlighter currentHighlighter = myLayerPainterManager.getCurrentHighlighter();
+
+		// create an action for it
+		Action highlighterProperties = new Action("Edit current highlighter:"
+				+ currentHighlighter.getName(), Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(Event event)
+			{
+				// ok - get the info object for this painter
+				if (currentHighlighter.hasEditor())
+				{
+					EditableWrapper pw = new EditableWrapper(currentHighlighter, _myLayers);
+					CorePlugin.editThisInProperties(_selectionListeners,
+							new StructuredSelection(pw), provider);
+				}
+			}
+		};
+		highlighterProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+				.getImageDescriptor("icons/properties.gif"));
+
+		// and store it on both menus
+		highlighterMenu.add(highlighterProperties);
+	}
+
+	/**
+	 * @param myLayerPainterManager
+	 * @param menuManager
+	 * @param toolManager
+	 * @param provider
+	 */
+	private void createPainterOptions(final LayerPainterManager myLayerPainterManager, final IMenuManager menuManager, final IToolBarManager toolManager, final ISelectionProvider provider)
+	{
+		// right, first the drop-down for the display-er
+		// ok, second menu for the DTG formats
+		MenuManager displayMenu = new MenuManager("Track Display");
+
+		// and store it
+		menuManager.add(displayMenu);
+		
+		// ok, what are the painters we know about
+		TemporalLayerPainter[] painterList = myLayerPainterManager.getPainterList();
+
+		// add the items
 		for (int i = 0; i < painterList.length; i++)
 		{
 			// ok, next painter
 			final TemporalLayerPainter painter = painterList[i];
 
-			final ISelectionProvider provider = this;
-
 			// create an action for it
-			Action thistoolboxProperties = new Action(painter.getName(), Action.AS_PUSH_BUTTON)
+			Action thisOne = new Action(painter.toString(), Action.AS_RADIO_BUTTON)
 			{
 				public void runWithEvent(Event event)
 				{
-					// ok - get the info object for this painter
-					if (painter.hasEditor())
+					myLayerPainterManager.setCurrentPainter(painter);
+
+					// and redo this list (deferred until the current processing is complete...
+					Display.getDefault().asyncExec(new Runnable()
 					{
-						EditableWrapper pw = new EditableWrapper(painter, _myLayers);
-						CorePlugin.editThisInProperties(_selectionListeners, new StructuredSelection(
-								pw), provider);
-					}
+						public void run()
+						{
+							populateDropDownList(myLayerPainterManager);
+						}
+					});					
 				}
 			};
 			String descPath = "icons/" + painter.toString().toLowerCase() + ".gif";
-			thistoolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+			thisOne.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 					.getImageDescriptor(descPath));
 
-			// and store it on both menus
-			mgr.add(thistoolboxProperties);
-		}
+			// hmm, and see if this is our current painter
+			if (painter.getName().equals(myLayerPainterManager.getCurrentPainter().getName()))
+			{
+				thisOne.setChecked(true);
+			}
 
-		// ok - get the action bars to re-populate themselves, otherwise we don't
-		// see our changes
-		getViewSite().getActionBars().updateActionBars();
+			// and store it on both menus
+			displayMenu.add(thisOne);
+			toolManager.add(thisOne);
+		}
+		
+
+		// put the display painter property editor into this one
+		final TemporalLayerPainter currentPainter = myLayerPainterManager.getCurrentPainter();
+		// create an action for it
+		Action currentPainterProperties = new Action("Edit current painter:"
+				+ currentPainter.getName(), Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(Event event)
+			{
+				// ok - get the info object for this painter
+				if (currentPainter.hasEditor())
+				{
+					EditableWrapper pw = new EditableWrapper(currentPainter, _myLayers);
+					CorePlugin.editThisInProperties(_selectionListeners,
+							new StructuredSelection(pw), provider);
+				}
+			}
+		};
+		currentPainterProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+				.getImageDescriptor("icons/properties.gif"));
+
+		// and store it on both menus
+		displayMenu.add(currentPainterProperties);
 	}
 
 	/**

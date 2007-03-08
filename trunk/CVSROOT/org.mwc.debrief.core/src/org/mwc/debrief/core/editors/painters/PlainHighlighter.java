@@ -99,23 +99,23 @@ public class PlainHighlighter implements TemporalLayerPainter
 		// now think about the highlight
 
 		// do we have a dtg?
-		if (dtg != null)
-		{
-			if (theLayer instanceof TrackWrapper)
-			{
-				TrackWrapper tw = (TrackWrapper) theLayer;
-				Watchable[] list = tw.getNearestTo(dtg);
-				if (list != null)
-				{
-					for (int i = 0; i < list.length; i++)
-					{
-						Watchable thisW = list[i];
-
-						highlightIt(dest.getProjection(), dest, thisW);
-					}
-				}
-			}
-		}
+//		if (dtg != null)
+//		{
+//			if (theLayer instanceof TrackWrapper)
+//			{
+//				TrackWrapper tw = (TrackWrapper) theLayer;
+//				Watchable[] list = tw.getNearestTo(dtg);
+//				if (list != null)
+//				{
+//					for (int i = 0; i < list.length; i++)
+//					{
+//						Watchable thisW = list[i];
+//
+//						highlightIt(dest.getProjection(), dest, thisW);
+//					}
+//				}
+//			}
+//		}
 	}
 
 	

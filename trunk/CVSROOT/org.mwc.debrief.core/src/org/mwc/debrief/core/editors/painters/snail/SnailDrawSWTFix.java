@@ -5,7 +5,10 @@ package org.mwc.debrief.core.editors.painters.snail;
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.2  2006-05-16 08:40:44  Ian.Mayo
+// Revision 1.3  2007-03-08 12:01:04  ian.mayo
+// Lots of tidying,refactoring = esp to snail & range highlighters
+//
+// Revision 1.2  2006/05/16 08:40:44  Ian.Mayo
 // Add categories for properties
 //
 // Revision 1.1  2005/07/04 07:45:51  Ian.Mayo
@@ -131,7 +134,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
       thisR = new Rectangle(x, y, wid, ht);
 
       // plot the rectangle anyway
-      dest.drawOval(x , y, wid, ht);
+ //     dest.drawOval(x , y, wid, ht);
 
       // get the fix to draw itself
 
@@ -336,6 +339,15 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 
     _trackPlotter.setPointSize(val.getCurrent());
 		_pointSize = val.getCurrent();
+  }
+
+  /** size of points to draw (pixels) - convenience method used for XML persistence
+   */
+  public final void setPointSize(final int val)
+  {
+
+    _trackPlotter.setPointSize(val);
+		_pointSize = val;
   }
 
   /** length of trail to draw
