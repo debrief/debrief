@@ -6,7 +6,8 @@
       provider-name="MWC">
 
    <description>
-      [1.0.26] Tidy to bounded integer editor
+      [1.0.27] Shrink default font size to 9 pixels
+[1.0.26] Tidying to bounded integer editor
 [1.0.25] Let tote handle tracks being deleted from layer manager
 [1.0.24] Show plural units in scale
 [1.0.23] Fix how centred text appears in labels
