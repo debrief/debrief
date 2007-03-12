@@ -22,12 +22,12 @@ public class LayerPainterManager extends PropertyChangeSupport
 	/**
 	 * our list of painters
 	 */
-	private Vector _myPainterList;
+	private Vector<TemporalLayerPainter> _myPainterList;
 	
 	/** our list of highlighters
 	 * 
 	 */
-	private Vector _myHighlighterList;
+	private Vector<SWTPlotHighlighter> _myHighlighterList;
 	
 	/**
 	 * the current one
@@ -51,20 +51,21 @@ public class LayerPainterManager extends PropertyChangeSupport
 		super(dataProvider);
 		
 		// and now build the painters
-		_myPainterList = new Vector(0,1);
+		_myPainterList = new Vector<TemporalLayerPainter>(0,1);
 		_myPainterList.add(new PlainHighlighter());
 		_myPainterList.add(new SnailHighlighter(dataProvider));
 		
 		setCurrentPainter((TemporalLayerPainter) _myPainterList.firstElement());
 		
 		// and the plot highlighters
-		_myHighlighterList = new Vector(0,1);
+		_myHighlighterList = new Vector<SWTPlotHighlighter>(0,1);
 		_myHighlighterList.add(new SWTPlotHighlighter.RectangleHighlight());
 		_myHighlighterList.add(new SWTSymbolHighlighter());
 		_myHighlighterList.add(new SWTRangeHighlighter());
 		
-		
-		
+		// and sort out the defaults
+		_currentPainter = _myPainterList.firstElement();
+		_currentHighlighter = _myHighlighterList.firstElement();
 	}
 
 
