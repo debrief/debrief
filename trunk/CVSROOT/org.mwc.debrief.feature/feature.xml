@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.26">
+      version="1.0.27">
 
    <description>
-      [1.0.26] Set default layer painter/highlighter, change tactical font size to 9 px
+      [1.0.27] Amend online update location
+[1.0.26] Set default layer painter/highlighter, change tactical
+font size to 9 px
 [1.0.25] Lots of tidying, esp to highlighters, snails, etc.
 [1.0.24] Improve Welcome structure - direct link to composite
 &quot;getting started&quot;
@@ -547,7 +549,7 @@ That&apos;s all there is to it!
    </license>
 
    <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
    </url>
 
    <requires>

@@ -284,6 +284,17 @@
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
                                                                            
+         <action
+               class="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
+               icon="icons/auto_layer.gif"
+               id="org.mwc.debrief.core.creators.shapes.InsertLine"
+               label="&amp;User-select target layer"
+               menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+               state="true"
+               style="toggle"
+               toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
+                                                                           
+
                               
          <action
                class="org.mwc.cmap.plotViewer.actions.ExportWMF"
