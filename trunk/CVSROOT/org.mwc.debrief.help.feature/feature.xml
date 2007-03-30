@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.10">
+      version="1.0.11">
 
    <description>
-      [1.0.10] Minor improvements to getting started cheat sheets
+      [1.0.11] Amend online update location
+[1.0.10] Minor improvements to getting started cheat sheets
 [1.0.9] Updated change logs
 [1.0.8] Updated change logs
 [1.0.7] Final NG review
@@ -666,7 +667,7 @@ That&apos;s all there is to it!
    </license>
 
    <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
    </url>
 
    <requires>

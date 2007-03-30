@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.7">
+      version="1.0.8">
 
    <description>
-      [1.0.7] Fix minor auto-generate problem
+      [1.0.8] Amend online update location
+[1.0.7] Fix minor auto-generate problem
 [1.0.6] Handle tote items being removed from layer manager
 [1.0.5] Preps for final release
 [1.0.4] Add user-selectable slant-range property
@@ -523,7 +524,7 @@ That&apos;s all there is to it!
    </license>
 
    <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
    </url>
 
    <requires>

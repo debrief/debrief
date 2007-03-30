@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.overview.feature"
       label="org.mwc.cmap.overview.feature"
-      version="1.0.3"
+      version="1.0.4"
       provider-name="MWC">
 
    <description>
-      [1.0.3] Tidy GC on completion
+      [1.0.4] Amend online update location
+[1.0.3] Tidy GC on completion
 [1.0.2] Preps for final release
 [1.0.1] Show ETOPO in background
    </description>
@@ -660,7 +661,7 @@ That&apos;s all there is to it!
    </license>
 
    <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
    </url>
 
    <plugin

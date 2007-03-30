@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.26"
+      version="1.0.28"
       provider-name="MWC">
 
    <description>
-      [1.0.27] Shrink default font size to 9 pixels
+      [1.0.28] Amend online update location
+[1.0.27] Shrink default font size to 9 pixels
 [1.0.26] Tidying to bounded integer editor
 [1.0.25] Let tote handle tracks being deleted from layer manager
 [1.0.24] Show plural units in scale
@@ -545,7 +546,7 @@ That&apos;s all there is to it!
    </license>
 
    <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
    </url>
 
    <requires>

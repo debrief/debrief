@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.static_resources.feature"
       label="org.mwc.cmap.static_resources.feature"
-      version="1.0.2"
+      version="1.0.3"
       provider-name="MWC">
 
    <description>
-      [1.0.2]  Start exporting world &amp; etopo datasets
+      [1.0.3] Amend online update location
+[1.0.2]  Start exporting world &amp; etopo datasets
 Static data used in Debrief-type projects (Etopo, World Outline,
 Jre installation)
    </description>
@@ -595,6 +596,7 @@ THE
 LIBRARY IS WITH YOU.  SHOULD THE LIBRARY PROVE DEFECTIVE, YOU
 ASSUME
 
+
 THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
 16. IN NO EVENT UNLESS REQUIRED BY APPLICABLE LAW OR AGREED TO
 IN
@@ -661,7 +663,7 @@ That&apos;s all there is to it!
    </license>
 
    <url>
-      <update label="TD Subs site" url="file://nelson/common/td submarines info/planetmayo/debrief/eclipse/updates"/>
+      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
    </url>
 
    <requires>
