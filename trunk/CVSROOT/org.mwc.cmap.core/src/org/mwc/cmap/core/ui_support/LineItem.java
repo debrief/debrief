@@ -16,6 +16,10 @@ public class LineItem extends ControlContribution
 	
 	String _lastText = " 00°00\'00.00\"N 000°00\'00.00\"W ";
 
+	/** constructor - get going
+	 * 
+	 * @param id
+	 */
 	public LineItem(String id)
 	{
 		super(id);

@@ -2,11 +2,13 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.28"
+      version="1.0.30"
       provider-name="MWC">
 
    <description>
-      [1.0.28] Amend online update location
+      [1.0.30] Increment version num to force update
+[1.0.29] Prevent lat-long display panel from dissappearing
+[1.0.28] Amend online update location
 [1.0.27] Shrink default font size to 9 pixels
 [1.0.26] Tidying to bounded integer editor
 [1.0.25] Let tote handle tracks being deleted from layer manager

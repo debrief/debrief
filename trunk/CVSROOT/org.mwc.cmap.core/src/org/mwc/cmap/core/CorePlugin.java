@@ -364,6 +364,15 @@ public class CorePlugin extends AbstractUIPlugin
 
 	public static LineItem getStatusLine(EditorPart editor)
 	{
+		
+		// right, has our old one closed?  They get closed when the last
+		//   Debrief editor view closes.  that's all.  So, we'll
+		//   just check if the UI has closed our text-line - if it has, we'll
+		//   create a new one.
+		if(_myLineItem != null)
+			if(_myLineItem.isDisposed())
+				_myLineItem = null;
+		
 		if (_myLineItem == null)
 		{
 			IStatusLineManager mgr = editor.getEditorSite().getActionBars()
