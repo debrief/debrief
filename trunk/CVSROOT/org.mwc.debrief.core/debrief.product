@@ -39,7 +39,7 @@
       <feature id="org.eclipse.platform" version="3.2.1.r321_v20060921-b_XVA-INSQSyMtx"/>
       <feature id="org.eclipse.rcp" version="3.2.1.r321_v20060801-2ekW2BxmcpPUOoq"/>
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.11"/>
-      <feature id="org.mwc.cmap.feature" version="1.0.28"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.30"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.11"/>
       <feature id="org.mwc.cmap.narrative.feature" version="1.0.5"/>
       <feature id="org.mwc.cmap.overview.feature" version="1.0.4"/>

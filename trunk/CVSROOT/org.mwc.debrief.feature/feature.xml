@@ -5,7 +5,8 @@
       version="1.0.27">
 
    <description>
-      [1.0.27] Amend online update location
+      [1.0.28] Prevent lat/long indicator dissappearing when last editor is closed
+[1.0.27] Amend online update location
 [1.0.26] Set default layer painter/highlighter, change tactical
 font size to 9 px
 [1.0.25] Lots of tidying, esp to highlighters, snails, etc.
