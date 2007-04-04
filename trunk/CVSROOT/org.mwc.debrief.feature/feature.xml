@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.29">
+      version="1.0.30">
 
    <description>
-      [1.0.29] Correct label used for user-controlled tgt layer select
+      [1.0.30] Correct how buoy patterns presented with normal highlighter
+[1.0.29] Correct label used for user-controlled tgt layer select
 [1.0.28] Prevent lat/long indicator dissappearing when last editor
 is closed
 [1.0.27] Amend online update location
