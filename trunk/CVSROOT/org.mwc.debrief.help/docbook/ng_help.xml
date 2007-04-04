@@ -1039,9 +1039,7 @@ You can use the  <guilabel>General</guilabel> &gt; <guilabel>Perspectives</guila
                   </guiicon>Range Bearing
                 </term> 
 <listitem> 
-<para>Whilst the Range and Bearing control does not allow you to move around the view, it does merit discussion at this point. Select the Range and Bearing control, then drag the mouse to measure the range and bearing between two points - you will see the calculated results displayed at the foot of the
-                    window, as shown below.  The default units are yards, but if you wish to change them double-click on the calculated range results: the units editor will open, allowing you to change the default units (your selection is saved in the
-                    <link linkend="debrief_props" endterm="debrief_props_title"/> section of the Maintainer&apos;s Guide).
+<para>Whilst the Range and Bearing control does not allow you to move around the view, it does merit discussion at this point. Select the Range and Bearing control, then drag the mouse to measure the range and bearing between two points - you will see the calculated results displayed at the mid-point of the connecting, as shown below.  The default units are yards, but different units may be selected from the <guimenuitem>CMAP</guimenuitem>  section of the properties shown in the <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu> dialog.
                   </para> 
 <para>
                     <guiicon>
@@ -1229,21 +1227,21 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
 </mediaobject> 
 </screenshot> 
 </figure> 
-<para>For the track-shifting to work, your data must be configured as follows:<orderedlist><listitem><para>You must have a Debrief plot open (duh)</para>
-</listitem>
-<listitem>
-<para>You must have a vessel track as the <link linkend="primary_track">primary track</link> (<xref linkend="primary_track"/>) on the <link linkend="the_tote_area">Tote</link> (not an annotation or other time-related object)</para>
-</listitem>
-<listitem>
-<para>You must have a secondary track on the Tote, but only one secondary track.  This must also be a vehicle track.</para>
-</listitem>
-<listitem>
-<para>The primary track must have <link linkend="sensor_data">sensor data</link>.</para>
-</listitem>
-<listitem>
-<para></para>
-</listitem>
-</orderedlist></para>
+<para>For the track-shifting to work, your data must be configured as follows:<orderedlist><listitem><para>You must have a Debrief plot open (duh)</para> 
+</listitem> 
+<listitem> 
+<para>You must have a vessel track as the <link linkend="primary_track">primary track</link> (<xref linkend="primary_track"/>) on the <link linkend="the_tote_area">Tote</link> (not an annotation or other time-related object)</para> 
+</listitem> 
+<listitem> 
+<para>You must have a secondary track on the Tote, but only one secondary track.  This must also be a vehicle track.</para> 
+</listitem> 
+<listitem> 
+<para>The primary track must have <link linkend="sensor_data">sensor data</link>.</para> 
+</listitem> 
+<listitem> 
+<para></para> 
+</listitem> 
+</orderedlist></para> 
 </sect2> 
 </sect1> 
 <sect1 id="new_chart_features"> 
@@ -1476,6 +1474,9 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
             </screenshot>
           </figure>
         </para> 
+<note> 
+<para>By default, new drawing features are placed in the <computeroutput>Misc</computeroutput> layer, from where they can be moved to other layers as required.  If you're creating lots of drawing features, and want to place them directly into target layers, select on <guimenuitem>Manually select target layer</guimenuitem> from the top of the Drawing menu.  When this setting is ticked, Debrief will prompt you to select a target layer for each new drawing feature added to the plot.  Clear the ticked setting to return the target layer to the <computeroutput>Misc</computeroutput> layer  </para> 
+</note> 
 <sect2> 
 <title>Label</title> 
 <para>The Label
