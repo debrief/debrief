@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.27">
+      version="1.0.29">
 
    <description>
-      [1.0.28] Prevent lat/long indicator dissappearing when last editor is closed
+      [1.0.29] Correct label used for user-controlled tgt layer select
+[1.0.28] Prevent lat/long indicator dissappearing when last editor
+is closed
 [1.0.27] Amend online update location
 [1.0.26] Set default layer painter/highlighter, change tactical
 font size to 9 px
