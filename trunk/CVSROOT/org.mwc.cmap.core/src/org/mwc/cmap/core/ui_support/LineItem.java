@@ -42,7 +42,11 @@ public class LineItem extends ControlContribution
 
 	public boolean isDisposed()
 	{
-		return label.isDisposed();
+		boolean res = true;
+		if(label != null)
+			res = label.isDisposed();
+
+		return res;
 	}
 	
 	/**
