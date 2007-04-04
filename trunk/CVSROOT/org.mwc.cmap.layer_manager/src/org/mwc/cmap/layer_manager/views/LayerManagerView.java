@@ -249,8 +249,8 @@ public class LayerManagerView extends ViewPart
 			// just see if we have sorted editables
 			if ((p1 instanceof Comparable) && (p2 instanceof Comparable))
 			{
-				Comparable w1 = (Comparable) p1;
-				Comparable w2 = (Comparable) p2;
+				Comparable<Object> w1 = (Comparable<Object>) p1;
+				Comparable<Object> w2 = (Comparable<Object>) p2;
 				res = w1.compareTo(w2);
 			}
 			else
@@ -765,8 +765,8 @@ public class LayerManagerView extends ViewPart
 	private void makeActions()
 	{
 
-		_trackNewLayers = _myPartMonitor.createSyncedAction("Track new narratives",
-				"Always show narratives for selected provider", getSite());
+		_trackNewLayers = _myPartMonitor.createSyncedAction("Link to current plot",
+				"Always show layers for selected Plot", getSite());
 
 		_followSelectionToggle = new Action("Jump to selection", Action.AS_CHECK_BOX)
 		{
@@ -1100,7 +1100,7 @@ public class LayerManagerView extends ViewPart
 	 * @param item
 	 *          the item to add (together with its children)
 	 */
-	private void addItemAndChildrenToList(Vector list, TreeItem item)
+	private void addItemAndChildrenToList(Vector<Object> list, TreeItem item)
 	{
 		Object myData = item.getData();
 		if (myData != null)
@@ -1116,7 +1116,7 @@ public class LayerManagerView extends ViewPart
 		}
 	}
 
-	private static Set _pendingLayers = new TreeSet(new Comparator()
+	private static Set _pendingLayers = new TreeSet<Object>(new Comparator<Object>()
 	{
 		public int compare(Object arg0, Object arg1)
 		{
@@ -1180,7 +1180,7 @@ public class LayerManagerView extends ViewPart
 		{
 			// right, we'll be building up a list of objects to refresh (all of the
 			// objects in the indicated layer)
-			Vector newList = new Vector(0, 1);
+			Vector<Object> newList = new Vector<Object>(0, 1);
 			Widget changed = null;
 
 			if (_pendingLayers.size() > 0)
