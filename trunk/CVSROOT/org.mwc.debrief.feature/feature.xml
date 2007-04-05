@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.30">
+      version="1.0.31">
 
    <description>
-      [1.0.30] Correct how buoy patterns presented with normal highlighter
+      [1.0.31] Make sure we include legacy code
+[1.0.30] Correct how buoy patterns presented with normal highlighter
 [1.0.29] Correct label used for user-controlled tgt layer select
 [1.0.28] Prevent lat/long indicator dissappearing when last editor
 is closed
@@ -602,6 +603,12 @@ That&apos;s all there is to it!
 
    <plugin
          id="org.mwc.debrief.core"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.mwc.debrief.legacy"
          download-size="0"
          install-size="0"
          version="0.0.0"/>
