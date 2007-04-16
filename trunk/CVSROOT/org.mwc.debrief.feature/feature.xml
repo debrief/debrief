@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.33">
+      version="1.0.34">
 
    <description>
-      [1.0.33] Include debug code to analyse highlighter problem.
+      [1.0.34] Remove debug lines.
+[1.0.33] Force update.
+[1.0.32] Include debug code to analyse highlighter problem.
 [1.0.31] Make sure we include legacy code
 [1.0.30] Correct how buoy patterns presented with normal highlighter
 [1.0.29] Correct label used for user-controlled tgt layer select
