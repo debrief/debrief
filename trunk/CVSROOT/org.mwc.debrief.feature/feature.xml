@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.31">
+      version="1.0.33">
 
    <description>
-      [1.0.31] Make sure we include legacy code
+      [1.0.33] Include debug code to analyse highlighter problem.
+[1.0.31] Make sure we include legacy code
 [1.0.30] Correct how buoy patterns presented with normal highlighter
 [1.0.29] Correct label used for user-controlled tgt layer select
 [1.0.28] Prevent lat/long indicator dissappearing when last editor
