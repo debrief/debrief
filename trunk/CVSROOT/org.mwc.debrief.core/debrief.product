@@ -39,7 +39,7 @@
       <feature id="org.eclipse.platform" version="3.2.1.r321_v20060921-b_XVA-INSQSyMtx"/>
       <feature id="org.eclipse.rcp" version="3.2.1.r321_v20060801-2ekW2BxmcpPUOoq"/>
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.11"/>
-      <feature id="org.mwc.cmap.feature" version="1.0.31"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.32"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.12"/>
       <feature id="org.mwc.cmap.narrative.feature" version="1.0.5"/>
       <feature id="org.mwc.cmap.overview.feature" version="1.0.4"/>
@@ -48,7 +48,7 @@
       <feature id="org.mwc.cmap.static_resources.feature" version="1.0.3"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.8"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.9"/>
-      <feature id="org.mwc.debrief.feature" version="1.0.31"/>
+      <feature id="org.mwc.debrief.feature" version="1.0.34"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.12"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.4"/>
    </features>
