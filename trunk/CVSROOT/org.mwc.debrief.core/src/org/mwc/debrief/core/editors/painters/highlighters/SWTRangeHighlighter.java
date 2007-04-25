@@ -8,6 +8,7 @@ package org.mwc.debrief.core.editors.painters.highlighters;
 
 import java.awt.*;
 
+import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.*;
 import MWC.GUI.Properties.*;
 import MWC.GenericData.*;
@@ -74,6 +75,14 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	public final void highlightIt(MWC.Algorithms.PlainProjection proj, CanvasType dest,
 			Debrief.Tools.Tote.WatchableList list, Debrief.Tools.Tote.Watchable watch)
 	{
+		
+  	// sort out if this is an item that we plot
+  	if(watch instanceof DoNotHighlightMe)
+  	{
+  		// hey, don't bother...
+  		return;
+  	}
+  	
 		if (_plainRectangle)
 		{
 			drawRectangle(watch, dest, proj, 5);

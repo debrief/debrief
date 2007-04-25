@@ -6,6 +6,7 @@
 
 package org.mwc.debrief.core.editors.painters.highlighters;
 
+import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.*;
 import java.awt.*;
 import MWC.GenericData.*;
@@ -54,8 +55,14 @@ public interface SWTPlotHighlighter extends Editable  {
       // we can't, so we will just have to trap any exceptions it raises
       try
       {
-
-
+      	
+      	// sort out if this is an item that we plot
+      	if(watch instanceof DoNotHighlightMe)
+      	{
+      		// hey, don't bother...
+      		return;
+      	}
+      	
         Rectangle _areaCovered = null;
 
         // set the highlight colour

@@ -8,216 +8,267 @@ package org.mwc.debrief.core.editors.painters.highlighters;
 
 import java.awt.*;
 
+import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
 public final class SWTSymbolHighlighter implements SWTPlotHighlighter, Editable
 {
 
-  private Color _myColor = Color.white;
-  private double _mySize = MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE;
+	private Color _myColor = Color.white;
 
-  /** Draw a highlight around this watchable
-   * @param proj the current projection
-   * @param dest the place to draw this highlight
-   * @param watch the current data point
-   */
-  public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-  		CanvasType dest,
-                          Debrief.Tools.Tote.WatchableList list,
-                          Debrief.Tools.Tote.Watchable watch)
-  {
-    // check that our graphics context is still valid -
-    // we can't, so we will just have to trap any exceptions it raises
-    try
-    {
-       boolean isPainted = false;
+	private double _mySize = MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.LARGE;
 
-      // do we have know the list for this symbol?
-      if(list != null)
-      {
-        // retrieve the symbol
-        MWC.GUI.Shapes.Symbols.PlainSymbol sym = list.getSnailShape();
+	/**
+	 * Draw a highlight around this watchable
+	 * 
+	 * @param proj
+	 *          the current projection
+	 * @param dest
+	 *          the place to draw this highlight
+	 * @param watch
+	 *          the current data point
+	 */
+	public final void highlightIt(MWC.Algorithms.PlainProjection proj, CanvasType dest,
+			Debrief.Tools.Tote.WatchableList list, Debrief.Tools.Tote.Watchable watch)
+	{
+		// check that our graphics context is still valid -
+		// we can't, so we will just have to trap any exceptions it raises
+		try
+		{
 
-        WorldLocation centre = null;
+			// sort out if this is an item that we plot
+			if (watch instanceof DoNotHighlightMe)
+			{
+				// hey, don't bother...
+				return;
+			}
 
-        if(sym != null)
-        {
+			boolean isPainted = false;
 
-          // find the centre of the area
-          centre = watch.getBounds().getCentre();
+			// do we have know the list for this symbol?
+			if (list != null)
+			{
+				// retrieve the symbol
+				MWC.GUI.Shapes.Symbols.PlainSymbol sym = list.getSnailShape();
 
-          // store the size
-          double size = sym.getScaleVal();
+				WorldLocation centre = null;
 
-          // use our size
-          sym.setScaleVal(_mySize);
+				if (sym != null)
+				{
 
-          // do the plotting
-          sym.paint(dest, centre, watch.getCourse());
+					// find the centre of the area
+					centre = watch.getBounds().getCentre();
 
-          // restore the size
-          sym.setScaleVal(size);
+					// store the size
+					double size = sym.getScaleVal();
 
-          // make a note that we've successfully highlighted this item
-          isPainted = true;
+					// use our size
+					sym.setScaleVal(_mySize);
 
-        }
-      }
+					// do the plotting
+					sym.paint(dest, centre, watch.getCourse());
 
-      // paint this symbol if we haven't already managed to do it
-      if(!isPainted)
-      {
-        // no symbol, make do with a rectangle
-        Rectangle _areaCovered = null;
+					// restore the size
+					sym.setScaleVal(size);
 
-        int myIntSize = 5;
-//
-//        int rectSize = (int)(3d * _mySize);
+					// make a note that we've successfully highlighted this item
+					isPainted = true;
 
-        // set the highlight colour
-        dest.setColor(_myColor);
-        // get the current area of the watchable
-        WorldArea wa = watch.getBounds();
-        // convert to screen coordinates
-        Point tl = proj.toScreen(wa.getTopLeft());
+				}
+			}
 
-        int tlx = tl.x;
-        int tly = tl.y;
+			// paint this symbol if we haven't already managed to do it
+			if (!isPainted)
+			{
+				// no symbol, make do with a rectangle
+				Rectangle _areaCovered = null;
 
-        Point br = proj.toScreen(wa.getBottomRight());
-        // get the width
-        int x = tlx - myIntSize;
-        int y = tly - myIntSize;
-        int wid = (br.x - tlx) + (myIntSize * 2);
-        int ht = (br.y - tly) + (myIntSize * 2);
+				int myIntSize = 5;
+				//
+				// int rectSize = (int)(3d * _mySize);
 
-        // represent this area as a rectangle
-        java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
+				// set the highlight colour
+				dest.setColor(_myColor);
+				// get the current area of the watchable
+				WorldArea wa = watch.getBounds();
+				// convert to screen coordinates
+				Point tl = proj.toScreen(wa.getTopLeft());
 
-        // keep track of the area covered
-        if(_areaCovered == null)
-          _areaCovered = thisR;
-        else
-          _areaCovered.add(thisR);
+				int tlx = tl.x;
+				int tly = tl.y;
 
-        // plot the rectangle
-        dest.drawRect(x , y, wid, ht);
-      }
-    }
-    catch(IllegalStateException e)
-    {
-      MWC.Utilities.Errors.Trace.trace(e);
-    }
+				Point br = proj.toScreen(wa.getBottomRight());
+				// get the width
+				int x = tlx - myIntSize;
+				int y = tly - myIntSize;
+				int wid = (br.x - tlx) + (myIntSize * 2);
+				int ht = (br.y - tly) + (myIntSize * 2);
 
-  }
+				// represent this area as a rectangle
+				java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
 
-  /** the name of this object
-   * @return the name of this editable object
-   */
-  public final String getName () {
-    return "Symbol Highlight";
-  }
+				// keep track of the area covered
+				if (_areaCovered == null)
+					_areaCovered = thisR;
+				else
+					_areaCovered.add(thisR);
 
-  /** the name of this object
-   * @return the name of this editable object
-   */
-  public final String toString(){
-    return getName();
-  }
+				// plot the rectangle
+				dest.drawRect(x, y, wid, ht);
+			}
+		}
+		catch (IllegalStateException e)
+		{
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
 
-  /** whether there is any edit information for this item
-   * this is a convenience function to save creating the EditorType data
-   * first
-   * @return yes/no
-   */
-  public final boolean hasEditor () {
-    return true;
-  }
+	}
 
-  /** get the editor for this item
-   * @return the BeanInfo data for this editable object
-   */
-  public final Editable.EditorType getInfo () {
-    return new SymbolHighlightInfo(this);
-  }
+	/**
+	 * the name of this object
+	 * 
+	 * @return the name of this editable object
+	 */
+	public final String getName()
+	{
+		return "Symbol Highlight";
+	}
 
-  /** change the colour of the highlight
-   * @param val the new colour
-   */
-  public final void setColor(final Color val)
-  {_myColor = val;}
-  /** change the size of the highlight to plot
-   * @param val the new size (stored with its constraints)
-   */
-  public final void setScale(final double val)
-  { _mySize = val; }
-  /** return the current highlight colour
-   * @return the colour
-   */
-  public final Color getColor()
-  { return _myColor; }
-  /** return the current size of the highlight
-   * @return current size, stored with it's constraints
-   */
-  public final double getScale()
-  { return _mySize;  }
+	/**
+	 * the name of this object
+	 * 
+	 * @return the name of this editable object
+	 */
+	public final String toString()
+	{
+		return getName();
+	}
 
+	/**
+	 * whether there is any edit information for this item this is a convenience
+	 * function to save creating the EditorType data first
+	 * 
+	 * @return yes/no
+	 */
+	public final boolean hasEditor()
+	{
+		return true;
+	}
 
-  /////////////////////////////////////////////////////////////
-  // nested class describing how to edit this class
-  ////////////////////////////////////////////////////////////
-  /** the set of editable details for the painter
-   */
-  public static final class SymbolHighlightInfo extends Editable.EditorType
-  {
+	/**
+	 * get the editor for this item
+	 * 
+	 * @return the BeanInfo data for this editable object
+	 */
+	public final Editable.EditorType getInfo()
+	{
+		return new SymbolHighlightInfo(this);
+	}
 
-    /** constructor for editable
-     * @param data the object we are editing
-     */
-    public SymbolHighlightInfo(final SWTSymbolHighlighter data)
-    {
-      super(data, "Symbol Highlight", "");
-    }
+	/**
+	 * change the colour of the highlight
+	 * 
+	 * @param val
+	 *          the new colour
+	 */
+	public final void setColor(final Color val)
+	{
+		_myColor = val;
+	}
 
-    /** the set of descriptions for this object
-     * @return the properties
-     */
-    public final java.beans.PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try{
-        final java.beans.PropertyDescriptor[] res={
-          prop("Scale", "scale to paint symbol"),
-        };
-        res[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
-        return res;
-      }
-      catch(Exception e)
-      {
-        MWC.Utilities.Errors.Trace.trace(e);
-        return super.getPropertyDescriptors();
-      }
+	/**
+	 * change the size of the highlight to plot
+	 * 
+	 * @param val
+	 *          the new size (stored with its constraints)
+	 */
+	public final void setScale(final double val)
+	{
+		_mySize = val;
+	}
 
-    }
-  }
+	/**
+	 * return the current highlight colour
+	 * 
+	 * @return the colour
+	 */
+	public final Color getColor()
+	{
+		return _myColor;
+	}
 
+	/**
+	 * return the current size of the highlight
+	 * 
+	 * @return current size, stored with it's constraints
+	 */
+	public final double getScale()
+	{
+		return _mySize;
+	}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class testMe extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE  = "UNIT";
-    public testMe(final String val)
-    {
-      super(val);
-    }
-    public final void testMyParams()
-    {
-      Editable ed = new SWTSymbolHighlighter();
-      Editable.editableTesterSupport.testParams(ed, this);
-      ed = null;
-    }
-  }
+	// ///////////////////////////////////////////////////////////
+	// nested class describing how to edit this class
+	// //////////////////////////////////////////////////////////
+	/**
+	 * the set of editable details for the painter
+	 */
+	public static final class SymbolHighlightInfo extends Editable.EditorType
+	{
+
+		/**
+		 * constructor for editable
+		 * 
+		 * @param data
+		 *          the object we are editing
+		 */
+		public SymbolHighlightInfo(final SWTSymbolHighlighter data)
+		{
+			super(data, "Symbol Highlight", "");
+		}
+
+		/**
+		 * the set of descriptions for this object
+		 * 
+		 * @return the properties
+		 */
+		public final java.beans.PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final java.beans.PropertyDescriptor[] res = { prop("Scale",
+						"scale to paint symbol"), };
+				res[0]
+						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
+				return res;
+			}
+			catch (Exception e)
+			{
+				MWC.Utilities.Errors.Trace.trace(e);
+				return super.getPropertyDescriptors();
+			}
+
+		}
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val)
+		{
+			super(val);
+		}
+
+		public final void testMyParams()
+		{
+			Editable ed = new SWTSymbolHighlighter();
+			Editable.editableTesterSupport.testParams(ed, this);
+			ed = null;
+		}
+	}
 }
-
