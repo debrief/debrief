@@ -5,6 +5,7 @@ import java.awt.Point;
 import org.eclipse.jface.action.IStatusLineManager;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.ui_support.LineItem;
 
 import MWC.GUI.*;
@@ -30,6 +31,18 @@ public class CursorTracker implements MouseMoveListener
 	 * 
 	 */
 	final private ChartCursorMovedListener _moveListener;
+	
+
+	/** keep track of how many people have a pointer to this tracker
+	 * 
+	 */
+	private static int _lineUsers = 0;	
+	
+
+	/**
+	 * the shared line of status text used across CMAP apps
+	 */
+	private static LineItem _myLineItem = null;	
 
 	// ///////////////////////////////////////////////////
 	// constructor
@@ -95,18 +108,6 @@ public class CursorTracker implements MouseMoveListener
 			String msg = BriefFormatLocation.toString(loc);
 			write(msg);
 		}
-
-		// }
-		// Coordinate world = getContext().pixelToWorld(screen.x, screen.y);
-		// String x = String.valueOf(world.x);
-		// String y = String.valueOf(world.y);
-		// if (_label.label.isDisposed())
-		// return;
-		// _label.label.setText(x.substring(0, Math.min(10, x.length())));
-		// if (ylabel.label.isDisposed())
-		// return;
-		// ylabel.label.setText(y.substring(0, Math.min(10, y.length())));
-
 	}
 
 	/**
@@ -120,6 +121,7 @@ public class CursorTracker implements MouseMoveListener
 	public void close()
 	{
 		_myChart.removeCursorMovedListener(_moveListener);
+		_lineUsers --;		
 	}
 
 	/**
@@ -164,4 +166,6 @@ public class CursorTracker implements MouseMoveListener
 //		return true;
 //	}
 
+
+		
 }

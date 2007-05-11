@@ -55,16 +55,24 @@ public class CorePlugin extends AbstractUIPlugin
 
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
+	
+
+	/** keep track of how many people have a pointer to this tracker
+	 * 
+	 */
+	private static int _lineUsers = 0;	
+	
+
+	/**
+	 * the shared line of status text used across CMAP apps
+	 */
+	private static LineItem _myLineItem = null;		
 
 	/**
 	 * the Debrief tool-parent used to provide legacy access to properties
 	 */
 	private static DebriefToolParent _toolParent;
 
-	/**
-	 * the shared line of status text used across CMAP apps
-	 */
-	private static LineItem _myLineItem = null;
 
 	/**
 	 * where we cache our images
@@ -91,6 +99,7 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
 
+	
 	/**
 	 * The constructor.
 	 */
@@ -362,28 +371,7 @@ public class CorePlugin extends AbstractUIPlugin
 		return res;
 	}
 
-	public static LineItem getStatusLine(EditorPart editor)
-	{
-		
-		// right, has our old one closed?  They get closed when the last
-		//   Debrief editor view closes.  that's all.  So, we'll
-		//   just check if the UI has closed our text-line - if it has, we'll
-		//   create a new one.
-		if(_myLineItem != null)
-			if(_myLineItem.isDisposed())
-				_myLineItem = null;
-		
-		if (_myLineItem == null)
-		{
-			IStatusLineManager mgr = editor.getEditorSite().getActionBars()
-					.getStatusLineManager();
-			_myLineItem = new LineItem("vv aa");
-			mgr.add(_myLineItem);
-		}
-
-		return _myLineItem;
-	}
-
+	
 	/**
 	 * show a message to the user
 	 * 
@@ -455,6 +443,34 @@ public class CorePlugin extends AbstractUIPlugin
 			logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
 		}
 		return res;
+	}
+
+	public static void ditchStatusLine()
+	{
+		_lineUsers --;
+	}
+
+	
+	public static LineItem getStatusLine(EditorPart editor)
+	{
+		// right, is anybody holding onto the last line item?  If nobody is,
+		// Eclipse will ditch it, and we have to create a new one.
+		if(_lineUsers == 0)
+		{
+			IStatusLineManager mgr = editor.getEditorSite().getActionBars()
+					.getStatusLineManager();
+			_myLineItem = new LineItem("vv aa");
+			mgr.add(_myLineItem);
+		}
+		
+		if(_lineUsers < 0)
+		{
+			System.err.println("CorePlugin: CursorTracker in unstable state");
+		}
+		
+		_lineUsers++;
+
+		return _myLineItem;
 	}
 
 }

@@ -89,7 +89,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	protected DropTarget target;
 
-	Vector _selectionListeners;
+	Vector<ISelectionChangedListener> _selectionListeners;
 
 	ISelection _currentSelection;
 
@@ -180,11 +180,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		_timeManager.removeListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 		// and clear the tracker
-		if (null != _myTracker)
-		{
-			_myTracker.close();
-			_myTracker = null;
-		}
+		CorePlugin.ditchStatusLine();
+		_myTracker.close();
+		_myTracker = null;
 		
 		// empty the part monitor
 		_myPartMonitor.ditch();
@@ -238,8 +236,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 		getSite().setSelectionProvider(this);
 
-		LineItem lineItem = CorePlugin.getStatusLine(this);
-		_myTracker = new CursorTracker(_myChart, lineItem);
+		// ok, create the lat-long tracker
+		LineItem theLabel = CorePlugin.getStatusLine(this);
+		_myTracker = new CursorTracker(_myChart, theLabel);
 
 
 		// and over-ride the undo button
@@ -564,7 +563,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
-			_selectionListeners = new Vector(0, 1);
+			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
 		// see if we don't already contain it..
 		if (!_selectionListeners.contains(listener))
