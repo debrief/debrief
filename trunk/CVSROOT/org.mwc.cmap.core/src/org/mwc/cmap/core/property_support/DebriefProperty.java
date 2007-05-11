@@ -23,7 +23,7 @@ public class DebriefProperty implements IPropertyDescriptor
 
 	EditorHelper _myHelper = null;
 
-	static Vector _myHelperList;
+	static Vector<EditorHelper> _myHelperList;
 
 	static Control _theControl;
 
@@ -109,7 +109,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		// now add the new ones
 		for (Iterator iter = newHelpers.iterator(); iter.hasNext();)
 		{
-			Object thisHelper = (Object) iter.next();
+			EditorHelper thisHelper = (EditorHelper) iter.next();
 			_myHelperList.add(thisHelper);
 		}
 	}
@@ -118,18 +118,16 @@ public class DebriefProperty implements IPropertyDescriptor
 	{
 		if (_myHelperList == null)
 		{
-			_myHelperList = new Vector(0, 1);
+			_myHelperList = new Vector<EditorHelper>(0, 1);
 			_myHelperList.add(new ColorHelper(_theControl));
 			_myHelperList.add(new BoundedIntegerHelper());
 			_myHelperList.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
 			_myHelperList.add(new EditorHelper(String.class)
 			{
-
 				public CellEditor getCellEditorFor(Composite parent)
 				{
 					return new TextCellEditor(parent, SWT.MULTI | SWT.V_SCROLL);
 				}
-
 			});
 			_myHelperList.add(new EditorHelper(Long.class)
 			{
@@ -200,6 +198,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			_myHelperList.add(new WorldPathHelper());
 			_myHelperList.add(new DurationHelper());
 			_myHelperList.add(new DoubleHelper());
+			_myHelperList.add(new FileNameHelper());
 
 		}
 	}

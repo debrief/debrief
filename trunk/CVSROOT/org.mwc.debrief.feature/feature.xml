@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.35">
+      version="1.0.36">
 
    <description>
-      [1.0.35] Prevent highlight showing for sensor &amp; TMA data.
+      [1.0.36] Include rudimentary S57 import
+[1.0.35] Prevent highlight showing for sensor &amp; TMA data.
 [1.0.34] Remove debug lines.
 [1.0.33] Force update.
 [1.0.32] Include debug code to analyse highlighter problem.

@@ -196,9 +196,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		try
 		{
-			IFileEditorInput ife = (IFileEditorInput) input;
-			InputStream is = ife.getFile().getContents();
-			loadThisStream(is, input.getName());
+			InputStream is = null;
+			if (input instanceof IFileEditorInput)
+			{
+				IFileEditorInput ife = (IFileEditorInput) input;
+				is = ife.getFile().getContents();
+			}
+			else
+			{
+				IPersistableElement persist = input.getPersistable();
+				if (persist instanceof IFileEditorInput)
+				{
+					IFileEditorInput iff = (IFileEditorInput) persist;
+					is = iff.getFile().getContents();
+				}
+			}
+			if (is != null)
+				loadThisStream(is, input.getName());
+
 		}
 		catch (CoreException e)
 		{
@@ -565,9 +580,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						// yes. cool, get plotting
 						_layerPainterManager.getCurrentPainter()
 								.paintThisLayer(thisLayer, dest, tNow);
-						
+
 						// ok, now sort out the highlight
-						
+
 						// right, what are the watchables
 						final Vector watchables = SnailPainter.getWatchables(thisLayer);
 
@@ -576,7 +591,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						while (watches.hasMoreElements())
 						{
 							final WatchableList list = (WatchableList) watches.nextElement();
-							// is the primary an instance of layer (with it's own line thickness?)
+							// is the primary an instance of layer (with it's own line
+							// thickness?)
 							if (list instanceof Layer)
 							{
 								final Layer ly = (Layer) list;
@@ -593,10 +609,11 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							if (watch != null)
 							{
 								// plot it
-								_layerPainterManager.getCurrentHighlighter().highlightIt(dest.getProjection(), dest, list, watch);
+								_layerPainterManager.getCurrentHighlighter().highlightIt(
+										dest.getProjection(), dest, list, watch);
 							}
 						}
-					}						
+					}
 				}
 				catch (Exception e)
 				{
@@ -741,8 +758,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		firePropertyChange(PROP_DIRTY);
 	}
 
-	
-	
 	/**
 	 * 
 	 */
@@ -751,8 +766,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	{
 		// inform our parent
 		super.layersExtended();
-		
-		// and tell the track data manager that something's happened.  One of it's tracks may have been
+
+		// and tell the track data manager that something's happened. One of it's
+		// tracks may have been
 		// deleted!
 		_trackDataProvider.fireTracksChanged();
 	}
