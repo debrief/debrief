@@ -180,7 +180,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		_timeManager.removeListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 
 		// and clear the tracker
-		CorePlugin.ditchStatusLine();
 		_myTracker.close();
 		_myTracker = null;
 		
@@ -237,8 +236,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		getSite().setSelectionProvider(this);
 
 		// ok, create the lat-long tracker
-		LineItem theLabel = CorePlugin.getStatusLine(this);
-		_myTracker = new CursorTracker(_myChart, theLabel);
+		_myTracker = new CursorTracker(_myChart,  this);
 
 
 		// and over-ride the undo button
@@ -343,7 +341,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 			public void chartFireSelectionChanged(ISelection sel)
 			{
-				// TODO Auto-generated method stub
 				fireSelectionChanged(sel);
 			}};
 		return res;

@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.32"
+      version="1.0.33"
       provider-name="MWC">
 
    <description>
-      [1.0.32] Don&apos;t try to load java clipboard file
+      [1.0.33] Fix for multiple lat-long trackers
+[1.0.32] Don&apos;t try to load java clipboard file
 [1.0.31] Fix tracking status of lat/long display panel
 [1.0.30] Increment version num to force update
 [1.0.29] Prevent lat-long display panel from dissappearing
