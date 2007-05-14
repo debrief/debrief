@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.12">
+      version="1.0.13">
 
    <description>
       [1.0.13] Include updated change logs
