@@ -30,13 +30,13 @@
    <feature url="features/org.mwc.debrief.help.feature_1.0.13.jar" id="org.mwc.debrief.help.feature" version="1.0.13">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.feature_1.0.33.jar" id="org.mwc.cmap.feature" version="1.0.33">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.14.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.14">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.36.jar" id="org.mwc.debrief.feature" version="1.0.36">
+   <feature url="features/org.mwc.cmap.feature_1.0.35.jar" id="org.mwc.cmap.feature" version="1.0.35">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.debrief.feature_1.0.37.jar" id="org.mwc.debrief.feature" version="1.0.37">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

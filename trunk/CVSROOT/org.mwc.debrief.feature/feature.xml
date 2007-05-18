@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.36">
+      version="1.0.37">
 
    <description>
-      [1.0.36] Include rudimentary S57 import
+      [1.0.37] Robustly handle failure when can&apos;t see S57 exporter
+[1.0.36] Include rudimentary S57 import
 [1.0.35] Prevent highlight showing for sensor &amp; TMA data.
 [1.0.34] Remove debug lines.
 [1.0.33] Force update.

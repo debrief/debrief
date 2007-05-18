@@ -2,11 +2,14 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.33"
+      version="1.0.35"
       provider-name="MWC">
 
    <description>
-      [1.0.33] Fix for multiple lat-long trackers, include rudimentary S57 import
+      [1.0.35] Force updates of S57 libraries
+[1.0.34] Make sure S57 libraries included
+[1.0.33] Fix for multiple lat-long trackers, include rudimentary
+S57 import
 [1.0.32] Don&apos;t try to load java clipboard file
 [1.0.31] Fix tracking status of lat/long display panel
 [1.0.30] Increment version num to force update
