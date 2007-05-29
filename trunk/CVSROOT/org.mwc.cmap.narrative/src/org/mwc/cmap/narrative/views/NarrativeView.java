@@ -13,12 +13,10 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.narrative.NarrativePlugin;
 
-import Debrief.Wrappers.NarrativeWrapper;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.*;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
@@ -637,19 +635,63 @@ public class NarrativeView extends ViewPart
 	{
 		if (_followTimeToggle.isChecked())
 		{
-			// move our list to the correct DTG
+			// retrieve our data
+			NarrativeEntry[] narr = (NarrativeEntry[]) viewer.getInput();
 
-			// first find the current DTG
-			NarrativeWrapper narr = (NarrativeWrapper) viewer.getInput();
+			// do we have any?
 			if (narr != null)
 			{
-				NarrativeEntry currentItem = narr.getEntryNearestTo(newDTG);
+				NarrativeEntry res = null;
+
+				// just check we're not looking for a time after the available data
+			  if(newDTG.greaterThan(narr[narr.length-1].getDTG()))
+			  {
+			  	// cool, store it
+			  	res = narr[narr.length-1];
+			  }
+			  else
+			  {
+			    // aah, but is it before?
+			  	if(newDTG.lessThan(narr[0].getDTG()))
+			  	{
+			  		// yup, store it.
+			  		res = narr[0];
+			  	}
+			  	else
+			  	{
+			  		// nope, better do it the hard way
+			  		for (int i = 0; i < narr.length; i++)
+						{
+							NarrativeEntry thisE = narr[i];
+							HiResDate dtg = thisE.getDTG();
+							
+							// right, are we still before the tgt dtg?
+							// note: we want to do less than or equal to, but we can't so we'll just do
+							// not greater than, which is equivalent
+							if(!dtg.greaterThan(newDTG))
+							{
+								// yup, remember this one and move one
+								res = thisE;
+							}
+							else
+							{
+								// nope.  cool. we've know the last matching dtg, just
+								// drop out of the loop.
+								break;
+							}
+							
+						}
+			  	}
+			  }
+				
+				
+//				NarrativeEntry currentItem = narr.getEntryNearestTo(newDTG);
 
 				// did we find one?
-				if (currentItem != null)
+				if (res != null)
 				{
 					// yup, store it in a selection
-					IStructuredSelection sel = new StructuredSelection(currentItem);
+					IStructuredSelection sel = new StructuredSelection(res);
 
 					// and update the table
 					viewer.setSelection(sel, _jumpToTimeToggle.isChecked());
