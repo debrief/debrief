@@ -240,6 +240,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 	private void makeActions()
 	{
+		final IWorkbenchPart myPart = this;
 		final ISelectionProvider provider = this;
 		_editProperties = new Action("Properties")
 		{
@@ -251,7 +252,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				if (_propsAsSelection == null)
 					_propsAsSelection = new StructuredSelection(_myStepperProperties);
 
-				CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection, provider);
+				CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection, provider, myPart);
 				_propsAsSelection = null;
 			}
 

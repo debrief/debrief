@@ -214,24 +214,11 @@ public class CorePlugin extends AbstractUIPlugin
 
 	/**
 	 * @param asSelection
+	 * @param parentPart 
 	 */
 	public static void editThisInProperties(Vector selectionListeners,
-			StructuredSelection asSelection, ISelectionProvider selectionProvider)
+			StructuredSelection asSelection, ISelectionProvider selectionProvider, IWorkbenchPart parentPart)
 	{
-		if (selectionListeners != null)
-		{
-			SelectionChangedEvent sEvent = new SelectionChangedEvent(selectionProvider,
-					asSelection);
-			for (Iterator stepper = selectionListeners.iterator(); stepper.hasNext();)
-			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
-				if (thisL != null)
-				{
-					thisL.selectionChanged(sEvent);
-				}
-			}
-		}
-
 		// hey, better make sure the properties window is open
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
@@ -242,6 +229,25 @@ public class CorePlugin extends AbstractUIPlugin
 		// times
 		try
 		{
+			// select the part that wants to do the editing (otherwise the properties window just ignores it's selection)
+			page.activate(parentPart);
+
+			// now update the selection
+			if (selectionListeners != null)
+			{
+				SelectionChangedEvent sEvent = new SelectionChangedEvent(selectionProvider,
+						asSelection);
+				for (Iterator stepper = selectionListeners.iterator(); stepper.hasNext();)
+				{
+					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+					if (thisL != null)
+					{
+						thisL.selectionChanged(sEvent);
+					}
+				}
+			}
+
+			// and show the properties view
 			page.showView(IPageLayout.ID_PROP_SHEET, null, IWorkbenchPage.VIEW_VISIBLE);
 		}
 		catch (PartInitException e)
