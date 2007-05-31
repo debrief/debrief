@@ -1139,7 +1139,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			if (_propsAsSelection == null)
 				_propsAsSelection = new StructuredSelection(_myStepperProperties);
 
-			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection, this);
+			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection, this, this);
 			_propsAsSelection = null;
 		}
 		else
@@ -1675,6 +1675,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		final SWTPlotHighlighter currentHighlighter = myLayerPainterManager.getCurrentHighlighter();
 
 		// create an action for it
+		final IWorkbenchPart myPart = this;		
 		Action highlighterProperties = new Action("Edit current highlighter:"
 				+ currentHighlighter.getName(), Action.AS_PUSH_BUTTON)
 		{
@@ -1685,7 +1686,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				{
 					EditableWrapper pw = new EditableWrapper(currentHighlighter, _myLayers);
 					CorePlugin.editThisInProperties(_selectionListeners,
-							new StructuredSelection(pw), provider);
+							new StructuredSelection(pw), provider, myPart);
 				}
 			}
 		};
@@ -1756,6 +1757,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// put the display painter property editor into this one
 		final TemporalLayerPainter currentPainter = myLayerPainterManager.getCurrentPainter();
 		// create an action for it
+		final IWorkbenchPart myPart = this;
 		Action currentPainterProperties = new Action("Edit current painter:"
 				+ currentPainter.getName(), Action.AS_PUSH_BUTTON)
 		{
@@ -1766,7 +1768,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				{
 					EditableWrapper pw = new EditableWrapper(currentPainter, _myLayers);
 					CorePlugin.editThisInProperties(_selectionListeners,
-							new StructuredSelection(pw), provider);
+							new StructuredSelection(pw), provider, myPart);
 				}
 			}
 		};
