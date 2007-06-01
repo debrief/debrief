@@ -2,10 +2,10 @@
 <feature
       id="org.mwc.debrief.data_feed.feature"
       label="Feature Feature"
-      version="1.0.0">
+      version="1.0.1">
 
    <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+      [1.0.1] Reflect change in export to file routine.
    </description>
 
    <copyright url="http://www.example.com/copyright">

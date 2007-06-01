@@ -14,8 +14,8 @@ import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 
-import Debrief.ReaderWriter.Replay.ImportReplay;
 import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.PlainImporterBase;
 
 /**
  * @author ian.mayo
@@ -38,7 +38,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	private void doTheLoad(final String thePath, final String theFileName, final Layers theLayers,
 			final InputStream is)
 	{
-		final ImportReplay importer = new Debrief.ReaderWriter.Replay.ImportReplay()
+		final PlainImporterBase importer = new Debrief.ReaderWriter.Replay.ImportReplay()
 		{
 			// override the count-lines method. We may only have a project-relative
 			// to the data-file - and the legacy code won't be able to find the file.

@@ -31,6 +31,7 @@ import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.StepperListener.StepperController;
 import MWC.GUI.Tools.Palette.CreateTOPO;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.ReaderWriter.PlainImporterBase;
 
 import com.sun.j3d.utils.universe.SimpleUniverse;
 
@@ -967,7 +968,7 @@ public class Plot3dView extends ViewPart
 
 			final String theFileName = "d:\\dev\\debrief\\debrief_out\\SOVEREIGN.REP";
 
-			Debrief.ReaderWriter.Replay.ImportReplay pi = new Debrief.ReaderWriter.Replay.ImportReplay();
+			PlainImporterBase pi = new Debrief.ReaderWriter.Replay.ImportReplay();
 			pi.importThis(theFileName, new java.io.FileInputStream(theFileName), theLayers);
 		}
 		catch (Exception e)
