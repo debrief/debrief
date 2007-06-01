@@ -87,7 +87,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 		_smallStep = _defaultSmallStep = new Duration(1, Duration.MINUTES);
 		_largeStep = _defaultLargeStep = new Duration(10, Duration.MINUTES);
 		_autoInterval = _defaultAutoInterval = new Duration(1, Duration.SECONDS);
-		_dtgFormat = _defaultFormat = new Integer(0);
+		_dtgFormat = _defaultFormat = new Integer(3);
 
 		// see if our tags need declaring
 		if (DTG_FORMAT_STRINGS == null)
