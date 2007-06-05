@@ -3,7 +3,10 @@
 // @author $Author$
 // @version $Revision$
 // $Log$
-// Revision 1.30  2007-01-25 15:53:56  ian.mayo
+// Revision 1.31  2007-06-05 14:57:37  ian.mayo
+// Improved tooltip handling
+//
+// Revision 1.30  2007/01/25 15:53:56  ian.mayo
 // Better GC maangement
 //
 // Revision 1.29  2007/01/19 11:39:28  ian.mayo
@@ -167,21 +170,20 @@ public class SWTCanvas extends SWTCanvasAdapter
 				// _tooltip.setBounds(e.x, e.y, 200,50);
 				// _tooltip.setVisible(true);
 
-				if (tip.length() > 0)
+				if (tip != null)
 				{
-					// strip out the HTML
-					tip = tip.replace("<u>", "");
-					tip = tip.replace("</u>", "");
-					tip = tip.replace("\\n", " ");
-					tip = tip.replace("<BR>", " ");
-					tip = tip.replace("<html><font face=\"sansserif\">", "");
-					tip = tip.replace("</font></html>", "");
+					if (tip.length() > 0)
+					{
+						// strip out the HTML
+						tip = tip.replace("<u>", "");
+						tip = tip.replace("</u>", "");
+						tip = tip.replace("\\n", " ");
+						tip = tip.replace("<BR>", " ");
+						tip = tip.replace("<html><font face=\"sansserif\">", "");
+						tip = tip.replace("</font></html>", "");
 
-					_myCanvas.setToolTipText(tip);
-				}
-				else
-				{
-					System.out.println("item not found for hover!!");
+						_myCanvas.setToolTipText(tip);
+					}
 				}
 			}
 		});
@@ -317,7 +319,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 			// all finished, close it now
 			endDraw(null);
-			
+
 			// and ditch the GC
 			theDest.dispose();
 
