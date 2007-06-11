@@ -11,8 +11,8 @@ public interface MWCModel
 {
   /** get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:22:03  Ian.Mayo
+   * $Log: MWCModel.java,v $
+   * Revision 1.1  2006/08/08 14:22:03  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:12  Ian.Mayo

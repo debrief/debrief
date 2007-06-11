@@ -6,8 +6,8 @@ package ASSET.Models.Decision.Tactical;
  * Date: $Date$
  * Time: $Time:$
  * Log:
- *  $Log$
- *  Revision 1.2  2006-09-11 09:36:04  Ian.Mayo
+ *  $Log: LadderSearch.java,v $
+ *  Revision 1.2  2006/09/11 09:36:04  Ian.Mayo
  *  Fix dodgy accessor
  *
  *  Revision 1.1  2006/08/08 14:21:34  Ian.Mayo
@@ -647,8 +647,8 @@ public final class LadderSearch extends CoreDecision implements Serializable
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-11 09:36:04  Ian.Mayo
+   * $Log: LadderSearch.java,v $
+   * Revision 1.2  2006/09/11 09:36:04  Ian.Mayo
    * Fix dodgy accessor
    *
    * Revision 1.1  2006/08/08 14:21:34  Ian.Mayo

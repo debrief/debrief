@@ -1,11 +1,11 @@
 package org.mwc.debrief.core.editors.painters.snail;
 
 // Copyright MWC 1999, Debrief 3 Project
-// $RCSfile$
+// $RCSfile: SnailDrawSWTBuoyPattern.java,v $
 // @author $Author$
 // @version $Revision$
-// $Log$
-// Revision 1.1  2005-07-04 07:45:50  Ian.Mayo
+// $Log: SnailDrawSWTBuoyPattern.java,v $
+// Revision 1.1  2005/07/04 07:45:50  Ian.Mayo
 // Initial snail implementation
 //
 

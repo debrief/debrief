@@ -411,8 +411,8 @@ public class Wander extends CoreDecision implements Response,
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-08-29 13:12:38  Ian.Mayo
+   * $Log: Wander.java,v $
+   * Revision 1.2  2006/08/29 13:12:38  Ian.Mayo
    * Debugging, tidying, fix getter for BottomRight corner
    *
    * Revision 1.1  2006/08/08 14:21:29  Ian.Mayo

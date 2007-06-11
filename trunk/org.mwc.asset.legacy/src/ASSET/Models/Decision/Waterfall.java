@@ -228,8 +228,8 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-11 15:15:48  Ian.Mayo
+   * $Log: Waterfall.java,v $
+   * Revision 1.2  2006/09/11 15:15:48  Ian.Mayo
    * Tidy to better reflect schema
    *
    * Revision 1.1  2006/08/08 14:21:41  Ian.Mayo

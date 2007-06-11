@@ -387,8 +387,8 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:29  Ian.Mayo
+   * $Log: TransitWaypoint.java,v $
+   * Revision 1.1  2006/08/08 14:21:29  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:37  Ian.Mayo

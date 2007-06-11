@@ -550,8 +550,8 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-21 12:20:41  Ian.Mayo
+   * $Log: DippingActiveBroadbandSensor.java,v $
+   * Revision 1.2  2006/09/21 12:20:41  Ian.Mayo
    * Reflect introduction of default names
    *
    * Revision 1.1  2006/08/08 14:21:54  Ian.Mayo

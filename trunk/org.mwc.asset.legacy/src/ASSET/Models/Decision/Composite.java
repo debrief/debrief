@@ -117,8 +117,8 @@ public class Composite extends CoreDecision implements MWC.GUI.Editable, java.io
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:39  Ian.Mayo
+   * $Log: Composite.java,v $
+   * Revision 1.1  2006/08/08 14:21:39  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:47  Ian.Mayo

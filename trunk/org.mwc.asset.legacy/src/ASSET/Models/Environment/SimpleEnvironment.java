@@ -103,8 +103,8 @@ public class SimpleEnvironment extends CoreEnvironment
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-11 15:14:42  Ian.Mayo
+   * $Log: SimpleEnvironment.java,v $
+   * Revision 1.2  2006/09/11 15:14:42  Ian.Mayo
    * Minor tidying
    *
    * Revision 1.1  2006/08/08 14:21:44  Ian.Mayo

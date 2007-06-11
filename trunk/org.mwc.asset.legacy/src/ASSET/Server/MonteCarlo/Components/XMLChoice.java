@@ -6,8 +6,8 @@ package ASSET.Server.MonteCarlo.Components;
  * Date: 22-Sep-2003
  * Time: 14:58:39
  * Log:  
- *  $Log$
- *  Revision 1.1  2006-08-08 14:22:21  Ian.Mayo
+ *  $Log: XMLChoice.java,v $
+ *  Revision 1.1  2006/08/08 14:22:21  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:26:27  Ian.Mayo

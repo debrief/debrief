@@ -144,8 +144,8 @@ public class Switch extends Waterfall
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:40  Ian.Mayo
+   * $Log: Switch.java,v $
+   * Revision 1.1  2006/08/08 14:21:40  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:48  Ian.Mayo

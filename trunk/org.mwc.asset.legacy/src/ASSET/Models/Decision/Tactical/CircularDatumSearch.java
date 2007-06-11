@@ -7,8 +7,8 @@ package ASSET.Models.Decision.Tactical;
  * Date: Spring 03
  * Time: ${TIME}
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:21:32  Ian.Mayo
+ *  $Log: CircularDatumSearch.java,v $
+ *  Revision 1.1  2006/08/08 14:21:32  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:40  Ian.Mayo
@@ -339,8 +339,8 @@ public class CircularDatumSearch extends Sequence
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:32  Ian.Mayo
+   * $Log: CircularDatumSearch.java,v $
+   * Revision 1.1  2006/08/08 14:21:32  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:40  Ian.Mayo

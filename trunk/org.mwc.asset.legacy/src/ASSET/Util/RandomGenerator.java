@@ -5,8 +5,8 @@ import java.util.Random;
 /**
  * Class providing seed-able random number generation
  * Log:
- * $Log$
- * Revision 1.1  2006-08-08 14:23:15  Ian.Mayo
+ * $Log: RandomGenerator.java,v $
+ * Revision 1.1  2006/08/08 14:23:15  Ian.Mayo
  * Second import
  *
  * Revision 1.1  2006/08/07 12:27:24  Ian.Mayo

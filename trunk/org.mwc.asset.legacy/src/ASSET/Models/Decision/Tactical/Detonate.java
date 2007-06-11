@@ -245,8 +245,8 @@ public class Detonate extends CoreDecision implements MWC.GUI.Editable, java.io.
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:32  Ian.Mayo
+   * $Log: Detonate.java,v $
+   * Revision 1.1  2006/08/08 14:21:32  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:41  Ian.Mayo

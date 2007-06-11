@@ -244,8 +244,8 @@ public class Sequence extends Waterfall
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-11-02 10:33:19  Ian.Mayo
+   * $Log: Sequence.java,v $
+   * Revision 1.2  2006/11/02 10:33:19  Ian.Mayo
    * Restart sequence properly
    *
    * Revision 1.1  2006/08/08 14:21:40  Ian.Mayo

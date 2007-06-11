@@ -1,9 +1,9 @@
 // Copyright MWC 1999, Debrief 3 Project
-// $RCSfile$
+// $RCSfile: SWTCanvasAdapter.java,v $
 // @author $Author$
 // @version $Revision$
-// $Log$
-// Revision 1.26  2007-01-25 15:53:57  ian.mayo
+// $Log: SWTCanvasAdapter.java,v $
+// Revision 1.26  2007/01/25 15:53:57  ian.mayo
 // Better GC maangement
 //
 // Revision 1.25  2006/11/28 10:52:04  Ian.Mayo

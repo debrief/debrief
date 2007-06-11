@@ -258,8 +258,8 @@ public class LaunchSensor extends CoreDecision implements Response, Editable, ja
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:35  Ian.Mayo
+   * $Log: LaunchSensor.java,v $
+   * Revision 1.1  2006/08/08 14:21:35  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:44  Ian.Mayo

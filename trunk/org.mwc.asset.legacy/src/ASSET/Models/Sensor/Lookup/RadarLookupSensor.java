@@ -318,8 +318,8 @@ public class RadarLookupSensor extends LookupSensor
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.3  2006-09-21 12:20:45  Ian.Mayo
+   * $Log: RadarLookupSensor.java,v $
+   * Revision 1.3  2006/09/21 12:20:45  Ian.Mayo
    * Reflect introduction of default names
    *
    * Revision 1.2  2006/09/12 15:15:34  Ian.Mayo

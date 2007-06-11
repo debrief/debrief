@@ -67,8 +67,8 @@ public class ActiveInterceptSensor extends BroadbandSensor
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-21 12:20:40  Ian.Mayo
+   * $Log: ActiveInterceptSensor.java,v $
+   * Revision 1.2  2006/09/21 12:20:40  Ian.Mayo
    * Reflect introduction of default names
    *
    * Revision 1.1  2006/08/08 14:21:54  Ian.Mayo

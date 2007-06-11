@@ -10,8 +10,8 @@ import java.util.Vector;
  * Date: 22-Sep-2003
  * Time: 14:58:51
  * Log:  
- *  $Log$
- *  Revision 1.1  2006-08-08 14:22:19  Ian.Mayo
+ *  $Log: Choice.java,v $
+ *  Revision 1.1  2006/08/08 14:22:19  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:26:25  Ian.Mayo

@@ -70,8 +70,8 @@ public class SSKMovement extends CoreMovement{
 
   /** get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:50  Ian.Mayo
+   * $Log: SSKMovement.java,v $
+   * Revision 1.1  2006/08/08 14:21:50  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:59  Ian.Mayo

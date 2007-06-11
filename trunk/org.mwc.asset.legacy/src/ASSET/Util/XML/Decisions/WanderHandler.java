@@ -8,8 +8,8 @@ package ASSET.Util.XML.Decisions;
  * @author
  * @version 1.0
  * Log:
- *   $Log$
- *   Revision 1.2  2006-09-14 14:09:47  Ian.Mayo
+ *   $Log: WanderHandler.java,v $
+ *   Revision 1.2  2006/09/14 14:09:47  Ian.Mayo
  *   Lots of tidying
  *
  *   Revision 1.1  2006/08/08 14:22:51  Ian.Mayo

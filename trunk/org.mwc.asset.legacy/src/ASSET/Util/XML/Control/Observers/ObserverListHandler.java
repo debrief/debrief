@@ -6,8 +6,8 @@ package ASSET.Util.XML.Control.Observers;
  * Date: 03-Sep-2003
  * Time: 09:55:35
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:22:37  Ian.Mayo
+ *  $Log: ObserverListHandler.java,v $
+ *  Revision 1.1  2006/08/08 14:22:37  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:26:47  Ian.Mayo

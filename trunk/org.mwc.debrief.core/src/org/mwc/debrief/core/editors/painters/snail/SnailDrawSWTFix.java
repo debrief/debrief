@@ -1,11 +1,11 @@
 package org.mwc.debrief.core.editors.painters.snail;
 
 // Copyright MWC 1999, Debrief 3 Project
-// $RCSfile$
+// $RCSfile: SnailDrawSWTFix.java,v $
 // @author $Author$
 // @version $Revision$
-// $Log$
-// Revision 1.3  2007-03-08 12:01:04  ian.mayo
+// $Log: SnailDrawSWTFix.java,v $
+// Revision 1.3  2007/03/08 12:01:04  ian.mayo
 // Lots of tidying,refactoring = esp to snail & range highlighters
 //
 // Revision 1.2  2006/05/16 08:40:44  Ian.Mayo

@@ -8,8 +8,8 @@ import MWC.GenericData.WorldSpeed;
  * Date: 11-Sep-2003
  * Time: 15:10:50
  * Log:  
- *  $Log$
- *  Revision 1.1  2006-08-08 14:21:46  Ian.Mayo
+ *  $Log: ClimbRateCharacteristics.java,v $
+ *  Revision 1.1  2006/08/08 14:21:46  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:54  Ian.Mayo

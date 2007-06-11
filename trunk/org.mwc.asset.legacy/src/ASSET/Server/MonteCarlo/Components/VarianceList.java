@@ -8,8 +8,8 @@ import java.util.Vector;
  * Date: 22-Sep-2003
  * Time: 14:57:36
  * Log:  
- *  $Log$
- *  Revision 1.1  2006-08-08 14:22:21  Ian.Mayo
+ *  $Log: VarianceList.java,v $
+ *  Revision 1.1  2006/08/08 14:22:21  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:26:26  Ian.Mayo

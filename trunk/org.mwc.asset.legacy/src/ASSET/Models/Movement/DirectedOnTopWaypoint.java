@@ -342,8 +342,8 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:46  Ian.Mayo
+   * $Log: DirectedOnTopWaypoint.java,v $
+   * Revision 1.1  2006/08/08 14:21:46  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:55  Ian.Mayo

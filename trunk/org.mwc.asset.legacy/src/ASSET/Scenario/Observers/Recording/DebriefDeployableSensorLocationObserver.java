@@ -24,8 +24,8 @@ import java.util.Vector;
  * Date: 03-Sep-2003
  * Time: 09:55:35
  * Log:
- * $Log$
- * Revision 1.1  2006-08-08 14:22:08  Ian.Mayo
+ * $Log: DebriefDeployableSensorLocationObserver.java,v $
+ * Revision 1.1  2006/08/08 14:22:08  Ian.Mayo
  * Second import
  *
  * Revision 1.1  2006/08/07 12:26:16  Ian.Mayo

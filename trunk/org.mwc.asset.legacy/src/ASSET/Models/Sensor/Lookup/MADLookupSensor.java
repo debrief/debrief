@@ -248,8 +248,8 @@ public class MADLookupSensor extends LookupSensor
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-21 12:20:44  Ian.Mayo
+   * $Log: MADLookupSensor.java,v $
+   * Revision 1.2  2006/09/21 12:20:44  Ian.Mayo
    * Reflect introduction of default names
    *
    * Revision 1.1  2006/08/08 14:21:57  Ian.Mayo

@@ -8,8 +8,8 @@ import org.w3c.dom.Document;
  * Date: 22-Sep-2003
  * Time: 14:57:59
  * Log:  
- *  $Log$
- *  Revision 1.1  2006-08-08 14:22:20  Ian.Mayo
+ *  $Log: Variance.java,v $
+ *  Revision 1.1  2006/08/08 14:22:20  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:26:26  Ian.Mayo

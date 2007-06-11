@@ -8,8 +8,8 @@ import MWC.GenericData.WorldLocation;
  * Date: 03-Sep-2003
  * Time: 09:55:35
  * Log:
- * $Log$
- * Revision 1.1  2006-08-08 14:21:59  Ian.Mayo
+ * $Log: DeployableSensor.java,v $
+ * Revision 1.1  2006/08/08 14:21:59  Ian.Mayo
  * Second import
  *
  * Revision 1.1  2006/08/07 12:26:08  Ian.Mayo

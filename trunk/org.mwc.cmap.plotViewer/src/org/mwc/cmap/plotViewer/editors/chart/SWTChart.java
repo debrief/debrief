@@ -1,9 +1,9 @@
 // Copyright MWC 1999, Debrief 3 Project
-// $RCSfile$
+// $RCSfile: SWTChart.java,v $
 // @author $Author$
 // @version $Revision$
-// $Log$
-// Revision 1.41  2007-02-08 09:02:38  ian.mayo
+// $Log: SWTChart.java,v $
+// Revision 1.41  2007/02/08 09:02:38  ian.mayo
 // Minor tidying
 //
 // Revision 1.40  2007/01/25 15:53:57  ian.mayo

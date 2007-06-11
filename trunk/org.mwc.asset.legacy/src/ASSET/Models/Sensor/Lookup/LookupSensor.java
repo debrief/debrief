@@ -1196,8 +1196,8 @@ public abstract class LookupSensor extends CoreSensor
 		 * get the version details for this model.
 		 * 
 		 * <pre>
-		 *  $Log$
-		 *  Revision 1.6  2006-09-22 10:32:05  Ian.Mayo
+		 *  $Log: LookupSensor.java,v $
+		 *  Revision 1.6  2006/09/22 10:32:05  Ian.Mayo
 		 *  Provide the time with the sensor components
 		 *
 		 *  Revision 1.5  2006/09/21 15:31:25  Ian.Mayo

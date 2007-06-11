@@ -22,8 +22,8 @@ import java.io.Serializable;
  * Date: 03-Sep-2003
  * Time: 09:55:35
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:21:38  Ian.Mayo
+ *  $Log: Wait.java,v $
+ *  Revision 1.1  2006/08/08 14:21:38  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:47  Ian.Mayo
@@ -284,8 +284,8 @@ public class Wait extends CoreDecision implements Serializable
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:38  Ian.Mayo
+   * $Log: Wait.java,v $
+   * Revision 1.1  2006/08/08 14:21:38  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:47  Ian.Mayo

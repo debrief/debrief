@@ -226,8 +226,8 @@ abstract public class CoreEnvironment implements EnvironmentType, java.io.Serial
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-11 15:15:01  Ian.Mayo
+   * $Log: CoreEnvironment.java,v $
+   * Revision 1.2  2006/09/11 15:15:01  Ian.Mayo
    * Give environments a name
    *
    * Revision 1.1  2006/08/08 14:21:43  Ian.Mayo

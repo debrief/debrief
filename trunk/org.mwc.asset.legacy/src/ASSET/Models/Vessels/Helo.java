@@ -99,8 +99,8 @@ public class Helo extends ASSET.Participants.CoreParticipant {
 
     /** get the version details for this model.
      * <pre>
-     * $Log$
-     * Revision 1.2  2006-09-21 15:27:51  Ian.Mayo
+     * $Log: Helo.java,v $
+     * Revision 1.2  2006/09/21 15:27:51  Ian.Mayo
      * Eclipse tidying
      *
      * Revision 1.1  2006/08/08 14:22:01  Ian.Mayo

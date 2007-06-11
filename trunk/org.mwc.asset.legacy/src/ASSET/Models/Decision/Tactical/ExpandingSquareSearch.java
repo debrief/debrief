@@ -6,8 +6,8 @@ package ASSET.Models.Decision.Tactical;
  * Date: $Date$
  * Time: $Time:$
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:21:33  Ian.Mayo
+ *  $Log: ExpandingSquareSearch.java,v $
+ *  Revision 1.1  2006/08/08 14:21:33  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:41  Ian.Mayo
@@ -436,8 +436,8 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:33  Ian.Mayo
+   * $Log: ExpandingSquareSearch.java,v $
+   * Revision 1.1  2006/08/08 14:21:33  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:41  Ian.Mayo

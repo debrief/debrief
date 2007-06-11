@@ -203,8 +203,8 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:41  Ian.Mayo
+   * $Log: UserControl.java,v $
+   * Revision 1.1  2006/08/08 14:21:41  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:49  Ian.Mayo

@@ -95,8 +95,8 @@ public class SSKBroadband extends BroadbandRadNoise
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:45  Ian.Mayo
+   * $Log: SSKBroadband.java,v $
+   * Revision 1.1  2006/08/08 14:21:45  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:54  Ian.Mayo

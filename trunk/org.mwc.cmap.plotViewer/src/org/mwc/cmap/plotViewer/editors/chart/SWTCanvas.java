@@ -1,9 +1,9 @@
 // Copyright MWC 1999, Debrief 3 Project
-// $RCSfile$
+// $RCSfile: SWTCanvas.java,v $
 // @author $Author$
 // @version $Revision$
-// $Log$
-// Revision 1.31  2007-06-05 14:57:37  ian.mayo
+// $Log: SWTCanvas.java,v $
+// Revision 1.31  2007/06/05 14:57:37  ian.mayo
 // Improved tooltip handling
 //
 // Revision 1.30  2007/01/25 15:53:56  ian.mayo

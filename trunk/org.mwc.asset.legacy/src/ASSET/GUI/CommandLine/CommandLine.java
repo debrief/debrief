@@ -22,8 +22,8 @@ import java.util.Vector;
  * Time: 15:05:23
  * Class providing command line access to the ASSET engine
  * Log:
- * $Log$
- * Revision 1.2  2006-11-06 15:00:25  Ian.Mayo
+ * $Log: CommandLine.java,v $
+ * Revision 1.2  2006/11/06 15:00:25  Ian.Mayo
  * Only use hard-coded if we don't receive any
  *
  * Revision 1.1  2006/08/08 14:21:07  Ian.Mayo

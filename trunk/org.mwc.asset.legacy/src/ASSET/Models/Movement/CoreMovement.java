@@ -99,8 +99,8 @@ public class CoreMovement implements MovementType, java.io.Serializable
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.2  2006-09-14 14:11:10  Ian.Mayo
+   * $Log: CoreMovement.java,v $
+   * Revision 1.2  2006/09/14 14:11:10  Ian.Mayo
    * Source tidying
    *
    * Revision 1.1  2006/08/08 14:21:46  Ian.Mayo

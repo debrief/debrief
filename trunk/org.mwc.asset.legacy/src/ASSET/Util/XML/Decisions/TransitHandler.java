@@ -5,8 +5,8 @@ package ASSET.Util.XML.Decisions;
  * User: Ian Mayo
  * Date: 2003
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:22:50  Ian.Mayo
+ *  $Log: TransitHandler.java,v $
+ *  Revision 1.1  2006/08/08 14:22:50  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:26:59  Ian.Mayo

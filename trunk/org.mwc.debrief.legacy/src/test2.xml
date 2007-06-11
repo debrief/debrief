@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<plot Created="Mon Sep 03 16:40:19 GMT+01:00 2001" Name="Debrief Plot">
+  <session>
+    <layers>
+      <layer Name="Chart Features" Visible="TRUE">
+	<grid Visible="TRUE" Delta="5.000" PlotLabels="FALSE">
+	  <colour Value="GREY" />
+	</grid>
+      </layer>
+      <track Name="TOMATO" Visible="TRUE" PositionsLinked="TRUE" PositionsVisible="TRUE" NameVisible="TRUE" NameAtStart="TRUE" NameLocation="Right" Symbol="Submarine">
+	<colour Value="BLUE" />
+	<font Family="Sans Serif" Size="12" Bold="FALSE" Italic="FALSE" />
+	<fix Course="0.300" Speed="3.500" Dtg="951212 050300.000" Visible="TRUE" Label="120503" LabelShowing="FALSE" SymbolShowing="TRUE" LabelLocation="Left">
+	  <font Family="Sans Serif" Size="12" Bold="FALSE" Italic="FALSE" />
+	  <centre>
+	    <shortLocation Lat="11.8942194" Long="-11.5937750" Depth="0.000" />
+	  </centre>
+	</fix>
+	<fix Course="359.600" Speed="3.500" Dtg="951212 050400.000" Visible="TRUE" Label="0504" LabelShowing="FALSE" SymbolShowing="TRUE" LabelLocation="Left">
+	  <font Family="Sans Serif" Size="12" Bold="FALSE" Italic="FALSE" />
+	  <centre>
+	    <shortLocation Lat="11.8954694" Long="-11.5937639" Depth="0.000" />
+	  </centre>
+	</fix>
+	<fix Course="358.500" Speed="3.500" Dtg="951212 050500.000" Visible="TRUE" Label="0505" LabelShowing="FALSE" SymbolShowing="TRUE" LabelLocation="Left">
+	  <font Family="Sans Serif" Size="12" Bold="FALSE" Italic="FALSE" />
+	  <centre>
+	    <shortLocation Lat="11.8966944" Long="-11.5937778" Depth="0.000" />
+	  </centre>
+	</fix>
+	<fix Course="20.800" Speed="3.500" Dtg="951212 114400.000" Visible="TRUE" Label="1144" LabelShowing="FALSE" SymbolShowing="TRUE" LabelLocation="Left">
+	  <font Family="Sans Serif" Size="12" Bold="FALSE" Italic="FALSE" />
+	  <centre>
+	    <shortLocation Lat="12.1410417" Long="-11.7342556" Depth="0.000" />
+	  </centre>
+	</fix>
+	<fix Course="359.200" Speed="3.500" Dtg="951212 114500.000" Visible="TRUE" Label="1145" LabelShowing="FALSE" SymbolShowing="TRUE" LabelLocation="Left">
+	  <font Family="Sans Serif" Size="12" Bold="FALSE" Italic="FALSE" />
+	  <centre>
+	    <shortLocation Lat="12.1422583" Long="-11.7335806" Depth="0.000" />
+	  </centre>
+	</fix>
+      </track>
+    </layers>
+    <projection Type="Flat" Border="1.000" Relative="FALSE">
+      <tl>
+	<shortLocation Lat="12.4237991" Long="-11.9694149" Depth="0.000" />
+      </tl>
+      <br>
+	<shortLocation Lat="11.8596526" Long="-11.4988751" Depth="0.000" />
+      </br>
+    </projection>
+    <gui>
+      <tote>
+	<secondary Name="TOMATO" />
+      </tote>
+      <component Type="Stepper">
+	<property Name="AutoStep" Value="1000" />
+	<property Name="StepSmall" Value="60000.000" />
+	<property Name="Toolbox_Start_Time" Value="691231 235959.999" />
+	<property Name="Toolbox_End_Time" Value="691231 235959.999" />
+	<property Name="CurrentTime" Value="951212 050000.000" />
+	<property Name="StepLarge" Value="600000.000" />
+	<property Name="Cursor" Value="Normal Cursor" />
+	<property Name="Highlighter" Value="Default Highlight" />
+	<property Name="DateFormat" Value="ddHHmm.ss" />
+      </component>
+    </gui>
+  </session>
+  <details Text="Saved with Debrief version dated 02 Sep 01 09:38" />
+</plot>
+

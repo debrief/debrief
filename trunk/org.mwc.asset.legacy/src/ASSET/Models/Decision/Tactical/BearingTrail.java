@@ -188,8 +188,8 @@ public class BearingTrail extends Trail implements java.io.Serializable
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:31  Ian.Mayo
+   * $Log: BearingTrail.java,v $
+   * Revision 1.1  2006/08/08 14:21:31  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:40  Ian.Mayo

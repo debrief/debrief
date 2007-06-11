@@ -302,8 +302,8 @@ public class Intercept extends CoreDecision implements java.io.Serializable
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:33  Ian.Mayo
+   * $Log: Intercept.java,v $
+   * Revision 1.1  2006/08/08 14:21:33  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:42  Ian.Mayo

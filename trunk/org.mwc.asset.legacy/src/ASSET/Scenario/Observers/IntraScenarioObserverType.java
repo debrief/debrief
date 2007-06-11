@@ -5,8 +5,8 @@ import java.io.File;
 /**
  * Interface implemented by observers which keep track of data across a number of scenario runs
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:22:12  Ian.Mayo
+ *  $Log: IntraScenarioObserverType.java,v $
+ *  Revision 1.1  2006/08/08 14:22:12  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:26:20  Ian.Mayo

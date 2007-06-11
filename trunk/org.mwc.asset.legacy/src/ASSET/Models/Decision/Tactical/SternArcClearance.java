@@ -461,8 +461,8 @@ public class SternArcClearance extends CoreDecision implements java.io.Serializa
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:38  Ian.Mayo
+   * $Log: SternArcClearance.java,v $
+   * Revision 1.1  2006/08/08 14:21:38  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:46  Ian.Mayo

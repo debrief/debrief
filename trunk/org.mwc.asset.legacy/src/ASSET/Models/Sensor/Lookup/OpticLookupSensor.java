@@ -270,8 +270,8 @@ public class OpticLookupSensor extends LookupSensor
 	 * get the version details for this model.
 	 * 
 	 * <pre>
-	 *   $Log$
-	 *   Revision 1.3  2006-09-21 12:20:44  Ian.Mayo
+	 *   $Log: OpticLookupSensor.java,v $
+	 *   Revision 1.3  2006/09/21 12:20:44  Ian.Mayo
 	 *   Reflect introduction of default names
 	 *
 	 *   Revision 1.2  2006/09/14 14:11:10  Ian.Mayo

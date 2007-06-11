@@ -12,8 +12,8 @@ import MWC.GenericData.WorldSpeed;
  * Date: 03-Sep-2003
  * Time: 09:55:35
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:21:48  Ian.Mayo
+ *  $Log: HeloMovementCharacteristics.java,v $
+ *  Revision 1.1  2006/08/08 14:21:48  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:56  Ian.Mayo

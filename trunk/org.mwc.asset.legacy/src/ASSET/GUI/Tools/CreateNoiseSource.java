@@ -1,9 +1,9 @@
 // Copyright MWC 1999, Debrief 3 Project
-// $RCSfile$
+// $RCSfile: CreateNoiseSource.java,v $
 // @author $Author$
 // @version $Revision$
-// $Log$
-// Revision 1.1  2006-08-08 14:21:21  Ian.Mayo
+// $Log: CreateNoiseSource.java,v $
+// Revision 1.1  2006/08/08 14:21:21  Ian.Mayo
 // Second import
 //
 // Revision 1.1  2006/08/07 12:25:29  Ian.Mayo

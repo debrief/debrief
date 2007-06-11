@@ -8,8 +8,8 @@ package ASSET.Util.XML.Decisions;
  * @author
  * @version 1.0
  * Log:
- *   $Log$
- *   Revision 1.2  2006-09-11 15:15:49  Ian.Mayo
+ *   $Log: RectangleWanderHandler.java,v $
+ *   Revision 1.2  2006/09/11 15:15:49  Ian.Mayo
  *   Tidy to better reflect schema
  *
  *   Revision 1.1  2006/08/08 14:22:48  Ian.Mayo

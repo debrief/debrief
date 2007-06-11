@@ -608,8 +608,8 @@ public class TurnAlgorithm implements MWCModel
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:52  Ian.Mayo
+   * $Log: TurnAlgorithm.java,v $
+   * Revision 1.1  2006/08/08 14:21:52  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:26:00  Ian.Mayo

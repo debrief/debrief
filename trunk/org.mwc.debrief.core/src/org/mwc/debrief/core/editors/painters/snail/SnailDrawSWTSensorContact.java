@@ -1,11 +1,11 @@
 package org.mwc.debrief.core.editors.painters.snail;
 
 // Copyright MWC 1999, Debrief 3 Project
-// $RCSfile$
+// $RCSfile: SnailDrawSWTSensorContact.java,v $
 // @author $Author$
 // @version $Revision$
-// $Log$
-// Revision 1.2  2005-07-11 11:51:33  Ian.Mayo
+// $Log: SnailDrawSWTSensorContact.java,v $
+// Revision 1.2  2005/07/11 11:51:33  Ian.Mayo
 // Do tidying as recommended by Eclipse
 //
 // Revision 1.1  2005/07/04 07:45:52  Ian.Mayo

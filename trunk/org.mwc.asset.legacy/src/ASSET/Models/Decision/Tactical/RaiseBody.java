@@ -5,8 +5,8 @@ package ASSET.Models.Decision.Tactical;
  * User: Ian Mayo
  * Date: August 2003
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:21:37  Ian.Mayo
+ *  $Log: RaiseBody.java,v $
+ *  Revision 1.1  2006/08/08 14:21:37  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:45  Ian.Mayo
@@ -262,8 +262,8 @@ public class RaiseBody extends CoreDecision implements Serializable
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:37  Ian.Mayo
+   * $Log: RaiseBody.java,v $
+   * Revision 1.1  2006/08/08 14:21:37  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:45  Ian.Mayo

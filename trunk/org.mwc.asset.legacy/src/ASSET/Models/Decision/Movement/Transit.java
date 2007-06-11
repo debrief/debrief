@@ -5,8 +5,8 @@ package ASSET.Models.Decision.Movement;
  * User: Ian Mayo
  * Date: 2003
  * Log:
- *  $Log$
- *  Revision 1.1  2006-08-08 14:21:28  Ian.Mayo
+ *  $Log: Transit.java,v $
+ *  Revision 1.1  2006/08/08 14:21:28  Ian.Mayo
  *  Second import
  *
  *  Revision 1.1  2006/08/07 12:25:37  Ian.Mayo
@@ -520,8 +520,8 @@ public class Transit extends CoreDecision implements java.io.Serializable
   /**
    * get the version details for this model.
    * <pre>
-   * $Log$
-   * Revision 1.1  2006-08-08 14:21:28  Ian.Mayo
+   * $Log: Transit.java,v $
+   * Revision 1.1  2006/08/08 14:21:28  Ian.Mayo
    * Second import
    *
    * Revision 1.1  2006/08/07 12:25:37  Ian.Mayo
