@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<plot Created="Tue Jan 31 09:27:30 GMT 2006" Name="Debrief Plot">
-  <details Text="Saved with Debrief version dated 06 May 05 15:47"/>
+<plot Created="Tue May 29 09:46:24 BST 2007" Name="Debrief Plot">
   <session>
     <layers>
       <layer LineThickness="0" Name="Chart Features" Visible="true">
         <grid Delta="5.000" PlotLabels="false" Units="nm" Visible="true">
           <colour Value="DARK_GREY"/>
         </grid>
-        <scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft" Name="World Default" ScaleMax="30000" ScaleStep="10000" Visible="true">
+        <scale AutoMode="true" DisplayUnits="yd" Location="BottomLeft" Name="World Default" ScaleMax="40000" ScaleStep="10000" Visible="true">
           <colour Value="GREY"/>
         </scale>
       </layer>
-      <track InterpolatePoints="false" LineThickness="2" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsLinked="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
+      <track InterpolatePoints="false" LineThickness="2" Name="NELSON" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsLinked="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
         <colour Value="RED"/>
         <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
         <fix Course="269.700" Dtg="951212 050000" Label="0500" LabelLocation="Left" LabelShowing="true" Speed="2.000" SymbolShowing="true" Visible="true">
@@ -2025,7 +2024,7 @@
           </centre>
         </fix>
       </track>
-      <track InterpolatePoints="false" LineThickness="2" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsLinked="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
+      <track InterpolatePoints="false" LineThickness="2" Name="COLLINGWOOD" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsLinked="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
         <colour Value="BLUE"/>
         <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
         <fix Course="0.300" Dtg="951212 050300" Label="0503" LabelLocation="Left" LabelShowing="false" Speed="3.500" SymbolShowing="false" Visible="true">
@@ -4045,7 +4044,7 @@
         </fix>
       </track>
       <layer LineThickness="0" Name="Misc" Visible="true">
-        <rectangle Filled="false" Label="AREA 15" LabelLocation="Right" LabelVisible="true" Visible="true">
+        <rectangle Filled="false" Label="SEARCH BOX" LabelLocation="Right" LabelVisible="true" Visible="true">
           <colour Value="GREEN"/>
           <fontcolour Value="GREEN"/>
           <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
@@ -4056,9 +4055,9 @@
             <shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
           </br>
         </rectangle>
-        <line Label="new line" LabelLocation="Left" LabelVisible="true" Visible="true">
-          <colour Value="RED"/>
-          <fontcolour Value="RED"/>
+        <line Label="START LINE" LabelLocation="Right" LabelVisible="true" Visible="true">
+          <colour Value="YELLOW"/>
+          <fontcolour Value="YELLOW"/>
           <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
           <tl>
             <shortLocation Depth="0.000" Lat="12.0402528" Long="-11.7194153"/>
@@ -4071,24 +4070,24 @@
     </layers>
     <projection Border="1.000" Relative="false" Type="Flat">
       <tl>
-        <shortLocation Depth="0.000" Lat="12.1862861" Long="-11.8660806"/>
+        <shortLocation Depth="0.000" Lat="12.3323194" Long="-12.0493459"/>
       </tl>
       <br>
-        <shortLocation Depth="0.000" Lat="11.8942194" Long="-11.5727500"/>
+        <shortLocation Depth="0.000" Lat="11.7481861" Long="-11.3894847"/>
       </br>
     </projection>
     <gui>
       <tote>
-        <primary Name="OSPREY"/>
-        <secondary Name="ALLIANCE"/>
+        <primary Name="NELSON"/>
+        <secondary Name="COLLINGWOOD"/>
       </tote>
       <component Type="Stepper">
+        <property Name="AutoStep" Value="1000"/>
         <property Name="Highlighter" Value="Default Highlight"/>
-        <property Name="LargeStep" Value="10.0 minutes"/>
+        <property Name="StepSmallMicros" Value="60000000"/>
         <property Name="Cursor" Value="Normal"/>
         <property Name="DateFormat" Value="ddHHmm:ss"/>
-        <property Name="SmallStep" Value="1.0 minutes"/>
-        <property Name="AutoStepInterval" Value="1.0 seconds"/>
+        <property Name="StepLargeMicros" Value="600000000"/>
         <property Name="CurrentTime" Value="951212 050000"/>
       </component>
       <Background>
@@ -4096,4 +4095,5 @@
       </Background>
     </gui>
   </session>
+  <details Text="Saved with Debrief version dated 04 Oct 06 08:43 (Final 2k3 build)"/>
 </plot>
