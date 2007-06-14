@@ -1,4 +1,97 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workingSetManager>
-<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1181571730961"/>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="BiSlider" name="BiSlider"/>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Debrief" name="Debrief">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.narrative.feature" type="4"/>
+<item elementID="=org.mwc.cmap.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.plotviewer.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.debrief.data_feed.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.debrief.track_shift.feature" type="4"/>
+<item elementID="=org.mwc.debrief.data_feed" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.layer_manager" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.installer_scrap" type="4"/>
+<item elementID="=org.mwc.cmap.TimeController" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.layer_manager.feature" type="4"/>
+<item elementID="=org.mwc.cmap.narrative" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.overview" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.legacy" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.plotViewer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.plot3d" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.TimeController.feature" type="4"/>
+<item elementID="=org.mwc.debrief.core" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.tote" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.debrief.help" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.debrief.core.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.plot3d.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.StaticResources.feature" type="4"/>
+<item elementID="=org.mwc.cmap.core" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.overview.feature" type="4"/>
+<item elementID="=org.qinetiq.data_feed" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.debrief.track_shift" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.xyplot.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.tote.feature" type="4"/>
+<item elementID="=org.mwc.cmap.xyplot" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.StaticResources" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.feature" type="4"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.debrief.help.feature" type="4"/>
+<item elementID="=org.mwc.debrief.legacy" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.ui.resourceWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="our_features" name="our_features">
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.narrative.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.layer_manager.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.TimeController.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.debrief.help.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.tote.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.debrief.core.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.plotviewer.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.StaticResources.feature/feature.xml" type="1"/>
+<item factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/org.mwc.cmap.xyplot.feature/feature.xml" type="1"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="our_java_bits" name="our_java_bits">
+<item elementID="=org.mwc.cmap.layer_manager/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.tote/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.legacy/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.TimeController/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.debrief.core/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.asset.legacy" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.debrief.legacy/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.core/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.plotViewer/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.narrative/src" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="our_new_java_bits" name="our_new_java_bits">
+<item elementID="=org.mwc.debrief.core" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.tests" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.asset.ScenarioPlotter" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.tote" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.debrief.help" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.asset.ScenarioController" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.asset.VesselMonitor" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.asset.core" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.asset.SensorMonitor" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.core" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.debrief.data_feed" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.layer_manager" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.debrief.track_shift" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.TimeController" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.narrative" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.asset.legacy" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.xyplot" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.overview" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.plot3d" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+<item elementID="=org.mwc.cmap.plotViewer" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet editPageId="org.eclipse.jdt.ui.JavaWorkingSetPage" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="SwingBiSlider" name="SwingBiSlider">
+<item elementID="=org.mwc.cmap.TimeController/src&lt;com.visutools.nav.bislider" factoryID="org.eclipse.jdt.ui.PersistableJavaElementFactory"/>
+</workingSet>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1136540471101"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1137423533835"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1137492773426"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1138617937591"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1139307591929"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1139311007710"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1140001176176"/>
+<workingSet aggregate="true" factoryID="org.eclipse.ui.internal.WorkingSetFactory" label="Window Working Set" name="Aggregate for window 1171270298051"/>
+<mruList name="our_features"/>
 </workingSetManager>

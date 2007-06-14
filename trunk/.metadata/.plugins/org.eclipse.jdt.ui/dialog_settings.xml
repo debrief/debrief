@@ -1,14 +1,328 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
+	<item value="800" key="org.eclipse.jdt.uiformatter_page.modify_dialog.preferred_width"/>
+	<item value="false" key="InstanceOf"/>
+	<item value="0" key="org.eclipse.jdt.uiformatter_page.white_space.java_view.inner"/>
 	<item value="2" key="TypeHierarchyViewPart.hierarchyview"/>
-	<item value="false" key="TypeHierarchyViewPart.qualifiednames"/>
-	<item value="3" key="TypeHierarchyViewPart.orientation"/>
-	<item value="false" key="TypeHierarchyViewPart.linkeditors"/>
-	<section name="org.eclipse.jdt.internal.ui.packageview.PackageExplorerPart">
-		<item value="true" key="group_libraries"/>
-		<item value="false" key="linkWithEditor"/>
-		<item value="2" key="layout"/>
-		<item value="1" key="rootMode"/>
-		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;packageExplorer group_libraries=&quot;1&quot; isWindowWorkingSet=&quot;true&quot; layout=&quot;2&quot; linkWithEditor=&quot;0&quot; rootMode=&quot;1&quot; workingSetName=&quot;&quot;&gt;&#x0D;&#x0A;&lt;customFilters userDefinedPatternsEnabled=&quot;false&quot;&gt;&#x0D;&#x0A;&lt;xmlDefinedFilters&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.LibraryFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.LocalTypesFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.StaticsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ClosedProjectsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonJavaElementFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ContainedLibraryFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.CuAndClassFileFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonSharedProjectsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonJavaProjectsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.EmptyInnerPackageFilter&quot; isEnabled=&quot;true&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.PackageDeclarationFilter&quot; isEnabled=&quot;true&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.EmptyPackageFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ImportDeclarationFilter&quot; isEnabled=&quot;true&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.FieldsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.HideInnerClassFilesFilter&quot; isEnabled=&quot;true&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonPublicFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer_patternFilterId_.*&quot; isEnabled=&quot;true&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.pde.ui.BinaryProjectFilter1&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.SyntheticMembersFilter&quot; isEnabled=&quot;true&quot;/&gt;&#x0D;&#x0A;&lt;/xmlDefinedFilters&gt;&#x0D;&#x0A;&lt;/customFilters&gt;&#x0D;&#x0A;&lt;/packageExplorer&gt;" key="memento"/>
+	<item value="0" key="org.eclipse.jdt.uiformatter_page.white_space_tab_page.node"/>
+	<item value="true" key="Replace"/>
+	<item value="true" key="org.eclipse.jdt.ui.codeformatter.create_profile_dialog.open_edit"/>
+	<item value="240" key="org.eclipse.jdt.uiformatter_page.modify_dialog.preferred_x"/>
+	<item value="false" key="delegateUpdating"/>
+	<item value="48" key="org.eclipse.jdt.uiformatter_page.modify_dialog.preferred_y"/>
+	<item value="0" key="org.eclipse.jdt.uiformatter_page.modify_dialog.last_focus"/>
+	<item value="0" key="TypeHierarchyViewPart.orientation"/>
+	<item value="650" key="org.eclipse.jdt.uiformatter_page.modify_dialog.preferred_height"/>
+	<item value="-1" key="org.eclipse.jdt.uiformatter_page.modify_dialog_tab_page.last_focus_index"/>
+	<item value="true" key="NewTypeWizardPage.add_comments"/>
+	<item value="4" key="org.eclipse.jdt.uiformatter_page.line_wrapping_tab_page.last_category_index"/>
+	<section name="OptionalMessageDialog.hide.">
+		<item value="true" key="org.eclipse.jdt.ui.typecomment.deprecated"/>
+	</section>
+	<section name="OverrideMethodDialog">
+		<item value="true" key="showtypes"/>
+	</section>
+	<section name="nls_accessor_history">
+		<section name="0">
+			<item value="Messages" key="accessorName"/>
+			<item value="=org.mwc.cmap.plotViewer/src&lt;org.mwc.cmap.plotViewer.editors.operations" key="accessorPackage"/>
+			<item value="=org.mwc.cmap.plotViewer/src&lt;org.mwc.cmap.plotViewer.editors.operations" key="bundlePackage"/>
+			<item value="messages.properties" key="bundleName"/>
+		</section>
+	</section>
+	<section name="hierarchy_presenter_bounds">
+		<item value="458" key="size.width"/>
+		<item value="320" key="size.height"/>
+		<item value="511" key="location.x"/>
+		<item value="191" key="location.y"/>
+	</section>
+	<section name="BuildPathsPropertyPage">
+		<item value="1" key="pageIndex"/>
+	</section>
+	<section name="DialogBounds_SuperInterfaceSelectionDialog">
+		<item value="396" key="DIALOG_WIDTH"/>
+		<item value="65" key="DIALOG_Y_ORIGIN"/>
+		<item value="49" key="DIALOG_X_ORIGIN"/>
+		<item value="347" key="DIALOG_HEIGHT"/>
+		<item value="1|Tahoma|8|0|WINDOWS|1|-11|0|0|0|400|0|0|0|0|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="JavaSearchPage">
+		<item value="false" key="CASE_SENSITIVE"/>
+		<item value="12" key="HISTORY_SIZE"/>
+		<section name="HISTORY11">
+			<item value="1" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.asset.legacy/src&lt;ASSET.Util.XML.Vessels{ParticipantHandler.java[ParticipantHandler" key="javaElement"/>
+			<item value="ASSET.Util.XML.Vessels.ParticipantHandler" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="our_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY2">
+			<item value="0" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.cmap.plotViewer/src&lt;org.mwc.cmap.plotViewer.editors.chart{SWTChart.java[SWTChart~createCanvas~QComposite;" key="javaElement"/>
+			<item value="org.mwc.cmap.plotViewer.editors.chart.SWTChart.createCanvas(Composite)" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="1" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="Debrief"/>
+				<item value="our_features"/>
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY3">
+			<item value="1" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.cmap.legacy/src&lt;MWC.Algorithms{PlainProjection.java[PlainProjection" key="javaElement"/>
+			<item value="MWC.Algorithms.PlainProjection" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="Debrief"/>
+				<item value="our_features"/>
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY0">
+			<item value="1" key="limitTo"/>
+			<item value="0" key="scope"/>
+			<item value="=org.mwc.cmap.legacy/src&lt;MWC.GUI.Properties{SteppingBoundedInteger.java[SteppingBoundedInteger" key="javaElement"/>
+			<item value="MWC.GUI.Properties.SteppingBoundedInteger" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+			</list>
+		</section>
+		<section name="HISTORY10">
+			<item value="1" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.asset.legacy/src&lt;ASSET.Models{MovementType.java[MovementType" key="javaElement"/>
+			<item value="ASSET.Models.MovementType" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY1">
+			<item value="1" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.debrief.core/src&lt;org.mwc.debrief.core.editors.painters{TemporalLayerPainter.java[TemporalLayerPainter" key="javaElement"/>
+			<item value="org.mwc.debrief.core.editors.painters.TemporalLayerPainter" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="Debrief"/>
+				<item value="our_features"/>
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY9">
+			<item value="1" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.asset.legacy/src&lt;ASSET.Models.Movement{MovementCharacteristics.java[MovementCharacteristics" key="javaElement"/>
+			<item value="ASSET.Models.Movement.MovementCharacteristics" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY8">
+			<item value="1" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.cmap.legacy/src&lt;MWC.GUI{Layer.java[Layer" key="javaElement"/>
+			<item value="MWC.GUI.Layer" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY5">
+			<item value="2" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.cmap.plotViewer/src&lt;org.mwc.cmap.plotViewer.editors.chart{SWTCanvasAdapter.java[SWTCanvasAdapter~getStringWidth~Qjava.awt.Font;~QString;" key="javaElement"/>
+			<item value="org.mwc.cmap.plotViewer.editors.chart.SWTCanvasAdapter.getStringWidth(java.awt.Font, String)" key="pattern"/>
+			<item value="false" key="includeJRE"/>
+			<item value="1" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY4">
+			<item value="0" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.cmap.legacy/src&lt;MWC.GUI{CanvasType.java[CanvasType[TooltipHandler~getString~QMWC.GenericData.WorldLocation;~Qjava.awt.Point;" key="javaElement"/>
+			<item value="MWC.GUI.CanvasType.TooltipHandler.getString(MWC.GenericData.WorldLocation, java.awt.Point)" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="1" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="Debrief"/>
+			</list>
+		</section>
+		<section name="HISTORY7">
+			<item value="0" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.cmap.legacy/src&lt;MWC.Utilities.ReaderWriter.XML.Features{VPFLibraryHandler.java[VPFLibraryHandler~addLibrary~QString;~Z~Qjava.util.Vector;" key="javaElement"/>
+			<item value="MWC.Utilities.ReaderWriter.XML.Features.VPFLibraryHandler.addLibrary(String, boolean, java.util.Vector)" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="1" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+		<section name="HISTORY6">
+			<item value="1" key="limitTo"/>
+			<item value="2" key="scope"/>
+			<item value="=org.mwc.asset.legacy/src&lt;ASSET.Scenario.Observers.Summary{BatchCollator.java[BatchCollator" key="javaElement"/>
+			<item value="ASSET.Scenario.Observers.Summary.BatchCollator" key="pattern"/>
+			<item value="true" key="includeJRE"/>
+			<item value="0" key="searchFor"/>
+			<item value="true" key="isCaseSensitive"/>
+			<list key="workingSets">
+				<item value="our_java_bits"/>
+				<item value="our_new_java_bits"/>
+			</list>
+		</section>
+	</section>
+	<section name="ClasspathContainerSelectionPage">
+		<item value="3" key="index"/>
+	</section>
+	<section name="SourceActionDialog.methods">
+		<item value="true" key="Comments"/>
+		<item value="1" key="VisibilityModifier"/>
+		<item value="false" key="SynchronizedModifier"/>
+		<item value="1" key="InsertPosition"/>
+		<item value="false" key="Annotations"/>
+		<item value="true" key="FinalModifier"/>
+	</section>
+	<section name="javadoc">
+		<item value="false" key="nodeprecatedlist"/>
+		<item value="false" key="notree"/>
+		<item value="true" key="splitindex"/>
+		<item value="D:\java\jdk1.5.0_04\jdk1.5.0_04\bin\javadoc.exe" key="javadoc_command_history"/>
+		<item value="true" key="use"/>
+		<item value="false" key="nonavbar"/>
+		<item value="private" key="access"/>
+		<item value="true" key="version"/>
+		<item value="false" key="nodeprecated"/>
+		<item value="true" key="author"/>
+		<item value="d:\dev\eclipse2\org.mwc.cmap.swt_bislider\doc" key="destdir"/>
+		<item value="" key="docletname"/>
+		<item value="1.3" key="source"/>
+		<item value="false" key="openinbrowser"/>
+		<item value="false" key="noindex"/>
+		<item value="" key="docletpath"/>
+		<item value="d:\dev\eclipse2\org.mwc.cmap.swt_bislider\javadoc.xml" key="antpath"/>
+		<item value="true" key="fromStandard"/>
+		<section name="projects">
+		</section>
+	</section>
+	<section name="org.eclipse.jdt.internal.ui.typehierarchy.QuickHierarchy">
+		<item value="false" key="org.eclipse.jdt.internal.ui.typehierarchy.HierarchyInformationControlDIALOG_USE_PERSISTED_BOUNDS"/>
+	</section>
+	<section name="org.eclipse.jdt.internal.ui.dialogs.TypeSelectionComponent">
+		<item value="true" key="show_status_line"/>
+		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;workingSet isWindowWorkingSet=&quot;false&quot; workingSetName=&quot;&quot;/&gt;" key="workingset_settings"/>
+	</section>
+	<section name="outline_presenter_bounds">
+		<item value="400" key="size.width"/>
+		<item value="320" key="size.height"/>
+		<item value="464" key="location.x"/>
+		<item value="269" key="location.y"/>
+	</section>
+	<section name="JavaElementSearchActions">
+		<list key="lastUsedWorkingSetNames2">
+			<item value="our_new_java_bits"/>
+			<item value="our_java_bits"/>
+		</list>
+		<list key="lastUsedWorkingSetNames1">
+			<item value="Debrief"/>
+		</list>
+		<list key="lastUsedWorkingSetNames0">
+			<item value="Debrief"/>
+			<item value="our_features"/>
+			<item value="our_java_bits"/>
+			<item value="our_new_java_bits"/>
+		</list>
+	</section>
+	<section name="AddUnimplementedConstructorsDialog">
+		<item value="false" key="OmitCallToSuper"/>
+	</section>
+	<section name="org.eclipse.jdt.internal.ui.text.QuickOutline">
+		<item value="false" key="org.eclipse.jdt.internal.ui.text.JavaOutlineInformationControlDIALOG_USE_PERSISTED_BOUNDS"/>
+		<item value="false" key="GoIntoTopLevelTypeAction.isChecked"/>
+	</section>
+	<section name="AddGetterSetterDialog">
+		<item value="false" key="SortOrdering"/>
+	</section>
+	<section name="SourceActionDialog.constructors">
+		<item value="true" key="Comments"/>
+		<item value="1" key="VisibilityModifier"/>
+		<item value="false" key="SynchronizedModifier"/>
+		<item value="0" key="InsertPosition"/>
+		<item value="false" key="FinalModifier"/>
+	</section>
+	<section name="GenerateConstructorUsingFieldsSelectionDialog">
+		<item value="false" key="OmitCallToSuper"/>
+	</section>
+	<section name="org.eclipse.jdt.ui.internal.packageExplorer">
+		<item value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#x0D;&#x0A;&lt;packageexplorer isWindowWorkingSet=&quot;true&quot; layout=&quot;1&quot; org.eclipse.jdt.ui.packages.linktoeditor=&quot;0&quot; rootMode=&quot;1&quot; workingSetName=&quot;&quot;&gt;&#x0D;&#x0A;&lt;customFilters userDefinedPatternsEnabled=&quot;true&quot;&gt;&#x0D;&#x0A;&lt;userDefinedPatterns&gt;&#x0D;&#x0A;&lt;child pattern=&quot;.cvsignore&quot;/&gt;&#x0D;&#x0A;&lt;/userDefinedPatterns&gt;&#x0D;&#x0A;&lt;xmlDefinedFilters&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.LibraryFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.LocalTypesFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.StaticsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer_patternFilterId_*$*.class&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ClosedProjectsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonSharedProjectsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.CuAndClassFileFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ContainedLibraryFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonJavaElementFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonJavaProjectsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.PackageDeclarationFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.EmptyInnerPackageFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.internal.ui.PackageExplorer.EmptyPackageFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.ImportDeclarationFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.FieldsFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.mylar.java.ui.MembersFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.NonPublicFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer_patternFilterId_.*&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.pde.ui.BinaryProjectFilter1&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.SyntheticMembersFilter&quot; isEnabled=&quot;false&quot;/&gt;&#x0D;&#x0A;&lt;/xmlDefinedFilters&gt;&#x0D;&#x0A;&lt;lastRecentlyUsedFilters&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.SyntheticMembersFilter&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.StaticsFilter&quot;/&gt;&#x0D;&#x0A;&lt;child filterId=&quot;org.eclipse.jdt.ui.PackageExplorer.LibraryFilter&quot;/&gt;&#x0D;&#x0A;&lt;/lastRecentlyUsedFilters&gt;&#x0D;&#x0A;&lt;/customFilters&gt;&#x0D;&#x0A;&lt;/packageexplorer&gt;" key="memento"/>
+	</section>
+	<section name="org.eclipse.jdt.internal.ui.preferences.EditTemplateDialog_dialogBounds">
+		<item value="500" key="DIALOG_WIDTH"/>
+		<item value="98" key="DIALOG_Y_ORIGIN"/>
+		<item value="40" key="DIALOG_X_ORIGIN"/>
+		<item value="243" key="DIALOG_HEIGHT"/>
+		<item value="1|Tahoma|8|0|WINDOWS|1|-11|0|0|0|400|0|0|0|0|0|0|0|0|Tahoma" key="DIALOG_FONT_NAME"/>
+	</section>
+	<section name="JavaBuildConfigurationBlock">
+		<item value="false" key="expanded2"/>
+		<item value="false" key="expanded1"/>
+		<item value="true" key="expanded0"/>
+	</section>
+	<section name="org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog2">
+		<item value="349" key="height"/>
+		<item value="480" key="width"/>
+		<item value="78" key="y"/>
+		<item value="1436" key="x"/>
+	</section>
+	<section name="completion_proposal_size">
+		<item value="322" key="size.x"/>
+		<item value="174" key="size.y"/>
+	</section>
+	<section name="NewClassWizardPage">
+		<item value="true" key="create_constructor"/>
+		<item value="false" key="create_main"/>
+		<item value="true" key="create_unimplemented"/>
+	</section>
+	<section name="org.eclipse.jdt.internal.ui.dialogs.OpenTypeSelectionDialog">
+		<item value="467" key="height"/>
+		<item value="306" key="width"/>
+		<item value="200" key="y"/>
+		<item value="487" key="x"/>
 	</section>
 </section>
