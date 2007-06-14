@@ -83,7 +83,7 @@
 		</copy>
 	</target>
 
-	<!-- try to make the builders -->
+	<!-- try to make the builders - though we're considering shifting to NSIS... -->
 	<target name="build_installer" description="create the installation file" depends="">
 		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
 			<arg line="/build ng_installer_settings.aip" />
