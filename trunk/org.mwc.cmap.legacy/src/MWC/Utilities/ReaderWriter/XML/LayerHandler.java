@@ -168,13 +168,14 @@ public class LayerHandler extends MWCXMLReader
 			theLayer.setVisible(_myLayer.getVisible());
 		}
 		
-		// right, make sure we make the chart-feature layer unbuffered
-		if(_myLayer.getName().equals(MWC.GUI.Layers.CHART_FEATURES))
-		{
-			// yup, we've either just loaded the chart-features layer, or it's magicced itself
-			// from somewhere else.  Let's just double-check that it's buffered.
-			_myLayer.setBuffered(true);
-		}
+		// right, make sure we make the chart-feature layer unbuffered		
+		// NO, don't bother making it buffered, we're having double-buffering trouble under VISTA		
+//		if(_myLayer.getName().equals(MWC.GUI.Layers.CHART_FEATURES))
+//		{
+//			// yup, we've either just loaded the chart-features layer, or it's magicced itself
+//			// from somewhere else.  Let's just double-check that it's buffered.
+//			_myLayer.setBuffered(true);
+//		}
 
 		_myLayer = null;
 
