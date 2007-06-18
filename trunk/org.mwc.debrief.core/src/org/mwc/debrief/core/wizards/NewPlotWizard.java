@@ -82,7 +82,9 @@ public class NewPlotWizard extends Wizard implements INewWizard
 			
 			// make the chart-features layer double-buffered, it won't hold time
 			//   related data
-			baseFeatures.setBuffered(true);
+			// NOTE : we stopped it being double-buffered, since the text was
+			//   plotted blurred.
+			baseFeatures.setBuffered(false);
 			
 			// ok, now use the chart-features reference
 			chartFeatures = baseFeatures;
