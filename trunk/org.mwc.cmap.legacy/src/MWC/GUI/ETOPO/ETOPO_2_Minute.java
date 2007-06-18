@@ -152,6 +152,15 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 
 		return (ra != null);
 	}
+	
+	
+
+	/** we do want to double-buffer this layer - since it takes "so" long to create
+	 * 
+	 */
+	public boolean isBuffered() {
+		return true;
+	}
 
 	/**
 	 * function to retrieve a data value at the indicated index
