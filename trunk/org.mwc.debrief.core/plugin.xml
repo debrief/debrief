@@ -374,6 +374,14 @@
         <property
               name="startupMessageRect"
               value="0,0,0,0"/>
+        <property
+              name="appName"
+              value="DebriefNG">
+        </property>
+        <property
+              name="preferenceCustomization"
+              value="plugin_customization.ini">
+        </property>
      </product>
      </extension>
 
