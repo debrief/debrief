@@ -575,7 +575,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					HiResDate tNow = _timeManager.getTime();
 
 					// do we know the time?
-					if (tNow != null)
+//					if (tNow != null)
+						if (true)
 					{
 						// yes. cool, get plotting
 						_layerPainterManager.getCurrentPainter()
