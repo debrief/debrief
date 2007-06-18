@@ -850,7 +850,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			
 		{
 			FontData[] fd = _theDest.getFont().getFontData();
-			int fontHt = fd[0].height;
+			int fontHt = (int)fd[0].height;
 			// shift the y. JDK uses bottom left coordinate, SWT uses top-left
 			
 			int y2 = y - fontHt;
