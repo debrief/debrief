@@ -327,13 +327,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// eBwd.setImage(TimeControllerPlugin.getImage("icons/control_start_blue.png"));
 
 		Button lBwd = new Button(_btnPanel, SWT.NONE);
-		lBwd.setText("<<");
+	//	lBwd.setText("<<");
 		lBwd.setToolTipText("Move backward large step");
 		// lBwd.setImage(TimeControllerPlugin.getImage("icons/control_rewind_blue.png"));
 		lBwd.setImage(TimeControllerPlugin.getImage("icons/media_rewind.png"));
 		lBwd.addSelectionListener(new TimeButtonSelectionListener(false, new Boolean(true)));
 		Button sBwd = new Button(_btnPanel, SWT.NONE);
-		sBwd.setText("<");
+	//	sBwd.setText("<");
 		sBwd.setToolTipText("Move backward small step");
 		sBwd.setImage(TimeControllerPlugin.getImage("icons/media_back.png"));
 		// sBwd.setImage(TimeControllerPlugin.getImage("icons/control_back_blue.png"));
