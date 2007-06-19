@@ -29,28 +29,45 @@
 			<format property="TODAY_UK" pattern="yyyy-MM-dd" locale="en" />
 		</tstamp>
 
-		<cvs  quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
+	     <tstamp>
+	          <format property="statsvn.start" pattern="yyyy-MM-dd"/>
+	     </tstamp>
+	     <tstamp>
+	          <format property="statsvn.stop" pattern="yyyy-MM-dd"
+	                  offset="-2" unit="day" />
+	     </tstamp>		
+		
+
+		<exec executable="svn" dir="d:\dev\cmap2" output="../deploy/cvs/statcvs.xml">
+		       <arg line="log"/>
+		        <arg line="-v"/>
+		        <arg line="--xml"/>
+		        <arg line="-r {${statsvn.start}}:{${statsvn.stop}}"/>
+		</exec>
+		
+	<!--	<cvs  quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
 			<commandline>
 				<argument line="log -d&quot;2006-01-01&quot;&lt;&quot;${TODAY_UK}&quot;  ../" />
 			</commandline> 
-		</cvs>
+		</cvs> -->
 	</target>
 
 
 
 
 	<target name="_log2_format" description="use the stylesheet tidier">
-		<antcall target="_cvs_stat_formatter">
+
+		<antcall target="_svn_stat_formatter">
 			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/short" />
 			<param name="cvs_stat_stylesheet" value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
 			<param name="cvs_stat_outputTitle" value="Abbreviated change statistics" />
 		</antcall>
-
+		<!--
 		<antcall target="_cvs_stat_formatter">
 			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/long" />
 			<param name="cvs_stat_stylesheet" value="../org.mwc.cmap.installer/statcvs_template/suite.xml" />
 			<param name="cvs_stat_outputTitle" value="Verbose change statistics" />
-		</antcall>
+		</antcall> -->
 
 	</target>
 
@@ -62,9 +79,9 @@
 	</target>
 
 	<target name="cvs_log" description="do the steps to produce a cvs log">
-		<!--<antcall target="_log1_produce" />
+		<antcall target="_log1_produce" />
 		<antcall target="_log2_format" />
-		<antcall target="_log3_copy" />  -->
+		<antcall target="_log3_copy" />
 	</target>	
 
 
@@ -191,6 +208,25 @@
 	######################################################################################
 	  -->
 
+	
+	<target name="_svn_stat_formatter" description="use the stylesheet tidier">
+		<!-- ok, delete the output directory -->
+		<delete dir="${cvs_stat_outputDir}" />
+
+		<!-- and create it afresh -->
+		<mkdir dir="${cvs_stat_outputDir}" />
+
+		<!-- and produce the output -->
+		<java dir="${sourceDir}" jar="${contribDir}/statsvn-0.3.1/statsvn.jar" fork="true">
+			<jvmarg line="-mx128m" />
+			<arg line="  -dump
+				-output-dir ${cvs_stat_outputDir}
+					-title '${cvs_stat_outputTitle}' 
+					..\deploy\cvs\statcvs.xml 
+					d:\dev\cmap2" />
+		</java>
+	</target>
+		
 	<target name="_cvs_stat_formatter" description="use the stylesheet tidier">
 		<!-- ok, delete the output directory -->
 		<delete dir="${cvs_stat_outputDir}" />

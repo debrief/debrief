@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">-->
-<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "file:///d:/dev/cmap2/contribs/docbook-xml-4.5/docbookx.dtd">
+<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "../../contribs/docbook-xml-4.5/docbookx.dtd">
 <?xml-stylesheet href="file:///C:/docbook/docbook-xsl-1.44/html/docbook.xsl" type="text/xsl"?>
 <book> 
 <bookinfo> 
@@ -29,13 +29,13 @@
 <para>
           <address>
             <firstname>Lt Cdr Andy Evans</firstname>
-            <surname>SMTAC OA</surname>
+            <surname>SM OA</surname>
             <lineage>Maritime Warfare Centre</lineage>
-            <street>PO Box 325</street>
-            <city>Cosham</city>
+            <street>Marlborough Building, HMS Collingwood</street>
+            <city>Fareham</city>
             <state>HANTS</state>
             <country>UK</country>
-            <postcode>  PO6 3SX</postcode>
+            <postcode>  PO14 1AS</postcode>
             <country>e-mail: smtac.oa@mwc.rn.mod.uk</country>
           </address>
         </para> 
@@ -408,10 +408,11 @@ The wider national/international use of
                     <address>
                       <firstname>Lt Cdr Andy Evans RN</firstname>
                       <lineage>Maritime Warfare Centre</lineage>
-                      <street>PO Box 325</street>
-                      <city>Cosham</city>
-                      <state>HANTS</state>
-                      <postcode>  PO6 3SX</postcode>
+                      <street>Marlborough Building, HMS Collingwood</street>
+            <city>Fareham</city>
+            <state>HANTS</state>
+            <country>UK</country>
+            <postcode>  PO14 1AS</postcode>
                       <country>United Kingdom</country>
                       <email>smtac.oa@mwc.rn.mod.uk</email>
                     </address>
@@ -426,15 +427,13 @@ The wider national/international use of
 <para>Debrief project manager.
                     <address>
                       <firstname>Mr Ian Mayo</firstname>
-                      <lineage>PlanetMayo Ltd</lineage>
-
-
-                      <street>PO Box 325</street>
-                      <city>Cosham</city>
-                      <state>HANTS</state>
-                      <postcode>  PO6 3SX</postcode>
+                      <street>Marlborough Building, HMS Collingwood</street>
+            <city>Fareham</city>
+            <state>HANTS</state>
+            <country>UK</country>
+            <postcode>  PO14 1AS</postcode>
                       <country>United Kingdom</country>
-                      <email>info@planetmayo.co.uk</email>
+                      <email>ian@planetmayo.com</email>
                     </address>
                   </para> </entry> 
 </row> 
