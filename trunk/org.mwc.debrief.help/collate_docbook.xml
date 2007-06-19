@@ -28,11 +28,11 @@
 		<tstamp>
 			<format property="TODAY_UK" pattern="yyyy-MM-dd" locale="en" />
 		</tstamp>
-			
+
 		<cvs  quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
 			<commandline>
 				<argument line="log -d&quot;2006-01-01&quot;&lt;&quot;${TODAY_UK}&quot;  ../" />
-			</commandline>
+			</commandline> 
 		</cvs>
 	</target>
 
@@ -62,9 +62,9 @@
 	</target>
 
 	<target name="cvs_log" description="do the steps to produce a cvs log">
-		<antcall target="_log1_produce" />
+		<!--<antcall target="_log1_produce" />
 		<antcall target="_log2_format" />
-		<antcall target="_log3_copy" />
+		<antcall target="_log3_copy" />  -->
 	</target>	
 
 
@@ -81,17 +81,19 @@
 		<mkdir dir="${pdfDest}" />
 		
 
-		<!-- build the history content -->
-		<antcall target="cvs_log"/>		
+		<!-- build the history content 
+		<antcall target="cvs_log"/>		-->
 
 		<!-- generate the HTML  -->
+		<echo message="Generating HTML"/>
 		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
-			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/ng_help.xml" />
-			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
+			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/ng_help.xml" />
+			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
 		</java> 
 			
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
 		  into the top-level of the docbook output directories -->
+		<echo message="Copying HTML"/>
 		<copy todir="${helpDest}\" preservelastmodified="yes">
 			<fileset dir="${helpDest}\html\legacy" />
 		</copy>
@@ -100,6 +102,7 @@
 		
 		
 		<!-- also copy the images to the target directory -->
+		<echo message="Copying images"/>
 		<copy todir="${helpDest}\figures" preservelastmodified="yes">
 			<fileset dir="${helpDir}\docbook/figures" />
 		</copy>
@@ -113,6 +116,7 @@
 
 		
 		<!-- try to insert our additional section content -->
+		<echo message="Inserting history"/>
 		<antcall target="insert_history_link"/>
 		
 		<!-- and move the generated toc back to the top level -->
@@ -132,8 +136,8 @@
       classname="com.icl.saxon.StyleSheet" maxmemory="512m">
       <arg value="-o"/>
       <arg value="out.fo"/>
-			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/ng_help.xml" />
-			<arg value="D:\Dev\Eclipse2\org.mwc.debrief.help\docbook/fo_style.xsl" />
+			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/ng_help.xml" />
+			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/fo_style.xsl" />
     </java>
 		
 		<echo message="fo complete, now going to pdf"/>	
