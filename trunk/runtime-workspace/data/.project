@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<projectDescription>
+	<name>data</name>
+	<comment></comment>
+	<projects>
+	</projects>
+	<buildSpec>
+	</buildSpec>
+	<natures>
+	</natures>
+	<linkedResources>
+		<link>
+			<name>test_data</name>
+			<type>2</type>
+			<location>D:/Dev/cmap2/runtime-workspace/test_data</location>
+		</link>
+	</linkedResources>
+</projectDescription>
