@@ -230,6 +230,7 @@ import java.beans.*;
 import java.io.Serializable;
 import java.util.*;
 
+import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import Debrief.Tools.Tote.*;
 import MWC.GUI.*;
 import MWC.GUI.Properties.LineStylePropertyEditor;
@@ -238,7 +239,7 @@ import MWC.GenericData.*;
 
 public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		java.beans.PropertyChangeListener, Debrief.Tools.Tote.WatchableList,
-		Debrief.Tools.Tote.Watchable, DraggableItem, HasDraggableComponents
+		Debrief.Tools.Tote.Watchable, DraggableItem, HasDraggableComponents, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables

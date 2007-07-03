@@ -10,6 +10,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.*;
 import java.awt.*;
 import MWC.GenericData.*;
+import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
 
 /** Interface for classes which are able to draw a highlight at a particular
@@ -62,6 +63,13 @@ public interface SWTPlotHighlighter extends Editable  {
       		// hey, don't bother...
       		return;
       	}
+      	
+      	// see if we're painting to WMF, in which case we don't want a highlight.
+      	if(dest instanceof MetafileCanvas)
+      	{
+      		return;
+      	}
+      	
       	
         Rectangle _areaCovered = null;
 
