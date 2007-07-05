@@ -67,7 +67,7 @@ import java.util.Iterator;
  * chart database.
  */
 
-public class VPFDatabase extends MWC.GUI.BaseLayer
+public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables.PlotMeFirst
 {
 
   /**
