@@ -147,6 +147,7 @@ import java.util.*;
 public class Plottables implements Plottable, Serializable, PlottablesType
 {
 
+
 	static final long serialVersionUID = 4094060714021604632L;
 
 	/**
@@ -190,8 +191,18 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		public int compare(Editable p1, Editable p2)
 		{
 			int res;
-			// see if they're already comparable
-			if (p1 instanceof Comparable)
+
+			// just do our special check for items that should get plotted first
+			if(p1 instanceof PlotMeFirst)
+			{
+				res = -1;
+			}
+			else if (p2 instanceof PlotMeFirst)
+			{
+				res = 1;
+			}
+			else 
+				if (p1 instanceof Comparable)
 			{
 				// yup, let them go for it
 				Comparable c1 = (Comparable) p1;
@@ -199,6 +210,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			}
 			else
 				res = p1.getName().compareTo(p2.getName());
+			
 			return res;
 		}
 	}
@@ -251,8 +263,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			if (next instanceof Plottable)
 			{
 				Plottable thisP = (Plottable) next;
-
-				// System.out.println("plotting:" + thisP);
 
 				// see if this plottable is within the data area
 				WorldArea wp = thisP.getBounds();
@@ -545,6 +555,14 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		{
 			return _val.next();
 		}
+	}
+
+	/** marker interface to indicate that this plottable should get plotted before the others.
+	 * 
+	 * @author ian
+	 *
+	 */
+	public static interface PlotMeFirst {
 	}
 
 }
