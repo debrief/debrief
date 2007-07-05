@@ -218,6 +218,7 @@
 
 		<!-- and produce the output -->
 		<java dir="${sourceDir}" jar="${contribDir}/statsvn-0.3.1/statsvn.jar" fork="true">
+			<env key="LANG" value="EN_US" />
 			<jvmarg line="-mx128m" />
 			<arg line="  -dump
 				-output-dir ${cvs_stat_outputDir}
