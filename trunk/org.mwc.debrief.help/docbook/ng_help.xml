@@ -58,6 +58,11 @@
 </formalpara> </abstract> 
 <revhistory> 
 <revision> 
+<revnumber>2.1</revnumber> <date>1st July 2007</date> 
+<authorinitials>IM</authorinitials> 
+<revremark>Polish final Debrief NG content</revremark> 
+</revision>
+<revision> 
 <revnumber>2.0</revnumber> <date>1st March 2006</date> 
 <authorinitials>IM</authorinitials> 
 <revremark>Start transition to Debrief NG</revremark> 
@@ -1888,7 +1893,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <title>Controlling Time</title> 
 <sect2 id="time_controller"> 
 <title>The Time Controller</title> 
-<para>Time is managed within Debrief through the Time Controller.  This view provides time display, it allows time control, and it acts as a placeholder for a series of other time-related operations. <figure float="0">
+<para>Time is managed within Debrief through the Time Controller.  This view displays the current serial time, allows control of that time, and provides access to a series of time-related functions in <application>Debrief</application>.<figure float="0">
               <title>Time Controller View</title>
               <screenshot>
                 <mediaobject>
@@ -1897,7 +1902,32 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                   </imageobject>
                 </mediaobject>
               </screenshot>
-            </figure></para> 
+            </figure>Your temporal (time-related) view of track data is dependent on three settings:<variablelist><varlistentry><term>Display Mode</term><listitem><para>How the track is displayed</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Highlight Mode</term> 
+<listitem> 
+<para>How the current position is displayed</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Absolute/Relative mode</term> 
+<listitem> 
+<para>Whether the data is plotted North-oriented, or using the current heading of the primary track</para> 
+</listitem> 
+</varlistentry> 
+</variablelist></para> 
+<para>You access these modes using the buttons on the Time Controller toolbar and the Time Controller drop-down menu.<figure float="0" id="TimeControllerMenu">
+              <title>Time Controller menu</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/TimeController3.png"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>As you can see, the first two items on the menu allow you to select the current Display/Highlight modes.  In each sub-menu is  a command to edit the currently mode.  Later menu options allow you to format how information is displayed on the menu, and perform other time-related activities.</para> 
 <sect3> 
 <title>Display modes</title> 
 <para>The first three icons on the Time Controller toolbar allow you to choose two combinations of plotting modes.  The first two control how data is displayed:  in Normal Mode, all exercise data is displayed, whereas in Snail mode, only the current position and a series of recent points are displayed (similar to a Snail with trail following behind it).  </para> 
@@ -1973,7 +2003,62 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </listitem> 
 </varlistentry> 
 </variablelist></para> 
-<para>The next display mode, Relative Mode, affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. </para> 
+</sect3> 
+<sect3> 
+<title>Highlight Modes</title> 
+<para>Three highlight modes are provided:<variablelist><varlistentry><term>Default Highlight</term><listitem><para>Shows a rectangle at the current position.  From the default highlight properties you are able to select the colour and size of the rectangle to plot</para> 
+</listitem> 
+</varlistentry> 
+</variablelist> 
+<variablelist> 
+<varlistentry> 
+<term>Symbol Highlight</term> 
+<listitem> 
+<para>Shows the symbol (<xref linkend="intro_to_sym_sets"/>) currently assigned in the properties for each track. From the symbol highlight properties you are able to select the size at which the symbols should be plotted.</para> 
+</listitem> 
+</varlistentry> 
+</variablelist> 
+<variablelist> 
+<varlistentry> 
+<term>Range Ring Highlight</term> 
+<listitem> 
+<para>This mode shows a series of rings around the current location.  The editable properties are listed below.</para> 
+</listitem> 
+</varlistentry> 
+</variablelist></para> 
+<para>For range rings you are able to edit the following properties:<variablelist><varlistentry><term>Arcs</term><listitem><para>The angle of arc that the spokes extend out to.  The angle is measured either side of current heading.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Color</term> 
+<listitem> 
+<para>The colour to plot the range rings</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Num Rings</term> 
+<listitem> 
+<para>How many range rings to plot, uniformly distributed from the center to the outer radius</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Radius</term> 
+<listitem> 
+<para>The radius of the outermost range ring</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term>Spoke separation</term> 
+<listitem> 
+<para>The angular separation of the spokes plotted within the range rings, centered on current heading.</para> 
+</listitem> 
+</varlistentry> 
+</variablelist></para> 
+</sect3> 
+<sect3> 
+<title>Relative/Absolute Modes</title> 
+<para></para> 
+<para>Relative Mode affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. </para> 
 <tip> 
 <para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
             </para> 
@@ -1989,10 +2074,6 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               </screenshot>
             </figure></para> 
 </tip> 
-</sect3> 
-<sect3> 
-<title>VCR controls</title> 
-<para>The VCR controls allow you to move forwards and backwards in time through the plot.  Looking at the order of buttons in  the Time Controller screenshot above, the commands allow you to move to the beginning, move a large step backwards, move a small step backwards and repeat the last time step continuously (small or large step, backwards or forwards).  The remaining buttons repeat these operations in the "forward" direction. The size of small and large steps is controlled by the Time Controller properties window, accessed by selecting <guimenu>Properties</guimenu>/<guimenuitem>Time Controller</guimenuitem>.  Also available from this set of properties is the <guibutton>Step Interval</guibutton>; the time interval that Debrief waits before automatically moving forwards.</para> 
 </sect3> 
 <sect3> 
 <title>Time display</title> 
@@ -2015,14 +2096,13 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </sect3> 
 <sect3 id="filter_time_period"> 
 <title>Filter to time period</title> 
-<para>When the <guibutton><inlinegraphic fileref="figures/FilterToTimePeriod.png"/>Filter to time period</guibutton> radio button is depressed the plot will automatically filter the displayed data to the indicated period.  In this mode, you can select a  6-hour period (for example), and drag it through the full serial time with shift-key depressed to view a moving "window" of data.</para> 
+<para>When the <guibutton><inlinegraphic fileref="figures/FilterToTimePeriod.png"/>Filter to time period</guibutton> radio button is depressed, changing the time of the start or end time-sliders will automatically filter the displayed data to the indicated period.  In this mode, you can select a  6-hour period (for example), and drag it through the full serial time with shift-key depressed to view a moving "window" of data.  In addition to filtering the visible data to the indicated period, the period covered by the time-slider is also reduced.  Drag out the start/end time-sliders to return to the original time period.</para> 
 </sect3> 
 <sect3> 
 <title>Copy to clipboard</title> 
 <para>Another operation that relies on the selected time period is exporting calculated data to the clipboard.  This operation is available form the <guiicon>
               <inlinegraphic fileref="figures/Calculator.png"/>
-            </guiicon><guibutton>Time Controller</guibutton>'s drop-down menu, and it performs a series of calculations for each data-point in the indicated time period.  These calculations are then placed on the system clipboard in Comma-Separated-Variable format  for reuse in other applications, <application>Microsoft Excel</application>, for instance.</para> 
-<para>A header line is written first, indicating the contents of each column:
+            </guiicon><guibutton>Time Controller</guibutton>'s drop-down menu, and it performs a series of calculations for each data-point in the indicated time period.  These calculations are then placed on the system clipboard in Comma-Separated-Variable format  for reuse in other applications, <application>Microsoft Excel</application>, for instance.<footnote><para>A header line is written first, indicating the contents of each column:
             <itemizedlist spacing="compact">
               <listitem><para>Track Time(hhmmss)</para> 
 </listitem> 
@@ -2067,17 +2147,21 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <para>Then the secondary tracks are listed:
             <screen>
  BUNKUM 12/Dec/95 05:50:00 000 00.00 000.0 12381 311.0 R49.0 R0.264 F5 0550</screen>
-          </para> 
+          </para></footnote> 
 <tip> 
 <para>The Colour parameter shows the colour of the track point used in that calculation.  On occasion analysts colour a track according to whether that participant is in contact or not.  Exporting the colour flag to Excel allows the post-analysis data to be filtered according to periods in contact - or any other time-dependent aspect specified by the analyst.  The application of a particular colour to sections of track is performed within the Layer Manager.
             </para> 
-</tip> 
+</tip></para> 
 <note> 
 <para>The last two columns output give identifier information:  the first of these is the name of the current item in this
               <glossterm linkend="g_track">track</glossterm>, and the second is the point in the primary
               <glossterm linkend="g_track">track</glossterm> nearest to the current time stamp: that-is the point in the primary track which has been used for the calculated results.
             </para> 
 </note> 
+</sect3> 
+<sect3> 
+<title>VCR controls</title> 
+<para>The VCR controls allow you to move forwards and backwards in time through the plot.  Looking at the order of buttons in  the Time Controller screenshot above, the commands allow you to move to the beginning, move a large step backwards, move a small step backwards and repeat the last time step continuously (small or large step, backwards or forwards).  The remaining buttons repeat these operations in the "forward" direction. The size of small and large steps is controlled by the Time Controller properties window, accessed by selecting <guimenu>Properties</guimenu>/<guimenuitem>Time Controller</guimenuitem>.  Also available from this set of properties is the <guibutton>Step Interval</guibutton>; the time interval that Debrief waits before automatically moving forwards.</para> 
 </sect3> 
 <sect3> 
 <title>Other time operations</title> 
