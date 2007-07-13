@@ -6,7 +6,7 @@
 <!DOCTYPE Version SYSTEM "tbr.dtd">
 <Version>0X00020003</Version>
 <CommandBars>
-	<Dtd_Id><![CDATA[d:\dev\cmap2\contribs\docbook-xml-4.5\docbookx.dtd]]></Dtd_Id>
+	<Dtd_Id><![CDATA[D:\Dev\cmap2\contribs\docbook-xml-4.5\docbookx.dtd]]></Dtd_Id>
 	<CommandBar>
 		<Name><![CDATA[Formatting]]></Name>
 		<BuiltIn/>
