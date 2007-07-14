@@ -61,7 +61,7 @@
 <revnumber>2.1</revnumber> <date>1st July 2007</date> 
 <authorinitials>IM</authorinitials> 
 <revremark>Polish final Debrief NG content</revremark> 
-</revision>
+</revision> 
 <revision> 
 <revnumber>2.0</revnumber> <date>1st March 2006</date> 
 <authorinitials>IM</authorinitials> 
@@ -2084,7 +2084,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <title>Time slider</title> 
 <para>Beneath the time-display is the time-slider, used to quickly move through a time-period.  By default the slider is of infinite resolution, stopping  exactly on the second/millisecond proportionate to the position of the slider.  Debrief can be configured such that the slider stops on higher resolutions by selecting the relevant  increment from the <guibutton>Time slider increment</guibutton> list in the Time Controller's drop-down menu.</para> 
 </sect3> 
-<sect3> 
+<sect3 id="time_bookmarks"> 
 <title>Bookmarking</title> 
 <para>Debrief NG introduces the concept of <glossterm linkend="g_bookmarks">Bookmarks</glossterm>.   These represent the combination of a DTG, a remark, and the name of a plot-file, and are displayed in the <guibutton>Bookmarks</guibutton> view.  With the view open you can quickly move between significant events across a number of files.  Bookmarks are added by clicking on the <guiicon>
               <inlinegraphic fileref="figures/AddBookmark.png"/>
@@ -2160,7 +2160,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </note> 
 </sect3> 
 <sect3> 
-<title>VCR controls</title> 
+<title id="time_vcr_controls">VCR controls</title> 
 <para>The VCR controls allow you to move forwards and backwards in time through the plot.  Looking at the order of buttons in  the Time Controller screenshot above, the commands allow you to move to the beginning, move a large step backwards, move a small step backwards and repeat the last time step continuously (small or large step, backwards or forwards).  The remaining buttons repeat these operations in the "forward" direction. The size of small and large steps is controlled by the Time Controller properties window, accessed by selecting <guimenu>Properties</guimenu>/<guimenuitem>Time Controller</guimenuitem>.  Also available from this set of properties is the <guibutton>Step Interval</guibutton>; the time interval that Debrief waits before automatically moving forwards.</para> 
 </sect3> 
 <sect3> 
