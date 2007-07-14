@@ -98,6 +98,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * enable/disable the controls
 	 */
 	private Composite _wholePanel;
+	
+	/** the holder for the VCR controls
+	 * 
+	 */
+	private Composite _btnPanel;
 
 	/**
 	 * the people listening to us
@@ -227,6 +232,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_theTimer.stop();
 		_theTimer.setDelay(1000);
 		_theTimer.addTimerListener(this);
+		
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(_wholePanel,
+		"org.mwc.debrief.help.TimeController");			
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(_tNowSlider,
+		"org.mwc.debrief.help.TimeController");			
+			
 
 	}
 
@@ -313,7 +324,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	private void createVCRbuttons()
 	{
 		// first create the button holder
-		Composite _btnPanel = new Composite(_wholePanel, SWT.NONE);
+		_btnPanel = new Composite(_wholePanel, SWT.NONE);
 		GridData btnGrid = new GridData(GridData.FILL_HORIZONTAL);
 		_btnPanel.setLayoutData(btnGrid);
 		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
@@ -385,6 +396,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
 		eFwd.setToolTipText("Move to end of dataset");
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
+		
+		// and the context help
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(_forwardButton,
+		"org.mwc.debrief.help.TimeController.VCRButtons");		
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(lFwd,
+		"org.mwc.debrief.help.TimeController");		
 	}
 
 	boolean _alreadyProcessingChange = false;
@@ -1626,7 +1643,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	{
 		// right, first the drop-down for the display-er
 		// ok, second menu for the DTG formats
-		MenuManager highlighterMenu = new MenuManager("Current position highlight");
+		MenuManager highlighterMenu = new MenuManager("Highlight Mode");
 
 		// and store it
 		menuManager.add(highlighterMenu);		
@@ -1707,7 +1724,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	{
 		// right, first the drop-down for the display-er
 		// ok, second menu for the DTG formats
-		MenuManager displayMenu = new MenuManager("Track Display");
+		MenuManager displayMenu = new MenuManager("Display Mode");
 
 		// and store it
 		menuManager.add(displayMenu);
