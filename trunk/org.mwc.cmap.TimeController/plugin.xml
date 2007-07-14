@@ -48,4 +48,7 @@
      <initializer class="org.mwc.cmap.TimeController.preferences.PreferenceInitializer"/>
   </extension>
   
+   <extension point="org.eclipse.help.contexts">
+      <contexts plugin="org.mwc.debrief.help" file="HelpContexts.xml"/>
+   </extension>  
 </plugin>
