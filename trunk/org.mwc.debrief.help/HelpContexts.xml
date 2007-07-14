@@ -1,6 +1,22 @@
 <contexts>
 	<context id="OverviewChart" title="Panic Button Title">
 		<description>This is the panic button.</description>
-		<topic href="html\legacy\moving_around.html" label="Pushing the panic button"/>
+		<topic href="html/legacy/moving_around.html" label="Pushing the panic button"/>
 	</context>
+	<context id="TimeController">
+		<description>This is the time controller</description>
+		<topic href="html/legacy/controlling_time.html" label="Analysing track data"/>
+	</context>		
+	<context id="TimeController.VCRButtons">
+		<description>These buttons move the time forward & backward</description>
+		<topic href="html/legacy/controlling_time.html#time_vcr_controls" label="VCR Controls"/>
+	</context>		
+	<context id="TimeController.FilterToTimePeriod">
+		<description>This control allows you to filter the data to your specified time period/description>
+		<topic href="html/legacy/controlling_time.html#filter_time_period" label="Filtering to time period"/>
+	</context>		
+	<context id="TimeController.AddBookmarks">
+		<description>Use this to insert a bookmark for the current DTG</description>
+		<topic href="html/legacy/controlling_time.html#time_bookmarks" label="Managing bookmarks"/>
+	</context>		
 </contexts>

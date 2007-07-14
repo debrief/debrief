@@ -188,13 +188,11 @@
             contentFile="cheat_sheets/narratives/AnalysingNarrativeData.xml"
             id="org.mwc.debrief.help.narrativs.analysing"
             name="Analysing narrative data in Debrief"/>            
-      
-      
-                              </extension>
+
+</extension>
    <extension
          point="org.eclipse.help.contexts">
       <contexts
-            file="HelpContexts.xml"
-            plugin="org.mwc.cmap.overview"/>
+            file="HelpContexts.xml"  plugin="org.mwc.debrief.help"/>
    </extension>
 </plugin>
