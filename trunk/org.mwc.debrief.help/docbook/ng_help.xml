@@ -228,7 +228,7 @@ included in the section entitled "GNU Free Documentation License".
 </formalpara> 
 <formalpara> 
 <title>Polished user interface</title> 
-<para>All of the user interface  have received a refresh. The layer manager includes contextual icons giving an extra indication of what's in each layer.<figure float="0">
+<para>All of the user interface  have received a refresh. The layer manager includes contextual icons giving an extra indication of what's in each layer.<figure float="0" id="fig_context_icons">
               <title>Contextual icons</title>
               <screenshot>
                 <mediaobject>
@@ -238,7 +238,7 @@ included in the section entitled "GNU Free Documentation License".
                   
                 </mediaobject>
               </screenshot>
-            </figure>The time-controller has also received some TLC, it is now tidier, more capable, and will act as a firm foundation for  more time-related operations in the future.<figure float="0">
+            </figure>The time-controller has also received some TLC, it is now tidier, more capable, and will act as a firm foundation for  more time-related operations in the future.<figure float="0" id="fig_improved_time_controller">
               <title>Improved time controller</title>
               <screenshot>
                 <mediaobject>
@@ -252,7 +252,7 @@ included in the section entitled "GNU Free Documentation License".
 </formalpara> 
 <formalpara> 
 <title>Bookmarks</title> 
-<para>You can now bookmark significant events within an exercise.  The list of bookmarks across all of your Debrief plots are managed from the Bookmarks dialog, and generated from the  drop-down menu of the improved Time Controller.<figure float="0">
+<para>You can now bookmark significant events within an exercise.  The list of bookmarks across all of your Debrief plots are managed from the Bookmarks dialog, and generated from the  drop-down menu of the improved Time Controller.<figure float="0" id="fig_adding_bookmark">
               <title>Adding a bookmark</title>
               <screenshot>
                 <mediaobject>
@@ -262,7 +262,7 @@ included in the section entitled "GNU Free Documentation License".
                   
                 </mediaobject>
               </screenshot>
-            </figure><figure float="0">
+            </figure><figure float="0" id="fig_managing_bookmarks">
               <title>Managing bookmarks</title>
               <screenshot>
                 <mediaobject>
@@ -1175,11 +1175,11 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
 </mediaobject> 
 </screenshot> 
 </figure> 
-<sect2> 
+<sect2 id="edit_track"> 
 <title>Edit Track</title> 
 <para>Track editing is performed on the <link linkend="g_property_window">Properties Window</link>, and is initiated by selecting the track either from the plot or the Layer Manager, as described in the <emphasis>Editing your data</emphasis> cheat-sheet.</para> 
 </sect2> 
-<sect2> 
+<sect2 id="sym_intervals"> 
 <title>Set label and symbol display intervals</title> 
 <para>In addition to switching the symbols and labels on and off for individual positions, you can instruct Debrief to show symbols or labels at one of  a series of frequencies - allowing you to quickly add 15 minute symbols and hourly time labels to a track.  The timings of the particular positions that get highlighted do not have their origin at the start of the track - but from 0000 hrs - thus the 15 minute positions will be marked for 00, 15, 30, 45 minutes past the hour.</para> 
 </sect2> 
@@ -1241,9 +1241,6 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
 </listitem> 
 <listitem> 
 <para>The primary track must have <link linkend="sensor_data">sensor data</link>.</para> 
-</listitem> 
-<listitem> 
-<para></para> 
 </listitem> 
 </orderedlist></para> 
 </sect2> 
@@ -1859,7 +1856,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <note> 
 <para>The limits on the time period are the outer time limits of the visible data in the primary and secondary tracks currently displayed on the Tote,  so following a filter operation (introduced later) the start/end times will be changed to reflect the time limits specified.</para> 
 </note> 
-<note> 
+<note id="time_controls"> 
 <para>The keyboard can also be used for moving backwards and forwards, although
                 <application>Debrief</application> has to know that it&apos;s the Stepper that you want the keys to control.  So, after clicking on the time-slider control you can then switch to keyboard control of the Tote as follows:
 
@@ -1875,7 +1872,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </listitem> 
 </itemizedlist> </para> 
 </note> 
-<tip> 
+<tip id="interp_data"> 
 <para>In Autumn 2005 the Interpolate Points property was added to tracks.  When ticked, Debrief interpolates positions between actual data points.  The highlight cursor changes appearance when on an interpolated data point.<figure float="0">
               <title>Display of an interpolated point</title>
               <screenshot>
@@ -1928,7 +1925,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
                 </mediaobject>
               </screenshot>
             </figure>As you can see, the first two items on the menu allow you to select the current Display/Highlight modes.  In each sub-menu is  a command to edit the currently mode.  Later menu options allow you to format how information is displayed on the menu, and perform other time-related activities.</para> 
-<sect3> 
+<sect3 id="display_modes"> 
 <title>Display modes</title> 
 <para>The first three icons on the Time Controller toolbar allow you to choose two combinations of plotting modes.  The first two control how data is displayed:  in Normal Mode, all exercise data is displayed, whereas in Snail mode, only the current position and a series of recent points are displayed (similar to a Snail with trail following behind it).  </para> 
 <para>As you'd imagine, Normal Mode is the mode that is used for most analysis tasks.  It's North oriented and shows all relevant data.  It's also quite simple, only having two properties, both of which control the presentation of the highlight:<variablelist><varlistentry><term>Color</term><listitem><para>Yes, the Color of the highlight</para> 
@@ -2004,7 +2001,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </varlistentry> 
 </variablelist></para> 
 </sect3> 
-<sect3> 
+<sect3 id="highlight_modes"> 
 <title>Highlight Modes</title> 
 <para>Three highlight modes are provided:<variablelist><varlistentry><term>Default Highlight</term><listitem><para>Shows a rectangle at the current position.  From the default highlight properties you are able to select the colour and size of the rectangle to plot</para> 
 </listitem> 
@@ -2055,7 +2052,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </varlistentry> 
 </variablelist></para> 
 </sect3> 
-<sect3> 
+<sect3 id="relative_mode"> 
 <title>Relative/Absolute Modes</title> 
 <para></para> 
 <para>Relative Mode affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. </para> 
@@ -2098,7 +2095,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 <title>Filter to time period</title> 
 <para>When the <guibutton><inlinegraphic fileref="figures/FilterToTimePeriod.png"/>Filter to time period</guibutton> radio button is depressed, changing the time of the start or end time-sliders will automatically filter the displayed data to the indicated period.  In this mode, you can select a  6-hour period (for example), and drag it through the full serial time with shift-key depressed to view a moving "window" of data.  In addition to filtering the visible data to the indicated period, the period covered by the time-slider is also reduced.  Drag out the start/end time-sliders to return to the original time period.</para> 
 </sect3> 
-<sect3> 
+<sect3 id="time_copy"> 
 <title>Copy to clipboard</title> 
 <para>Another operation that relies on the selected time period is exporting calculated data to the clipboard.  This operation is available form the <guiicon>
               <inlinegraphic fileref="figures/Calculator.png"/>
@@ -3003,9 +3000,6 @@ data is not present, a gap is inserted into the data-line.
 <para>By switching to Snail mode and reducing the reducing the Trail Length to zero, a GOP-type plot can be shown.
             </para> 
 </tip> 
-<note> 
-<para>Unfortunately Symbol plotting mode is not provided in the initial release of Debrief NG</para> 
-</note> 
 </sect2> 
 </sect1> 
 </chapter> 
