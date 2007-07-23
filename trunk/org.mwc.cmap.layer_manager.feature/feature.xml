@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.layer_manager.feature"
       label="org.mwc.cmap.layer_manager.feature"
-      version="1.0.12"
+      version="1.0.13"
       provider-name="MWC">
-
+ 
    <description>
-      [1.0.12] Correct label for sync with plot
+      [1.0.13] Improve context-sensitive help
+[1.0.12] Correct label for sync with plot
 [1.0.11] Amend online update location
 [1.0.10] Sort tactical items by DTG, others by name
 [1.0.9] Sort layer manager items alphabetically

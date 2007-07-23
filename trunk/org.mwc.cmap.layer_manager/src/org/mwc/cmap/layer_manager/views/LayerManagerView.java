@@ -450,6 +450,9 @@ public class LayerManagerView extends ViewPart
 
 		});
 
+		// and declare our context sensitive help
+		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.LayerMgr");
+		
 	}
 
 	/**
@@ -685,6 +688,8 @@ public class LayerManagerView extends ViewPart
 		manager.add(_collapseAllAction);
 		manager.add(new Separator());
 		manager.add(_createLayer);
+		
+		manager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.LayerMgr", null, this));
 	}
 
 	private void fillContextMenu(IMenuManager manager)
@@ -759,7 +764,7 @@ public class LayerManagerView extends ViewPart
 		manager.add(_trackNewLayers);
 
 		// manager.add(new Separator());
-		// drillDownAdapter.addNavigationActions(manager);
+		// drillDownAdapter.addNavigationActions(manager)			
 	}
 
 	private void makeActions()
