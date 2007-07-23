@@ -152,18 +152,55 @@
 	  <property name="fopDir" value="${rootDir}\contribs\${fopVersion}" description="where the fop libraries are located"/>
 	  <property name="docName" value="Debrief User Guide.pdf" description="The Debrief document file"/>
 
-    <!-- produce the FO file, ready for PDF-->
+    <!-- produce the FO file, ready for PDF
     <java classpath="${rootDir}\contribs\saxon6_5_2\saxon.jar" fork="yes" dir="${pdfDest}"
       classname="com.icl.saxon.StyleSheet" maxmemory="512m">
       <arg value="-o"/>
       <arg value="out.fo"/>
 			<arg value="${rootDir}\org.mwc.debrief.help\docbook/ng_help.xml" />
 			<arg value="${rootDir}\org.mwc.debrief.help\docbook/fo_style.xsl" />
-    </java>
+    </java>-->
+		
+		
+		<!--
+		<property name="docbook.home"    value="D:\Dev\cmap\contribs\docbook-xsl-1.72.0"/>
+		<property name="saxon.dir"       value="${rootDir}\contribs\saxon6_5_2"/>
+		<property name="xml.dir"         value="${helpDir}docbook"/>
+		<property name="fo.dir"          value="fo"/>
+
+		     <xslt  style="${docbook.home}/fo/docbook.xsl"
+		            classpath="${saxon.dir}/saxon.jar"
+        in="${xml.dir}/ng_help.xml"
+        out="${xml.dir}/out.fo"
+		            /> -->
+
+	    <property name="fop.home" value="D:\Dev\cmap\contribs/fop-0.93"/>
+	    <property name="fo.dir" value="fo"/>
+	    <property name="pdf.dir" value="pdf"/>
+
+	    <taskdef name="fop"
+	            classname="org.apache.fop.tools.anttasks.Fop">
+	        <classpath>
+	            <pathelement location="${fop.home}/build/fop.jar"/>
+	            <pathelement location="${fop.home}/lib/avalon-framework-4.2.0.jar"/>
+	            <pathelement location="${fop.home}/lib/batik-all-1.6.jar"/>
+	            <pathelement location="${fop.home}/lib/commons-logging-1.0.4.jar"/>	        		        	
+	            <pathelement location="${fop.home}/lib/xmlgraphics-commons-1.1.jar"/>
+	            <pathelement location="${fop.home}/lib/commons-io-1.1.jar"/>
+	        	
+	        	
+	        	
+	        </classpath>
+	    </taskdef>
+		
+		
+		<fop format="application/pdf"
+		                fofile="docbook\out.fo"
+		                outfile="docbook\mybook.pdf" />
 		
 		<echo message="fo complete, now going to pdf"/>	
 		
-    <!-- now convert the fo file to PDF format-->
+    <!-- now convert the fo file to PDF format
     <java 
       fork="yes" dir="${pdfDest}"
       classname="org.apache.fop.apps.Fop" maxmemory="512m">
@@ -179,7 +216,7 @@
       <arg value="-d"/>
       <arg value="out.fo"/>
       <arg value="${docName}"/>    	
-    </java>
+    </java>-->
 		
 		
 		<!-- also copy the images to the target directory -->
