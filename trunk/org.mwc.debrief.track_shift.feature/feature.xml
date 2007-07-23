@@ -2,14 +2,14 @@
 <feature
       id="org.mwc.debrief.track_shift.feature"
       label="org.mwc.debrief.track_shift.feature"
-      version="1.0.4">
-
+      version="1.0.5">
+ 
    <description>
-      [1.0.4] Update online update location
+      [1.0.5] Add help link
+[1.0.4] Update online update location
 [1.0.3] Minor typo
 [1.0.2] Don&apos;t throw as many data-missing dialogs
-[1.0.1] Sort out Dave&apos;s dragging problem when only blue produces
-update.
+[1.0.1] Sort out Dave&apos;s dragging problem when only blue produces update.
    </description>
 
    <copyright>

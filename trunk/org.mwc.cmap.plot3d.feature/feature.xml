@@ -2,13 +2,14 @@
 <feature
       id="org.mwc.cmap.plot3d.feature"
       label="org.mwc.cmap.plot3d.feature"
-      version="1.0.7"
+      version="1.0.8"
       provider-name="MWC">
-
+ 
    <description url="http://www.example.com/description">
-      [1.0.7] Amend online update location
+      [1.0.8] Add help link
+[1.0.7] Amend online update location
 [1.0.6] Preps for final release
-[1.0.4]  Include debug lines
+[1.0.4] Include debug lines
    </description>
 
    <copyright url="http://www.example.com/copyright">

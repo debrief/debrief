@@ -547,6 +547,11 @@ public class Plot3dView extends ViewPart
 	private void fillLocalPullDown(IMenuManager manager)
 	{
 		manager.add(_editMyProperties);
+
+		// and the help link
+		manager.add(new Separator());
+		manager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.Plot3d", null, this));
+		
 	}
 
 	private void fillContextMenu(IMenuManager manager)

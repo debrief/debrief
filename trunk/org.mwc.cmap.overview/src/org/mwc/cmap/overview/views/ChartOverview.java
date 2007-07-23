@@ -73,6 +73,12 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	 */
 	public void createPartControl(Composite parent)
 	{
+		
+		// declare our context sensitive help
+		CorePlugin.declareContextHelp(parent, 
+				"org.mwc.debrief.help.OverviewChart");
+
+		
 		// hey, first create the chart
 		_myOverviewChart = new OverviewSWTChart(parent){
 
@@ -117,10 +123,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		// /////////////////////////////////////////
 		// ok - listen out for changes in the view
 		// /////////////////////////////////////////
-		watchMyParts();
-		
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(_myOverviewChart.getCanvasControl(),
-				"org.mwc.debrief.help.OverviewChart");		
+		watchMyParts();	
 	}
 
 	/**
@@ -288,6 +291,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	{
 		manager.add(_fitToWindow);
 
+		// and the help link
+		manager.add(new Separator());
+		manager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.OverviewChart", null, this));
 	}
 
 	private void makeActions()

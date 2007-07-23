@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.overview.feature"
       label="org.mwc.cmap.overview.feature"
-      version="1.0.4"
+      version="1.0.5"
       provider-name="MWC">
 
    <description>
-      [1.0.4] Amend online update location
+      [1.0.5] Add help link
+[1.0.4] Amend online update location
 [1.0.3] Tidy GC on completion
 [1.0.2] Preps for final release
 [1.0.1] Show ETOPO in background

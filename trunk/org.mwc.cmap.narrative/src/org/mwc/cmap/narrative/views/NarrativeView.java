@@ -13,6 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.*;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.narrative.NarrativePlugin;
@@ -420,6 +421,12 @@ public class NarrativeView extends ViewPart
 		manager.add(_followTimeToggle);
 		manager.add(_jumpToTimeToggle);
 		manager.add(_controllingTimeToggle);
+
+		// and the help link
+		manager.add(new Separator());
+		manager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.Narrative", null, this));
+
+		
 	}
 
 	private void fillContextMenu(IMenuManager manager)

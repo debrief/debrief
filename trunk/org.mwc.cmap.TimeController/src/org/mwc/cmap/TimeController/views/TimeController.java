@@ -183,6 +183,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	public void createPartControl(Composite parent)
 	{
 
+		// and declare our context sensitive help
+		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.TimeController");
+
 		// also sort out the slider conversion bits. We do it at the start, because
 		// callbacks
 		// created during initialisation may need to use/reset it
@@ -232,12 +235,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_theTimer.stop();
 		_theTimer.setDelay(1000);
 		_theTimer.addTimerListener(this);
-		
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(_wholePanel,
-		"org.mwc.debrief.help.TimeController");			
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(_tNowSlider,
-		"org.mwc.debrief.help.TimeController");			
-			
 
 	}
 
@@ -396,12 +393,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
 		eFwd.setToolTipText("Move to end of dataset");
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
-		
-		// and the context help
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(_forwardButton,
-		"org.mwc.debrief.help.TimeController.VCRButtons");		
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(lFwd,
-		"org.mwc.debrief.help.TimeController");		
 	}
 
 	boolean _alreadyProcessingChange = false;
@@ -1628,6 +1619,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		menuManager.add(toolboxProperties);
 		toolManager.add(toolboxProperties);
 
+		// and the help link
+		menuManager.add(new Separator());
+		menuManager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.TimeController", null, this));
+		
 
 		// ok - get the action bars to re-populate themselves, otherwise we don't
 		// see our changes

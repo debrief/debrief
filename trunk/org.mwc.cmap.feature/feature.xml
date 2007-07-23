@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.39"
+      version="1.0.40"
       provider-name="MWC">
 
    <description>
-      [1.0.39] Overcome export-to-clipboard performance bottleneck
+      [1.0.40] Improved support for context-sensitive help
+[1.0.39] Overcome export-to-clipboard performance bottleneck
 [1.0.38] Select parent view before displaying its editable parts
 in properties window
 [1.0.37] Hide S57 importer, leading to instability
@@ -653,7 +654,7 @@ That&apos;s all there is to it!
          download-size="0"
          install-size="0"
          version="0.0.0"/>
-
+ 
    <plugin
          id="org.eclipse.jdt.junit.runtime"
          download-size="0"

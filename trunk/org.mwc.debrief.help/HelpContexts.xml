@@ -1,22 +1,50 @@
 <contexts>
+	<context id="Debrief">
+		<description>Getting started with Debrief</description>
+		<topic href="html/legacy/start_up.html#navigating_debrief" label="Moving around the Debrief application"/>
+	</context>
 	<context id="OverviewChart" title="Panic Button Title">
-		<description>This is the panic button.</description>
-		<topic href="html/legacy/moving_around.html" label="Pushing the panic button"/>
+		<description>Provides an overview of the full chart area, with facilities to quickly move around the current viewport</description>
+		<topic href="html/legacy/moving_around.html#overview_window" label="Introduction to the Chart Overview"/>
 	</context>
 	<context id="TimeController">
-		<description>This is the time controller</description>
+		<description>The Time Controller both indicates the current exercise time, and allows you to control that time.  It also supports a number of other time-related activities</description>
 		<topic href="html/legacy/controlling_time.html" label="Analysing track data"/>
+		<topic href="html/legacy/controlling_time.html#time_bookmarks" label="Inserting a bookmark for a particular time"/>
+		<topic href="html/legacy/controlling_time.html#filter_to_time_period" label="Filtering track data to a particular period"/>
+		<topic href="html/legacy/analysing_data.html#time_controls" label="Controlling time using the keyboard"/>
+		<topic href="html/legacy/analysing_data.html#interp_data" label="Showing interpolated track data"/>
+		<topic href="html/legacy/controlling_time.html#display_modes" label="Switching between Normal &amp; Snail modes"/>
+		<topic href="html/legacy/controlling_time.html#highlight_modes" label="Selecting how the current position is displayed"/>
+		<topic href="html/legacy/controlling_time.html#relative_mode" label="Switching between relative &amp; absolute display modes"/>
+		<topic href="html/legacy/controlling_time.html#time_copy" label="Copying track data to the clipboard"/>
+		<topic href="html/legacy/show_time_vars.html" label="Selecting the period for which xy data should be plotted"/>
 	</context>		
-	<context id="TimeController.VCRButtons">
-		<description>These buttons move the time forward & backward</description>
-		<topic href="html/legacy/controlling_time.html#time_vcr_controls" label="VCR Controls"/>
+	<context id="TrackShifting">
+		<description>This panel displays bearing errors between tracks with sensor data </description>
+		<topic href="html/legacy/formatting_data.html#track_shifting" label="How to shift-tracks"/>
 	</context>		
-	<context id="TimeController.FilterToTimePeriod">
-		<description>This control allows you to filter the data to your specified time period/description>
-		<topic href="html/legacy/controlling_time.html#filter_time_period" label="Filtering to time period"/>
+	<context id="TrackTote">
+		<description>This panel shows data calculated from the current state of the primary and secondary tracs</description>
+		<topic href="html/legacy/analysing_data.html#the_tote_area" label="Analysing track data"/>
+		<topic href="html/legacy/analysing_data.html#assigning_tracks" label="Assigning tracks to the tote"/>
 	</context>		
-	<context id="TimeController.AddBookmarks">
-		<description>Use this to insert a bookmark for the current DTG</description>
-		<topic href="html/legacy/controlling_time.html#time_bookmarks" label="Managing bookmarks"/>
+	<context id="LayerMgr">
+		<description>The layer manager provides you with tree-oriented access into the detail of your plot</description>
+		<topic href="html/legacy/layer_mgr.html" label="Using the layer manager"/>
+		<topic href="html/legacy/layer_mgr.html#cut_copy_paste" label="Cutting and pasting data"/>
+		<topic href="html/legacy/show_time_vars.html" label="Selecting data for using in an xy plot"/>
+		<topic href="html/legacy/formatting_data.html#edit_track" label="Selecting which tracks to edit"/>
+		<topic href="html/legacy/formatting_data.html#sym_intervals" label="Setting label &amp; symbol display intervals"/>
+		<topic href="html/legacy/symbol_sets.html" label="Symbols that may be assigned to tracks &amp; labels"/>
+	</context>		
+	<context id="Narrative">
+		<description>Displays narrative data, allowing you to quickly move to a particular event</description>
+		<topic href="html/legacy/viewing_narratives.html" label="An overview of narrative data"/>
+		<topic href="html/legacy/viewing_narratives.html#preparing_narrative_data" label="Preparing narrative data"/>
+	</context>		
+	<context id="Plot3d">
+		<description>Shows a 3d view of the current plot</description>
+		<topic href="html/legacy/view_3d.html" label="An overview of narrative data"/>
 	</context>		
 </contexts>

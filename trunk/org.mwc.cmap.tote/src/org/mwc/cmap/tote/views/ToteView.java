@@ -1,25 +1,61 @@
 package org.mwc.cmap.tote.views;
 
-import java.beans.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IConfigurationElement;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ColumnWeightData;
+import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.IStructuredContentProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.TableLayout;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Table;
+import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.DataTypes.Temporal.*;
-import org.mwc.cmap.core.DataTypes.TrackData.*;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.ToteCalculationProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
-import Debrief.Tools.Tote.*;
+import Debrief.Tools.Tote.Watchable;
+import Debrief.Tools.Tote.WatchableList;
+import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GenericData.HiResDate;
 
@@ -84,7 +120,7 @@ public class ToteView extends ViewPart
 	/**
 	 * our current set of calculations
 	 */
-	Vector _myCalculations = null;
+	Vector<toteCalculation> _myCalculations = null;
 
 	/**
 	 * the temporal dataset controlling the narrative entry currently displayed
@@ -129,7 +165,7 @@ public class ToteView extends ViewPart
 	 */
 	public ToteView()
 	{
-		_myCalculations = new Vector(0, 1);
+		_myCalculations = new Vector<toteCalculation>(0, 1);
 	}
 
 	/**
@@ -247,6 +283,9 @@ public class ToteView extends ViewPart
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow().getActivePage());
 
+		// and declare our context sensitive help
+		CorePlugin.declareContextHelp(parent, "org.mwc.debrief.help.TrackTote");
+		
 	}
 
 	private void updateTableLayout()
@@ -548,6 +587,10 @@ public class ToteView extends ViewPart
 		manager.add(_autoGenerate);
 		manager.add(_autoGenerateJustTracks);
 		manager.add(_showUnits);
+		// and the help link
+		manager.add(new Separator());
+		manager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.TrackTote", null, this));
+		
 	}
 
 	private void fillContextMenu(IMenuManager manager, final int index)

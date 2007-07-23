@@ -207,6 +207,10 @@ public class StackedDotsView extends ViewPart
 	{
 		manager.add(_centreYAxis);
 		manager.add(_onlyVisible);
+		// and the help link
+		manager.add(new Separator());
+		manager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.TrackShifting", null, this));
+		
 	}
 
 	/**
