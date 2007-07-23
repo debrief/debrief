@@ -127,10 +127,14 @@
 			<fileset dir="${helpDir}\docbook/images" />
 		</copy>
 		<!-- and the stylesheet -->
+		<echo message="Copying stylesheet"/>
 		<copy todir="${helpDest}" preservelastmodified="yes">
-			<fileset file="${helpDir}\docbook/header.css" />
+			<fileset file="${helpDir}\docbook/Header.css" />
 		</copy>
 
+		<!-- make sure the help file gets moved across --> 
+		<echo message="Copying stylesheet"/>
+		<antcall target="insert_css"/>
 		
 		<!-- try to insert our additional section content -->
 		<echo message="Inserting history"/>
@@ -201,6 +205,10 @@
 		
 	</target>
 	
+	<!-- now, how do we tie the two together? -->
+	<target name="insert_css">
+		<copy file="${helpDir}\docbook/header.css" verbose="true" failonerror="true" todir="${helpDest}" preservelastmodified="yes"/>
+	</target>
 	
 	<!--
 	######################################################################################
