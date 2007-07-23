@@ -34,11 +34,11 @@
 	     </tstamp>
 	     <tstamp>
 	          <format property="statsvn.stop" pattern="yyyy-MM-dd"
-	                  offset="-2" unit="day" />
+	                  offset="-60" unit="day" />
 	     </tstamp>		
 		
 
-		<exec executable="svn" dir="d:\dev\cmap2" output="../deploy/cvs/statcvs.xml">
+		<exec executable="svn" dir="d:\dev\cmap" output="../deploy/cvs/statcvs.xml">
 		       <arg line="log"/>
 		        <arg line="-v"/>
 		        <arg line="--xml"/>
@@ -104,8 +104,8 @@
 		<!-- generate the HTML  -->
 		<echo message="Generating HTML"/>
 		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
-			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/ng_help.xml" />
-			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
+			<arg value="D:\Dev\cmap\org.mwc.debrief.help\docbook/ng_help.xml" />
+			<arg value="D:\Dev\cmap\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
 		</java> 
 			
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
@@ -157,8 +157,8 @@
       classname="com.icl.saxon.StyleSheet" maxmemory="512m">
       <arg value="-o"/>
       <arg value="out.fo"/>
-			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/ng_help.xml" />
-			<arg value="D:\Dev\cmap2\org.mwc.debrief.help\docbook/fo_style.xsl" />
+			<arg value="D:\Dev\cmap\org.mwc.debrief.help\docbook/ng_help.xml" />
+			<arg value="D:\Dev\cmap\org.mwc.debrief.help\docbook/fo_style.xsl" />
     </java>
 		
 		<echo message="fo complete, now going to pdf"/>	
@@ -226,13 +226,12 @@
 
 		<!-- and produce the output -->
 		<java dir="${sourceDir}" jar="${contribDir}/statsvn-0.3.1/statsvn.jar" fork="true">
-			<env key="LANG" value="EN_US" />
-			<jvmarg line="-mx128m" />
-			<arg line="  -dump
-				-output-dir ${cvs_stat_outputDir}
-					-title '${cvs_stat_outputTitle}' 
+			<env key="LANG" value="en_US" />
+			<jvmarg line="-mx256m" />
+			<arg line="	-output-dir ${buildCVSLogDir}/statcvs/short
+					-title 'Debrief NG Source listing' 
 					..\deploy\cvs\statcvs.xml 
-					d:\dev\cmap2" />
+					d:\dev\cmap" />
 		</java>
 	</target>
 		
