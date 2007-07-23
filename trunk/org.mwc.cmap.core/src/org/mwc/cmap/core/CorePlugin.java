@@ -6,13 +6,17 @@ import java.util.*;
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.*;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.*;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.*;
+import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
@@ -417,6 +421,43 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 		return res;
 	}
+	
+	/** create an action that we can stick in our manager
+	 * 
+	 * @param target
+	 * @param description
+	 * @param host
+	 * @return
+	 */
+	public static Action createOpenHelpAction(final String target, 
+			String description, 
+			final ViewPart host)
+	{
+		// sort out the description
+		if(description == null)
+			description = "Help";
+		
+		Action res = new Action(description, Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(Event event)
+			{
+				host.getViewSite().getWorkbenchWindow().getWorkbench().getHelpSystem().displayHelp(target);
+			}
+		};
+		res.setToolTipText("View help on this component");
+		res.setImageDescriptor(CorePlugin.getImageDescriptor("icons/linkto_help.gif"));
+		return res;
+	}
+	
+	/** make it easy to declare context sensitive help
+	 * 
+	 * @param parent
+	 * @param context
+	 */
+	public static void declareContextHelp(final Composite parent, final String context) {
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, context);
+	}
+	
 
 	public static IViewPart openSecondaryView(String viewName, String secondaryId, int state)
 	{
@@ -436,5 +477,6 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 		return res;
 	}
+
 
 }
