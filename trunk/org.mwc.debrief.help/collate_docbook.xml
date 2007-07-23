@@ -174,12 +174,30 @@
         out="${xml.dir}/out.fo"
 		            /> -->
 
-	    <property name="fop.home" value="D:\Dev\cmap\contribs/fop-0.93"/>
+	  <property name="fop.home" value="D:\Dev\cmap\contribs\fop-0.93"/>
 	    <property name="fo.dir" value="fo"/>
 	    <property name="pdf.dir" value="pdf"/>
 
-	    <taskdef name="fop"
-	            classname="org.apache.fop.tools.anttasks.Fop">
+	
+    <taskdef name="fop"
+            classname="org.apache.fop.tools.anttasks.Fop">
+        <classpath>
+            <pathelement location="${fop.home}/build/fop.jar"/>
+            <pathelement location="${fop.home}/lib/avalon-framework-4.2.0.jar"/>
+            <pathelement location="${fop.home}/lib/batik-all-1.6.jar"/>
+            <pathelement location="${fop.home}/lib/commons-logging-1.0.4.jar"/>	        		        	
+            <pathelement location="${fop.home}/lib/xmlgraphics-commons-1.1.jar"/>
+            <pathelement location="${fop.home}/lib/commons-io-1.1.jar"/>
+        </classpath>
+    </taskdef>	
+		
+		        <fop format="application/pdf"
+		        		basedir="docbook"
+		                fofile="docbook/out.fo"		        	
+		                outfile="docbook/DebriefNG.pdf" />
+		
+	
+		<!-- 	<java fork="yes" dir="docbook" classname="org.apache.fop.apps.Fop" maxmemory="512m">
 	        <classpath>
 	            <pathelement location="${fop.home}/build/fop.jar"/>
 	            <pathelement location="${fop.home}/lib/avalon-framework-4.2.0.jar"/>
@@ -187,16 +205,13 @@
 	            <pathelement location="${fop.home}/lib/commons-logging-1.0.4.jar"/>	        		        	
 	            <pathelement location="${fop.home}/lib/xmlgraphics-commons-1.1.jar"/>
 	            <pathelement location="${fop.home}/lib/commons-io-1.1.jar"/>
-	        	
-	        	
-	        	
 	        </classpath>
-	    </taskdef>
-		
-		
-		<fop format="application/pdf"
-		                fofile="docbook\out.fo"
-		                outfile="docbook\mybook.pdf" />
+	        <sysproperty key="FOPD" value="c:\docbook\${fopVersion}\"/>
+	        <arg  value="-d"/>
+	        <arg  value="out.fo"/>
+	        <arg  value="${docName}"/> 	    	
+	    </java>
+		-->
 		
 		<echo message="fo complete, now going to pdf"/>	
 		
