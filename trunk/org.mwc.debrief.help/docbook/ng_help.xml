@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+﻿<?xml version="1.0" encoding="UTF-8"?>
 <!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">-->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "../../contribs/docbook-xml-4.5/docbookx.dtd">
 <?xml-stylesheet href="file:///C:/docbook/docbook-xsl-1.44/html/docbook.xsl" type="text/xsl"?>
@@ -411,15 +411,15 @@ The wider national/international use of
                   </para> </entry> 
 <entry id="project_manager"> 
 <para>Debrief project manager.
-           <address>
-             <firstname>Mr Ian Mayo</firstname>
-             <street>Marlborough Building, HMS Collingwood</street>
-   <city>Fareham, HANTS</city>
-   <postcode>  PO14 1AS</postcode>
-             <country>United Kingdom</country>
-             <email>ian@planetmayo.com</email>
-           </address>
-                  </para> </entry> 
+<address>
+<firstname>Mr Ian Mayo</firstname>
+<street>Marlborough Building, HMS Collingwood</street>
+<city>Fareham, HANTS</city>
+<postcode>  PO14 1AS</postcode>
+<country>United Kingdom</country>
+<email>ian@planetmayo.com</email>
+</address>
+</para> </entry> 
 </row> 
 <row id="csds"> 
 <entry> 
@@ -430,12 +430,11 @@ The wider national/international use of
 <para>COMSUBDEVRON 12
                     <address>
                       
-                      <street>Submarine Development Squadron Twelve</street>
-                      <city>Naval Submarine Base New London</city>
-                      <state>Groton, CT</state>
-                      <postcode>  06349-5200</postcode>
-                      <country>USA</country>
-                    </address>
+<street>Submarine Development Squadron Twelve</street>
+<city>Naval Submarine Base New London</city>
+<state>Groton, CT, 06349-5200</state>
+<country>USA</country>
+</address>
                   </para> </entry> 
 </row> 
 <row id="nuwc_address"> 
@@ -452,8 +451,7 @@ The wider national/international use of
 Naval Undersea Warfare Center (NUWC)
                       <city>1176 Howell St</city>
                       <state>Bldg 1171 CSTL Laboratory</state>
-                      <postcode>Newport, Rhode Island</postcode>
-                      <country>USA</country>
+                      <postcode>Newport, Rhode Island, USA</postcode>
                       <email>HowletRW@npt.nuwc.navy.mil</email>
                     </address>
                   </para> </entry> 
