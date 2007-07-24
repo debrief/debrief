@@ -168,7 +168,7 @@
 		<property name="saxon.dir"       value="${rootDir}\contribs\saxon6_5_2"/>
 		<property name="xml.dir"         value="${helpDir}docbook"/>
 		<property name="fo.dir"          value="fo"/>
-		<xslt style="${docbook.home}/fo/docbook.xsl"
+		<xslt style="${xml.dir}/fo_style.xsl"
 		      classpath="${saxon.dir}/saxon.jar"
 		      in="${xml.dir}/ng_help.xml"
 		      out="${xml.dir}/out.fo" />
