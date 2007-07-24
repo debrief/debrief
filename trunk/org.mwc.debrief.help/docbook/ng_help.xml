@@ -803,7 +803,7 @@ Naval Undersea Warfare Center (NUWC)
 <title>Debrief&apos;s Welcome view</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/apptoolbar.png"/> 
+<imageobject> <imagedata fileref="figures/apptoolbar.png" width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -817,7 +817,7 @@ Naval Undersea Warfare Center (NUWC)
 <title>Debrief&apos;s default view</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/bare_app.png"/> 
+<imageobject> <imagedata fileref="figures/bare_app.png"  width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -832,7 +832,7 @@ Naval Undersea Warfare Center (NUWC)
 <screenshot> 
 <mediaobject> 
 <imageobject>
-<imagedata fileref="figures/app_with_plot.png" id="sample_plot"/> 
+<imagedata fileref="figures/app_with_plot.png" id="sample_plot"   width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -1126,7 +1126,7 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/OverviewInUse.png"/>
+                    <imagedata fileref="figures/OverviewInUse.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1920,7 +1920,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TimeController3.png"/>
+                    <imagedata fileref="figures/TimeController3.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2225,7 +2225,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_tracks.png"/>
+                    <imagedata fileref="figures/3d_tracks.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2254,7 +2254,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_tracks_with_3d.png"/>
+                    <imagedata fileref="figures/3d_tracks_with_3d.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2323,7 +2323,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_view2.png"/>
+                    <imagedata fileref="figures/3d_view2.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2460,7 +2460,7 @@ data is not present, a gap is inserted into the data-line.
 <title>View of time-variable plot</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/time_variable_plot.png"/> 
+<imageobject> <imagedata fileref="figures/time_variable_plot.png"   width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -2964,7 +2964,7 @@ data is not present, a gap is inserted into the data-line.
               </title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/d3_symbols.gif"/>
+                  <imagedata fileref="figures/d3_symbols.gif"   width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -3149,7 +3149,7 @@ different vectored databases. </para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/vpf_prefs.png"/>
+                    <imagedata fileref="figures/vpf_prefs.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3621,7 +3621,7 @@ different vectored databases. </para>
                   <screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/etopo2src.jpg"/>
+                        <imagedata fileref="figures/etopo2src.jpg"   width="100%"/>
                       </imageobject>
 
                     </mediaobject>
@@ -3731,7 +3731,7 @@ over appearance in the plot:
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/Narr_1.png"/>
+                    <imagedata fileref="figures/Narr_1.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4053,7 +4053,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/debrief_home.png"/>
+                  <imagedata fileref="figures/debrief_home.png"   width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4176,7 +4176,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/sf_page.png"/>
+                  <imagedata fileref="figures/sf_page.png"   width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4228,7 +4228,7 @@ permanent file archival, full backups, and total web-based administration.
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/sf_trackers.png"/>
+                    <imagedata fileref="figures/sf_trackers.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4246,7 +4246,7 @@ permanent file archival, full backups, and total web-based administration.
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/sf_bugs.png"/>
+                    <imagedata fileref="figures/sf_bugs.png"   width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4931,7 +4931,7 @@ course, speed, depth (m), label string
               <title>XML File structure in Debrief</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/XMLStructure.gif"/>
+                  <imagedata fileref="figures/XMLStructure.gif"   width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -5686,20 +5686,20 @@ of this license document, but changing it is not allowed.</para>
 <glossterm>Bearing Rate</glossterm> 
 <glossdef> 
 <para>Bearing rate within the application is calculated using the following formula:
-            <screen>
-              <markup>Bdot = ((Tspd * sin(Tcrse) - Ospd * sin(Ocrse)) *
-     cos(brg) - (Tspd * cos(Tcrse) - Ospd * cos(Ocrse)) *
-            sin(brg)) / range * 60</markup>
-            </screen>
+<screen>
+<markup>Bdot = ((Tspd * sin(Tcrse) - Ospd * sin(Ocrse)) *
+cos(brg) - (Tspd * cos(Tcrse) - Ospd * cos(Ocrse)) *
+sin(brg)) / range * 60</markup>
+</screen>
 
-            <screen>
-              <markup>Rdot = Range Rate (yds/min)
+<screen>
+<markup>Rdot = Range Rate (yds/min)
 Bdot = Bearing Rate (degs/min)
 Tspd, Tcrse = Target course and speed (degs &amp; yps)
 Ospd, Ocrse = Ownship course and speed (degs &amp; yps)
 brg = Bearing to target from ownship (degs)
 range = Range to target from ownship (yds)</markup>
-            </screen>
+</screen>
           </para> 
 <para>Positive and negative bearing rates are named Right and Left according to naval convention, abreviated to R and L in the tote.</para> 
 </glossdef> 
