@@ -4,77 +4,68 @@
 	<!-- and the cvs-logging related ones -->
 	<property name="rootDir" value="d:/dev/cmap" />
 	<property name="contribDir" value="${rootDir}/contribs" />
-	<property name="sourceDir" value="./" description="top level directory within which all our sources are stored" />
-	<property name="deployDir" value="${rootDir}/deploy" description="where we start building the output set" />
-	<property name="buildCVSLogDir" value="${deployDir}/cvs" />	
-	
+	<property name="sourceDir"
+	          value="../"
+	          description="top level directory within which all our sources are stored" />
+	<property name="deployDir"
+	          value="${rootDir}/deploy"
+	          description="where we start building the output set" />
+	<property name="buildSVNLogDir" value="${deployDir}/svn" />
+
 	<!-- and the docbook/help related bits -->
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="helpDir" value="./" />
 	<property name="helpDest" value="${helpDir}\html\legacy" />
 	<property name="pdfDest" value="${helpDir}\html\pdf" />
-	
+
 	<target name="_log1_produce" description="produce the cvs change logs">
 
 		<!-- clear the output directory -->
-		<delete dir="${buildCVSLogDir}" />
+		<delete dir="${buildSVNLogDir}" />
 
 		<!-- create the output directory if we have to -->
-		<mkdir dir="${buildCVSLogDir}" />
-		<mkdir dir="${buildCVSLogDir}/statcvs" />
+		<mkdir dir="${buildSVNLogDir}" />
+		<mkdir dir="${buildSVNLogDir}/statcvs" />
 
 		<!-- produce the CVS log -->
-		<echo message="about to log:${sourceDir}"/>
-		
+		<echo message="about to log:${sourceDir}" />
+
 		<tstamp>
-			<format property="TODAY_UK" pattern="yyyy-MM-dd" locale="en" />
+			<format property="statsvn.start" pattern="yyyy-MM-dd" />
+		</tstamp>
+		<tstamp>
+			<format property="statsvn.stop"
+			        pattern="yyyy-MM-dd"
+			        offset="-60"
+			        unit="day" />
 		</tstamp>
 
-	     <tstamp>
-	          <format property="statsvn.start" pattern="yyyy-MM-dd"/>
-	     </tstamp>
-	     <tstamp>
-	          <format property="statsvn.stop" pattern="yyyy-MM-dd"
-	                  offset="-60" unit="day" />
-	     </tstamp>				
-
-		<exec executable="svn" dir="${sourceDir}/.." output="../deploy/cvs/statcvs.xml">
-		       <arg line="log"/>
-		        <arg line="-v"/>
-		        <arg line="--xml"/>
-		        <arg line="-r {${statsvn.start}}:{${statsvn.stop}}"/>
+		<exec executable="svn"
+		      dir="${sourceDir}"
+		      output="../deploy/cvs/statcvs.xml">
+			<arg line="log" />
+			<arg line="-v" />
+			<arg line="--xml" />
+			<arg line="-r {${statsvn.start}}:{${statsvn.stop}}" />
 		</exec>
-		
-	<!--	<cvs  quiet="yes" dest="${sourceDir}" output="${buildCVSLogDir}/statcvs.log">
-			<commandline>
-				<argument line="log -d&quot;2006-01-01&quot;&lt;&quot;${TODAY_UK}&quot;  ../" />
-			</commandline> 
-		</cvs> -->
+
 	</target>
-
-
-
 
 	<target name="_log2_format" description="use the stylesheet tidier">
-
 		<antcall target="_svn_stat_formatter">
-			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/short" />
-			<param name="cvs_stat_stylesheet" value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
-			<param name="cvs_stat_outputTitle" value="Abbreviated change statistics" />
+			<param name="svn_stat_outputDir"
+			       value="${buildSVNLogDir}/statcvs/short" />
+			<param name="svn_stat_stylesheet"
+			       value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
+			<param name="svn_stat_outputTitle"
+			       value="Abbreviated change statistics" />
 		</antcall>
-		<!--
-		<antcall target="_cvs_stat_formatter">
-			<param name="cvs_stat_outputDir" value="${buildCVSLogDir}/statcvs/long" />
-			<param name="cvs_stat_stylesheet" value="../org.mwc.cmap.installer/statcvs_template/suite.xml" />
-			<param name="cvs_stat_outputTitle" value="Verbose change statistics" />
-		</antcall> -->
-
 	</target>
 
-
-	<target name="_log3_copy" description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
+	<target name="_log3_copy"
+	        description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
 		<copy todir="..\org.mwc.debrief.help\html\history">
-			<fileset dir="${buildCVSLogDir}" />
+			<fileset dir="${buildSVNLogDir}" />
 		</copy>
 	</target>
 
@@ -82,44 +73,47 @@
 		<antcall target="_log1_produce" />
 		<antcall target="_log2_format" />
 		<antcall target="_log3_copy" />
-	</target>	
-
+	</target>
 
 	<target name="clear_output" description="ditch the existing output files">
 		<delete dir="${helpDest}" />
 	</target>
-	
+
 	<target name="docbook_to_eclipse" description="Generate html from docbook">
 		<!-- clear the output directories -->
-		<antcall target="clear_output"></antcall>
-		
+		<antcall target="clear_output">
+		</antcall>
+
 		<!-- generate the output -->
 		<mkdir dir="${helpDest}" />
 		<mkdir dir="${pdfDest}" />
-		
 
-		<!-- build the history content 
-		<antcall target="cvs_log"/>		-->
+		<!-- build the history content -->
+		<antcall target="cvs_log" />
 
 		<!-- generate the HTML  -->
-		<echo message="Generating HTML"/>
-		<java classpath="${contribDir}\saxon6_5_2\saxon.jar" fork="yes" dir="${helpDest}" classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+		<echo message="Generating HTML" />
+		<java classpath="${contribDir}\saxon6_5_2\saxon.jar"
+		      fork="yes"
+		      dir="${helpDest}"
+		      classname="com.icl.saxon.StyleSheet"
+		      maxmemory="128m">
 			<arg value="${rootDir}\org.mwc.debrief.help\docbook/ng_help.xml" />
 			<arg value="${rootDir}\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
-		</java> 
-			
+		</java>
+
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
 		  into the top-level of the docbook output directories -->
-		<echo message="Copying HTML"/>
+		<echo message="Copying HTML" />
 		<copy todir="${helpDest}\" preservelastmodified="yes">
 			<fileset dir="${helpDest}\html\legacy" />
 		</copy>
 		<!-- and delete the duff directory (to stop us getting confused... -->
 		<delete dir="${helpDest}\html\legacy" />
-		
-		
+
+
 		<!-- also copy the images to the target directory -->
-		<echo message="Copying images"/>
+		<echo message="Copying images" />
 		<copy todir="${helpDest}\figures" preservelastmodified="yes">
 			<fileset dir="${helpDir}\docbook/figures" />
 		</copy>
@@ -127,190 +121,125 @@
 			<fileset dir="${helpDir}\docbook/images" />
 		</copy>
 		<!-- and the stylesheet -->
-		<echo message="Copying stylesheet"/>
+		<echo message="Copying stylesheet" />
 		<copy todir="${helpDest}" preservelastmodified="yes">
 			<fileset file="${helpDir}\docbook/Header.css" />
 		</copy>
 
-		<!-- make sure the help file gets moved across --> 
-		<echo message="Copying stylesheet"/>
-		<antcall target="insert_css"/>
-		
+		<!-- make sure the help file gets moved across -->
+		<echo message="Copying stylesheet" />
+		<copy file="${helpDir}\docbook/header.css"
+		      verbose="true"
+		      failonerror="true"
+		      todir="${helpDest}"
+		      preservelastmodified="yes" />
+
 		<!-- try to insert our additional section content -->
-		<echo message="Inserting history"/>
-		<antcall target="insert_history_link"/>
-		
+		<echo message="Inserting history" />
+		<antcall target="insert_history_link" />
+
 		<!-- and move the generated toc back to the top level -->
-		<move file="${helpDest}\toc.xml" todir="${helpDest}"/>
-		
+		<move file="${helpDest}\toc.xml" todir="${helpDest}" />
+
 	</target>
 
 
 	<target name="docbook_to_pdf" description="Generate html from docbook">
 
-	  <property name="fopVersion" value="fop-0.93" description="the current version of FOP"/>
-	  <property name="fopDir" value="${rootDir}\contribs\${fopVersion}" description="where the fop libraries are located"/>
-	  <property name="docName" value="Debrief User Guide.pdf" description="The Debrief document file"/>
+		<property name="fopVersion"
+		          value="fop-0.93"
+		          description="the current version of FOP" />
+		<property name="fopDir"
+		          value="${rootDir}\contribs\${fopVersion}"
+		          description="where the fop libraries are located" />
+		<property name="docName"
+		          value="Debrief User Guide.pdf"
+		          description="The Debrief document file" />
+		<property name="xml.dir"
+		          value="docbook"
+		          description="where our docbook sources are" />
 
-    <!-- produce the FO file, ready for PDF
-    <java classpath="${rootDir}\contribs\saxon6_5_2\saxon.jar" fork="yes" dir="${pdfDest}"
-      classname="com.icl.saxon.StyleSheet" maxmemory="512m">
-      <arg value="-o"/>
-      <arg value="out.fo"/>
-			<arg value="${rootDir}\org.mwc.debrief.help\docbook/ng_help.xml" />
-			<arg value="${rootDir}\org.mwc.debrief.help\docbook/fo_style.xsl" />
-    </java>-->
-		
-		
-		<!--
+		<echo message="going from xml to FO" />
+
+		<!-- produce the FO file, ready for PDF -->
+		<delete file="${rootDir}\org.mwc.debrief.help\docbook\out.fo" />
+
 		<property name="docbook.home"    value="D:\Dev\cmap\contribs\docbook-xsl-1.72.0"/>
 		<property name="saxon.dir"       value="${rootDir}\contribs\saxon6_5_2"/>
 		<property name="xml.dir"         value="${helpDir}docbook"/>
 		<property name="fo.dir"          value="fo"/>
+		<xslt style="${docbook.home}/fo/docbook.xsl"
+		      classpath="${saxon.dir}/saxon.jar"
+		      in="${xml.dir}/ng_help.xml"
+		      out="${xml.dir}/out.fo" />
+		<echo message="output to fo complete, now going to pdf" />
 
-		     <xslt  style="${docbook.home}/fo/docbook.xsl"
-		            classpath="${saxon.dir}/saxon.jar"
-        in="${xml.dir}/ng_help.xml"
-        out="${xml.dir}/out.fo"
-		            /> -->
+		<property name="fop.home" value="D:\Dev\cmap\contribs\fop-0.93" />
+		<property name="fo.dir" value="fo" />
+		<property name="pdf.dir" value="pdf" />
 
-	  <property name="fop.home" value="D:\Dev\cmap\contribs\fop-0.93"/>
-	    <property name="fo.dir" value="fo"/>
-	    <property name="pdf.dir" value="pdf"/>
+		<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
+			<classpath>
+				<pathelement location="${fop.home}/build/fop.jar" />
+				<pathelement location="${fop.home}/lib/avalon-framework-4.2.0.jar" />
+				<pathelement location="${fop.home}/lib/batik-all-1.6.jar" />
+				<pathelement location="${fop.home}/lib/commons-logging-1.0.4.jar" />
+				<pathelement location="${fop.home}/lib/xmlgraphics-commons-1.1.jar" />
+				<pathelement location="${fop.home}/lib/commons-io-1.1.jar" />
+			</classpath>
+		</taskdef>
 
-	
-    <taskdef name="fop"
-            classname="org.apache.fop.tools.anttasks.Fop">
-        <classpath>
-            <pathelement location="${fop.home}/build/fop.jar"/>
-            <pathelement location="${fop.home}/lib/avalon-framework-4.2.0.jar"/>
-            <pathelement location="${fop.home}/lib/batik-all-1.6.jar"/>
-            <pathelement location="${fop.home}/lib/commons-logging-1.0.4.jar"/>	        		        	
-            <pathelement location="${fop.home}/lib/xmlgraphics-commons-1.1.jar"/>
-            <pathelement location="${fop.home}/lib/commons-io-1.1.jar"/>
-        </classpath>
-    </taskdef>	
-		
-		        <fop format="application/pdf"
-		        		basedir="docbook"
-		                fofile="docbook/out.fo"		        	
-		                outfile="docbook/DebriefNG.pdf" />
-		
-	
-		<!-- 	<java fork="yes" dir="docbook" classname="org.apache.fop.apps.Fop" maxmemory="512m">
-	        <classpath>
-	            <pathelement location="${fop.home}/build/fop.jar"/>
-	            <pathelement location="${fop.home}/lib/avalon-framework-4.2.0.jar"/>
-	            <pathelement location="${fop.home}/lib/batik-all-1.6.jar"/>
-	            <pathelement location="${fop.home}/lib/commons-logging-1.0.4.jar"/>	        		        	
-	            <pathelement location="${fop.home}/lib/xmlgraphics-commons-1.1.jar"/>
-	            <pathelement location="${fop.home}/lib/commons-io-1.1.jar"/>
-	        </classpath>
-	        <sysproperty key="FOPD" value="c:\docbook\${fopVersion}\"/>
-	        <arg  value="-d"/>
-	        <arg  value="out.fo"/>
-	        <arg  value="${docName}"/> 	    	
-	    </java>
-		-->
-		
-		<echo message="fo complete, now going to pdf"/>	
-		
-    <!-- now convert the fo file to PDF format
-    <java 
-      fork="yes" dir="${pdfDest}"
-      classname="org.apache.fop.apps.Fop" maxmemory="512m">
-		<classpath>
-		  <pathelement location="${fopDir}/build/fop.jar"/>
-	      <pathelement location="${fopDir}/lib/batik-all-1.6.jar"/>
-	      <pathelement location="${fopDir}/lib/xalan-2.7.0.jar"/>
-		  <pathelement location="${fopDir}/lib/xercesImpl-2.7.1.jar"/>
-		  <pathelement location="${fopDir}/lib/xml-apis-1.3.02.jar"/>
-		  <pathelement location="${fopDir}/lib/avalon-framework-4.2.0.jar"/>
-		</classpath>		
-      <sysproperty key="FOPD" value="c:\docbook\${fopVersion}\"/>
-      <arg value="-d"/>
-      <arg value="out.fo"/>
-      <arg value="${docName}"/>    	
-    </java>-->
-		
-		
-		<!-- also copy the images to the target directory -->
-		<copy todir="${helpDest}\figures" preservelastmodified="yes">
-			<fileset dir="${helpDir}\docbook/figures" />
-		</copy>
-		<copy todir="${helpDest}\images" preservelastmodified="yes">
-			<fileset dir="${helpDir}\docbook/images" />
-		</copy>
-		
-	</target>	
-	
+		<fop format="application/pdf"
+		     basedir="docbook"
+		     fofile="docbook/out.fo"
+		     outfile="docbook/DebriefNG.pdf" />
+
+		<!-- ok, move the output file to the target directory -->
+	</target>
+
 	<!-- now, how do we tie the two together? -->
 	<target name="insert_history_link">
 		<property name="dupFile" value="${helpDest}\toc2.xml" />
 
 		<!-- make sure the target file is gone -->
-		<delete file="${dupFile}"/>
-		
+		<delete file="${dupFile}" />
+
 		<!-- create a fresh copy -->
-		<copy file="${helpDest}\toc.xml" tofile="${dupFile}"/>
-		
+		<copy file="${helpDest}\toc.xml" tofile="${dupFile}" />
+
 		<!-- try the change -->
 		<replace file="${dupFile}">
 			<replacetoken>label="Getting started"</replacetoken>
-			  <replacevalue>
-			  	label="History">&lt;topic label="Short" href="\html\history\statcvs\short\index.html"/&gt;
+			<replacevalue label="History">&lt;topic label="Short" href="\html\history\statcvs\short\index.html"/&gt;
 			  	&lt;topic label="Verbose" href="\html\history\statcvs\long\index.html"/&gt;&lt;/topic&gt;
 			  	&lt;topic label="Getting started" </replacevalue>
 		</replace>
-		
+
 	</target>
-	
-	<!-- now, how do we tie the two together? -->
-	<target name="insert_css">
-		<copy file="${helpDir}\docbook/header.css" verbose="true" failonerror="true" todir="${helpDest}" preservelastmodified="yes"/>
-	</target>
-	
+
 	<!--
 	######################################################################################
 	##	utility tasks
 	######################################################################################
 	  -->
 
-	
 	<target name="_svn_stat_formatter" description="use the stylesheet tidier">
 		<!-- ok, delete the output directory -->
-		<delete dir="${cvs_stat_outputDir}" />
+		<delete dir="${svn_stat_outputDir}" />
 
 		<!-- and create it afresh -->
-		<mkdir dir="${cvs_stat_outputDir}" />
+		<mkdir dir="${svn_stat_outputDir}" />
 
 		<!-- and produce the output -->
-		<java dir="${sourceDir}" jar="${contribDir}/statsvn-0.3.1/statsvn.jar" fork="true">
+		<java dir="${sourceDir}"
+		      jar="${contribDir}/statsvn-0.3.1/statsvn.jar"
+		      fork="true">
 			<env key="LANG" value="en_US" />
 			<jvmarg line="-mx256m" />
-			<arg line="	-output-dir ${buildCVSLogDir}/statcvs/short
+			<arg line="	-output-dir ${buildSVNLogDir}/statcvs/short
 					-title 'Debrief NG Source listing' 
-					..\deploy\cvs\statcvs.xml 
+					deploy\cvs\statcvs.xml 
 				    ${rootDir}" />
 		</java>
 	</target>
-		
-	<target name="_cvs_stat_formatter" description="use the stylesheet tidier">
-		<!-- ok, delete the output directory -->
-		<delete dir="${cvs_stat_outputDir}" />
-
-		<!-- and create it afresh -->
-		<mkdir dir="${cvs_stat_outputDir}" />
-
-		<!-- and produce the output -->
-		<java dir="${sourceDir}" jar="${contribDir}/statcvs/statcvs-xml-0.9.6-full.jar" fork="true">
-			<jvmarg line="-mx128m" />
-			<arg line=" -output-dir ${cvs_stat_outputDir}
-	            -title '${cvs_stat_outputTitle}'
-	            -suite ${cvs_stat_stylesheet}
-				../deploy/cvs/statcvs.log" />
-		</java>
-	</target>
-	
-	
 </project>
