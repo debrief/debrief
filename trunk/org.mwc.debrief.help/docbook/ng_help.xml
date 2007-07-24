@@ -204,23 +204,7 @@ included in the section entitled "GNU Free Documentation License".
 </listitem> 
 </varlistentry> 
 </variablelist> 
-<itemizedlist> 
-<listitem> 
-<para><emphasis></emphasis>.    </para> 
-</listitem> 
-<listitem> 
-<para>  </para> 
-</listitem> 
-<listitem> 
-<para>  </para> 
-</listitem> 
-<listitem> 
-<para>  </para> 
-</listitem> 
-<listitem> 
-<para></para> 
-</listitem> 
-</itemizedlist></para> 
+</para> 
 </formalpara> 
 <formalpara> 
 <title>Editing multiple items</title> 
@@ -396,7 +380,6 @@ The wider national/international use of
         <application>Debrief</application> was originally developed for use within the Maritime Warfare Centre, the switch to Open Source licensing has led to its adoption by the following organisations and companies:
       </para> 
 <para>
-
         <table frame="none">
           <title>List of acknowledged Debrief users</title>
           <tgroup cols="2">
@@ -406,46 +389,42 @@ The wider national/international use of
               <row id="mwc">
                 <entry>
                   <para>
-                    <inlinegraphic fileref="figures/mwc_cresta.gif"/>
+                    <inlinegraphic fileref="figures/mwc_cresta.gif" width="100"/>
                   </para> </entry> 
 <entry id="project_sponsor"> 
 <para>Debrief project sponsor.
-                    <address>
-                      <firstname>Lt Cdr Andy Evans RN</firstname>
-                      <lineage>Maritime Warfare Centre</lineage>
-                      <street>Marlborough Building, HMS Collingwood</street>
-            <city>Fareham</city>
-            <state>HANTS</state>
-            <country>UK</country>
-            <postcode>  PO14 1AS</postcode>
-                      <country>United Kingdom</country>
-                      <email>smtac.oa@mwc.rn.mod.uk</email>
-                    </address>
+<address>
+<firstname>Lt Cdr Andy Evans RN</firstname>
+<lineage>Maritime Warfare Centre</lineage>
+<street>Marlborough Building, HMS Collingwood</street>
+<city>Fareham, HANTS</city>
+<postcode>  PO14 1AS</postcode>
+<country>United Kingdom</country>
+<email>smtac.oa@mwc.rn.mod.uk</email>
+ </address>
                   </para> </entry> 
 </row> 
 <row> 
 <entry> 
 <para>
-                    <inlinegraphic fileref="figures/planet.gif"/>
+                    <inlinegraphic fileref="figures/planet.gif" width="100"/>
                   </para> </entry> 
 <entry id="project_manager"> 
 <para>Debrief project manager.
-                    <address>
-                      <firstname>Mr Ian Mayo</firstname>
-                      <street>Marlborough Building, HMS Collingwood</street>
-            <city>Fareham</city>
-            <state>HANTS</state>
-            <country>UK</country>
-            <postcode>  PO14 1AS</postcode>
-                      <country>United Kingdom</country>
-                      <email>ian@planetmayo.com</email>
-                    </address>
+           <address>
+             <firstname>Mr Ian Mayo</firstname>
+             <street>Marlborough Building, HMS Collingwood</street>
+   <city>Fareham, HANTS</city>
+   <postcode>  PO14 1AS</postcode>
+             <country>United Kingdom</country>
+             <email>ian@planetmayo.com</email>
+           </address>
                   </para> </entry> 
 </row> 
 <row id="csds"> 
 <entry> 
 <para>
-                    <inlinegraphic fileref="figures/csds12.gif"/>
+                    <inlinegraphic fileref="figures/csds12.gif" width="100" />
                   </para> </entry> 
 <entry> 
 <para>COMSUBDEVRON 12
@@ -462,7 +441,7 @@ The wider national/international use of
 <row id="nuwc_address"> 
 <entry> 
 <para>
-                    <inlinegraphic fileref="figures/nuwc.gif"/>
+                    <inlinegraphic fileref="figures/nuwc.gif" width="100"/>
                   </para> </entry> 
 <entry> 
 <para>Naval Undersea Warfare Center (NUWC)
@@ -479,29 +458,10 @@ Naval Undersea Warfare Center (NUWC)
                     </address>
                   </para> </entry> 
 </row> 
-<row id="poseidon"> 
-<entry> 
-<para>
-                    <inlinegraphic fileref="figures/pos_logo.gif"/>
-                  </para> </entry> 
-<entry> 
-<para>
-                    <address>
-                      <firstname>Erlend Helmersen</firstname>
-                      <lineage>Poseidon Simulation AS</lineage>
-                      <street>Lufthavnveien 11</street>
-                      <city>P.O.Box 89</city>
-                      <state>–8376 Leknes</state>
-                      <postcode></postcode>
-                      <country>Norway</country>
-                      <email>eh@poseidon.no</email>
-                    </address>
-                  </para> </entry> 
-</row> 
 <row id="comsubpac"> 
 <entry> 
 <para>
-                    <inlinegraphic fileref="figures/CSP_LOGO_SM.gif"/>
+                    <inlinegraphic fileref="figures/CSP_LOGO_SM.gif" width="100" />
                   </para> </entry> 
 <entry> 
 <para>
