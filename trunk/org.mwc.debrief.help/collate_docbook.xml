@@ -195,7 +195,8 @@
 		     outfile="docbook/DebriefNG.pdf" />
 
 		<!-- ok, move the output file to the target directory -->
-	</target>
+		<move file="docbook/DebriefNG.pdf" todir="" failonerror="true" />
+ 	</target>
 
 	<!-- now, how do we tie the two together? -->
 	<target name="insert_history_link">
