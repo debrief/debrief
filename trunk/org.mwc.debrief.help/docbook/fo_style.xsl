@@ -15,7 +15,7 @@
 
 
   <!-- get the extensions to work -->
-  <xsl:param name="fop.extensions" select="1"/>
+  <xsl:param name="fop1.extensions" select="1"/>
   <xsl:param name="tablecolumns.extension" select="0"/>
   <xsl:param name="use.extensions" select="'1'"/>
 
