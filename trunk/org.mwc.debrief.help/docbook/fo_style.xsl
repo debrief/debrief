@@ -23,7 +23,7 @@
 
   <xsl:param name="generate.index" select="1"/>
   <xsl:param name="generate.toc">
-    book      toc,title,figure,table,example,equation
+    book      toc,title
     part      title
   </xsl:param>
   <xsl:param name="toc.section.depth" select="1"/>
