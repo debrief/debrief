@@ -60,6 +60,15 @@
 			<param name="svn_stat_outputTitle"
 			       value="Abbreviated change statistics" />
 		</antcall>
+
+		<antcall target="_svn_stat_formatter">
+			<param name="svn_stat_outputDir"
+			       value="${buildSVNLogDir}/statcvs/long" />
+			<param name="svn_stat_stylesheet"
+			       value="../org.mwc.cmap.installer/statcvs_template/suite.xml" />
+			<param name="svn_stat_outputTitle"
+			       value="Debrief change statistics" />
+		</antcall>
 	</target>
 
 	<target name="_log3_copy"
@@ -211,7 +220,7 @@
 		<!-- try the change -->
 		<replace file="${dupFile}">
 			<replacetoken>label="Getting started"</replacetoken>
-			<replacevalue label="History">&lt;topic label="Short" href="\html\history\statcvs\short\index.html"/&gt;
+			<replacevalue>label="Short" href="\html\history\statcvs\short\index.html"/&gt;
 			  	&lt;topic label="Verbose" href="\html\history\statcvs\long\index.html"/&gt;&lt;/topic&gt;
 			  	&lt;topic label="Getting started" </replacevalue>
 		</replace>
@@ -237,7 +246,7 @@
 		      fork="true">
 			<env key="LANG" value="en_US" />
 			<jvmarg line="-mx256m" />
-			<arg line="	-output-dir ${buildSVNLogDir}/statcvs/short
+			<arg line="	-output-dir ${svn_stat_outputDir}
 					-title 'Debrief NG Source listing' 
 					deploy\cvs\statcvs.xml 
 				    ${rootDir}" />
