@@ -172,7 +172,7 @@ included in the section entitled "GNU Free Documentation License".
 </listitem> 
 </itemizedlist> </para> 
 </sect1> 
-<sect1 id="debrief_history"> 
+<sect1 id="debrief_whats_new"> 
 <title>What's new?</title> 
 <formalpara> 
 <title>Adoption of Eclipse framework</title> 
@@ -260,9 +260,9 @@ included in the section entitled "GNU Free Documentation License".
 </formalpara> 
 </sect1> 
 <sect1> 
-<title>History</title> 
+<title id="History">History</title> 
 <sect2> 
-<title>Pre-history</title> 
+<title id="PreHistory">Pre-history</title> 
 <para>
           <application>Debrief</application> was originally
           <indexterm>
