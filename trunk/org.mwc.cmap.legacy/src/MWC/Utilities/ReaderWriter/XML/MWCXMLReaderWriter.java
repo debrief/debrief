@@ -6,17 +6,23 @@
 
 package MWC.Utilities.ReaderWriter.XML;
 
-import java.io.InputStream;
+import java.awt.Component;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InterruptedIOException;
-import java.awt.*;
 
-import org.xml.sax.*;
-import org.apache.xerces.parsers.SAXParser;
+import javax.swing.ProgressMonitorInputStream;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
+
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXNotRecognizedException;
+import org.xml.sax.SAXNotSupportedException;
+import org.xml.sax.SAXParseException;
 
 import MWC.GUI.Plottable;
-
-import javax.swing.*;
 
 /**
  * @author IAN MAYO
@@ -42,15 +48,11 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		throw new RuntimeException("importThis method not implemented!");
 	}
 
+	@Override
 	public boolean canHandleThis(String type)
 	{
 		// hey! we can't really handle anything!
 		return false;
-	}
-
-	protected void handleOurselves(String name, AttributeList atts)
-	{
-		// stuff it
 	}
 
 	/**
@@ -66,14 +68,20 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 
 		try
 		{
-			res = new SAXParser();
-			res.setFeature("http://xml.org/sax/features/validation", false);
-			res.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",
-					false);
+			res = SAXParserFactory.newInstance().newSAXParser();
+			// res.setFeature("http://xml.org/sax/features/validation", false);
+			// res.setFeature(
+			// "http://apache.org/xml/features/nonvalidating/load-external-dtd",
+			// false);
 		}
 		catch (SAXException e)
 		{
 			System.err.println("could not set parser feature");
+		}
+		catch (ParserConfigurationException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 		return res;
@@ -90,10 +98,10 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 			SAXParser spf = getConfiguredParser();
 
 			// put our plot handler into the chain
-			theHandler.handleThis(spf, this);
+			theHandler.handleThis(spf.getXMLReader(), this);
 
 			// start parsing
-			spf.parse(is);
+			spf.parse(is, theHandler);
 		}
 		catch (SAXParseException se)
 		{
@@ -105,7 +113,8 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 			{
 				int line = se.getLineNumber();
 				int col = se.getColumnNumber();
-				String msg = "Trouble reading input file at line:" + line + ", column:" + col;
+				String msg = "Trouble reading input file at line:" + line + ", column:"
+						+ col;
 				MWC.Utilities.Errors.Trace.trace(se, msg);
 				MWC.GUI.Dialogs.DialogFactory.showMessage("Open Debrief file", msg);
 			}
@@ -113,7 +122,8 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		catch (SAXNotRecognizedException sre)
 		{
 			MWC.Utilities.Errors.Trace.trace(sre,
-					"Unknown trouble with SAX parsing (not recognised):" + sre.getMessage());
+					"Unknown trouble with SAX parsing (not recognised):"
+							+ sre.getMessage());
 		}
 		catch (SAXNotSupportedException spe)
 		{
@@ -137,8 +147,8 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	/**
 	 * do an import using the indicated handler
 	 */
-	static public void importThis(MWCXMLReader theHandler, String name, InputStream is)
-			throws SAXException
+	static public void importThis(MWCXMLReader theHandler, String name,
+			InputStream is) throws SAXException
 	{
 		MWCXMLReaderWriter xr = new MWCXMLReaderWriter();
 
@@ -186,16 +196,18 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		}
 	}
 
-	protected class ModifiedProgressMonitorInputStream extends ProgressMonitorInputStream
+	protected class ModifiedProgressMonitorInputStream extends
+			ProgressMonitorInputStream
 	{
 		private int override_nread = 0;
 
-		public ModifiedProgressMonitorInputStream(Component parentComponent, Object message,
-				InputStream in)
+		public ModifiedProgressMonitorInputStream(Component parentComponent,
+				Object message, InputStream in)
 		{
 			super(parentComponent, message, in);
 		}
 
+		@Override
 		public int read(byte b[], int off, int len) throws IOException
 		{
 			int nr = in.read(b, off, len);
@@ -253,13 +265,13 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 	public void endExport(Plottable item)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	public void startExport(Plottable item)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }
