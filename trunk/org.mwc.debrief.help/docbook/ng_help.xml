@@ -259,10 +259,10 @@ included in the section entitled "GNU Free Documentation License".
             </figure></para> 
 </formalpara> 
 </sect1> 
-<sect1> 
-<title id="History">History</title> 
-<sect2> 
-<title id="PreHistory">Pre-history</title> 
+<sect1 id="History"> 
+<title>History</title> 
+<sect2 id="PreHistory"> 
+<title>Pre-history</title> 
 <para>
           <application>Debrief</application> was originally
           <indexterm>
@@ -295,7 +295,7 @@ During 2000
           <application>Debrief</application> gained wider use within the Maritime Warfare Centre, being used for more varied types of submarine exercise analysis together with analysis in surface-related warfare areas.
         </para> 
 </sect2> 
-<sect2> 
+<sect2 id="SwitchToOpen"> 
 <title>The switch to Open Source</title> 
 <para>
 In Summer 2000 the Maritime Warfare Centre committed to switching the
@@ -339,7 +339,7 @@ The wider national/international use of
 </listitem> 
 </orderedlist> </para> 
 </sect2> 
-<sect2> 
+<sect2 id="TwoThouOnwards"> 
 <title>Debrief 2001 onwards</title> 
 <para>At the end of 2000, Ian Mayo, the developer and
           <link linkend="project_manager">project manager</link> of
