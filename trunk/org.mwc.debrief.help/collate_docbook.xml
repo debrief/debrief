@@ -2,7 +2,7 @@
 <project name="org.mwc.debrief.help" default="docbook_to_eclipse" basedir=".">
 
 	<!-- and the cvs-logging related ones -->
-	<property name="rootDir" value="d:/dev/cmap" />
+	<property name="rootDir" value="d:/dev/cmap_net" />
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="sourceDir"
 	          value="../"
@@ -61,14 +61,14 @@
 			       value="Abbreviated change statistics" />
 		</antcall>
 
-		<antcall target="_svn_stat_formatter">
+<!--		<antcall target="_svn_stat_formatter">
 			<param name="svn_stat_outputDir"
 			       value="${buildSVNLogDir}/statcvs/long" />
 			<param name="svn_stat_stylesheet"
 			       value="../org.mwc.cmap.installer/statcvs_template/suite.xml" />
 			<param name="svn_stat_outputTitle"
 			       value="Debrief change statistics" />
-		</antcall>
+		</antcall> -->
 	</target>
 
 	<target name="_log3_copy"
@@ -97,8 +97,8 @@
 		<mkdir dir="${helpDest}" />
 		<mkdir dir="${pdfDest}" />
 
-		<!-- build the history content -->
-		<antcall target="cvs_log" />
+		<!-- build the history content 
+		<antcall target="cvs_log" />-->
 
 		<!-- generate the HTML  -->
 		<echo message="Generating HTML" />
@@ -116,9 +116,9 @@
 		<echo message="Copying HTML" />
 		<copy todir="${helpDest}\" preservelastmodified="yes">
 			<fileset dir="${helpDest}\html\legacy" />
-		</copy>
+		</copy> 
 		<!-- and delete the duff directory (to stop us getting confused... -->
-		<delete dir="${helpDest}\html\legacy" />
+		<delete dir="${helpDest}\html\legacy" /> 
 
 
 		<!-- also copy the images to the target directory -->
@@ -147,9 +147,6 @@
 		<echo message="Inserting history" />
 		<antcall target="insert_history_link" />
 
-		<!-- and move the generated toc back to the top level -->
-		<move file="${helpDest}\toc.xml" todir="${helpDest}" />
-
 	</target>
 
 
@@ -173,7 +170,7 @@
 		<!-- produce the FO file, ready for PDF -->
 		<delete file="${rootDir}\org.mwc.debrief.help\docbook\out.fo" />
 
-		<property name="docbook.home"    value="D:\Dev\cmap\contribs\docbook-xsl-1.72.0"/>
+		<property name="docbook.home"    value="D:\Dev\cmap_net\contribs\docbook-xsl-1.72.0"/>
 		<property name="saxon.dir"       value="${rootDir}\contribs\saxon6_5_2"/>
 		<property name="xml.dir"         value="${helpDir}docbook"/>
 		<property name="fo.dir"          value="fo"/>
@@ -183,7 +180,7 @@
 		      out="${xml.dir}/out.fo" />
 		<echo message="output to fo complete, now going to pdf" />
 
-		<property name="fop.home" value="D:\Dev\cmap\contribs\fop-0.93" />
+		<property name="fop.home" value="D:\Dev\cmap_net\contribs\fop-0.93" />
 		<property name="fo.dir" value="fo" />
 		<property name="pdf.dir" value="pdf" />
 
@@ -220,8 +217,8 @@
 		<!-- try the change -->
 		<replace file="${dupFile}">
 			<replacetoken>label="Getting started"</replacetoken>
-			<replacevalue>label="Short" href="\html\history\statcvs\short\index.html"/&gt;
-			  	&lt;topic label="Verbose" href="\html\history\statcvs\long\index.html"/&gt;&lt;/topic&gt;
+			<replacevalue>label="Short History" href="html\history\statcvs\short\index.html"/&gt;
+			  	&lt;topic label="Verbose History" href="html\history\statcvs\long\index.html"/&gt;
 			  	&lt;topic label="Getting started" </replacevalue>
 		</replace>
 
