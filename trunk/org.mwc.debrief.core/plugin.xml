@@ -411,5 +411,32 @@
         point="org.eclipse.core.runtime.preferences">
      <initializer class="org.mwc.debrief.core.preferences.PreferenceInitializer"/>
   </extension>
+  <extension
+        point="org.eclipse.ui.intro">
+     <intro
+           class="org.eclipse.ui.intro.config.CustomizableIntroPart"
+           id="org.mwc.debrief.core.intro">
+     </intro>
+     <introProductBinding
+           introId="org.mwc.debrief.core.intro"
+           productId="org.mwc.debrief.core.Debrief">
+     </introProductBinding>
+  </extension>
+  <extension
+        point="org.eclipse.ui.intro.config">
+     <config
+           content="intro/introContent.xml"
+           id="org.mwc.debrief.core.introConfigId"
+           introId="org.mwc.debrief.core.intro">
+        <presentation
+              home-page-id="root">
+           <implementation
+                 kind="html"
+                 os="win32,linux,macosx"
+                 style="content/shared.css">
+           </implementation>
+        </presentation>
+     </config>
+  </extension>
   
 </plugin>
