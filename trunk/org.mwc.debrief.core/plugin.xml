@@ -428,6 +428,34 @@
            productId="org.mwc.debrief.core.Debrief">
      </introProductBinding>
   </extension>
+  <extension
+        point="org.eclipse.ui.intro.configExtension">
+     <configExtension
+           configId="org.eclipse.ui.intro.universalConfig"
+           content="intro_content/debrief_overview.xml">
+     </configExtension>
+  </extension>
+  <extension
+        point="org.eclipse.ui.intro.configExtension">
+     <configExtension
+           configId="org.eclipse.ui.intro.universalConfig"
+           content="intro_content/debrief_tutorials.xml">
+     </configExtension>
+  </extension>
+  <extension
+        point="org.eclipse.ui.intro.configExtension">
+     <configExtension
+           configId="org.eclipse.ui.intro.universalConfig"
+           content="intro_content/debrief_firststeps.xml">
+     </configExtension>
+  </extension>
+  <extension
+        point="org.eclipse.ui.intro.configExtension">
+     <configExtension
+           configId="org.eclipse.ui.intro.universalConfig"
+           content="intro_content/debrief_whatsnew.xml">
+     </configExtension>
+  </extension>
 
   
 </plugin>
