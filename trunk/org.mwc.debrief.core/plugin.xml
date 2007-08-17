@@ -384,6 +384,15 @@
               name="preferenceCustomization"
               value="plugin_customization.ini">
         </property>
+   		<property            
+   				name="introTitle"
+            	value="Welcome to Debrief"/>
+      <property
+            name="introBrandingImage"
+            value="product:icons/debrief_icon.gif"/>
+      <property
+            name="introBrandingImageText"
+            value="Maritime Warfare Centre"/>        
      </product>
      </extension>
 
@@ -414,21 +423,10 @@
   </extension>
   <extension
         point="org.eclipse.ui.intro">
-     <intro
-           class="org.eclipse.ui.intro.config.CustomizableIntroPart"
-           id="org.mwc.debrief.core.intro">
-     </intro>
      <introProductBinding
            introId="org.eclipse.ui.intro.universal"
            productId="org.mwc.debrief.core.Debrief">
      </introProductBinding>
-  </extension>
-  <extension
-        point="org.eclipse.ui.intro.configExtension">
-     <configExtension
-           configId="org.eclipse.ui.intro.universalConfig"
-           content="welcome/sample.xml">
-     </configExtension>
   </extension>
 
   
