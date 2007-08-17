@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+	<extensionContent id="orgmwcdebriefcore-introExtension"
+		style="css/intro.css" name="Sample Extension" path="whatsnew/@">
+		<group style-id="content-group"
+			id="orgmwcdebriefcore-introLink-group">
+			<link label="Whats new for Debrief" url="http://www.eclipse.org"
+				id="orgmwcdebriefcore-introLink" style-id="content-link">
+				<text>
+					An introduction to Debrief NG
+				</text>
+			</link>
+		</group>
+	</extensionContent>
+</introContent>

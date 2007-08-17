@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+	<extensionContent id="orgmwcdebriefcore-introExtension"
+		style="css/intro.css" name="Sample Extension" path="firststeps/@">
+		<group style-id="content-group"
+			id="orgmwcdebriefcore-introLink-group">
+			<link label="First steps for Debrief" url="http://www.eclipse.org"
+				id="orgmwcdebriefcore-introLink" style-id="content-link">
+				<text>
+					An introduction to Debrief NG
+				</text>
+			</link>
+				<link label="History of Debrief" 
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/reference/history.html&amp;embedTarget=page-content"
+				 id="history"  style-id="content-link">
+					<text>Where Debrief came from</text>
+				</link>			
+		</group>
+	</extensionContent>
+</introContent>
