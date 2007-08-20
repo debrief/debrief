@@ -4,11 +4,15 @@
 		style="css/intro.css" name="Sample Extension" path="whatsnew/@">
 		<group style-id="content-group"
 			id="orgmwcdebriefcore-introLink-group">
-			<link label="Whats new for Debrief" url="http://www.eclipse.org"
-				id="orgmwcdebriefcore-introLink" style-id="content-link">
-				<text>
-					An introduction to Debrief NG
-				</text>
+			<link label="Whats new for Debrief"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_whats_new.html"
+				id="debrief-whatsnew" style-id="content-link">
+				<text>New features to be found in Debrief NG</text>
+			</link>
+			<link label="Debrief's changelog"
+				url="http://org.eclipse.ui.intro/showMessage?message=Debrief change-log available soon."
+				id="debrief-changelog" style-id="content-link">
+				<text>Detailed list of changes in the current build of Debrief</text>
 			</link>
 		</group>
 	</extensionContent>

@@ -1,70 +1,26 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <introContent>
 	<extensionContent id="orgmwcdebriefcore-introExtension"
-		style="css/intro.css" name="Sample Extension" path="tutorials/@">
-		<group label="Finding your sea legs" style-id="content-group"	id="orgmwcdebriefcore-introLink-group">
-			<text>
-				Before you start generating and viewing plots in Debrief
-				you have to generate a Project
-			</text>
-			<text>
-				A Project is a place where Debrief can find your working
-				files (and links to existing work directories).
-			</text>
-			<link label="Debrief Tutorials" url="http://www.eclipse.org"
-				id="orgmwcdebriefcore-introLink" style-id="content-link">
-				<text>An introduction to Debrief NG 2</text>
+		style="css/intro.css" name="Debrief bits" path="tutorials/@">
+		<group label="Finding your sea legs in Debrief NG" style-id="content-group"
+			id="orgmwcdebriefcore-introLink-group">
+			<link style-id="content-link" label="A Debrief walkthrough"
+				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial"
+				id="debrief-tutorial">
+				<text>Let Debrief itself lead you through your first session</text>
 			</link>
-			<link style-id="content-link" label="Generating a project"
-				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.generate_project"
-				id="generate_project">
+			<link style-id="content-link" label="Viewing Debrief's error log"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/fault_diagnosis.html"
+				id="debrief-viewlog">
 				<text>
-					Learn how to generate a folder to store you work
-					(together with links to existing work)
+					Learn how to find and open the Debrief error log
 				</text>
 			</link>
-			<link style-id="content-link"
-				label="Getting your data into Debrief"
-				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.existing_data"
-				id="existing_data">
-				<text>
-					Learn how to inform Debrief where your information
-					existing plots (and data-files) are stored
-				</text>
+			<link style-id="content-link" label="Reporting a problem with Debrief"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content"
+				id="debrief-feedback">
+				<text>Learn how to report Debrief-related problems</text>
 			</link>
-			<link style-id="content-link" label="Creating a new plot"
-				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.create_plot"
-				id="create_new_plot">
-				<text>
-					Learn how to create a blank plot, ready to import
-					exercise data
-				</text>
-			</link>
-			<link style-id="content-link"
-				label="Opening an existing plot"
-				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.open_plot"
-				id="open_existing_plot">
-				<text>
-					Learn how to load an existing plot into Debrief
-				</text>
-			</link>
-
 		</group>
-			<group id="overview-links" label="Solving Problems">
-				<link label="Viewing the error log"
-					url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/fault_diagnosis.html"
-					id="view_log">
-					<text>
-						Learn how to find and open the Debrief error log
-					</text>
-				</link>
-				<link label="Reporting a bug"
-					url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content"
-					id="report_bug">
-					<text>
-						Learn how to report Debrief-relatedproblems
-					</text>
-				</link>
-			</group>		
 	</extensionContent>
 </introContent>

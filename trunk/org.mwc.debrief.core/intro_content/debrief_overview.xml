@@ -5,20 +5,14 @@
 		<group style-id="content-group"
 			id="orgmwcdebriefcore-introLink-group">
 			<link style-id="content-link" label="History of Debrief"
-				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/reference/history.html&amp;embedTarget=page-content"
-				id="history">
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/history.html"
+				id="debrief-history">
 				<text>Where Debrief came from</text>
 			</link>
 			<link style-id="content-link"
-				label="Getting data into Debrief"
-				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/import_range_data.html&amp;embedTarget=page-content"
-				id="data">
-				<text>Find out how to get your data into Debrief</text>
-			</link>
-			<link style-id="content-link"
 				label="Getting support for Debrief"
-				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content"
-				id="support">
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html"
+				id="debrief-support">
 				<text>
 					What to do if you have any problems with Debrief
 				</text>
