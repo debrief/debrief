@@ -1,3 +1,25 @@
 
 a#orgmwcdebriefcore-introLink img { background-image : url(graphics/intro.gif); }
 a#orgmwcdebriefcore-introLink:hover img { background-image : url(graphics/intro_hov.gif); }
+
+a#debrief-tutorial img { background-image : url(graphics/tutorials48.gif); }
+a#debrief-tutorial:hover img { background-image : url(graphics/tutorials48sel.gif); }
+
+a#debrief-feedback img { background-image : url(graphics/feedback.gif); }
+a#debrief-feedback:hover img { background-image : url(graphics/feedbackhov.gif); }
+
+a#debrief-history img { background-image : url(graphics/history.png); }
+a#debrief-history:hover img { background-image : url(graphics/historyhov.png); }
+
+a#debrief-support img { background-image : url(graphics/support.jpg); }
+a#debrief-support:hover img { background-image : url(graphics/supporthov.jpg); }
+
+a#debrief-welcome img { background-image : url(graphics/welcome.gif); }
+a#debrief-welcome:hover img { background-image : url(graphics/welcomehov.gif); }
+
+a#debrief-viewlog img { background-image : url(graphics/viewlog.gif); }
+a#debrief-viewlog:hover img { background-image : url(graphics/viewloghov.gif); }
+
+
+a#debrief-changelog img { background-image : url(graphics/changelog.gif); }
+a#debrief-changelog:hover img { background-image : url(graphics/changeloghov.gif); }
