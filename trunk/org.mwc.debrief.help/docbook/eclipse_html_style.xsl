@@ -4,7 +4,7 @@
   xmlns="http://www.w3.org/TR/xhtml1/transitional"
   exclude-result-prefixes="#default">
 
-  <xsl:import href="file:///D:\Dev\cmap_net\contribs\docbook-xsl-1.72.0/eclipse/eclipse.xsl"/>
+  <xsl:import href="file:///D:\Dev\cmap\contribs\docbook-xsl-1.72.0/eclipse/eclipse.xsl"/>
 
   <!-- Add other variable definitions here -->
 
