@@ -113,12 +113,12 @@ Section -un.post UNSEC0001
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\$(^Name).lnk"
     Delete /REBOOTOK "$SMPROGRAMS\$StartMenuGroup\Uninstall $(^Name).lnk"
     Delete /REBOOTOK $INSTDIR\uninstall.exe
+    RmDir $SMPROGRAMS\$StartMenuGroup
+    RmDir $INSTDIR
     DeleteRegValue HKLM "${REGKEY}" StartMenuGroup
     DeleteRegValue HKLM "${REGKEY}" Path
     DeleteRegKey /IfEmpty HKLM "${REGKEY}\Components"
     DeleteRegKey /IfEmpty HKLM "${REGKEY}"
-    RmDir /REBOOTOK $SMPROGRAMS\$StartMenuGroup
-    RmDir /REBOOTOK $INSTDIR
     Push $R0
     StrCpy $R0 $StartMenuGroup 1
     StrCmp $R0 ">" no_smgroup
