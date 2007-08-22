@@ -2,7 +2,8 @@
 <project name="org.mwc.debrief.help" default="docbook_to_eclipse" basedir=".">
 
 	<!-- and the cvs-logging related ones -->
-	<property name="rootDir" value="d:/dev/cmap_net" />
+	<property name="rootDir" value="../" />
+	<property name="scrapRootDir" value="d:/dev/cmap_net" />
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="sourceDir"
 	          value="../"
@@ -107,8 +108,8 @@
 		      dir="${helpDest}"
 		      classname="com.icl.saxon.StyleSheet"
 		      maxmemory="128m">
-			<arg value="${rootDir}\org.mwc.debrief.help\docbook/ng_help.xml" />
-			<arg value="${rootDir}\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
+			<arg value="..\..\..\org.mwc.debrief.help\docbook/ng_help.xml" />
+			<arg value="..\..\..\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
 		</java>
 
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
@@ -170,7 +171,7 @@
 		<!-- produce the FO file, ready for PDF -->
 		<delete file="${rootDir}\org.mwc.debrief.help\docbook\out.fo" />
 
-		<property name="docbook.home"    value="D:\Dev\cmap_net\contribs\docbook-xsl-1.72.0"/>
+		<property name="docbook.home"    value="${rootDir}\contribs\docbook-xsl-1.72.0"/>
 		<property name="saxon.dir"       value="${rootDir}\contribs\saxon6_5_2"/>
 		<property name="xml.dir"         value="${helpDir}docbook"/>
 		<property name="fo.dir"          value="fo"/>
@@ -180,7 +181,13 @@
 		      out="${xml.dir}/out.fo" />
 		<echo message="output to fo complete, now going to pdf" />
 
-		<property name="fop.home" value="D:\Dev\cmap_net\contribs\fop-0.93" />
+		
+		
+<!--	
+        <eclipse.convertPath resourcePath="..\contribs\fop-0.9.3" property="fop.home"/>
+  -->
+		
+	    <property name="fop.home" value="${rootDir}\contribs/fop-0.93" /> 
 		<property name="fo.dir" value="fo" />
 		<property name="pdf.dir" value="pdf" />
 
