@@ -10,7 +10,9 @@
 	<property name="destDir" value="${deployDir}" description="where the updated install-sets are located" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
-	<property name="advancedInstallerPath" value="d:\dev\eclipse2\contribs\advancedinstaller\" />
+    <property name="nsisPath" value="c:\program files\dev\nsis" />
+    <property name="nsisExecutable" value="makensis" />
+    <property name="nsisScriptFile" value="setup.nsi" />
 
 	<target name="upload_online_updaters" description="upload updated files to td submarines directory" depends="clean">
 		<copy todir="${updateUploadDir}" preservelastmodified="yes">
@@ -46,20 +48,6 @@
 				<!-- now eclipse itself -->
 			</and>
 		</condition>
-		<condition property="static_present">
-			<and>
-				<!-- and the jre -->
-				<available file="${distDir}\jre" />
-				<available file="${distDir}\jre\bin\java.exe" />
-				<!-- and the workspace -->
-				<available file="${distDir}\workspace" />
-				<available file="${distDir}\workspace\sample_data" />
-				<available file="${distDir}\workspace\sample_data\sample.xml" />
-				<!-- and the dlls -->
-				<available file="${distDir}\gdiplus.dll" />
-				<available file="${distDir}\JavaClipboard.dll" />
-			</and>
-		</condition>
 		<condition property="debrief_present">
 			<and>
 				<!-- first the plugins -->
@@ -73,29 +61,20 @@
 		</condition>
 
 		<fail message="some eclipse files are missing" unless="eclipse_present" />
-		<fail message="some static lib files are missing" unless="static_present" />
 		<fail message="some debrief files are missing" unless="debrief_present" />
-	</target>
-
-	<target name="fill_in_bits" description="insert missing files" depends="">
-		<copy todir="${destDir}\DebriefNG" preservelastmodified="yes">
-			<fileset dir="${rootDir}" excludes="*cvs*" />
-		</copy>
 	</target>
 
 	<!-- try to make the builders - though we're considering shifting to NSIS... -->
 	<target name="build_installer" description="create the installation file" depends="">
-		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
-			<arg line="/build ng_installer_settings.aip" />
+		<exec executable="${nsisPath}\nsisExecutable">
+			<arg line=" ${nsisScriptFile}" />
 		</exec>
 	</target>
-
 
 	<target name="collate_dist" description="insert missing bits into dist">
 		<!-- get a name for the new dist -->
 		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />
 		<echo message="building:${dist-title}" />
-
 		
 		<property name="destZip" value="${destDir}/${dist-title}.zip" description="the target file" />
 		<tstamp>
@@ -125,10 +104,6 @@
 		<echo message="checking the dist" />
 		<antcall target="check_the_dist" />
 
-		<!-- repack the whole dist -->
-		<echo message="collating new dist zip:d:/${dist-title}.zip" />
-		<zip destfile="${destZip}" basedir="${destDir}/DebriefNG" />
-
 		<!-- do the installer -->
 		<echo message="creating single-file installer" />
 		<antcall target="build_installer" />
@@ -144,7 +119,5 @@
 		<echo message="All copied.  Dist complete" />
 
 	</target>
-
-
 
 </project>
