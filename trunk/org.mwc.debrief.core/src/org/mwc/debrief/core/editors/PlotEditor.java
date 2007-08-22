@@ -721,11 +721,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 					return;
 				}
 
-			OutputStream os;
+			OutputStream os = null;
 			try {
 				os = new FileOutputStream(file.getLocation().toFile(), false);
 				// ok, write to the file
 				doSaveTo(os, new NullProgressMonitor());
+				
 
 				// also make this new file our input
 				IFileEditorInput newInput = new FileEditorInput(file);
@@ -734,6 +735,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 			catch (FileNotFoundException e) {
 				CorePlugin
 				    .logError(Status.ERROR, "Failed whilst performing Save As", e);
+			}
+			finally
+			{
+				// and close it
+				try {
+					if(os != null)
+						os.close();
+        }
+        catch (IOException e) {
+	        CorePlugin.logError(Status.ERROR, "Whilst performaing save-as", e);
+        }
+
 			}
 
 		}
