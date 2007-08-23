@@ -43,7 +43,7 @@ Var StartMenuGroup
 !insertmacro MUI_LANGUAGE English
 
 # Installer attributes
-OutFile ..\deploy\setup.exe
+OutFile ..\deploy\InstallDebrief.exe
 InstallDir $PROGRAMFILES\DebriefNG
 CRCCheck on
 XPStyle on
