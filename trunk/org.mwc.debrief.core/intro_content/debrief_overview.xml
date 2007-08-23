@@ -5,7 +5,7 @@
 		<group style-id="content-group"
 			id="orgmwcdebriefcore-introLink-group">
 			<link style-id="content-link" label="History of Debrief"
-				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/history.html"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/History.html"
 				id="debrief-history">
 				<text>Where Debrief came from</text>
 			</link>
