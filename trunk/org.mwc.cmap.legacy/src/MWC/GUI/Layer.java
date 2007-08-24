@@ -98,6 +98,7 @@
 package MWC.GUI;
 
 import java.io.Serializable;
+import java.util.Enumeration;
 
 /**
  * this class is a collection of objects which
@@ -108,6 +109,20 @@ import java.io.Serializable;
  */
 public interface Layer extends Serializable, Editable, Plottable
 {
+  /////////////////////////////////////////////////////////////
+  // member interfaces
+  ////////////////////////////////////////////////////////////
+	
+	/** interface for class that normally provides it's elements in a tiered fashion,
+	 * but is able to provide them as a single list (for when an external class wants to
+	 * process all of them as one list - double-click nearest testing).
+	 */
+	public interface ProvidesContiguousElements
+	{
+		public Enumeration contiguousElements();
+	}
+	
+	
   /////////////////////////////////////////////////////////////
   // member functions
   ////////////////////////////////////////////////////////////

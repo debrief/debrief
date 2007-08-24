@@ -390,6 +390,7 @@ import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Tote.*;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.*;
+import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GUI.Shapes.*;
 import MWC.GenericData.*;
@@ -403,9 +404,9 @@ import MWC.TacticalData.*;
  * iteself, but the responsibility for the fixes within the track are demoted to
  * the FixWrapper
  */
-public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem, HasDraggableComponents
-{
+public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
+    Serializable, WatchableList, DynamicPlottable, MWC.GUI.Layer,
+    DraggableItem, HasDraggableComponents, ProvidesContiguousElements {
 
 	// //////////////////////////////////////
 	// member variables
@@ -447,10 +448,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	private boolean _showPositions;
 
 	private HiResDate _lastSymbolFrequency = new HiResDate(0,
-			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	    TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	private HiResDate _lastLabelFrequency = new HiResDate(0,
-			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+	    TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	/**
 	 * working parameters
@@ -514,8 +515,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * Wrapper for a Track (a series of position fixes). It combines the data with
 	 * the formatting details
 	 */
-	public TrackWrapper()
-	{
+	public TrackWrapper() {
 		// declare our arrays
 		_thePositions = new PlottableLayer();
 		_thePositions.setName("Positions");
@@ -534,28 +534,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		_theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
 		// set an initial location for the label
 		_theLabel.setRelativeLocation(new Integer(
-				MWC.GUI.Properties.LocationPropertyEditor.RIGHT));
+		    MWC.GUI.Properties.LocationPropertyEditor.RIGHT));
 
 		// initialise the symbol to use for plotting this track in snail mode
-		_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol("Submarine");
+		_theSnailShape = MWC.GUI.Shapes.Symbols.SymbolFactory
+		    .createSymbol("Submarine");
 	}
 
 	/**
 	 * instruct this object to clear itself out, ready for ditching
 	 */
-	public final void closeMe()
-	{
+	public final void closeMe() {
 		// do the parent
 		super.closeMe();
 
 		// and my objects
 		// first ask them to close themselves
 		Enumeration it = _thePositions.elements();
-		while (it.hasMoreElements())
-		{
+		while (it.hasMoreElements()) {
 			final Object val = it.nextElement();
-			if (val instanceof PlainWrapper)
-			{
+			if (val instanceof PlainWrapper) {
 				final PlainWrapper pw = (PlainWrapper) val;
 				pw.closeMe();
 			}
@@ -567,14 +565,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 		// and my objects
 		// first ask the sensors to close themselves
-		if (_mySensors != null)
-		{
+		if (_mySensors != null) {
 			Iterator it2 = _mySensors.iterator();
-			while (it2.hasNext())
-			{
+			while (it2.hasNext()) {
 				final Object val = it2.next();
-				if (val instanceof PlainWrapper)
-				{
+				if (val instanceof PlainWrapper) {
 					final PlainWrapper pw = (PlainWrapper) val;
 					pw.closeMe();
 				}
@@ -584,14 +579,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		}
 
 		// now ask the solutions to close themselves
-		if (_mySolutions != null)
-		{
+		if (_mySolutions != null) {
 			Iterator it2 = _mySolutions.iterator();
-			while (it2.hasNext())
-			{
+			while (it2.hasNext()) {
 				final Object val = it2.next();
-				if (val instanceof PlainWrapper)
-				{
+				if (val instanceof PlainWrapper) {
 					final PlainWrapper pw = (PlainWrapper) val;
 					pw.closeMe();
 				}
@@ -625,8 +617,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theFix
 	 *          the Fix to be added
 	 */
-	public final void addFix(final FixWrapper theFix)
-	{
+	public final void addFix(final FixWrapper theFix) {
 		// add fix to the track
 		_thePositions.add(theFix);
 
@@ -643,10 +634,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theContact
 	 *          the contact to add
 	 */
-	private void addContact(final ContactWrapper theContact)
-	{
-		if (_theContacts == null)
-		{
+	private void addContact(final ContactWrapper theContact) {
+		if (_theContacts == null) {
 			_theContacts = new java.util.Vector<ContactWrapper>(0, 1);
 		}
 
@@ -661,8 +650,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theTrack
 	 *          the track data we are handling
 	 */
-	public final void setTrack(final Track theTrack)
-	{
+	public final void setTrack(final Track theTrack) {
 		_theTrack = theTrack;
 	}
 
@@ -672,10 +660,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param dest
 	 *          the destination
 	 */
-	public final void paint(final CanvasType dest)
-	{
-		if (getVisible())
-		{
+	public final void paint(final CanvasType dest) {
+		if (getVisible()) {
 
 			java.awt.Point lastP = null;
 
@@ -701,19 +687,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			// let the fixes draw themselves in
 			// ///////////////////////////////////////////
 			final Enumeration fixWrappers = _thePositions.elements();
-			while (fixWrappers.hasMoreElements())
-			{
+			while (fixWrappers.hasMoreElements()) {
 				final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
 
 				// is this fix visible
-				if (!fw.getVisible())
-				{
+				if (!fw.getVisible()) {
 					// this fix isn't visible. forget the last position, so when
 					// we do get a visible point, it isn't connected to the previous...
 					lastP = null;
 				}
-				else
-				{
+				else {
 					// ok, so we have plotted something
 					plotted_anything = true;
 
@@ -728,26 +711,21 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 					// so, we're looking at the first data point. Do
 					// we want to use this to locate the track name?
-					if (_LabelAtStart)
-					{
+					if (_LabelAtStart) {
 						// or have we already sorted out the location
-						if (!locatedTrack)
-						{
+						if (!locatedTrack) {
 							locatedTrack = true;
 							_theLabel.setLocation(new WorldLocation(lastLocation));
 						}
 					}
 
 					// are we
-					if (_linkPositions)
-					{
-						if (lastP == null)
-						{
+					if (_linkPositions) {
+						if (lastP == null) {
 							// don't bother doing anything really
 							lastP = new Point();
 						}
-						else
-						{
+						else {
 							dest.drawLine(lastP.x, lastP.y, thisP.x, thisP.y);
 						}
 
@@ -761,8 +739,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 					}
 
-					if (_showPositions)
-					{
+					if (_showPositions) {
 						fw.paintMe(dest);
 					}
 				}
@@ -770,33 +747,27 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			}
 
 			// are we trying to put the label at the end of the track?
-			if (!_LabelAtStart)
-			{
+			if (!_LabelAtStart) {
 				// check that we have found at least one location to plot.
 				if (lastLocation != null)
 					_theLabel.setLocation(new WorldLocation(lastLocation));
 			}
 
 			// and draw the track label
-			if (_theLabel.getVisible())
-			{
+			if (_theLabel.getVisible()) {
 
 				// still, we only plot the track label if we have plotted any points
-				if (plotted_anything)
-				{
+				if (plotted_anything) {
 
 					// check that we have found a location for the lable
-					if (_theLabel.getLocation() != null)
-					{
+					if (_theLabel.getLocation() != null) {
 
 						// check that we have set the name for the label
-						if (_theLabel.getString() == null)
-						{
+						if (_theLabel.getString() == null) {
 							_theLabel.setString(getName());
 						}
 
-						if (_theLabel.getColor() == null)
-						{
+						if (_theLabel.getColor() == null) {
 							_theLabel.setColor(getColor());
 						}
 
@@ -810,11 +781,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			// /////////////////////////////////////////////
 			// now plot the solutions
 			// /////////////////////////////////////////////
-			if (_mySolutions != null)
-			{
+			if (_mySolutions != null) {
 				final Enumeration iter = _mySolutions.elements();
-				while (iter.hasMoreElements())
-				{
+				while (iter.hasMoreElements()) {
 					final TMAWrapper sw = (TMAWrapper) iter.nextElement();
 					sw.paint(dest);
 
@@ -824,11 +793,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			// /////////////////////////////////////////////
 			// lastly plot the sensors
 			// /////////////////////////////////////////////
-			if (_mySensors != null)
-			{
+			if (_mySensors != null) {
 				final Enumeration iter = _mySensors.elements();
-				while (iter.hasMoreElements())
-				{
+				while (iter.hasMoreElements()) {
 					final SensorWrapper sw = (SensorWrapper) iter.nextElement();
 					sw.paint(dest);
 
@@ -843,8 +810,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return get the outer bounds of the area
 	 */
-	public final WorldArea getBounds()
-	{
+	public final WorldArea getBounds() {
 		// we no longer just return the bounds of the track, because a portion
 		// of the track may have been made invisible.
 
@@ -852,29 +818,23 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		// of the visible area
 		WorldArea res = null;
 
-		if (!getVisible())
-		{
+		if (!getVisible()) {
 			// hey, we're invisible, return null
 		}
-		else
-		{
+		else {
 			final Enumeration it = this._thePositions.elements();
-			while (it.hasMoreElements())
-			{
+			while (it.hasMoreElements()) {
 				final FixWrapper fw = (FixWrapper) it.nextElement();
 
 				// is this point visible?
-				if (fw.getVisible())
-				{
+				if (fw.getVisible()) {
 
 					// has our data been initialised?
-					if (res == null)
-					{
+					if (res == null) {
 						// no, initialise it
 						res = new WorldArea(fw.getLocation(), fw.getLocation());
 					}
-					else
-					{
+					else {
 						// yes, extend to include the new area
 						res.extend(fw.getLocation());
 					}
@@ -882,15 +842,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			}
 
 			// also extend to include our sensor data
-			if (_mySensors != null)
-			{
+			if (_mySensors != null) {
 				final Enumeration iter = _mySensors.elements();
-				while (iter.hasMoreElements())
-				{
+				while (iter.hasMoreElements()) {
 					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
 					WorldArea theseBounds = sw.getBounds();
-					if (theseBounds != null)
-					{
+					if (theseBounds != null) {
 						if (res == null)
 							res = new WorldArea(theseBounds);
 						else
@@ -900,15 +857,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			} // whether we have any sensors
 
 			// and our solution data
-			if (_mySolutions != null)
-			{
+			if (_mySolutions != null) {
 				final Enumeration iter = _mySolutions.elements();
-				while (iter.hasMoreElements())
-				{
+				while (iter.hasMoreElements()) {
 					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
 					WorldArea theseBounds = sw.getBounds();
-					if (theseBounds != null)
-					{
+					if (theseBounds != null) {
 						if (res == null)
 							res = new WorldArea(theseBounds);
 						else
@@ -930,8 +884,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the DTG
 	 */
-	public final HiResDate getStartDTG()
-	{
+	public final HiResDate getStartDTG() {
 		return _theTrack.getStartDTG();
 	}
 
@@ -940,16 +893,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the DTG
 	 */
-	public final HiResDate getEndDTG()
-	{
+	public final HiResDate getEndDTG() {
 		return _theTrack.getEndDTG();
 	}
 
 	/**
 	 * get the list of sensors for this track
 	 */
-	public final Enumeration getSensors()
-	{
+	public final Enumeration getSensors() {
 		Enumeration res = null;
 
 		if (_mySensors != null)
@@ -961,8 +912,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	/**
 	 * get the list of sensors for this track
 	 */
-	public final Enumeration getSolutions()
-	{
+	public final Enumeration getSolutions() {
 		Enumeration res = null;
 
 		if (_mySolutions != null)
@@ -980,59 +930,50 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param end
 	 *          the end dtg of the period
 	 */
-	public final void filterListTo(final HiResDate start, final HiResDate end)
-	{
+	public final void filterListTo(final HiResDate start, final HiResDate end) {
 		final Enumeration fixWrappers = _thePositions.elements();
-		while (fixWrappers.hasMoreElements())
-		{
+		while (fixWrappers.hasMoreElements()) {
 			final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
 			final HiResDate dtg = fw.getTime();
-			if ((dtg.greaterThanOrEqualTo(start)) && (dtg.lessThanOrEqualTo(end)))
-			{
+			if ((dtg.greaterThanOrEqualTo(start)) && (dtg.lessThanOrEqualTo(end))) {
 				fw.setVisible(true);
 			}
-			else
-			{
+			else {
 				fw.setVisible(false);
 			}
 		}
 
 		// now do the same for our sensor data
-		if (_mySensors != null)
-		{
+		if (_mySensors != null) {
 			final Enumeration iter = _mySensors.elements();
-			while (iter.hasMoreElements())
-			{
+			while (iter.hasMoreElements()) {
 				final WatchableList sw = (WatchableList) iter.nextElement();
 				sw.filterListTo(start, end);
 			} // through the sensors
 		} // whether we have any sensors
 
 		// and our solution data
-		if (_mySolutions != null)
-		{
+		if (_mySolutions != null) {
 			final Enumeration iter = _mySolutions.elements();
-			while (iter.hasMoreElements())
-			{
+			while (iter.hasMoreElements()) {
 				final WatchableList sw = (WatchableList) iter.nextElement();
 				sw.filterListTo(start, end);
 			} // through the sensors
 		} // whether we have any sensors
 
 		// do we have any property listeners?
-		if (getSupport() != null)
-		{
+		if (getSupport() != null) {
 			final Debrief.GUI.Tote.StepControl.somePeriod newPeriod = new Debrief.GUI.Tote.StepControl.somePeriod(
-					start, end);
-			getSupport().firePropertyChange(WatchableList.FILTERED_PROPERTY, null, newPeriod);
+			    start, end);
+			getSupport().firePropertyChange(WatchableList.FILTERED_PROPERTY, null,
+			    newPeriod);
 		}
 	}
 
 	/**
 	 * return the symbol to be used for plotting this track in snail mode
 	 */
-	public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape()
-	{
+	public final MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape() {
 		return _theSnailShape;
 	}
 
@@ -1043,8 +984,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 *          the time of interest
 	 * @return the nearest fix
 	 */
-	public final Watchable[] getNearestTo(final HiResDate srchDTG)
-	{
+	public final Watchable[] getNearestTo(final HiResDate srchDTG) {
 		/**
 		 * we need to end up with a watchable, not a fix, so we need to work our way
 		 * through the fixes
@@ -1056,36 +996,32 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			return new Debrief.Tools.Tote.Watchable[] {};
 
 		// special case - if we've been asked for an invalid time value
-		if (srchDTG == TimePeriod.INVALID_DATE)
-		{
+		if (srchDTG == TimePeriod.INVALID_DATE) {
 			// just return our first location
-			return new Debrief.Tools.Tote.Watchable[] { (Watchable) _thePositions.first() };
+			return new Debrief.Tools.Tote.Watchable[] { (Watchable) _thePositions
+			    .first() };
 		}
 
 		// see if this is the DTG we have just requestsed
-		if ((srchDTG.equals(lastDTG)) && (lastFix != null))
-		{
+		if ((srchDTG.equals(lastDTG)) && (lastFix != null)) {
 			res = lastFix;
 		}
-		else
-		{
+		else {
 			// see if this DTG is inside our data range
 			// in which case we will just return null
 			final FixWrapper theFirst = (FixWrapper) _thePositions.first();
 			final FixWrapper theLast = (FixWrapper) _thePositions.last();
 
 			if ((srchDTG.greaterThanOrEqualTo(theFirst.getTime()))
-					&& (srchDTG.lessThanOrEqualTo(theLast.getTime())))
-			{
+			    && (srchDTG.lessThanOrEqualTo(theLast.getTime()))) {
 				// yes it's inside our data range, find the first fix
 				// after the indicated point
 
 				// right, increment the time, since we want to allow matching points
-		//		HiResDate DTG = new HiResDate(0, srchDTG.getMicros() + 1);
+				// HiResDate DTG = new HiResDate(0, srchDTG.getMicros() + 1);
 
 				// see if we have to create our local temporary fix
-				if (nearestFix == null)
-				{
+				if (nearestFix == null) {
 					nearestFix = new FixWrapper(new Fix(srchDTG, _zeroLocation, 0.0, 0.0));
 				}
 				else
@@ -1099,21 +1035,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 				SortedSet set = _thePositions.tailSet(nearestFix);
 
 				// see if the requested DTG was inside the range of the data
-				if (!set.isEmpty())
-				{
+				if (!set.isEmpty()) {
 					res = (FixWrapper) set.first();
 
 					// is this one visible?
-					if (!res.getVisible())
-					{
+					if (!res.getVisible()) {
 						// right, the one we found isn't visible. duplicate the set, so that
 						// we can remove items
 						// without affecting the parent
 						set = new TreeSet(set);
 
 						// ok, start looping back until we find one
-						while ((!res.getVisible()) && (set.size() > 0))
-						{
+						while ((!res.getVisible()) && (set.size() > 0)) {
 
 							// the first one wasn't, remove it
 							set.remove(res);
@@ -1128,15 +1061,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 				// meant
 				// to be interpolating?
 				if (res != null)
-					if (getInterpolatePoints())
-					{
+					if (getInterpolatePoints()) {
 						// right - just check that we aren't actually on the correct time
 						// point.
 						// HEY, USE THE ORIGINAL SEARCH TIME, NOT THE INCREMENTED ONE,
 						// SINCE WE DON'T WANT TO COMPARE AGAINST A MODIFIED TIME
 
-						if (!res.getTime().equals(srchDTG))
-						{
+						if (!res.getTime().equals(srchDTG)) {
 
 							// right, we haven't found an actual data point. Better calculate
 							// one
@@ -1148,14 +1079,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 							FixWrapper previous = null;
 
-							if (!set.isEmpty())
-							{
+							if (!set.isEmpty()) {
 								previous = (FixWrapper) otherSet.last();
 							}
 
 							// did it work?
-							if (previous != null)
-							{
+							if (previous != null) {
 								// cool, sort out the interpolated point USING THE ORIGINAL
 								// SEARCH TIME
 								res = getInterpolatedFix(previous, res, srchDTG);
@@ -1187,8 +1116,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @return and interpolated point
 	 */
 	private final FixWrapper getInterpolatedFix(final FixWrapper previous,
-			final FixWrapper next, HiResDate requestedDTG)
-	{
+	    final FixWrapper next, HiResDate requestedDTG) {
 		FixWrapper res = null;
 
 		// do we have a start point
@@ -1200,8 +1128,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			res = previous;
 
 		// did we find it?
-		if (res == null)
-		{
+		if (res == null) {
 			res = FixWrapper.interpolateFix(previous, next, requestedDTG);
 		}
 
@@ -1218,64 +1145,53 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 *          end DTG
 	 * @return series of fixes
 	 */
-	public final Collection getItemsBetween(final HiResDate start, final HiResDate end)
-	{
+	public final Collection getItemsBetween(final HiResDate start,
+	    final HiResDate end) {
 		//
 		SortedSet set = null;
 
 		// does our track contain any data at all
-		if (_theTrack.hasFixes())
-		{
+		if (_theTrack.hasFixes()) {
 
 			// see if we have _any_ points in range
-			if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
-			{
+			if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start))) {
 				// don't bother with it.
 			}
-			else
-			{
+			else {
 
 				// SPECIAL CASE! If we've been asked to show interpolated data points,
 				// then
 				// we should produce a series of items between the indicated times. How
 				// about 1 minute resolution?
-				if (getInterpolatePoints())
-				{
+				if (getInterpolatePoints()) {
 					long ourInterval = 1000 * 60; // one minute
 					set = new TreeSet();
-					for (long newTime = start.getDate().getTime(); newTime < end.getDate()
-							.getTime(); newTime += ourInterval)
-					{
+					for (long newTime = start.getDate().getTime(); newTime < end
+					    .getDate().getTime(); newTime += ourInterval) {
 						HiResDate newD = new HiResDate(newTime);
 						Watchable[] nearestOnes = getNearestTo(newD);
-						if (nearestOnes.length > 0)
-						{
+						if (nearestOnes.length > 0) {
 							FixWrapper nearest = (FixWrapper) nearestOnes[0];
 							set.add(nearest);
 						}
 					}
 				}
-				else
-				{
+				else {
 					// bugger that - get the real data
 
 					// have a go..
-					if (starter == null)
-					{
+					if (starter == null) {
 						starter = new FixWrapper(new Fix((start), _zeroLocation, 0.0, 0.0));
 					}
-					else
-					{
+					else {
 						starter.getFix().setTime(new HiResDate(0, start.getMicros() - 1));
 					}
 
-					if (finisher == null)
-					{
-						finisher = new FixWrapper(new Fix(new HiResDate(0, end.getMicros() + 1),
-								_zeroLocation, 0.0, 0.0));
+					if (finisher == null) {
+						finisher = new FixWrapper(new Fix(new HiResDate(0,
+						    end.getMicros() + 1), _zeroLocation, 0.0, 0.0));
 					}
-					else
-					{
+					else {
 						finisher.getFix().setTime(new HiResDate(0, end.getMicros() + 1));
 					}
 
@@ -1303,68 +1219,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 *          end DTG
 	 * @return series of fixes
 	 */
-	public final Collection getUnfilteredItems(final HiResDate start, final HiResDate end)
-	{
+	public final Collection getUnfilteredItems(final HiResDate start,
+	    final HiResDate end) {
 
 		// if we have an invalid end point, just return the full track
-		if (end == TimePeriod.INVALID_DATE)
-		{
+		if (end == TimePeriod.INVALID_DATE) {
 			return _thePositions.getData();
 		}
-
-		// see if we have _any_ points in range
-		if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
-			return null;
-
-		if (this.getVisible() == false)
-			return null;
-
-		// get ready for the output
-		final Vector <PlainWrapper> res = new Vector<PlainWrapper>(0, 1);
-
-		// put the data into a period
-		final TimePeriod thePeriod = new TimePeriod.BaseTimePeriod(start, end);
-
-		// step through our fixes
-		final Enumeration iter = _thePositions.elements();
-		while (iter.hasMoreElements())
-		{
-			final FixWrapper fw = (FixWrapper) iter.nextElement();
-			if (fw.getVisible())
-			{
-				// is it visible?
-				if (thePeriod.contains(fw.getTime()))
-				{
-					res.add(fw);
-				}
-			}
-		}
-
-		return res;
-	}
-
-	/**
-	 * quick accessor for how many fixes we have
-	 * 
-	 * @return
-	 */
-	public int numFixes()
-	{
-		return _thePositions.size();
-	}
-
-	/**
-	 * get the set of fixes contained within this time period
-	 * 
-	 * @param start
-	 *          start DTG
-	 * @param end
-	 *          end DTG
-	 * @return series of fixes
-	 */
-	public final Collection getVisibleItemsBetween(final HiResDate start,
-			final HiResDate end)
-	{
 
 		// see if we have _any_ points in range
 		if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
@@ -1381,14 +1242,60 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 		// step through our fixes
 		final Enumeration iter = _thePositions.elements();
-		while (iter.hasMoreElements())
-		{
+		while (iter.hasMoreElements()) {
 			final FixWrapper fw = (FixWrapper) iter.nextElement();
-			if (fw.getVisible() && (fw.getSymbolShowing() || fw.getLabelShowing()))
-			{
+			if (fw.getVisible()) {
 				// is it visible?
-				if (thePeriod.contains(fw.getTime()))
-				{
+				if (thePeriod.contains(fw.getTime())) {
+					res.add(fw);
+				}
+			}
+		}
+
+		return res;
+	}
+
+	/**
+	 * quick accessor for how many fixes we have
+	 * 
+	 * @return
+	 */
+	public int numFixes() {
+		return _thePositions.size();
+	}
+
+	/**
+	 * get the set of fixes contained within this time period
+	 * 
+	 * @param start
+	 *          start DTG
+	 * @param end
+	 *          end DTG
+	 * @return series of fixes
+	 */
+	public final Collection getVisibleItemsBetween(final HiResDate start,
+	    final HiResDate end) {
+
+		// see if we have _any_ points in range
+		if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
+			return null;
+
+		if (this.getVisible() == false)
+			return null;
+
+		// get ready for the output
+		final Vector<PlainWrapper> res = new Vector<PlainWrapper>(0, 1);
+
+		// put the data into a period
+		final TimePeriod thePeriod = new TimePeriod.BaseTimePeriod(start, end);
+
+		// step through our fixes
+		final Enumeration iter = _thePositions.elements();
+		while (iter.hasMoreElements()) {
+			final FixWrapper fw = (FixWrapper) iter.nextElement();
+			if (fw.getVisible() && (fw.getSymbolShowing() || fw.getLabelShowing())) {
+				// is it visible?
+				if (thePeriod.contains(fw.getTime())) {
 					// hey, it's valid - continue
 					res.add(fw);
 				}
@@ -1402,8 +1309,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the Track object we represent
 	 */
-	public final Track getTrack()
-	{
+	public final Track getTrack() {
 		return _theTrack;
 	}
 
@@ -1416,8 +1322,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the name
 	 */
-	public final String getName()
-	{
+	public final String getName() {
 		return _theTrack.getName();
 	}
 
@@ -1427,8 +1332,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theName
 	 *          the name as a String
 	 */
-	public final void setName(final String theName)
-	{
+	public final void setName(final String theName) {
 		_theTrack.setName(theName);
 		_theLabel.setString(theName);
 	}
@@ -1439,8 +1343,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theCol
 	 *          the colour
 	 */
-	public final void setColor(final Color theCol)
-	{
+	public final void setColor(final Color theCol) {
 		// do the parent
 		super.setColor(theCol);
 
@@ -1457,8 +1360,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theCol
 	 *          the colour to use
 	 */
-	public final void setTrackColor(final Color theCol)
-	{
+	public final void setTrackColor(final Color theCol) {
 		setColor(theCol);
 	}
 
@@ -1467,8 +1369,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the colour
 	 */
-	public final Color getTrackColor()
-	{
+	public final Color getTrackColor() {
 		return getColor();
 	}
 
@@ -1477,8 +1378,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return yes/no
 	 */
-	public final boolean getPositionsLinked()
-	{
+	public final boolean getPositionsLinked() {
 		return _linkPositions;
 	}
 
@@ -1488,8 +1388,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param val
 	 *          yes/no
 	 */
-	public final void setPositionsLinked(final boolean val)
-	{
+	public final void setPositionsLinked(final boolean val) {
 		_linkPositions = val;
 	}
 
@@ -1499,8 +1398,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return
 	 */
-	public final Enumeration getPositions()
-	{
+	public final Enumeration getPositions() {
 		Enumeration res = null;
 		if (_thePositions != null)
 			res = _thePositions.elements();
@@ -1514,8 +1412,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param font
 	 *          the font to use for the label
 	 */
-	public final void setTrackFont(final java.awt.Font font)
-	{
+	public final void setTrackFont(final java.awt.Font font) {
 		_theLabel.setFont(font);
 	}
 
@@ -1524,8 +1421,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the font to use for the label
 	 */
-	public final java.awt.Font getTrackFont()
-	{
+	public final java.awt.Font getTrackFont() {
 		return _theLabel.getFont();
 	}
 
@@ -1534,36 +1430,30 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return
 	 */
-	public int getLineThickness()
-	{
+	public int getLineThickness() {
 		return _lineWidth;
 	}
 
 	/**
 	 * the line thickness (convenience wrapper around width)
 	 */
-	public void setLineThickness(final int val)
-	{
+	public void setLineThickness(final int val) {
 		_lineWidth = val;
 	}
 
 	/**
 	 * get the type of this symbol
 	 */
-	public final String getSymbolType()
-	{
+	public final String getSymbolType() {
 		return _theSnailShape.getType();
 	}
 
-	public final void setSymbolType(final String val)
-	{
+	public final void setSymbolType(final String val) {
 		// is this the type of our symbol?
-		if (val.equals(_theSnailShape.getType()))
-		{
+		if (val.equals(_theSnailShape.getType())) {
 			// don't bother we're using it already
 		}
-		else
-		{
+		else {
 			// remember the size of the symbol
 			final double scale = _theSnailShape.getScaleVal();
 			// replace our symbol with this new one
@@ -1580,8 +1470,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return yes/no
 	 */
-	public final boolean getNameVisible()
-	{
+	public final boolean getNameVisible() {
 		return _theLabel.getVisible();
 	}
 
@@ -1591,8 +1480,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param val
 	 *          yes/no
 	 */
-	public final void setNameVisible(final boolean val)
-	{
+	public final void setNameVisible(final boolean val) {
 		_theLabel.setVisible(val);
 	}
 
@@ -1601,8 +1489,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return yes/no to indicate <I>At Start</I>
 	 */
-	public final boolean getNameAtStart()
-	{
+	public final boolean getNameAtStart() {
 		return _LabelAtStart;
 	}
 
@@ -1612,13 +1499,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param val
 	 *          yes no for <I>show label at start</I>
 	 */
-	public final void setNameAtStart(final boolean val)
-	{
+	public final void setNameAtStart(final boolean val) {
 		_LabelAtStart = val;
 	}
 
-	public boolean hasOrderedChildren()
-	{
+	public boolean hasOrderedChildren() {
 		return false;
 	}
 
@@ -1627,8 +1512,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the relative location
 	 */
-	public final Integer getNameLocation()
-	{
+	public final Integer getNameLocation() {
 		return _theLabel.getRelativeLocation();
 	}
 
@@ -1638,8 +1522,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param val
 	 *          the relative location
 	 */
-	public final void setNameLocation(final Integer val)
-	{
+	public final void setNameLocation(final Integer val) {
 		_theLabel.setRelativeLocation(val);
 	}
 
@@ -1649,8 +1532,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return yes/no
 	 */
-	public final boolean getPositionsVisible()
-	{
+	public final boolean getPositionsVisible() {
 		return _showPositions;
 	}
 
@@ -1660,8 +1542,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param val
 	 *          yes/no
 	 */
-	public final void setPositionsVisible(final boolean val)
-	{
+	public final void setPositionsVisible(final boolean val) {
 		_showPositions = val;
 	}
 
@@ -1670,8 +1551,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the track name, as a string
 	 */
-	public final String toString()
-	{
+	public final String toString() {
 		return "Track:" + getName();
 	}
 
@@ -1682,13 +1562,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 *          the other location
 	 * @return the range
 	 */
-	public final double rangeFrom(final WorldLocation other)
-	{
+	public final double rangeFrom(final WorldLocation other) {
 		double nearest = -1;
 
 		// do we have a track?
-		if (_theTrack != null)
-		{
+		if (_theTrack != null) {
 			// find the nearest point on the track
 			nearest = _theTrack.getDataArea().rangeFrom(other);
 		}
@@ -1701,8 +1579,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the details
 	 */
-	public final Editable.EditorType getInfo()
-	{
+	public final Editable.EditorType getInfo() {
 		if (_myEditor == null)
 			_myEditor = new trackInfo(this);
 
@@ -1714,8 +1591,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return yes/no
 	 */
-	public final boolean hasEditor()
-	{
+	public final boolean hasEditor() {
 		return true;
 	}
 
@@ -1727,8 +1603,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * interface defining a boolean operation which is applied to all fixes in a
 	 * track
 	 */
-	protected interface FixSetter
-	{
+	protected interface FixSetter {
 		/**
 		 * operation to apply to a fix
 		 * 
@@ -1746,14 +1621,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theVal
 	 *          frequency to use
 	 */
-	public final void setLabelFrequency(final HiResDate theVal)
-	{
+	public final void setLabelFrequency(final HiResDate theVal) {
 		this._lastLabelFrequency = theVal;
 
-		final FixSetter setLabel = new FixSetter()
-		{
-			public void execute(final FixWrapper fix, final boolean val)
-			{
+		final FixSetter setLabel = new FixSetter() {
+			public void execute(final FixWrapper fix, final boolean val) {
 				fix.setLabelShowing(val);
 			}
 		};
@@ -1765,8 +1637,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return frequency to use
 	 */
-	public final HiResDate getLabelFrequency()
-	{
+	public final HiResDate getLabelFrequency() {
 		return this._lastLabelFrequency;
 	}
 
@@ -1776,21 +1647,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param theVal
 	 *          frequency in seconds
 	 */
-	public final void setSymbolFrequency(final HiResDate theVal)
-	{
+	public final void setSymbolFrequency(final HiResDate theVal) {
 		this._lastSymbolFrequency = theVal;
 
 		// set the "showPositions" parameter, as long as we are
 		// not setting the symbols off
-		if (theVal.getMicros() != 0.0)
-		{
+		if (theVal.getMicros() != 0.0) {
 			this.setPositionsVisible(true);
 		}
 
-		final FixSetter setSymbols = new FixSetter()
-		{
-			public void execute(final FixWrapper fix, final boolean val)
-			{
+		final FixSetter setSymbols = new FixSetter() {
+			public void execute(final FixWrapper fix, final boolean val) {
 				fix.setSymbolShowing(val);
 			}
 		};
@@ -1803,56 +1670,47 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return frequency in seconds
 	 */
-	public final HiResDate getSymbolFrequency()
-	{
+	public final HiResDate getSymbolFrequency() {
 		return _lastSymbolFrequency;
 	}
 
 	/**
 	 * pass through the track, resetting the labels back to their original DTG
 	 */
-	public void resetLabels()
-	{
+	public void resetLabels() {
 		FormatTracks.formatTrack(this);
 	}
 
 	/**
 	 * the setter function which passes through the track
 	 */
-	private void setFixes(final FixSetter setter, final HiResDate theVal)
-	{
+	private void setFixes(final FixSetter setter, final HiResDate theVal) {
 		final long freq = theVal.getMicros();
 
 		// briefly check if we are revealing/hiding all times (ie if freq is 1 or 0)
-		if (freq == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
-		{
+		if (freq == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY) {
 			// show all of the labels
 			final Enumeration iter = _thePositions.elements();
-			while (iter.hasMoreElements())
-			{
+			while (iter.hasMoreElements()) {
 				final FixWrapper fw = (FixWrapper) iter.nextElement();
 				setter.execute(fw, true);
 			}
 		}
-		else
-		{
+		else {
 			// no, we're not just blindly doing all of them. do them at the correct
 			// frequency
 
 			// hide all of the labels/symbols first
 			final Enumeration enumA = _thePositions.elements();
-			while (enumA.hasMoreElements())
-			{
+			while (enumA.hasMoreElements()) {
 				final FixWrapper fw = (FixWrapper) enumA.nextElement();
 				setter.execute(fw, false);
 			}
 
-			if (freq == 0)
-			{
+			if (freq == 0) {
 				// we can ignore this, since we have just hidden all of the points
 			}
-			else
-			{
+			else {
 
 				// pass through the track setting the values
 
@@ -1862,38 +1720,33 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 				// first check that there is a valid time period between start time
 				// and end time
-				if (start_time + freq < end_time)
-				{
+				if (start_time + freq < end_time) {
 					long num = start_time / freq;
 
 					// we need to add one to the quotient if it has rounded down
-					if (start_time % freq == 0)
-					{
+					if (start_time % freq == 0) {
 						// start is at our freq, so we don't need to increment it
 					}
-					else
-					{
+					else {
 						num++;
 					}
 
 					// calculate new start time
 					start_time = num * freq;
 				}
-				else
-				{
+				else {
 					// there is not one of our 'intervals' between the start and the end,
 					// so use the start time
 				}
 
-				while (start_time <= end_time)
-				{
+				while (start_time <= end_time) {
 					// right, increment the start time by one, because we were getting the
 					// fix immediately before the requested time
 					HiResDate thisDTG = new HiResDate(0, start_time);
-					final Debrief.Tools.Tote.Watchable[] list = this.getNearestTo(thisDTG);
+					final Debrief.Tools.Tote.Watchable[] list = this
+					    .getNearestTo(thisDTG);
 					// check we found some
-					if (list.length > 0)
-					{
+					if (list.length > 0) {
 						final FixWrapper fw = (FixWrapper) list[0];
 						setter.execute(fw, true);
 					}
@@ -1914,11 +1767,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 *          end DTG
 	 * @return yes/no
 	 */
-	public final boolean visibleBetween(final HiResDate start, final HiResDate end)
-	{
+	public final boolean visibleBetween(final HiResDate start, final HiResDate end) {
 		boolean visible = false;
-		if (getStartDTG().lessThan(end) && (getEndDTG().greaterThan(start)))
-		{
+		if (getStartDTG().lessThan(end) && (getEndDTG().greaterThan(start))) {
 			visible = true;
 		}
 
@@ -1936,11 +1787,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param other
 	 *          the layer to add to ourselves
 	 */
-	public final void append(final Layer other)
-	{
+	public final void append(final Layer other) {
 		final java.util.Enumeration iter = other.elements();
-		while (iter.hasMoreElements())
-		{
+		while (iter.hasMoreElements()) {
 			add((Plottable) iter.nextElement());
 		}
 	}
@@ -1951,28 +1800,23 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param point
 	 *          the point to add
 	 */
-	public final void add(final MWC.GUI.Editable point)
-	{
+	public final void add(final MWC.GUI.Editable point) {
 		boolean done = false;
 		// see what type of object this is
-		if (point instanceof FixWrapper)
-		{
+		if (point instanceof FixWrapper) {
 			final FixWrapper fw = (FixWrapper) point;
 			fw.setTrackWrapper(this);
 			addFix(fw);
 			done = true;
 		}
-		else if (point instanceof ContactWrapper)
-		{
+		else if (point instanceof ContactWrapper) {
 			addContact((ContactWrapper) point);
 			done = true;
 		}
 		// is this a sensor?
-		else if (point instanceof SensorWrapper)
-		{
+		else if (point instanceof SensorWrapper) {
 			final SensorWrapper swr = (SensorWrapper) point;
-			if (_mySensors == null)
-			{
+			if (_mySensors == null) {
 				_mySensors = new Vector<SensorWrapper>(0, 1);
 			}
 			// add to our list
@@ -1986,11 +1830,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 		}
 		// is this a TMA solution track?
-		else if (point instanceof TMAWrapper)
-		{
+		else if (point instanceof TMAWrapper) {
 			final TMAWrapper twr = (TMAWrapper) point;
-			if (_mySolutions == null)
-			{
+			if (_mySolutions == null) {
 				_mySolutions = new Vector<TMAWrapper>(0, 1);
 			}
 			// add to our list
@@ -2006,7 +1848,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 		if (!done)
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
-					"Sorry it is not possible to add:" + point.getName() + " to " + this.getName());
+			    "Sorry it is not possible to add:" + point.getName() + " to "
+			        + this.getName());
 	}
 
 	/**
@@ -2015,33 +1858,59 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * @param point
 	 *          the point to remove
 	 */
-	public final void removeElement(final Editable point)
-	{
+	public final void removeElement(final Editable point) {
 		// just see if it's a sensor which is trying to be removed
-		if (point instanceof SensorWrapper)
-		{
+		if (point instanceof SensorWrapper) {
 			_mySensors.remove(point);
 		}
-		else if (point instanceof TMAWrapper)
-		{
+		else if (point instanceof TMAWrapper) {
 			_mySolutions.remove(point);
 		}
-		else if (point instanceof SensorContactWrapper)
-		{
+		else if (point instanceof SensorContactWrapper) {
 			// ok, cycle through our sensors, try to remove this contact...
 			Iterator iter = _mySensors.iterator();
-			while(iter.hasNext())
-			{
+			while (iter.hasNext()) {
 				SensorWrapper sw = (SensorWrapper) iter.next();
 				// try to remove it from this one...
 				sw.removeElement(point);
 			}
 		}
-		else
-		{
+		else {
 			_thePositions.removeElement(point);
 		}
 
+	}
+
+	/**
+	 * return our tiered data as a single series of elements
+	 * 
+	 * @return
+	 */
+	public final java.util.Enumeration contiguousElements() {
+		final Vector res = new Vector(0, 1);
+
+		if (_mySensors != null) {
+			final Enumeration iter = _mySensors.elements();
+			while (iter.hasMoreElements()) {
+				res.add(iter.nextElement());
+			}
+		}
+
+		if (_mySolutions != null) {
+			final Enumeration iter = _mySolutions.elements();
+			while (iter.hasMoreElements()) {
+				res.add(iter.nextElement());
+			}
+		}
+
+		if (_thePositions != null) {
+			final Enumeration iter = _thePositions.elements();
+			while (iter.hasMoreElements()) {
+				res.add(iter.nextElement());
+			}
+		}
+
+		return res.elements();
 	}
 
 	/**
@@ -2049,43 +1918,35 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @return the points in this track
 	 */
-	public final java.util.Enumeration elements()
-	{
+	public final java.util.Enumeration elements() {
 		TreeSet<Object> res = null;
 
-		if (_mySensors != null)
-		{
+		if (_mySensors != null) {
 			res = new TreeSet<Object>();
 			final Enumeration iter = _mySensors.elements();
-			while (iter.hasMoreElements())
-			{
+			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
 		}
 
-		if (_mySolutions != null)
-		{
+		if (_mySolutions != null) {
 			if (res == null)
 				res = new TreeSet<Object>();
 
 			final Enumeration iter = _mySolutions.elements();
-			while (iter.hasMoreElements())
-			{
+			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
 		}
 
-		if (res == null)
-		{
+		if (res == null) {
 			res = new TreeSet<Object>();
 			final Enumeration iter = _thePositions.elements();
-			while (iter.hasMoreElements())
-			{
+			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
 		}
-		else
-		{
+		else {
 			// ok, we want to wrap our fast-data as a set of plottables
 			res.add(_thePositions);
 		}
@@ -2096,8 +1957,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	/**
 	 * export this track to REPLAY file
 	 */
-	public final void exportShape()
-	{
+	public final void exportShape() {
 		// call the method in PlainWrapper
 		this.exportThis();
 	}
@@ -2110,42 +1970,35 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	// support for dragging the track around
 	// ////////////////////////////////////////////////
 
-	public final void setDragTrack(TrackWrapper track)
-	{
+	public final void setDragTrack(TrackWrapper track) {
 		//
 	}
 
-	public final TrackWrapper getDragTrack()
-	{
+	public final TrackWrapper getDragTrack() {
 		return this;
 	}
 
-	public final boolean getInterpolatePoints()
-	{
+	public final boolean getInterpolatePoints() {
 		return _interpolatePoints;
 	}
 
-	public final void setInterpolatePoints(boolean val)
-	{
+	public final void setInterpolatePoints(boolean val) {
 		_interpolatePoints = val;
 	}
 
 	/**
 	 * move the whole of the track be the provided offset
 	 */
-	public final void shiftTrack(Enumeration theEnum, final WorldVector offset)
-	{
+	public final void shiftTrack(Enumeration theEnum, final WorldVector offset) {
 		// keep track of if the track contains something that doesn't get dragged
 		boolean handledData = false;
 
 		if (theEnum == null)
 			theEnum = elements();
 
-		while (theEnum.hasMoreElements())
-		{
+		while (theEnum.hasMoreElements()) {
 			final Object thisO = theEnum.nextElement();
-			if (thisO instanceof FixWrapper)
-			{
+			if (thisO instanceof FixWrapper) {
 				final FixWrapper fw = (FixWrapper) thisO;
 
 				WorldLocation copiedLoc = new WorldLocation(fw.getFix().getLocation());
@@ -2160,18 +2013,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 				handledData = true;
 
 			} // whether this was a fix wrapper
-			else if (thisO instanceof SensorWrapper)
-			{
+			else if (thisO instanceof SensorWrapper) {
 				final SensorWrapper sw = (SensorWrapper) thisO;
 				final Enumeration enumS = sw.elements();
-				while (enumS.hasMoreElements())
-				{
-					final SensorContactWrapper scw = (SensorContactWrapper) enumS.nextElement();
+				while (enumS.hasMoreElements()) {
+					final SensorContactWrapper scw = (SensorContactWrapper) enumS
+					    .nextElement();
 					// does this fix have it's own origin?
 					final WorldLocation sensorOrigin = scw.getOrigin(null);
 
-					if (sensorOrigin != null)
-					{
+					if (sensorOrigin != null) {
 						// create new object to contain the updated location
 						WorldLocation newSensorLocation = new WorldLocation(sensorOrigin);
 						newSensorLocation.addToMe(offset);
@@ -2185,8 +2036,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 				handledData = true;
 
 			} // whether this is a sensor wrapper
-			else if (thisO instanceof TrackWrapper.PlottableLayer)
-			{
+			else if (thisO instanceof TrackWrapper.PlottableLayer) {
 				final PlottableLayer tw = (PlottableLayer) thisO;
 				final Enumeration enumS = tw.elements();
 
@@ -2200,8 +2050,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		} // looping through this track
 
 		// ok, did we handle the data?
-		if (!handledData)
-		{
+		if (!handledData) {
 			System.err.println("TrackWrapper problem; not able to shift:" + theEnum);
 		}
 	}
@@ -2277,8 +2126,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	/**
 	 * class containing editable details of a track
 	 */
-	public final class trackInfo extends Editable.EditorType
-	{
+	public final class trackInfo extends Editable.EditorType {
 
 		/**
 		 * constructor for this editor, takes the actual track as a parameter
@@ -2286,63 +2134,64 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		 * @param data
 		 *          track being edited
 		 */
-		public trackInfo(final TrackWrapper data)
-		{
+		public trackInfo(final TrackWrapper data) {
 			super(data, data.getName(), "");
 		}
 
-		public final String getName()
-		{
+		public final String getName() {
 			return getTrack().getName();
 		}
 
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
 				final PropertyDescriptor[] res = {
-						expertProp("SymbolType", "the type of symbol plotted for this label", FORMAT),
-						legacyProp("DragTrack", "drag the track location"),
-						expertProp("LineThickness", "the width to draw this track", FORMAT),
-						expertProp("Name", "the track name"),
-						expertProp("InterpolatePoints",
-								"whether to interpolate points between known data points", SPATIAL),
-						expertProp("Color", "the track color", FORMAT),
-						expertProp("TrackFont", "the track label font", FORMAT),
-						expertProp("PositionsLinked", "link the track Positions"),
-						expertProp("NameVisible", "show the track label", VISIBILITY),
-						expertProp("PositionsVisible", "show individual Positions", VISIBILITY),
-						expertProp("NameAtStart",
-								"whether to show the track name at the start (or end)", VISIBILITY),
-						expertProp("Visible", "whether the track is visible", VISIBILITY),
-						expertLongProp("NameLocation", "relative location of track label",
-								MWC.GUI.Properties.LocationPropertyEditor.class),
-						expertLongProp("LabelFrequency", "the label frequency",
-								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("SymbolFrequency", "the symbol frequency",
-								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)
+				    expertProp("SymbolType",
+				        "the type of symbol plotted for this label", FORMAT),
+				    legacyProp("DragTrack", "drag the track location"),
+				    expertProp("LineThickness", "the width to draw this track", FORMAT),
+				    expertProp("Name", "the track name"),
+				    expertProp("InterpolatePoints",
+				        "whether to interpolate points between known data points",
+				        SPATIAL),
+				    expertProp("Color", "the track color", FORMAT),
+				    expertProp("TrackFont", "the track label font", FORMAT),
+				    expertProp("PositionsLinked", "link the track Positions"),
+				    expertProp("NameVisible", "show the track label", VISIBILITY),
+				    expertProp("PositionsVisible", "show individual Positions",
+				        VISIBILITY),
+				    expertProp("NameAtStart",
+				        "whether to show the track name at the start (or end)",
+				        VISIBILITY),
+				    expertProp("Visible", "whether the track is visible", VISIBILITY),
+				    expertLongProp("NameLocation", "relative location of track label",
+				        MWC.GUI.Properties.LocationPropertyEditor.class),
+				    expertLongProp("LabelFrequency", "the label frequency",
+				        MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+				    expertLongProp("SymbolFrequency", "the symbol frequency",
+				        MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)
 
 				};
 				res[0]
-						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
-				res[1].setPropertyEditorClass(Debrief.Tools.Reconstruction.DragTrackEditor.class);
-				res[2].setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+				    .setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
+				res[1]
+				    .setPropertyEditorClass(Debrief.Tools.Reconstruction.DragTrackEditor.class);
+				res[2]
+				    .setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
 				return res;
 			}
-			catch (IntrospectionException e)
-			{
+			catch (IntrospectionException e) {
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
 		}
 
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
+		public final MethodDescriptor[] getMethodDescriptors() {
 			// just add the reset color field first
 			final Class c = TrackWrapper.class;
 
-			final MethodDescriptor[] mds = { method(c, "exportThis", null, "Export Shape"),
-					method(c, "resetLabels", null, "Reset DTG Labels") };
+			final MethodDescriptor[] mds = {
+			    method(c, "exportThis", null, "Export Shape"),
+			    method(c, "resetLabels", null, "Reset DTG Labels") };
 
 			return mds;
 		}
@@ -2354,23 +2203,19 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	// internally
 	// outside as an Enumeration
 	// /////////////////////////////////////////////////////////////////
-	public static final class IteratorWrapper implements java.util.Enumeration
-	{
+	public static final class IteratorWrapper implements java.util.Enumeration {
 		private final Iterator _val;
 
-		public IteratorWrapper(final Iterator iterator)
-		{
+		public IteratorWrapper(final Iterator iterator) {
 			_val = iterator;
 		}
 
-		public final boolean hasMoreElements()
-		{
+		public final boolean hasMoreElements() {
 			return _val.hasNext();
 
 		}
 
-		public final Object nextElement()
-		{
+		public final Object nextElement() {
 			return _val.next();
 		}
 	}
@@ -2378,17 +2223,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
+	static public final class testMe extends junit.framework.TestCase {
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public testMe(final String val)
-		{
+		public testMe(final String val) {
 			super(val);
 		}
 
-		public final void testMyParams()
-		{
+		public final void testMyParams() {
 			TrackWrapper ed = new TrackWrapper();
 			ed.setTrack(new Track());
 			ed.setName("blank");
@@ -2397,32 +2239,31 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			ed = null;
 		}
 
-		public final void testInterpolation()
-		{
+		public final void testInterpolation() {
 			final TrackWrapper tw = new TrackWrapper();
 
 			tw.setTrack(new Track());
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000), loc_1
-					.add(new WorldVector(33, new WorldDistance(100, WorldDistance.METRES), null)),
-					10, 110));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+			    loc_1.add(new WorldVector(33, new WorldDistance(100,
+			        WorldDistance.METRES), null)), 10, 110));
 			fw1.setLabel("fw1");
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000), loc_1
-					.add(new WorldVector(33, new WorldDistance(200, WorldDistance.METRES), null)),
-					20, 120));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+			    loc_1.add(new WorldVector(33, new WorldDistance(200,
+			        WorldDistance.METRES), null)), 20, 120));
 			fw2.setLabel("fw2");
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000), loc_1
-					.add(new WorldVector(33, new WorldDistance(300, WorldDistance.METRES), null)),
-					30, 130));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+			    loc_1.add(new WorldVector(33, new WorldDistance(300,
+			        WorldDistance.METRES), null)), 30, 130));
 			fw3.setLabel("fw3");
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000), loc_1
-					.add(new WorldVector(33, new WorldDistance(400, WorldDistance.METRES), null)),
-					40, 140));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+			    loc_1.add(new WorldVector(33, new WorldDistance(400,
+			        WorldDistance.METRES), null)), 40, 140));
 			fw4.setLabel("fw4");
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000), loc_1
-					.add(new WorldVector(33, new WorldDistance(500, WorldDistance.METRES), null)),
-					50, 150));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+			    loc_1.add(new WorldVector(33, new WorldDistance(500,
+			        WorldDistance.METRES), null)), 50, 150));
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
 			tw.addFix(fw2);
@@ -2431,7 +2272,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			tw.addFix(fw5);
 
 			// check that we're not interpolating
-			assertFalse("interpolating switched off by default", tw.getInterpolatePoints());
+			assertFalse("interpolating switched off by default", tw
+			    .getInterpolatePoints());
 
 			// ok, get on with it.
 			Watchable[] list = tw.getNearestTo(new HiResDate(200, 20000));
@@ -2479,28 +2321,34 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 			// have a look at them
 			FixWrapper res = (FixWrapper) list[0];
-			WorldVector rangeError = res.getFixLocation().subtract(fw3.getFixLocation());
-			assertEquals("right answer", 0, Conversions.Degs2m(rangeError.getRange()), 0.0001);
+			WorldVector rangeError = res.getFixLocation().subtract(
+			    fw3.getFixLocation());
+			assertEquals("right answer", 0,
+			    Conversions.Degs2m(rangeError.getRange()), 0.0001);
 			// assertEquals("right speed", res.getSpeed(), fw3.getSpeed(), 0);
 			// assertEquals("right course", res.getCourse(), fw3.getCourse(), 0);
 
 		}
 
-		public final void testGettingTimes()
-		{
+		public final void testGettingTimes() {
 			final TrackWrapper tw = new TrackWrapper();
 
 			tw.setTrack(new Track());
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final WorldLocation loc_2 = new WorldLocation(1, 1, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 100), loc_1, 0, 0));
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 300), loc_2, 0, 0));
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 500), loc_2, 0, 0));
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 700), loc_2, 0, 0));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 100),
+			    loc_1, 0, 0));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 300),
+			    loc_2, 0, 0));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 500),
+			    loc_2, 0, 0));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 700),
+			    loc_2, 0, 0));
 
 			// check returning empty data
-			Collection coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(0, 40));
+			Collection coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(
+			    0, 40));
 			assertEquals("Return empty when empty", coll, null);
 
 			tw.addFix(fw1);
@@ -2570,20 +2418,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 		}
 
-		public void testGetItemsBetween_Second()
-		{
+		public void testGetItemsBetween_Second() {
 			final TrackWrapper tw = new TrackWrapper();
 
 			tw.setTrack(new Track());
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
-			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 1), loc_1, 0, 0));
-			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 2), loc_1, 0, 0));
-			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 3), loc_1, 0, 0));
-			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 4), loc_1, 0, 0));
-			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(0, 5), loc_1, 0, 0));
-			final FixWrapper fw6 = new FixWrapper(new Fix(new HiResDate(0, 6), loc_1, 0, 0));
-			final FixWrapper fw7 = new FixWrapper(new Fix(new HiResDate(0, 7), loc_1, 0, 0));
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(0, 1), loc_1,
+			    0, 0));
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(0, 2), loc_1,
+			    0, 0));
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(0, 3), loc_1,
+			    0, 0));
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(0, 4), loc_1,
+			    0, 0));
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(0, 5), loc_1,
+			    0, 0));
+			final FixWrapper fw6 = new FixWrapper(new Fix(new HiResDate(0, 6), loc_1,
+			    0, 0));
+			final FixWrapper fw7 = new FixWrapper(new Fix(new HiResDate(0, 7), loc_1,
+			    0, 0));
 			tw.addFix(fw1);
 			tw.addFix(fw2);
 			tw.addFix(fw3);
@@ -2599,7 +2453,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			fw6.setLabelShowing(true);
 			fw7.setLabelShowing(true);
 
-			Collection col = tw.getItemsBetween(new HiResDate(0, 3), new HiResDate(0, 5));
+			Collection col = tw.getItemsBetween(new HiResDate(0, 3), new HiResDate(0,
+			    5));
 			assertEquals("found correct number of items", 3, col.size());
 
 			// make the fourth item not visible
@@ -2619,8 +2474,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		}
 	}
 
-	public static void main(final String[] args)
-	{
+	public static void main(final String[] args) {
 		final testMe tm = new testMe("scrap");
 		tm.testGettingTimes();
 		tm.testGetItemsBetween_Second();
@@ -2628,25 +2482,21 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 
 	}
 
-	public void shift(WorldVector vector)
-	{
+	public void shift(WorldVector vector) {
 		this.shiftTrack(elements(), vector);
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer)
-	{
+	    LocationConstruct currentNearest, Layer parentLayer) {
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
 		// cycle through the fixes
 		Enumeration fixes = _thePositions.elements();
-		while (fixes.hasMoreElements())
-		{
+		while (fixes.hasMoreElements()) {
 			final FixWrapper thisF = (FixWrapper) fixes.nextElement();
 
-			if (thisF.getVisible())
-			{
+			if (thisF.getVisible()) {
 				// how far away is it?
 				thisDist = thisF.getLocation().rangeFrom(cursorLoc, thisDist);
 
@@ -2656,36 +2506,30 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		}
 	}
 
-	public void shift(WorldLocation feature, WorldVector vector)
-	{
+	public void shift(WorldLocation feature, WorldVector vector) {
 		feature.addToMe(vector);
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			ComponentConstruct currentNearest, Layer parentLayer)
-	{
+	    ComponentConstruct currentNearest, Layer parentLayer) {
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
 		// cycle through the fixes
 		Enumeration fixes = _thePositions.elements();
-		while (fixes.hasMoreElements())
-		{
+		while (fixes.hasMoreElements()) {
 			final FixWrapper thisF = (FixWrapper) fixes.nextElement();
 
 			// only check it if it's visible
-			if (thisF.getVisible())
-			{
+			if (thisF.getVisible()) {
 
 				// how far away is it?
 				thisDist = thisF.getLocation().rangeFrom(cursorLoc, thisDist);
 
-				WorldLocation fixLocation = new WorldLocation(thisF.getLocation())
-				{
+				WorldLocation fixLocation = new WorldLocation(thisF.getLocation()) {
 					private static final long serialVersionUID = 1L;
 
-					public void addToMe(WorldVector delta)
-					{
+					public void addToMe(WorldVector delta) {
 						super.addToMe(delta);
 						thisF.setFixLocation(this);
 					}
@@ -2703,8 +2547,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 	 * 
 	 * @author ian.mayo
 	 */
-	public class PlottableLayer extends Plottables implements Layer
-	{
+	public class PlottableLayer extends Plottables implements Layer {
 
 		/**
 		 * 
@@ -2716,61 +2559,49 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		 * 
 		 * @param thePlottable
 		 */
-		public void add(Editable thePlottable)
-		{
-			if (thePlottable instanceof FixWrapper)
-			{
+		public void add(Editable thePlottable) {
+			if (thePlottable instanceof FixWrapper) {
 				super.add(thePlottable);
 			}
-			else
-			{
+			else {
 				System.err.println("Trying to add wront");
 			}
 		}
-		
+
 		/**
 		 * get the editing information for this type
 		 */
-		public Editable.EditorType getInfo()
-		{
+		public Editable.EditorType getInfo() {
 			return new plottableLayerInfo(this);
-		}		
+		}
 
-		public void append(Layer other)
-		{
+		public void append(Layer other) {
 			// ok, pass through and add the items
 			Enumeration enumer = other.elements();
-			while (enumer.hasMoreElements())
-			{
+			while (enumer.hasMoreElements()) {
 				Plottable pl = (Plottable) enumer.nextElement();
 				add(pl);
 			}
 		}
 
-		public boolean hasOrderedChildren()
-		{
+		public boolean hasOrderedChildren() {
 			return true;
 		}
 
-		public void exportShape()
-		{
+		public void exportShape() {
 			// ignore..
 		}
 
-		public int getLineThickness()
-		{
+		public int getLineThickness() {
 			// ignore..
 			return 1;
 		}
-		
-		
-		
+
 		/**
 		 * @return
 		 */
 		@Override
-		public boolean getVisible()
-		{
+		public boolean getVisible() {
 			return getPositionsLinked();
 		}
 
@@ -2778,18 +2609,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 		 * @param visible
 		 */
 		@Override
-		public void setVisible(boolean visible)
-		{
+		public void setVisible(boolean visible) {
 			setPositionsLinked(visible);
 		}
-
-
 
 		/**
 		 * class containing editable details of a track
 		 */
-		public final class plottableLayerInfo extends Editable.EditorType
-		{
+		public final class plottableLayerInfo extends Editable.EditorType {
 
 			/**
 			 * constructor for this editor, takes the actual track as a parameter
@@ -2797,32 +2624,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements Serializ
 			 * @param data
 			 *          track being edited
 			 */
-			public plottableLayerInfo(final PlottableLayer data)
-			{
+			public plottableLayerInfo(final PlottableLayer data) {
 				super(data, data.getName(), "");
 			}
 
-			public final String getName()
-			{
+			public final String getName() {
 				return getTrack().getName();
 			}
 
-			public final PropertyDescriptor[] getPropertyDescriptors()
-			{
-				try
-				{
-					final PropertyDescriptor[] res = {
-							expertProp("Visible", "whether this layer is visible", FORMAT),
-					};
+			public final PropertyDescriptor[] getPropertyDescriptors() {
+				try {
+					final PropertyDescriptor[] res = { expertProp("Visible",
+					    "whether this layer is visible", FORMAT), };
 					return res;
 				}
-				catch (IntrospectionException e)
-				{
+				catch (IntrospectionException e) {
 					e.printStackTrace();
 					return super.getPropertyDescriptors();
 				}
 			}
-		}		
+		}
 
 	}
 

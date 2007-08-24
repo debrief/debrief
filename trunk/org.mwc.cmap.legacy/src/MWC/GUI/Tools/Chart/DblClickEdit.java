@@ -96,6 +96,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Plottable;
+import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GenericData.WorldLocation;
 
@@ -172,7 +173,15 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
       if (thisL.getVisible())
       {
         // go through this layer
-        Enumeration enumer = thisL.elements();
+        Enumeration enumer = null;
+        if(thisL instanceof Layer.ProvidesContiguousElements)
+        {
+        	Layer.ProvidesContiguousElements contig = (ProvidesContiguousElements) thisL;
+        	enumer = contig.contiguousElements();
+        }
+        else
+        	enumer = thisL.elements();
+        
         while (enumer.hasMoreElements())
         {
           Plottable p = (Plottable) enumer.nextElement();
