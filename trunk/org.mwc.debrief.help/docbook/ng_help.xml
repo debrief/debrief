@@ -21,13 +21,15 @@
 <edition>Documentation for Debrief NG</edition> 
 <pubdate>August 2007</pubdate> <abstract id="contact_details"> 
 <title>Contact details</title> 
-<para>Should you wish to learn more about
-        <application>Debrief</application> please contact one of the following:
-      </para> 
+<para>
+								Should you wish to learn more about
+								<application>Debrief</application>
+								please contact one of the following:
+						</para> 
 <formalpara> 
 <title>Debrief Project Sponsor</title> 
 <para>
-          <address>
+										<address>
             <firstname>Lt Cdr Andy Evans</firstname>
             <surname>SM OA</surname>
             <lineage>Maritime Warfare Centre</lineage>
@@ -203,8 +205,7 @@ included in the section entitled "GNU Free Documentation License".
 <para>It is now easier to create Debrief plug-ins, and applications based on Debrief. Developers no longer have to learn the full depth and breadth of Debrief prior to adding new features.  They just need to learn about the interfaces presented by Debrief, and how the Eclipse infrastructure works.  Eclipse development is documented online and in many off-the-shelf books, and it has a strong support community  </para> 
 </listitem> 
 </varlistentry> 
-</variablelist> 
-</para> 
+</variablelist> </para> 
 </formalpara> 
 <formalpara> 
 <title>Editing multiple items</title> 
@@ -424,7 +425,7 @@ The wider national/international use of
 <row id="csds"> 
 <entry> 
 <para>
-                    <inlinegraphic fileref="figures/csds12.gif" width="100" />
+                    <inlinegraphic fileref="figures/csds12.gif" width="100"/>
                   </para> </entry> 
 <entry> 
 <para>COMSUBDEVRON 12
@@ -459,7 +460,7 @@ Naval Undersea Warfare Center (NUWC)
 <row id="comsubpac"> 
 <entry> 
 <para>
-                    <inlinegraphic fileref="figures/CSP_LOGO_SM.gif" width="100" />
+                    <inlinegraphic fileref="figures/CSP_LOGO_SM.gif" width="100"/>
                   </para> </entry> 
 <entry> 
 <para>
@@ -475,7 +476,7 @@ Naval Undersea Warfare Center (NUWC)
 </row> 
 <row id="COMSEVENTHFLT"> 
 <entry> 
-<para></para> </entry> 
+<para/> </entry> 
 <entry> 
 <para>
                     <address>
@@ -761,7 +762,8 @@ Naval Undersea Warfare Center (NUWC)
 <title>Debrief&apos;s Welcome view</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/apptoolbar.png" width="100%"/> 
+<imageobject>
+<imagedata fileref="figures/apptoolbar.png" width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -775,7 +777,8 @@ Naval Undersea Warfare Center (NUWC)
 <title>Debrief&apos;s default view</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/bare_app.png"  width="100%"/> 
+<imageobject> <imagedata fileref="figures/bare_app.png"
+width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -790,7 +793,8 @@ Naval Undersea Warfare Center (NUWC)
 <screenshot> 
 <mediaobject> 
 <imageobject>
-<imagedata fileref="figures/app_with_plot.png" id="sample_plot"   width="100%"/> 
+<imagedata fileref="figures/app_with_plot.png"
+id="sample_plot" width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -1044,7 +1048,7 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
                 <listitem>
                   <para>If you now click on the Zoom out button, you will "zoom out" of the
                     <glossterm linkend="g_plt">plot</glossterm> (surprise, surprise). This button works well in conjunction with the Zoom in button, since this does not take the mouse out of "zoom in" mode -- therefore you can zoom in on areas, click zoom out a couple of times, then zoom in again, all with the minimum of mouse clicks.  The wheel-mouse may also be used to zoom out as described above in
-                    <link linkend="toggle_buttons"></link>
+                    <link linkend="toggle_buttons"/>
                   </para> 
 </listitem> 
 </varlistentry> 
@@ -1060,9 +1064,7 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
                     <link linkend="filter_time_period">Time Controller</link> - the
                     <glossterm linkend="g_plt">plot</glossterm> is resized to fit the data contained in the indicated time period (yes, you&apos;ll learn about this later in <xref linkend="filter_time_period"/>).
                   </para> 
-<para>
-
-                  </para> 
+<para/> 
 </listitem> 
 </varlistentry> 
 <varlistentry> 
@@ -1084,7 +1086,7 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/OverviewInUse.png"   width="100%"/>
+                    <imagedata fileref="figures/OverviewInUse.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -1650,7 +1652,7 @@ button which will take you to the Path editor.  The Path editor is shown below:
             <glossterm linkend="g_plot_file">Plot-File</glossterm> (
             <filename>xml</filename>).<note><para>Debrief will only let you save the new plot into one of your project folders, so you must both select a folder and a provide a filename for the new file.  Usefully, Debrief guesses that you probably want to name the plot the same as the REP file first loaded.  Hey, it's only a guess.</para> 
 </note></para> 
-<para> </para> 
+<para/> 
 <para>
             <figure float="0">
               <title>Save-file dialog</title>
@@ -1878,7 +1880,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/TimeController3.png"   width="100%"/>
+                    <imagedata fileref="figures/TimeController3.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2012,7 +2014,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
 </sect3> 
 <sect3 id="relative_mode"> 
 <title>Relative/Absolute Modes</title> 
-<para></para> 
+<para/> 
 <para>Relative Mode affects the orientation of the plot.  The plot is always oriented along the heading of the primary track, with the current primary track location placed at the centre of the plot. </para> 
 <tip> 
 <para> Relative Display Mode is particularly useful for analysing one vessel trailing another. Make the trailing vessel the primary track, and the vessel being trailed the secondary track.  As you step forward through the serial you will clearly be able to see the relative bearing of the contact as held by the trailing vessel.
@@ -2183,7 +2185,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_tracks.png"   width="100%"/>
+                    <imagedata fileref="figures/3d_tracks.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2212,7 +2214,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_tracks_with_3d.png"   width="100%"/>
+                    <imagedata fileref="figures/3d_tracks_with_3d.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2281,7 +2283,7 @@ It may be useful to remember that the Primary Track is usually assigned to the T
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/3d_view2.png"   width="100%"/>
+                    <imagedata fileref="figures/3d_view2.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -2418,7 +2420,8 @@ data is not present, a gap is inserted into the data-line.
 <title>View of time-variable plot</title> 
 <screenshot> 
 <mediaobject> 
-<imageobject> <imagedata fileref="figures/time_variable_plot.png"   width="100%"/> 
+<imageobject>
+<imagedata fileref="figures/time_variable_plot.png" width="100%"/> 
 </imageobject> 
 </mediaobject> 
 </screenshot> 
@@ -2432,7 +2435,7 @@ data is not present, a gap is inserted into the data-line.
                 <tgroup cols="3">
                   <thead>
                     <row>
-                      <entry> </entry>
+                      <entry/> 
                       <entry>Primary contains DTG</entry>
                       <entry>Primary does not contain DTG</entry>
                     </row>
@@ -2457,7 +2460,7 @@ data is not present, a gap is inserted into the data-line.
                 <tgroup cols="2">
                   <thead>
                     <row>
-                      <entry> </entry>
+                      <entry/> 
                       <entry>Calculation</entry>
                     </row>
                   </thead>
@@ -2922,7 +2925,7 @@ data is not present, a gap is inserted into the data-line.
               </title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/d3_symbols.gif"   width="100%"/>
+                  <imagedata fileref="figures/d3_symbols.gif" width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -3107,7 +3110,7 @@ different vectored databases. </para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/vpf_prefs.png"   width="100%"/>
+                    <imagedata fileref="figures/vpf_prefs.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3579,7 +3582,7 @@ different vectored databases. </para>
                   <screenshot>
                     <mediaobject>
                       <imageobject>
-                        <imagedata fileref="figures/etopo2src.jpg"   width="100%"/>
+                        <imagedata fileref="figures/etopo2src.jpg" width="100%"/>
                       </imageobject>
 
                     </mediaobject>
@@ -3689,7 +3692,7 @@ over appearance in the plot:
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/Narr_1.png"   width="100%"/>
+                    <imagedata fileref="figures/Narr_1.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4011,7 +4014,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/debrief_home.png"   width="100%"/>
+                  <imagedata fileref="figures/debrief_home.png" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4081,18 +4084,20 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 <para>This section provides guidance on maintenance of Debrief installations for users on the Maritime Warfare Centre network.</para> 
 <sect2> 
 <title>Installing Debrief</title> 
-<para>The IT Support department should be approached to conduct fresh <application>Debrief</application> installations. The most up-to-date Debrief installer is located at <filename>Nelson/TD Submarines Info/PlanetMayo/Debrief/Debrief.exe</filename>.  </para> 
+<para>The IT Support department should be approached to conduct fresh <application>Debrief</application> 
+installations. The most up-to-date Debrief installer is located at
+ <filename>//Needles/Operational Analysis/collaborative/application/debrief/InstallDebrief.exe</filename>.  </para> 
 </sect2> 
 <sect2> 
 <title>Keeping your Debrief installation up to date</title> 
-<para>The development of the Debrief application is ongoing throughout the year.  Occasionally particular users have new requirements, or bugs are found.  Normally, only users working in related areas are informed about new features or minor bugs that only occur when performing that particular type of analysis.  Where new features relate to users across MWC, or where a significant bug is fixed, e-mails are sent out to the Debrief user mailing list.</para> 
+<para>The development of the Debrief application is ongoing throughout the year.  Occasionally particular users have new requirements, or bugs are found.  Normally, only users working in related areas are informed about new features or minor bugs that only occur when performing that particular type of analysis.  Where new features relate to users across MWC, or where a significant bug is fixed, e-mails are sent out to the <link linkend="debrief_news">Debrief user mailing list</link>.</para> 
 <sidebar> 
 <formalpara> 
 <title>Debrief Users mailing list</title> 
 <para>On the MWC network mailing lists have been set up to allow e-mails to quickly be addressed to a group of users.  One such list is the <emphasis>Debrief Users</emphasis> list.  When you start using <application>Debrief</application> it is worth contacting IT Support to have your name added to the list - then you know you will be informed of any significant changes to Debrief.</para> 
 </formalpara> 
 </sidebar> 
-<para>Don't worry about always having the newest version of <application>Debrief</application>.  Most software changes only apply to a small portion of the software and don't justify the upgrade effort.  If, however, a Debrief fix applies specifically to your work, you should follow these steps to upgrade your Debrief installation:<orderedlist id="search_software_updates"><title>Searching for software updates</title><listitem><para>Select <guimenu>Help</guimenu>/<guimenu>Software Updates</guimenu>/<guimenu>Find and install</guimenu>.</para> 
+<para>Don't worry about always having the newest version of <application>Debrief</application>.  Most software changes only apply to a small portion of the software and don't justify the upgrade effort.  If, however, a Debrief fix applies specifically to your work, you should follow these steps to upgrade your Debrief installation:<orderedlist id="search_software_updates_internet"><title>Searching for software updates</title><listitem><para>Select <guimenu>Help</guimenu>/<guimenu>Software Updates</guimenu>/<guimenu>Find and install</guimenu>.</para> 
 </listitem> 
 <listitem> 
 <para>Select <guibutton>Search for updates of the currently installed features</guibutton>, then <guibutton>Next</guibutton>.</para> 
@@ -4110,7 +4115,46 @@ track name, ellipse orientation (deg from north),  maxima (yds),
 <para>You will see a list of download sites.  If there isn't one with a name you associate with MWC, select <guibutton>New Local Site...</guibutton>.  </para> 
 </listitem> 
 <listitem> 
-<para>A file dialog will open.  From it, enter <filename>Network Neighbourhood</filename>,  and navigate to <filename>Nelson/Common/TD Submarines Info/PlanetMayo/Debrief/Eclipse/Updates</filename>.  Then press <guibutton>OK</guibutton> and name the local site as <userinput>MWC Updates</userinput>.  Accept this.  Now, from the list of update sites, ensure <userinput>MWC Updates</userinput> is ticked, but not the others (since they rely on an internet connection).</para> 
+<para>A file dialog will open.  From it, enter <filename>Network Neighbourhood
+</filename>,  and navigate to 
+<filename>//Needles/Operational Analysis/collaborative/applications/Debrief/Updates</filename>.
+  Then press <guibutton>OK</guibutton> and name the local site as <userinput>MWC Updates</userinput>.  Accept this.  Now, from the list of update sites, ensure <userinput>MWC Updates</userinput> is ticked, but not the others (since they rely on an internet connection).</para> 
+</listitem> 
+<listitem> 
+<para>Now you should be able to perform the <link linkend="search_software_updates">search for software updates</link> again.</para> 
+</listitem> 
+</orderedlist></para> 
+</sect2> 
+</sect1>
+<sect1 id="debrief_on_internet"> 
+<title>Debrief across the Internet</title> 
+<para>This section provides guidance on maintenance of Debrief installations for users with world wide web (Internet) access.</para> 
+<sect2> 
+<title>Installing Debrief</title> 
+<para>Debrief can be downloaded via the downloads page at the Debrief site (<ulink url="http://sf,net/projects/debrief">http://sf.net/projects/debrief</ulink>). Be warned, because the full install contains the Etopo data set it is well over 150 Mb in size.  If you aren't able to perform such a download, or you need a formal copy for your IS/IT department please send an e-mail justification to the <link linkend="project_manager">project manager</link>, and a CD-based copy will be forwarded to you via snail mail.  </para> 
+</sect2> 
+<sect2> 
+<title>Keeping your Debrief installation up to date</title> 
+<para>The development of the Debrief application is ongoing throughout the year.  Occasionally particular users have new requirements, or bugs are found.  Normally, only users working in related areas are informed about new features or minor bugs that only occur when performing that particular type of analysis.  Where new features relate to a wide body of users , or where a significant bug is fixed, e-mails are sent out to the Debrief user mailing list.</para> 
+<para>Don't worry about always having the newest version of <application>Debrief</application>.  Most software changes only apply to a small portion of the software and don't justify the upgrade effort.  If, however, a Debrief fix applies specifically to your work, you should follow these steps to upgrade your Debrief installation:<orderedlist id="search_software_updates"><title>Searching for software updates</title><listitem><para>Select <guimenu>Help</guimenu>/<guimenu>Software Updates</guimenu>/<guimenu>Find and install</guimenu>.</para> 
+</listitem> 
+<listitem> 
+<para>Select <guibutton>Search for updates of the currently installed features</guibutton>, then <guibutton>Next</guibutton>.</para> 
+</listitem> 
+<listitem> 
+<para>Follow the instructions provided to view what updates are available, select any relevant ones (though you can't really go wrong in retrieving all of them), and install them.  Easy.</para> 
+</listitem> 
+</orderedlist></para> 
+<para>Now, Debrief may now have found any updates.  Hey, maybe there weren't any.  But maybe Debrief's not looking in the right place.  If no updates are found, follow these steps to ensure the Debrief update server is configured:<orderedlist><listitem><para>Select <guimenu>Help</guimenu>/<guimenu>Software Updates</guimenu>/<guimenu>Find and install</guimenu>.</para> 
+</listitem> 
+<listitem> 
+<para>Select <guibutton>Search for new features to install</guibutton></para> 
+</listitem> 
+<listitem> 
+<para>You will see a list of download sites.  If there isn't one with a name you associate with Debrief, select <guibutton>New Remote Site...</guibutton>.  </para> 
+</listitem> 
+<listitem> 
+<para>A file dialog will open.  In it, enter <filename>Debrief update site</filename> for the Name,  and <filename>http://debrief.sourceforge.net/eclipse/</filename> for the URL.  Now, from the list of update sites, ensure <userinput>Debrief update site</userinput> is ticked, but not the others (since they rely on an internet connection).</para> 
 </listitem> 
 <listitem> 
 <para>Now you should be able to perform the <link linkend="search_software_updates">search for software updates</link> again.</para> 
@@ -4134,7 +4178,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <screenshot>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/sf_page.png"   width="100%"/>
+                  <imagedata fileref="figures/sf_page.png" width="100%"/>
                 </imageobject>
               </mediaobject>
             </screenshot>
@@ -4186,7 +4230,7 @@ permanent file archival, full backups, and total web-based administration.
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/sf_trackers.png"   width="100%"/>
+                    <imagedata fileref="figures/sf_trackers.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4204,7 +4248,7 @@ permanent file archival, full backups, and total web-based administration.
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/sf_bugs.png"   width="100%"/>
+                    <imagedata fileref="figures/sf_bugs.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -4300,7 +4344,7 @@ permanent file archival, full backups, and total web-based administration.
 <entry> 
 <para>SAX and DOM support (through the enclosed jaxp.jar and parser.jar libraries)</para> </entry> 
 <entry> 
-<para></para> </entry> 
+<para/> </entry> 
 </row> 
 <row> 
 <entry> 
@@ -4308,7 +4352,7 @@ permanent file archival, full backups, and total web-based administration.
 <entry> 
 <para>4.2.1 (through the enclosed openmap.jar library)</para> </entry> 
 <entry> 
-<para></para> </entry> 
+<para/> </entry> 
 </row> 
 </tbody> 
 </tgroup> 
@@ -4705,16 +4749,16 @@ and symbol-type to represent that vehicle.  The Symbol style read in is used whe
 <para>V</para> </entry> 
 <entry> 
 <para>Fishing Vessel</para> </entry> 
-<entry></entry> 
-<entry></entry> 
+<entry/> 
+<entry/> 
 </row> 
 <row> 
 <entry> 
 <para>@</para> </entry> 
 <entry> 
 <para>Unknown</para> </entry> 
-<entry></entry> 
-<entry></entry> 
+<entry/> 
+<entry/> 
 </row> 
 </tbody> 
 </tgroup> 
@@ -4815,7 +4859,7 @@ course, speed, depth (m), label string
 </sect1> 
 <sect1 id="debrief_file_format"> 
 <title>Debrief File Format</title> 
-<para></para> 
+<para/> 
 <sect2> 
 <title>Introduction</title> 
 <para>
@@ -4889,7 +4933,7 @@ course, speed, depth (m), label string
               <title>XML File structure in Debrief</title>
               <mediaobject>
                 <imageobject>
-                  <imagedata fileref="figures/XMLStructure.gif"   width="100%"/>
+                  <imagedata fileref="figures/XMLStructure.gif" width="100%"/>
                 </imageobject>
               </mediaobject>
             </figure>
@@ -5094,7 +5138,7 @@ departure / d.lat = tan (course)</markup>
 </mediaobject> 
 </screenshot> 
 </figure> </para> 
-<para></para> 
+<para/> 
 <para>The contouring subroutine CONREC does not assume anything about the device that will be used to plot the contours. It instead expects a user written subroutine called VECOUT. CONREC calls VECOUT with the horizontal and vertical coordinates of the start and end coordinates of a line segment along with the contour level for that line segment. In the simplest case this is very similar the the usual LINE (x1,y1)-(x2,y2) command in BASIC. See the source code listing below. </para> 
 </sect2> 
 <sect2> 
@@ -5196,7 +5240,7 @@ departure / d.lat = tan (course)</markup>
                 <imageobject>
                   <imagedata fileref="figures/contour_6.gif"/>
                 </imageobject>
-                <caption></caption>
+                <caption/>
               </mediaobject>
             </figure>The sample contour plot itself
           </para> 
@@ -6054,9 +6098,8 @@ brg = Bearing to target from ownship (degs)
 <!-- ********************************************************************** -->
 <appendix id="app_index">
 <title>Index</title> 
-<para></para> 
-<index> 
-</index> 
+<para/> 
+<index/> 
 </appendix>
   <!-- ********************************************************************** -->
 <!-- ********************************************************************** -->
