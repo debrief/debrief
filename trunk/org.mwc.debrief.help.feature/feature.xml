@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.14">
+      version="1.0.16">
 
    <description>
-      [1.0.14] Update release date
+      [1.0.16] Update Internet update guidance
+[1.0.15] Update MWC network paths
+[1.0.14] Update release date
 [1.0.13] Include updated change logs
 [1.0.12] Correct rng/brg image, include description of user-select
 target layer
