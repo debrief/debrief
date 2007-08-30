@@ -2,11 +2,13 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.13">
+      version="1.0.14">
 
    <description>
-      [1.0.13] Include updated change logs
-[1.0.12] Correct rng/brg image, include description of user-select target layer
+      [1.0.14] Update release date
+[1.0.13] Include updated change logs
+[1.0.12] Correct rng/brg image, include description of user-select
+target layer
 [1.0.11] Amend online update location
 [1.0.10] Minor improvements to getting started cheat sheets
 [1.0.9] Updated change logs
