@@ -19,7 +19,7 @@
 </affiliation> 
 </author> 
 <edition>Documentation for Debrief NG</edition> 
-<pubdate>March 2006</pubdate> <abstract id="contact_details"> 
+<pubdate>August 2007</pubdate> <abstract id="contact_details"> 
 <title>Contact details</title> 
 <para>Should you wish to learn more about
         <application>Debrief</application> please contact one of the following:
@@ -52,7 +52,7 @@
             <state>HANTS</state>
             <country>UK</country>
             <postcode>  PO16 8YE</postcode>
-            <country>e-mail: Ian@planetmayo.com</country>
+            <country>e-mail: ian@planetmayo.com</country>
           </address>
         </para> 
 </formalpara> </abstract> 
@@ -114,7 +114,7 @@ pages to DocBook format, together with full review by SMTAC OA.
 </revision> 
 </revhistory> 
 <copyright> 
-<year>2000, 2001, 2002, 2003, 2004, 2005, 2006</year> 
+<year>2000, 2001, 2002, 2003, 2004, 2005, 2006, 2007</year> 
 <holder>Maritime Warfare Centre Ltd. Permission is granted to copy,
 distribute and/or modify this document under the terms of the GNU
 Free Documentation License, Version 1.1 or any later version
