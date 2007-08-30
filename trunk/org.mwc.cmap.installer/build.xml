@@ -10,7 +10,7 @@
 	<property name="destDir" value="${deployDir}" description="where the updated install-sets are located" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
-	<property name="advancedInstallerPath" value="d:\dev\eclipse2\contribs\advancedinstaller\" />
+	<property name="advancedInstallerPath" value="d:\dev\cmap\contribs\advancedinstaller\" />
 
 	<target name="upload_online_updaters" description="upload updated files to td submarines directory" depends="clean">
 		<copy todir="${updateUploadDir}" preservelastmodified="yes">
@@ -95,7 +95,6 @@
 		</tstamp>
 		<property name="archiveDestZipFile" value="${TODAY_UK}_${dist-title}.zip" description="the target zip" />
 		<property name="destInstallFile" value="${TODAY_UK}_${dist-title}.exe" description="the target installer" />
-
 
 		<!-- upload the modified features -->
 		<echo message="uploading features for online updates" />
