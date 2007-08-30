@@ -10,9 +10,7 @@
 	<property name="destDir" value="${deployDir}" description="where the updated install-sets are located" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
-    <property name="nsisPath" value="c:\program files\dev\nsis" />
-    <property name="nsisExecutable" value="makensis" />
-    <property name="nsisScriptFile" value="setup.nsi" />
+	<property name="advancedInstallerPath" value="d:\dev\eclipse2\contribs\advancedinstaller\" />
 
 	<target name="upload_online_updaters" description="upload updated files to td submarines directory" depends="clean">
 		<copy todir="${updateUploadDir}" preservelastmodified="yes">
@@ -48,6 +46,20 @@
 				<!-- now eclipse itself -->
 			</and>
 		</condition>
+		<condition property="static_present">
+			<and>
+				<!-- and the jre -->
+				<available file="${distDir}\jre" />
+				<available file="${distDir}\jre\bin\java.exe" />
+				<!-- and the workspace -->
+				<available file="${distDir}\workspace" />
+				<available file="${distDir}\workspace\sample_data" />
+				<available file="${distDir}\workspace\sample_data\sample.xml" />
+				<!-- and the dlls -->
+				<available file="${distDir}\gdiplus.dll" />
+				<available file="${distDir}\JavaClipboard.dll" />
+			</and>
+		</condition>
 		<condition property="debrief_present">
 			<and>
 				<!-- first the plugins -->
@@ -61,13 +73,14 @@
 		</condition>
 
 		<fail message="some eclipse files are missing" unless="eclipse_present" />
+		<fail message="some static lib files are missing" unless="static_present" />
 		<fail message="some debrief files are missing" unless="debrief_present" />
 	</target>
 
 	<!-- try to make the builders - though we're considering shifting to NSIS... -->
 	<target name="build_installer" description="create the installation file" depends="">
-		<exec executable="${nsisPath}\nsisExecutable">
-			<arg line=" ${nsisScriptFile}" />
+		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
+			<arg line="/build ng_installer_settings.aip" />
 		</exec>
 	</target>
 
