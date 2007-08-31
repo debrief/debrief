@@ -1,38 +1,26 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project name="org.mwc.cmap.installer" default="collate_dist" basedir=".">
-	<property name="zipUploadDir" value="W://Operational Analysis/Work in Progress/Cross Warfare/SoftEng/PlanetMayo/Debrief/eclipse" description="the destination for backup copies of dists" />
-	<property name="releaseDir" value="W://Operational Analysis/Collaborative/Applications/Debrief" description="the destination for the zip file" />
+<project name="org.mwc.cmap.installer" default="perform_dist" basedir=".">
 	<property name="updateUploadDir" value="${releaseDir}/updates" description="the destination for the updates" />
-	<property name="archiveUploadDir" value="${zipUploadDir}/old" description="the destination for the updates" />
 	<property name="srcDir" value="./" description="where the updated install-sets are located" />
-	<property name="rootDir" value="../org.mwc.cmap.static_resources/root_installs" description="where the updated install-sets are located" />
 	<property name="deployDir" value="../deploy" description="where we start building the output set" />
-	<property name="destDir" value="${deployDir}" description="where the updated install-sets are located" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
 	<property name="advancedInstallerPath" value="d:\dev\cmap\contribs\advancedinstaller\" />
 
-	<target name="upload_online_updaters" description="upload updated files to td submarines directory" depends="clean">
+	<target name="upload_online_updaters" description="upload updated files to Internet" depends="clean">
 		<copy todir="${updateUploadDir}" preservelastmodified="yes">
 			<fileset dir="${srcDir}" />
 		</copy>
 	</target>
 
 	<target name="clean" description="clear the output directory" depends="">
-		<!-- don't bother doing clean. just let Eclipse use the newer version
 		<delete dir="${updateUploadDir}/features" />
-		<delete dir="${updateUploadDir}/plugins" />  -->
+		<delete dir="${updateUploadDir}/plugins" />
 	</target>
 
 	<target name="empty_dist_dir" description="clear the output directory" depends="">
 		<delete dir="${destDir}\DebriefNG" />
 	</target>
-
-	<target name="unzip_dist" description="unzip the dist into a folder structure" depends="">
-		<unzip src="${destDir}\DebriefNG.zip" dest="${destDir}">
-		</unzip>
-	</target>
-
 
 	<target name="check_the_dist" description="checking all files there" depends="">
 
@@ -63,12 +51,12 @@
 		<condition property="debrief_present">
 			<and>
 				<!-- first the plugins -->
-				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.23" /> 
+				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.23" />
 				<!-- now the features -->
 				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.39" />
 				<available file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.12" />
 				<available file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.4" />
-				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.7" /> 
+				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.7" />
 			</and>
 		</condition>
 
@@ -77,40 +65,45 @@
 		<fail message="some debrief files are missing" unless="debrief_present" />
 	</target>
 
-	<!-- try to make the builders - though we're considering shifting to NSIS... -->
-	<target name="build_installer" description="create the installation file" depends="">
+	<target name="build_installer" description="create the installation file" depends="" if="do.installer" >
+		<fail message="doing installer"/>
 		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
 			<arg line="/build ng_installer_settings.aip" />
 		</exec>
 	</target>
 
-	<target name="collate_dist" description="insert missing bits into dist">
+	<target name="perform_dist" description="insert missing bits into dist">
 		<!-- get a name for the new dist -->
 		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />
 		<echo message="building:${dist-title}" />
+
+		<input message="Build installer? (y/n)?" validargs="y,n" addproperty="do.installer.answer" />
+
+        <input message="Export to removeable media? (y/n)?" validargs="y,n" addproperty="do.zipDrive.answer" />
+
+		  <condition property="do.installer">
+		    <equals arg1="y" arg2="${do.installer.answer}"/>
+		  </condition>				
+
+        <!-- do the installer -->
+        <echo message="creating single-file installer" />
+        <antcall target="build_installer" />	
+		
+		<fail message="just testing"/>
+
+        <condition property="do.zipDrive">
+          <equals arg1="y" arg2="${do.zipDrive.answer}"/>
+        </condition>      
 		
 		<property name="destZip" value="${destDir}/${dist-title}.zip" description="the target file" />
 		<tstamp>
 			<format property="TODAY_UK" pattern="yyyyMMdd_HHmm" locale="en" />
 		</tstamp>
 		<property name="archiveDestZipFile" value="${TODAY_UK}_${dist-title}.zip" description="the target zip" />
-		<property name="destInstallFile" value="${TODAY_UK}_${dist-title}.exe" description="the target installer" />
-
-		<!-- upload the modified features -->
-		<echo message="uploading features for online updates" />
-		<antcall target="upload_online_updaters" />
 
 		<!-- clean the target dist -->
 		<echo message="clearing 'build' directory" />
 		<antcall target="empty_dist_dir" />
-
-		<!-- unpack the new dist -->
-		<echo message="unpacking auto-build into build directory" />
-		<antcall target="unzip_dist" />
-
-		<!-- add the other root elements -->
-		<echo message="copying in other bits needed for dist" />
-		<antcall target="fill_in_bits" />
 
 		<!-- check everything's in the dist -->
 		<echo message="checking the dist" />
@@ -120,10 +113,24 @@
 		<echo message="creating single-file installer" />
 		<antcall target="build_installer" />
 
+		<!-- copy installer to internet -->
+
+		<!-- upload the modified features -->
+		<echo message="uploading features for online updates" />
+		<antcall target="upload_online_updaters" />
+
+		<!-- unpack the new dist -->
+		<echo message="unpacking auto-build into build directory" />
+		<antcall target="unzip_dist" />
+
+		<!-- add the other root elements -->
+		<echo message="copying in other bits needed for dist" />
+		<antcall target="fill_in_bits" />
+
 		<!-- ok - copy the dist to td-subs -->
 		<echo message="copying dist to td-subs" />
 		<copy description="copy the zip to the safe dest" file="${destZip}" toDir="${zipUploadDir}" />
-		<copy description="copy the installer to the release directory" file="${deployDir}/debrief_install.exe" toDir="${releaseDir}" overwrite="yes"/>
+		<copy description="copy the installer to the release directory" file="${deployDir}/debrief_install.exe" toDir="${releaseDir}" overwrite="yes" />
 		<move description="also put a date-stamped version of the installer in the backup directory." file="${deployDir}/debrief_install.exe" tofile="${zipUploadDir}/${destInstallFile}" />
 
 		<!-- now save versions of the zip to a legacy folder -->
