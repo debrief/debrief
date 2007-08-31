@@ -1,25 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.mwc.cmap.installer" default="perform_dist" basedir=".">
-	<property name="updateUploadDir" value="${releaseDir}/updates" description="the destination for the updates" />
-	<property name="srcDir" value="./" description="where the updated install-sets are located" />
 	<property name="deployDir" value="../deploy" description="where we start building the output set" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
 	<property name="advancedInstallerPath" value="d:\dev\cmap\contribs\advancedinstaller\" />
 
-	<target name="upload_online_updaters" description="upload updated files to Internet" depends="clean">
-		<copy todir="${updateUploadDir}" preservelastmodified="yes">
-			<fileset dir="${srcDir}" />
-		</copy>
-	</target>
-
 	<target name="clean" description="clear the output directory" depends="">
-		<delete dir="${updateUploadDir}/features" />
-		<delete dir="${updateUploadDir}/plugins" />
 	</target>
 
 	<target name="empty_dist_dir" description="clear the output directory" depends="">
-		<delete dir="${destDir}\DebriefNG" />
+		<delete dir="${deployDir}" excludes="DebriefNG, .project" />
 	</target>
 
 	<target name="check_the_dist" description="checking all files there" depends="">
@@ -65,41 +55,47 @@
 		<fail message="some debrief files are missing" unless="debrief_present" />
 	</target>
 
-	<target name="build_installer" description="create the installation file" depends="" if="do.installer" >
-		<fail message="doing installer"/>
+	<target name="build_installer" description="create the installation file" depends="" if="do.installer">
+		<fail message="doing installer" />
 		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
 			<arg line="/build ng_installer_settings.aip" />
 		</exec>
 	</target>
 
+	<path id="exportBits">
+<!--        <fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml"  />-->
+        <fileset dir="../org.mwc.cmap.installer" />
+	</path>
+	
+	<target name="copy_update_to_zip" description="copy the update site to zip" depends="" > <!-- if="do.zipDrive" -->
+        <echo message="collating zip file" />
+        <zip destFile="${deployDir}/update2.Zip" whenempty="fail" duplicate="fail">
+        	<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template"  />
+        </zip>
+		<echo message="performing copy" />
+	</target>
+
 	<target name="perform_dist" description="insert missing bits into dist">
 		<!-- get a name for the new dist -->
-		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_" />
-		<echo message="building:${dist-title}" />
-
-		<input message="Build installer? (y/n)?" validargs="y,n" addproperty="do.installer.answer" />
-
-        <input message="Export to removeable media? (y/n)?" validargs="y,n" addproperty="do.zipDrive.answer" />
-
-		  <condition property="do.installer">
-		    <equals arg1="y" arg2="${do.installer.answer}"/>
-		  </condition>				
-
-        <!-- do the installer -->
-        <echo message="creating single-file installer" />
-        <antcall target="build_installer" />	
-		
-		<fail message="just testing"/>
-
-        <condition property="do.zipDrive">
-          <equals arg1="y" arg2="${do.zipDrive.answer}"/>
-        </condition>      
-		
-		<property name="destZip" value="${destDir}/${dist-title}.zip" description="the target file" />
 		<tstamp>
 			<format property="TODAY_UK" pattern="yyyyMMdd_HHmm" locale="en" />
 		</tstamp>
-		<property name="archiveDestZipFile" value="${TODAY_UK}_${dist-title}.zip" description="the target zip" />
+		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_${TODAY_UK}" />
+		<echo message="building:${dist-title}" />
+
+		<!-- find out what we're doing -->
+		<input message="Build installer? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.installer.answer" />
+		<input message="Export to removeable media? (y/n)?" defaultvalue="y" validargs="y,n" addproperty="do.zipDrive.answer" />
+        <input message="And the password for target server?" addproperty="sf.pwd"/>
+
+		<!-- convert answers to true/false -->
+		<condition property="do.installer">
+			<equals arg1="y" arg2="${do.installer.answer}" />
+		</condition>
+
+		<condition property="do.zipDrive">
+			<equals arg1="y" arg2="${do.zipDrive.answer}" />
+		</condition>
 
 		<!-- clean the target dist -->
 		<echo message="clearing 'build' directory" />
@@ -109,15 +105,21 @@
 		<echo message="checking the dist" />
 		<antcall target="check_the_dist" />
 
+		<!-- upload the modified features -->
+		<echo message="uploading features for online updates" />
+        <scp trust="yes" file="${deployDir}/test2.txt" password="${sf.pwd}"
+            todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/eclipse">
+            <fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template"  />
+        </scp>
+
+		<!-- copy the bits to the zip drive -->
+		<antcall target="copy_update_to_zip" />
+
 		<!-- do the installer -->
 		<echo message="creating single-file installer" />
 		<antcall target="build_installer" />
 
 		<!-- copy installer to internet -->
-
-		<!-- upload the modified features -->
-		<echo message="uploading features for online updates" />
-		<antcall target="upload_online_updaters" />
 
 		<!-- unpack the new dist -->
 		<echo message="unpacking auto-build into build directory" />
