@@ -19,8 +19,8 @@
 			<and>
 				<!-- now eclipse itself -->
 				<available file="${distDir}\DebriefNG.exe" />
-				<available file="${distDir}\features\org.eclipse.platform_3.2.1.r321_v20060921-b_XVA-INSQSyMtx" />
-				<available file="${distDir}\features\org.eclipse.rcp_3.2.1.r321_v20060801-2ekW2BxmcpPUOoq" />
+				<available file="${distDir}\features\org.eclipse.platform_3.3.0.v20070612-_19UEkLEzwsdF9jSqQ-G" />
+				<available file="${distDir}\features\org.eclipse.rcp_3.3.0.v20070607-8y8eE8NEbsN3X_fjWS8HPNG" />
 				<!-- now eclipse itself -->
 			</and>
 		</condition>
@@ -29,10 +29,10 @@
 				<!-- and the jre -->
 				<available file="${distDir}\jre" />
 				<available file="${distDir}\jre\bin\java.exe" />
-				<!-- and the workspace -->
+				<!-- and the workspace 
 				<available file="${distDir}\workspace" />
 				<available file="${distDir}\workspace\sample_data" />
-				<available file="${distDir}\workspace\sample_data\sample.xml" />
+				<available file="${distDir}\workspace\sample_data\sample.xml" /> -->
 				<!-- and the dlls -->
 				<available file="${distDir}\gdiplus.dll" />
 				<available file="${distDir}\JavaClipboard.dll" />
@@ -55,24 +55,47 @@
 		<fail message="some debrief files are missing" unless="debrief_present" />
 	</target>
 
-	<target name="build_installer" description="create the installation file" depends="" if="do.installer">
-		<fail message="doing installer" />
+	<target name="build_installer" description="do installer" if="do.installer" depends="">
+		<!-- check everything's in the dist -->
+		<echo message="checking the dist" />
+		<antcall target="check_the_dist" />
+
+		<echo message="building the dist" />
 		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
 			<arg line="/build ng_installer_settings.aip" />
 		</exec>
 	</target>
 
-	<path id="exportBits">
-<!--        <fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml"  />-->
-        <fileset dir="../org.mwc.cmap.installer" />
-	</path>
-	
-	<target name="copy_update_to_zip" description="copy the update site to zip" depends="" > <!-- if="do.zipDrive" -->
-        <echo message="collating zip file" />
-        <zip destFile="${deployDir}/update2.Zip" whenempty="fail" duplicate="fail">
-        	<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template"  />
-        </zip>
-		<echo message="performing copy" />
+	<target name="copyUpdateToZip" description="copy updates to zipDrv" if="zip.drivePresent" depends="">
+        <echo message="zip drive found" />
+        <property name="zipName" value="update.zip"/>
+        <property name="zipDest" value="${deployDir}/${zipName}"/>
+        <echo message="ditching old update zip" />
+        <delete file="h:/${zipDest}"/>
+        <echo message="creating new update zip" />
+		<zip destFile="${zipDest}" whenempty="fail" duplicate="fail">
+			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+		</zip>
+        <echo message="ditching old zip from zip drive" />
+        <delete file="h:/${zipName}"/>
+        <echo message="copying new zip to zip drive" />
+		<copy file="${zipDest}" todir="h:/" />
+	    <echo message="copying unpack script to zip drive" />
+		<copy file="unpack.xml" todir="h:/" />
+	</target>
+
+	<target name="prepareUpdateToZip" description="copy updates to zipDrv" if="do.zipDrive" depends="">
+		<echo message="checking zip present" />
+        <available file="h:/" property="zip.drivePresent" />
+		<antcall target="copyUpdateToZip"/>
+	</target>
+
+	<target name="upload_to_internet" if="do.internet">
+		<input message="And the password for target server?" addproperty="sf.pwd" />
+		<echo message="copying fileset to internet" />
+		<scp trust="yes" file="${deployDir}/test2.txt" password="${sf.pwd}" todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/eclipse">
+			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+		</scp>
 	</target>
 
 	<target name="perform_dist" description="insert missing bits into dist">
@@ -86,7 +109,7 @@
 		<!-- find out what we're doing -->
 		<input message="Build installer? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.installer.answer" />
 		<input message="Export to removeable media? (y/n)?" defaultvalue="y" validargs="y,n" addproperty="do.zipDrive.answer" />
-        <input message="And the password for target server?" addproperty="sf.pwd"/>
+		<input message="Export to internet? (y/n)?" defaultvalue="y" validargs="y,n" addproperty="do.internet.answer" />
 
 		<!-- convert answers to true/false -->
 		<condition property="do.installer">
@@ -97,48 +120,31 @@
 			<equals arg1="y" arg2="${do.zipDrive.answer}" />
 		</condition>
 
+		<condition property="do.internet">
+			<equals arg1="y" arg2="${do.internet.answer}" />
+		</condition>
+
 		<!-- clean the target dist -->
-		<echo message="clearing 'build' directory" />
 		<antcall target="empty_dist_dir" />
 
-		<!-- check everything's in the dist -->
-		<echo message="checking the dist" />
-		<antcall target="check_the_dist" />
-
-		<!-- upload the modified features -->
-		<echo message="uploading features for online updates" />
-        <scp trust="yes" file="${deployDir}/test2.txt" password="${sf.pwd}"
-            todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/eclipse">
-            <fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template"  />
-        </scp>
+		<!-- upload the modified features to the internet -->
+		<antcall target="upload_to_internet" />
 
 		<!-- copy the bits to the zip drive -->
-		<antcall target="copy_update_to_zip" />
+		<antcall target="prepareUpdateToZip" />
 
 		<!-- do the installer -->
-		<echo message="creating single-file installer" />
 		<antcall target="build_installer" />
 
-		<!-- copy installer to internet -->
-
-		<!-- unpack the new dist -->
-		<echo message="unpacking auto-build into build directory" />
-		<antcall target="unzip_dist" />
-
-		<!-- add the other root elements -->
-		<echo message="copying in other bits needed for dist" />
-		<antcall target="fill_in_bits" />
-
-		<!-- ok - copy the dist to td-subs -->
-		<echo message="copying dist to td-subs" />
-		<copy description="copy the zip to the safe dest" file="${destZip}" toDir="${zipUploadDir}" />
-		<copy description="copy the installer to the release directory" file="${deployDir}/debrief_install.exe" toDir="${releaseDir}" overwrite="yes" />
-		<move description="also put a date-stamped version of the installer in the backup directory." file="${deployDir}/debrief_install.exe" tofile="${zipUploadDir}/${destInstallFile}" />
-
-		<!-- now save versions of the zip to a legacy folder -->
-		<move file="${destZip}" tofile="${archiveUploadDir}/${archiveDestZipFile}" />
+		<!-- all complete -->
 		<echo message="All copied.  Dist complete" />
 
+	</target>
+
+	<target name="copyInstallToInternet" description="Copy installer to Internet">
+		<scp trust="yes" file="${deployDir}/test2.txt" password="${sf.pwd}" todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/eclipse">
+			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+		</scp>
 	</target>
 
 </project>
