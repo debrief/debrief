@@ -2368,6 +2368,12 @@ It may be useful to remember that the Primary Track is usually assigned to the T
           </para> 
 </sect2> 
 <sect2> 
+<title>Multi-monitor setups</title> 
+<para>The current Direct3D libraries from Microsoft only allow Debrief to show 3d plots on the primary monitor. 
+If you only have one monitor, there isn't a problem.  But, if you have a multiple monitor setup,
+the 3d plot will only appear if you have Debrief running on the primary monitor (that's the monitor that contains the windows task bar).</para> 
+</sect2> 
+<sect2> 
 <title>Memory Leaks</title> 
 <para>The current version of the 3D libraries used in this viewer contains memory leaks.  In general memory leaks are tidied up in each revision of Java-3d, so it is in your interest to try to keep up to date with the newest releases.
             <footnote>
