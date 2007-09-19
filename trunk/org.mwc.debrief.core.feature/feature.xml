@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.38">
+      version="1.0.40">
 
    <description>
-      [1.0.39] Reflect improved performance of export to clipboard
+      [1.0.40] Update legacy unit tests
+[1.0.39] Reflect improved performance of export to clipboard
 [1.0.38] Hide S57 support, leading to instability
 [1.0.37] Robustly handle failure when can&apos;t see S57 exporter
 [1.0.36] Include rudimentary S57 import
