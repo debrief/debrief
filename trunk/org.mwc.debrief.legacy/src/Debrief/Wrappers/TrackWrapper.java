@@ -550,7 +550,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// and my objects
 		// first ask them to close themselves
-		Enumeration it = _thePositions.elements();
+		Enumeration<FixWrapper> it = _thePositions.elements();
 		while (it.hasMoreElements()) {
 			final Object val = it.nextElement();
 			if (val instanceof PlainWrapper) {
@@ -566,7 +566,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// and my objects
 		// first ask the sensors to close themselves
 		if (_mySensors != null) {
-			Iterator it2 = _mySensors.iterator();
+			Iterator<SensorWrapper> it2 = _mySensors.iterator();
 			while (it2.hasNext()) {
 				final Object val = it2.next();
 				if (val instanceof PlainWrapper) {
@@ -580,7 +580,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// now ask the solutions to close themselves
 		if (_mySolutions != null) {
-			Iterator it2 = _mySolutions.iterator();
+			Iterator<TMAWrapper> it2 = _mySolutions.iterator();
 			while (it2.hasNext()) {
 				final Object val = it2.next();
 				if (val instanceof PlainWrapper) {
@@ -686,9 +686,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// ///////////////////////////////////////////
 			// let the fixes draw themselves in
 			// ///////////////////////////////////////////
-			final Enumeration fixWrappers = _thePositions.elements();
+			final Enumeration<FixWrapper> fixWrappers = _thePositions.elements();
 			while (fixWrappers.hasMoreElements()) {
-				final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
+				final FixWrapper fw = fixWrappers.nextElement();
 
 				// is this fix visible
 				if (!fw.getVisible()) {
@@ -782,9 +782,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// now plot the solutions
 			// /////////////////////////////////////////////
 			if (_mySolutions != null) {
-				final Enumeration iter = _mySolutions.elements();
+				final Enumeration<TMAWrapper> iter = _mySolutions.elements();
 				while (iter.hasMoreElements()) {
-					final TMAWrapper sw = (TMAWrapper) iter.nextElement();
+					final TMAWrapper sw = iter.nextElement();
 					sw.paint(dest);
 
 				} // through the sensors
@@ -794,9 +794,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// lastly plot the sensors
 			// /////////////////////////////////////////////
 			if (_mySensors != null) {
-				final Enumeration iter = _mySensors.elements();
+				final Enumeration<SensorWrapper> iter = _mySensors.elements();
 				while (iter.hasMoreElements()) {
-					final SensorWrapper sw = (SensorWrapper) iter.nextElement();
+					final SensorWrapper sw = iter.nextElement();
 					sw.paint(dest);
 
 				} // through the sensors
@@ -822,9 +822,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// hey, we're invisible, return null
 		}
 		else {
-			final Enumeration it = this._thePositions.elements();
+			final Enumeration<FixWrapper> it = this._thePositions.elements();
 			while (it.hasMoreElements()) {
-				final FixWrapper fw = (FixWrapper) it.nextElement();
+				final FixWrapper fw = it.nextElement();
 
 				// is this point visible?
 				if (fw.getVisible()) {
@@ -843,9 +843,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// also extend to include our sensor data
 			if (_mySensors != null) {
-				final Enumeration iter = _mySensors.elements();
+				final Enumeration<SensorWrapper> iter = _mySensors.elements();
 				while (iter.hasMoreElements()) {
-					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+					final PlainWrapper sw = iter.nextElement();
 					WorldArea theseBounds = sw.getBounds();
 					if (theseBounds != null) {
 						if (res == null)
@@ -858,9 +858,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and our solution data
 			if (_mySolutions != null) {
-				final Enumeration iter = _mySolutions.elements();
+				final Enumeration<TMAWrapper> iter = _mySolutions.elements();
 				while (iter.hasMoreElements()) {
-					final PlainWrapper sw = (PlainWrapper) iter.nextElement();
+					final PlainWrapper sw = iter.nextElement();
 					WorldArea theseBounds = sw.getBounds();
 					if (theseBounds != null) {
 						if (res == null)
@@ -900,8 +900,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * get the list of sensors for this track
 	 */
-	public final Enumeration getSensors() {
-		Enumeration res = null;
+	public final Enumeration<SensorWrapper> getSensors() {
+		Enumeration<SensorWrapper> res = null;
 
 		if (_mySensors != null)
 			res = _mySensors.elements();
@@ -912,8 +912,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * get the list of sensors for this track
 	 */
-	public final Enumeration getSolutions() {
-		Enumeration res = null;
+	public final Enumeration<TMAWrapper> getSolutions() {
+		Enumeration<TMAWrapper> res = null;
 
 		if (_mySolutions != null)
 			res = _mySolutions.elements();
@@ -931,9 +931,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the end dtg of the period
 	 */
 	public final void filterListTo(final HiResDate start, final HiResDate end) {
-		final Enumeration fixWrappers = _thePositions.elements();
+		final Enumeration<FixWrapper> fixWrappers = _thePositions.elements();
 		while (fixWrappers.hasMoreElements()) {
-			final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
+			final FixWrapper fw = fixWrappers.nextElement();
 			final HiResDate dtg = fw.getTime();
 			if ((dtg.greaterThanOrEqualTo(start)) && (dtg.lessThanOrEqualTo(end))) {
 				fw.setVisible(true);
@@ -945,18 +945,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// now do the same for our sensor data
 		if (_mySensors != null) {
-			final Enumeration iter = _mySensors.elements();
+			final Enumeration<SensorWrapper> iter = _mySensors.elements();
 			while (iter.hasMoreElements()) {
-				final WatchableList sw = (WatchableList) iter.nextElement();
+				final WatchableList sw = iter.nextElement();
 				sw.filterListTo(start, end);
 			} // through the sensors
 		} // whether we have any sensors
 
 		// and our solution data
 		if (_mySolutions != null) {
-			final Enumeration iter = _mySolutions.elements();
+			final Enumeration<TMAWrapper> iter = _mySolutions.elements();
 			while (iter.hasMoreElements()) {
-				final WatchableList sw = (WatchableList) iter.nextElement();
+				final WatchableList sw = iter.nextElement();
 				sw.filterListTo(start, end);
 			} // through the sensors
 		} // whether we have any sensors
@@ -1032,18 +1032,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// how do we do filters?
 
 				// get the data. use tailSet, since it's inclusive...
-				SortedSet set = _thePositions.tailSet(nearestFix);
+				SortedSet<FixWrapper> set = _thePositions.tailSet(nearestFix);
 
 				// see if the requested DTG was inside the range of the data
 				if (!set.isEmpty()) {
-					res = (FixWrapper) set.first();
+					res = set.first();
 
 					// is this one visible?
 					if (!res.getVisible()) {
 						// right, the one we found isn't visible. duplicate the set, so that
 						// we can remove items
 						// without affecting the parent
-						set = new TreeSet(set);
+						set = new TreeSet<FixWrapper>(set);
 
 						// ok, start looping back until we find one
 						while ((!res.getVisible()) && (set.size() > 0)) {
@@ -1051,7 +1051,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// the first one wasn't, remove it
 							set.remove(res);
 							if (set.size() > 0)
-								res = (FixWrapper) set.first();
+								res = set.first();
 						}
 					}
 
@@ -1075,12 +1075,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// hmm, better also find the point before our one. the
 							// headSet operation is exclusive - so we need to find the one
 							// after the first
-							final SortedSet otherSet = _thePositions.headSet(nearestFix);
+							final SortedSet<FixWrapper> otherSet = _thePositions.headSet(nearestFix);
 
 							FixWrapper previous = null;
 
 							if (!set.isEmpty()) {
-								previous = (FixWrapper) otherSet.last();
+								previous = otherSet.last();
 							}
 
 							// did it work?
@@ -1145,10 +1145,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          end DTG
 	 * @return series of fixes
 	 */
-	public final Collection getItemsBetween(final HiResDate start,
+	public final Collection<PlainWrapper> getItemsBetween(final HiResDate start,
 	    final HiResDate end) {
 		//
-		SortedSet set = null;
+		SortedSet<PlainWrapper> set = null;
 
 		// does our track contain any data at all
 		if (_theTrack.hasFixes()) {
@@ -1165,7 +1165,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// about 1 minute resolution?
 				if (getInterpolatePoints()) {
 					long ourInterval = 1000 * 60; // one minute
-					set = new TreeSet();
+					set = new TreeSet<PlainWrapper>();
 					for (long newTime = start.getDate().getTime(); newTime < end
 					    .getDate().getTime(); newTime += ourInterval) {
 						HiResDate newD = new HiResDate(newTime);
@@ -1219,7 +1219,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          end DTG
 	 * @return series of fixes
 	 */
-	public final Collection getUnfilteredItems(final HiResDate start,
+	public final Collection<PlainWrapper> getUnfilteredItems(final HiResDate start,
 	    final HiResDate end) {
 
 		// if we have an invalid end point, just return the full track
@@ -1241,9 +1241,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		final TimePeriod thePeriod = new TimePeriod.BaseTimePeriod(start, end);
 
 		// step through our fixes
-		final Enumeration iter = _thePositions.elements();
+		final Enumeration<FixWrapper> iter = _thePositions.elements();
 		while (iter.hasMoreElements()) {
-			final FixWrapper fw = (FixWrapper) iter.nextElement();
+			final FixWrapper fw = iter.nextElement();
 			if (fw.getVisible()) {
 				// is it visible?
 				if (thePeriod.contains(fw.getTime())) {
@@ -1273,7 +1273,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          end DTG
 	 * @return series of fixes
 	 */
-	public final Collection getVisibleItemsBetween(final HiResDate start,
+	public final Collection<PlainWrapper> getVisibleItemsBetween(final HiResDate start,
 	    final HiResDate end) {
 
 		// see if we have _any_ points in range
@@ -1290,9 +1290,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		final TimePeriod thePeriod = new TimePeriod.BaseTimePeriod(start, end);
 
 		// step through our fixes
-		final Enumeration iter = _thePositions.elements();
+		final Enumeration<FixWrapper> iter = _thePositions.elements();
 		while (iter.hasMoreElements()) {
-			final FixWrapper fw = (FixWrapper) iter.nextElement();
+			final FixWrapper fw = iter.nextElement();
 			if (fw.getVisible() && (fw.getSymbolShowing() || fw.getLabelShowing())) {
 				// is it visible?
 				if (thePeriod.contains(fw.getTime())) {
@@ -1398,8 +1398,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @return
 	 */
-	public final Enumeration getPositions() {
-		Enumeration res = null;
+	public final Enumeration<FixWrapper> getPositions() {
+		Enumeration<FixWrapper> res = null;
 		if (_thePositions != null)
 			res = _thePositions.elements();
 
@@ -1690,9 +1690,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// briefly check if we are revealing/hiding all times (ie if freq is 1 or 0)
 		if (freq == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY) {
 			// show all of the labels
-			final Enumeration iter = _thePositions.elements();
+			final Enumeration<FixWrapper> iter = _thePositions.elements();
 			while (iter.hasMoreElements()) {
-				final FixWrapper fw = (FixWrapper) iter.nextElement();
+				final FixWrapper fw = iter.nextElement();
 				setter.execute(fw, true);
 			}
 		}
@@ -1701,9 +1701,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// frequency
 
 			// hide all of the labels/symbols first
-			final Enumeration enumA = _thePositions.elements();
+			final Enumeration<FixWrapper> enumA = _thePositions.elements();
 			while (enumA.hasMoreElements()) {
-				final FixWrapper fw = (FixWrapper) enumA.nextElement();
+				final FixWrapper fw = enumA.nextElement();
 				setter.execute(fw, false);
 			}
 
@@ -1788,9 +1788,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          the layer to add to ourselves
 	 */
 	public final void append(final Layer other) {
-		final java.util.Enumeration iter = other.elements();
+		final java.util.Enumeration<FixWrapper> iter = other.elements();
 		while (iter.hasMoreElements()) {
-			add((Plottable) iter.nextElement());
+			add(iter.nextElement());
 		}
 	}
 
@@ -1868,9 +1868,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else if (point instanceof SensorContactWrapper) {
 			// ok, cycle through our sensors, try to remove this contact...
-			Iterator iter = _mySensors.iterator();
+			Iterator<SensorWrapper> iter = _mySensors.iterator();
 			while (iter.hasNext()) {
-				SensorWrapper sw = (SensorWrapper) iter.next();
+				SensorWrapper sw = iter.next();
 				// try to remove it from this one...
 				sw.removeElement(point);
 			}
@@ -1886,25 +1886,25 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @return
 	 */
-	public final java.util.Enumeration contiguousElements() {
-		final Vector res = new Vector(0, 1);
+	public final java.util.Enumeration<PlainWrapper> contiguousElements() {
+		final Vector<PlainWrapper> res = new Vector<PlainWrapper>(0, 1);
 
 		if (_mySensors != null) {
-			final Enumeration iter = _mySensors.elements();
+			final Enumeration<SensorWrapper> iter = _mySensors.elements();
 			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
 		}
 
 		if (_mySolutions != null) {
-			final Enumeration iter = _mySolutions.elements();
+			final Enumeration<TMAWrapper> iter = _mySolutions.elements();
 			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
 		}
 
 		if (_thePositions != null) {
-			final Enumeration iter = _thePositions.elements();
+			final Enumeration<FixWrapper> iter = _thePositions.elements();
 			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
@@ -1918,30 +1918,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @return the points in this track
 	 */
-	public final java.util.Enumeration elements() {
-		TreeSet<Object> res = null;
+	public final java.util.Enumeration<Plottable> elements() {
+		TreeSet<Plottable> res = new TreeSet<Plottable>();
 
 		if (_mySensors != null) {
-			res = new TreeSet<Object>();
-			final Enumeration iter = _mySensors.elements();
+			final Enumeration<SensorWrapper> iter = _mySensors.elements();
 			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
 		}
 
 		if (_mySolutions != null) {
-			if (res == null)
-				res = new TreeSet<Object>();
 
-			final Enumeration iter = _mySolutions.elements();
+			final Enumeration<TMAWrapper> iter = _mySolutions.elements();
 			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
 		}
 
 		if (res == null) {
-			res = new TreeSet<Object>();
-			final Enumeration iter = _thePositions.elements();
+			final Enumeration<FixWrapper> iter = _thePositions.elements();
 			while (iter.hasMoreElements()) {
 				res.add(iter.nextElement());
 			}
@@ -1989,7 +1985,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * move the whole of the track be the provided offset
 	 */
-	public final void shiftTrack(Enumeration theEnum, final WorldVector offset) {
+	public final void shiftTrack(Enumeration<Plottable> theEnum, final WorldVector offset) {
 		// keep track of if the track contains something that doesn't get dragged
 		boolean handledData = false;
 
@@ -2015,9 +2011,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // whether this was a fix wrapper
 			else if (thisO instanceof SensorWrapper) {
 				final SensorWrapper sw = (SensorWrapper) thisO;
-				final Enumeration enumS = sw.elements();
+				final Enumeration<SensorContactWrapper> enumS = sw.elements();
 				while (enumS.hasMoreElements()) {
-					final SensorContactWrapper scw = (SensorContactWrapper) enumS
+					final SensorContactWrapper scw = enumS
 					    .nextElement();
 					// does this fix have it's own origin?
 					final WorldLocation sensorOrigin = scw.getOrigin(null);
@@ -2038,7 +2034,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // whether this is a sensor wrapper
 			else if (thisO instanceof TrackWrapper.PlottableLayer) {
 				final PlottableLayer tw = (PlottableLayer) thisO;
-				final Enumeration enumS = tw.elements();
+				final Enumeration<Plottable> enumS = tw.elements();
 
 				// fire recursively, smart-arse.
 				shiftTrack(enumS, offset);
@@ -2187,7 +2183,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		public final MethodDescriptor[] getMethodDescriptors() {
 			// just add the reset color field first
-			final Class c = TrackWrapper.class;
+			final Class<TrackWrapper> c = TrackWrapper.class;
 
 			final MethodDescriptor[] mds = {
 			    method(c, "exportThis", null, "Export Shape"),
@@ -2203,10 +2199,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	// internally
 	// outside as an Enumeration
 	// /////////////////////////////////////////////////////////////////
-	public static final class IteratorWrapper implements java.util.Enumeration {
-		private final Iterator _val;
+	private static final class IteratorWrapper implements java.util.Enumeration<Plottable> {
+		private final Iterator<Plottable> _val;
 
-		public IteratorWrapper(final Iterator iterator) {
+		public IteratorWrapper(final Iterator<Plottable> iterator) {
 			_val = iterator;
 		}
 
@@ -2215,7 +2211,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		}
 
-		public final Object nextElement() {
+		public final Plottable nextElement() {
 			return _val.next();
 		}
 	}
@@ -2347,7 +2343,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			    loc_2, 0, 0));
 
 			// check returning empty data
-			Collection coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(
+			Collection<PlainWrapper> coll = tw.getItemsBetween(new HiResDate(0, 0), new HiResDate(
 			    0, 40));
 			assertEquals("Return empty when empty", coll, null);
 
@@ -2453,7 +2449,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			fw6.setLabelShowing(true);
 			fw7.setLabelShowing(true);
 
-			Collection col = tw.getItemsBetween(new HiResDate(0, 3), new HiResDate(0,
+			Collection<PlainWrapper> col = tw.getItemsBetween(new HiResDate(0, 3), new HiResDate(0,
 			    5));
 			assertEquals("found correct number of items", 3, col.size());
 
@@ -2492,9 +2488,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
 		// cycle through the fixes
-		Enumeration fixes = _thePositions.elements();
+		Enumeration<FixWrapper> fixes = _thePositions.elements();
 		while (fixes.hasMoreElements()) {
-			final FixWrapper thisF = (FixWrapper) fixes.nextElement();
+			final FixWrapper thisF = fixes.nextElement();
 
 			if (thisF.getVisible()) {
 				// how far away is it?
@@ -2516,9 +2512,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
 		// cycle through the fixes
-		Enumeration fixes = _thePositions.elements();
+		Enumeration<FixWrapper> fixes = _thePositions.elements();
 		while (fixes.hasMoreElements()) {
-			final FixWrapper thisF = (FixWrapper) fixes.nextElement();
+			final FixWrapper thisF = fixes.nextElement();
 
 			// only check it if it's visible
 			if (thisF.getVisible()) {
@@ -2577,9 +2573,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		public void append(Layer other) {
 			// ok, pass through and add the items
-			Enumeration enumer = other.elements();
+			Enumeration<FixWrapper> enumer = other.elements();
 			while (enumer.hasMoreElements()) {
-				Plottable pl = (Plottable) enumer.nextElement();
+				Plottable pl = enumer.nextElement();
 				add(pl);
 			}
 		}
