@@ -961,8 +961,8 @@ public interface Editable
             }
             catch (InvocationTargetException ie)
             {
-              Assert.fail("missing getter for " + toBeTested + " property:"
-                  + p.getDisplayName() + " because:" + ie.getCause());
+              Assert.fail("missing getter for " + toBeTested + " called:" + getter.getName() + " property:"
+                  + p.getDisplayName() + " (" + et.getClass() + ") because:" + ie.getCause());
             }
             catch (IllegalAccessException al)
             {

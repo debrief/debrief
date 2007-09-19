@@ -97,203 +97,173 @@ import MWC.GenericData.WorldArea;
 import java.io.Serializable;
 import java.util.*;
 
-public class Track implements Serializable
-{
-  /**
+public class Track implements Serializable {
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
-	//////////////////////////////////////////////////
-  // member variables
-  //////////////////////////////////////////////////
-  /**
-   * the list of fixes we are storing
-   */
-  private java.util.Vector _theFixes;
+	// ////////////////////////////////////////////////
+	// member variables
+	// ////////////////////////////////////////////////
+	/**
+	 * the list of fixes we are storing
+	 */
+	private java.util.Vector _theFixes;
 
-  /**
-   * the vessel name
-   */
-  private String VesselName;
+	/**
+	 * the vessel name
+	 */
+	private String VesselName;
 
-  /**
-   * the name of the track
-   */
-  private String _trackName;
+	/**
+	 * the name of the track
+	 */
+	private String _trackName;
 
-  /**
-   * the area covered by the track
-   */
-  private WorldArea _theArea;
+	/**
+	 * the area covered by the track
+	 */
+	private WorldArea _theArea;
 
-  protected HiResDate _startDTG = null;
-  protected HiResDate _endDTG = null;
+	protected HiResDate _startDTG = null;
+	protected HiResDate _endDTG = null;
 
-  //////////////////////////////////////////////////
-  // constructor
-  //////////////////////////////////////////////////
+	// ////////////////////////////////////////////////
+	// constructor
+	// ////////////////////////////////////////////////
 
-  /**
-   * default constructor
-   */
-  public Track()
-  {
-  	_theFixes = new Vector(0,1);
-  }
+	/**
+	 * default constructor
+	 */
+	public Track() {
+		_theFixes = new Vector(0, 1);
+	}
 
-  /**
-   * constructor receives reference to list of fixes which make up
-   * the track
-   */
-  public Track(java.util.Vector theFixesVal)
-  {
-  	this();
-  	
-    // ok - add the fixes incrementally, so we can sort out the time limits
-    for (Iterator iter = theFixesVal.iterator(); iter.hasNext();)
-		{
-			Fix thisFix = (Fix) iter.next();
-			addFix(thisFix);
+	/**
+	 * constructor receives reference to list of fixes which make up the track
+	 */
+	public Track(java.util.Vector theFixesVal) {
+		this();
+
+		// hey, check we've received some fixes
+		if (theFixesVal != null) {
+
+			// ok - add the fixes incrementally, so we can sort out the time
+			// limits
+			for (Iterator iter = theFixesVal.iterator(); iter.hasNext();) {
+				Fix thisFix = (Fix) iter.next();
+				addFix(thisFix);
+			}
 		}
-  }
-  
-  public void closeMe()
-  {
-    // empty out the fixes
-    _theFixes.removeAllElements();
-  }
-  //////////////////////////////////////////////////
-  // member functions
-  //////////////////////////////////////////////////
+	}
 
-  public Enumeration getFixes()
-  {
-    return _theFixes.elements();
-  }
+	public void closeMe() {
+		// empty out the fixes
+		_theFixes.removeAllElements();
+	}
 
+	// ////////////////////////////////////////////////
+	// member functions
+	// ////////////////////////////////////////////////
 
-  /**
-   * get the last fix - convenience function called from ASSET
-   *
-   * @return the last fix
-   */
-  public Fix getFinalFix()
-  {
-    return (Fix) _theFixes.lastElement();
-  }
+	public Enumeration getFixes() {
+		return _theFixes.elements();
+	}
 
+	/**
+	 * get the last fix - convenience function called from ASSET
+	 * 
+	 * @return the last fix
+	 */
+	public Fix getFinalFix() {
+		return (Fix) _theFixes.lastElement();
+	}
 
-  /**
-   * do we have any data?
-   *
-   * @return yes/no
-   */
-  public boolean hasFixes()
-  {
-    return _theFixes.size() > 0;
-  }
+	/**
+	 * do we have any data?
+	 * 
+	 * @return yes/no
+	 */
+	public boolean hasFixes() {
+		return _theFixes.size() > 0;
+	}
 
-  /**
-   * Get
-   */
-  public String getVesselName()
-  {
-    return VesselName;
-  }
+	/**
+	 * Get
+	 */
+	public String getVesselName() {
+		return VesselName;
+	}
 
-  /**
-   * Retrieve the area of the track
-   */
-  public WorldArea getDataArea()
-  {
-    return _theArea;
-  }
+	/**
+	 * Retrieve the area of the track
+	 */
+	public WorldArea getDataArea() {
+		return _theArea;
+	}
 
-  /**
-   * Set
-   */
-  public void setVesselName(String VesselName)
-  {
-    this.VesselName = VesselName;
-    setName(VesselName);
-  }
+	/**
+	 * Set
+	 */
+	public void setVesselName(String VesselName) {
+		this.VesselName = VesselName;
+		setName(VesselName);
+	}
 
-  /**
-   * add the fix to our list, also extend our area
-   */
-  public void addFix(Fix theFix)
-  {
-    // add to vector
-    _theFixes.addElement(theFix);
+	/**
+	 * add the fix to our list, also extend our area
+	 */
+	public void addFix(Fix theFix) {
+		// add to vector
+		_theFixes.addElement(theFix);
 
-    // extend the area to include this
-    if (_theArea == null)
-    {
-      _theArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
-    }
-    else
-    {
-      _theArea.extend(theFix.getLocation());
-    }
+		// extend the area to include this
+		if (_theArea == null) {
+			_theArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
+		} else {
+			_theArea.extend(theFix.getLocation());
+		}
 
-    // extend the time period
-    HiResDate thisTime = theFix.getTime();
+		// extend the time period
+		HiResDate thisTime = theFix.getTime();
 
-    long myTime = thisTime.getMicros();
+		long myTime = thisTime.getMicros();
 
-    if (_startDTG == TimePeriod.INVALID_DATE)
-    {
-      _startDTG = _endDTG = thisTime;
-    }
-    else
-    {
-      if (myTime < _startDTG.getMicros())
-      {
-        _startDTG = thisTime;
-      }
+		if (_startDTG == TimePeriod.INVALID_DATE) {
+			_startDTG = _endDTG = thisTime;
+		} else {
+			if (myTime < _startDTG.getMicros()) {
+				_startDTG = thisTime;
+			}
 
-      if (myTime > _endDTG.getMicros())
-      {
-        _endDTG = thisTime;
-      }
-    }
-  }
+			if (myTime > _endDTG.getMicros()) {
+				_endDTG = thisTime;
+			}
+		}
+	}
 
-  /**
-   * return this item as a string
-   */
-  public String toString()
-  {
-    return getName();
-  }
+	/**
+	 * return this item as a string
+	 */
+	public String toString() {
+		return getName();
+	}
 
-  public String getName()
-  {
-    return _trackName;
-  }
+	public String getName() {
+		return _trackName;
+	}
 
-  public void setName(String theName)
-  {
-    _trackName = theName;
-  }
+	public void setName(String theName) {
+		_trackName = theName;
+	}
 
-  public HiResDate getStartDTG()
-  {
-    return _startDTG;
-  }
+	public HiResDate getStartDTG() {
+		return _startDTG;
+	}
 
-  public HiResDate getEndDTG()
-  {
-    return _endDTG;
-  }
+	public HiResDate getEndDTG() {
+		return _endDTG;
+	}
 
 }
-
-
-
-
-
-
-
-
