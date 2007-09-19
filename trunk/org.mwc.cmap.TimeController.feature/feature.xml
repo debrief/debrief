@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.12">
+      version="1.0.13">
 
    <description>
-      [1.0.12] Fix edit prop&apos;s not being displayed, better default DTG format
+      [1.0.13] Error trapping for when no time data loaded (new plot)
+[1.0.12] Fix edit prop&apos;s not being displayed, better default
+DTG format
 [1.0.11] Amend online update location
 [1.0.10] Lots of tidying, introduce highlighters
 [1.0.9] Redraw whole plot when switching out of relative mode
