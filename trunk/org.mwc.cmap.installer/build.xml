@@ -127,7 +127,7 @@
 		<echo message="building:${dist-title}" />
 
 		<!-- find out what we're doing -->
-        <input message="Build unix/mac dist? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.linux" />
+        <input message="Build unix/mac dist? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.linux.answer" />
         <input message="Export to internet? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.internet.answer" />
 		<input message="Build installer? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.installer.answer" />
 		<input message="Export to removeable media? (y/n)?" defaultvalue="y" validargs="y,n" addproperty="do.zipDrive.answer" />
