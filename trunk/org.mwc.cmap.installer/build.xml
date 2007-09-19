@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project name="org.mwc.cmap.installer" default="perform_dist" basedir=".">
 	<property name="deployDir" value="../deploy" description="where we start building the output set" />
+    <property name="linuxDist" value="${deployDir}/Debrief.zip" description="the name for the linux/debrief dist (without JRE)" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
 	<property name="advancedInstallerPath" value="d:\dev\cmap\contribs\advancedinstaller\" />
@@ -9,11 +10,10 @@
 	</target>
 
 	<target name="empty_dist_dir" description="clear the output directory" depends="">
-		<delete dir="${deployDir}" excludes="DebriefNG, .project" />
+		<delete dir="${deployDir}" excludes="DebriefNG,DebriefNG/**, .project" />
 	</target>
 
 	<target name="check_the_dist" description="checking all files there" depends="">
-
 		<property name="distDir" value="${destDir}\DebriefNG" />
 		<condition property="eclipse_present">
 			<and>
@@ -90,12 +90,32 @@
 		<antcall target="copyUpdateToZip"/>
 	</target>
 
+    <target name="createLinuxDist" description="copy updates to zipDrv" if="do.linux">
+        <echo message="ditching previous linux dist" />
+    	<delete file="${linuxDist}"/>
+        <echo message="collating linux dist" />
+    	<zip destfile="${linuxDist}" basedir="${deployDir}/DebriefNG" excludes="jre" />
+    	<property name="linuxDistComplete" value="true"/>
+    </target>
+
 	<target name="upload_to_internet" if="do.internet">
 		<input message="And the password for target server?" addproperty="sf.pwd" />
 		<echo message="copying fileset to internet" />
 		<scp trust="yes" file="${deployDir}/test2.txt" password="${sf.pwd}" todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/eclipse">
-			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
 		</scp>
+<!--
+            <fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+ -->		
+		<echo message="and the linux dist"/>
+		<antcall target="uploadLinuxDist"/>
+	</target>
+		
+	<target name="uploadLinuxDist" if="${linuxDistComplete}">
+		<!-- check if linux dist built -->
+		<fail message="We haven't got the linux dist" unless="${linuxDistComplete}"/>
+        <fail message="we don't know the password" if="${sf.pwd}"/>
+        <scp trust="yes" file="${linuxDist}" password="${sf.pwd}" todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/linux">
+        </scp>
 	</target>
 
 	<target name="perform_dist" description="insert missing bits into dist">
@@ -107,9 +127,10 @@
 		<echo message="building:${dist-title}" />
 
 		<!-- find out what we're doing -->
+        <input message="Build unix/mac dist? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.linux" />
+        <input message="Export to internet? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.internet.answer" />
 		<input message="Build installer? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.installer.answer" />
 		<input message="Export to removeable media? (y/n)?" defaultvalue="y" validargs="y,n" addproperty="do.zipDrive.answer" />
-		<input message="Export to internet? (y/n)?" defaultvalue="y" validargs="y,n" addproperty="do.internet.answer" />
 
 		<!-- convert answers to true/false -->
 		<condition property="do.installer">
@@ -124,8 +145,15 @@
 			<equals arg1="y" arg2="${do.internet.answer}" />
 		</condition>
 
+        <condition property="do.linux">
+            <equals arg1="y" arg2="${do.linux.answer}" />
+        </condition>
+
 		<!-- clean the target dist -->
 		<antcall target="empty_dist_dir" />
+
+        <!-- do the linux dist -->
+        <antcall target="createLinuxDist" />
 
 		<!-- upload the modified features to the internet -->
 		<antcall target="upload_to_internet" />
