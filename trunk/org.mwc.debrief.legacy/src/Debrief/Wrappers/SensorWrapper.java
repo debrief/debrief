@@ -295,7 +295,7 @@ public final class SensorWrapper extends TacticalDataWrapper
 
   /**
    * get the watchable in this list nearest to the specified DTG - we take most of this processing
-   * from the similar method in TrackWrappper
+   * from the similar method in TrackWrappper. If the DTG is after our end, return our last point
    *
    * @param DTG the DTG to search for
    * @return the nearest Watchable
@@ -689,7 +689,7 @@ public final class SensorWrapper extends TacticalDataWrapper
       // after end of track data?
       cal.set(2001, 10, 4, 4, 7, 0);
       list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      assertEquals("after end of data", list.length, 0);
+      assertEquals("after end of data", list.length, 1);
 
 
     }

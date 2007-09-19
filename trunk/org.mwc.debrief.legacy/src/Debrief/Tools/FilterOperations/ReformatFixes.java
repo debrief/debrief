@@ -1010,11 +1010,11 @@ public final class ReformatFixes implements FilterOperation
       Collection keys = props.keySet();
 
       // did we get the correct number
-      for(Iterator iterator = keys.iterator(); iterator.hasNext();)
-      {
-        String s = (String) iterator.next();
-        System.out.println("this key:" + s);
-      }
+//      for(Iterator iterator = keys.iterator(); iterator.hasNext();)
+//      {
+//        String s = (String) iterator.next();
+//        System.out.println("this key:" + s);
+//      }
 
       assertEquals("found correct number of properties for track", 8, keys.size());
 

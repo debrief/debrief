@@ -635,7 +635,7 @@ public final class TMAWrapper  extends TacticalDataWrapper
       // after end of track data?
       cal.set(2001, 10, 4, 4, 7, 0);
       list = solution.getNearestTo(new HiResDate(cal.getTime().getTime()));
-      assertEquals("after end of data", list.length, 0);
+      assertEquals("after end of data", 1, list.length);
 
 
     }

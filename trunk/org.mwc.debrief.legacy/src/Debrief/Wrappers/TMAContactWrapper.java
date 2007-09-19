@@ -1209,6 +1209,9 @@ public final class TMAContactWrapper extends
 			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor", "blank track",
 					theDTG, 3000, 55, 5d, 6d, 1d, Color.red, "my label", null, "some symbol");
 
+			final TMAWrapper wrap = new TMAWrapper("tma");
+			ed.setTMATrack(wrap);
+			
 			// check the editable parameters
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 		}
@@ -1222,9 +1225,6 @@ public final class TMAContactWrapper extends
 			HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
 			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor", "blank track",
 					theDTG, origin, 5d, 6d, 1d, Color.red, "my label", es, "some symbol");
-
-			// check the editable parameters
-			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 
 			/**
 			 * test the distance calcs

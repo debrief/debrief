@@ -1078,10 +1078,14 @@ public class ImportReplay extends PlainImporterBase
 		{
 			super(val);
 			String fileRoot = System.getProperty("dataDir");
-			if (fileRoot == null)
-				fileRoot = "D:\\Dev\\Debrief\\src\\java\\Debrief";
+			
+			// 
 			assertNotNull("Check data directory is configured", fileRoot);
 			fileName = fileRoot + File.separator + fileName;
+						
+			// and check the file exists
+			java.io.File iFile = new File(fileName);
+			assertTrue("Test file not found", iFile.exists());
 		}
 
 		public final void testReadREP()

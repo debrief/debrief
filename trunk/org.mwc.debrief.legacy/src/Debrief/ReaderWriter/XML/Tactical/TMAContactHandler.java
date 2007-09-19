@@ -27,6 +27,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import java.awt.*;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.Enumeration;
 
@@ -414,6 +415,11 @@ abstract public class TMAContactHandler extends MWC.Utilities.ReaderWriter.XML.M
       Layers res = new Layers();
       //       final String fName = "D:\\dev\\Debrief\\Source\\src\\Debrief\\test_tma_read_write.xml";
       final String fName = System.getProperty("dataDir") + "\\test_tma_read_write.xml";
+      assertNotNull("dataDir system variable not set - should be in debrief_legacy\\src", fName);
+      
+      java.io.File fileTest = new File(fName);
+      assertTrue("Test file not found:" + fName, fileTest.exists());
+      
       try
       {
         java.io.FileInputStream fis = new java.io.FileInputStream(fName);

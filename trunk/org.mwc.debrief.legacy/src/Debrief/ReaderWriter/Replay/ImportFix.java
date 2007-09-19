@@ -530,12 +530,11 @@ public final class ImportFix implements PlainLineImporter
     {
       String val = "700101 000000";
       HiResDate ers = DebriefFormatDateTime.parseThis(val);
-      long micros = ers.getMicros();
-      assertEquals("zero micros", 0, micros);
+      assertNull("zero micros doesn't get parsed", ers);
 
       val = "700101 000000.001";
       ers = DebriefFormatDateTime.parseThis(val);
-      micros = ers.getMicros();
+      long micros = ers.getMicros();
       assertEquals("zero micros", 1000, micros);
 
       val = "19700101 000000.001";
