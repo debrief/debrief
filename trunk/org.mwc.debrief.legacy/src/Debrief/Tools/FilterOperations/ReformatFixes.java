@@ -984,7 +984,7 @@ public final class ReformatFixes implements FilterOperation
       HashMap res = ReformatFixes.getCommonProperties(theObjects2);
 
       // check we have our two items
-      assertEquals("found right number of properties", 3, res.keySet().size());
+      assertEquals("found right number of properties", 4, res.keySet().size());
 
       // get the first list
       Vector firstList = (Vector) res.get(res.keySet().iterator().next());
@@ -1010,13 +1010,13 @@ public final class ReformatFixes implements FilterOperation
       Collection keys = props.keySet();
 
       // did we get the correct number
-//      for(Iterator iterator = keys.iterator(); iterator.hasNext();)
-//      {
-//        String s = (String) iterator.next();
-//        System.out.println("this key:" + s);
-//      }
+      for(Iterator iterator = keys.iterator(); iterator.hasNext();)
+      {
+        String s = (String) iterator.next();
+        System.out.println("this key:" + s);
+      }
 
-      assertEquals("found correct number of properties for track", 7, keys.size());
+      assertEquals("found correct number of properties for track", 8, keys.size());
 
       // see if we've got a property we expect
       assertTrue("found get color", keys.contains("Color"));
@@ -1154,8 +1154,8 @@ public final class ReformatFixes implements FilterOperation
       // find the list of properties to be edited
        HashMap commonProps = ReformatFixes.getCommonProperties(theTracks);
 
-       // find out what is to be edited
-       Vector theSetters = (Vector) commonProps.get(commonProps.keySet().iterator().next());
+       // get the color setter
+       Vector theSetters = (Vector) commonProps.get("Color");
 
       // find out what types of position to use
       String position_type = ALL_ITEMS;
