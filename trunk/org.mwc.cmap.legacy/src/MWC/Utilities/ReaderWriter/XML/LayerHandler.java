@@ -153,20 +153,16 @@ public class LayerHandler extends MWCXMLReader
 			}
 		}
 
-		// add to layer if greater than 0
-		if (counter > 0)
-		{
-			// our layer is complete, add it to the parent!
-			// note, we no longer allow duplicates, we only want
-			// one Chart Features, for example
-			_theLayers.addThisLayer(_myLayer);
+		// our layer is complete, add it to the parent!
+		// note, we no longer allow duplicates, we only want
+		// one Chart Features, for example
+		_theLayers.addThisLayer(_myLayer);
 
-			// now, we may well have already had a layer of this name - particularly
-			// the "Chart Features" one.
-			// if this has happened, we need to update it's visibility with our one
-			Layer theLayer = _theLayers.findLayer(_myLayer.getName());
-			theLayer.setVisible(_myLayer.getVisible());
-		}
+		// now, we may well have already had a layer of this name - particularly
+		// the "Chart Features" one.
+		// if this has happened, we need to update it's visibility with our one
+		Layer theLayer = _theLayers.findLayer(_myLayer.getName());
+		theLayer.setVisible(_myLayer.getVisible());
 		
 		// right, make sure we make the chart-feature layer unbuffered		
 		// NO, don't bother making it buffered, we're having double-buffering trouble under VISTA		
