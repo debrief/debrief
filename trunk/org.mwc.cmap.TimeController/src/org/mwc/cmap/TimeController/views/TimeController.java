@@ -2036,7 +2036,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		if (_myTemporalDataset != null)
 		{
 			TimePeriod period = _myTemporalDataset.getPeriod();
-			_slideManager.resetRange(period.getStartDTG(), period.getEndDTG());
+
+			// do we know our period?
+			if (period != null)
+			{
+				_slideManager.resetRange(period.getStartDTG(), period
+						.getEndDTG());
+			}
 		}
 	}
 
