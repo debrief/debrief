@@ -200,6 +200,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 	 */
 	public CoastPainter(ToolParent parent)
 	{
+		this();
 		_myParent = parent;
 	}
 

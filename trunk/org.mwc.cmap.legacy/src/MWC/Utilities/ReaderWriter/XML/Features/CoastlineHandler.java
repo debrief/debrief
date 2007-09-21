@@ -49,7 +49,7 @@ abstract public class CoastlineHandler extends MWCXMLReader  implements LayerHan
   public void elementClosed()
   {
     // create a coastline from this data
-    MWC.GUI.Chart.Painters.CoastPainter csp = new MWC.GUI.Chart.Painters.CoastPainter((Coastline)null);
+    MWC.GUI.Chart.Painters.CoastPainter csp = new MWC.GUI.Chart.Painters.CoastPainter();
     csp.setColor(_theColor);
     csp.setVisible(_isVisible);
 
