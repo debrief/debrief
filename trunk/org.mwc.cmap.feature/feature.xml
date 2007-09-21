@@ -6,7 +6,8 @@
       provider-name="MWC">
 
    <description>
-      [1.0.41] Load Layer from xml even if empty, minor tidying for unit tests
+[1.0.42] Fix for CoastLine painter not loading coastline, duh.
+[1.0.41] Load Layer from xml even if empty, minor tidying for unit tests
 [1.0.40] Improved support for context-sensitive help
 [1.0.39] Overcome export-to-clipboard performance bottleneck
 [1.0.38] Select parent view before displaying its editable parts
