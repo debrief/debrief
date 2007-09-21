@@ -24,19 +24,19 @@
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.5.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.5">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.help.feature_1.0.16.jar" id="org.mwc.debrief.help.feature" version="1.0.16">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.feature_1.0.41.jar" id="org.mwc.cmap.feature" version="1.0.41">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.plot3d.feature_1.0.9.jar" id="org.mwc.cmap.plot3d.feature" version="1.0.9">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.13.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.13">
+   <feature url="features/org.mwc.debrief.help.feature_1.0.16.jar" id="org.mwc.debrief.help.feature" version="1.0.16">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.40.jar" id="org.mwc.debrief.feature" version="1.0.40">
+   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.14.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.14">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.debrief.feature_1.0.41.jar" id="org.mwc.debrief.feature" version="1.0.41">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
