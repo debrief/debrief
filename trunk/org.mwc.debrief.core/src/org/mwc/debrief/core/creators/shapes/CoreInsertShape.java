@@ -59,9 +59,14 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 	 */
 	protected String getLayerName()
 	{
-		String res = DEFAULT_TARGET_LAYER;
+		String res = null;
 		// ok, are we auto-deciding? 
-		if(AutoSelectTarget.getAutoSelectTarget())
+		if(!AutoSelectTarget.getAutoSelectTarget())
+		{
+			// nope, just use the default layer
+			res = DEFAULT_TARGET_LAYER;
+		}
+		else
 		{
 			// ok, get the non-track layers for the current plot
 			

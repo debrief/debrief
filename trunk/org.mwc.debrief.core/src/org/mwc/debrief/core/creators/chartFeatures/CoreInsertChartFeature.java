@@ -58,11 +58,15 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 
 		Action res = createAction(theChart);
 
-		// ok, now wrap the action
-		DebriefActionWrapper daw = new DebriefActionWrapper(res);
+		// did we get an action?
+		if (res != null)
+		{
+			// ok, now wrap the action
+			DebriefActionWrapper daw = new DebriefActionWrapper(res);
 
-		// and add it to our buffer (which will execute it anyway)
-		CorePlugin.run(daw);
+			// and add it to our buffer (which will execute it anyway)
+			CorePlugin.run(daw);
+		}
 	}
 
 	protected final Action createAction(PlainChart theChart)
@@ -81,6 +85,14 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 
 			// ok, get our layer name
 			final String myLayer = getLayerName();
+
+			// hmm, did we get a layer?
+			if (myLayer == null)
+			{
+				// nope, use must have cancelled. Whatever, we haven't got anywhere
+				// to put the new feature anyway...
+				return res;
+			}
 
 			// aah, and the misc layer, in which we will store the shape
 			Layer theLayer = null;
@@ -101,8 +113,8 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 			}
 
 			// and put it into an action (so we can undo it)
-			res = new PlainCreate.CreateLabelAction(null, theLayer, theChart.getLayers(),
-					thePlottable)
+			res = new PlainCreate.CreateLabelAction(null, theLayer, theChart
+					.getLayers(), thePlottable)
 			{
 
 				public void execute()
@@ -120,32 +132,32 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 						// ok, now open the properties window
 						try
 						{
-							PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-									.showView(IPageLayout.ID_PROP_SHEET);
-						}
-						catch (PartInitException e)
+							PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+									.getActivePage().showView(IPageLayout.ID_PROP_SHEET);
+						} catch (PartInitException e)
 						{
-							CorePlugin.logError(Status.WARNING, "Failed to open properties view", e);
+							CorePlugin.logError(Status.WARNING,
+									"Failed to open properties view", e);
 						}
 
 						// find the editor
 						CorePlotEditor editor = getEditor();
 
 						// highlight the editor
-						PlatformUI.getWorkbench().getActiveWorkbenchWindow().getActivePage()
-								.activate(editor);
+						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
+								.getActivePage().activate(editor);
 
 						// select the shape
 						editor.selectPlottable(_theShape, _theLayer);
 					}
 				}
 			};
-		}
-		else
+		} else
 		{
 			// we haven't got an area, inform the user
 			CorePlugin
-					.showMessage("Create Feature",
+					.showMessage(
+							"Create Feature",
 							"Sorry, we can't create a shape until the area is defined.  Try adding a coastline first");
 		}
 
