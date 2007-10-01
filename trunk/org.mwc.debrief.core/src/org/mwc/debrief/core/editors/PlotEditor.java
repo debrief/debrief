@@ -136,7 +136,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 			// just provide with our complete set of layers
 			public Object[] getTargets() {
 				// ok, return our top level layers as objects
-				Vector res = new Vector(0, 1);
+				Vector<Layer> res = new Vector<Layer>(0, 1);
 				for (int i = 0; i < _myLayers.size(); i++) {
 					res.add(_myLayers.elementAt(i));
 				}
@@ -147,13 +147,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 			 * override performing the operation, since we'll do a screen update on
 			 * completion
 			 */
-			public Vector performOperation(AnOperation operationName) {
+			public Vector<Layer> performOperation(AnOperation operationName) {
 				// make the actual change
-				Vector res = super.performOperation(operationName);
+				Vector<Layer> res = super.performOperation(operationName);
 
 				if (res != null) {
 					if (res.size() != 0) {
-						for (Iterator iter = res.iterator(); iter.hasNext();) {
+						for (Iterator<Layer> iter = res.iterator(); iter.hasNext();) {
 							Layer thisL = (Layer) iter.next();
 							// and update the screen
 							_myLayers.fireReformatted(thisL);
@@ -194,7 +194,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 			IPersistableElement persist = input.getPersistable();
 			if (input instanceof IFileEditorInput) {
 				IFileEditorInput ife = (IFileEditorInput) input;
-				is = ife.getFile().getContents();
+				IFile iff = ife.getFile();
+				iff.refreshLocal(IResource.DEPTH_ONE, null);
+				is = iff.getContents();
 			}
 			else if (persist instanceof IFileEditorInput) {
 				IFileEditorInput iff = (IFileEditorInput) persist;
@@ -295,7 +297,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 	private static TimePeriod getPeriodFor(Layers theData) {
 		TimePeriod res = null;
 
-		for (Enumeration iter = theData.elements(); iter.hasMoreElements();) {
+		for (Enumeration<Editable> iter = theData.elements(); iter.hasMoreElements();) {
 			Layer thisLayer = (Layer) iter.nextElement();
 
 			// and through this layer
@@ -305,7 +307,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 				res = extend(res, thisT.getEndDTG());
 			}
 			else if (thisLayer instanceof BaseLayer) {
-				Enumeration elements = thisLayer.elements();
+				Enumeration<Editable> elements = thisLayer.elements();
 				while (elements.hasMoreElements()) {
 					Plottable nextP = (Plottable) elements.nextElement();
 					if (nextP instanceof Watchable) {
@@ -542,10 +544,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor {
 						// ok, now sort out the highlight
 
 						// right, what are the watchables
-						final Vector watchables = SnailPainter.getWatchables(thisLayer);
+						final Vector<Plottable> watchables = SnailPainter.getWatchables(thisLayer);
 
 						// cycle through them
-						final Enumeration watches = watchables.elements();
+						final Enumeration<Plottable> watches = watchables.elements();
 						while (watches.hasMoreElements()) {
 							final WatchableList list = (WatchableList) watches.nextElement();
 							// is the primary an instance of layer (with it's
