@@ -209,13 +209,13 @@ public final class ImportNarrative implements PlainLineImporter
     public void testImportNarrative()
     {
 
-      final String testFile = "D:\\Dev\\cmap\\org.mwc.debrief.legacy\\src" +
-      		"\\Debrief\\readerwriter\\Replay\\test_import_narrative.rep";
+      final String testFile = "/home/ian/dev/cmap/org.mwc.debrief.legacy/src" +
+      		"/Debrief/ReaderWriter/Replay/test_import_narrative.rep";
 
       
       // check we can find the file
       java.io.File file = new java.io.File(testFile);
-      assertTrue("test file not found", file.exists());
+      assertTrue("test file not found:" + testFile, file.exists());
       
       // ok, now try to read it in
       Layers theHolder = new Layers();
