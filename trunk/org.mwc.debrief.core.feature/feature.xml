@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.41">
+      version="1.0.42">
 
    <description>
-      [1.0.41] Tidily handle user cancelling Add Shape dialog
+[1.0.42] Force file refresh before opening, tidy generics support
+[1.0.41] Tidily handle user cancelling Add Shape dialog
 [1.0.40] Update legacy unit tests
 [1.0.39] Reflect improved performance of export to clipboard
 [1.0.38] Hide S57 support, leading to instability
