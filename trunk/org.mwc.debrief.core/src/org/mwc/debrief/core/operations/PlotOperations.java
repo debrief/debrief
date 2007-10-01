@@ -1,11 +1,15 @@
 package org.mwc.debrief.core.operations;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 
 import Debrief.Tools.Tote.WatchableList;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GenericData.TimePeriod;
 
 public class PlotOperations implements ControllablePeriod
@@ -14,7 +18,7 @@ public class PlotOperations implements ControllablePeriod
 	/**
 	 * store our list of operations
 	 */
-	private Vector myOperations;
+	private Vector<ControllablePeriod.AnOperation> myOperations;
 
 	/**
 	 * store the time period
@@ -27,7 +31,7 @@ public class PlotOperations implements ControllablePeriod
 	public PlotOperations()
 	{
 		super();
-		myOperations = new Vector(0, 1);
+		myOperations = new Vector<ControllablePeriod.AnOperation>(0, 1);
 		myOperations.add(new FilterToTimePeriod());
 	}
 
@@ -44,10 +48,10 @@ public class PlotOperations implements ControllablePeriod
 			return "Hide all time-related data points outside time period";
 		}
 
-		public Vector apply(TimePeriod period, Object[] selection)
+		public Vector<Layer> apply(TimePeriod period, Object[] selection)
 		{
 			
-			Vector res = new Vector(0,1);
+			Vector<Layer> res = new Vector<Layer>(0,1);
 			
 			// right, pass through the series
 			for (int i = 0; i < selection.length; i++)
@@ -66,7 +70,7 @@ public class PlotOperations implements ControllablePeriod
 				{
 					// hey, pass through this layer
 					Layer thisL = (Layer) thisO;
-					Enumeration enumer = thisL.elements();
+					Enumeration<Editable> enumer = thisL.elements();
 					while(enumer.hasMoreElements())
 					{
 						Plottable thisP = (Plottable) enumer.nextElement();
@@ -95,7 +99,7 @@ public class PlotOperations implements ControllablePeriod
 	/**
 	 * @return
 	 */
-	public Vector getOperations()
+	public Vector<ControllablePeriod.AnOperation>  getOperations()
 	{
 		return myOperations;
 	}
@@ -111,10 +115,10 @@ public class PlotOperations implements ControllablePeriod
 	/**
 	 * @param operationName
 	 */
-	public Vector performOperation(AnOperation operationName)
+	public Vector<Layer> performOperation(AnOperation operationName)
 	{
 		// right, find the operation with the correct name
-		Vector res = operationName.apply(getPeriod(), getTargets());
+		Vector<Layer> res = operationName.apply(getPeriod(), getTargets());
 		return res;
 	}
 
@@ -126,12 +130,12 @@ public class PlotOperations implements ControllablePeriod
 		_myPeriod = period;
 	}
 
-	public Vector performOperation(String operationName)
+	public Vector<Layer> performOperation(String operationName)
 	{
-		Vector res = null;
+		Vector<Layer> res = null;
 		
 		// right, run through the ops to find a matching one
-		for (Iterator iter = myOperations.iterator(); iter.hasNext();)
+		for (Iterator<AnOperation> iter = myOperations.iterator(); iter.hasNext();)
 		{
 			AnOperation op = (AnOperation) iter.next();
 			if (op.getName().equals(operationName))
