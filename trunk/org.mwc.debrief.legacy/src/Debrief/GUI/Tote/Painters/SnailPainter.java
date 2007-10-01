@@ -364,7 +364,7 @@ public class SnailPainter extends TotePainter implements Editable
 						final TrackWrapper trw = (TrackWrapper) thisLayer;
 
 						// first plot the sensors
-						final Enumeration sensors = trw.getSensors();
+						final Enumeration<SensorWrapper> sensors = trw.getSensors();
 						if (sensors != null)
 						{
 							while (sensors.hasMoreElements())
@@ -379,7 +379,7 @@ public class SnailPainter extends TotePainter implements Editable
 						}
 
 						// now the TMA solutons
-						final Enumeration solutions = trw.getSolutions();
+						final Enumeration<TMAWrapper> solutions = trw.getSolutions();
 						if (solutions != null)
 						{
 							while (solutions.hasMoreElements())
@@ -397,7 +397,7 @@ public class SnailPainter extends TotePainter implements Editable
 			}
 			else
 			{
-				final Enumeration iter = thisLayer.elements();
+				final Enumeration<Editable> iter = thisLayer.elements();
 				while (iter.hasMoreElements())
 				{
 					final Plottable p = (Plottable) iter.nextElement();
@@ -464,7 +464,7 @@ public class SnailPainter extends TotePainter implements Editable
 			else
 			{
 				// just see if this layer is one of our back-ground layesr
-				final Enumeration iter = thisLayer.elements();
+				final Enumeration<Editable> iter = thisLayer.elements();
 				while (iter.hasMoreElements())
 				{
 					final Plottable thisPlottable = (Plottable) iter.nextElement();
@@ -559,7 +559,7 @@ public class SnailPainter extends TotePainter implements Editable
 		if (on)
 		{
 			// remove the current painters for the canvas
-			final Enumeration iter = _theChart.getCanvas().getPainters();
+			final Enumeration<CanvasType.PaintListener> iter = _theChart.getCanvas().getPainters();
 
 			_oldPainters = new Vector<PaintListener>(0, 1);
 
@@ -570,7 +570,7 @@ public class SnailPainter extends TotePainter implements Editable
 			}
 
 			// and remove the painters
-			final Enumeration oldies = _oldPainters.elements();
+			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters.elements();
 			while (oldies.hasMoreElements())
 			{
 				_theChart.getCanvas().removePainter(
@@ -590,7 +590,7 @@ public class SnailPainter extends TotePainter implements Editable
 			_theChart.getCanvas().removePainter(this);
 
 			// restore the painters
-			final Enumeration oldies = _oldPainters.elements();
+			final Enumeration<CanvasType.PaintListener> oldies = _oldPainters.elements();
 			while (oldies.hasMoreElements())
 			{
 				_theChart.getCanvas().addPainter((CanvasType.PaintListener) oldies.nextElement());
@@ -634,8 +634,8 @@ public class SnailPainter extends TotePainter implements Editable
 		// we will plot the non-watchables aswell)
 		if ((oldDTG == null) || (_oldWatchables.size() == 0))
 		{
-			final Vector nonWatches = getNonWatchables(super._theData);
-			final Enumeration iter = nonWatches.elements();
+			final Vector<Plottable> nonWatches = getNonWatchables(super._theData);
+			final Enumeration<Plottable> iter = nonWatches.elements();
 			while (iter.hasMoreElements())
 			{
 				final Plottable p = (Plottable) iter.nextElement();
@@ -684,7 +684,7 @@ public class SnailPainter extends TotePainter implements Editable
 				}
 
 				// sort out the oldies
-				final Iterator oldies = _oldWatchables.keySet().iterator();
+				final Iterator<Watchable> oldies = _oldWatchables.keySet().iterator();
 				while (oldies.hasNext())
 				{
 					final Watchable thisOne = (Watchable) oldies.next();
@@ -710,7 +710,7 @@ public class SnailPainter extends TotePainter implements Editable
 		}
 
 		// determine the new items
-		final Vector theWatchableLists = getWatchables(super._theData);
+		final Vector<Plottable> theWatchableLists = getWatchables(super._theData);
 		_paintingOldies = false;
 
 		// sort out the line width of the primary
@@ -742,7 +742,7 @@ public class SnailPainter extends TotePainter implements Editable
 		}
 
 		// got through to highlight the data
-		final Enumeration watches = theWatchableLists.elements();
+		final Enumeration<Plottable> watches = theWatchableLists.elements();
 		while (watches.hasMoreElements())
 		{
 			final WatchableList list = (WatchableList) watches.nextElement();
@@ -827,7 +827,7 @@ public class SnailPainter extends TotePainter implements Editable
 			dest.setColor(Color.white);
 
 			// see if our plotters can plot this type of watchable
-			final Enumeration iter = _myHighlightPlotters.elements();
+			final Enumeration<SnailPainter.drawHighLight> iter = _myHighlightPlotters.elements();
 			while (iter.hasMoreElements())
 			{
 				final SnailPainter.drawHighLight plotter = (SnailPainter.drawHighLight) iter
