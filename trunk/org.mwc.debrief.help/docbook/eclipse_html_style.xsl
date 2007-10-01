@@ -24,7 +24,7 @@
   <xsl:param name="root.filename" select="'index'"/>
   <xsl:param name="html.extra.head.links" select="1"/>
   <xsl:param name="chunker.output.method" select="'html'"/>
-  <xsl:param name="base.dir" select="'html\legacy\'"/>
+  <xsl:param name="base.dir" select="'html/legacy/'"/>
   <xsl:param name="chunk.quietly" select="1"/>
   <xsl:param name="chunk.first.sections" select="0"></xsl:param>
 
