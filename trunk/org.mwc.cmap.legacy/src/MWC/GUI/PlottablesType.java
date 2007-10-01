@@ -15,7 +15,7 @@ public interface PlottablesType {
    *
    * @return enumeration of elements
    */
-  Enumeration elements();
+  Enumeration<Editable> elements();
 
   /** how big is the list?
    *

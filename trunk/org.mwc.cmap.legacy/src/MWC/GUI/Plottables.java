@@ -188,6 +188,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 */
 	public static class CompareEditables implements Comparator<Editable>
 	{
+		@SuppressWarnings("unchecked")
 		public int compare(Editable p1, Editable p2)
 		{
 			int res;
@@ -205,7 +206,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 				if (p1 instanceof Comparable)
 			{
 				// yup, let them go for it
-				Comparable c1 = (Comparable) p1;
+				Comparable<Editable> c1 = (Comparable<Editable>) p1;
 				res = c1.compareTo(p2);
 			}
 			else
@@ -222,7 +223,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	/**
 	 * return the list of elements in this plottable
 	 */
-	public Enumeration elements()
+	public Enumeration<Editable> elements()
 	{
 		return new IteratorWrapper(_thePlottables.iterator());
 	}
@@ -244,7 +245,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		if (!getVisible())
 			return;
 
-		Iterator enumer = _thePlottables.iterator();
+		Iterator<Editable> enumer = _thePlottables.iterator();
 
 		// note, we used to only test it the subject was in the data area,
 		// but that left some items outside the user-dragged area not being visible.
@@ -307,7 +308,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		// so, step through the array, and calculate the area
 		WorldArea res = null;
 
-		Iterator enumer = _thePlottables.iterator();
+		Iterator<Editable> enumer = _thePlottables.iterator();
 		while (enumer.hasNext())
 		{
 			Object nextOne = enumer.next();
@@ -459,7 +460,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 */
 	public void append(PlottablesType other)
 	{
-		Enumeration enumer = other.elements();
+		Enumeration<Editable> enumer = other.elements();
 		while (enumer.hasMoreElements())
 		{
 			Plottable p = (Plottable) enumer.nextElement();
@@ -504,7 +505,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	/**
 	 * @return all items in our list greater or equal to fromElement
 	 */
-	public SortedSet tailSet(Plottable fromElement)
+	public SortedSet<Editable> tailSet(Editable fromElement)
 	{
 		return _thePlottables.tailSet(fromElement);
 	}
@@ -512,7 +513,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	/**
 	 * @return all items in our list less than toElement
 	 */
-	public SortedSet headSet(Plottable toElement)
+	public SortedSet<Editable> headSet(Editable toElement)
 	{
 		return _thePlottables.headSet(toElement);
 	}
@@ -521,7 +522,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 * @return all items in our list greater or equal to fromElement and less than
 	 *         toElement
 	 */
-	public SortedSet subSet(Plottable fromElement, Plottable toElement)
+	public SortedSet<Editable> subSet(Editable fromElement, Editable toElement)
 	{
 		return _thePlottables.subSet(fromElement, toElement);
 	}
@@ -531,16 +532,16 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 * 
 	 * @return
 	 */
-	public Collection getData()
+	public Collection<Editable> getData()
 	{
 		return _thePlottables;
 	}
 
-	public static final class IteratorWrapper implements java.util.Enumeration
+	public static final class IteratorWrapper implements java.util.Enumeration<Editable>
 	{
-		private final Iterator _val;
+		private final Iterator<Editable> _val;
 
-		public IteratorWrapper(final Iterator iterator)
+		public IteratorWrapper(final Iterator<Editable> iterator)
 		{
 			_val = iterator;
 		}
@@ -551,7 +552,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 
 		}
 
-		public final Object nextElement()
+		public final Editable nextElement()
 		{
 			return _val.next();
 		}

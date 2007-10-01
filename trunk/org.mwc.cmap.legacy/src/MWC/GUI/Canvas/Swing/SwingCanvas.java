@@ -257,7 +257,7 @@ public class SwingCanvas extends javax.swing.JComponent
   /**
    * the list of registered painters for this canvas.
    */
-  private Vector _thePainters;
+  private Vector<CanvasType.PaintListener> _thePainters;
 
   /**
    * the dimensions of the canvas - we keep our own
@@ -284,7 +284,7 @@ public class SwingCanvas extends javax.swing.JComponent
   /**
    * a list of the line-styles we know about.
    */
-  static private java.util.HashMap _myLineStyles = null;
+  static private java.util.HashMap<Integer, BasicStroke> _myLineStyles = null;
 
   /**
    * the current line width.
@@ -306,7 +306,7 @@ public class SwingCanvas extends javax.swing.JComponent
     setBackgroundColor(java.awt.Color.black);
 
     // initialisation
-    _thePainters = new Vector(0, 1);
+    _thePainters = new Vector<CanvasType.PaintListener>(0, 1);
 
     // create our projection
     _theProjection = new FlatProjection();
@@ -407,7 +407,7 @@ public class SwingCanvas extends javax.swing.JComponent
 
     // get the data area for the current painters
     WorldArea theArea = null;
-    final Enumeration enumer = _thePainters.elements();
+    final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
     while (enumer.hasMoreElements())
     {
       final CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer.nextElement();
@@ -459,7 +459,7 @@ public class SwingCanvas extends javax.swing.JComponent
       _dblBuff = null;
 
       // inform the listeners that we have resized
-      final Enumeration enumer = _thePainters.elements();
+      final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
       while (enumer.hasMoreElements())
       {
         final CanvasType.PaintListener thisPainter =
@@ -671,7 +671,7 @@ public class SwingCanvas extends javax.swing.JComponent
   {
     if (_myLineStyles == null)
     {
-      _myLineStyles = new java.util.HashMap(5);
+      _myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
       _myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID), new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
                                                                                         java.awt.BasicStroke.JOIN_MITER, 1, new float[]{5, 0}, 0));
       _myLineStyles.put(new Integer(MWC.GUI.CanvasType.DOTTED), new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
@@ -901,7 +901,7 @@ public class SwingCanvas extends javax.swing.JComponent
     _thePainters.removeElement(listener);
   }
 
-  public final Enumeration getPainters()
+  public final Enumeration<CanvasType.PaintListener> getPainters()
   {
     return _thePainters.elements();
   }
@@ -1006,7 +1006,7 @@ public class SwingCanvas extends javax.swing.JComponent
   public final void paintIt(final CanvasType canvas)
   {
     // go through our painters
-    final Enumeration enumer = _thePainters.elements();
+    final Enumeration<CanvasType.PaintListener> enumer = _thePainters.elements();
     while (enumer.hasMoreElements())
     {
       final CanvasType.PaintListener thisPainter =
@@ -1072,7 +1072,7 @@ public class SwingCanvas extends javax.swing.JComponent
     return true;
   }
 
-  /**
+  /**CanvasType.PaintListener
    * provide close method, clear elements.
    */
   public final void close()
@@ -1187,9 +1187,8 @@ public class SwingCanvas extends javax.swing.JComponent
 
     public final void testMyParams()
     {
-      final Editable.editableTesterSupport _tester = new Editable.editableTesterSupport();
       final Editable ed = new SwingCanvas(null);
-      _tester.testParams(ed, this);
+      Editable.editableTesterSupport.testParams(ed, this);
     }
   }
 }

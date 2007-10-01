@@ -2,6 +2,7 @@ package org.mwc.cmap.core.DataTypes.Temporal;
 
 import java.util.Vector;
 
+import MWC.GUI.Layer;
 import MWC.GenericData.TimePeriod;
 
 /**
@@ -26,18 +27,18 @@ public interface ControllablePeriod
 	/** indicate that an operation has been requested on the selected period
 	 * 
 	 */
-	public Vector performOperation(AnOperation operation);
+	public Vector<Layer> performOperation(AnOperation operation);
 	
 	/** indicate that an operation has been requested on the selected period
 	 * 
 	 */
-	public Vector performOperation(String operationName);
+	public Vector<Layer> performOperation(String operationName);
 	
 	
 	/** retrieve the list of available operations
 	 * 
 	 */
-	public Vector getOperations();
+	public Vector<AnOperation> getOperations();
 	
 	/** find out what the current period is
 	 * 
@@ -67,7 +68,7 @@ public interface ControllablePeriod
 		 * @param selection
 		 * @return series of layers to be updated
 		 */
-		public Vector apply(TimePeriod period, 
+		public Vector<Layer> apply(TimePeriod period, 
 												Object[] selection);
 	}	
 }

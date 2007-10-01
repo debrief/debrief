@@ -287,7 +287,7 @@ public class BaseLayer extends Plottables implements Layer
     _lineWidth = val;
   }
 
-	public Enumeration elements()
+	public Enumeration<Editable> elements()
   {
     return super.elements();
   }
@@ -338,10 +338,10 @@ public class BaseLayer extends Plottables implements Layer
     MWC.Utilities.ReaderWriter.ImportManager.exportThis(";;Layer: " + getName());
 
     // go through the layer, exporting each plottable, if it will.
-    Enumeration enumer = this.elements();
+    Enumeration<Editable> enumer = this.elements();
     while (enumer.hasMoreElements())
     {
-      Plottable pl = (Plottable) enumer.nextElement();
+    	Editable pl = (Editable) enumer.nextElement();
       if (pl instanceof Exportable)
       {
         Exportable e = (Exportable) pl;

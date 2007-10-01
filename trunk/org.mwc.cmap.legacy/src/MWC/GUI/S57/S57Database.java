@@ -4,6 +4,7 @@ import java.awt.*;
 import java.io.IOException;
 import java.util.*;
 
+import MWC.GUI.Editable;
 import MWC.GUI.S57.features.*;
 import MWC.GUI.S57.features.PointFeature.PointPainter;
 import MWC.GenericData.*;
@@ -71,7 +72,7 @@ public class S57Database
 	 */
 	private HashMap<Integer, FeatureRecord> _myFeatures = new HashMap<Integer, FeatureRecord>();
 
-	public HashMap<String, S57Feature> _items = new HashMap<String, S57Feature>();
+	public HashMap<String, Editable> _items = new HashMap<String, Editable>();
 
 	private WorldArea _area = null;
 
@@ -88,7 +89,7 @@ public class S57Database
 		return _area;
 	}
 
-	public Collection<S57Feature> getFeatures()
+	public Collection<Editable> getFeatures()
 	{
 		return _items.values();
 	}
@@ -100,7 +101,7 @@ public class S57Database
 
 	public S57Feature getFeature(String name)
 	{
-		return _items.get(name);
+		return (S57Feature) _items.get(name);
 	}
 
 	public void loadDatabase(String filename, boolean fspt_repeating)

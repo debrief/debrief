@@ -127,10 +127,10 @@ public class S57Layer implements Plottable, Serializable, Layer
 		// g.setColor(Color.cyan);
 		// g.drawLine(222, 133, 244, 355);
 
-		Enumeration<S57Feature> theFeatures = elements();
+		Enumeration<Editable> theFeatures = elements();
 		while (theFeatures.hasMoreElements())
 		{
-			S57Feature nextF = theFeatures.nextElement();
+			S57Feature nextF = (S57Feature) theFeatures.nextElement();
 			nextF.paint(g);
 		}
 
@@ -257,7 +257,7 @@ public class S57Layer implements Plottable, Serializable, Layer
 	{
 	}
 
-	public Enumeration<S57Feature> elements()
+	public Enumeration<Editable> elements()
 	{
 		IteratorWrapper res = null;
 		if (_myDatabase != null)

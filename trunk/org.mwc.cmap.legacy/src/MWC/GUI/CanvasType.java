@@ -424,7 +424,7 @@ public interface CanvasType {
    *
    * @return the returned java.util.Enumeration
    */
-  public java.util.Enumeration getPainters();
+  public java.util.Enumeration<CanvasType.PaintListener> getPainters();
 
 	///////////////////////////////////////////////
 	// tooltip handler commands

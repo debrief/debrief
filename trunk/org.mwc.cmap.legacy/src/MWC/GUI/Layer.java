@@ -119,7 +119,7 @@ public interface Layer extends Serializable, Editable, Plottable
 	 */
 	public interface ProvidesContiguousElements
 	{
-		public Enumeration contiguousElements();
+		public Enumeration<Editable> contiguousElements();
 	}
 	
 	
@@ -168,7 +168,7 @@ public interface Layer extends Serializable, Editable, Plottable
    */
   public void removeElement(Editable point);
 
-  public java.util.Enumeration elements();
+  public java.util.Enumeration<Editable> elements();
 
   public void setVisible(boolean val);
 

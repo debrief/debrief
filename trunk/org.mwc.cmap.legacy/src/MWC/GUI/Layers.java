@@ -208,7 +208,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	/**
 	 * the layer data
 	 */
-	private Vector<Layer> _theLayers;
+	private Vector<Editable> _theLayers;
 
 	/**
 	 * the set of callbacks for when data has been modified
@@ -251,7 +251,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	 */
 	public Layers()
 	{
-		_theLayers = new Vector<Layer>(0, 1);
+		_theLayers = new Vector<Editable>(0, 1);
 
 		produceLists();
 	}
@@ -295,7 +295,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	{
 		WorldArea res = null;
 
-		Iterator it = _theLayers.iterator();
+		Iterator<Editable> it = _theLayers.iterator();
 		while (it.hasNext())
 		{
 			Layer thisL = (Layer) it.next();
@@ -341,7 +341,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	public void addThis(Layers theOther)
 	{
 		//
-		Enumeration other = theOther._theLayers.elements();
+		Enumeration<Editable> other = theOther._theLayers.elements();
 		while (other.hasMoreElements())
 		{
 			Layer thisL = (Layer) other.nextElement();
@@ -365,7 +365,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 		return _theLayers.size();
 	}
 
-	public Enumeration elements()
+	public Enumeration<Editable> elements()
 	{
 		return _theLayers.elements();
 	}
@@ -377,16 +377,15 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	 * 
 	 * @return
 	 */
-	public Enumeration sortedElements()
+	public Enumeration<Layer> sortedElements()
 	{
 		// have a got a creating a sorted set of layers
 		Vector<Layer> res = new Vector<Layer>(0, 1);
-		Enumeration numer = _theLayers.elements();
+		Enumeration<Editable> numer = _theLayers.elements();
 
 		Vector<Layer> _backgrounds = new Vector<Layer>(0, 1);
 		Vector<Layer> _buffered = new Vector<Layer>(0, 1);
 		Vector<Layer> _nonBuffered = new Vector<Layer>(0, 1);
-
 		while (numer.hasMoreElements())
 		{
 			boolean inserted = false;
@@ -442,7 +441,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	{
 		Layer res = null;
 		// step through our layers
-		Enumeration enumer = _theLayers.elements();
+		Enumeration<Editable> enumer = _theLayers.elements();
 		while (enumer.hasMoreElements())
 		{
 			Layer thisL = (Layer) enumer.nextElement();
@@ -554,7 +553,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 		{
 			if (sArea.width > 0)
 			{
-				Enumeration enumer = _theLayers.elements();
+				Enumeration<Editable> enumer = _theLayers.elements();
 				while (enumer.hasMoreElements())
 				{
 					Layer thisLayer = (Layer) enumer.nextElement();
@@ -591,7 +590,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	{
 		if (!_suspendFiringExtended)
 		{
-			Enumeration enumer = _dataExtendedListeners.elements();
+			Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
 			while (enumer.hasMoreElements())
 			{
 				DataListener thisOne = (DataListener) enumer.nextElement();
@@ -607,7 +606,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	{
 		if (!_suspendFiringExtended)
 		{
-			Enumeration enumer = _dataExtendedListeners.elements();
+			Enumeration<DataListener> enumer = _dataExtendedListeners.elements();
 			while (enumer.hasMoreElements())
 			{
 				DataListener thisOne = (DataListener) enumer.nextElement();
@@ -630,7 +629,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	 */
 	public void fireModified(Layer changedLayer)
 	{
-		Enumeration enumer = _dataModifiedListeners.elements();
+		Enumeration<DataListener> enumer = _dataModifiedListeners.elements();
 		while (enumer.hasMoreElements())
 		{
 			DataListener thisOne = (DataListener) enumer.nextElement();
@@ -643,7 +642,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	 */
 	public void fireReformatted(Layer changedLayer)
 	{
-		Enumeration enumer = _dataReformattedListeners.elements();
+		Enumeration<DataListener> enumer = _dataReformattedListeners.elements();
 		while (enumer.hasMoreElements())
 		{
 			DataListener thisOne = (DataListener) enumer.nextElement();
@@ -798,7 +797,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 	public void close()
 	{
 		// first, get the layers to close themselves
-		Enumeration enumer = _theLayers.elements();
+		Enumeration<Editable> enumer = _theLayers.elements();
 		while (enumer.hasMoreElements())
 		{
 			Object layer = enumer.nextElement();
