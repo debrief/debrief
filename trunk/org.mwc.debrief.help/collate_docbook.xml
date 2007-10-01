@@ -16,8 +16,8 @@
 	<!-- and the docbook/help related bits -->
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="helpDir" value="./" />
-	<property name="helpDest" value="${helpDir}\html\legacy" />
-	<property name="pdfDest" value="${helpDir}\html\pdf" />
+	<property name="helpDest" value="${helpDir}/html/legacy" />
+	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
 	<target name="_log1_produce" description="produce the cvs change logs">
 
@@ -103,42 +103,42 @@
 
 		<!-- generate the HTML  -->
 		<echo message="Generating HTML" />
-		<java classpath="${contribDir}\saxon6_5_2\saxon.jar"
+		<java classpath="${contribDir}/saxon6_5_2/saxon.jar"
 		      fork="yes"
 		      dir="${helpDest}"
 		      classname="com.icl.saxon.StyleSheet"
 		      maxmemory="128m">
-			<arg value="..\..\..\org.mwc.debrief.help\docbook/ng_help.xml" />
-			<arg value="..\..\..\org.mwc.debrief.help\docbook/eclipse_html_style.xsl" />
+			<arg value="../../../org.mwc.debrief.help/docbook/ng_help.xml" />
+			<arg value="../../../org.mwc.debrief.help/docbook/eclipse_html_style.xsl" />
 		</java>
 
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
 		  into the top-level of the docbook output directories -->
 		<echo message="Copying HTML" />
-		<copy todir="${helpDest}\" preservelastmodified="yes">
-			<fileset dir="${helpDest}\html\legacy" />
+		<copy todir="${helpDest}/" preservelastmodified="yes">
+			<fileset dir="${helpDest}/html/legacy" />
 		</copy> 
 		<!-- and delete the duff directory (to stop us getting confused... -->
-		<delete dir="${helpDest}\html\legacy" /> 
+		<delete dir="${helpDest}/html/legacy" /> 
 
 
 		<!-- also copy the images to the target directory -->
 		<echo message="Copying images" />
-		<copy todir="${helpDest}\figures" preservelastmodified="yes">
+		<copy todir="${helpDest}/figures" preservelastmodified="yes">
 			<fileset dir="${helpDir}\docbook/figures" />
 		</copy>
-		<copy todir="${helpDest}\images" preservelastmodified="yes">
-			<fileset dir="${helpDir}\docbook/images" />
+		<copy todir="${helpDest}/images" preservelastmodified="yes">
+			<fileset dir="${helpDir}/docbook/images" />
 		</copy>
 		<!-- and the stylesheet -->
 		<echo message="Copying stylesheet" />
 		<copy todir="${helpDest}" preservelastmodified="yes">
-			<fileset file="${helpDir}\docbook/Header.css" />
+			<fileset file="${helpDir}/docbook/Header.css" />
 		</copy>
 
 		<!-- make sure the help file gets moved across -->
 		<echo message="Copying stylesheet" />
-		<copy file="${helpDir}\docbook/header.css"
+		<copy file="${helpDir}/docbook/Header.css"
 		      verbose="true"
 		      failonerror="true"
 		      todir="${helpDest}"
@@ -157,7 +157,7 @@
 		          value="fop-0.93"
 		          description="the current version of FOP" />
 		<property name="fopDir"
-		          value="${rootDir}\contribs\${fopVersion}"
+		          value="${rootDir}/contribs/${fopVersion}"
 		          description="where the fop libraries are located" />
 		<property name="docName"
 		          value="Debrief User Guide.pdf"
@@ -169,10 +169,10 @@
 		<echo message="going from xml to FO" />
 
 		<!-- produce the FO file, ready for PDF -->
-		<delete file="${rootDir}\org.mwc.debrief.help\docbook\out.fo" />
+		<delete file="${rootDir}/org.mwc.debrief.help/docbook/out.fo" />
 
-		<property name="docbook.home"    value="${rootDir}\contribs\docbook-xsl-1.72.0"/>
-		<property name="saxon.dir"       value="${rootDir}\contribs\saxon6_5_2"/>
+		<property name="docbook.home"    value="${rootDir}/contribs/docbook-xsl-1.72.0"/>
+		<property name="saxon.dir"       value="${rootDir}/contribs/saxon6_5_2"/>
 		<property name="xml.dir"         value="${helpDir}docbook"/>
 		<property name="fo.dir"          value="fo"/>
 		<xslt style="${xml.dir}/fo_style.xsl"
@@ -187,7 +187,7 @@
         <eclipse.convertPath resourcePath="..\contribs\fop-0.9.3" property="fop.home"/>
   -->
 		
-	    <property name="fop.home" value="${rootDir}\contribs/fop-0.93" /> 
+	    <property name="fop.home" value="${rootDir}/contribs/fop-0.93" /> 
 		<property name="fo.dir" value="fo" />
 		<property name="pdf.dir" value="pdf" />
 
@@ -213,7 +213,7 @@
 
 	<!-- now, how do we tie the two together? -->
 	<target name="insert_history_link">
-		<property name="dupFile" value="${helpDest}\toc2.xml" />
+		<property name="dupFile" value="${helpDest}/toc2.xml" />
 
 		<!-- make sure the target file is gone -->
 		<delete file="${dupFile}" />
@@ -224,8 +224,8 @@
 		<!-- try the change -->
 		<replace file="${dupFile}">
 			<replacetoken>label="Getting started"</replacetoken>
-			<replacevalue>label="Short History" href="html\history\statcvs\short\index.html"/&gt;
-			  	&lt;topic label="Verbose History" href="html\history\statcvs\long\index.html"/&gt;
+			<replacevalue>label="Short History" href="html/history/statcvs/short/index.html"/&gt;
+			  	&lt;topic label="Verbose History" href="html/history/statcvs/long/index.html"/&gt;
 			  	&lt;topic label="Getting started" </replacevalue>
 		</replace>
 
@@ -252,7 +252,7 @@
 			<jvmarg line="-mx256m" />
 			<arg line="	-output-dir ${svn_stat_outputDir}
 					-title 'Debrief NG Source listing' 
-					deploy\cvs\statcvs.xml 
+					deploy/cvs/statcvs.xml 
 				    ${rootDir}" />
 		</java>
 	</target>
