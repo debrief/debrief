@@ -2013,9 +2013,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			} // whether this was a fix wrapper
 			else if (thisO instanceof SensorWrapper) {
 				final SensorWrapper sw = (SensorWrapper) thisO;
-				final Enumeration<SensorContactWrapper> enumS = sw.elements();
+				final Enumeration<Editable> enumS = sw.elements();
 				while (enumS.hasMoreElements()) {
-					final SensorContactWrapper scw = enumS
+					final SensorContactWrapper scw = (SensorContactWrapper) enumS
 					    .nextElement();
 					// does this fix have it's own origin?
 					final WorldLocation sensorOrigin = scw.getOrigin(null);

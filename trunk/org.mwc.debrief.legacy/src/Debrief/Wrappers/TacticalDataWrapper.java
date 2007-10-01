@@ -17,6 +17,7 @@ import java.util.Iterator;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
 abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implements MWC.GUI.Layer, java.lang.Comparable,
@@ -44,7 +45,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   /**
    * our list of contacts
    */
-  protected final java.util.SortedSet _myContacts;
+  protected final java.util.SortedSet<Editable> _myContacts;
 
   /**
    * the track of our host
@@ -79,7 +80,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   public TacticalDataWrapper(final String title)
   {
     _myName = title;
-    _myContacts = new java.util.TreeSet();
+    _myContacts = new java.util.TreeSet<Editable>();
     setVisible(false);
   }
 
@@ -93,7 +94,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
 
     // and the fixes
     // first ask them to close themselves
-    final java.util.Iterator it = _myContacts.iterator();
+    final java.util.Iterator<Editable> it = _myContacts.iterator();
     while (it.hasNext())
     {
       final Object val = it.next();
@@ -247,7 +248,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
     canvas.setLineWidth(_lineWidth);
 
     // trigger our child sensor contact data items to plot themselves
-    final java.util.Iterator it = _myContacts.iterator();
+    final java.util.Iterator<Editable> it = _myContacts.iterator();
     while (it.hasNext())
     {
       Object next = it.next();
@@ -267,7 +268,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
    * ////////////////////////////////////////
    */
 
-  public final java.util.Enumeration elements()
+  public final java.util.Enumeration<Editable> elements()
   {
     return new IteratorWrapper(_myContacts.iterator());
   }
@@ -350,7 +351,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   /**
    * return the set of items which fall inside the indicated period
    */
-  public final java.util.Collection getItemsBetween(final HiResDate start, final HiResDate end)
+  public final java.util.Collection<Editable> getItemsBetween(final HiResDate start, final HiResDate end)
   {
     // see if we have _any_ points in range
     if ((getStartDTG().greaterThan(end)) ||
@@ -358,8 +359,8 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
       return null;
 
     // hey, we can do this on our own!
-    java.util.Vector res = new java.util.Vector(0, 1);
-    final java.util.Iterator it = _myContacts.iterator();
+    java.util.Vector<Editable> res = new java.util.Vector<Editable>(0, 1);
+    final java.util.Iterator<Editable> it = _myContacts.iterator();
     boolean finished = false;
     while ((it.hasNext()) && (!finished))
     {
@@ -393,7 +394,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
    */
   public final void filterListTo(final HiResDate start, final HiResDate end)
   {
-    final Iterator contactWrappers = _myContacts.iterator();
+    final Iterator<Editable> contactWrappers = _myContacts.iterator();
     while (contactWrappers.hasNext())
     {
 
@@ -443,19 +444,19 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   /**
    *
    */
-  public static final class IteratorWrapper implements java.util.Enumeration
+  public static final class IteratorWrapper implements java.util.Enumeration<Editable>
   {
     /**
      * java.util.Iterator _val
      */
-    private final java.util.Iterator _val;
+    private final java.util.Iterator<Editable> _val;
 
     /**
      * <init>
      *
      * @param iterator parameter for <init>
      */
-    public IteratorWrapper(final java.util.Iterator iterator)
+    public IteratorWrapper(final java.util.Iterator<Editable> iterator)
     {
       _val = iterator;
     }
@@ -476,7 +477,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
      *
      * @return the returned Object
      */
-    public final Object nextElement()
+    public final Editable nextElement()
     {
       return _val.next();
     }
