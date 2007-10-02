@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
-   <feature url="features/org.mwc.cmap.feature_1.0.45.jar" id="org.mwc.cmap.feature" version="1.0.45">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.layer_manager.feature_1.0.13.jar" id="org.mwc.cmap.layer_manager.feature" version="1.0.13">
       <category name="cmap_features"/>
    </feature>
@@ -39,6 +36,7 @@
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.5.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.5">
       <category name="cmap_features"/>
    </feature>
+   <feature url="features/org.mwc.cmap.feature_1.0.46.jar" id="org.mwc.cmap.feature" version="1.0.46"/>
    <category-def name="cmap_features" label="CMAP">
       <description>
          Core Maritime Analysis Platform

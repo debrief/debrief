@@ -283,8 +283,13 @@ public abstract class PlainImporterBase implements PlainImporter
 	 * @param txt
 	 */
 	protected void addThisToExport(String txt)
-	{
-		_beingExported.append('\n');
+	{	
+		// initialise the export string?
+		if(_beingExported == null)
+			_beingExported = new StringBuffer();
+		else
+			_beingExported.append('\n');
+		
 		_beingExported.append(txt);
 	}
 }

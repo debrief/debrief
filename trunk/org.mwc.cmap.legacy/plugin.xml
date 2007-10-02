@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.legacy"
    name="CMap Legacy Algorithms Plug-in"
-   version="1.0.25"
+   version="1.0.26"
    provider-name="MWC">
 
    <runtime>

@@ -80,8 +80,9 @@
         <delete file="h:/${zipName}"/>
         <echo message="copying new zip to zip drive" />
 		<copy file="${zipDest}" todir="h:/" />
-	    <echo message="copying unpack script to zip drive" />
-		<copy file="unpack.xml" todir="h:/" />
+     <!--  don't bother copying the unpack code.  we haven't got it in linux, and it's waiting already on the LAN	    
+     	<echo message="copying unpack script to zip drive" />
+		<copy file="unpack.xml" todir="h:/" /> -->
 	</target>
 	
 	<target name="zipTheData" description="create the zip file for exporting">
@@ -96,7 +97,8 @@
 
 	<target name="prepareUpdateToZip" description="copy updates to zipDrv" if="do.zipDrive" depends="">
 		<echo message="checking zip present" />
-        <available file="h:/" property="zip.drivePresent" />
+        <available file="/media/disk" property="zip.drivePresent" />
+		<fail message="zip drive not found!"  unless="zip.drivePresent"/>
 		<antcall target="copyUpdateToZip"/>
 	</target>
 

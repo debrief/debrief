@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.45"
+      version="1.0.46"
       provider-name="MWC">
 
    <description>
-      [1.0.45] Reinstate degree symbol for lat/long display
+      [1.0.46] Fix track export
+[1.0.45] Reinstate degree symbol for lat/long display
 [1.0.44] Extended support for generic language changes
 [1.0.42] Fix for CoastLine painter not loading coastline, duh.
 [1.0.41] Load Layer from xml even if empty, minor tidying for
