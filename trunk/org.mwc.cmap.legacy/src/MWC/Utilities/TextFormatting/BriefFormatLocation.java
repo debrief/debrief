@@ -11,10 +11,17 @@ import java.text.DecimalFormat;
 
 public class BriefFormatLocation
 {
-  public static DecimalFormat df = new DecimalFormat("00.00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
+	/** degree symbol, obviously.  Taken from helpful website at http://www.fileformat.info/info/unicode/char/00b0/index.htm
+	 * 
+	 */
+  private static final String DEGREE_SYMBOL = "\u00B0";
+	public static DecimalFormat df = new DecimalFormat("00.00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
   public static DecimalFormat df2 = new DecimalFormat("00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
   public static DecimalFormat df3 = new DecimalFormat("000", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
 
+  /** reduce object creation - have working copy of object used for breaking down decimal value into components
+   * 
+   */
   private static brokenDown _workingHolder = new brokenDown(0, true);
 
 
@@ -34,7 +41,7 @@ public class BriefFormatLocation
     else
       secFormat = df2;
 
-    String res = " " + df2.format(_workingHolder.deg) + "°" +
+    String res = " " + df2.format(_workingHolder.deg) + DEGREE_SYMBOL +
       df2.format(_workingHolder.min) + "\'" +
       secFormat.format(_workingHolder.sec) + "\"" + _workingHolder.hem + " ";
 
@@ -66,7 +73,7 @@ public class BriefFormatLocation
     else
       secFormat = df2;
 
-    String res = df3.format(_workingHolder.deg) + "°" +
+    String res = df3.format(_workingHolder.deg) + DEGREE_SYMBOL +
       df2.format(_workingHolder.min) + "\'" +
       secFormat.format(_workingHolder.sec) + "\"" + _workingHolder.hem;
 
@@ -186,21 +193,24 @@ public class BriefFormatLocation
 
     public void testFormatting()
     {
+    	// try to check we've successfully created our degrees symbol
+    	assertNotNull("failed to create degree symbol", DEGREE_SYMBOL);
+    	assertEquals("degree symbol wrong length", 1, DEGREE_SYMBOL.length());
+    	
       WorldLocation la = new WorldLocation(0d, 0d, 0d);
-      String res1 = " 00°00\'00.00\"S  000°00\'00.00\"W";
-
+      String res1 = " 00" + DEGREE_SYMBOL + "00\'00.00\"S  000" + DEGREE_SYMBOL + "00\'00.00\"W";
       super.assertEquals("first test", res1, BriefFormatLocation.toString(la));
       la.setLat(-12.345);
       la.setLong(22.432);
-      res1 = " 12°20\'42.00\"S  022°25\'55.20\"E";
+      res1 = " 12" + DEGREE_SYMBOL + "20\'42.00\"S  022" + DEGREE_SYMBOL + "25\'55.20\"E";
       super.assertEquals("second test", res1, BriefFormatLocation.toString(la));
       la.setLat(12.34533);
       la.setLong(-22.43222);
-      res1 = " 12°20\'43.19\"N  022°25\'55.99\"W";
+      res1 = " 12" + DEGREE_SYMBOL + "20\'43.19\"N  022" + DEGREE_SYMBOL + "25\'55.99\"W";
       super.assertEquals("third test", res1, BriefFormatLocation.toString(la));
       la.setLat(82.345);
       la.setLong(172.432);
-      res1 = " 82°20\'42.00\"N  172°25\'55.20\"E";
+      res1 = " 82" + DEGREE_SYMBOL + "20\'42.00\"N  172" + DEGREE_SYMBOL + "25\'55.20\"E";
       super.assertEquals("fourth test", res1, BriefFormatLocation.toString(la));
 
     }
