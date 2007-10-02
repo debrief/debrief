@@ -9,6 +9,8 @@
 	<!-- and the zip support filenames -->
     <property name="zipName" value="update.zip"/>
     <property name="zipDest" value="${deployDir}/${zipName}"/>
+	<property name="zipPath" value="/media/disk"/>
+	<!-- <property name="zipPath" value="h:/"/> -->
 	
 	
 	<target name="clean" description="clear the output directory" depends="">
@@ -77,9 +79,9 @@
 		<antcall target="zipTheData"/>
 		
         <echo message="ditching old zip from zip drive" />
-        <delete file="h:/${zipName}"/>
+        <delete file="${zipPath}/${zipName}"/>
         <echo message="copying new zip to zip drive" />
-		<copy file="${zipDest}" todir="h:/" />
+		<copy file="${zipDest}" todir="${zipPath}" />
      <!--  don't bother copying the unpack code.  we haven't got it in linux, and it's waiting already on the LAN	    
      	<echo message="copying unpack script to zip drive" />
 		<copy file="unpack.xml" todir="h:/" /> -->
@@ -87,7 +89,7 @@
 	
 	<target name="zipTheData" description="create the zip file for exporting">
         <echo message="ditching old update zip" />
-        <delete file="h:/${zipDest}"/>
+        <delete file="${zipDest}"/>
         <echo message="creating new update zip" />
 		<zip destFile="${zipDest}" whenempty="fail" duplicate="fail">
 			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
@@ -97,7 +99,7 @@
 
 	<target name="prepareUpdateToZip" description="copy updates to zipDrv" if="do.zipDrive" depends="">
 		<echo message="checking zip present" />
-        <available file="/media/disk" property="zip.drivePresent" />
+        <available file="${zipPath}" property="zip.drivePresent" />
 		<fail message="zip drive not found!"  unless="zip.drivePresent"/>
 		<antcall target="copyUpdateToZip"/>
 	</target>
