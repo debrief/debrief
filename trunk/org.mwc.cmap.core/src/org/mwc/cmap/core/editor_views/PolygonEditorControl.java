@@ -57,8 +57,8 @@ public abstract class PolygonEditorControl extends org.eclipse.swt.widgets.Compo
 		}
 		{
 			// ok, sort out the images
-			pasteBtn.setImage(CorePlugin.getImageFromRegistry("paste_20.png"));
-			upBtn.setImage(CorePlugin.getImageFromRegistry("up.gif"));
+			pasteBtn.setImage(CorePlugin.getImageFromRegistry("paste.png"));
+			upBtn.setImage(CorePlugin.getImageFromRegistry("Up.gif"));
 			newBtn.setImage(CorePlugin.getImageFromRegistry("NewPin.gif"));
 			delBtn.setImage(CorePlugin.getImageFromRegistry("DeletePin.gif"));
 			}
