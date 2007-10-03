@@ -73,7 +73,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	{
 		boolean res = false;
 
-		final String thePath = etopo_path + "//" + fName;
+		final String thePath = etopo_path + "/" + fName;
 
 		final File testFile = new File(thePath);
 
@@ -603,7 +603,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		static public String THE_PATH = "C:\\Program Files\\Debrief 2003\\etopo";
+		static public String THE_PATH;
 
 		public Etopo2Test(final String val)
 		{
