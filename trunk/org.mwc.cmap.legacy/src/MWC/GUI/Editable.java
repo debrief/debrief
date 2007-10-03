@@ -997,7 +997,7 @@ public interface Editable
             // check if we can get a property editor GUI component for this
             SwingPropertyEditor2.checkPropertyEditors();
             final PropertyEditor editor = SwingPropertyEditor2.findEditor(p);
-            Assert.assertNotNull("could find GUI editor component for:" + data
+            Assert.assertNotNull("could not find GUI editor component for:" + data
                 + " getter:" + p.getReadMethod().getName(), editor);
 
           }
