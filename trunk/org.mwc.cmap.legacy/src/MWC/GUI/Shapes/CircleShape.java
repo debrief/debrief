@@ -292,8 +292,11 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
     firePropertyChange("Location", _theCentre, centre);
     // make the change
     _theCentre = centre;
-    // and calc the new su,,ary data
+    // and calc the new summary data
     calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
   }
 
   /**
@@ -320,7 +323,13 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
   public void setRadius(WorldDistance val)
   {
     _theRadius = val.getValueIn(WorldDistance.YARDS);
+    
+    // and calc the new summary data
     calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+    
   }
 
   public boolean hasEditor()
@@ -417,7 +426,13 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
 	{
 		// ok, just shift it...
 		feature.addToMe(vector);
-		calcPoints();
+		
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+		
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
@@ -482,6 +497,13 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
 		WorldLocation oldCentre = getCentre();
 		WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
+		
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+		
 	}
 
 }

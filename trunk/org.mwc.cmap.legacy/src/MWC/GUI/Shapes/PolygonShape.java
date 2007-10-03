@@ -322,6 +322,9 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
 
     // and recalc the points
     calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);
   }
 
 
@@ -410,8 +413,11 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
 			pt.setDepth(newLoc.getDepth());			
 		}
 		
-		// and update the label location
+		// and update the outer bounding area
 		calcPoints();
+		
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);		
 	}  
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -432,6 +438,7 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
       Editable.editableTesterSupport.testParams(ed, this);
       ed = null;
     }
+    
   }
 
 
@@ -458,6 +465,10 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
 		// ok, just shift it...
 		feature.addToMe(vector);
 		calcPoints();
+		
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);
+		
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,

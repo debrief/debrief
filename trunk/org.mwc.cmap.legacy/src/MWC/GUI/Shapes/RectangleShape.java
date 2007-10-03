@@ -390,7 +390,9 @@ public class RectangleShape extends PlainShape implements Editable, Serializable
 
 		// ok, apply the offset to each corner
 		_myArea.setCentre(newCentre);
-
+		
+		// and inform the parent, so we can shift the label location
+		firePropertyChange("Location", null, null);		
 	}
 
 	public void shift(WorldLocation feature, WorldVector vector)
@@ -400,6 +402,9 @@ public class RectangleShape extends PlainShape implements Editable, Serializable
 
 		// better normalise the shape now...
 		_myArea.normalise();
+		
+		// and inform the parent, so we can shift the label location
+		firePropertyChange("Location", null, null);		
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,

@@ -340,8 +340,12 @@ public class WheelShape extends PlainShape implements Serializable, Editable
     firePropertyChange("Location", _theCentre, centre);
     // make the change
     _theCentre = centre;
-    // and calc the new su,,ary data
+    // and calc the new summary data
     calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+
   }
 
   /**
@@ -382,6 +386,12 @@ public class WheelShape extends PlainShape implements Serializable, Editable
   public void setRadiusInner(WorldDistance val)
   {
     _theInnerRadius = val.getValueIn(WorldDistance.DEGS);
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+    
   }
 
   /**
@@ -392,6 +402,13 @@ public class WheelShape extends PlainShape implements Serializable, Editable
   public void setRadiusOuter(WorldDistance val)
   {
     _theOuterRadius = val.getValueIn(WorldDistance.DEGS);
+    
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+
   }
 
   public boolean hasEditor()
@@ -496,6 +513,13 @@ public class WheelShape extends PlainShape implements Serializable, Editable
 	public void setSpokeSize(SteppingBoundedInteger spokeSize)
 	{
 		_theSpokeSize = spokeSize.getCurrent();
+		
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+
 	}
 	
 
@@ -504,5 +528,12 @@ public class WheelShape extends PlainShape implements Serializable, Editable
 		WorldLocation oldCentre = getCentre();
 		WorldLocation newCentre = oldCentre.add(vector);
 		setCentre(newCentre);
+		
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+
 	}	
 }

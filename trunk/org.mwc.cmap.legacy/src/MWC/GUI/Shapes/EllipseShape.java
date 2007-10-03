@@ -478,8 +478,12 @@ public class EllipseShape extends PlainShape implements Serializable, Editable
     // convert to yarda
     _theMinima = val.getValueIn(WorldDistance.DEGS);
 
-    // and calc the new summary data & shape
+    // and calc the new summary data
     calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+
   }
 
   /**
@@ -494,8 +498,12 @@ public class EllipseShape extends PlainShape implements Serializable, Editable
     // convert to yards
     _theMaxima = val.getValueIn(WorldDistance.DEGS);
 
-    // and calc the new summary data & shape
+    // and calc the new summary data
     calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+
   }
 
   /**
@@ -505,8 +513,12 @@ public class EllipseShape extends PlainShape implements Serializable, Editable
   {
     _theOrientation = degs;
 
-    // and calc the new summary data & shape
+    // and calc the new summary data
     calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+
   }
 
 

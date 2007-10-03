@@ -399,6 +399,12 @@ public class ArcShape extends CircleShape implements Serializable, Editable
   public void setArcWidth(double _arcWidth)
   {
     this._arcWidth = _arcWidth;
+    
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
   }
 
   /**
@@ -420,6 +426,13 @@ public class ArcShape extends CircleShape implements Serializable, Editable
   public void setCentreBearing(double centreBearing)
   {
     this._centreBearing = centreBearing;
+    
+    // and calc the new summary data
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+    
   }
 
   /**
