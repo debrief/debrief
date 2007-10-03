@@ -76,7 +76,7 @@ abstract public class S57Handler extends MWCXMLReader implements LayerHandler.ex
 		{
 			File tstFile = new File(_sourceFile);
 			if (tstFile.exists())
-				csp.setSourceFile(tstFile);
+				csp.setSourceFile(_sourceFile);
 		}
 
 		addPlottable(csp);
@@ -133,7 +133,7 @@ abstract public class S57Handler extends MWCXMLReader implements LayerHandler.ex
 	{
 		// do the visibility
 		gridElement.setAttribute(VISIBLE, writeThis(theS57.getVisible()));
-		gridElement.setAttribute(SOURCE_FILE, theS57.getSourceFile().getAbsolutePath());
+		gridElement.setAttribute(SOURCE_FILE, theS57.getSourceFile());
 	}
 
 }

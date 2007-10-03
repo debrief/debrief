@@ -211,7 +211,6 @@ public class S57Layer implements Plottable, Serializable, Layer
 				PropertyDescriptor[] res = {
 						prop("Visible", "whether S57 data is visible", VISIBILITY),
 						prop("SourceFile", "the S57 data-file", FORMAT), };
-
 				return res;
 			}
 			catch (IntrospectionException e)
@@ -292,17 +291,22 @@ public class S57Layer implements Plottable, Serializable, Layer
 	/**
 	 * @return the _sourceFile
 	 */
-	public final File getSourceFile()
+	public final String getSourceFile()
 	{
-		return _sourceFile;
+		String res = null;
+		if(_sourceFile != null)
+		{
+			res = _sourceFile.getPath();
+		}
+		return res;
 	}
 
 	/**
 	 * @param file
 	 *          the _sourceFile to set
 	 */
-	public final void setSourceFile(File file)
+	public final void setSourceFile(String file)
 	{
-		_sourceFile = file;
+		_sourceFile =  new java.io.File(file);
 	}
 }
