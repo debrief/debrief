@@ -207,7 +207,16 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
       	else
       		dest.drawPolyline(xP, yP, xP.length);
       }
-    }
+    }    
+    
+    // unfortunately we don't have a way of tracking edits to the underlying
+    // worldpath object (since the polygon editor manipulates it directly.
+    // so, we'll recalc our bounds at each repaint.
+    calcPoints();
+    
+    // and inform the parent (so it can move the label)
+		firePropertyChange("Location", null, null);    
+    
   }
 
   /**
