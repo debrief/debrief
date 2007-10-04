@@ -1,10 +1,15 @@
 package org.mwc.cmap.core.DataTypes.TrackData;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.TacticalData.Track;
 
 /**
@@ -18,11 +23,11 @@ public class TrackManager implements TrackDataProvider // ,
 
 	private WatchableList[] _theSecondaries;
 
-	private Vector _myDataListeners;
+	private Vector<TrackDataListener> _myDataListeners;
 
 	private Layers _theLayers;
 
-	private Vector _myShiftListeners;
+	private Vector<TrackShiftListener> _myShiftListeners;
 
 	/**
 	 * set a limit for the maximum number of secondary tracks we will plot
@@ -65,17 +70,16 @@ public class TrackManager implements TrackDataProvider // ,
 						// have we got our full set of secondarires yet?
 						if (_theSecondaries.length >= MAX_SECONDARIES)
 						{
-							MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached",
-									MAX_MESSAGE);
+							MWC.GUI.Dialogs.DialogFactory.showMessage(
+									"Secondary limit reached", MAX_MESSAGE);
 							return;
 						}
 					}
 
 					processWatchableList((WatchableList) layer, onlyAssignTracks);
-				}
-				else
+				} else
 				{
-					final Enumeration iter = layer.elements();
+					final Enumeration<Editable> iter = layer.elements();
 					while (iter.hasMoreElements())
 					{
 						final Plottable p = (Plottable) iter.nextElement();
@@ -87,8 +91,8 @@ public class TrackManager implements TrackDataProvider // ,
 								// have we got our full set of secondarires yet?
 								if (_theSecondaries.length >= MAX_SECONDARIES)
 								{
-									MWC.GUI.Dialogs.DialogFactory.showMessage("Secondary limit reached",
-											MAX_MESSAGE);
+									MWC.GUI.Dialogs.DialogFactory.showMessage(
+											"Secondary limit reached", MAX_MESSAGE);
 									return;
 								}
 							}
@@ -107,7 +111,8 @@ public class TrackManager implements TrackDataProvider // ,
 	 * @param onlyAssignTracks
 	 *          whether only TrackWrapper items should be placed on the list
 	 */
-	private void processWatchableList(final WatchableList list, boolean onlyAssignTracks)
+	private void processWatchableList(final WatchableList list,
+			boolean onlyAssignTracks)
 	{
 		// check this isn't the primary
 		if (list != getPrimaryTrack())
@@ -117,30 +122,35 @@ public class TrackManager implements TrackDataProvider // ,
 			if (getPrimaryTrack() == null)
 			{
 				if (w.getVisible())
-					if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
+					if ((!onlyAssignTracks) || (onlyAssignTracks)
+							&& (w instanceof TrackWrapper))
 						setPrimary(w);
-			}
-			else
+			} else
 			{
 
 				boolean haveAlready = false;
 
 				// check that this isn't one of our secondaries
-				for (int i = 0; i < _theSecondaries.length; i++)
+				if (_theSecondaries != null)
 				{
-					WatchableList secW = _theSecondaries[i];
-					if (secW == w)
+					// right, we've got some secondaries at least. is it one of them?
+					for (int i = 0; i < _theSecondaries.length; i++)
 					{
-						// don't bother with it, we've got it already
-						haveAlready = true;
-						continue;
+						WatchableList secW = _theSecondaries[i];
+						if (secW == w)
+						{
+							// don't bother with it, we've got it already
+							haveAlready = true;
+							continue;
+						}
 					}
 				}
 
 				if (!haveAlready)
 				{
 					if (w.getVisible())
-						if ((!onlyAssignTracks) || (onlyAssignTracks) && (w instanceof TrackWrapper))
+						if ((!onlyAssignTracks) || (onlyAssignTracks)
+								&& (w instanceof TrackWrapper))
 							addSecondary(w);
 				}
 			}
@@ -149,7 +159,7 @@ public class TrackManager implements TrackDataProvider // ,
 
 	}
 
-	public void assignTracks(String primaryTrack, Vector secondaryTracks)
+	public void assignTracks(String primaryTrack, Vector<String> secondaryTracks)
 	{
 		// ok - find the matching tracks/
 		Object theP = _theLayers.findLayer(primaryTrack);
@@ -165,12 +175,12 @@ public class TrackManager implements TrackDataProvider // ,
 		if (secondaryTracks != null)
 		{
 			// and now the secs
-			Vector secs = new Vector(0, 1);
-			Iterator iter = secondaryTracks.iterator();
+			Vector<Layer> secs = new Vector<Layer>(0, 1);
+			Iterator<String> iter = secondaryTracks.iterator();
 			while (iter.hasNext())
 			{
 				String thisS = (String) iter.next();
-				Object theS = _theLayers.findLayer(thisS);
+				Layer theS = _theLayers.findLayer(thisS);
 				if (theS != null)
 					if (theS instanceof WatchableList)
 					{
@@ -180,7 +190,8 @@ public class TrackManager implements TrackDataProvider // ,
 
 			if (secs.size() > 0)
 			{
-				_theSecondaries = new WatchableList[] {};
+				_theSecondaries = new WatchableList[]
+				{};
 				_theSecondaries = (WatchableList[]) secs.toArray(_theSecondaries);
 			}
 		}
@@ -189,7 +200,7 @@ public class TrackManager implements TrackDataProvider // ,
 	public void addTrackDataListener(TrackDataListener listener)
 	{
 		if (_myDataListeners == null)
-			_myDataListeners = new Vector();
+			_myDataListeners = new Vector<TrackDataListener>();
 
 		// do we already contain this one?
 		if (!_myDataListeners.contains(listener))
@@ -199,7 +210,7 @@ public class TrackManager implements TrackDataProvider // ,
 	public void addTrackShiftListener(TrackShiftListener listener)
 	{
 		if (_myShiftListeners == null)
-			_myShiftListeners = new Vector();
+			_myShiftListeners = new Vector<TrackShiftListener>();
 
 		// do we already contain this one?
 		if (!_myShiftListeners.contains(listener))
@@ -234,7 +245,7 @@ public class TrackManager implements TrackDataProvider // ,
 		// and inform the listeners
 		if (_myDataListeners != null)
 		{
-			Iterator iter = _myDataListeners.iterator();
+			Iterator<TrackDataListener> iter = _myDataListeners.iterator();
 			while (iter.hasNext())
 			{
 				TrackDataListener list = (TrackDataListener) iter.next();
@@ -284,16 +295,17 @@ public class TrackManager implements TrackDataProvider // ,
 			}
 
 			// and store the new secs list
-			WatchableList[] demo = new WatchableList[] {};
+			WatchableList[] demo = new WatchableList[]
+			{};
 			_theSecondaries = (WatchableList[]) secsFound.toArray(demo);
 		}
 
 		if (_myDataListeners != null)
 		{
-			Iterator iter = _myDataListeners.iterator();
+			Iterator<TrackDataListener> iter = _myDataListeners.iterator();
 			while (iter.hasNext())
 			{
-				TrackDataListener list = (TrackDataListener) iter.next();
+				TrackDataListener list =  iter.next();
 				list.tracksUpdated(_thePrimary, _theSecondaries);
 			}
 		}
@@ -328,7 +340,8 @@ public class TrackManager implements TrackDataProvider // ,
 		// and add the new item
 		newList.add(secondary);
 
-		WatchableList[] demo = new WatchableList[] {};
+		WatchableList[] demo = new WatchableList[]
+		{};
 		_theSecondaries = (WatchableList[]) newList.toArray(demo);
 	}
 
@@ -365,7 +378,7 @@ public class TrackManager implements TrackDataProvider // ,
 			String sec_b = "tb";
 			String sec_c = "tc";
 			String sec_d = "tz";
-			Vector secs = new Vector(0, 1);
+			Vector<String> secs = new Vector<String>(0, 1);
 			secs.add(sec_b);
 			secs.add(sec_c);
 
@@ -452,8 +465,7 @@ public class TrackManager implements TrackDataProvider // ,
 				if (curSec == thisSec)
 				{
 					// hey, just ignore it
-				}
-				else
+				} else
 				{
 					newList.add(_theSecondaries[i]);
 				}
@@ -462,10 +474,10 @@ public class TrackManager implements TrackDataProvider // ,
 
 		if (newList.size() > 0)
 		{
-			WatchableList[] demo = new WatchableList[] {};
+			WatchableList[] demo = new WatchableList[]
+			{};
 			_theSecondaries = (WatchableList[]) newList.toArray(demo);
-		}
-		else
+		} else
 			_theSecondaries = new WatchableList[0];
 	}
 
@@ -478,10 +490,10 @@ public class TrackManager implements TrackDataProvider // ,
 	{
 		if (_myShiftListeners != null)
 		{
-			Iterator iter = _myShiftListeners.iterator();
+			Iterator<TrackShiftListener> iter = _myShiftListeners.iterator();
 			while (iter.hasNext())
 			{
-				TrackShiftListener list = (TrackShiftListener) iter.next();
+				TrackShiftListener list = iter.next();
 				list.trackShifted(target);
 			}
 		}
