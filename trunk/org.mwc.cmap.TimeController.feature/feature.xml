@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.14">
+      version="1.0.15">
 
    <description>
-      [1.0.14] More error trapping for when no time data loaded (new plot)
+[1.0.15] More robust checking for gui elements disposed
+[1.0.14] More error trapping for when no time data loaded (new plot)
 [1.0.13] Error trapping for when no time data loaded (new plot)
 [1.0.12] Fix edit prop&apos;s not being displayed, better default
 DTG format

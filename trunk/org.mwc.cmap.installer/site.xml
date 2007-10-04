@@ -21,7 +21,7 @@
    <feature url="features/org.mwc.cmap.static_resources.feature_1.0.3.jar" id="org.mwc.cmap.static_resources.feature" version="1.0.3">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.14.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.14">
+   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.15.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.15">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.tote.feature_1.0.9.jar" id="org.mwc.cmap.tote.feature" version="1.0.9">
