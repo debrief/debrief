@@ -23,8 +23,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-import javax.media.j3d.LineArray;
-import javax.media.j3d.Node;
+import javax.media.j3d.*;
 import javax.vecmath.Point3d;
 import java.awt.*;
 import java.beans.PropertyChangeEvent;
