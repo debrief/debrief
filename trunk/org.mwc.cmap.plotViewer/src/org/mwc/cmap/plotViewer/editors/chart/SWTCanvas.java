@@ -257,11 +257,13 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 * @param mmgr
 	 * @param scrPoint
 	 */
-	protected void fillContextMenu(MenuManager mmgr, Point scrPoint, WorldLocation loc)
+	protected void fillContextMenu(MenuManager mmgr, Point scrPoint,
+			WorldLocation loc)
 	{
 		// right, we create the actions afresh each time here. We can't
 		// automatically calculate it.
-		_copyLocation = new LocationSelectedAction("Copy cursor location", SWT.PUSH, loc)
+		_copyLocation = new LocationSelectedAction("Copy cursor location",
+				SWT.PUSH, loc)
 		{
 			/**
 			 * @param loc
@@ -276,8 +278,10 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 				// right, copy the location to the clipboard
 				Clipboard clip = CorePlugin.getDefault().getClipboard();
-				Object[] data = new Object[] { locText };
-				Transfer[] types = new Transfer[] { TextTransfer.getInstance() };
+				Object[] data = new Object[]
+				{ locText };
+				Transfer[] types = new Transfer[]
+				{ TextTransfer.getInstance() };
 				clip.setContents(data, types);
 
 			}
@@ -327,12 +331,12 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 		// finally put the required bits of the target image onto the screen
 		if (_dblBuff != null)
-			gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y, pe.width,
-					pe.height);
+			gc.drawImage(_dblBuff, pe.x, pe.y, pe.width, pe.height, pe.x, pe.y,
+					pe.width, pe.height);
 		else
 		{
-			CorePlugin
-					.logError(Status.INFO, "Double-buffering failed, no image produced", null);
+			CorePlugin.logError(Status.INFO,
+					"Double-buffering failed, no image produced", null);
 		}
 	}
 
@@ -424,7 +428,10 @@ public class SWTCanvas extends SWTCanvasAdapter
 	{
 		if (_dblBuff != null)
 		{
-			_dblBuff.dispose();
+			if (!_dblBuff.isDisposed())
+			{
+				_dblBuff.dispose();
+			}
 			_dblBuff = null;
 		}
 
@@ -556,7 +563,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 			// try southern/western location
 			theLoc = new WorldLocation(-12.3, -12.555555, -1.2);
 			txt = CorePlugin.toClipboard(theLoc);
-			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2", txt);
+			assertEquals("correct string not produced", "LOC:-12.3,-12.555555,-1.2",
+					txt);
 		}
 	}
 }
