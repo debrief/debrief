@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.14">
+      version="1.0.15">
 
    <description>
-      [1.0.14] Fix for multiple lat-long trackers
+[1.0.15] Fix for crashing in dragged snail-trail
+[1.0.14] Fix for multiple lat-long trackers
 [1.0.13] Update should redraw whole plot, not just repaint it
 [1.0.12] Ensure we ditch GCs we no longer need
 [1.0.11] Fix integration issue associated with buffer clearing
