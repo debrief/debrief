@@ -329,7 +329,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 			public void widgetSelected(SelectionEvent e)
 			{
-				_theScenario.step();
+				if(_theScenario != null)
+					_theScenario.step();
 			}
 		});
 		stepBtn.setImage(ScenarioControllerPlugin.getImage("icons/media_forward.png"));
