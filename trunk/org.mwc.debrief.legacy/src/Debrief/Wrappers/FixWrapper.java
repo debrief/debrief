@@ -597,7 +597,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   {
     return "<u>" + _trackWrapper.getName() + ":" + getName() + "</u>\n" +
       GeneralFormat.formatStatus(MWC.Algorithms.Conversions.Rads2Degs(_theFix.getCourse()),
-                   _theFix.getSpeed(), _theFix.getLocation().getDepth());
+                   getSpeed(), _theFix.getLocation().getDepth());
   }
 
   public final boolean getLabelShowing()
