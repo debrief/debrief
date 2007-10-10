@@ -313,6 +313,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
    */
   private String _theFormat = MyDateFormatPropertyEditor.stringTags[0];
 
+  /** whether to connect this fix to the previous one.
+   * 
+   */
+	private boolean _lineShowing = true;
+
   ////////////////////////////////////////
   // constructors
   ////////////////////////////////////////
@@ -774,6 +779,18 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
     return res;
   }
+  
+
+  public void setLineShowing(boolean val)
+  {
+  	_lineShowing = val;
+  }
+  
+	public boolean getLineShowing()
+	{
+		return _lineShowing;
+	}
+  
 
   //////////////////////////////////////////////////////
   // bean info for this class
@@ -803,14 +820,15 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     {
       try{
         final PropertyDescriptor[] res={
+          prop("SymbolScale", "the scale of the symbol", FORMAT),
+          prop("DateTimeGroup", "the DTG for the fix"),
           prop("Color", "the position color", FORMAT),
           prop("Label", "the position label", FORMAT),
           prop("Font", "the label font", FORMAT),
           prop("LabelShowing", "whether the label is showing", VISIBILITY),
           prop("SymbolShowing", "whether the symbol is showing", VISIBILITY),
+          prop("LineShowing", "whether the to join this position to the previous", VISIBILITY),
           prop("FixLocation", "the location of the fix", SPATIAL),
-          prop("DateTimeGroup", "the DTG for the fix"),
-          prop("SymbolScale", "the scale of the symbol", FORMAT),
           prop("Visible", "whether the whole fix is visible", VISIBILITY),
           longProp("LabelFormat", "the time format of the label, or N/A to leave as-is",
                   MyDateFormatPropertyEditor.class, SPATIAL),
@@ -818,7 +836,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
                    "the label location",
                    MWC.GUI.Properties.LocationPropertyEditor.class, FORMAT)
         };
-        res[7].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
+        res[0].setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
         return res;
       }catch(IntrospectionException e){
         return super.getPropertyDescriptors();

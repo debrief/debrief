@@ -36,7 +36,7 @@
    <feature url="features/org.mwc.cmap.TimeController.feature_1.0.16.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.16">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.45.jar" id="org.mwc.debrief.feature" version="1.0.45">
+   <feature url="features/org.mwc.debrief.feature_1.0.46.jar" id="org.mwc.debrief.feature" version="1.0.46">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

@@ -123,6 +123,14 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
       }
     });
 
+    addAttributeHandler(new HandleBooleanAttribute("LineShowing")
+    {
+      public void setValue(String name, boolean value)
+      {
+        _theFixWrapper.setLineShowing(value);
+      }
+    });
+
     addAttributeHandler(new HandleBooleanAttribute("Visible")
     {
       public void setValue(String name, boolean value)
@@ -187,6 +195,7 @@ abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     eFix.setAttribute("Visible", writeThis(fix.getVisible()));
     eFix.setAttribute("Label", toXML(fix.getLabel()));
     eFix.setAttribute("LabelShowing", writeThis(fix.getLabelShowing()));
+    eFix.setAttribute("LineShowing", writeThis(fix.getLineShowing()));
     eFix.setAttribute("SymbolShowing", writeThis(fix.getSymbolShowing()));
     lp.setValue(fix.getLabelLocation());
     eFix.setAttribute("LabelLocation", lp.getAsText());

@@ -728,7 +728,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							lastP = new Point();
 						}
 						else {
-							dest.drawLine(lastP.x, lastP.y, thisP.x, thisP.y);
+							// does this individual positon want to be linked?
+							if(fw.getLineShowing())
+								dest.drawLine(lastP.x, lastP.y, thisP.x, thisP.y);
 						}
 
 						// remember this point
