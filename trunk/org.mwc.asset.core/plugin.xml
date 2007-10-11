@@ -36,4 +36,28 @@
          point="org.eclipse.ui.startup">
       <startup class="org.mwc.asset.core.ASSETPlugin"/>
    </extension>
+   <extension
+         id="ASSET"
+         point="org.eclipse.core.runtime.products">
+      <product
+            application="org.eclipse.ui.ide.workbench"
+            name="AssetNG">
+         <property
+               name="windowImages"
+               value="icons/components.gif">
+         </property>
+         <property
+               name="aboutText"
+               value="Welcome to ASSET NG, from the Maritime Warfare Centre">
+         </property>
+         <property
+               name="aboutImage"
+               value="platform:/plugin/org.mwc.debrief.core/icons/new_logo2.gif">
+         </property>
+         <property
+               name="appName"
+               value="AssetNG">
+         </property>
+      </product>
+   </extension>
 </plugin>

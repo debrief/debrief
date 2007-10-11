@@ -107,7 +107,7 @@ public class CommandLine
   /**
    * the list of observers loaded from the control file
    */
-  private Vector _myObservers;
+  private Vector<ScenarioObserver> _myObservers;
 
   /**
    * keep track of whether we're alive or not
@@ -125,7 +125,7 @@ public class CommandLine
     _myScenario = new CoreScenario();
 
     // and create the list of observers
-    _myObservers = new Vector(0, 1);
+    _myObservers = new Vector<ScenarioObserver>(0, 1);
   }
 
   /**
@@ -305,12 +305,12 @@ public class CommandLine
     _myScenario.setSeed(controller.randomSeed);
   }
 
-  public void configureObservers(Vector observers, File outputPath)
+  public void configureObservers(Vector<ScenarioObserver> observers, File outputPath)
   {
-    Iterator iter = observers.iterator();
+    Iterator<ScenarioObserver> iter = observers.iterator();
     while (iter.hasNext())
     {
-      ScenarioObserver observer = (ScenarioObserver) iter.next();
+      ScenarioObserver observer = iter.next();
 
       // is this an observer which is interested in the output path
       if (observer instanceof RecordToFileObserverType)
@@ -405,14 +405,14 @@ public class CommandLine
       res = cl.setup(null, null, output);
       assertFalse("correctly failed to open", res);
       String outMsg = bos.toString();
-      final String testMsg = "Setup failed:Scenario file (null)" + cl.FILE_NOT_SPECIFIED + sep;
+      final String testMsg = "Setup failed:Scenario file (null)" + CommandLine.FILE_NOT_SPECIFIED + sep;
       assertEquals("message is correct", testMsg, outMsg);
       bos.reset();
 
       // check handles invalid scenario, missing control
       res = cl.setup(TEST_ROOT + "\\test1_scenario_invalid.xml", null, output);
       assertFalse("correctly failed to open", res);
-      final String testMsg2 = "Setup failed:Control file (null)" + cl.FILE_NOT_SPECIFIED + sep;
+      final String testMsg2 = "Setup failed:Control file (null)" + CommandLine.FILE_NOT_SPECIFIED + sep;
       final String bosString = bos.toString();
       assertEquals("message is correct", testMsg2, bosString);
       bos.reset();

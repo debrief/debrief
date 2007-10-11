@@ -1,6 +1,9 @@
 package org.mwc.asset.scenarioplotter.editors;
 
 import java.io.*;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.resources.*;
 import org.eclipse.core.runtime.*;
@@ -11,6 +14,7 @@ import org.eclipse.ui.*;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.asset.core.ASSETPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.narrative.BaseNarrativeProvider;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
@@ -18,9 +22,13 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.*;
+import ASSET.Scenario.Observers.RecordToFileObserverType;
+import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.*;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.NarrativeEntry;
 
 public class ASSETPlotEditor extends CorePlotEditor
@@ -47,6 +55,30 @@ public class ASSETPlotEditor extends CorePlotEditor
 	private Layers _assetLayers;
 
 	private ScenarioLayer _myScenarioLayer;
+	
+	
+	/** store our observers in a layer
+	 * 
+	 * @author ian
+	 *
+	 */
+	private class ControlLayer extends BaseLayer
+	{
+		private Vector<Editable> _observers;
+
+		public ControlLayer()
+		{
+			this.setName("Controls");
+		}
+		
+		public Enumeration<Editable> elements()
+		{
+			return new IteratorWrapper(_observers.iterator());
+		}
+	}
+	
+	private ControlLayer _controller;
+
 
 	public ASSETPlotEditor()
 	{
@@ -57,6 +89,10 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 		_myScenario = new CoreScenario();
 		listenToTheScenario();
+		
+		// and the controller
+		_controller = new ControlLayer();
+		_assetLayers.addThisLayer(_controller);
 
 		// add the chart plotter
 		_myScenarioLayer = new ASSET.GUI.Workbench.Plotters.ScenarioLayer();
@@ -72,6 +108,17 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	public void dispose()
 	{
+    // clear out the observers
+    if (_controller != null)
+    {
+    	java.util.Enumeration<Editable> enumer = _controller.elements();
+    	while(enumer.hasMoreElements())
+    	{
+        ScenarioObserver observer = (ScenarioObserver) enumer.nextElement();
+        observer.tearDown(_myScenario);
+    	}
+    }		
+		
 		super.dispose();
 	}
 
@@ -410,4 +457,57 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myNarrativeProvider.fireEntry(newEntry);
 	}
 
+
+	@Override
+	protected void filesDropped(String[] fileNames)
+	{
+		super.filesDropped(fileNames);
+		
+		// ok. is it a control file?
+		
+		String control = fileNames[0];
+		try
+		{
+			InputStream controlStream;
+			controlStream = new FileInputStream(control);
+	    // now get the control data
+	    ASSETReaderWriter.ResultsContainer controller = 
+	    	ASSET.Util.XML.ASSETReaderWriter.importThisControlFile(control,
+	        controlStream);
+	                                                                                                           
+	    // and do our stuff with the observers (tell them about our scenario)
+	    configureObservers(controller.observerList, controller.outputDirectory);
+
+	    // and setup the random number seed
+	    _myScenario.setSeed(controller.randomSeed);				
+		} 
+		catch (FileNotFoundException e)
+		{
+			CorePlugin.logError(Status.ERROR,"Whilst reading in control file", e);
+		}
+		
+	}
+	
+
+  public void configureObservers(Vector<ScenarioObserver> observers, File outputPath)
+  {
+    Iterator<ScenarioObserver> iter = observers.iterator();
+    while (iter.hasNext())
+    {
+      ScenarioObserver observer = (ScenarioObserver) iter.next();
+
+      // is this an observer which is interested in the output path
+      if (observer instanceof RecordToFileObserverType)
+      {
+        RecordToFileObserverType obs = (RecordToFileObserverType) observer;
+        obs.setDirectory(outputPath);
+      }
+
+      // ok, let it set itself up
+      observer.setup(_myScenario);
+
+      // and remember it for when we finish
+      _controller.add(observer);
+    }
+  }		
 }

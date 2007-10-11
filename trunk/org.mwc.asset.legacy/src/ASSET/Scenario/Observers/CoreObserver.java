@@ -1,5 +1,5 @@
 /*
- * Desciption:
+ * Description:
  * User: administrator
  * Date: Nov 6, 2001
  * Time: 1:11:09 PM
@@ -15,7 +15,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 
 import java.util.Date;
 
-abstract public class CoreObserver implements ScenarioObserver
+abstract public class CoreObserver implements ScenarioObserver, Editable
 {
   /***************************************************************
    *  member variables

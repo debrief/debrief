@@ -14,7 +14,6 @@ public class ASSETActivator extends AbstractUIPlugin {
 	public static final String PLUGIN_ID = "org.mwc.asset.core";
 
 	public static final String SCENARIO_CONTROLLER = "org.mwc.asset.ScenarioController";
-	public static final String VESSEL_MONITOR = "org.mwc.asset.VesselMonitor";
 	
 
 	// The shared instance

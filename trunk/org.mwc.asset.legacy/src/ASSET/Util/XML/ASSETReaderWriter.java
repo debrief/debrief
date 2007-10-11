@@ -19,6 +19,7 @@ import org.xml.sax.InputSource;
 import ASSET.ScenarioType;
 import ASSET.Models.SensorType;
 import ASSET.Models.Sensor.SensorList;
+import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
@@ -476,7 +477,7 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
    */
   public static class ResultsContainer
   {
-    public Vector observerList;
+    public Vector<ScenarioObserver> observerList;
     public File outputDirectory;
     public Integer randomSeed;
   }

@@ -2,7 +2,7 @@
 <!--Control file used in investigating ASSET lookup sensors-->
 <ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="d:\dev\Asset\src\schemas\ASSET.xsd" OutputDirectory=".\">
 	<ObserverList>
-		<TimeObserver Name="run for an hour" Active="true">
+		<TimeObserver Name="run for 6 hours" Active="true">
 			<Duration Units="hours" Value="6"/>
 		</TimeObserver>
 		<DebriefReplayObserver directory_name=".\" Active="true" Name="Record to REP" file_name="res.rep" record_detections="true" record_positions="true" record_decisions="false"/>
