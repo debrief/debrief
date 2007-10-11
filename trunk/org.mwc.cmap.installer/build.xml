@@ -4,14 +4,14 @@
     <property name="linuxDist" value="${deployDir}/Debrief.zip" description="the name for the linux/debrief dist (without JRE)" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
-	<property name="advancedInstallerPath" value="d:\dev\cmap\contribs\advancedinstaller\" />
+	<property name="advancedInstallerPath" value="C:\Program Files\Caphyon\Advanced Installer 5.2.2" />
 
 	<!-- and the zip support filenames -->
     <property name="zipName" value="update.zip"/>
     <property name="zipDest" value="${deployDir}/${zipName}"/>
-	<property name="zipPath" value="/media/disk"/>
+<!--	<property name="zipPath" value="/media/disk"/> -->
 <!--	<property name="zipPath" value="/media/cdrom0"/> -->
-	<!-- <property name="zipPath" value="h:/"/> -->
+	<property name="zipPath" value="f:/"/> 
 	
 	
 	<target name="clean" description="clear the output directory" depends="">
@@ -21,14 +21,14 @@
 		<delete dir="${deployDir}" excludes="DebriefNG,DebriefNG/**, .project" />
 	</target>
 
-	<target name="check_the_dist" description="checking all files there" depends="">
-		<property name="distDir" value="${destDir}\DebriefNG" />
+	<target name="check_the_dist" description="checking all files there" depends="">		
+		<property name="distDir" value="${deployDir}\DebriefNG" />
 		<condition property="eclipse_present">
 			<and>
 				<!-- now eclipse itself -->
 				<available file="${distDir}\DebriefNG.exe" />
-				<available file="${distDir}\features\org.eclipse.platform_3.3.0.v20070612-_19UEkLEzwsdF9jSqQ-G" />
-				<available file="${distDir}\features\org.eclipse.rcp_3.3.0.v20070607-8y8eE8NEbsN3X_fjWS8HPNG" />
+				<available file="${distDir}\features\org.eclipse.platform_3.3.1.R33x_r20070911-_19UEkpF-B7Uh2hKy75y" />
+				<available file="${distDir}\features\org.eclipse.rcp_3.3.1.R33x_r20070802-8y8eE8sEV3Fz0z0GlHJrXvTAUS" />
 				<!-- now eclipse itself -->
 			</and>
 		</condition>
@@ -49,12 +49,12 @@
 		<condition property="debrief_present">
 			<and>
 				<!-- first the plugins -->
-				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.23" />
+				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.27" />
 				<!-- now the features -->
-				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.39" />
-				<available file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.12" />
-				<available file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.4" />
-				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.7" />
+				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.48" />
+				<available file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.13" />
+				<available file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.5" />
+				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.9" />
 			</and>
 		</condition>
 
