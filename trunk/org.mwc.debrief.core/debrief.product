@@ -30,8 +30,9 @@
       </win>
    </launcher>
 
+
    <vm>
-      <windows type="jre">jre1.6.0_01</windows>
+      <windows type="jre">jre1.6.0_02</windows>
    </vm>
 
    <plugins>
@@ -50,8 +51,7 @@
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.16"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.9"/>
-      <feature id="org.mwc.debrief.data_feed.feature" version="1.0.1"/>
-      <feature id="org.mwc.debrief.feature" version="1.0.44"/>
+      <feature id="org.mwc.debrief.feature" version="1.0.46"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.18"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.5"/>
    </features>
