@@ -57,12 +57,10 @@ public class CorePlugin extends AbstractUIPlugin
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
 
-
 	/**
 	 * the Debrief tool-parent used to provide legacy access to properties
 	 */
 	private static DebriefToolParent _toolParent;
-
 
 	/**
 	 * where we cache our images
@@ -89,7 +87,6 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static final String LOCATION_STRING_IDENTIFIER = "LOC:";
 
-	
 	/**
 	 * The constructor.
 	 */
@@ -165,8 +162,7 @@ public class CorePlugin extends AbstractUIPlugin
 		try
 		{
 			return (bundle != null) ? bundle.getString(key) : key;
-		}
-		catch (MissingResourceException e)
+		} catch (MissingResourceException e)
 		{
 			return key;
 		}
@@ -208,8 +204,7 @@ public class CorePlugin extends AbstractUIPlugin
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle
 						.getBundle("org.mwc.cmap.core.CorePluginResources");
-		}
-		catch (MissingResourceException x)
+		} catch (MissingResourceException x)
 		{
 			resourceBundle = null;
 		}
@@ -218,47 +213,68 @@ public class CorePlugin extends AbstractUIPlugin
 
 	/**
 	 * @param asSelection
-	 * @param parentPart 
+	 * @param parentPart
 	 */
-	public static void editThisInProperties(Vector selectionListeners,
-			StructuredSelection asSelection, ISelectionProvider selectionProvider, IWorkbenchPart parentPart)
+	public static void editThisInProperties(
+			final Vector<ISelectionChangedListener> selectionListeners,
+			final StructuredSelection asSelection,
+			final ISelectionProvider selectionProvider, IWorkbenchPart parentPart)
 	{
 		// hey, better make sure the properties window is open
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-		IWorkbenchPage page = win.getActivePage();
+		final IWorkbenchPage page = win.getActivePage();
 
 		// get ready for the start/end times
 		// right, we need the time controller if we're going to get the
 		// times
-		try
-		{
-			// select the part that wants to do the editing (otherwise the properties window just ignores it's selection)
-			page.activate(parentPart);
+		// select the part that wants to do the editing (otherwise the properties
+		// window just ignores it's selection)
+		page.activate(parentPart);
 
-			// now update the selection
-			if (selectionListeners != null)
+		// fire the update async - so the current page is clearly activated before
+		// marking the selection
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
 			{
-				SelectionChangedEvent sEvent = new SelectionChangedEvent(selectionProvider,
-						asSelection);
-				for (Iterator stepper = selectionListeners.iterator(); stepper.hasNext();)
+				try
 				{
-					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
-					if (thisL != null)
+					// introduce a pause
+					try
 					{
-						thisL.selectionChanged(sEvent);
+						Thread.sleep(100);
+					} catch (InterruptedException e)
+					{
+						e.printStackTrace();
 					}
+					
+					// now update the selection
+					if (selectionListeners != null)
+					{
+						SelectionChangedEvent sEvent = new SelectionChangedEvent(
+								selectionProvider, asSelection);
+						for (Iterator stepper = selectionListeners.iterator(); stepper
+								.hasNext();)
+						{
+							ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+									.next();
+							if (thisL != null)
+							{
+								thisL.selectionChanged(sEvent);
+							}
+						}
+					}
+					// and show the properties view
+					page.showView(IPageLayout.ID_PROP_SHEET, null,
+							IWorkbenchPage.VIEW_VISIBLE);
+				} catch (PartInitException e)
+				{
+					logError(Status.ERROR,
+							"Failed to open properties view when showing timer properties", e);
 				}
 			}
-
-			// and show the properties view
-			page.showView(IPageLayout.ID_PROP_SHEET, null, IWorkbenchPage.VIEW_VISIBLE);
-		}
-		catch (PartInitException e)
-		{
-			logError(Status.ERROR,
-					"Failed to open properties view when showing timer properties", e);
-		}
+		});
 	}
 
 	/**
@@ -270,7 +286,8 @@ public class CorePlugin extends AbstractUIPlugin
 	public static WorldLocation fromClipboard(String txt)
 	{
 		// get rid of the title
-		String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(), txt.length());
+		String dataPart = txt.substring(LOCATION_STRING_IDENTIFIER.length(), txt
+				.length());
 		StringTokenizer st = new StringTokenizer(dataPart);
 		String latP = st.nextToken(",");
 		String longP = st.nextToken(",");
@@ -278,8 +295,8 @@ public class CorePlugin extends AbstractUIPlugin
 		Double _lat = new Double(latP);
 		Double _long = new Double(longP);
 		Double _depth = new Double(depthP);
-		WorldLocation res = new WorldLocation(_lat.doubleValue(), _long.doubleValue(), _depth
-				.doubleValue());
+		WorldLocation res = new WorldLocation(_lat.doubleValue(), _long
+				.doubleValue(), _depth.doubleValue());
 		return res;
 	}
 
@@ -302,8 +319,8 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static String toClipboard(WorldLocation loc)
 	{
-		String res = LOCATION_STRING_IDENTIFIER + loc.getLat() + "," + loc.getLong() + ","
-				+ loc.getDepth();
+		String res = LOCATION_STRING_IDENTIFIER + loc.getLat() + ","
+				+ loc.getLong() + "," + loc.getDepth();
 		return res;
 	}
 
@@ -317,7 +334,8 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static ImageDescriptor getImageDescriptor(String path)
 	{
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
+		return AbstractUIPlugin
+				.imageDescriptorFromPlugin("org.mwc.cmap.core", path);
 	}
 
 	/**
@@ -334,7 +352,8 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static void logError(int severity, String message, Throwable exception)
 	{
-		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message, exception);
+		Status stat = new Status(severity, "org.mwc.cmap.core", Status.OK, message,
+				exception);
 		getDefault().getLog().log(stat);
 	}
 
@@ -367,7 +386,6 @@ public class CorePlugin extends AbstractUIPlugin
 		return res;
 	}
 
-	
 	/**
 	 * show a message to the user
 	 * 
@@ -376,7 +394,8 @@ public class CorePlugin extends AbstractUIPlugin
 	 */
 	public static void showMessage(final String title, final String message)
 	{
-		MessageDialog.openInformation(Display.getCurrent().getActiveShell(), title, message);
+		MessageDialog.openInformation(Display.getCurrent().getActiveShell(), title,
+				message);
 	}
 
 	/**
@@ -395,8 +414,7 @@ public class CorePlugin extends AbstractUIPlugin
 			{
 				// add, then run the action to the buffer
 				getHistory().execute(theAction, null, null);
-			}
-			catch (ExecutionException e)
+			} catch (ExecutionException e)
 			{
 				logError(Status.ERROR, "Whilst adding new action to history buffer", e);
 			}
@@ -413,53 +431,57 @@ public class CorePlugin extends AbstractUIPlugin
 			IWorkbenchPage page = win.getActivePage();
 			// right, open the view.
 			res = page.showView(viewName);
-		}
-		catch (PartInitException e)
+		} catch (PartInitException e)
 		{
 			e.printStackTrace();
 			logError(Status.ERROR, "Failed to open " + viewName + "view", e);
 		}
 		return res;
 	}
-	
-	/** create an action that we can stick in our manager
+
+	/**
+	 * create an action that we can stick in our manager
 	 * 
 	 * @param target
 	 * @param description
 	 * @param host
 	 * @return
 	 */
-	public static Action createOpenHelpAction(final String target, 
-			String description, 
-			final ViewPart host)
+	public static Action createOpenHelpAction(final String target,
+			String description, final ViewPart host)
 	{
 		// sort out the description
-		if(description == null)
+		if (description == null)
 			description = "Help";
-		
+
 		Action res = new Action(description, Action.AS_PUSH_BUTTON)
 		{
 			public void runWithEvent(Event event)
 			{
-				host.getViewSite().getWorkbenchWindow().getWorkbench().getHelpSystem().displayHelp(target);
+				host.getViewSite().getWorkbenchWindow().getWorkbench().getHelpSystem()
+						.displayHelp(target);
 			}
 		};
 		res.setToolTipText("View help on this component");
-		res.setImageDescriptor(CorePlugin.getImageDescriptor("icons/linkto_help.gif"));
+		res.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/linkto_help.gif"));
 		return res;
 	}
-	
-	/** make it easy to declare context sensitive help
+
+	/**
+	 * make it easy to declare context sensitive help
 	 * 
 	 * @param parent
 	 * @param context
 	 */
-	public static void declareContextHelp(final Composite parent, final String context) {
+	public static void declareContextHelp(final Composite parent,
+			final String context)
+	{
 		PlatformUI.getWorkbench().getHelpSystem().setHelp(parent, context);
 	}
-	
 
-	public static IViewPart openSecondaryView(String viewName, String secondaryId, int state)
+	public static IViewPart openSecondaryView(String viewName,
+			String secondaryId, int state)
 	{
 		IViewPart res = null;
 		try
@@ -469,14 +491,12 @@ public class CorePlugin extends AbstractUIPlugin
 			IWorkbenchPage page = win.getActivePage();
 			// right, open the view.
 			res = page.showView(viewName, secondaryId, state);
-		}
-		catch (PartInitException e)
+		} catch (PartInitException e)
 		{
 			e.printStackTrace();
 			logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
 		}
 		return res;
 	}
-
 
 }
