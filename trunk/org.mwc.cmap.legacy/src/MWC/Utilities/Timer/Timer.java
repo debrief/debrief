@@ -145,9 +145,19 @@ implements java.io.Serializable {
   class TimerThread extends Thread {
     public void run() {
       while (true) {
-        try {
+        try 
+        {
           sleep(delay);
-        } catch (InterruptedException e) {}
+        } 
+        catch (InterruptedException e) 
+        {
+        	
+        }
+        catch (Exception e) 
+        {
+        	System.err.println("Exception in time-stepper");
+        	e.printStackTrace();
+        }
         fireTimerEvent();
         if (onceOnly) break;
       }
