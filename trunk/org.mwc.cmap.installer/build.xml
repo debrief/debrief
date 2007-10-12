@@ -23,6 +23,11 @@
 
 	<target name="check_the_dist" description="checking all files there" depends="">		
 		<property name="distDir" value="${deployDir}\DebriefNG" />
+		<condition property="help_present">
+			<and>
+				<available file="${deployDir}\..\org.mwc.debrief.help\html\legacy\index.html" />
+			</and>
+		</condition>
 		<condition property="eclipse_present">
 			<and>
 				<!-- now eclipse itself -->
@@ -58,6 +63,7 @@
 			</and>
 		</condition>
 
+		<fail message="the help files have not been built" unless="help_present" />
 		<fail message="some eclipse files are missing" unless="eclipse_present" />
 		<fail message="some static lib files are missing" unless="static_present" />
 		<fail message="some debrief files are missing" unless="debrief_present" />
