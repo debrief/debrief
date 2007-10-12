@@ -390,7 +390,7 @@ The wider national/international use of
               <row id="mwc">
                 <entry>
                   <para>
-                    <inlinegraphic fileref="figures/mwc_cresta.gif" width="100"/>
+                    <inlinegraphic fileref="figures/mwc_crest.gif" width="100"/>
                   </para> </entry> 
 <entry id="project_sponsor"> 
 <para>Debrief project sponsor.
@@ -438,9 +438,9 @@ The wider national/international use of
 </address>
                   </para> </entry> 
 </row> 
-<row id="nuwc_address"> 
+<row> 
 <entry> 
-<para>
+<para  id="nuwc_address">
                     <inlinegraphic fileref="figures/nuwc.gif" width="100"/>
                   </para> </entry> 
 <entry> 
@@ -1070,7 +1070,7 @@ The next set of buttons do not involve mouse interaction with the plot, they jus
 <varlistentry> 
 <term>
                   <guiicon>
-                    <inlinegraphic fileref="figures/repaint.png"/>
+                    <inlinegraphic fileref="figures/Repaint.png"/>
                   </guiicon>Refresh View
                 </term> 
 <listitem> 
@@ -3116,7 +3116,7 @@ different vectored databases. </para>
               <screenshot>
                 <mediaobject>
                   <imageobject>
-                    <imagedata fileref="figures/vpf_prefs.png" width="100%"/>
+                    <imagedata fileref="figures/VPF_prefs.png" width="100%"/>
                   </imageobject>
                 </mediaobject>
               </screenshot>
@@ -3250,7 +3250,7 @@ different vectored databases. </para>
           </para> 
 <para>Select the Pan control from the Plot toolbar:
             <guiicon>
-              <inlinegraphic fileref="figures/pan.gif"/>
+              <inlinegraphic fileref="figures/Pan.gif"/>
             </guiicon>
           </para> 
 <para>Now drag the plot southwards to move the view up towards Europe.  Keep dragging until you have a clear view of a more familiar coastline, that of the British Isles.  From this view you will add depth contours.
@@ -3545,6 +3545,27 @@ different vectored databases. </para>
 </sect1> 
 <sect1 id="etopo_data"> 
 <title>ETOPO Data</title> 
+<sect2 id="etopo_install"> 
+<title>Configuring Debrief to read VPF data</title> 
+<para>Debrief determines where to find the
+            <glossterm linkend="g_etopo">ETOPO</glossterm> data using
+            <indexterm>
+              <primary>ETOPO Data</primary>
+              <secondary>Configuring Debrief</secondary>
+            </indexterm>the <guibutton>ETOPO Data storage</guibutton> tab of the <guibutton>Preferences</guibutton> dialog from the <guimenu>Window</guimenu> menu.
+          Indicate the location of your ETOPO.RAW datafile using the file-browser button.<figure float="0">
+              <title>VPF preferences</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/ETOPO_prefs.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure></para> 
+</sect2> 
+<sect2 id="etopo_background">
+<title>Background to ETOPO data</title> 
 <para>
           <application>Debrief 2002</application> added the capability to view gridded bathymetric data, provided through the ETOPO dataset.  The ETOPO dataset and its use is explained in more detail in
           <link linkend="etopo_gridded_bathy">ETOPO gridded bathy</link>
@@ -3673,6 +3694,7 @@ over appearance in the plot:
               </para> 
 <para>The ETOPO-2 dataset is many times larger than ETOPO-5, thus is not read into memory but accessed on the fly. For this reason it does not consume as much memory, but does require a fast PC to produce acceptable screen updates.</para> 
 </tip> </para> 
+</sect2>
 </sect1> 
 </chapter> 
 <chapter id="viewing_narratives"> 
@@ -3794,9 +3816,7 @@ over appearance in the plot:
 </sect1> 
 </chapter> 
 <chapter id="video_recording"> 
-<title>
-        <application>Debrief</application> video recording
-      </title> 
+<title><application>Debrief</application> video recording</title> 
 <sect1> 
 <title>Recording plots to video</title> 
 <sect2> 
@@ -5797,7 +5817,14 @@ range = Range to target from ownship (yds)</markup>
 <glossdef> 
 <para>Acronym representing Date Time Group</para> 
 </glossdef> 
+</glossentry>
+<glossentry id="g_etopo"> 
+<glossterm>ETOPO</glossterm> 
+<glossdef> 
+<para>Standard for digital topographic data, predominantly distributed by the NOAA</para> 
+</glossdef> 
 </glossentry> 
+ 
 <glossentry id="g_cheat"> 
 <glossterm>Cheat Sheets</glossterm> 
 <glossdef> 
