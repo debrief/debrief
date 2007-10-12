@@ -154,23 +154,27 @@
 	<target name="docbook_to_pdf" description="Generate html from docbook">
 
 		<property name="fopVersion"
-		          value="fop-0.93"
+		          value="fop-0.94"
 		          description="the current version of FOP" />
 		<property name="fopDir"
 		          value="${rootDir}/contribs/${fopVersion}"
 		          description="where the fop libraries are located" />
 		<property name="docName"
-		          value="Debrief User Guide.pdf"
+		          value="DebriefNG.pdf"
 		          description="The Debrief document file" />
 		<property name="xml.dir"
 		          value="docbook"
 		          description="where our docbook sources are" />
+		
+		<property name="pdfDestination" value="../org.mwc.debrief.help.feature/root_installs"/>
+		<echo message="Ditching old pdf"/>
+		<delete file="${pdfDestination}/${docName}"/>
 
-		<echo message="going from xml to FO" />
-
-		<!-- produce the FO file, ready for PDF -->
+		<echo message="ditching old fo document"/>
 		<delete file="${rootDir}/org.mwc.debrief.help/docbook/out.fo" />
 
+		<!-- produce the FO file, ready for PDF -->
+		<echo message="going from xml to FO" />
 		<property name="docbook.home"    value="${rootDir}/contribs/docbook-xsl-1.72.0"/>
 		<property name="saxon.dir"       value="${rootDir}/contribs/saxon6_5_2"/>
 		<property name="xml.dir"         value="${helpDir}docbook"/>
@@ -179,26 +183,17 @@
 		      classpath="${saxon.dir}/saxon.jar"
 		      in="${xml.dir}/ng_help.xml"
 		      out="${xml.dir}/out.fo" />
-		<echo message="output to fo complete, now going to pdf" />
 
-		
-		
-<!--	
-        <eclipse.convertPath resourcePath="..\contribs\fop-0.9.3" property="fop.home"/>
-  -->
-		
-	    <property name="fop.home" value="${rootDir}/contribs/fop-0.93" /> 
-		<property name="fo.dir" value="fo" />
-		<property name="pdf.dir" value="pdf" />
+		<echo message="output to fo complete, now going to pdf" />		
 
 		<taskdef name="fop" classname="org.apache.fop.tools.anttasks.Fop">
 			<classpath>
-				<pathelement location="${fop.home}/build/fop.jar" />
-				<pathelement location="${fop.home}/lib/avalon-framework-4.2.0.jar" />
-				<pathelement location="${fop.home}/lib/batik-all-1.6.jar" />
-				<pathelement location="${fop.home}/lib/commons-logging-1.0.4.jar" />
-				<pathelement location="${fop.home}/lib/xmlgraphics-commons-1.1.jar" />
-				<pathelement location="${fop.home}/lib/commons-io-1.1.jar" />
+				<pathelement location="${fopDir}/build/fop.jar" />
+				<pathelement location="${fopDir}/lib/avalon-framework-4.2.0.jar" />
+				<pathelement location="${fopDir}/lib/batik-all-1.6.jar" />
+				<pathelement location="${fopDir}/lib/commons-logging-1.0.4.jar" />
+				<pathelement location="${fopDir}/lib/xmlgraphics-commons-1.2.jar" />
+				<pathelement location="${fopDir}/lib/commons-io-1.3.1.jar" />
 			</classpath>
 		</taskdef>
 
@@ -208,7 +203,7 @@
 		     outfile="docbook/DebriefNG.pdf" />
 
 		<!-- ok, move the output file to the target directory -->
-		<move file="docbook/DebriefNG.pdf" todir="" failonerror="true" />
+		<move file="docbook/DebriefNG.pdf" todir="${pdfDestination}" failonerror="true" />
  	</target>
 
 	<!-- now, how do we tie the two together? -->
