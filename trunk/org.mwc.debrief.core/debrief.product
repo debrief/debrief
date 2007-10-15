@@ -30,8 +30,8 @@
       </win>
    </launcher>
 
-
    <vm>
+      <linux type="jre">java-6-sun-1.6.0.03</linux>
       <windows type="jre">jre1.6.0_02</windows>
    </vm>
 
