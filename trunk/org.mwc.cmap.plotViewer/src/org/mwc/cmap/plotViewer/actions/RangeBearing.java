@@ -3,6 +3,8 @@
  */
 package org.mwc.cmap.plotViewer.actions;
 
+import java.text.DecimalFormat;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
@@ -134,7 +136,9 @@ final public class RangeBearing extends CoreDragAction
 			brg = brg * 180 / Math.PI;
 			if(brg < 0)
 				 brg += 360;
-			String txt = "[" + (int) rng + myUnits + " " + (int) brg + "\u00b0]";
+			DecimalFormat df = new DecimalFormat("0.00");
+			String numComponent = df.format(rng);
+			String txt = "[" + numComponent + myUnits + " " + (int) brg + "\u00b0]";
 
 			// decide the mid-point
 			java.awt.Point loc = new java.awt.Point(_lastRect.x + _lastRect.width / 2,
