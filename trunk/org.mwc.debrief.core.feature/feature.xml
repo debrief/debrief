@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.46">
+      version="1.0.48">
 
    <description>
-      [1.0.46] Allow user to hide line connecting points
+      [1.0.48] Fix copying sensor/track data to clipboard
+[1.0.47] More robust handling of errors in Replay import
+[1.0.46] Allow user to hide line connecting points
 [1.0.45] Show fixwrapper hover in correct units
 [1.0.44] Force inclusion of previous update
 [1.0.42] Force file refresh before opening, tidy generics support
