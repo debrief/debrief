@@ -50,7 +50,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   /**
    * the track of our host
    */
-  protected Debrief.Tools.Tote.WatchableList _myHost;
+  protected transient Debrief.Tools.Tote.WatchableList _myHost;
 
   /**
    * manage the start/stop times for this period
