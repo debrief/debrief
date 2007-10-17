@@ -247,6 +247,8 @@ import java.awt.*;
 import java.io.*;
 import java.util.*;
 
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
 import MWC.GUI.*;
@@ -414,7 +416,14 @@ public class ImportReplay extends PlainImporterBase
 			}
 
 			// now read it in.
-			Object thisObject = thisOne.readThisLine(theLine);
+			Object thisObject = null;
+			try{
+				thisObject = thisOne.readThisLine(theLine);
+			}catch(ParseException pe)
+			{
+				System.err.println("Failed to read in:" + theLine);
+				pe.printStackTrace();
+			}
 
 			// see if we are going to do any special processing
 
