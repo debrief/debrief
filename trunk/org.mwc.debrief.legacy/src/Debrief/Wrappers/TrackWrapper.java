@@ -1828,6 +1828,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// tell the sensor about us
 			swr.setHost(this);
+			
+			// and the track name (if we're loading from REP it will already know
+			//    the name, but if this data is being pasted in, it may start with a different
+			//    parent track name - so override it here)
+			swr.setTrackName(this.getName());
 
 			// indicate success
 			done = true;
@@ -1844,6 +1849,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// tell the sensor about us
 			twr.setHost(this);
+			
+			// and the track name (if we're loading from REP it will already know
+			//    the name, but if this data is being pasted in, it may start with a different
+			//    parent track name - so override it here)
+			twr.setTrackName(this.getName());
 
 			// indicate success
 			done = true;
