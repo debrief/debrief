@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.19">
+      version="1.0.20">
 
    <description>
-      [1.0.19] Include ETOPO setup guidance, put pdf in root of install
+      [1.0.20] Include instructions on persistent rng/brg display
+[1.0.19] Include ETOPO setup guidance, put pdf in root of install
 [1.0.18] Force update
 [1.0.17] Include guidance for 3d on multiple monitor setup
 [1.0.16] Update Internet update guidance

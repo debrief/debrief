@@ -2134,9 +2134,10 @@ It may be useful to remember that the Primary Track is usually assigned to the T
             <guiicon>
               <inlinegraphic fileref="figures/RngBrg.png"/>
             </guiicon>
- which is frequently useful in analysis.  The calculated range and bearing is displayed at the bottom right-hand corner of the Tote.
+ which is frequently useful in analysis.  The calculated range and bearing is displayed at the mid-point of the line and at the foot of the DebriefNG screen (where it remains until you make another measurement).
           </para> 
-<para>The default units for the range displayed are configured using the <guimenu>CMAP</guimenu> section of the <guimenuitem>Preferences</guimenuitem> dialog in the <guimenu>Window</guimenu> menu. </para> 
+<para>The default units for the range displayed are configured using the <guimenu>CMAP</guimenu> section of the <guimenuitem>Preferences</guimenuitem> dialog in the <guimenu>Window</guimenu> menu. 
+The preferences page can also be accessed by double-clicking on the range/bearing slave display at the foot of the screen. </para> 
 </sect2> 
 <sect2> 
 <title>Earth Model</title> 
