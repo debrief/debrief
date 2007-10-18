@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.TimeController"
    name="Time Controller Plug-in"
-   version="1.0.16"
+   version="1.0.17"
    provider-name="MWC"
    class="org.mwc.cmap.TimeController.TimeControllerPlugin">
 
@@ -36,13 +36,6 @@
             id="org.mwc.cmap.TimeController.views.TimeController">
       </view>
    </extension>
-  <extension
-        point="org.eclipse.ui.preferencePages">
-     <page
-           class="org.mwc.cmap.TimeController.preferences.TimeControllerPrefsPage"
-           id="org.mwc.cmap.TimeController.preferences.TimeControllerPrefsPage"
-           name="Time Controller"/>
-  </extension>
   <extension
         point="org.eclipse.core.runtime.preferences">
      <initializer class="org.mwc.cmap.TimeController.preferences.PreferenceInitializer"/>
