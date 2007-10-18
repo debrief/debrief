@@ -204,6 +204,9 @@
 		     basedir="docbook"
 		     fofile="docbook/out.fo"
 		     outfile="docbook/DebriefNG.pdf" />
+		
+		<!-- ditch the fo file, we don't want it in version tracking -->
+		<delete file="docbook/out.fo" failonerror="true" />
 
 		<!-- ok, move the output file to the target directory -->
 		<move file="docbook/DebriefNG.pdf" todir="${pdfDestination}" failonerror="true" />
