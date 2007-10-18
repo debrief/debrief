@@ -6,15 +6,25 @@ package org.mwc.cmap.plotViewer.actions;
 import java.text.DecimalFormat;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontMetrics;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.core.preferences.CMAPPrefsPage;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.cmap.plotViewer.editors.chart.StatusPanel;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.Conversions;
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author ian.mayo
@@ -22,6 +32,22 @@ import MWC.GenericData.*;
 final public class RangeBearing extends CoreDragAction
 {
 
+	static StatusPanel _myPanel;
+	
+	public static StatusPanel getPanel(EditorPart editor)
+	{
+		if(_myPanel == null)
+		{
+			_myPanel = new StatusPanel(editor, 
+			    "Range Bearing", 
+			    "__________________", 
+			    "Last measured range/bearing (double click to change units)", 
+			    CMAPPrefsPage.PREFS_PAGE_ID);
+		}
+				
+		return _myPanel;
+	}
+	
 	/**
 	 * embedded class that handles the range/bearing measurement
 	 * 
@@ -50,7 +76,8 @@ final public class RangeBearing extends CoreDragAction
 		 */
 		SWTCanvas _myCanvas;
 
-		final public void doMouseDrag(Point pt, int JITTER, Layers theLayers, SWTCanvas theCanvas)
+		final public void doMouseDrag(Point pt, int JITTER, Layers theLayers,
+				SWTCanvas theCanvas)
 		{
 			if (_startPoint != null)
 			{
@@ -69,13 +96,19 @@ final public class RangeBearing extends CoreDragAction
 
 				// Draw selection rectangle
 				_lastRect = new Rectangle(_startPoint.x, _startPoint.y, dx, dy);
-				plotUpdate(gc);
-				
-				// and ditch the GC
+
+				try
+				{
+					// update the range/bearing text
+					plotUpdate(gc);
+				} 
+				catch(Exception e)
+				{	
+					e.printStackTrace();
+				}
 				gc.dispose();
 
-			}
-			else
+			} else
 			{
 				// System.out.println("no point.");
 			}
@@ -96,7 +129,15 @@ final public class RangeBearing extends CoreDragAction
 				// hmm, we've finished plotting. see if the ctrl button is
 				// down
 				if ((keyState & SWT.CTRL) == 0)
-					plotUpdate(gc);
+					try
+					{
+						plotUpdate(gc);
+					} 
+					catch(Exception e)
+					{	
+						e.printStackTrace();
+					}
+					gc.dispose();
 			}
 
 			_startPoint = null;
@@ -105,7 +146,8 @@ final public class RangeBearing extends CoreDragAction
 			_startLocation = null;
 		}
 
-		final public void mouseDown(Point point, SWTCanvas canvas, PlainChart theChart)
+		final public void mouseDown(Point point, SWTCanvas canvas,
+				PlainChart theChart)
 		{
 			_startPoint = point;
 			_myCanvas = canvas;
@@ -116,13 +158,13 @@ final public class RangeBearing extends CoreDragAction
 		final private void plotUpdate(GC dest)
 		{
 
-			java.awt.Point endPoint = new java.awt.Point(_lastRect.x + _lastRect.width,
-					_lastRect.y + _lastRect.height);
+			java.awt.Point endPoint = new java.awt.Point(_lastRect.x
+					+ _lastRect.width, _lastRect.y + _lastRect.height);
 
 			dest.setForeground(new Color(Display.getDefault(), 111, 111, 111));
 			dest.setLineWidth(2);
-			dest.drawLine(_lastRect.x, _lastRect.y, _lastRect.x + _lastRect.width, _lastRect.y
-					+ _lastRect.height);
+			dest.drawLine(_lastRect.x, _lastRect.y, _lastRect.x + _lastRect.width,
+					_lastRect.y + _lastRect.height);
 
 			// also put in a text-label
 			WorldLocation endLocation = _myCanvas.getProjection().toWorld(endPoint);
@@ -134,15 +176,15 @@ final public class RangeBearing extends CoreDragAction
 			double rng = Conversions.convertRange(sep.getRange(), myUnits);
 			double brg = sep.getBearing();
 			brg = brg * 180 / Math.PI;
-			if(brg < 0)
-				 brg += 360;
+			if (brg < 0)
+				brg += 360;
 			DecimalFormat df = new DecimalFormat("0.00");
 			String numComponent = df.format(rng);
-			String txt = "[" + numComponent + myUnits + " " + (int) brg + "\u00b0]";
+			final String txt = numComponent + myUnits + " " + (int) brg + "\u00b0";
 
 			// decide the mid-point
-			java.awt.Point loc = new java.awt.Point(_lastRect.x + _lastRect.width / 2,
-					_lastRect.y + _lastRect.height / 2);
+			java.awt.Point loc = new java.awt.Point(
+					_lastRect.x + _lastRect.width / 2, _lastRect.y + _lastRect.height / 2);
 
 			// find out how big the text is
 			FontMetrics fm = dest.getFontMetrics();
@@ -153,7 +195,9 @@ final public class RangeBearing extends CoreDragAction
 			dest.setForeground(new Color(Display.getDefault(), 200, 200, 200));
 			// dest.setForeground(dest.getBackground());
 
-			dest.drawText(txt, loc.x, loc.y, SWT.DRAW_TRANSPARENT);
+			dest.drawText("[" + txt + "]", loc.x, loc.y, SWT.DRAW_TRANSPARENT);
+			
+			_myPanel.write(txt);
 
 		}
 	}
@@ -162,4 +206,6 @@ final public class RangeBearing extends CoreDragAction
 	{
 		return new RangeBearingMode();
 	}
+
+
 }

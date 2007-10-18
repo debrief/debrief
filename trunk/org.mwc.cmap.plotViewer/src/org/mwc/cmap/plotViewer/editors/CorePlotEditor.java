@@ -22,6 +22,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.*;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
+import org.mwc.cmap.plotViewer.actions.RangeBearing;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
@@ -113,6 +114,8 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	private PartMonitor _myPartMonitor;
 
+	private StatusPanel _myRngBrg;
+
 
 	// //////////////////////////////
 	// constructor
@@ -183,6 +186,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		_myTracker.close();
 		_myTracker = null;
 		
+		_myRngBrg.close();
+		_myRngBrg = null;
+		
 		// empty the part monitor
 		_myPartMonitor.ditch();
 		_myPartMonitor = null;
@@ -237,6 +243,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 		// ok, create the lat-long tracker
 		_myTracker = new CursorTracker(_myChart,  this);
+		
+		// and the range bearing tracker
+		_myRngBrg = RangeBearing.getPanel(this);
 
 
 		// and over-ride the undo button
