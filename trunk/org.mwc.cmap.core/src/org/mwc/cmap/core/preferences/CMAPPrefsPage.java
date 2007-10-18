@@ -22,6 +22,8 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 		IWorkbenchPreferencePage
 {
 
+  public static final String PREFS_PAGE_ID = "org.mwc.cmap.core.preferences.CMAPPrefsPage";
+  
 	public CMAPPrefsPage()
 	{
 		super(GRID);
