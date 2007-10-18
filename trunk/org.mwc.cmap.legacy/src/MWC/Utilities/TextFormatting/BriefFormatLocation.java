@@ -14,7 +14,7 @@ public class BriefFormatLocation
 	/** degree symbol, obviously.  Taken from helpful website at http://www.fileformat.info/info/unicode/char/00b0/index.htm
 	 * 
 	 */
-  private static final String DEGREE_SYMBOL = "\u00B0";
+  public static final String DEGREE_SYMBOL = "\u00B0";
 	public static DecimalFormat df = new DecimalFormat("00.00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
   public static DecimalFormat df2 = new DecimalFormat("00", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
   public static DecimalFormat df3 = new DecimalFormat("000", new java.text.DecimalFormatSymbols(java.util.Locale.UK));
