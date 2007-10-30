@@ -10,7 +10,8 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy,
  org.mwc.asset.core,
- org.mwc.asset.legacy
+ org.mwc.asset.legacy,
+ org.eclipse.draw2d
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  libs/draw2d.jar,
