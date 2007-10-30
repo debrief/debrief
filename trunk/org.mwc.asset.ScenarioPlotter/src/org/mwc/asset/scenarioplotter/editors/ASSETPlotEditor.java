@@ -64,13 +64,24 @@ public class ASSETPlotEditor extends CorePlotEditor
 	 */
 	private class ControlLayer extends BaseLayer
 	{
-		private Vector<Editable> _observers;
+		/**
+     * 
+     */
+    private static final long serialVersionUID = 1L;
+    
+    /** and the observers themselves
+     * 
+     */
+    private Vector<Editable> _observers;
 
 		public ControlLayer()
 		{
 			this.setName("Controls");
 		}
 		
+		/** present ourselves as a list
+		 * 
+		 */
 		public Enumeration<Editable> elements()
 		{
 		  IteratorWrapper res = null;
@@ -78,6 +89,20 @@ public class ASSETPlotEditor extends CorePlotEditor
 		    res = new IteratorWrapper(_observers.iterator()); 
 			return res;
 		}
+
+		/** store some more observers
+		 * 
+		 * @param observerList
+		 */
+    public void addObservers(Vector<ScenarioObserver> observerList)
+    {
+      // do we have our list yet?
+      if(_observers == null)
+        _observers = new Vector<Editable>(1,1);
+      
+      // ok, add the new items
+      _observers.addAll(observerList);
+    }
 	}
 	
 	private ControlLayer _controller;
@@ -480,6 +505,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 	                                                                                                           
 	    // and do our stuff with the observers (tell them about our scenario)
 	    configureObservers(controller.observerList, controller.outputDirectory);
+	    
+	    // inform our controllers object about the new observers
+	    _controller.addObservers(controller.observerList);
 
 	    // and setup the random number seed
 	    _myScenario.setSeed(controller.randomSeed);				
