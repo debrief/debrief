@@ -510,7 +510,10 @@ public class ASSETPlotEditor extends CorePlotEditor
 	    _controller.addObservers(controller.observerList);
 
 	    // and setup the random number seed
-	    _myScenario.setSeed(controller.randomSeed);				
+	    _myScenario.setSeed(controller.randomSeed);			
+	    
+	    // hey, better fire an upate - to get the layer manager to repopulate itself
+	    _assetLayers.fireExtended();
 		} 
 		catch (FileNotFoundException e)
 		{
