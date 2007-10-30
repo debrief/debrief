@@ -1,6 +1,7 @@
 package ASSET.Scenario.Observers;
 
 import ASSET.ScenarioType;
+import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import MWC.GUI.Editable;
 
 import java.io.File;
@@ -159,7 +160,10 @@ public abstract class RecordToFileObserverType extends CoreObserver
    *
    * @return a new property editor for this object
    */
-  abstract protected Editable.EditorType createEditor();
+  protected Editable.EditorType createEditor()
+  {
+    return new RecordToFileObserverInfo(this);
+  }
 
   /**
    * ok, do the actual legwork of creating the file
@@ -199,4 +203,49 @@ public abstract class RecordToFileObserverType extends CoreObserver
     FileWriter os = new FileWriter(new File(getDirectory(), theName));
     return os;
   }
+  
+
+  //////////////////////////////////////////////////////////////////////
+  // editable properties
+  //////////////////////////////////////////////////////////////////////
+
+  static public class RecordToFileObserverInfo extends MWC.GUI.Editable.EditorType
+  {
+
+
+    /**
+     * constructor for editable details of a set of Layers
+     *
+     * @param data the Layers themselves
+     */
+    public RecordToFileObserverInfo(final RecordToFileObserverType data)
+    {
+      super(data, data.getName(), "Edit");
+    }
+
+    /**
+     * editable GUI properties for our participant
+     *
+     * @return property descriptions
+     */
+    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final java.beans.PropertyDescriptor[] res = {
+          prop("Directory", "The directory to place Debrief data-files"),
+          prop("Active", "Whether this observer is active"),
+          prop("FileName", "The filename template to use"),
+          prop("Name", "The name of this observer"),
+        };
+
+        return res;
+      }
+      catch (java.beans.IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
+
+  }  
 }

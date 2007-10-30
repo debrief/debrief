@@ -177,14 +177,5 @@ public abstract class EndOfRunBatchObserver extends EndOfRunRecordToFileObserver
     return "csv";  //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  /**
-   * hey, we haven't got an editor, better create one
-   *
-   * @return a new property editor for this object
-   */
-  protected EditorType createEditor()
-  {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
 
 }

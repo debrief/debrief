@@ -187,22 +187,22 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
     this._showScale = _showScale;
   }
 
-  public int getWidth()
+  public Integer getWidth()
   {
     return _myWid;
   }
 
-  public void setWidth(int _myWid)
+  public void setWidth(Integer _myWid)
   {
     this._myWid = _myWid;
   }
 
-  public int getHeight()
+  public Integer getHeight()
   {
     return _myHeight;
   }
 
-  public void setHeight(int _myHeight)
+  public void setHeight(Integer _myHeight)
   {
     this._myHeight = _myHeight;
   }
