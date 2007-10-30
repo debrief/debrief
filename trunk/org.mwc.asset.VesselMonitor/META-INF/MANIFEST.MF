@@ -14,5 +14,4 @@ Require-Bundle: org.eclipse.ui,
  org.eclipse.draw2d
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
- libs/draw2d.jar,
  images/
