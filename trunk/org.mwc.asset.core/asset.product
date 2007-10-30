@@ -91,6 +91,7 @@
    </plugins>
 
    <features>
+      <feature id="org.eclipse.gef" version="3.3.1.v20070814"/>
       <feature id="org.eclipse.rcp" version="3.3.1.R33x_r20070802-8y8eE8sEV3Fz0z0GlHJrXvTAUS"/>
       <feature id="org.eclipse.platform" version="3.3.1.R33x_r20070911-_19UEkpF-B7Uh2hKy75y"/>
       <feature id="org.mwc.asset.ScenarioController.feature" version="1.0.1"/>
@@ -105,7 +106,6 @@
       <feature id="org.mwc.cmap.tote.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.9"/>
       <feature id="org.mwc.debrief.feature" version="1.0.48"/>
-      <feature id="org.eclipse.gef" version="3.3.1.v20070814"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.0"/>
       <feature id="org.mwc.asset.VesselMonitor.Feature" version="1.0.1"/>
       <feature id="org.mwc.asset.SensorMonitor.feature" version="1.0.0"/>
