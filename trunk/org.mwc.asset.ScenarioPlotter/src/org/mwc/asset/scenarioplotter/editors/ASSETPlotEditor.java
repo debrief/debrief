@@ -73,7 +73,10 @@ public class ASSETPlotEditor extends CorePlotEditor
 		
 		public Enumeration<Editable> elements()
 		{
-			return new IteratorWrapper(_observers.iterator());
+		  IteratorWrapper res = null;
+		  if(_observers != null)
+		    res = new IteratorWrapper(_observers.iterator()); 
+			return res;
 		}
 	}
 	
