@@ -9,7 +9,7 @@
             category="org.mwc.asset.core.simulation.category"
             class="org.mwc.asset.sensormonitor.views.SensorMonitor"
             icon="icons/Binocular.gif"
-            id="org.mwc.asset.sensormonitor.views.SensorMonitor"
+            id="org.mwc.asset.SensorMonitor"
             name="Sensor Monitor">
       </view>
    </extension>
