@@ -29,9 +29,9 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 
 	public static final String SCENARIO_CONTROLLER = "org.mwc.asset.ScenarioController";
 
-	public static final String VESSEL_MONITOR = "org.mwc.asset.vmonitor";
+	public static final String VESSEL_MONITOR = "org.mwc.asset.VesselMonitor";
 
-	public static final String SENSOR_MONITOR = "org.mwc.asset.sensormonitor.views.SensorMonitor";
+	public static final String SENSOR_MONITOR = "org.mwc.asset.SensorMonitor";
 
 	// The shared instance
 	private static ASSETPlugin plugin;
