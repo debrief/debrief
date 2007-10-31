@@ -9,9 +9,9 @@
 	<!-- and the zip support filenames -->
     <property name="zipName" value="update.zip"/>
     <property name="zipDest" value="${deployDir}/${zipName}"/>
-<!--	<property name="zipPath" value="/media/disk"/> -->
+	<property name="zipPath" value="/media/zip"/>
 <!--	<property name="zipPath" value="/media/cdrom0"/> -->
-	<property name="zipPath" value="f:/"/> 
+<!--	<property name="zipPath" value="f:/"/> --> 
 	
 	
 	<target name="clean" description="clear the output directory" depends="">
