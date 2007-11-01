@@ -698,7 +698,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			dest.setColor(thisCol);
 			int[] poly = new int[_ptCtr];
 			System.arraycopy(_myPts, 0, poly, 0, _ptCtr);
-			dest.drawPolygon(_myPts, null, _ptCtr);
+			dest.drawPolyline(poly, null, _ptCtr);
 
 			// and reset the counter
 			_ptCtr = 0;
@@ -2643,8 +2643,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			CanvasType dummyDest = new MockCanvasType()
 			{
-				public void drawPolygon(int[] points, int[] points2, int points3)
+				public void drawPolyline(int[] points, int[] points2, int points3)
 				{
+					System.out.println("plotting:" + points.length + "points");
 					callCount++;
 				}
 			};
@@ -2707,7 +2708,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			CanvasType dummyDest = new MockCanvasType()
 			{
-				public void drawPolygon(int[] points, int[] points2, int points3)
+				public void drawPolyline(int[] points, int[] points2, int points3)
 				{
 					callCount++;
 				}
@@ -2771,7 +2772,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			CanvasType dummyDest = new MockCanvasType()
 			{
-				public void drawPolygon(int[] points, int[] points2, int points3)
+				public void drawPolyline(int[] points, int[] points2, int points3)
 				{
 					callCount++;
 				}
