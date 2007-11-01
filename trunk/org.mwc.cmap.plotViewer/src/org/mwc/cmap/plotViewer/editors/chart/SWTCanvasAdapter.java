@@ -617,9 +617,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 	 * @param xPoints
 	 *          list of x coordinates
 	 * @param yPoints
-	 *          list of y coordinates
+	 *          list of y coordinates (or null if xPoints contains both lists - in SWT PolyLine format)
 	 * @param nPoints
-	 *          length of list
+	 *          length of list (ignored if yPoints is null)
 	 */
 	public final void drawPolyline(final int[] xPoints, final int[] yPoints,
 			final int nPoints)
@@ -633,8 +633,19 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 			this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
 					.getLineWidth()));
 
-			// translate the polygon to SWT format
-			int[] poly = getPolygonArray(xPoints, yPoints, nPoints);
+			int[] poly;
+			
+			// just see if we're receiving a pre-collated series of points
+			if(yPoints == null)
+			{
+				// just use the points
+				poly = xPoints;
+			}
+			else
+			{
+				// translate the polygon to SWT format
+				poly = getPolygonArray(xPoints, yPoints, nPoints);
+			}
 
 			_theDest.drawPolyline(poly);
 		}
