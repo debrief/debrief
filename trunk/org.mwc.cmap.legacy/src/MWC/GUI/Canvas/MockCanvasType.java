@@ -246,8 +246,7 @@ public class MockCanvasType implements CanvasType
     @Override
     public Point toScreen(WorldLocation val)
     {
-        // TODO Auto-generated method stub
-        return null;
+        return new Point(1,2);
     }
 
     @Override
