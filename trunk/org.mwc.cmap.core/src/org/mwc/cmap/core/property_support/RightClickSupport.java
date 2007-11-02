@@ -326,6 +326,7 @@ public class RightClickSupport
 			}
 		};
 		changeThis.setChecked(currentVal);
+		changeThis.setToolTipText(thisP.getShortDescription());
 
 		// is our sub-menu already created?
 		if (subMenu == null)
@@ -446,7 +447,7 @@ public class RightClickSupport
 				subMenu = new MenuManager(p.getName());
 				manager.add(subMenu);
 			}
-
+			
 			subMenu.add(thisChoice);
 
 		}
