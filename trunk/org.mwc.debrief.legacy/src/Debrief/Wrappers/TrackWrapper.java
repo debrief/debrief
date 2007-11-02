@@ -803,13 +803,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							lastCol = thisCol;
 						}
 
-						// is this to be joined to the next
+						// is this to be joined to the previous one?
 						if (fw.getLineShowing())
 						{
-							// right, extend the list, unless we've got a colour
+							// so, grow the the polyline, unless we've got a colour
 							// change...
 							if (thisCol != lastCol)
 							{
+	                            // add our position to the list - so it finishes on us
+	                            _myPts[_ptCtr++] = thisP.x;
+	                            _myPts[_ptCtr++] = thisP.y;
+	                            
 								// yup, better get rid of the previous polygon
 								paintTrack(dest, lastCol);
 							}
@@ -821,10 +825,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						}
 						else
 						{
-							// nope, output however much line we've got so far -
+
+                            // nope, output however much line we've got so far -
 							// since this
 							// line won't be joined to future points
 							paintTrack(dest, thisCol);
+							
+                            // start off the next line
+                            _myPts[_ptCtr++] = thisP.x;
+                            _myPts[_ptCtr++] = thisP.y;
+							
 						}
 
 						// set the colour of the track from now on to this
@@ -2581,6 +2591,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	static public final class testMe extends junit.framework.TestCase
 	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+		
+      
+		private static class TestMockCanvas extends MockCanvasType
+        {
+            public void drawPolyline(int[] points, int[] points2, int points3)
+            {
+                callCount++;
+                pointCount += points.length;
+            }
+        };
+		
+        /** utility to track number of calls
+         * 
+         */
+        static int callCount = 0;
+        
+        /** utility to track number of points passed to paint polyline method
+         * 
+         */
+        static int pointCount = 0;
 
 		public testMe(final String val)
 		{
@@ -2603,6 +2633,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			tw.setTrack(new Track());
 			tw.setColor(Color.RED);
 			tw.setName("test track");
+
+			/** intention of this test:
+             * line is broken into three segments (red, yellow, green).
+             * - first of 2 points, next of 2 points, last of 3 points (14 values)
+             */
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100,
@@ -2637,18 +2672,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			tw.addFix(fw5);
 
 			callCount = 0;
+			pointCount = 0;
 
 			assertNull("our array of points starts empty", tw._myPts);
 			assertEquals("our point array counter is zero", tw._ptCtr, 0);
 
-			CanvasType dummyDest = new MockCanvasType()
-			{
-				public void drawPolyline(int[] points, int[] points2, int points3)
-				{
-					System.out.println("plotting:" + points.length + "points");
-					callCount++;
-				}
-			};
+			CanvasType dummyDest = new TestMockCanvas();
 
 			tw.paint(dummyDest);
 
@@ -2658,6 +2687,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// check it got called the correct number of times
 			assertEquals("We didnt paint enough polygons", 3, callCount);
+            assertEquals("We didnt paint enough polygons points", 14, pointCount);
 		}
 
 
@@ -2668,6 +2698,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			tw.setColor(Color.RED);
 			tw.setName("test track");
 
+            /** intention of this test:
+             * line is broken into two segments - one of two points, the next of three, thus two polygons should be drawn
+             * - 10 points total (4 then 6).
+             */
+			
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100,
 					10000), loc_1.add(new WorldVector(33, new WorldDistance(
@@ -2702,17 +2737,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			tw.addFix(fw5);
 
 			callCount = 0;
+            pointCount = 0;			
 
 			assertNull("our array of points starts empty", tw._myPts);
 			assertEquals("our point array counter is zero", tw._ptCtr, 0);
 
-			CanvasType dummyDest = new MockCanvasType()
-			{
-				public void drawPolyline(int[] points, int[] points2, int points3)
-				{
-					callCount++;
-				}
-			};
+            CanvasType dummyDest = new TestMockCanvas();
 
 			tw.paint(dummyDest);
 
@@ -2722,6 +2752,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// check it got called the correct number of times
 			assertEquals("We didnt paint enough polygons", 2, callCount);
+            assertEquals("We didnt paint enough polygons points", 10, pointCount);
+			
 		}		
 		
 		
@@ -2732,6 +2764,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			tw.setColor(Color.RED);
 			tw.setName("test track");
 
+			/** intention of this test:
+			 * line is broken into two segments of two points, thus two polygons should be drawn, each with 4 points
+			 * - 8 points total.
+			 */
+			
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100,
 					10000), loc_1.add(new WorldVector(33, new WorldDistance(
@@ -2766,17 +2803,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			tw.addFix(fw5);
 
 			callCount = 0;
+            pointCount = 0;			
 
 			assertNull("our array of points starts empty", tw._myPts);
 			assertEquals("our point array counter is zero", tw._ptCtr, 0);
 
-			CanvasType dummyDest = new MockCanvasType()
-			{
-				public void drawPolyline(int[] points, int[] points2, int points3)
-				{
-					callCount++;
-				}
-			};
+            CanvasType dummyDest = new TestMockCanvas();
 
 			tw.paint(dummyDest);
 
@@ -2786,11 +2818,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// check it got called the correct number of times
 			assertEquals("We didnt paint enough polygons", 2, callCount);
+            assertEquals("We didnt paint enough polygons points", 8, pointCount);
+			
 		}		
 		
-		
-		
-		static int callCount = 0;
+
 
 		public final void testInterpolation()
 		{
