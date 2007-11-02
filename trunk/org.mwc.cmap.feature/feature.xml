@@ -6,7 +6,9 @@
       provider-name="MWC">
 
    <description>
-      [1.0.50] Increase access to prefs.  Persist last measured range bearing
+      [1.0.51] Optimised plotting of polylines
+[1.0.50] Increase access to prefs.  Persist last measured range
+bearing
 [1.0.49] Prevent having to double-click &quot;see my props&quot; for relevant
 props to open
 [1.0.48] Fix for auto-generating when we only had primary on
