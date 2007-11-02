@@ -620,6 +620,24 @@ public class SwingCanvas extends javax.swing.JComponent
 
     _theDest.drawPolyline(xPoints, yPoints, nPoints);
   }
+  
+  @Override
+  public void drawPolyline(int[] points)
+  {
+      if (_theDest == null)
+          return;
+      // convert to normal format
+      int[] xP = new int[points.length];
+      int[] yP = new int[points.length];
+      int len = points.length;
+      
+      for (int i = 0; i < points.length; i+= 2)
+      {
+          xP[i] = points[i];
+          yP[i] = points[i+1];
+      }
+      drawPolyline(xP, yP, len);        
+  }    
 
   /**
    * drawPolygon.

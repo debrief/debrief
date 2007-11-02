@@ -31,6 +31,22 @@ public class WindowsClipboard implements CanvasType{
   public native void drawPolyline(int[] xPoints,
                           int[] yPoints,
                           int nPoints);
+
+  @Override
+  public void drawPolyline(int[] points)
+  {
+      // convert to normal format
+      int[] xP = new int[points.length];
+      int[] yP = new int[points.length];
+      int len = points.length;
+      
+      for (int i = 0; i < points.length; i+= 2)
+      {
+          xP[i] = points[i];
+          yP[i] = points[i+1];
+      }
+     drawPolyline(xP, yP, len);        
+  }    
   public native void drawPolygon(int[] xPoints,
                           int[] yPoints,
                           int nPoints);

@@ -66,6 +66,11 @@ public class MockCanvasType implements CanvasType
         // TODO Auto-generated method stub
 
     }
+    
+    @Override
+    public void drawPolyline(int[] points)
+    {        
+    }    
 
     @Override
     public void drawRect(int x1, int y1, int wid, int height)

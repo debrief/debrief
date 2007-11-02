@@ -255,4 +255,54 @@ public  class CanvasAdaptor implements MWC.GUI.CanvasType
         //
         _dest.drawArc(x, y, width, height, startAngle, arcAngle);
       }
+
+    @Override
+    public void drawPolyline(int[] points)
+    {
+        // convert to normal format
+        int[] xP = new int[points.length];
+        int[] yP = new int[points.length];
+        int len = points.length;
+        
+        for (int i = 0; i < points.length; i+= 2)
+        {
+            xP[i] = points[i];
+            yP[i] = points[i+1];
+        }
+        drawPolyline(xP, yP, len);        
+    }
+
+    // ////////////////////////////////////////////////////////////////////////////////////////////////
+    // testing for this class
+    // ////////////////////////////////////////////////////////////////////////////////////////////////
+    static public final class testMe extends junit.framework.TestCase
+    {
+        static public final String TEST_ALL_TEST_TYPE = "UNIT";
+        
+
+        public testMe(final String val)
+        {
+            super(val);
+        }
+
+        public final void testPolygonMgt()
+        {
+            int[] points = {1,2,3,4,5,6,7,8,9,10};
+            // convert to normal format
+            int len = points.length / 2;
+            int[] xP = new int[len];
+            int[] yP = new int[len];
+            
+            for (int i = 0; i < points.length; i+= 2)
+            {
+                xP[i/2] = points[i];
+                yP[i/2] = points[i+1];
+            }          
+            assertEquals("array wrong length", len, 5);
+            assertEquals("wrong first x", xP[0], 1);
+            assertEquals("wrong first y", yP[0], 2);
+            assertEquals("wrong last x", xP[len-1], 9);
+            assertEquals("wrong last y", yP[len-1], 10);
+        }
+    }
   }
