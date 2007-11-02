@@ -143,209 +143,238 @@ import java.io.Serializable;
 
 import MWC.GenericData.WorldArea;
 
-
-/** This class shows all the responsibilities of the
-  * wrapper items. In particular the fact that the data items
-  * should be able to describe themselves, and create/fill
-  * which shows/describes the raw data
-  */
-abstract public class PlainWrapper implements Plottable, Serializable, Exportable
+/**
+ * This class shows all the responsibilities of the wrapper items. In particular
+ * the fact that the data items should be able to describe themselves, and
+ * create/fill which shows/describes the raw data
+ */
+abstract public class PlainWrapper implements Plottable, Serializable,
+        Exportable
 {
 
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////
+    // member variables
+    // //////////////////////////////////////////////////////////
 
+    public static interface InterpolatedData
+    {
 
-  public static interface InterpolatedData
-	{
-		
-	}
+    }
 
-	/** property name to indicate that the text in the label has changed
-   *
-   */
-  public static final String TEXT_CHANGED = "TEXT_CHANGE";
+    /**
+     * property name to indicate that the text in the label has changed
+     * 
+     */
+    public static final String TEXT_CHANGED = "TEXT_CHANGE";
 
-  /** the name of the property change event to fire should this object get moved
-   *
-   */
-  public static final String LOCATION_CHANGED = "LOCATION_CHANGED";
+    /**
+     * the name of the property change event to fire should this object get
+     * moved
+     * 
+     */
+    public static final String LOCATION_CHANGED = "LOCATION_CHANGED";
 
-  /** the name of the property change event to fire should this object have its colour changed
-   *
-   */
-  public static final String COLOR_CHANGED = "COLOR_CHANGED";
+    /**
+     * the name of the property change event to fire should this object have its
+     * colour changed
+     * 
+     */
+    public static final String COLOR_CHANGED = "COLOR_CHANGED";
 
-  /** the name of the property change event to fire should this object change its visibility
-   *
-   */
-  public static final String VISIBILITY_CHANGED = "VISIBILITY_CHANGED";
+    /**
+     * the name of the property change event to fire should this object change
+     * its visibility
+     * 
+     */
+    public static final String VISIBILITY_CHANGED = "VISIBILITY_CHANGED";
 
-  // keep track of versions
-  static final long serialVersionUID = 1;
+    // keep track of versions
+    static final long serialVersionUID = 1;
 
-  private java.awt.Color _theColor;
+    private java.awt.Color _theColor;
 
-  /** whether this shape is visible
-   *
-   */
-  private boolean _visible;
+    /**
+     * whether this shape is visible
+     * 
+     */
+    private boolean _visible;
 
-  /** provide support for property changes, should we require it
-   *
-   */
-  private java.beans.PropertyChangeSupport _pSupport = null;
+    /**
+     * provide support for property changes, should we require it
+     * 
+     */
+    private java.beans.PropertyChangeSupport _pSupport = null;
 
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  protected PlainWrapper(){
-    _visible = true;
-  }
+    // ///////////////////////////////////////////////////////////
+    // constructor
+    // //////////////////////////////////////////////////////////
+    protected PlainWrapper()
+    {
+        _visible = true;
+    }
 
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
+    // ///////////////////////////////////////////////////////////
+    // member functions
+    // //////////////////////////////////////////////////////////
 
-  public java.beans.PropertyChangeSupport getSupport()
-  {
-    if(_pSupport == null)
-      _pSupport = new java.beans.PropertyChangeSupport(this);
+    public java.beans.PropertyChangeSupport getSupport()
+    {
+        if (_pSupport == null)
+            _pSupport = new java.beans.PropertyChangeSupport(this);
 
-    return _pSupport;
-  }
+        return _pSupport;
+    }
 
-  public void addPropertyChangeListener(String property, java.beans.PropertyChangeListener listener)
-  {
-    // add to our list
-    getSupport().addPropertyChangeListener(property, listener);
-  }
+    public void addPropertyChangeListener(String property,
+            java.beans.PropertyChangeListener listener)
+    {
+        // add to our list
+        getSupport().addPropertyChangeListener(property, listener);
+    }
 
+    /**
+     * add this listener which wants to hear about all changes
+     * 
+     * @deprecated use the per-property listener interface instead
+     */
+    public void addPropertyChangeListener(
+            java.beans.PropertyChangeListener listener)
+    {
+        // add to our list
+        getSupport().addPropertyChangeListener(listener);
+    }
 
+    /**
+     * remove this listener which wants to hear about all changes
+     * 
+     * @deprecated use the per-property listener interface instead
+     */
+    public void removePropertyChangeListener(
+            java.beans.PropertyChangeListener listener)
+    {
+        getSupport().removePropertyChangeListener(listener);
+    }
 
-  /** add this listener which wants to hear about all changes
-   * @deprecated use the per-property listener interface instead
-   */
-  public void addPropertyChangeListener(java.beans.PropertyChangeListener listener)
-  {
-    // add to our list
-    getSupport().addPropertyChangeListener(listener);
-  }
+    public void removePropertyChangeListener(String property,
+            java.beans.PropertyChangeListener listener)
+    {
+        getSupport().removePropertyChangeListener(property, listener);
+    }
 
-  /** remove this listener which wants to hear about all changes
-   * @deprecated use the per-property listener interface instead
-   */
-  public void removePropertyChangeListener(java.beans.PropertyChangeListener listener)
-  {
-    getSupport().removePropertyChangeListener(listener);
-  }
+    public abstract void paint(CanvasType dest);
 
-  public void removePropertyChangeListener(String property, java.beans.PropertyChangeListener listener)
-  {
-    getSupport().removePropertyChangeListener(property, listener);
-  }
+    /**
+     * get the name of this object
+     * 
+     */
+    abstract public String getName();
 
-  public abstract void paint(CanvasType dest);
+    public void setColor(java.awt.Color theColor)
+    {
+        // store the old colour
+        Color oldCol = _theColor;
 
-  /** get the name of this object
-   *
-   */
-  abstract public String getName();
+        // do the update
+        _theColor = theColor;
 
-  public void setColor(java.awt.Color theColor){
-    // store the old colour
-    Color oldCol = _theColor;
+        // and inform the listeners
+        getSupport().firePropertyChange(COLOR_CHANGED, oldCol, theColor);
+    }
 
-    // do the update
-    _theColor = theColor;
+    public java.awt.Color getColor()
+    {
+        return _theColor;
+    }
 
-    // and inform the listeners
-    getSupport().firePropertyChange(COLOR_CHANGED, oldCol, theColor);
-  }
+    /**
+     * it this item currently visible?
+     */
+    final public boolean getVisible()
+    {
+        return _visible;
+    }
 
-  public java.awt.Color getColor()
-  {
-    return _theColor;
-  }
+    /**
+     * specify is this object is visible
+     */
+    final public void setVisible(boolean val)
+    {
+        // is this a different value?
+        if (val != _visible)
+        {
+            // store the old vis
+            boolean oldVis = _visible;
 
-  /** it this item currently visible?
-   */
-  final public boolean getVisible(){
-    return _visible;
-  }
+            // do the update
+            _visible = val;
 
-	/** specify is this object is visible
-	 */
-	final public void setVisible(boolean val)
-	{
-    // store the old vis
-    boolean oldVis = _visible;
+            // and inform the listeners, if we need to
+            getSupport().firePropertyChange(VISIBILITY_CHANGED, oldVis, val);
+        }
+    }
 
-    // do the update
-    _visible = val;
+    /**
+     * get the editing information for this type
+     */
+    public Editable.EditorType getInfo()
+    {
+        return null;
+    }
 
-    // and inform the listeners
-    getSupport().firePropertyChange(VISIBILITY_CHANGED, oldVis, val);
-	}
+    /**
+     * whether there is any edit information for this item this is a convenience
+     * function to save creating the EditorType data first
+     * 
+     * @return yes/no
+     */
+    abstract public boolean hasEditor();
 
+    /**
+     * find the data area occupied by this item
+     */
+    abstract public WorldArea getBounds();
 
-  /** get the editing information for this type
-   */
-  public Editable.EditorType getInfo(){
-    return null;
-  }
+    /**
+     * Determine how far away we are from this point or return INVALID_RANGE if
+     * it can't be calculated
+     */
+    public double rangeFrom(MWC.GenericData.WorldLocation other)
+    {
+        return INVALID_RANGE;
+    }
 
-  /** whether there is any edit information for this item
-   * this is a convenience function to save creating the EditorType data
-   * first
-   * @return yes/no
-   */
-  abstract public boolean hasEditor();
+    // //////////////////////////////////////////////////
+    // export this shape
+    // /////////////////////////////////////////////////
+    public void exportThis()
+    {
+        // ok, export it.
+        MWC.Utilities.ReaderWriter.ImportManager.exportThis(this);
+    }
 
-  /** find the data area occupied by this item
-   */
-  abstract public WorldArea getBounds();
+    /**
+     * instruct this object to clear itself out, ready for ditching
+     * 
+     */
+    public void closeMe()
+    {
+        _pSupport = null;
+        _theColor = null;
+    }
 
-  /** Determine how far away we are from this point
-   * or return INVALID_RANGE if it can't be calculated
-   */
-  public double rangeFrom(MWC.GenericData.WorldLocation other){
-    return INVALID_RANGE;
-  }
+    public int compareTo(Object arg0)
+    {
+        final int res;
+        Plottable other = (Plottable) arg0;
+        int myCode = hashCode();
+        int otherCode = other.hashCode();
+        if (myCode < otherCode)
+            res = -1;
+        else if (myCode > otherCode)
+            res = 1;
+        else
+            res = 0;
+        return res;
+    }
 
-
-	////////////////////////////////////////////////////
-	// export this shape
-	///////////////////////////////////////////////////
-	public void exportThis()
-	{
-		// ok, export it.
-		MWC.Utilities.ReaderWriter.ImportManager.exportThis(this);
-	}
-
-  /** instruct this object to clear itself out, ready for ditching
-   *
-   */
-  public void closeMe()
-  {
-    _pSupport = null;
-    _theColor = null;
-  }
-
-	public int compareTo(Object arg0)
-	{
-		final int res;
-		Plottable other = (Plottable) arg0;
-		int myCode = hashCode();
-		int otherCode = other.hashCode();
-		if(myCode < otherCode)
-			res = -1;
-		else if(myCode > otherCode)
-			res = 1;
-		else 
-			res = 0;
-		return res;
-	}
-	
 }
