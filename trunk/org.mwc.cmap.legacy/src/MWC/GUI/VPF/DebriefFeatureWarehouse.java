@@ -470,8 +470,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
 
     // now plot the polygon
     int len = coords.maxIndex();
-    int[] xpoints = new int[len];
-    int[] ypoints = new int[len];
+    int[] points = new int[len * 2];
 
     counter++;
 
@@ -486,13 +485,13 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
         _workingLocation.setLong(x);
         java.awt.Point pt = _myCanvas.toScreen(_workingLocation);
 
-        xpoints[i] = pt.x;
-        ypoints[i] = pt.y;
+        points[i * 2] = pt.x;
+        points[i * 2 + 1] = pt.y;
 
       }
 
       // finally plot the polygon
-      _myCanvas.drawPolyline(xpoints, ypoints, len);
+      _myCanvas.drawPolyline(points);
     }
     catch (Exception E)
     {
