@@ -75,7 +75,12 @@ public final class NarrativeEntry implements java.lang.Comparable, MWC.GUI.Plott
 
 	public final String getType()
 	{
-		return _type;
+	    String res;
+	    if(_type == null)
+	        res = "na";
+	    else
+	       res = _type;
+		return res;
 	}
 	
   public final String getDTGString()

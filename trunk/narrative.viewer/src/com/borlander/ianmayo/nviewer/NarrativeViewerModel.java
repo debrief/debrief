@@ -1,8 +1,6 @@
 package com.borlander.ianmayo.nviewer;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.LinkedList;
 
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -11,8 +9,10 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-import com.borlander.ianmayo.nviewer.model.IEntry;
-import com.borlander.ianmayo.nviewer.model.IEntryWrapper;
+import MWC.GenericData.HiResDate;
+import MWC.TacticalData.IRollingNarrativeProvider;
+import MWC.TacticalData.NarrativeEntry;
+
 import com.borlander.ianmayo.nviewer.model.TimeFormatter;
 
 import de.kupzog.ktable.KTableCellEditor;
@@ -25,7 +25,7 @@ import de.kupzog.ktable.renderers.FixedCellRenderer;
 import de.kupzog.ktable.renderers.TextCellRenderer;
 
 public class NarrativeViewerModel extends KTableDefaultModel {
-	private static final IEntry[] NO_ENTRIES = new IEntry[0];
+	private static final NarrativeEntry[] NO_ENTRIES = new NarrativeEntry[0];
 	private static final int ROW_HEIGHT = 20;
 	private static final String DEFAULT_TIME_FORMAT = "HH:mm";
 
@@ -49,11 +49,11 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 		}
 	};
 
-	private final LinkedList<IEntry> myVisibleRows = new LinkedList<IEntry>();
-	private IEntry[] myAllEntries = NO_ENTRIES;
+	private final LinkedList<NarrativeEntry> myVisibleRows = new LinkedList<NarrativeEntry>();
+	private NarrativeEntry[] myAllEntries = NO_ENTRIES;
 	private ColumnSizeCalculator myColumnSizeCalculator;
 	private int myEntryCellContentWidth = -1;
-	private IEntryWrapper myInput;
+	private IRollingNarrativeProvider myInput;
 
 	public NarrativeViewerModel(IPreferenceStore store, ColumnSizeCalculator columnSizeCalculator) {
 		myColumnSizeCalculator = columnSizeCalculator;
@@ -73,8 +73,8 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 		};
 
 		mySourceFilter = new ColumnFilter() {
-			public String getFilterValue(IEntry entry) {
-				return entry.getSource();
+			public String getFilterValue(NarrativeEntry entry) {
+				return entry.getTrackName();
 			}
 
 			protected void valuesSetChanged() {
@@ -82,7 +82,7 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 			}
 		};
 		myTypeFilter = new ColumnFilter() {
-			public String getFilterValue(IEntry entry) {
+			public String getFilterValue(NarrativeEntry entry) {
 				return entry.getType();
 			}
 
@@ -102,13 +102,13 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 		updateColumnsVisibility();
 	}
 	
-	public void setInput(IEntryWrapper entryWrapper) {
+	public void setInput(IRollingNarrativeProvider entryWrapper) {
 		myInput = entryWrapper;
-		myAllEntries = entryWrapper == null ? null : entryWrapper.getEntries();
+		myAllEntries = entryWrapper == null ? null : entryWrapper.getNarrativeHistory(new String[]{});
 		updateFilters();
 	}
 	
-	public IEntryWrapper getInput() {
+	public IRollingNarrativeProvider getInput() {
 		return myInput;
 	}
 
@@ -129,7 +129,7 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 		if (!hasInput()) {
 			return;
 		}
-		for (IEntry entry : myAllEntries) {
+		for (NarrativeEntry entry : myAllEntries) {
 			if (mySourceFilter.accept(entry) && myTypeFilter.accept(entry)) {
 				myVisibleRows.add(entry);
 			}
@@ -289,7 +289,7 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 			super(0, "Visible", store);
 		}
 
-		public Object getProperty(IEntry entry) {
+		public Object getProperty(NarrativeEntry entry) {
 			return entry.getVisible();
 		}
 
@@ -312,8 +312,8 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 			super(1, "Time", store);
 		}
 
-		public Object getProperty(IEntry entry) {
-			return myTimeFormatter.format(entry.getTime());
+		public Object getProperty(NarrativeEntry entry) {
+			return myTimeFormatter.format(entry.getDTG());
 		}
 
 		public void setTimeFormatter(TimeFormatter formatter) {
@@ -326,8 +326,8 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 			super(2, "Source", store);
 		}
 
-		public Object getProperty(IEntry entry) {
-			return entry.getSource();
+		public Object getProperty(NarrativeEntry entry) {
+			return entry.getTrackName();
 		}
 	}
 
@@ -336,7 +336,7 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 			super(3, "Type", store);
 		}
 
-		public Object getProperty(IEntry entry) {
+		public Object getProperty(NarrativeEntry entry) {
 			return entry.getType();
 		}
 	}
@@ -362,7 +362,7 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 			return myIsWrapping;
 		}
 
-		public Object getProperty(IEntry entry) {
+		public Object getProperty(NarrativeEntry entry) {
 			return entry.getEntry();
 		}
 
@@ -386,11 +386,12 @@ public class NarrativeViewerModel extends KTableDefaultModel {
 	}
 
 	private static TimeFormatter DEFAULT_TIME = new TimeFormatter() {
-		public String format(long time) {
-			Calendar calendar = Calendar.getInstance();
-			calendar.setTimeInMillis(time);
-			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_TIME_FORMAT);
-			return simpleDateFormat.format(calendar.getTime());
+		public String format(HiResDate time) {
+		    return time.toString();
+//			Calendar calendar = Calendar.getInstance();
+//			calendar.setTimeInMillis(time);
+//			SimpleDateFormat simpleDateFormat = new SimpleDateFormat(DEFAULT_TIME_FORMAT);
+//			return simpleDateFormat.format(calendar.getTime());
 		}
 	};
 }

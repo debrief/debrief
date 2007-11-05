@@ -1,7 +1,6 @@
 package com.borlander.ianmayo.nviewer;
 
-import com.borlander.ianmayo.nviewer.model.IEntry;
-
+import MWC.TacticalData.NarrativeEntry;
 import de.kupzog.ktable.KTableCellEditor;
 import de.kupzog.ktable.KTableCellRenderer;
 
@@ -20,7 +19,7 @@ public interface Column {
 
 	public int getIndex();
 
-	public Object getProperty(IEntry entry);
+	public Object getProperty(NarrativeEntry entry);
 	
 	public ColumnFilter getFilter();
 	

@@ -5,16 +5,16 @@ import java.util.Collections;
 import java.util.SortedSet;
 import java.util.TreeSet;
 
-import com.borlander.ianmayo.nviewer.model.IEntry;
+import MWC.TacticalData.NarrativeEntry;
 
 public abstract class ColumnFilter {
 	private final TreeSet<String> myAllowedValues = new TreeSet<String>();
 	private final SortedSet<String> myAllowedValuesRO = Collections.unmodifiableSortedSet(myAllowedValues);
 
-	public abstract String getFilterValue(IEntry entry);
+	public abstract String getFilterValue(NarrativeEntry entry);
 	protected abstract void valuesSetChanged();
 
-	public boolean accept(IEntry entry) {
+	public boolean accept(NarrativeEntry entry) {
 		if (isEmpty()) {
 			return true;
 		}

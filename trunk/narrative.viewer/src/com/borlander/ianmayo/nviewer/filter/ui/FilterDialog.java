@@ -15,10 +15,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
+import MWC.TacticalData.IRollingNarrativeProvider;
+import MWC.TacticalData.NarrativeEntry;
+
 import com.borlander.ianmayo.nviewer.Column;
 import com.borlander.ianmayo.nviewer.ColumnFilter;
-import com.borlander.ianmayo.nviewer.model.IEntry;
-import com.borlander.ianmayo.nviewer.model.IEntryWrapper;
 
 public class FilterDialog extends Dialog {
 
@@ -36,7 +37,7 @@ public class FilterDialog extends Dialog {
 	private List myItemsToSelectList;
 	private List mySelectedItemsList;
 
-	public FilterDialog(Shell parent, IEntryWrapper dataSource, Column column) {
+	public FilterDialog(Shell parent, IRollingNarrativeProvider dataSource, Column column) {
 		super(parent);
 		myCaption = "Filter by: " + column.getColumnName();
 		myFilter = column.getFilter(); 
@@ -45,7 +46,7 @@ public class FilterDialog extends Dialog {
 		myItemsToSelect = new TreeSet<String>();
 
 		if (dataSource != null){
-			for (IEntry entry : dataSource.getEntries()) {
+			for (NarrativeEntry entry : dataSource.getNarrativeHistory(new String[]{})) {
 				String nextValue = myFilter.getFilterValue(entry);
 				if (!mySelectedItems.contains(nextValue)) {
 					myItemsToSelect.add(nextValue);

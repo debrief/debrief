@@ -1,7 +1,5 @@
 package com.borlander.ianmayo.nviewer.app;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Collections;
 
 import org.eclipse.swt.SWT;
@@ -17,6 +15,7 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
+import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
@@ -24,9 +23,7 @@ import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import com.borlander.ianmayo.nviewer.Column;
 import com.borlander.ianmayo.nviewer.ColumnFilter;
 import com.borlander.ianmayo.nviewer.NarrativeViewer;
-import com.borlander.ianmayo.nviewer.model.IEntryWrapper;
 import com.borlander.ianmayo.nviewer.model.TimeFormatter;
-import com.borlander.ianmayo.nviewer.model.mock.MockEntryWrapper;
 
 public class NViewerView extends ViewPart {
 	public static final String VIEW_ID = "com.borlander.ianmayo.nviewer.app.view";
@@ -35,7 +32,7 @@ public class NViewerView extends ViewPart {
 
 	private Composite myButtonPanel;
 
-	private IEntryWrapper myCurrentInput = null;
+	private IRollingNarrativeProvider myCurrentInput = null;
 	
 
 
@@ -71,30 +68,31 @@ public class NViewerView extends ViewPart {
 		new TestButton("Set input") {
 			@Override
 			protected void onClick() {
-				MockEntryWrapper entryWrapper = new MockEntryWrapper();
-				for (int i = 0; i < 30; i++) {
-					String entry = "";
-					for (int j = 0; j <= i; j++) {
-						entry += "entry#" + (j + 1);
-						if (j < i) {
-							entry += " ";
-						}
-					}
-					entryWrapper.addEntry("source #" + (i % 3 + 1), "type #" + (i % 4 + 1), entry);
-				}
-				myCurrentInput = entryWrapper;
-				myViewer.setInput(myCurrentInput);
+//				MockEntryWrapper entryWrapper = new MockEntryWrapper();
+//				for (int i = 0; i < 30; i++) {
+//					String entry = "";
+//					for (int j = 0; j <= i; j++) {
+//						entry += "entry#" + (j + 1);
+//						if (j < i) {
+//							entry += " ";
+//						}
+//					}
+//					entryWrapper.addEntry("source #" + (i % 3 + 1), "type #" + (i % 4 + 1), entry);
+//				}
+//				myCurrentInput = entryWrapper;
+//				myViewer.setInput(myCurrentInput);
 			}
 		};
 		new TestButton("Format time as HH:mm") {
 			@Override
 			protected void onClick() {
 				myViewer.setTimeFormatter(new TimeFormatter() {
-					public String format(long time) {
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTimeInMillis(time);
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
-						return simpleDateFormat.format(calendar.getTime());
+					public String format(HiResDate time) {
+					    return time.toString();
+//						Calendar calendar = Calendar.getInstance();
+//						calendar.setTimeInMillis(time);
+//						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm");
+//						return simpleDateFormat.format(calendar.getTime());
 					}
 				});
 			}
@@ -103,11 +101,12 @@ public class NViewerView extends ViewPart {
 			@Override
 			protected void onClick() {
 				myViewer.setTimeFormatter(new TimeFormatter() {
-					public String format(long time) {
-						Calendar calendar = Calendar.getInstance();
-						calendar.setTimeInMillis(time);
-						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-						return simpleDateFormat.format(calendar.getTime());
+                    public String format(HiResDate time) {
+                        return "[" + time.toString() + "]";
+//						Calendar calendar = Calendar.getInstance();
+//						calendar.setTimeInMillis(time);
+//						SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+//						return simpleDateFormat.format(calendar.getTime());
 					}
 				});
 			}
@@ -270,7 +269,7 @@ public class NViewerView extends ViewPart {
                             // stop listening to old narrative
                             _myRollingNarrative.removeNarrativeListener(
                                     IRollingNarrativeProvider.ALL_CATS, _myRollingNarrListener);
-                            myViewer.setInput((IEntryWrapper)null);
+                            myViewer.setInput(null);
                             _myRollingNarrative = null;
                         }
                     }
@@ -299,7 +298,7 @@ public class NViewerView extends ViewPart {
 //                            if (_temporalListener == null)
 //                            {
 //                                _temporalListener = new PropertyChangeListener()
-//                                {
+//                                {IEntryWrapper
 //                                    public void propertyChange(PropertyChangeEvent event)
 //                                    {
 //                                        // ok, use the new time
