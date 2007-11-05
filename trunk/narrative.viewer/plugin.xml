@@ -22,9 +22,10 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Narrative Viewer"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="com.borlander.ianmayo.nviewer.app.NViewerView"
-            id="com.borlander.ianmayo.nviewer.app.view">
+            id="com.borlander.ianmayo.nviewer.app.view"
+            name="Narrative Viewer">
       </view>
    </extension>
 
