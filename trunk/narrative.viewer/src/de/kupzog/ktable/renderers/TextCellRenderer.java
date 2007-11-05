@@ -83,6 +83,8 @@ public class TextCellRenderer extends DefaultCellRenderer {
 		 * rightWidth=1; rect = drawSolidCellLines(gc, rect, vBorderColor,
 		 * hBorderColor, topWidth, bottomWidth, leftWidth, rightWidth);
 		 */
+		if(content == null)
+		    content = " ";
 
 		// draw focus sign:
 		if (focus && (m_Style & INDICATION_FOCUS) != 0) {
