@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Narrative Viewer Plug-in
+Bundle-SymbolicName: org.mwc.cmap.NarrativeViewer;singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Vendor: borlander@gmail.com
+Require-Bundle: org.eclipse.core.runtime,
+ org.eclipse.ui
+Bundle-Activator: com.borlander.ianmayo.nviewer.app.Activator
+Eclipse-LazyStart: true
