@@ -24,6 +24,7 @@
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
             class="com.borlander.ianmayo.nviewer.app.NViewerView"
+            icon="icons/list_comments.gif"
             id="com.borlander.ianmayo.nviewer.app.view"
             name="Narrative Viewer">
       </view>
