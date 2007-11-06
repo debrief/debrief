@@ -126,6 +126,11 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	private int _lineWidth = 1;
 
+	/** anybody listening to this narrative data
+	 * 
+	 */
+    private Vector<INarrativeListener> _myListeners;
+
 	/**
 	 * property type to signify data being added or removed
 	 */
@@ -220,6 +225,17 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and inform anybody who happens to be listening
 			getSupport().firePropertyChange(CONTENTS_CHANGED, null, this);
+			
+			// and the narrative listeners, if we have one
+			if(_myListeners != null)
+			{
+			    for (Iterator iter = _myListeners.iterator(); iter
+                        .hasNext();)
+                {
+                    INarrativeListener thisL = (INarrativeListener) iter.next();
+                    thisL.entryRemoved((NarrativeEntry) editable);
+                }
+			}
 		}
 	}
 
@@ -466,7 +482,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public NarrativeEntry[] getNarrativeHistory(String[] categories)
 	{
-		NarrativeEntry[] res = new NarrativeEntry[]{null};
+		NarrativeEntry[] res = new NarrativeEntry[]{};
 		// ok, cn
 		Vector theNarrs = new Vector(10, 10);
 		Iterator iter = getData().iterator();
@@ -482,12 +498,15 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 	public void addNarrativeListener(String category, INarrativeListener listener)
 	{
-		// just ignore it, ok?
+	    if(_myListeners == null)
+	        _myListeners = new Vector<INarrativeListener>(1,1);
+	        
+        _myListeners.add(listener);
 	}
 
 	public void removeNarrativeListener(String category, INarrativeListener listener)
 	{
-		// hey, just ignore it, ok?
+	    _myListeners.remove(listener);
 	}
 
 }
