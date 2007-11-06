@@ -66,6 +66,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         myColumnSizeCalculator = columnSizeCalculator;
 
         myColumnVisible = new ColumnVisible(store);
+        myColumnVisible.setVisible(false);
         myColumnTime = new ColumnTime(store);
         myColumnSource = new ColumnSource(store);
         myColumnType = new ColumnType(store);

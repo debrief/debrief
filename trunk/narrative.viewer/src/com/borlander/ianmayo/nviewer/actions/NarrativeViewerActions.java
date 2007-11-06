@@ -21,6 +21,7 @@ public class NarrativeViewerActions extends ActionGroup {
 		NarrativeViewerModel model = viewer.getModel();
 		myShowSourceColumn = new SwitchColumnVisibilityAction(model.getColumnSource(), "Show source");
 		myShowVisibleColumn = new SwitchColumnVisibilityAction(model.getColumnVisible(), "Show visible");
+		myShowVisibleColumn.setChecked(false);
 		myShowTypeColumn = new SwitchColumnVisibilityAction(model.getColumnType(), "Show type");
 		
 		myFilterSource = new OpenFilterAction(viewer, model.getColumnSource(), "Set source filter...");

@@ -2,11 +2,13 @@
 <feature
       id="org.mwc.cmap.NarrativeViewer.feature"
       label="org.mwc.cmap.NarrativeViewer.feature"
-      version="1.0.1"
+      version="1.0.3"
       provider-name="MWC">
 
    <description>
-      [1.0.1] Initial integrated implemenatation
+      [1.0.3] Hide visible column by default
+[1.0.2] Include checkbox for entry visible
+[1.0.1] Initial integrated implemenatation
    </description>
 
    <copyright url="http://www.example.com/copyright">
