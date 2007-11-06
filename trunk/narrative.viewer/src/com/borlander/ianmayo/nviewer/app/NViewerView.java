@@ -1,8 +1,9 @@
 package com.borlander.ianmayo.nviewer.app;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.TimeZone;
 
 import org.eclipse.jface.action.Action;
@@ -21,7 +22,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import MWC.GUI.Properties.DateFormatPropertyEditor;
@@ -30,12 +32,13 @@ import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 
-import com.borlander.ianmayo.nviewer.Column;
-import com.borlander.ianmayo.nviewer.ColumnFilter;
 import com.borlander.ianmayo.nviewer.NarrativeViewer;
 import com.borlander.ianmayo.nviewer.model.TimeFormatter;
 
-public class NViewerView extends ViewPart
+import de.kupzog.ktable.KTableCellDoubleClickAdapter;
+import de.kupzog.ktable.KTableCellDoubleClickListener;
+
+public class NViewerView extends ViewPart implements PropertyChangeListener
 {
     public static final String VIEW_ID = "com.borlander.ianmayo.nviewer.app.view";
 
@@ -53,7 +56,29 @@ public class NViewerView extends ViewPart
 
     protected INarrativeListener _myRollingNarrListener;
 
+    /**
+     * whether to clip text to the visible size
+     * 
+     */
     private Action _clipText;
+
+    /**
+     * whether to follow the controllable time
+     * 
+     */
+    private Action _followTime;
+
+    /**
+     * whether to control the controllable time
+     * 
+     */
+    private Action _controlTime;
+
+    protected TimeProvider _myTemporalDataset;
+
+    protected PropertyChangeListener _temporalListener;
+
+    protected ControllableTime _controllableTime;
 
     public void createPartControl(Composite parent)
     {
@@ -70,18 +95,17 @@ public class NViewerView extends ViewPart
         myViewer = new NarrativeViewer(rootPanel, Activator.getInstance()
                 .getPreferenceStore());
         rootPanelLayout.topControl = myViewer;
-        
+
         // sort out the initial time format
         final String startFormat = DateFormatPropertyEditor.getTagList()[3];
-        myViewer.setTimeFormatter(new TimeFormatter(){
-                public String format(HiResDate time)
-                {
-                    String res = toStringHiRes(time,
-                            startFormat);
-                    return res;
-                }
-            });            
-        
+        myViewer.setTimeFormatter(new TimeFormatter()
+        {
+            public String format(HiResDate time)
+            {
+                String res = toStringHiRes(time, startFormat);
+                return res;
+            }
+        });
 
         /**
          * sort out the view menu & toolbar
@@ -89,10 +113,35 @@ public class NViewerView extends ViewPart
          */
         populateMenu();
 
-        /** and start listening out for new panels to open
+        /**
+         * and start listening out for new panels to open
          * 
          */
         setupPartListeners();
+
+        myViewer.addCellDoubleClickListener(new KTableCellDoubleClickAdapter()
+        {
+            public void cellDoubleClicked(int col, int row, int statemask)
+            {
+                NarrativeEntry[] entries = myViewer.getModel().getInput()
+                        .getNarrativeHistory(new String[] {});
+                HiResDate newTime = entries[row - 1].getDTG();
+                fireNewTime(newTime);
+            }
+        });
+
+    }
+
+    /**
+     * send this new time to the time controller
+     * 
+     * @param newTime
+     */
+    protected void fireNewTime(HiResDate newTime)
+    {
+        if (_controlTime.isChecked())
+            if (_controllableTime != null)
+                _controllableTime.setTime(this, newTime, true);
     }
 
     private void populateMenu()
@@ -107,7 +156,7 @@ public class NViewerView extends ViewPart
         // view action bar
         myViewer.getViewerActions().fillActionBars(
                 getViewSite().getActionBars());
-        
+
         // and another separator
         menuManager.add(new Separator());
 
@@ -120,13 +169,36 @@ public class NViewerView extends ViewPart
                 myViewer.setWrappingEntries(!_clipText.isChecked());
             }
         };
-        _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin.getImageDescriptor("icons/wrap.gif"));
-        _clipText
-                .setToolTipText("Indicate whether to clip to visible space");
+        _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+                .getImageDescriptor("icons/wrap.gif"));
+        _clipText.setToolTipText("Whether to clip to visible space");
         _clipText.setChecked(true);
 
         menuManager.add(_clipText);
         toolManager.add(_clipText);
+
+        _followTime = new Action("Follow current time", Action.AS_CHECK_BOX)
+        {
+        };
+        _followTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+                .getImageDescriptor("icons/synced.gif"));
+        _followTime
+                .setToolTipText("Whether to listen to the time controller");
+        _followTime.setChecked(true);
+
+        menuManager.add(_followTime);
+        toolManager.add(_followTime);
+
+        _controlTime = new Action("Control current time", Action.AS_CHECK_BOX)
+        {
+        };
+        _controlTime.setImageDescriptor(org.mwc.cmap.core.CorePlugin
+                .getImageDescriptor("icons/clock.png"));
+        _controlTime
+                .setToolTipText("Whether to control the current time");
+        _controlTime.setChecked(true);
+        menuManager.add(_controlTime);
+        toolManager.add(_controlTime);
 
         // and the DTG formatter
         addDateFormats(menuManager);
@@ -168,8 +240,7 @@ public class NViewerView extends ViewPart
                     {
                         public String format(HiResDate time)
                         {
-                            String res = toStringHiRes(time,
-                                    theFormat);
+                            String res = toStringHiRes(time, theFormat);
                             return res;
                         }
                     });
@@ -208,13 +279,22 @@ public class NViewerView extends ViewPart
         myViewer.setFocus();
     }
 
+    protected void timeUpdated(HiResDate dtg)
+    {
+        if (_followTime.isChecked())
+        {
+            // ok, tell the model to move to the relvant item
+            myViewer.setDTG(dtg);
+        }
+    }
+
     protected void setInput(IRollingNarrativeProvider newNarr)
     {
         // check it has some data
-        NarrativeEntry[] entries = newNarr.getNarrativeHistory(new String[]{});
-        
+        NarrativeEntry[] entries = newNarr.getNarrativeHistory(new String[] {});
+
         _myRollingNarrative = newNarr;
-        if(entries.length > 0)
+        if (entries.length > 0)
             myViewer.setInput(_myRollingNarrative);
         else
             myViewer.setInput(null);
@@ -243,7 +323,7 @@ public class NViewerView extends ViewPart
                     {
                         public void run()
                         {
-                            // ok, sort it - get the view to refresh itself                        
+                            // ok, sort it - get the view to refresh itself
                             setInput(_myRollingNarrative);
                         }
                     });
@@ -272,8 +352,7 @@ public class NViewerView extends ViewPart
                 });
 
         // unusually, we are also going to track the open event for narrative
-        // data
-        // so that we can start off with some data
+        // data so that we can start off with some data
         _myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
                 PartMonitor.OPENED, new PartMonitor.ICallback()
                 {
@@ -305,85 +384,90 @@ public class NViewerView extends ViewPart
                     }
                 });
 
-        // _myPartMonitor.addPartListener(TimeProvider.class,
-        // PartMonitor.ACTIVATED,
-        // new PartMonitor.ICallback()
-        // {
-        // public void eventTriggered(String type, Object part, IWorkbenchPart
-        // parentPart)
-        // {
-        // // just check we're not already looking at it
-        // if (part != _myTemporalDataset)
-        // {
-        // // ok, better stop listening to the old one
-        // if (_myTemporalDataset != null)
-        // {
-        // // yup, better ignore it
-        // _myTemporalDataset.removeListener(_temporalListener,
-        // TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-        //
-        // _myTemporalDataset = null;
-        // }
-        //
-        // // implementation here.
-        // _myTemporalDataset = (TimeProvider) part;
-        // if (_temporalListener == null)
-        // {
-        // _temporalListener = new PropertyChangeListener()
-        // {IEntryWrapper
-        // public void propertyChange(PropertyChangeEvent event)
-        // {
-        // // ok, use the new time
-        // HiResDate newDTG = (HiResDate) event.getNewValue();
-        // timeUpdated(newDTG);
-        // }
-        // };
-        // }
-        // _myTemporalDataset.addListener(_temporalListener,
-        // TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-        // }
-        // }
-        // });
-        // _myPartMonitor.addPartListener(TimeProvider.class,
-        // PartMonitor.CLOSED,
-        // new PartMonitor.ICallback()
-        // {
-        // public void eventTriggered(String type, Object part, IWorkbenchPart
-        // parentPart)
-        // {
-        // if (part == _myTemporalDataset)
-        // {
-        // _myTemporalDataset.removeListener(_temporalListener,
-        // TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-        // }
-        // }
-        // });
-        // _myPartMonitor.addPartListener(ControllableTime.class,
-        // PartMonitor.ACTIVATED,
-        // new PartMonitor.ICallback()
-        // {
-        // public void eventTriggered(String type, Object part, IWorkbenchPart
-        // parentPart)
-        // {
-        // // implementation here.
-        // ControllableTime ct = (ControllableTime) part;
-        // _controllableTime = ct;
-        // }
-        // });
-        // _myPartMonitor.addPartListener(ControllableTime.class,
-        // PartMonitor.DEACTIVATED,
-        // new PartMonitor.ICallback()
-        // {
-        // public void eventTriggered(String type, Object part, IWorkbenchPart
-        // parentPart)
-        // {
-        // // no, don't bother clearing the controllable time when the plot is
-        // // de-activated,
-        // // - since with the highlight on the narrative, we want to be able
-        // // to control the time still.
-        // // _controllableTime = null;
-        // }
-        // });
+        // ///////////////////////////////////////////////
+        // now for time provider support
+        // ///////////////////////////////////////////////
+        _myPartMonitor.addPartListener(TimeProvider.class,
+                PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+                {
+                    public void eventTriggered(String type, Object part,
+                            IWorkbenchPart parentPart)
+                    {
+                        // just check we're not already looking at it
+                        if (part != _myTemporalDataset)
+                        {
+                            // ok, better stop listening to the old one
+                            if (_myTemporalDataset != null)
+                            {
+                                // yup, better ignore it
+                                _myTemporalDataset
+                                        .removeListener(
+                                                _temporalListener,
+                                                TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+                                _myTemporalDataset = null;
+                            }
+
+                            // implementation here.
+                            _myTemporalDataset = (TimeProvider) part;
+                            if (_temporalListener == null)
+                            {
+                                _temporalListener = new PropertyChangeListener()
+                                {
+                                    public void propertyChange(
+                                            PropertyChangeEvent event)
+                                    {
+                                        // ok, use the new time
+                                        HiResDate newDTG = (HiResDate) event
+                                                .getNewValue();
+                                        timeUpdated(newDTG);
+                                    }
+                                };
+                            }
+                            _myTemporalDataset.addListener(_temporalListener,
+                                    TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+                        }
+                    }
+                });
+        _myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.CLOSED,
+                new PartMonitor.ICallback()
+                {
+                    public void eventTriggered(String type, Object part,
+                            IWorkbenchPart parentPart)
+                    {
+                        if (part == _myTemporalDataset)
+                        {
+                            _myTemporalDataset.removeListener(
+                                    _temporalListener,
+                                    TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+                        }
+                    }
+                });
+        _myPartMonitor.addPartListener(ControllableTime.class,
+                PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+                {
+                    public void eventTriggered(String type, Object part,
+                            IWorkbenchPart parentPart)
+                    {
+                        // implementation here.
+                        _controllableTime = (ControllableTime) part;
+                    }
+                });
+        _myPartMonitor.addPartListener(ControllableTime.class,
+                PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+                {
+                    public void eventTriggered(String type, Object part,
+                            IWorkbenchPart parentPart)
+                    {
+                        // no, don't bother clearing the controllable time when
+                        // the plot is
+                        // de-activated,
+                        // - since with the highlight on the narrative, we want
+                        // to be able
+                        // to control the time still.
+                        // _controllableTime = null;
+                    }
+                });
 
         // ok we're all ready now. just try and see if the current part is valid
         _myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
@@ -397,15 +481,23 @@ public class NViewerView extends ViewPart
         // and stop listening for part activity
         _myPartMonitor.dispose(getSite().getWorkbenchWindow().getPartService());
 
+        if (_controllableTime != null)
+        {
+            _myTemporalDataset.removeListener(_temporalListener,
+                    TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
+            _myTemporalDataset = null;
+            _controllableTime = null;
+        }
+
         // let the parent do it's bit
         super.dispose();
 
     }
 
-    
     private static SimpleDateFormat _myFormat;
     private static String _myFormatString;
-    
+
     public static String toStringHiRes(HiResDate time, String pattern)
             throws IllegalArgumentException
     {
@@ -470,6 +562,19 @@ public class NViewerView extends ViewPart
         }
 
         return res.toString();
+    }
+
+    /**
+     * the user has selected a new time
+     * 
+     */
+    public void propertyChange(PropertyChangeEvent evt)
+    {
+        // are we syncing with time?
+        if (_followTime.isChecked())
+        {
+
+        }
     }
 
 }

@@ -1,5 +1,7 @@
 package com.borlander.ianmayo.nviewer;
 
+import java.beans.PropertyChangeListener;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.swt.SWT;
@@ -8,9 +10,12 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 
+import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
+import MWC.TacticalData.NarrativeEntry;
 
 import com.borlander.ianmayo.nviewer.actions.NarrativeViewerActions;
+import com.borlander.ianmayo.nviewer.app.NViewerView;
 import com.borlander.ianmayo.nviewer.filter.ui.FilterDialog;
 import com.borlander.ianmayo.nviewer.model.TimeFormatter;
 
@@ -23,10 +28,11 @@ public class NarrativeViewer extends KTable {
 
 	private final NarrativeViewerModel myModel;
 	private NarrativeViewerActions myActions;
+    private PropertyChangeListener _timeListener;
 	
 
 	public NarrativeViewer(Composite parent, IPreferenceStore preferenceStore) {
-		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL);
+		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 		myModel = new NarrativeViewerModel(preferenceStore, new ColumnSizeCalculator() {
 			public int getColumnWidth(int col) {
@@ -127,22 +133,30 @@ public class NarrativeViewer extends KTable {
 		}     
 	}
 
-//    public void setInput(IRollingNarrativeProvider myRollingNarrative)
-//    {
-//        // convert the rolling narrative to the expected format
-//        
-//        // create some duff data, and present it.
-////        IRollingNarrativeProvider ie = new IRollingNarrativeProvider(){
-////            public NarrativeEntry[] getNarrativeHistory(String[] categories)
-////            {
-////                NarrativeEntry one = new NarrativeEntry("trk", "type1", new HiResDate(new Date()), "a1");
-////                NarrativeEntry two = new NarrativeEntry("trk", "type2", new HiResDate(new Date()), "a2");
-////                NarrativeEntry three = new NarrativeEntry("trk1", "type1", new HiResDate(new Date()), "a3");
-////                NarrativeEntry[] res = new NarrativeEntry[]{one, two, three};
-////                return res;
-////            }};
-//         setInput(myRollingNarrative);
-//    }
-	
+	/** the controlling time has updated
+	 * 
+	 * @param dtg the selected dtg
+	 */
+    public void setDTG(HiResDate dtg)
+    {
+        // find the table entry immediately after or on this DTG
+        IRollingNarrativeProvider narr = myModel.getInput();
+        NarrativeEntry[] neList = narr.getNarrativeHistory(new String[]{});
+        int theIndex = -1;
+        for (int index = 0; index < neList.length; index++)
+        {
+            NarrativeEntry ne = neList[index];
+            HiResDate dt = ne.getDTG();
+            if(dt.greaterThanOrEqualTo(dtg))
+            {
+                theIndex = index;
+                break;
+            }            
+        }
+        
+        // ok, try to select this entry
+        if(theIndex > -1)
+            super.setSelection(1, theIndex + 1, true);
 
+    }
 }
