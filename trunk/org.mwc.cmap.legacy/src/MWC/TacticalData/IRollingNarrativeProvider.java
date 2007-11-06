@@ -50,6 +50,10 @@ public interface IRollingNarrativeProvider
 		 * @param entry
 		 */
 		public void newEntry(NarrativeEntry entry);
+		
+		/** a narrative entry has been removed
+		 */
+		public void entryRemoved(NarrativeEntry entry);
 	}
 	
 }

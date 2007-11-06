@@ -3,8 +3,12 @@
  */
 package MWC.TacticalData;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+import java.util.Date;
 
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -14,11 +18,13 @@ public final class NarrativeEntry implements java.lang.Comparable,
     // ///////////////////////////////////////////
     // member variables
     // ///////////////////////////////////////////
-    final String _track;
-    final HiResDate _DTG;
-    final String _entry;
-    final String _type;
+    private String _track;
+    private HiResDate _DTG;
+    private String _entry;
+    private String _type;
     String _DTGString = null;
+    
+    private NarrativeEntryInfo _myInfo;
 
     /**
      * 
@@ -75,6 +81,15 @@ public final class NarrativeEntry implements java.lang.Comparable,
         return _track;
     }
 
+    public final String getSource()
+    {
+        return _track;
+    }
+    public final void setSource(String track)
+    {
+        _track = track;
+    }
+    
     public final String getEntry()
     {
         return _entry;
@@ -84,12 +99,22 @@ public final class NarrativeEntry implements java.lang.Comparable,
     {
         return _DTG;
     }
+    
+    public void setDTG(HiResDate date)
+    {
+        _DTG = date;
+    }
 
     public final String getType()
     {
         return _type;
     }
 
+    public void setType(String type)
+    {
+        _type = type;
+    }
+    
     public final String getDTGString()
     {
         if (_DTGString == null)
@@ -170,7 +195,9 @@ public final class NarrativeEntry implements java.lang.Comparable,
      */
     public final MWC.GUI.Editable.EditorType getInfo()
     {
-        return null;
+        if(_myInfo == null)
+            _myInfo = new NarrativeEntryInfo(this, this.toString());
+        return _myInfo;
     }
 
     /**
@@ -181,7 +208,7 @@ public final class NarrativeEntry implements java.lang.Comparable,
      */
     public final boolean hasEditor()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -195,6 +222,60 @@ public final class NarrativeEntry implements java.lang.Comparable,
     public final String toString()
     {
         return getName();
+    }
+    
+    // ////////////////////////////////////////////////////
+    // bean info for this class
+    // ///////////////////////////////////////////////////
+    public final class NarrativeEntryInfo extends Editable.EditorType
+    {
+
+        public NarrativeEntryInfo(final NarrativeEntry data, final String theName)
+        {
+            super(data, theName, data.toString());
+        }
+
+        public final PropertyDescriptor[] getPropertyDescriptors()
+        {
+            try
+            {
+                final PropertyDescriptor[] myRes = {
+                        
+                        prop("Type", "the type of entry", FORMAT),
+                        prop("Source", "the source for this entry", FORMAT),
+                        prop("DTG", "the time this entry was recorded", FORMAT),
+                        };
+
+                return myRes;
+
+            }
+            catch (IntrospectionException e)
+            {
+                e.printStackTrace();
+                return super.getPropertyDescriptors();
+            }
+        }
+
+    }    
+
+ // ////////////////////////////////////////////////////////////////////////////////////////////////
+    // testing for this class
+    // ////////////////////////////////////////////////////////////////////////////////////////////////
+    static public final class testMe extends junit.framework.TestCase
+    {
+        static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+        public testMe(final String val)
+        {
+            super(val);
+        }
+
+        public final void testMyParams()
+        {
+            HiResDate hd = new HiResDate(new Date());
+            final NarrativeEntry ne = new NarrativeEntry("aaa", "bbb", hd, "vvvv"); 
+            editableTesterSupport.testParams(ne, this);
+        }
     }
 
 }
