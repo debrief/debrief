@@ -5,6 +5,8 @@ import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
@@ -13,6 +15,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.List;
 import org.eclipse.swt.widgets.Shell;
 
@@ -80,6 +83,13 @@ public class FilterDialog extends Dialog
     {
         Composite dialogArea = (Composite) super.createDialogArea(parent);
         dialogArea.setLayout(new GridLayout(3, false));
+        
+        Label lab1 = new Label(dialogArea, SWT.NONE);
+        lab1.setText("Available items:");
+        lab1 = new Label(dialogArea, SWT.NONE);
+        lab1.setText(" ");
+        lab1 = new Label(dialogArea, SWT.NONE);
+        lab1.setText("Show entries matching:");
 
         myItemsToSelectList = createItemsList(dialogArea, myItemsToSelect);
 
@@ -122,6 +132,25 @@ public class FilterDialog extends Dialog
         });
 
         mySelectedItemsList = createItemsList(dialogArea, mySelectedItems);
+        
+        // add double-click jumping for the lists
+        myItemsToSelectList.addMouseListener(new MouseAdapter(){
+            public void mouseDoubleClick(MouseEvent e)
+            {
+                super.mouseDoubleClick(e);
+                // and handle it
+                addOne();
+            }
+        });
+        mySelectedItemsList.addMouseListener(new MouseAdapter(){
+            public void mouseDoubleClick(MouseEvent e)
+            {
+                super.mouseDoubleClick(e);
+                // and handle it
+                removeOne();
+            }
+        });
+        
         return dialogArea;
     }
 
@@ -197,6 +226,7 @@ public class FilterDialog extends Dialog
         {
             result.add(item);
         }
+        
         return result;
     }
 
