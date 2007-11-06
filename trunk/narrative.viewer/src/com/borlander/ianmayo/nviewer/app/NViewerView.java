@@ -117,7 +117,7 @@ public class NViewerView extends ViewPart
             public void run()
             {
                 super.run();
-                myViewer.setWrappingEntries(_clipText.isChecked());
+                myViewer.setWrappingEntries(!_clipText.isChecked());
             }
         };
         _clipText.setImageDescriptor(org.mwc.cmap.core.CorePlugin.getImageDescriptor("icons/wrap.gif"));
@@ -208,11 +208,16 @@ public class NViewerView extends ViewPart
         myViewer.setFocus();
     }
 
-    protected void setInput(IRollingNarrativeProvider newNarr,
-            IWorkbenchPart parentPart)
+    protected void setInput(IRollingNarrativeProvider newNarr)
     {
+        // check it has some data
+        NarrativeEntry[] entries = newNarr.getNarrativeHistory(new String[]{});
+        
         _myRollingNarrative = newNarr;
-        myViewer.setInput(_myRollingNarrative);
+        if(entries.length > 0)
+            myViewer.setInput(_myRollingNarrative);
+        else
+            myViewer.setInput(null);
 
         // check if we have our rolling narrative listener
         if (_myRollingNarrListener == null)
@@ -225,10 +230,21 @@ public class NViewerView extends ViewPart
                     {
                         public void run()
                         {
-                            // ok, sort it.
-                            // viewer.add(entry);
-                            System.err
-                                    .println("should be updating with new narrative entry!!!");
+                            // ok, sort it - get the view to refresh itself
+                            setInput(_myRollingNarrative);
+                        }
+                    });
+                }
+
+                public void entryRemoved(NarrativeEntry entry)
+                {
+                    // update our list...
+                    Display.getDefault().asyncExec(new Runnable()
+                    {
+                        public void run()
+                        {
+                            // ok, sort it - get the view to refresh itself                        
+                            setInput(_myRollingNarrative);
                         }
                     });
                 }
@@ -251,7 +267,7 @@ public class NViewerView extends ViewPart
                             IWorkbenchPart parentPart)
                     {
                         IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
-                        setInput(newNarr, parentPart);
+                        setInput(newNarr);
                     }
                 });
 
@@ -265,7 +281,7 @@ public class NViewerView extends ViewPart
                             IWorkbenchPart parentPart)
                     {
                         IRollingNarrativeProvider newNarr = (IRollingNarrativeProvider) part;
-                        setInput(newNarr, parentPart);
+                        setInput(newNarr);
                     }
 
                 });
