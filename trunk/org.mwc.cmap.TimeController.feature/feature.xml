@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.17">
+      version="1.0.18">
 
    <description>
-      [1.0.17] Ditch the preferences pages, we don&apos;t need them.
+      [1.0.18] Switch icon to more intuitive one
+[1.0.17] Ditch the preferences pages, we don&apos;t need them.
 [1.0.16] Make sure we finish step tidily, even if probs occur.
 Then we will carry on stepping
 [1.0.15] More robust checking for gui elements disposed
