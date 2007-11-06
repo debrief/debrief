@@ -2,11 +2,13 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.52"
+      version="1.0.53"
       provider-name="MWC">
 
    <description>
-      [1.0.51] Optimised plotting of polylines
+      [1.0.53] Incorporate icon for new narrative viewer
+[1.0.52] Refactor support for legacy narrative viewer
+[1.0.51] Optimised plotting of polylines
 [1.0.50] Increase access to prefs.  Persist last measured range
 bearing
 [1.0.49] Prevent having to double-click &quot;see my props&quot; for relevant
