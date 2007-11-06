@@ -598,6 +598,11 @@ public class NarrativeView extends ViewPart
 						}
 					});
 				}
+
+                public void entryRemoved(NarrativeEntry entry)
+                {
+                    // ignore - we manage this differently
+                }
 			};
 		}
 

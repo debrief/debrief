@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Narrative Viewer
 Bundle-SymbolicName: org.mwc.cmap.narrative; singleton:=true
-Bundle-Version: 1.0.8
+Bundle-Version: 1.0.9
 Bundle-ClassPath: NarrativeViewer.jar
 Bundle-Activator: org.mwc.cmap.narrative.NarrativePlugin
 Bundle-Vendor: MWC

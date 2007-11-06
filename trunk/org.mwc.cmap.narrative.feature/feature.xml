@@ -2,9 +2,9 @@
 <feature
       id="org.mwc.cmap.narrative.feature"
       label="org.mwc.cmap.narrative.feature"
-      version="1.0.8"
+      version="1.0.9"
       provider-name="MWC">
- 
+
    <description>
       [1.0.8] Include link to help
 [1.0.6] Fix where times not being tracked
