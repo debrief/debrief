@@ -5,7 +5,7 @@
      <extension
          point="org.eclipse.ui.views">
       <view
-            name="Narrative Viewer"
+            name="Narrative Viewer (legacy)"
             icon="icons/list_comments.gif"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.narrative.views.NarrativeView"
