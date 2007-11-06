@@ -36,6 +36,7 @@ public class CorePlugin extends AbstractUIPlugin
 	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
 
 	public static final String NARRATIVES = "org.mwc.cmap.narrative.views.NarrativeView";
+    public static final String NARRATIVES2 = "com.borlander.ianmayo.nviewer.app.view";
 
 	public static final String PLOT_3d = "org.mwc.cmap.plot3d.views.Plot3dView";
 
