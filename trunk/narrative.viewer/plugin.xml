@@ -7,7 +7,7 @@
          point="org.eclipse.core.runtime.applications">
       <application>
          <run
-               class="com.borlander.ianmayo.nviewer.app.NarrativeViewerApplication">
+               class="org.mwc.cmap.NarrativeViewer.app.NarrativeViewerApplication">
          </run>
       </application>
    </extension>
@@ -15,7 +15,7 @@
          point="org.eclipse.ui.perspectives">
       <perspective
             name="RCP Perspective"
-            class="com.borlander.ianmayo.nviewer.app.Perspective"
+            class="org.mwc.cmap.NarrativeViewer.app.Perspective"
             id="narrative.viewer.perspective">
       </perspective>
    </extension>
@@ -23,7 +23,7 @@
          point="org.eclipse.ui.views">
       <view
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="com.borlander.ianmayo.nviewer.app.NViewerView"
+            class="org.mwc.cmap.NarrativeViewer.app.NViewerView"
             icon="icons/list_comments.gif"
             id="com.borlander.ianmayo.nviewer.app.view"
             name="Narrative Viewer">
