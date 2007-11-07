@@ -98,9 +98,6 @@ public final class ImportNarrative2 implements PlainLineImporter
     // skip the comment identifier
     st.nextToken();
 
-		// start off with the type
-		theType = st.nextToken();
-
     // combine the date, a space, and the time
     dateStr = st.nextToken() + " " + st.nextToken();
 
@@ -110,6 +107,10 @@ public final class ImportNarrative2 implements PlainLineImporter
     // now the track name
     theTrack = ImportFix.checkForQuotedTrackName(st);
 
+		// start off with the type
+		theType = ImportFix.checkForQuotedTrackName(st);
+
+    
     // and now read in the message
     theEntry = st.nextToken("\r");
 
