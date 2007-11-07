@@ -42,6 +42,7 @@
 		<description>Displays narrative data, allowing you to quickly move to a particular event</description>
 		<topic href="html/legacy/viewing_narratives.html" label="An overview of narrative data"/>
 		<topic href="html/legacy/viewing_narratives.html#preparing_narrative_data" label="Preparing narrative data"/>
+		<topic href="html/legacy/viewing_narratives.html#viewing_narrative_data" label="Using the narrative viewer"/>
 	</context>		
 	<context id="Plot3d">
 		<description>Shows a 3d view of the current plot</description>

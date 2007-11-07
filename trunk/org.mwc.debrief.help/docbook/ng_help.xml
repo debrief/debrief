@@ -3715,85 +3715,10 @@ over appearance in the plot:
 <para>Typically this data would be narrative data recorded to provide an overview of events within an exercise
             <glossterm linkend="g_serial">serial</glossterm>, but an equally valid use of the facility would be for a textual record of information exported from a recording device.  An example of this could be control messages returned from a weapon, or readings taken from an onboard sensor.
           </para> 
-<para>Once the data is loaded into Debrief, it is displayed in a list window - with one entry per line.  When stepping through the data the "current" entry is highlighted, but the user is also able to double-click on an entry to move the Debrief step time to the time this entry was recorded.
-            <figure float="0">
-              <title>Viewing a narrative</title>
-              <screenshot>
-                <mediaobject>
-                  <imageobject>
-                    <imagedata fileref="figures/Narr_1.png" width="100%"/>
-                  </imageobject>
-                </mediaobject>
-              </screenshot>
-            </figure>Three settings affect how the Narrative Viewer integrates with the current plot time (as indicated on the <link linkend="time_controller">Time Controller</link> (see <xref linkend="time_controller"/>).
-          <variablelist><varlistentry><term><guiicon>
-              <inlinegraphic fileref="figures/FollowTime.png"/>
-            </guiicon></term><listitem><para>Highlight the narrative entry nearest to the current plot time.</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term><guiicon>
-              <inlinegraphic fileref="figures/JumpToCurrent.png"/>
-            </guiicon></term> 
-<listitem> 
-<para>Always ensure the current entry is visible (scrolling up and down as necessary)</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term><guiicon>
-              <inlinegraphic fileref="figures/ControlTime.png"/>
-            </guiicon></term> 
-<listitem> 
-<para>Change the plot-time to that of a narrative entry when the user double-clicks on it.</para> 
-</listitem> 
-</varlistentry> 
-</variablelist></para> 
 </sect2> 
 <sect2 id="preparing_narrative_data"> 
 <title>Preparing the data</title> 
-<para>Narrative data is loaded into Debrief using the following file format:
-            <screen>;NARRATIVE:  YYMMDD HHMMSS  TTT.TTT  XX..XX
- ;; dtg, track name, narrative entry
-            </screen>
-          </para> 
-<para>
- This line  is composed of the following fields:
-            <variablelist>
-              <varlistentry>
-                <term>
-                  <guilabel>;NARRATIVE:</guilabel>
-                </term>
-                <listitem>
-                  <para>Leader identifier, to indicate that this is a narrative entry</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>
-                  <guilabel>YYMMDD HHMMSS:</guilabel>
-                </term> 
-<listitem> 
-<para>DTG for this narrative entry</para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>
-                  <guilabel>TTT..TTT</guilabel>
-                </term> 
-<listitem> 
-<para>The name of the source vessel or
-                    <glossterm linkend="g_sensor">sensor</glossterm> for this narrative entry
-                  </para> 
-</listitem> 
-</varlistentry> 
-<varlistentry> 
-<term>
-                  <guilabel>XX..XX</guilabel>
-                </term> 
-<listitem> 
-<para>The text of this narrative entry, up to the end-of-line marker.</para> 
-</listitem> 
-</varlistentry> 
-</variablelist> </para> 
+<para>Narrative data is loaded into Debrief using the ;NARRATIVE and ;NARRATIVE2 replay file format entries as described at <xref linkend="replay_annotation_format"/>. </para> 
 <para>The narrative data can be located in a
             <filename>.REP</filename> file of its own, or together with other Debrief track and annotation data.
           </para> 
@@ -3805,14 +3730,55 @@ over appearance in the plot:
             <guibutton>Import Data</guibutton> button.
           </para> 
 </sect2> 
-</sect1> 
-<sect1 id="view_narrative"> 
-<title>Viewing narrative data</title> 
-<sect2> 
-<title>Opening the narrative viewer</title> 
-<para>To view the narrative data, just select <guibutton>Narrative Viewer</guibutton> from the <guimenu>Window</guimenu>/<guibutton>Show View...</guibutton> drop-down list.</para> 
-<para>To open the narrative viewer, double-click on the Narratives text.
-          </para> 
+<sect2 id="viewing_narrative_data"> 
+<title>Viewing the data</title>           
+<para>Once the data is loaded into Debrief, it is displayed in a list window - with one entry per line.  When stepping through the data the "current" entry is highlighted, but the user is also able to double-click on an entry to move the Debrief step time to the time this entry was recorded.
+            <figure float="0">
+              <title>Viewing a narrative</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/Narr_1.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>Three settings affect how the Narrative Viewer integrates with the current plot time (as indicated on the <link linkend="time_controller">Time Controller</link> (see <xref linkend="time_controller"/>).
+          <variablelist>          
+<varlistentry> 
+<term><guiicon>
+              <inlinegraphic fileref="figures/wrap.gif"/>
+            </guiicon></term> 
+<listitem> 
+<para>Trim the narrative entries to the visible screen space</para> 
+</listitem> 
+</varlistentry> 
+          
+          <varlistentry><term><guiicon>
+              <inlinegraphic fileref="figures/synced.gif"/>
+            </guiicon></term><listitem><para>Highlight the narrative entry nearest to the current plot time.</para> 
+</listitem> 
+</varlistentry> 
+<varlistentry> 
+<term><guiicon>
+              <inlinegraphic fileref="figures/clock.png"/>
+            </guiicon></term> 
+<listitem> 
+<para>Change the plot-time to that of a narrative entry when the user double-clicks on it.</para> 
+</listitem> 
+</varlistentry> 
+</variablelist></para> 
+<para>Also, the narrative viewer is able to filter your data for you.  Double-click on the <guibutton>Source</guibutton> or <guibutton>Type</guibutton> headings and a filter 
+dialog will open.<figure float="0">
+              <title>Filtering a narrative</title>
+              <screenshot>
+                <mediaobject>
+                  <imageobject>
+                    <imagedata fileref="figures/narr_filter.png" width="100%"/>
+                  </imageobject>
+                </mediaobject>
+              </screenshot>
+            </figure>In the example shown, select which types of data you wish to see in the filtered narrative by either double-clicking on them or selecting one then clicking the right arrow.  When you've selected which data you want to see, click <guibutton>OK</guibutton></para>
+            <para>The drop-down menu for the narrative viewer also allows you to select how you want the date column formatted - helpful for very frequent or infrequent narrative entries.</para>
 </sect2> 
 </sect1> 
 </chapter> 
@@ -4480,6 +4446,8 @@ permanent file archival, full backups, and total web-based administration.
 <title>Debrief File Formats</title> 
 <sect1 id="replay_file_format"> 
 <title>Replay File Format</title> 
+<sect2 id="replay_track_format">
+<title>Track Data</title> 
 <para>
           <application>Debrief</application> accepts files in the
           <indexterm>
@@ -4630,6 +4598,10 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
 </tbody> 
 </tgroup> 
 </table> </para> 
+</sect2>
+<sect2 id="replay_symbology">
+<title>Symbology attributes</title> 
+
 <para>The symbology data field describes the representation
 required for this vessel track, specifying the colour of track to use
 and symbol-type to represent that vehicle.  The Symbol style read in is used when tracks are to be shown by using symbol (in 2D or 3D), as described in
@@ -4794,6 +4766,9 @@ and symbol-type to represent that vehicle.  The Symbol style read in is used whe
 <para>Note that historically only the first color style read in from file for a particular track was implemented, this has been changed in order that the colour value is used for each position read in.
             </para> 
 </note> </para> 
+</sect2>
+<sect2 id="replay_annotation_format">
+<title>Annotation Data</title> 
 <para>In addition to the positional vessel track data, annotations can also be added. Each annotation is placed on a single line in a replay file, each line beginning with the comment marker; a semi-colon &apos;;&apos;.To put a comment on a line, begin with two semi-colons.</para> 
 <para>The format for the different types of annotations is:
           <screen>
@@ -4861,6 +4836,11 @@ XXXX YYYY  CCC SSS DDD xx.xx
 track name, elipse orientation (deg from north),  maxima (yds), minima (yds), 
 course, speed, depth (m), label string
 
+;NARRATIVE:  YYMMDD HHMMSS  TTT.TTT  XX..XX
+ ;; dtg, track name, narrative entry. Note the track name can be multi-word if surrounded by quotes (").
+
+;NARRATIVE2:  YYMMDD HHMMSS  TTT.TTT AA..AA XX..XX
+ ;; dtg, track name, narrative entry-type, narrative entry.  Note the track name and entry type can be multi-word if surrounded by quotes (").
             </markup>
           </screen>
 
@@ -4883,6 +4863,7 @@ course, speed, depth (m), label string
 	  standard replay file format, and symbology representations
 	  are as in the above tables.
         </para> 
+</sect2>
 </sect1> 
 <sect1 id="debrief_file_format"> 
 <title>Debrief File Format</title> 
