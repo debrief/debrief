@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.53">
+      version="1.0.54">
 
    <description>
-      [1.0.53] Update to include new narrative column sequence/format
+      [1.0.54] Store narrative type entries, if available
+[1.0.53] Update to include new narrative column sequence/format
 [1.0.52] Update perspective to exploit new narrative viewer
 [1.0.51] Switch column sequence of Narrative2 data format
 [1.0.49] Optimised plotting of monster tracks

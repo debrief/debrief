@@ -123,6 +123,7 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     private String _entry;
     private HiResDate _dtg;
     private String _track;
+		protected String _type;
 
     public EntryHandler()
     {
@@ -146,6 +147,14 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
         }
       });
 
+      addAttributeHandler(new HandleAttribute("Type")
+      {
+        public void setValue(String name, String value)
+        {
+          _type = value;
+        }
+      });
+
       addAttributeHandler(new HandleAttribute("Dtg")
       {
         public void setValue(String name, String value)
@@ -162,6 +171,7 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
       _entry = "";
       _dtg = null;
       _track = "";
+      _type = null;
 
       super.handleOurselves(name, atts);
     }
@@ -170,7 +180,7 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     {
       // create the new object
       MWC.TacticalData.NarrativeEntry ne = new
-        MWC.TacticalData.NarrativeEntry(_track, _dtg, _entry);
+        MWC.TacticalData.NarrativeEntry(_track, _type, _dtg, _entry);
 
       // pass it to the parent
       addEntry(ne);
@@ -188,6 +198,12 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
       eEntry.setAttribute("Dtg", writeThis(Entry.getDTG()));
       eEntry.setAttribute("Entry", Entry.getEntry());
       eEntry.setAttribute("Track", Entry.getTrackName());
+      
+      // do we have an type attribute?
+      String typeStr = Entry.getType();
+      if(typeStr != null)
+        eEntry.setAttribute("Type", typeStr);
+      	
 
       parent.appendChild(eEntry);
 
