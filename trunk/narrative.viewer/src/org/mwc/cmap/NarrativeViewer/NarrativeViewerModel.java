@@ -28,8 +28,6 @@ public class NarrativeViewerModel extends KTableDefaultModel
 {
     private static final NarrativeEntry[] NO_ENTRIES = new NarrativeEntry[0];
     private static final int ROW_HEIGHT = 20;
-    private static final String DEFAULT_TIME_FORMAT = "HH:mm";
-
     private static final int KTABLE_CELL_CONTENT_MARGIN_WIDTH = 4;
     private static final int KTABLE_CELL_CONTENT_MARGIN_HEIGHT = 3;
 
@@ -54,7 +52,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         }
     };
 
-    private final LinkedList<NarrativeEntry> myVisibleRows = new LinkedList<NarrativeEntry>();
+    final LinkedList<NarrativeEntry> myVisibleRows = new LinkedList<NarrativeEntry>();
     private NarrativeEntry[] myAllEntries = NO_ENTRIES;
     private ColumnSizeCalculator myColumnSizeCalculator;
     private int myEntryCellContentWidth = -1;

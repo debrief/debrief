@@ -3,9 +3,6 @@
    <feature url="features/org.mwc.cmap.layer_manager.feature_1.0.13.jar" id="org.mwc.cmap.layer_manager.feature" version="1.0.13">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.narrative.feature_1.0.9.jar" id="org.mwc.cmap.narrative.feature" version="1.0.9">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.overview.feature_1.0.5.jar" id="org.mwc.cmap.overview.feature" version="1.0.5">
       <category name="cmap_features"/>
    </feature>
@@ -33,13 +30,13 @@
    <feature url="features/org.mwc.cmap.feature_1.0.54.jar" id="org.mwc.cmap.feature" version="1.0.54">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.5.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.5">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.debrief.help.feature_1.0.21.jar" id="org.mwc.debrief.help.feature" version="1.0.21">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.debrief.feature_1.0.54.jar" id="org.mwc.debrief.feature" version="1.0.54">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.6.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.6">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

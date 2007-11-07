@@ -1,6 +1,7 @@
 package org.mwc.cmap.NarrativeViewer;
 
-import java.beans.PropertyChangeListener;
+import java.util.Iterator;
+import java.util.LinkedList;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.preference.IPreferenceStore;
@@ -10,15 +11,12 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.widgets.Composite;
 import org.mwc.cmap.NarrativeViewer.actions.NarrativeViewerActions;
-import org.mwc.cmap.NarrativeViewer.app.NViewerView;
 import org.mwc.cmap.NarrativeViewer.filter.ui.FilterDialog;
 import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.IRollingNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
-
-
 import de.kupzog.ktable.KTable;
 import de.kupzog.ktable.KTableCellDoubleClickAdapter;
 import de.kupzog.ktable.KTableCellResizeAdapter;
@@ -28,10 +26,7 @@ public class NarrativeViewer extends KTable {
 
 	private final NarrativeViewerModel myModel;
 	private NarrativeViewerActions myActions;
-    private PropertyChangeListener _timeListener;
-	
-
-	public NarrativeViewer(Composite parent, IPreferenceStore preferenceStore) {
+    public NarrativeViewer(Composite parent, IPreferenceStore preferenceStore) {
 		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 		myModel = new NarrativeViewerModel(preferenceStore, new ColumnSizeCalculator() {
@@ -140,19 +135,31 @@ public class NarrativeViewer extends KTable {
     public void setDTG(HiResDate dtg)
     {
         // find the table entry immediately after or on this DTG
-        IRollingNarrativeProvider narr = myModel.getInput();
-        NarrativeEntry[] neList = narr.getNarrativeHistory(new String[]{});
-        int theIndex = -1;
-        for (int index = 0; index < neList.length; index++)
-        {
-            NarrativeEntry ne = neList[index];
-            HiResDate dt = ne.getDTG();
-            if(dt.greaterThanOrEqualTo(dtg))
-            {
-                theIndex = index;
-                break;
-            }            
-        }
+    		int theIndex = -1;
+    		int thisIndex = 0;
+    		
+    		// retrieve the list of visible rows
+        LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+        
+        // step through them
+        for (Iterator entryIterator = visEntries.iterator(); entryIterator.hasNext();)
+				{        	
+					NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+					
+					// get the date
+          HiResDate dt = narrativeEntry.getDTG();
+          
+          // is this what we're looking for?
+          if(dt.greaterThanOrEqualTo(dtg))            	
+          {
+          	// yup, remember the index
+            theIndex = thisIndex;
+            break;
+          }             
+					
+          // increment the counter
+          thisIndex++;
+				}
         
         // ok, try to select this entry
         if(theIndex > -1)
