@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.NarrativeViewer.feature"
       label="org.mwc.cmap.NarrativeViewer.feature"
-      version="1.0.4"
+      version="1.0.5"
       provider-name="MWC">
 
    <description>
-      [1.0.4] Integrate with time
+      [1.0.5] Add help link
+[1.0.4] Integrate with time
 [1.0.3] Hide visible column by default
 [1.0.2] Include checkbox for entry visible
 [1.0.1] Initial integrated implemenatation
