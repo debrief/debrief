@@ -36,7 +36,7 @@
    <feature url="features/org.mwc.debrief.feature_1.0.54.jar" id="org.mwc.debrief.feature" version="1.0.54">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.6.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.6">
+   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.7.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.7">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
