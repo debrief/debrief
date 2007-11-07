@@ -22,6 +22,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -202,6 +203,10 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 
         // and the DTG formatter
         addDateFormats(menuManager);
+
+        menuManager.add(new Separator());
+    		menuManager.add(CorePlugin.createOpenHelpAction("org.mwc.debrief.help.Narrative", null, this));
+        
 
     }
 
