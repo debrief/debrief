@@ -1,14 +1,11 @@
 /**
  * 
  */
-package org.mwc.cmap.NarrativeViewer.model.mwc;
+package MWC.TacticalData;
 
-import java.util.*;
-
-import org.eclipse.core.runtime.Status;
-
-import MWC.TacticalData.*;
-import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
 public class BaseNarrativeProvider implements IRollingNarrativeProvider
 {

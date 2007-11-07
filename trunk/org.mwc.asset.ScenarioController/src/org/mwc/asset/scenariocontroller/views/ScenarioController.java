@@ -1,28 +1,45 @@
 package org.mwc.asset.scenariocontroller.views;
 
-import java.beans.*;
-import java.text.*;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
+import java.util.Vector;
 
-import org.eclipse.jface.action.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.asset.scenariocontroller.ScenarioControllerPlugin;
 import org.mwc.asset.scenariocontroller.preferences.TimeControllerProperties;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.narrative.BaseNarrativeProvider;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.GenericData.HiResDate;
+import MWC.TacticalData.BaseNarrativeProvider;
 import MWC.TacticalData.NarrativeEntry;
 
 public class ScenarioController extends ViewPart implements ISelectionProvider

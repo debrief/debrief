@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.asset.ScenarioController.feature"
       label="Scenario Controller Feature"
-      version="1.0.1">
+      version="1.0.2">
 
    <description url="http://www.example.com/description">
-      [1.0.1] Reflect improved practice for editing properties
+      [1.0.2] Refactor narrative provider class
+[1.0.1] Reflect improved practice for editing properties
    </description>
 
    <copyright url="http://www.example.com/copyright">

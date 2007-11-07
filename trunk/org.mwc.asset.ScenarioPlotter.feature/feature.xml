@@ -2,10 +2,10 @@
 <feature
       id="org.mwc.asset.ScenarioPlotter.feature"
       label="Feature Feature"
-      version="1.0.0">
+      version="1.0.1">
 
    <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+      [1.0.1] Refactor narrative provider class
    </description>
 
    <copyright url="http://www.example.com/copyright">
