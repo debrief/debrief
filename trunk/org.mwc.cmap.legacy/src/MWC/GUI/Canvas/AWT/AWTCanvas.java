@@ -393,7 +393,7 @@ final public class AWTCanvas extends java.awt.Canvas
     _theDest.drawPolyline(xPoints, yPoints, nPoints);
   }
   
-  @Override
+  
   public void drawPolyline(int[] points)
   {
       if (_theDest == null)

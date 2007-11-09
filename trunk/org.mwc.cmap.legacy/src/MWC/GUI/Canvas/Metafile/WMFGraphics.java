@@ -486,7 +486,6 @@ public class WMFGraphics
 		wmf.setPixel(is[i - 1], is_71_[i - 1], getColor());
 	}
 	
-	  @Override
 	  public void drawPolyline(int[] points)
 	  {
 	      // convert to normal format

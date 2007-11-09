@@ -294,7 +294,6 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
     if(DEBUG_OUTPUT) MWC.Utilities.Errors.Trace.trace("drawPolyline");
   }
 
-  @Override
   public void drawPolyline(int[] points)
   {
       // convert to normal format

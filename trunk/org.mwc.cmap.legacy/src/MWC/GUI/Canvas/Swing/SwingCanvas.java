@@ -621,7 +621,6 @@ public class SwingCanvas extends javax.swing.JComponent
     _theDest.drawPolyline(xPoints, yPoints, nPoints);
   }
   
-  @Override
   public void drawPolyline(int[] points)
   {
       if (_theDest == null)

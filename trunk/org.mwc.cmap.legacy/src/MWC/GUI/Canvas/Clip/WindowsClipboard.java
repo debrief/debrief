@@ -32,7 +32,6 @@ public class WindowsClipboard implements CanvasType{
                           int[] yPoints,
                           int nPoints);
 
-  @Override
   public void drawPolyline(int[] points)
   {
       // convert to normal format

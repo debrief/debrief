@@ -256,7 +256,6 @@ public  class CanvasAdaptor implements MWC.GUI.CanvasType
         _dest.drawArc(x, y, width, height, startAngle, arcAngle);
       }
 
-    @Override
     public void drawPolyline(int[] points)
     {
         // convert to normal format

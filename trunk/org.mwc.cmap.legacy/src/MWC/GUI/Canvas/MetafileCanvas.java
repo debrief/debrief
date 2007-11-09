@@ -398,7 +398,6 @@ public class MetafileCanvas implements CanvasType
 			MWC.Utilities.Errors.Trace.trace("drawPolyline");
 	}
 
-    @Override
     public void drawPolyline(int[] points)
     {
         // convert to normal format
