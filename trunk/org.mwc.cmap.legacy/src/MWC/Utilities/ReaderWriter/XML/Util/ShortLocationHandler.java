@@ -39,7 +39,7 @@ abstract public class ShortLocationHandler extends MWCXMLReader
     int len = attributes.getLength();
     for(int i=0; i<len;i++){
 
-      String nm = attributes.getLocalName(i);
+      String nm = attributes.getQName(i);// getLocalName(i);
       String val = attributes.getValue(i);
       try{
         if(nm.equals("Lat"))
