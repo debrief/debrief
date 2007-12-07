@@ -27,16 +27,16 @@
    <feature url="features/org.mwc.cmap.TimeController.feature_1.0.18.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.18">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.feature_1.0.54.jar" id="org.mwc.cmap.feature" version="1.0.54">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.debrief.help.feature_1.0.21.jar" id="org.mwc.debrief.help.feature" version="1.0.21">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.54.jar" id="org.mwc.debrief.feature" version="1.0.54">
+   <feature url="features/org.mwc.cmap.feature_1.0.56.jar" id="org.mwc.cmap.feature" version="1.0.56">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.7.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.7">
+   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.8.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.8">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.debrief.feature_1.0.55.jar" id="org.mwc.debrief.feature" version="1.0.55">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
