@@ -294,20 +294,10 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
     if(DEBUG_OUTPUT) MWC.Utilities.Errors.Trace.trace("drawPolyline");
   }
 
-  public void drawPolyline(int[] points)
-  {
-      // convert to normal format
-      int[] xP = new int[points.length];
-      int[] yP = new int[points.length];
-      int len = points.length;
-      
-      for (int i = 0; i < points.length; i+= 2)
-      {
-          xP[i] = points[i];
-          yP[i] = points[i+1];
-      }
-      drawPolyline(xP, yP, len);        
-  }
+	final public void drawPolyline(int[] points) {
+		// get the convenience function to plot this for us
+		CanvasAdaptor.drawPolylineForMe(points, this);
+	}
 
   public boolean drawImage(Image img,
                                   int x,

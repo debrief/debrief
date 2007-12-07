@@ -112,6 +112,7 @@ package MWC.GUI.Canvas.AWT;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Canvas.CanvasAdaptor;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -394,22 +395,10 @@ final public class AWTCanvas extends java.awt.Canvas
   }
   
   
-  public void drawPolyline(int[] points)
-  {
-      if (_theDest == null)
-          return;
-      // convert to normal format
-      int[] xP = new int[points.length];
-      int[] yP = new int[points.length];
-      int len = points.length;
-      
-      for (int i = 0; i < points.length; i+= 2)
-      {
-          xP[i] = points[i];
-          yP[i] = points[i+1];
-      }
-      drawPolyline(xP, yP, len);        
-  }  
+	final public void drawPolyline(int[] points) {
+		// get the convenience function to plot this for us
+		CanvasAdaptor.drawPolylineForMe(points, this);
+	}
 
   /**
    * drawPolygon

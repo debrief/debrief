@@ -274,7 +274,7 @@ public interface CanvasType {
    *
    * @param points list of x & y coordinates
    */
-  public void drawPolyline(int[] xPoints);  
+  public void  drawPolyline(final int[] xPoints);  
 
   /**
    * draw an arc on the current destination
