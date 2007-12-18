@@ -318,6 +318,8 @@ public class WMF
 																byte pitchAndFamily, String string)
   {
     metaRecord(763, 9 + (string.length() + 2) / 2);
+    // scale the height up a bit
+    height = (int)(height * 1.3);
     writeWord(height);
     writeWord(width);
     writeWord(escapement);

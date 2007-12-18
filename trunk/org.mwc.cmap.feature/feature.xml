@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.56"
+      version="1.0.57"
       provider-name="MWC">
 
    <description>
-      [1.0.56] Fix using legacy polyline plotter from new signature
+      [1.0.57] Scale wmf text up a little (30%)
+[1.0.56] Fix using legacy polyline plotter from new signature
 [1.0.55] Refactor narrative provider class
 [1.0.54] Another icon - for the narrative viewer
 [1.0.53] Incorporate icon for new narrative viewer
