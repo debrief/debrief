@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.55">
+      version="1.0.56">
 
    <description>
-      [1.0.55] Force update, to include: store narrative type entries, if available
+      [1.0.56] Support dtf file suffix for REP data
+[1.0.55] Force update, to include: store narrative type entries,
+if available
 [1.0.54] Store narrative type entries, if available
 [1.0.53] Update to include new narrative column sequence/format
 [1.0.52] Update perspective to exploit new narrative viewer
