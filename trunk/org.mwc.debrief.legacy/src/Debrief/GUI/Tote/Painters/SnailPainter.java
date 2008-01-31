@@ -845,6 +845,15 @@ public class SnailPainter extends TotePainter implements Editable
 							g2.setStroke(new BasicStroke(ly.getLineThickness()));
 						}
 					}
+					else if(list instanceof ShapeWrapper)
+					{
+						final ShapeWrapper sw = (ShapeWrapper)list;
+						if(dest instanceof Graphics2D)
+						{
+							final Graphics2D g2 = (Graphics2D)dest;
+							g2.setStroke(new BasicStroke(sw.getLineThickness()));
+						}
+					}
 
 					final Rectangle rec = plotter.drawMe(proj, dest, list, watch, this, dtg,
 							backColor);

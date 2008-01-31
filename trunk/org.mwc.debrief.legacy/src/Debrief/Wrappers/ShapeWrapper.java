@@ -289,6 +289,12 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 */
 	private int _lineStyle;
 
+	/**
+	 * the width to draw this line
+	 */
+	private int _lineWidth;
+	
+
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
@@ -336,11 +342,20 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			// sort out the line style
 			dest.setLineStyle(_lineStyle);
 			
+			// store the current line width
+			float lineWid = dest.getLineWidth();
+			
+			// and the line width
+			dest.setLineWidth(_lineWidth);
+			
 			// first paint the symbol
 			_theShape.paint(dest);
 
 			// and restore the line style
 			dest.setLineStyle(CanvasType.SOLID);
+			
+			// and restore the line width
+			dest.setLineWidth(lineWid);
 
 			// now paint the text
 			_theLabel.paint(dest);
@@ -495,6 +510,25 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	{
 		return _lineStyle;
 	}
+	
+  /**
+   * the line thickness (convenience wrapper around width)
+   *
+   * @return
+   */
+  public int getLineThickness()
+  {
+    return _lineWidth;
+  }
+
+  /**
+   * the line thickness (convenience wrapper around width)
+   */
+  public void setLineThickness(int val)
+  {
+    _lineWidth = val;
+  }
+  
 	
 	/**
 	 * whether to show the label for this shape
@@ -904,6 +938,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 						prop("LabelVisible", "whether the label is visible", VISIBILITY),
 						prop("Time_Start", "the start date time group", TEMPORAL),
 						longProp("LineStyle","the dot-dash style to use for plotting this shape", LineStylePropertyEditor.class, FORMAT),
+						longProp("LineWidth","the line-thickness to use for this shape", MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
 						prop(
 								"TimeEnd",
