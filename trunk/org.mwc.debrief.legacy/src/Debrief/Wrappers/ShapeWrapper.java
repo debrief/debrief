@@ -938,7 +938,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 						prop("LabelVisible", "whether the label is visible", VISIBILITY),
 						prop("Time_Start", "the start date time group", TEMPORAL),
 						longProp("LineStyle","the dot-dash style to use for plotting this shape", LineStylePropertyEditor.class, FORMAT),
-						longProp("LineWidth","the line-thickness to use for this shape", MWC.GUI.Properties.LineWidthPropertyEditor.class),
+						longProp("LineThickness","the line-thickness to use for this shape", MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
 						prop(
 								"TimeEnd",
