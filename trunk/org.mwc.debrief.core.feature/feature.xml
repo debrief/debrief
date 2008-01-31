@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.58">
+      version="1.0.59">
 
    <description>
-      [1.0.58] Let shape wrapper have their own width
+      [1.0.59] Let shape wrapper have their own width, take Two.
+[1.0.58] Let shape wrapper have their own width
 [1.0.57] Don&apos;t show snail highlight for labels
 [1.0.56] Support dtf file suffix for REP data
 [1.0.55] Force update, to include: store narrative type entries,
