@@ -5,7 +5,8 @@
       version="1.0.56">
 
    <description>
-      [1.0.56] Support dtf file suffix for REP data
+      [1.0.57] Don&apos;t show snail highlight for labels
+[1.0.56] Support dtf file suffix for REP data
 [1.0.55] Force update, to include: store narrative type entries,
 if available
 [1.0.54] Store narrative type entries, if available

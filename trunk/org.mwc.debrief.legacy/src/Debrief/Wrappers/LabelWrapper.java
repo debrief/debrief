@@ -188,6 +188,7 @@ import java.util.Vector;
 import javax.swing.JFrame;
 
 import Debrief.Tools.Tote.WatchableList;
+import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.*;
 import MWC.GUI.Chart.Swing.SwingChart;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
@@ -196,7 +197,8 @@ import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.*;
 
 public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		Debrief.Tools.Tote.WatchableList, Debrief.Tools.Tote.Watchable, DraggableItem
+		Debrief.Tools.Tote.WatchableList, 
+		Debrief.Tools.Tote.Watchable, DraggableItem, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables
