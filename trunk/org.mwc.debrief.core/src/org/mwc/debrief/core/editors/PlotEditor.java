@@ -453,14 +453,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			try
 			{
-				Display.getCurrent().asyncExec(new Runnable()
+				// note, we've learn't to use the default display instead of the
+				// current one, we were get a null returned since this thread may not have a display
+				Display myDis = Display.getDefault();
+				if (myDis != null)
 				{
-					public void run()
+					myDis.asyncExec(new Runnable()
 					{
-						// ok - update our painter
-						getChart().getCanvas().updateMe();
-					}
-				});
+						public void run()
+						{
+							// ok - update our painter
+							getChart().getCanvas().updateMe();
+						}
+					});
+				}
 
 			} finally
 			{
