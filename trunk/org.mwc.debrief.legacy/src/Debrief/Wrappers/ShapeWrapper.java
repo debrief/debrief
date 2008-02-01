@@ -239,7 +239,8 @@ import MWC.GenericData.*;
 
 public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		java.beans.PropertyChangeListener, Debrief.Tools.Tote.WatchableList,
-		Debrief.Tools.Tote.Watchable, DraggableItem, HasDraggableComponents, DoNotHighlightMe
+		Debrief.Tools.Tote.Watchable, DraggableItem, HasDraggableComponents,
+		DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables
@@ -284,7 +285,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 */
 	transient private Editable.EditorType _myEditor = null;
 
-	/** the style of line to use for this feature
+	/**
+	 * the style of line to use for this feature
 	 * 
 	 */
 	private int _lineStyle;
@@ -293,13 +295,13 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * the width to draw this line
 	 */
 	private int _lineWidth;
-	
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public ShapeWrapper(final String label, final MWC.GUI.Shapes.PlainShape theShape,
-			final java.awt.Color theColor, final HiResDate theDate)
+	public ShapeWrapper(final String label,
+			final MWC.GUI.Shapes.PlainShape theShape, final java.awt.Color theColor,
+			final HiResDate theDate)
 	{
 		_theLabel = new MWC.GUI.Shapes.TextLabel(theShape, label);
 		// store the shape
@@ -310,7 +312,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 		_theLabel.setFont(new Font("Sans Serif", Font.PLAIN, 9));
 		_theLabel.setColor(theColor);
-		
+
 		// override the shape, just to be sure...
 		_theShape.setColor(theColor);
 
@@ -341,19 +343,19 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		{
 			// sort out the line style
 			dest.setLineStyle(_lineStyle);
-			
+
 			// store the current line width
 			float lineWid = dest.getLineWidth();
-			
+
 			// and the line width
 			dest.setLineWidth(_lineWidth);
-			
+
 			// first paint the symbol
 			_theShape.paint(dest);
 
 			// and restore the line style
 			dest.setLineStyle(CanvasType.SOLID);
-			
+
 			// and restore the line width
 			dest.setLineWidth(lineWid);
 
@@ -505,31 +507,30 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	{
 		_lineStyle = style;
 	}
-	
+
 	public final int getLineStyle()
 	{
 		return _lineStyle;
 	}
-	
-  /**
-   * the line thickness (convenience wrapper around width)
-   *
-   * @return
-   */
-  public int getLineThickness()
-  {
-    return _lineWidth;
-  }
 
-  /**
-   * the line thickness (convenience wrapper around width)
-   */
-  public void setLineThickness(int val)
-  {
-    _lineWidth = val;
-  }
-  
-	
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 * 
+	 * @return
+	 */
+	public int getLineThickness()
+	{
+		return _lineWidth;
+	}
+
+	/**
+	 * the line thickness (convenience wrapper around width)
+	 */
+	public void setLineThickness(int val)
+	{
+		_lineWidth = val;
+	}
+
 	/**
 	 * whether to show the label for this shape
 	 */
@@ -598,8 +599,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 	private void updateLabelLocation()
 	{
-		final WorldLocation newLoc = _theShape.getAnchor(_theLabel.getRelativeLocation()
-				.intValue());
+		final WorldLocation newLoc = _theShape.getAnchor(_theLabel
+				.getRelativeLocation().intValue());
 		_theLabel.setLocation(newLoc);
 	}
 
@@ -637,17 +638,21 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 		if (appThreshold != null)
 		{
-			try
+			if (appThreshold.length() > 0)
 			{
-				// get actual value (in seconds)
-				res = Long.parseLong(appThreshold);
-				// convert to micros
-				res *= 1000000;
+				try
+				{
+					// get actual value (in seconds)
+					res = Long.parseLong(appThreshold);
+					// convert to micros
+					res *= 1000000;
+				} catch (Exception e)
+				{
+					MWC.Utilities.Errors.Trace.trace(e,
+							"Retrieving step threshold from properties");
+				}
 			}
-			catch (Exception e)
-			{
-				MWC.Utilities.Errors.Trace.trace(e, "Retrieving step threshold from properties");
-			}
+
 		}
 
 		return res;
@@ -656,16 +661,17 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	public final Debrief.Tools.Tote.Watchable[] getNearestTo(final HiResDate DTG)
 	{
 
-		Debrief.Tools.Tote.Watchable[] res = new Debrief.Tools.Tote.Watchable[] {};
+		Debrief.Tools.Tote.Watchable[] res = new Debrief.Tools.Tote.Watchable[]
+		{};
 		;
 
 		// special case, have we been asked for an invalid time period?
 		if (DTG == TimePeriod.INVALID_DATE)
 		{
 			// yes, just return ourselves
-			return new Watchable[] { this };
-		}
-		else
+			return new Watchable[]
+			{ this };
+		} else
 		{
 			// do we know about time?
 			if (this.getStartDTG() != null)
@@ -676,36 +682,39 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 					if ((getStartDTG().lessThan(DTG)) && (getEndDTG().greaterThan(DTG)))
 					{
 						// yes, it's within our time period
-						res = new Debrief.Tools.Tote.Watchable[] { this };
-					}
-					else
+						res = new Debrief.Tools.Tote.Watchable[]
+						{ this };
+					} else
 					{
 						// no, it's outside our time period
 						// - just return our default res
 					}
-				}
-				else
+				} else
 				{
-					// no end value, see if we are within time threshold of supplied time
+					// no end value, see if we are within time threshold of
+					// supplied time
 
 					// find how far we are from the DTG
-					final long diff = Math.abs(DTG.getMicros() - this.getStartDTG().getMicros());
+					final long diff = Math.abs(DTG.getMicros()
+							- this.getStartDTG().getMicros());
 
 					// is this within our threshold?
 					if (diff <= getThreshold())
-						res = new Debrief.Tools.Tote.Watchable[] { this };
+						res = new Debrief.Tools.Tote.Watchable[]
+						{ this };
 					else
-						res = new Debrief.Tools.Tote.Watchable[] {};
+						res = new Debrief.Tools.Tote.Watchable[]
+						{};
 				}
-			}
-			else
+			} else
 			{
 				// so, we don't have a start time.
 				// are we also missing the end time?
 				if (_theEndDTG == null)
 				{
 					// yup, say we were nearest
-					res = new Debrief.Tools.Tote.Watchable[] { this };
+					res = new Debrief.Tools.Tote.Watchable[]
+					{ this };
 				}
 			}// this whole object is a watchable
 
@@ -771,8 +780,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 		// if we have a property support class, fire the filtered event
 		if (getSupport() != null)
-			getSupport().firePropertyChange(Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY,
-					null, null);
+			getSupport().firePropertyChange(
+					Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, null, null);
 
 	}
 
@@ -793,7 +802,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			return res;
 		}
 
-		boolean done = false; // whether we have been able to process the times
+		boolean done = false; // whether we have been able to process the
+		// times
 
 		// do we have an end time?
 		if (myEnd != null)
@@ -819,16 +829,15 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				// no start time, just return ourselves anyway.
 				res = new Vector<ShapeWrapper>(0, 1);
 				res.addElement(this);
-			}
-			else
+			} else
 			{
 				// use the start time as a centre time
-				if ((myStart.greaterThanOrEqualTo(start)) && (myStart.lessThanOrEqualTo(end)))
+				if ((myStart.greaterThanOrEqualTo(start))
+						&& (myStart.lessThanOrEqualTo(end)))
 				{
 					res = new Vector<ShapeWrapper>(0, 1);
 					res.addElement(this);
-				}
-				else
+				} else
 				{
 					// no, it's outside the period
 				}
@@ -909,7 +918,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				final MWC.GUI.Editable et = (MWC.GUI.Editable) ps;
 				if (et.hasEditor() == true)
 				{
-					final BeanInfo[] res = { et.getInfo() };
+					final BeanInfo[] res =
+					{ et.getInfo() };
 					return res;
 				}
 			}
@@ -921,7 +931,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		{
 			// just add the reset color field first
 			final Class c = ShapeWrapper.class;
-			final MethodDescriptor[] mds = { method(c, "exportThis", null, "Export Shape") };
+			final MethodDescriptor[] mds =
+			{ method(c, "exportThis", null, "Export Shape") };
 			return mds;
 		}
 
@@ -929,7 +940,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		{
 			try
 			{
-				final PropertyDescriptor[] myRes = {
+				final PropertyDescriptor[] myRes =
+				{
 						prop("LabelColor", "the text color", FORMAT),
 						prop("Label", "the text showing", FORMAT),
 						prop("Font", "the label font", FORMAT),
@@ -937,19 +949,23 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 						prop("Visible", "whether this shape is visible", VISIBILITY),
 						prop("LabelVisible", "whether the label is visible", VISIBILITY),
 						prop("Time_Start", "the start date time group", TEMPORAL),
-						longProp("LineStyle","the dot-dash style to use for plotting this shape", LineStylePropertyEditor.class, FORMAT),
-						longProp("LineThickness","the line-thickness to use for this shape", MWC.GUI.Properties.LineWidthPropertyEditor.class),
+						longProp("LineStyle",
+								"the dot-dash style to use for plotting this shape",
+								LineStylePropertyEditor.class, FORMAT),
+						longProp("LineThickness",
+								"the line-thickness to use for this shape",
+								MWC.GUI.Properties.LineWidthPropertyEditor.class),
 						prop("Color", "the color of the shape itself", FORMAT),
 						prop(
 								"TimeEnd",
 								"the end date time group \n\r(or leave blank for to use Start as Centre time)",
 								TEMPORAL), };
-				myRes[3].setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
+				myRes[3]
+						.setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
 
 				return myRes;
 
-			}
-			catch (IntrospectionException e)
+			} catch (IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();
@@ -974,7 +990,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		{
 			final MWC.GUI.Shapes.PlainShape ps = new MWC.GUI.Shapes.CircleShape(
 					new WorldLocation(2d, 2d, 2d), 12);
-			MWC.GUI.Editable ed = new ShapeWrapper("", ps, java.awt.Color.red, new HiResDate(0));
+			MWC.GUI.Editable ed = new ShapeWrapper("", ps, java.awt.Color.red,
+					new HiResDate(0));
 			editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
@@ -990,8 +1007,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				public WatchableList getBothDates(final HiResDate startDate,
 						final HiResDate endDate)
 				{
-					final ShapeWrapper sw = new ShapeWrapper("blank", new MWC.GUI.Shapes.LineShape(
-							scrapLoc, scrapLoc2), java.awt.Color.red, null)
+					final ShapeWrapper sw = new ShapeWrapper("blank",
+							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
+							java.awt.Color.red, null)
 					{
 						/**
 						 * 
@@ -1010,8 +1028,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 				public WatchableList getNullDates()
 				{
-					final ShapeWrapper sw = new ShapeWrapper("blank", new MWC.GUI.Shapes.LineShape(
-							scrapLoc, scrapLoc2), java.awt.Color.red, null)
+					final ShapeWrapper sw = new ShapeWrapper("blank",
+							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
+							java.awt.Color.red, null)
 					{
 						/**
 						 * 
@@ -1030,8 +1049,9 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 				public WatchableList getStartDateOnly(final HiResDate startDate)
 				{
-					final ShapeWrapper sw = new ShapeWrapper("blank", new MWC.GUI.Shapes.LineShape(
-							scrapLoc, scrapLoc2), java.awt.Color.red, null)
+					final ShapeWrapper sw = new ShapeWrapper("blank",
+							new MWC.GUI.Shapes.LineShape(scrapLoc, scrapLoc2),
+							java.awt.Color.red, null)
 					{
 						/**
 						 * 
@@ -1069,7 +1089,8 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 			LocationConstruct currentNearest, Layer parentLayer)
 	{
-		 _theShape.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest, parentLayer);
+		_theShape.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
+				parentLayer);
 
 	}
 
@@ -1080,12 +1101,14 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		theLoc.addToMe(vector);
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, ComponentConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+			ComponentConstruct currentNearest, Layer parentLayer)
 	{
-		if(_theShape instanceof HasDraggableComponents)
+		if (_theShape instanceof HasDraggableComponents)
 		{
 			HasDraggableComponents dragger = (HasDraggableComponents) _theShape;
-			dragger.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest, parentLayer);
+			dragger.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
+					parentLayer);
 		}
 	}
 }
