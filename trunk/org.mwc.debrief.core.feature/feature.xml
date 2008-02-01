@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.59">
+      version="1.0.61">
 
    <description>
-      [1.0.59] Let shape wrapper have their own width, take Two.
+      [1.0.61] Fix time stepper not moving forward
+[1.0.60] More robust string retrieval for ShapeWrapper in Snail
+[1.0.59] Let shape wrapper have their own width, take Two.
 [1.0.58] Let shape wrapper have their own width
 [1.0.57] Don&apos;t show snail highlight for labels
 [1.0.56] Support dtf file suffix for REP data
