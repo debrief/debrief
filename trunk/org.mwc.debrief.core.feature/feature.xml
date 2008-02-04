@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.61">
+      version="1.0.62">
 
    <description>
-      [1.0.61] Fix time stepper not moving forward
+      [1.0.62] Fix for time threshold around text label in Snail
+[1.0.61] Fix time stepper not moving forward
 [1.0.60] More robust string retrieval for ShapeWrapper in Snail
 [1.0.59] Let shape wrapper have their own width, take Two.
 [1.0.58] Let shape wrapper have their own width
