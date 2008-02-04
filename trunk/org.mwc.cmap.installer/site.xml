@@ -39,7 +39,7 @@
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.5.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.5">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.61.jar" id="org.mwc.debrief.feature" version="1.0.61">
+   <feature url="features/org.mwc.debrief.feature_1.0.62.jar" id="org.mwc.debrief.feature" version="1.0.62">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
