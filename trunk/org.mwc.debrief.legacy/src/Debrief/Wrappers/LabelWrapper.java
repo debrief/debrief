@@ -197,8 +197,8 @@ import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.*;
 
 public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		Debrief.Tools.Tote.WatchableList, 
-		Debrief.Tools.Tote.Watchable, DraggableItem, DoNotHighlightMe
+		Debrief.Tools.Tote.WatchableList, Debrief.Tools.Tote.Watchable,
+		DraggableItem, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables
@@ -281,7 +281,8 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 *          the end time, or null if single date value
 	 */
 	public LabelWrapper(final String label, final WorldLocation location,
-			final java.awt.Color theColor, final HiResDate startDTG, final HiResDate endDTG)
+			final java.awt.Color theColor, final HiResDate startDTG,
+			final HiResDate endDTG)
 	{
 		_theLocation = location;
 		_theLabel = new MWC.GUI.Shapes.TextLabel(location, label);
@@ -310,8 +311,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 				// also indicate to the text that we are using an offset
 				_theLabel.setFixedOffset(_theShape.getBounds());
-			}
-			else
+			} else
 			{
 				// indicate to the shape that we don't need an offset
 				_theLabel.setFixedOffset(new java.awt.Dimension(0, 0));
@@ -508,16 +508,20 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 		if (appThreshold != null)
 		{
-			try
+			// aaah, we actually get a zero length string in SWT, check for that
+			if (appThreshold.length() > 0)
 			{
-				// get actual value (in seconds)
-				res = Long.parseLong(appThreshold);
-				// convert to millis
-				res *= 1000;
-			}
-			catch (Exception e)
-			{
-				MWC.Utilities.Errors.Trace.trace(e, "Retrieving step threshold from properties");
+				try
+				{
+					// get actual value (in seconds)
+					res = Long.parseLong(appThreshold);
+					// convert to millis
+					res *= 1000;
+				} catch (Exception e)
+				{
+					MWC.Utilities.Errors.Trace.trace(e,
+							"Retrieving step threshold from properties");
+				}
 			}
 		}
 
@@ -532,8 +536,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		if (DTG == TimePeriod.INVALID_DATE)
 		{
 			res = true;
-		}
-		else
+		} else
 		{
 
 			// see if we are within the threshold of plotting
@@ -544,10 +547,10 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			if (getEndDTG() != null)
 			{
 				// check if we are in the range
-				if ((DTG.greaterThanOrEqualTo(myStart)) && (DTG.lessThanOrEqualTo(myEnd)))
+				if ((DTG.greaterThanOrEqualTo(myStart))
+						&& (DTG.lessThanOrEqualTo(myEnd)))
 					res = true;
-			}
-			else
+			} else
 			{
 				// see if there is just a start (centre) time
 				if (myStart != null)
@@ -555,8 +558,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 					final long sep = Math.abs(DTG.getMicros() - myStart.getMicros());
 					if (sep <= getThreshold())
 						res = true;
-				}
-				else
+				} else
 				{
 					// start and end must equal -1
 					res = true;
@@ -566,10 +568,11 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		if (res == true)
 		{
 			// produce a new LabelWrapper, with the indicated time
-			return new Debrief.Tools.Tote.Watchable[] { this };
-		}
-		else
-			return new Debrief.Tools.Tote.Watchable[] {};
+			return new Debrief.Tools.Tote.Watchable[]
+			{ this };
+		} else
+			return new Debrief.Tools.Tote.Watchable[]
+			{};
 
 	}
 
@@ -596,26 +599,22 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				if ((myStart.lessThan(end)) && (myEnd.greaterThan(start)))
 				{
 					setVisible(true);
-				}
-				else
+				} else
 				{
 					setVisible(false);
 				}
-			}
-			else
+			} else
 			{
 				// we just have a centre time, see if it is in the area
 				if ((myStart.greaterThan(start)) && (myStart.lessThan(end)))
 				{
 					setVisible(true);
-				}
-				else
+				} else
 				{
 					setVisible(false);
 				}
 			}
-		}
-		else
+		} else
 		{
 			// we must be visible if we are'nt time related
 			setVisible(true);
@@ -623,8 +622,8 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 		// if we have a property support class, fire the filtered event
 		if (getSupport() != null)
-			getSupport().firePropertyChange(Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY,
-					null, null);
+			getSupport().firePropertyChange(
+					Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, null, null);
 
 	}
 
@@ -651,12 +650,12 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				if (endTime != null)
 				{
 					// we have start and finish times, see if we overlap the period at all
-					if ((startTime.lessThanOrEqualTo(end)) && (endTime.greaterThanOrEqualTo(start)))
+					if ((startTime.lessThanOrEqualTo(end))
+							&& (endTime.greaterThanOrEqualTo(start)))
 					{
 						res = new Vector(0, 1);
 					}
-				}
-				else
+				} else
 				{
 					// we don't have a finish time, see if we are inside the period
 					if ((startTime.greaterThanOrEqualTo(start))
@@ -684,11 +683,11 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 						// work through this dataset, in minutes
 						for (long i = st; i <= en; i += 60 * 1000 * 1000)
 						{
-							res.addElement(new LabelWrapper(this.getLabel(), this.getLocation(), this
-									.getColor(), new HiResDate(0, i), new HiResDate(0, i)));
+							res.addElement(new LabelWrapper(this.getLabel(), this
+									.getLocation(), this.getColor(), new HiResDate(0, i),
+									new HiResDate(0, i)));
 						}
-					}
-					else
+					} else
 					{
 						// HI-RES NOT DONE - WHAT ON EARTH IS HAPPENING IN THIS NEXT
 						// SECTION?
@@ -701,21 +700,20 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 						// work through this dataset, in minutes
 						for (long i = st; i <= end.getMicros(); i += 60 * 1000 * 1000)
 						{
-							res.addElement(new LabelWrapper(this.getLabel(), this.getLocation(), this
-									.getColor(), new HiResDate(0, i), new HiResDate(0, i)));
+							res.addElement(new LabelWrapper(this.getLabel(), this
+									.getLocation(), this.getColor(), new HiResDate(0, i),
+									new HiResDate(0, i)));
 						}
 					}
 				}
 
-			}
-			else
+			} else
 			{
 				// no dates have been set - just say yes we are visible
 				res = new Vector(0, 1);
 				res.add(this);
 			}
-		}
-		else
+		} else
 		{
 			// no times are set - just return ourselves
 			res = new Vector(0, 1);
@@ -828,8 +826,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		if (val.equals(_theShape.getType()))
 		{
 			// don't bother we're using it already
-		}
-		else
+		} else
 		{
 			// remember the size of the symbol
 			final double scale = _theShape.getScaleVal();
@@ -838,9 +835,9 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			_theShape = MWC.GUI.Shapes.Symbols.SymbolFactory.createSymbol(val);
 			if (_theShape == null)
 			{
-				MWC.Utilities.Errors.Trace.trace("Unable to create symbol of type:" + val);
-			}
-			else
+				MWC.Utilities.Errors.Trace.trace("Unable to create symbol of type:"
+						+ val);
+			} else
 			{
 				_theShape.setColor(this.getColor());
 
@@ -911,7 +908,8 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			if (list != null)
 			{
 				// create the dummy list to show toArray what we are after
-				final BeanInfo[] dummy = new BeanInfo[] { sampler };
+				final BeanInfo[] dummy = new BeanInfo[]
+				{ sampler };
 
 				// put the list onto the array
 				res = (BeanInfo[]) list.toArray(dummy);
@@ -924,8 +922,9 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		{
 			try
 			{
-				final PropertyDescriptor[] res = { prop("Color", "the label color"),
-						prop("Label", "the text showing"), prop("Font", "the label font"),
+				final PropertyDescriptor[] res =
+				{ prop("Color", "the label color"), prop("Label", "the text showing"),
+						prop("Font", "the label font"),
 						prop("SymbolVisible", "whether a symbol is plotted"),
 						prop("LabelLocation", "the relative location of the label"),
 						prop("Location", "the location of the origin of the label"),
@@ -933,10 +932,12 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 						prop("SymbolSize", "the scale of the symbol"),
 						prop("LabelVisible", "whether the label is plotted"),
 						prop("Visible", "whether the label and symbol are plotted"),
-						prop("TimeStart", "the start DTG"), prop("Time_End", "the end DTG"), };
+						prop("TimeStart", "the start DTG"),
+						prop("Time_End", "the end DTG"), };
 
 				// set the custom editors
-				res[4].setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
+				res[4]
+						.setPropertyEditorClass(MWC.GUI.Properties.LocationPropertyEditor.class);
 				res[6]
 						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
 				res[7]
@@ -944,8 +945,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 				return res;
 
-			}
-			catch (IntrospectionException e)
+			} catch (IntrospectionException e)
 			{
 				System.err.println("Problem generating property editors (see below)");
 				e.printStackTrace();
@@ -957,7 +957,8 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		{
 			// just add the reset color field first
 			final Class c = ShapeWrapper.class;
-			final MethodDescriptor[] mds = { method(c, "exportThis", null, "Export Shape") };
+			final MethodDescriptor[] mds =
+			{ method(c, "exportThis", null, "Export Shape") };
 			return mds;
 		}
 
@@ -1050,14 +1051,15 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		JFrame jf = new JFrame("here");
 		Layers theData = new Layers();
 		SwingChart sc = new SwingChart(theData);
-		RectangleShape rect = new RectangleShape(new WorldLocation(50.679199, -1.0351547, 0),
-				new WorldLocation(50.4545845, -0.6318624, 0));
+		RectangleShape rect = new RectangleShape(new WorldLocation(50.679199,
+				-1.0351547, 0), new WorldLocation(50.4545845, -0.6318624, 0));
 		ShapeWrapper sw = new ShapeWrapper("here", rect, Color.blue, null);
 		sw.setLabelVisible(false);
 		LabelWrapper lw = new LabelWrapper("there\nand here\nand there again",
 				new WorldLocation(50.6114132, -0.7973965, 0), Color.red);
 		Layer misc = new BaseLayer();
-		lw.setLabelLocation(new Integer(MWC.GUI.Properties.LocationPropertyEditor.TOP));
+		lw.setLabelLocation(new Integer(
+				MWC.GUI.Properties.LocationPropertyEditor.TOP));
 		misc.setName("misc");
 		misc.add(sw);
 		misc.add(lw);
@@ -1084,11 +1086,13 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		setLocation(newCentre);
 	}
 
-	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, LocationConstruct currentNearest, Layer parentLayer)
+	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+			LocationConstruct currentNearest, Layer parentLayer)
 	{
 		// calculate the distance
-		WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc), WorldDistance.DEGS);
-		
+		WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),
+				WorldDistance.DEGS);
+
 		// see if we're closer
 		currentNearest.checkMe(this, thisDist, this.getLocation(), parentLayer);
 	}
