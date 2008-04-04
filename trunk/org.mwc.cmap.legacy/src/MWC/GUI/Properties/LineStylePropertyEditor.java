@@ -66,7 +66,7 @@ public class LineStylePropertyEditor extends PropertyEditorSupport
   public static final int SOLID = 0;
   public static final int DOTTED = 2;
   public static final int DOT_DASH = 3;
-  public static final int SHORT_DASHES = 4;
+  public static final int DOT_DOT_DASH = 4;
   public static final int LONG_DASHES = 1;
   public static final int UNCONNECTED = 5;
 
@@ -82,7 +82,7 @@ public class LineStylePropertyEditor extends PropertyEditorSupport
       _myTags[SOLID] = "Solid";
       _myTags[DOTTED] = "Dotted";
       _myTags[DOT_DASH] = "Dot Dash";
-      _myTags[SHORT_DASHES] = "Short Dashes";
+      _myTags[DOT_DOT_DASH] = "Dot Dot Dash";
       _myTags[LONG_DASHES] = "Long Dashes";
       _myTags[UNCONNECTED] = "Unconnected";
     }
