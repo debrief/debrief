@@ -35,7 +35,7 @@ class BiSliderPointer extends BiSliderComponentBase implements DragListener, Dis
 					public void mouseDoubleClick(final MouseEvent e)
 					{
             if (myDrawer.getAreaGate().isInsideArea(e.x, e.y)){
-  						handler.adjust(!myMinNotMax);
+  						handler.adjust(myMinNotMax);
           }
 					}};               
         getBiSlider().addMouseListener(myFineTunePopupShower);

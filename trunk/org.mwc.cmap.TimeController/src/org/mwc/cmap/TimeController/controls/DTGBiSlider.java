@@ -3,11 +3,7 @@ package org.mwc.cmap.TimeController.controls;
 import java.util.Calendar;
 import java.util.Date;
 
-import org.eclipse.swt.events.MouseAdapter;
-import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.MessageBox;
 
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -22,7 +18,12 @@ import com.borlander.rac353542.bislider.cdata.CalendarDateSuite;
 import com.borlander.rac353542.bislider.cdata.CalendarDateSuite.CalendarDateModel;
 
 public class DTGBiSlider
-{
+{	
+	
+	public static interface DoFineControl
+	{
+		public void adjust(boolean isMax);
+	}
 
 	/**
 	 * our slider control
@@ -51,11 +52,12 @@ public class DTGBiSlider
 
 	/**
 	 * constructor - get things going
+	 * @param fineControl 
 	 * 
 	 * @param parent
 	 * @param style
 	 */
-	public DTGBiSlider(Composite parentControl)
+	public DTGBiSlider(Composite parentControl, DoFineControl fineControl)
 	{
 
 		// sort out some demo dates
@@ -132,34 +134,14 @@ public class DTGBiSlider
 				}
 			}
 		});		
-		
-		DoFineControl fc = new DoFineControl()
-		{
-			public void adjust(boolean isMax)
-			{
-				doFineControl(isMax);
-			}
-			
-		};
 
 		
 		// great, now it's ready for the actual BiSlider control
 		_mySlider = BiSliderFactory.getInstance().createBiSlider(parentControl, _dateModel,
-				_uiModel, fc);
+				_uiModel, fineControl);
 		
 	}
-	
-	public static interface DoFineControl
-	{
-		public void adjust(boolean isMax);
-	}
-	
-	protected void doFineControl(boolean doMinVal)
-	{
-		MessageBox mb = new MessageBox(Display.getCurrent().getActiveShell());
-		mb.setMessage("doing fine tune, max is:" + doMinVal);
-		mb.open();
-	}
+
 
 	public Composite getControl()
 	{

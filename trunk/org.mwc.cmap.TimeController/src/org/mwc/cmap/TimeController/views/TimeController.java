@@ -1,44 +1,93 @@
 package org.mwc.cmap.TimeController.views;
 
 import java.awt.event.ActionEvent;
-import java.beans.*;
-import java.text.*;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.TimeZone;
+import java.util.Vector;
 
 import junit.framework.TestCase;
 
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.layout.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.layout.FillLayout;
+import org.eclipse.swt.layout.GridData;
+import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.swt.widgets.Listener;
+import org.eclipse.swt.widgets.Scale;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
 import org.mwc.cmap.TimeController.Operations.ExportTimeDataToClipboard;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
+import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
+import org.mwc.cmap.TimeController.properties.FineTuneStepperProps;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.*;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.editors.PlotEditor;
-import org.mwc.debrief.core.editors.painters.*;
-import org.mwc.debrief.core.editors.painters.highlighters.*;
+import org.mwc.debrief.core.editors.painters.LayerPainterManager;
+import org.mwc.debrief.core.editors.painters.TemporalLayerPainter;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 
 import Debrief.Tools.Tote.WatchableList;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.DateFormatPropertyEditor;
-import MWC.GenericData.*;
+import MWC.GenericData.Duration;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Timer.TimerListener;
 
 /**
@@ -177,6 +226,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private TrackDataProvider.TrackDataListener _theTrackDataListener;
 
+
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -307,7 +357,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		});
 		_tNowSlider.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
-		_dtgRangeSlider = new DTGBiSlider(_wholePanel)
+		
+		/** declare the handler we use for if the user double-clicks on a slider marker
+		 * 
+		 */
+		DoFineControl fineControl = new DoFineControl()
+		{
+			public void adjust(boolean isMax)
+			{
+				doFineControl(isMax);
+			}			
+		};
+
+		
+		_dtgRangeSlider = new DTGBiSlider(_wholePanel, fineControl)
 		{
 			public void rangeChanged(TimePeriod period)
 			{
@@ -321,10 +384,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			_dtgRangeSlider.setStepSize(_defaultSliderResolution.intValue());
 
 		// hmm, do we have a default step size for the slider?
-
 		GridData biGrid = new GridData(GridData.FILL_BOTH);
 		_dtgRangeSlider.getControl().setLayoutData(biGrid);
 	}
+
+	
+	/** user has double-clicked on one of the slider markers, allow detailed edit
+	 * 
+	 * @param doMinVal whether it was the min or max value
+	 */
+	public void doFineControl(final boolean doMinVal)
+	{
+			FineTuneStepperProps fineTunerProperties = new FineTuneStepperProps(_dtgRangeSlider, doMinVal);
+			EditableWrapper wrappedEditable = new EditableWrapper(fineTunerProperties);
+			StructuredSelection _propsAsSelection = new StructuredSelection(wrappedEditable);			
+			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
+					this, this);
+	}	
+
 
 	/**
 	 * 
@@ -1223,14 +1300,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	public void editMeInProperties()
+	private void editMeInProperties(PropertyChangeSupport props)
 	{
 		// do we have any data?
-		if (_myStepperProperties != null)
+		if (props != null)
 		{
 			// get the editable thingy
 			if (_propsAsSelection == null)
-				_propsAsSelection = new StructuredSelection(_myStepperProperties);
+				_propsAsSelection = new StructuredSelection(props);
 
 			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
 					this, this);
@@ -1708,7 +1785,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		{
 			public void runWithEvent(Event event)
 			{
-				editMeInProperties();
+				editMeInProperties(_myStepperProperties);
 			}
 		};
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
@@ -2232,4 +2309,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		}
 	}
+
+
 }
