@@ -65,7 +65,7 @@ public class FineTuneStepperProps implements Editable
 		if(_myInfo == null)
 			 _myInfo = new StepperInfo(this);
 		
-		return null;
+		return _myInfo;
 	}
 
 	public String getName()
