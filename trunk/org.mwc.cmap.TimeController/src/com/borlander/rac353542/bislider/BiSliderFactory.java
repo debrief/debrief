@@ -1,7 +1,10 @@
 package com.borlander.rac353542.bislider;
 
 import java.util.Date;
+
+import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
 
 import com.borlander.rac353542.bislider.cdata.*;
 import com.borlander.rac353542.bislider.impl.BiSliderFactoryImpl;
@@ -23,8 +26,9 @@ public abstract class BiSliderFactory {
 
     /**
      * Creates BiSlider with specified data model and UI configuration.
+     * @param fc TODO
      */
-    public abstract BiSlider createBiSlider(Composite parent, BiSliderDataModel.Writable dataModel, BiSliderUIModel uiConfig);
+    public abstract BiSlider createBiSlider(Composite parent, BiSliderDataModel.Writable dataModel, BiSliderUIModel uiConfig, DoFineControl fc);
 
     /**
      * Creates BiSlider with double data model and default configuration
@@ -34,8 +38,8 @@ public abstract class BiSliderFactory {
      * <code>BiSlider#getDataModel()</code> and
      * <code>BiSlider#getUIModel()</code> methods.
      */
-    public BiSlider createBiSlider(Composite parent) {
-        return createBiSlider(parent, new DefaultBiSliderDataModel(), new DefaultBiSliderUIModel());
+    public BiSlider createBiSlider(Composite parent, DoFineControl mHandler) {
+        return createBiSlider(parent, new DefaultBiSliderDataModel(), new DefaultBiSliderUIModel(), mHandler);
     }
 
     /**
@@ -54,11 +58,11 @@ public abstract class BiSliderFactory {
      * This method may be considered as an example for construction of the
      * BiSlider with any other custom data object model.
      */
-    public BiSlider createLongBiSlider(Composite parent, long totalMin, long totalMax) {
+    public BiSlider createLongBiSlider(Composite parent, long totalMin, long totalMax, DoFineControl mHandler) {
         LongDataSuite suite = new LongDataSuite();
         LongDataSuite.LongDataModel dataModel = suite.createDataModel(totalMin, totalMax, totalMin, totalMax);
         BiSliderUIModel uiModel = suite.createUIModel();
-        return createBiSlider(parent, dataModel, uiModel);
+        return createBiSlider(parent, dataModel, uiModel, mHandler);
     }
 
     /**
@@ -78,10 +82,10 @@ public abstract class BiSliderFactory {
      * This method may be considered as an example for construction of the
      * BiSlider with any other custom data object model.
      */
-    public BiSlider createCalendarDateBiSlider(Composite parent, Date totalMin, Date totalMax) {
+    public BiSlider createCalendarDateBiSlider(Composite parent, Date totalMin, Date totalMax, DoFineControl mHandler) {
         CalendarDateSuite suite = new CalendarDateSuite();
         CalendarDateSuite.CalendarDateModel dataModel = suite.createDataModel(totalMin, totalMax, totalMin, totalMax);
         BiSliderUIModel uiModel = suite.createUIModel();
-        return createBiSlider(parent, dataModel, uiModel);
+        return createBiSlider(parent, dataModel, uiModel, mHandler);
     }
 }

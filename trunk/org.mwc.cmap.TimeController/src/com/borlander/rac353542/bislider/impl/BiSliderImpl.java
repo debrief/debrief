@@ -10,6 +10,7 @@ import org.eclipse.swt.events.PaintListener;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
 
 import com.borlander.rac353542.bislider.*;
 
@@ -33,7 +34,8 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
     private LabelSupport myLabelSupport;
     private UserRangePanner myUserRangePanner;
 
-    public BiSliderImpl(Composite parent, int style, BiSliderDataModel.Writable dataModel, BiSliderUIModel uiModel) {
+    public BiSliderImpl(Composite parent, int style, BiSliderDataModel.Writable dataModel, 
+    		BiSliderUIModel uiModel, DoFineControl handler) {
         super(parent, style | SWT.DOUBLE_BUFFERED);
         setFont(parent.getFont());
         myDataModel = dataModel;
@@ -41,8 +43,8 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
         myLabelSupport = new LabelSupport(this);
         myMapper = new CoordinateMapperImpl(myUiModel.isVertical());
         mySegmenter = new Segmenter(myDataModel, myUiModel);
-        myMaxPointer = new BiSliderPointer(this, true, mySegmenter);
-        myMinPointer = new BiSliderPointer(this, false, mySegmenter);
+        myMaxPointer = new BiSliderPointer(this, true, mySegmenter, handler);
+        myMinPointer = new BiSliderPointer(this, false, mySegmenter, handler);
         
         myContents = new BiSliderContents(this, mySegmenter);
         myOutline = new BiSliderOutline(this, myLabelSupport);

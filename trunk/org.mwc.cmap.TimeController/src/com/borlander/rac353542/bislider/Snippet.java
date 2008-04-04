@@ -36,7 +36,7 @@ public class Snippet {
         Group simple = new Group(shell, SWT.NONE);
         simple.setText("All defaults");
         simple.setLayout(new FillLayout());
-        BiSlider simpleSlider = BiSliderFactory.getInstance().createBiSlider(simple);
+        BiSlider simpleSlider = BiSliderFactory.getInstance().createBiSlider(simple, null);
         
         /*
         simpleSlider.getDataModel().addListener(new BiSliderDataModel.Listener() {
@@ -90,7 +90,7 @@ public class Snippet {
         calendar.add(Calendar.YEAR, +1);
         Date yearFromNow = calendar.getTime();
         
-        BiSlider result = BiSliderFactory.getInstance().createCalendarDateBiSlider(parent, yearAgo, yearFromNow);
+        BiSlider result = BiSliderFactory.getInstance().createCalendarDateBiSlider(parent, yearAgo, yearFromNow, null);
         
         CalendarDateSuite.CalendarDateModel model = (CalendarDateSuite.CalendarDateModel)result.getDataModel();
         model.setUserMinimum(threeMonthesAgo);
@@ -139,7 +139,7 @@ public class Snippet {
 
     public static BiSlider createLongBiSlider(Composite parent){
         long base = 1000000000L;
-        BiSlider result = BiSliderFactory.getInstance().createLongBiSlider(parent, base + 0, base + 100);
+        BiSlider result = BiSliderFactory.getInstance().createLongBiSlider(parent, base + 0, base + 100, null);
         //the safety of these casts is guarranteed -- see BiSliderFactory 
         LongDataModel dataModel = (LongDataModel)result.getDataModel(); 
         dataModel.setUserMaximum(new Long(base + 70));
