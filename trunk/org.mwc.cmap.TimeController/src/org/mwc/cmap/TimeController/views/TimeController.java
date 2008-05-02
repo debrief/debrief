@@ -226,7 +226,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private TrackDataProvider.TrackDataListener _theTrackDataListener;
 
-
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -357,8 +356,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		});
 		_tNowSlider.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
-		
-		/** declare the handler we use for if the user double-clicks on a slider marker
+		/**
+		 * declare the handler we use for if the user double-clicks on a slider
+		 * marker
 		 * 
 		 */
 		DoFineControl fineControl = new DoFineControl()
@@ -366,10 +366,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			public void adjust(boolean isMax)
 			{
 				doFineControl(isMax);
-			}			
+			}
 		};
 
-		
 		_dtgRangeSlider = new DTGBiSlider(_wholePanel, fineControl)
 		{
 			public void rangeChanged(TimePeriod period)
@@ -388,20 +387,22 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_dtgRangeSlider.getControl().setLayoutData(biGrid);
 	}
 
-	
-	/** user has double-clicked on one of the slider markers, allow detailed edit
+	/**
+	 * user has double-clicked on one of the slider markers, allow detailed edit
 	 * 
-	 * @param doMinVal whether it was the min or max value
+	 * @param doMinVal
+	 *          whether it was the min or max value
 	 */
 	public void doFineControl(final boolean doMinVal)
 	{
-			FineTuneStepperProps fineTunerProperties = new FineTuneStepperProps(_dtgRangeSlider, doMinVal);
-			EditableWrapper wrappedEditable = new EditableWrapper(fineTunerProperties);
-			StructuredSelection _propsAsSelection = new StructuredSelection(wrappedEditable);			
-			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
-					this, this);
-	}	
-
+		FineTuneStepperProps fineTunerProperties = new FineTuneStepperProps(
+				_dtgRangeSlider, doMinVal);
+		EditableWrapper wrappedEditable = new EditableWrapper(fineTunerProperties);
+		StructuredSelection _propsAsSelection = new StructuredSelection(
+				wrappedEditable);
+		CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
+				this, this);
+	}
 
 	/**
 	 * 
@@ -814,19 +815,30 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							TimePeriod timeRange = _myTemporalDataset.getPeriod();
 							if (timeRange != null)
 							{
-								// don't update the slider here, take it's value
-								// from the
-								// TimeControlPreferences
-								_slideManager.resetRange(timeRange.getStartDTG(), timeRange
-										.getEndDTG());
+								// are we working with a controllable period? In which case
+								// it may have been filtered, and we don't want to set the
+								// slider
+								// ranges to the available data period
+								if (_controllablePeriod == null)
+								{
+									// don't update the slider here, take it's value
+									// from the
+									// TimeControlPreferences
+									_slideManager.resetRange(timeRange.getStartDTG(), timeRange
+											.getEndDTG());
+								}
 
 								// and our range selector - first the outer
 								// ranges
 								_dtgRangeSlider.updateOuterRanges(timeRange);
 
-								// and now the slider positions
-								_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(),
-										timeRange.getEndDTG());
+								// and now the slider positions, if we don't have a controllable
+								// period
+								if (_controllablePeriod == null)
+								{
+									_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(),
+											timeRange.getEndDTG());
+								}
 							}
 
 							checkTimeEnabled();
@@ -973,6 +985,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						ControllablePeriod ct = (ControllablePeriod) part;
 						_controllablePeriod = ct;
 						checkTimeEnabled();
+
+						// update the limits of the range selector
+						// and our range selector - first the outer
+						// ranges
+						TimePeriod tp = _controllablePeriod.getPeriod();
+						if (tp != null)
+						{
+							_dtgRangeSlider.updateSelectedRanges(tp.getStartDTG(), tp
+									.getEndDTG());
+							
+							// also set the slider limits to these values
+							_slideManager.resetRange(tp.getStartDTG(), tp
+									.getEndDTG());
+
+						}
 					}
 
 				});
@@ -1127,8 +1154,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 							// and update the slider ranges
 							// do we have start/stop times?
-							HiResDate startDTG = _myStepperProperties.getSliderStartTime();
-							if ((startDTG != null) && (_myTemporalDataset != null))
+							HiResDate startTime = _myStepperProperties.getSliderStartTime();
+							if ((startTime != null) && (_myTemporalDataset != null))
 							{
 								// cool - update the slider to our data settings
 
@@ -1136,8 +1163,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								// greater than our
 								// data period
 								TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
-								HiResDate startTime, endTime;
-								startTime = _myStepperProperties.getSliderStartTime();
+								HiResDate  endTime;								
 								endTime = _myStepperProperties.getSliderEndTime();
 
 								// trim slider start time
@@ -1153,6 +1179,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 									endTime = dataPeriod.getEndDTG();
 
 								_slideManager.resetRange(startTime, endTime);
+								_dtgRangeSlider.updateSelectedRanges(startTime, endTime);
 
 								// right, trim the DTG to the current slider
 								// settings
@@ -2309,6 +2336,5 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		}
 	}
-
 
 }
