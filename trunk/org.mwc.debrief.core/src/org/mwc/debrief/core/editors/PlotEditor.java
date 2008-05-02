@@ -181,6 +181,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			}
 		};
+		
+		// do we have some time preferences?
+		if(_timePreferences != null)
+		{
+			HiResDate startDTG = _timePreferences.getSliderStartTime();
+			HiResDate endDTG = _timePreferences.getSliderEndTime();
+			// and were there any times in it?
+			if((startDTG != null)&& (endDTG != null))
+			{
+				// yup, store the time data.
+				_myOperations.setPeriod(new TimePeriod.BaseTimePeriod(startDTG, endDTG));
+			}
+		}
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
