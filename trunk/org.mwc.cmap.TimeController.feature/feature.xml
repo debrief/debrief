@@ -2,10 +2,10 @@
 <feature
       id="org.mwc.cmap.TimeController.feature"
       label="org.mwc.cmap.TimeController.feature"
-      version="1.0.21">
+      version="1.0.22">
 
    <description>
-      [1.0.21] Remember the bi-slider values [1.0.20] Fix the fix [1.0.19] Improve detailed edit of start/end
+      [1.0.22] Better bislider management [1.0.21] Remember the bi-slider values [1.0.20] Fix the fix [1.0.19] Improve detailed edit of start/end
 times [1.0.18]Switch icon to more intuitive one [1.0.17] Ditch
 the preferences pages, we don&apos;t need them. [1.0.16] Make
 sure we finish step tidily, even if probs occur. Then we will
