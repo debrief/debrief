@@ -342,11 +342,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				if (!_alreadyProcessingChange)
 				{
 					_alreadyProcessingChange = true;
-					int index = _tNowSlider.getSelection();
-					HiResDate newDTG = _slideManager.fromSliderUnits(index,
-							_dtgRangeSlider.getStepSize());
-					fireNewTime(newDTG);
-					_alreadyProcessingChange = false;
+					try
+					{
+						int index = _tNowSlider.getSelection();
+						HiResDate newDTG = _slideManager.fromSliderUnits(index,
+								_dtgRangeSlider.getStepSize());
+						fireNewTime(newDTG);
+					} 
+					catch(Exception ex)
+					{
+						System.err.println("Tripped in step forward:" + ex);
+					}
+					finally
+					{
+						_alreadyProcessingChange = false;
+					}
 				}
 			}
 
@@ -811,35 +821,42 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 							timeUpdated(newDTG);
 
-							// and initialise the current time
-							TimePeriod timeRange = _myTemporalDataset.getPeriod();
-							if (timeRange != null)
-							{
-								// are we working with a controllable period? In which case
-								// it may have been filtered, and we don't want to set the
-								// slider
-								// ranges to the available data period
-								if (_controllablePeriod == null)
-								{
-									// don't update the slider here, take it's value
-									// from the
-									// TimeControlPreferences
-									_slideManager.resetRange(timeRange.getStartDTG(), timeRange
-											.getEndDTG());
-								}
-
-								// and our range selector - first the outer
-								// ranges
-								_dtgRangeSlider.updateOuterRanges(timeRange);
-
-								// and now the slider positions, if we don't have a controllable
-								// period
-								if (_controllablePeriod == null)
-								{
-									_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(),
-											timeRange.getEndDTG());
-								}
-							}
+							
+							// try to configure the sliders (the method will check
+							//   that we've received both of the required datasets,
+							//   only configuring them if both have arrived
+							configureSliders(_myStepperProperties, _myTemporalDataset);
+//							
+//							// and initialise the current time
+//							TimePeriod timeRange = _myTemporalDataset.getPeriod();
+//							if (timeRange != null)
+//							{
+//								// are we working with a controllable period? In which case
+//								// it may have been filtered, and we don't want to set the
+//								// slider
+//								// ranges to the available data period
+//								if (_controllablePeriod == null)
+//								{
+//									// don't update the slider here, take it's value
+//									// from the
+//									// TimeControlPreferences
+//									_slideManager.resetRange(timeRange.getStartDTG(), timeRange
+//											.getEndDTG());
+//								}
+//
+//								// and our range selector - first the outer
+//								// ranges
+//					//			_dtgRangeSlider.updateOuterRanges(timeRange);
+//
+//								// and now the slider positions, if we don't have a controllable
+//								// period
+////								if (_controllablePeriod == null)
+////								{
+////									System.err.println("no controllable period, setting start to:" + timeRange.getStartDTG());
+////									_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(),
+////											timeRange.getEndDTG());
+////								}
+//							}
 
 							checkTimeEnabled();
 
@@ -989,17 +1006,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// update the limits of the range selector
 						// and our range selector - first the outer
 						// ranges
-						TimePeriod tp = _controllablePeriod.getPeriod();
-						if (tp != null)
-						{
-							_dtgRangeSlider.updateSelectedRanges(tp.getStartDTG(), tp
-									.getEndDTG());
-							
-							// also set the slider limits to these values
-							_slideManager.resetRange(tp.getStartDTG(), tp
-									.getEndDTG());
-
-						}
+//						TimePeriod tp = _controllablePeriod.getPeriod();
+//						if (tp != null)
+//						{
+//							
+//							System.err.println("controllable period found, setting start to:" + tp.getStartDTG());
+//							
+//							_dtgRangeSlider.updateSelectedRanges(tp.getStartDTG(), tp
+//									.getEndDTG());
+//
+//							// also set the slider limits to these values
+//							_slideManager.resetRange(tp.getStartDTG(), tp.getEndDTG());
+//
+//						}
 					}
 
 				});
@@ -1152,79 +1171,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							_myStepperProperties
 									.addPropertyChangeListener(_myDateFormatListener);
 
-							// and update the slider ranges
-							// do we have start/stop times?
-							HiResDate startTime = _myStepperProperties.getSliderStartTime();
-							if ((startTime != null) && (_myTemporalDataset != null))
-							{
-								// cool - update the slider to our data settings
-
-								// aaah, first check that the time period isn't
-								// greater than our
-								// data period
-								TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
-								HiResDate  endTime;								
-								endTime = _myStepperProperties.getSliderEndTime();
-
-								// trim slider start time
-								if (startTime.lessThan(dataPeriod.getStartDTG()))
-									startTime = dataPeriod.getStartDTG();
-								else if (startTime.greaterThan(dataPeriod.getEndDTG()))
-									startTime = dataPeriod.getEndDTG();
-
-								// trim slider end time
-								if (endTime.lessThan(dataPeriod.getStartDTG()))
-									endTime = dataPeriod.getStartDTG();
-								else if (endTime.greaterThan(dataPeriod.getEndDTG()))
-									endTime = dataPeriod.getEndDTG();
-
-								_slideManager.resetRange(startTime, endTime);
-								_dtgRangeSlider.updateSelectedRanges(startTime, endTime);
-
-								// right, trim the DTG to the current slider
-								// settings
-								HiResDate tNow = _myTemporalDataset.getTime();
-								HiResDate tNew = null;
-								if (tNow != null)
-								{
-									TimePeriod sliderPeriod = new TimePeriod.BaseTimePeriod(
-											_myStepperProperties.getSliderStartTime(),
-											_myStepperProperties.getSliderEndTime());
-									if (!sliderPeriod.contains(tNow))
-									{
-										if (tNow
-												.lessThan(_myStepperProperties.getSliderStartTime()))
-											tNew = _myStepperProperties.getSliderStartTime();
-										else
-											tNew = _myStepperProperties.getSliderEndTime();
-									}
-
-									if (tNew != null)
-										_controllableTime.setTime(this, tNew, false);
-
-								}
-
-								// and set the time again - the slider has
-								// probably forgotten
-								// it.
-								timeUpdated(_myTemporalDataset.getTime());
-
-							} else
-							{
-								// we don't have an existing period - reset it
-								// from the data
-								// provided
-
-								// do we have a dataset even?
-								if (_myTemporalDataset != null)
-								{
-									TimePeriod period = _myTemporalDataset.getPeriod();
-									if (period != null)
-										_slideManager.resetRange(period.getStartDTG(), period
-												.getEndDTG());
-								}
-							}
-
+							// try to configure the sliders (the method will check
+							//   that we've received both of the required datasets,
+							//   only configuring them if both have arrived
+							configureSliders(_myStepperProperties, _myTemporalDataset);
 						}
 
 					}
@@ -1239,6 +1189,80 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					}
 				});
 
+	}
+
+	protected void configureSliders(TimeControlProperties stepperProperties,
+			TimeProvider temporalDataset)
+	{
+		if((stepperProperties != null) && (temporalDataset != null))
+		{
+			// ok, we have our data, setup the sliders
+			
+			
+			HiResDate startTime = stepperProperties.getSliderStartTime();
+			if (startTime == null)
+			{
+			}
+			else
+			{
+				// cool - update the slider to our data settings
+
+				// aaah, first check that the time period isn't
+				// greater than our
+				// data period
+				TimePeriod dataPeriod = temporalDataset.getPeriod();
+				HiResDate endTime;
+				endTime = stepperProperties.getSliderEndTime();
+
+				// trim slider start time
+				if (startTime.lessThan(dataPeriod.getStartDTG()))
+					startTime = dataPeriod.getStartDTG();
+				else if (startTime.greaterThan(dataPeriod.getEndDTG()))
+					startTime = dataPeriod.getEndDTG();
+
+				// trim slider end time
+				if (endTime.lessThan(dataPeriod.getStartDTG()))
+					endTime = dataPeriod.getStartDTG();
+				else if (endTime.greaterThan(dataPeriod.getEndDTG()))
+					endTime = dataPeriod.getEndDTG();
+
+				System.err.println("time prefs found, setting inner start to:" + startTime + " outer start to:" + dataPeriod.getStartDTG());
+
+				_slideManager.resetRange(startTime, endTime);
+				_dtgRangeSlider.updateOuterRanges(dataPeriod);
+				_dtgRangeSlider.updateSelectedRanges(startTime, endTime);
+
+				// right, trim the DTG to the current slider
+				// settings
+				HiResDate tNow = temporalDataset.getTime();
+				HiResDate tNew = null;
+				if (tNow != null)
+				{
+					TimePeriod sliderPeriod = new TimePeriod.BaseTimePeriod(
+							stepperProperties.getSliderStartTime(),
+							stepperProperties.getSliderEndTime());
+					if (!sliderPeriod.contains(tNow))
+					{
+						if (tNow
+								.lessThan(stepperProperties.getSliderStartTime()))
+							tNew = stepperProperties.getSliderStartTime();
+						else
+							tNew = stepperProperties.getSliderEndTime();
+					}
+
+					if (tNew != null)
+						_controllableTime.setTime(this, tNew, false);
+
+				}
+
+				// and set the time again - the slider has
+				// probably forgotten
+				// it.
+				timeUpdated(temporalDataset.getTime());
+
+			} 
+		
+		}
 	}
 
 	/**

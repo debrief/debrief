@@ -83,8 +83,9 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     }
     
     public void setUserMinimum(double userMinimum) {
-        userMinimum = Math.min(userMinimum, myUserMaximum);
-        userMinimum = Math.max(userMinimum, myTotalMinimum);
+    // skip these checks, our estimate is better.
+    //    userMinimum = Math.min(userMinimum, myUserMaximum);
+    //    userMinimum = Math.max(userMinimum, myTotalMinimum);
         if (userMinimum != myUserMinimum){
             myUserMinimum = userMinimum;
             fireChanged();
@@ -92,8 +93,9 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     }
 
     public void setUserMaximum(double userMaximum) {
-        userMaximum = Math.max(userMaximum, myUserMinimum);
-        userMaximum = Math.min(userMaximum, myTotalMaximum);
+      // skip these checks, our estimate is better.
+			//        userMaximum = Math.max(userMaximum, myUserMinimum);
+			//        userMaximum = Math.min(userMaximum, myTotalMaximum);
         if (userMaximum != myUserMaximum){
             myUserMaximum = userMaximum;
             fireChanged();
@@ -112,8 +114,9 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
         if (myTotalMaximum != maxValue || myTotalMinimum != minValue){
             myTotalMinimum = minValue;
             myTotalMaximum = maxValue;
-            myUserMinimum = Math.max(myUserMinimum, myTotalMinimum);
-            myUserMaximum = Math.min(myUserMaximum, myTotalMaximum);
+            // skip these checks, our estimate is better.		
+		        //    myUserMinimum = Math.max(myUserMinimum, myTotalMinimum);
+		        //    myUserMaximum = Math.min(myUserMaximum, myTotalMaximum);
             fireChanged();
         }
     }
