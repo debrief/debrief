@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site>
+   <feature url="features/org.mwc.cmap.feature_1.0.59.jar" id="org.mwc.cmap.feature" version="1.0.59">
+      <category name="cmap_features"/>
+   </feature>
    <feature url="features/org.mwc.cmap.layer_manager.feature_1.0.13.jar" id="org.mwc.cmap.layer_manager.feature" version="1.0.13">
       <category name="cmap_features"/>
    </feature>
@@ -21,25 +24,22 @@
    <feature url="features/org.mwc.cmap.static_resources.feature_1.0.3.jar" id="org.mwc.cmap.static_resources.feature" version="1.0.3">
       <category name="cmap_features"/>
    </feature>
+   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.23.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.23">
+      <category name="cmap_features"/>
+   </feature>
    <feature url="features/org.mwc.cmap.tote.feature_1.0.9.jar" id="org.mwc.cmap.tote.feature" version="1.0.9">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.xyplot.feature_1.0.9.jar" id="org.mwc.cmap.xyplot.feature" version="1.0.9">
       <category name="cmap_features"/>
    </feature>
+   <feature url="features/org.mwc.debrief.feature_1.0.63.jar" id="org.mwc.debrief.feature" version="1.0.63">
+      <category name="cmap_features"/>
+   </feature>
    <feature url="features/org.mwc.debrief.help.feature_1.0.21.jar" id="org.mwc.debrief.help.feature" version="1.0.21">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.5.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.5">
-      <category name="cmap_features"/>
-   </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.63.jar" id="org.mwc.debrief.feature" version="1.0.63">
-      <category name="cmap_features"/>
-   </feature>
-   <feature url="features/org.mwc.cmap.TimeController.feature_1.0.23.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.23">
-      <category name="cmap_features"/>
-   </feature>
-   <feature url="features/org.mwc.cmap.feature_1.0.59.jar" id="org.mwc.cmap.feature" version="1.0.59">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
