@@ -3,8 +3,11 @@
  */
 package org.mwc.cmap.core.ui_support;
 
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Set;
+import java.util.SortedSet;
 import java.util.Vector;
 
 import junit.framework.TestCase;
@@ -169,7 +172,24 @@ public class PartMonitor implements IPartListener
 			if (thisEventList.size() > 0)
 			{
 				// yup. work though and check the objects
-				Iterator iter = thisEventList.keySet().iterator();
+				Set theSet = thisEventList.keySet();
+
+				// have a go at sorting the events, so we can process them in a predictable fashion
+				Comparator myComparator = new Comparator(){
+					public int compare(Object arg0, Object arg1)
+					{
+						// the following comparison test is relied upon in order to fire
+						// the new time provider partMonitor callback before the new
+						// time control preferences callback event (all in TimeController view)
+						return arg1.toString().compareTo(arg0.toString());
+					}};
+				SortedSet ss = new java.util.TreeSet(myComparator );
+				
+				// add all the current entries
+				ss.addAll(theSet);
+				
+				// and work through them.
+				Iterator iter = ss.iterator();
 				while (iter.hasNext())
 				{
 					Class thisType = (Class) iter.next();
