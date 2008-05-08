@@ -226,7 +226,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	private TrackDataProvider.TrackDataListener _theTrackDataListener;
 
-
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
 	 * it.
@@ -347,12 +346,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					HiResDate newDTG = _slideManager.fromSliderUnits(index,
 							_dtgRangeSlider.getStepSize());
 					fireNewTime(newDTG);
-				} 
-				catch(Exception ex)
+				} catch (Exception ex)
 				{
 					System.err.println("Tripped in step forward:" + ex);
-				}
-				finally
+				} finally
 				{
 					_alreadyProcessingChange = false;
 				}
@@ -364,8 +361,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		});
 		_tNowSlider.addListener(SWT.MouseWheel, new WheelMovedEvent());
 
-		
-		/** declare the handler we use for if the user double-clicks on a slider marker
+		/**
+		 * declare the handler we use for if the user double-clicks on a slider
+		 * marker
 		 * 
 		 */
 		DoFineControl fineControl = new DoFineControl()
@@ -373,10 +371,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			public void adjust(boolean isMax)
 			{
 				doFineControl(isMax);
-			}			
+			}
 		};
 
-		
 		_dtgRangeSlider = new DTGBiSlider(_wholePanel, fineControl)
 		{
 			public void rangeChanged(TimePeriod period)
@@ -395,20 +392,22 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_dtgRangeSlider.getControl().setLayoutData(biGrid);
 	}
 
-	
-	/** user has double-clicked on one of the slider markers, allow detailed edit
+	/**
+	 * user has double-clicked on one of the slider markers, allow detailed edit
 	 * 
-	 * @param doMinVal whether it was the min or max value
+	 * @param doMinVal
+	 *          whether it was the min or max value
 	 */
 	public void doFineControl(final boolean doMinVal)
 	{
-			FineTuneStepperProps fineTunerProperties = new FineTuneStepperProps(_dtgRangeSlider, doMinVal);
-			EditableWrapper wrappedEditable = new EditableWrapper(fineTunerProperties);
-			StructuredSelection _propsAsSelection = new StructuredSelection(wrappedEditable);			
-			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
-					this, this);
-	}	
-
+		FineTuneStepperProps fineTunerProperties = new FineTuneStepperProps(
+				_dtgRangeSlider, doMinVal);
+		EditableWrapper wrappedEditable = new EditableWrapper(fineTunerProperties);
+		StructuredSelection _propsAsSelection = new StructuredSelection(
+				wrappedEditable);
+		CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
+				this, this);
+	}
 
 	/**
 	 * 
@@ -821,19 +820,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							TimePeriod timeRange = _myTemporalDataset.getPeriod();
 							if (timeRange != null)
 							{
-								// don't update the slider here, take it's value
-								// from the
-								// TimeControlPreferences
-								_slideManager.resetRange(timeRange.getStartDTG(), timeRange
-										.getEndDTG());
-
 								// and our range selector - first the outer
 								// ranges
 								_dtgRangeSlider.updateOuterRanges(timeRange);
 
-								// and now the slider positions
+								// ok, now the user ranges...
 								_dtgRangeSlider.updateSelectedRanges(timeRange.getStartDTG(),
 										timeRange.getEndDTG());
+
+								// and the time slider range
+								_slideManager.resetRange(timeRange.getStartDTG(), timeRange
+										.getEndDTG());
+
 							}
 
 							checkTimeEnabled();
@@ -1074,6 +1072,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// _myLayerPainterManager = null;
 					}
 				});
+
 		_myPartMonitor.addPartListener(TimeControlPreferences.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
@@ -1147,78 +1146,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 								startTime = _myStepperProperties.getSliderStartTime();
 								endTime = _myStepperProperties.getSliderEndTime();
 
-								// trim slider start time
-								if (startTime.lessThan(dataPeriod.getStartDTG()))
-									startTime = dataPeriod.getStartDTG();
-								else if (startTime.greaterThan(dataPeriod.getEndDTG()))
-									startTime = dataPeriod.getEndDTG();
-
-								// trim slider end time
-								if (endTime.lessThan(dataPeriod.getStartDTG()))
-									endTime = dataPeriod.getStartDTG();
-								else if (endTime.greaterThan(dataPeriod.getEndDTG()))
-									endTime = dataPeriod.getEndDTG();
-
 								_slideManager.resetRange(startTime, endTime);
 
-								// right, trim the DTG to the current slider
-								// settings
-								HiResDate tNow = _myTemporalDataset.getTime();
-								HiResDate tNew = null;
-								if (tNow != null)
-								{
-									TimePeriod sliderPeriod = new TimePeriod.BaseTimePeriod(
-											_myStepperProperties.getSliderStartTime(),
-											_myStepperProperties.getSliderEndTime());
-									if (!sliderPeriod.contains(tNow))
-									{
-										if (tNow
-												.lessThan(_myStepperProperties.getSliderStartTime()))
-											tNew = _myStepperProperties.getSliderStartTime();
-										else
-											tNew = _myStepperProperties.getSliderEndTime();
-									}
-
-									if (tNew != null)
-										_controllableTime.setTime(this, tNew, false);
-
-								}
+								// ok, set the slider ranges...
+								_dtgRangeSlider.updateSelectedRanges(startTime, endTime);
 
 								// and set the time again - the slider has
 								// probably forgotten
 								// it.
 								timeUpdated(_myTemporalDataset.getTime());
 
-							} else
-							{
-								// we don't have an existing period - reset it
-								// from the data
-								// provided
-
-								// do we have a dataset even?
-								if (_myTemporalDataset != null)
-								{
-									TimePeriod period = _myTemporalDataset.getPeriod();
-									if (period != null)
-										_slideManager.resetRange(period.getStartDTG(), period
-												.getEndDTG());
-								}
 							}
-
 						}
-
 					}
 				});
-
-		_myPartMonitor.addPartListener(TimeControlPreferences.class,
-				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
-				{
-					public void eventTriggered(String type, Object part,
-							IWorkbenchPart parentPart)
-					{
-					}
-				});
-
 	}
 
 	/**
@@ -1333,6 +1274,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	{
 		if (newDTG != null)
 		{
+			// display the correct time.
 			if (!_timeLabel.isDisposed())
 			{
 				// updating the text items has to be done in the UI thread. make
@@ -2316,6 +2258,5 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			}
 		}
 	}
-
 
 }
