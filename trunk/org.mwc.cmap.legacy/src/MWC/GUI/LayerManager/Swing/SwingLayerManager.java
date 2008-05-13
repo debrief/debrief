@@ -141,14 +141,13 @@ package MWC.GUI.LayerManager.Swing;
 // Initial revision
 //
 
-import MWC.GUI.*;
-import MWC.GUI.Properties.PlainPropertyEditor;
-import MWC.GUI.Properties.Swing.SwingCustomEditor;
-import MWC.GUI.Tools.Chart.RightClickEdit;
-
-import javax.swing.*;
-import javax.swing.tree.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.FontMetrics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
@@ -156,12 +155,43 @@ import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Hashtable;
-import java.util.Vector;
+
+import javax.swing.AbstractCellEditor;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
+import javax.swing.JScrollPane;
+import javax.swing.JTree;
+import javax.swing.UIManager;
+import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellEditor;
+import javax.swing.tree.TreeCellEditor;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
+
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.PlainPropertyEditor;
+import MWC.GUI.Properties.Swing.SwingCustomEditor;
+import MWC.GUI.Tools.Chart.RightClickEdit;
+import MWC.GUI.Tools.Chart.RightClickEdit.PlottableMenuCreator;
 
 public class SwingLayerManager extends SwingCustomEditor implements Layers.DataListener,
   MWC.GUI.Properties.NoEditorButtons, PlainPropertyEditor.EditorUsesToolParent
 {
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
   /**
@@ -186,7 +216,7 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
    */
   protected javax.swing.JScrollPane _myPane;
 
-  protected Hashtable _myNodes = new Hashtable();
+  protected Hashtable<?,?> _myNodes = new Hashtable();
 
   /**
    * the name we give to the root layer
@@ -425,7 +455,7 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
     // see if we have found one!
     if (thePlottable != null)
     {
-      Vector extras = _myData.getEditor().getExtraPlottableEditors(getPanel());
+    	java.util.Vector<PlottableMenuCreator> extras = _myData.getEditor().getExtraPlottableEditors(getPanel());
       thePopup = RightClickEdit.createMenuFor(thePlottable,
                                               thePoint,
                                               getChart().getCanvas(),
@@ -555,7 +585,7 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
     DefaultMutableTreeNode thisL = new PlottableNode(thisLayer, theTopLayer);
 
     // and work through the elements of this layer
-    Enumeration enumer = thisLayer.elements();
+    Enumeration<Editable> enumer = thisLayer.elements();
     if (enumer != null)
     {
       while (enumer.hasMoreElements())
@@ -713,7 +743,11 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
    */
   private static class PlottableRenderer extends javax.swing.tree.DefaultTreeCellRenderer
   {
-    protected JCheckBox checkBox = new JCheckBox("");
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected JCheckBox checkBox = new JCheckBox("");
     private Component strut = Box.createHorizontalStrut(5);
     private JPanel panel = new JPanel();
     private int _xOffset = 0;
@@ -861,7 +895,11 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
 
   class PlottableNodeEditor extends AbstractCellEditor implements TreeCellEditor
   {
-    PlottableNodeEditorRenderer renderer;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		PlottableNodeEditorRenderer renderer;
     DefaultMutableTreeNode lastEditedNode;
     JCheckBox checkBox;
 
@@ -903,7 +941,12 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
   //  class PlottableNodeEditorRenderer extends FileNodeRenderer {
   class PlottableNodeEditorRenderer extends PlottableRenderer
   {
-    public Component getTreeCellRendererComponent(JTree tree, Object value,
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public Component getTreeCellRendererComponent(JTree tree, Object value,
                                                   boolean selected, boolean expanded,
                                                   boolean leaf, int row,
                                                   boolean hasFocus)
@@ -926,7 +969,11 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
    */
   private class PlottableNode extends javax.swing.tree.DefaultMutableTreeNode
   {
-    private Layer _theParentLayer = null;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private Layer _theParentLayer = null;
 
     /**
      * Creates a tree node with no parent, no children, but which allows

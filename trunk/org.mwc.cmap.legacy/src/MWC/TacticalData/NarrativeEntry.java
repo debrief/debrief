@@ -9,11 +9,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 import MWC.GUI.Editable;
+import MWC.GUI.ExcludeFromRightClickEdit;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class NarrativeEntry implements java.lang.Comparable,
-        MWC.GUI.Plottable, Serializable
+        MWC.GUI.Plottable, Serializable, ExcludeFromRightClickEdit
 {
     // ///////////////////////////////////////////
     // member variables

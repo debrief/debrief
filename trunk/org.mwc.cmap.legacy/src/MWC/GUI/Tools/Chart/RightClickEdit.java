@@ -173,22 +173,37 @@ package MWC.GUI.Tools.Chart;
 // Initial revision
 //
 
-import MWC.GUI.*;
-import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Undo.UndoBuffer;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
-import java.beans.*;
+import java.beans.BeanDescriptor;
+import java.beans.BeanInfo;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
 import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
+
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Undo.UndoBuffer;
 
 public class RightClickEdit implements PlainChart.ChartClickListener, Serializable
 {
@@ -205,7 +220,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	/**
 	 * list of additional classes which we invite to extend our pop up menu
 	 */
-	Vector _theExtras;
+	Vector<MenuCreator> _theExtras;
 
 	/**
 	 * this static hashtable contains multiple lists of plottable extras, indexed
@@ -213,7 +228,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	 * additional classes which are able to extend the popup menu once a Plottable
 	 * has been selected
 	 */
-	private Hashtable _thePlottableExtras;
+	private Hashtable<PropertiesPanel, Vector<PlottableMenuCreator>> _thePlottableExtras;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -221,8 +236,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	public RightClickEdit(PropertiesPanel thePanel)
 	{
 		_thePanel = thePanel;
-		_theExtras = new Vector(0, 1);
-		_thePlottableExtras = new Hashtable();
+		_theExtras = new Vector<MenuCreator>(0, 1);
+		_thePlottableExtras = new Hashtable<PropertiesPanel, Vector<PlottableMenuCreator>>();
 	}
 
 	// ///////////////////////////////////////////////////////////
@@ -232,9 +247,9 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	/**
 	 * get the list of extra editors which we know about
 	 */
-	public java.util.Vector getExtraPlottableEditors(PropertiesPanel thePanel)
+	public java.util.Vector<PlottableMenuCreator> getExtraPlottableEditors(PropertiesPanel thePanel)
 	{
-		return (Vector) _thePlottableExtras.get(thePanel);
+		return (Vector<PlottableMenuCreator>) _thePlottableExtras.get(thePanel);
 	}
 
 	public void addMenuCreator(MenuCreator mn)
@@ -250,20 +265,20 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	public void addPlottableMenuCreator(PlottableMenuCreator mn, PropertiesPanel thePanel)
 	{
 		// see if we have a list for this panel
-		Object obj = _thePlottableExtras.get(thePanel);
-		Vector vt = null;
+		Vector<PlottableMenuCreator> obj = _thePlottableExtras.get(thePanel);
+		Vector<PlottableMenuCreator> vt = null;
 
 		if (obj == null)
 		{
 			// we've got to make one
-			vt = new Vector(0, 1);
+			vt = new Vector<PlottableMenuCreator>(0, 1);
 
 			// and add it to our list
 			_thePlottableExtras.put(thePanel, vt);
 		}
 		else
 		{
-			vt = (Vector) obj;
+			vt = obj;
 		}
 
 		// now put the menu creator into the vector
@@ -273,11 +288,10 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	public void removePlottableMenuCreator(PlottableMenuCreator mn, PropertiesPanel thePanel)
 	{
 		// see if we have a list for this panel
-		Object oj = _thePlottableExtras.get(thePanel);
+		Vector<PlottableMenuCreator> oj = _thePlottableExtras.get(thePanel);
 		if (oj != null)
 		{
-			Vector vt = (Vector) oj;
-			vt.removeElement(mn);
+			oj.removeElement(mn);
 		}
 	}
 
@@ -289,7 +303,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 		public Layer parent = null;
 
-		public java.util.Vector rangeIndependent;
+		public java.util.Vector<Plottable> rangeIndependent;
 
 		public void setData(Plottable p, double dist, Layer l)
 		{
@@ -301,7 +315,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		public void addRangeIndependent(Plottable p)
 		{
 			if (rangeIndependent == null)
-				rangeIndependent = new Vector(1, 1);
+				rangeIndependent = new Vector<Plottable>(1, 1);
 			rangeIndependent.add(p);
 		}
 	}
@@ -313,7 +327,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		if (thisLayer.getVisible())
 		{
 			// go through this layer
-			Enumeration enumer = thisLayer.elements();
+			Enumeration<Editable> enumer = thisLayer.elements();
 
 			// check something got returned
 			if (enumer != null)
@@ -365,8 +379,14 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 								else
 								{
 									// not range related, add to our list of non-location related
-									// entities
-									currentNearest.addRangeIndependent(p);
+									// entities (unless it's a type we specifically exclude from
+									//  right-click editing, like Narrative Entries)
+									if(p instanceof ExcludeFromRightClickEdit)
+									{
+										// just ignore it, we don't want to show it.
+									}
+									else
+										currentNearest.addRangeIndependent(p);
 								}
 							}
 							else
@@ -393,7 +413,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		double dist = 0;
 
 		// keep track of editable items which don't have a screen location
-		Vector noPoints = new Vector(0, 1);
+		Vector<Plottable> noPoints = null;
 
 		// we also want to find which layer contained the nearest item - so we know
 		// to update that layer
@@ -449,7 +469,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		// plottable
 		if (res == null)
 		{
-			Enumeration creators = _theExtras.elements();
+			Enumeration<MenuCreator> creators = _theExtras.elements();
 			while (creators.hasMoreElements())
 			{
 				MenuCreator mc = (MenuCreator) creators.nextElement();
@@ -461,7 +481,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		if ((noPoints != null) && ( res == null))
 		{
 
-			Enumeration pts = noPoints.elements();
+			Enumeration<Plottable> pts = noPoints.elements();
 			while (pts.hasMoreElements())
 			{
 				Plottable p = (Plottable) pts.nextElement();
@@ -508,10 +528,10 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	protected JPopupMenu createMenu(Plottable data, Point thePoint, Layer theParent,
 			CanvasType theCanvas, Layers theLayers, Layer updateLayer)
 	{
-		Vector oj = null;
+		Vector<PlottableMenuCreator> oj = null;
 
 		if (_thePlottableExtras != null)
-			oj = (Vector) _thePlottableExtras.get(_thePanel);
+			oj =  _thePlottableExtras.get(_thePanel);
 
 		JPopupMenu res = createMenuFor(data, thePoint, theCanvas, theParent, _thePanel,
 				theLayers, oj, updateLayer);
@@ -522,7 +542,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 	static public JPopupMenu createMenuFor(Editable data, Point thePoint,
 			CanvasType theCanvas, Layer theParent, PropertiesPanel thePanel, Layers theLayers,
-			Vector extras, Layer updateLayer)
+			java.util.Vector<PlottableMenuCreator> extras, Layer updateLayer)
 	{
 
 		// change the panel parameter to be a final
@@ -669,7 +689,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 				pi.addSeparator();
 
-				Enumeration creators = extras.elements();
+				Enumeration<PlottableMenuCreator> creators = extras.elements();
 				while (creators.hasMoreElements())
 				{
 					PlottableMenuCreator mc = (PlottableMenuCreator) creators.nextElement();
@@ -816,8 +836,8 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 			for (int i = 0; i < props.length; i++)
 			{
 				PropertyDescriptor prop = props[i];
-				Class thisType = prop.getPropertyType();
-				Class boolClass = Boolean.class;
+				Class<?> thisType = prop.getPropertyType();
+				Class<?> boolClass = Boolean.class;
 				if ((thisType == boolClass) || (thisType.equals(boolean.class)))
 				{
 					// hey we've found one
@@ -828,7 +848,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 						// get the current value
 						Method getter = prop.getReadMethod();
 						Method setter = prop.getWriteMethod();
-						Object val = getter.invoke(theItem, null);
+						Object val = getter.invoke(theItem,(Object[]) null);
 						boolean current = ((Boolean) val).booleanValue();
 						cm.setState(current);
 
@@ -908,10 +928,10 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 
 				// find out the type of the editor
 				Method m = prop.getReadMethod();
-				Class cl = m.getReturnType();
+				Class<?> cl = m.getReturnType();
 
 				// is there a custom editor for this type?
-				Class c = prop.getPropertyEditorClass();
+				Class<?> c = prop.getPropertyEditorClass();
 
 				// try to create an editor for this class
 				try
@@ -936,7 +956,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 				{
 					// just check that we haven't already created a
 					// boolean editor for this field already
-					Class boolClass = Boolean.class;
+					Class<?> boolClass = Boolean.class;
 					if ((cl != boolClass) && (!cl.equals(boolean.class)))
 					{
 
@@ -957,7 +977,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 							Object val = null;
 							try
 							{
-								val = getter.invoke(theItem, null);
+								val = getter.invoke(theItem, (Object[])null);
 							}
 							catch (Exception e)
 							{
@@ -1142,7 +1162,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		{
 			try
 			{
-				_myMethod.invoke(_myData, null);
+				_myMethod.invoke(_myData, (Object[])null);
 				_theCanvas.updateMe();
 				// inform the object that we've updated it.
 				_theEditable.getInfo().fireChanged(this, _myMethod.toString(), null, null);
