@@ -2,11 +2,11 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.59"
+      version="1.0.60"
       provider-name="MWC">
 
    <description>
-      [1.0.59] Reliable cycle through PartMonitor items in order [1.0.58] Correct list of available line styles [1.0.57] Scale
+     [1.0.60] Don't show narratives in right click popup [1.0.59] Reliable cycle through PartMonitor items in order [1.0.58] Correct list of available line styles [1.0.57] Scale
 wmf text up a little (30%) [1.0.56] Fix using legacy polyline
 plotter from new signature [1.0.55] Refactor narrative provider
 class [1.0.54] Another icon - for the narrative viewer [1.0.53]
