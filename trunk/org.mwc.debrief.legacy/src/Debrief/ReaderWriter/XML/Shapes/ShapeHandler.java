@@ -27,6 +27,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   private java.awt.Font _font = null;
   private Integer _theLocation = null;;
   private Integer _lineStyle = null;
+  private Integer _lineThickness = null;
   private java.awt.Color _fontCol = null;
   private boolean _isVisible = false;
   private boolean _labelVisible = true;
@@ -46,6 +47,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   private static final String LABEL_TEXT = "Label";
   private static final String FONT_COLOUR = "fontcolour";
   private static final String LINE_STYLE = "LineStyle";
+  private static final String LINE_THICKNESS = "LineThickness";
 
   public ShapeHandler(String type)
   {
@@ -113,6 +115,14 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
       }
     });
 
+    addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
+    {
+      public void setValue(String name, int value)
+      {
+        _lineThickness = new Integer(value);
+      }
+    });
+
 
     addAttributeHandler(new HandleBooleanAttribute(SHAPE_VISIBLE)
     {
@@ -168,6 +178,11 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     {
     	sw.setLineStyle(_lineStyle.intValue());
     }
+    // line width?
+    if(_lineThickness != null)
+    {
+    	sw.setLineThickness(_lineThickness.intValue());
+    }
     sw.setVisible(_isVisible);
     sw.setLabelVisible(_labelVisible);
     
@@ -183,6 +198,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     _theLocation = null;
     _isVisible = true;
     _lineStyle = null;
+    _lineThickness = null;
   }
 
   protected abstract MWC.GUI.Shapes.PlainShape getShape();
@@ -216,6 +232,9 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     {
       theShape.setAttribute(LINE_STYLE, writeThis(sw.getLineStyle()));
     }
+    
+    // and output the line thickness
+    theShape.setAttribute(LINE_THICKNESS, writeThis(sw.getLineThickness()));
 
     // and the font
     java.awt.Font theFont = sw.getFont();
