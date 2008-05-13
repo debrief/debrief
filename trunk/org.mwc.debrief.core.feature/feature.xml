@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.63">
+      version="1.0.64">
 
    <description>
-      [1.0.63] Store &amp; use slider start/end settings when reopening file
+      [1.0.64] Store &amp; use line thickness for annotations
+[1.0.63] Store &amp; use slider start/end settings when reopening
+file
 [1.0.62] Fix for time threshold around text label in Snail
 [1.0.61] Fix time stepper not moving forward
 [1.0.60] More robust string retrieval for ShapeWrapper in Snail
