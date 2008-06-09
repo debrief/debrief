@@ -5,7 +5,8 @@
       version="1.0.64">
 
    <description>
-      [1.0.64] Store &amp; use line thickness for annotations
+      [1.0.65] Plot TUAs &amp; Bearing before track in TrackWrapper - since large volume of bearings was hiding track
+[1.0.64] Store &amp; use line thickness for annotations
 [1.0.63] Store &amp; use slider start/end settings when reopening
 file
 [1.0.62] Fix for time threshold around text label in Snail
