@@ -519,8 +519,7 @@ public class XYPlotView extends ViewPart
 		}
 		catch (Exception e)
 		{
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			MWC.Utilities.Errors.Trace.trace(e, "Whilst writing WMF to clipboard");
 		}
 
 	}
@@ -635,7 +634,13 @@ public class XYPlotView extends ViewPart
 		{
 			public void run()
 			{
-				_thePlot.zoom(0.0);
+				try{
+					_thePlot.zoom(0.0);
+				}
+				catch(Exception e)
+				{
+					MWC.Utilities.Errors.Trace.trace(e, "whilst performing resize after loading new plot");
+				}
 			}
 		};
 		_fitToWindow.setText("Fit to window");
