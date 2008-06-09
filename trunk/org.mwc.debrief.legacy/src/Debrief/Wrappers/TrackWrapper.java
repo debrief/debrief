@@ -720,7 +720,41 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// and set the initial colour for this track
 			dest.setColor(getColor());
+			
 
+			// /////////////////////////////////////////////
+			// firstly plot the solutions
+			// /////////////////////////////////////////////
+			if (_mySolutions != null)
+			{
+				final Enumeration<TMAWrapper> iter = _mySolutions.elements();
+				while (iter.hasMoreElements())
+				{
+					final TMAWrapper sw = iter.nextElement();
+					sw.paint(dest);
+
+				} // through the solutions
+			} // whether we have any solutions
+
+			// /////////////////////////////////////////////
+			// now plot the sensors
+			// /////////////////////////////////////////////
+			if (_mySensors != null)
+			{
+				final Enumeration<SensorWrapper> iter = _mySensors.elements();
+				while (iter.hasMoreElements())
+				{
+					final SensorWrapper sw = iter.nextElement();
+					sw.paint(dest);
+
+				} // through the sensors
+			} // whether we have any sensors			
+			
+
+			// /////////////////////////////////////////////
+			// and now the track itself
+			// /////////////////////////////////////////////
+			
 			// is our points store long enough?
 			if ((_myPts == null) || (_myPts.length < numFixes() * 2))
 			{
@@ -898,34 +932,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					} // if the label has a location
 				}
 			} // if the label is visible
-
-			// /////////////////////////////////////////////
-			// now plot the solutions
-			// /////////////////////////////////////////////
-			if (_mySolutions != null)
-			{
-				final Enumeration<TMAWrapper> iter = _mySolutions.elements();
-				while (iter.hasMoreElements())
-				{
-					final TMAWrapper sw = iter.nextElement();
-					sw.paint(dest);
-
-				} // through the sensors
-			} // whether we have any sensors
-
-			// /////////////////////////////////////////////
-			// lastly plot the sensors
-			// /////////////////////////////////////////////
-			if (_mySensors != null)
-			{
-				final Enumeration<SensorWrapper> iter = _mySensors.elements();
-				while (iter.hasMoreElements())
-				{
-					final SensorWrapper sw = iter.nextElement();
-					sw.paint(dest);
-
-				} // through the sensors
-			} // whether we have any sensors
 
 		} // if visible
 	}
