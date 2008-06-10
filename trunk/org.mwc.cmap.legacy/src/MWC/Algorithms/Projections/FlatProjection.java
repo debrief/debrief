@@ -206,11 +206,12 @@ public class FlatProjection extends PlainProjection implements Serializable {
 
           // find the width and height of the data
           // we've got to calculate the new scale
+        	double thisBorder = getDataBorder();
 
           // find the x scale factor
-          double dx = (getDataArea().getWidth() * getDataBorder()) / getScreenArea().width;
+          double dx = (getDataArea().getWidth() * thisBorder) / getScreenArea().width;
           // find the y scale factor
-          double dy = (getDataArea().getHeight() * getDataBorder()) / getScreenArea().height;
+          double dy = (getDataArea().getHeight() * thisBorder) / getScreenArea().height;
 
           // find the maximum of these
           _scaleVal = Math.max(dx, dy);

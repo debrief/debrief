@@ -275,6 +275,15 @@ abstract public class PlainProjection implements Serializable,
     zoom(0d);
 
   }
+  
+  /** allow the border to be set without triggering a zoom operation
+   * 
+   * @param theBorder the new border to use..
+   */
+  public void setDataBorderNoZoom(double theBorder)
+  {
+  	_dataBorder = theBorder;
+  }
 
   /**
    * produce a relative plot
