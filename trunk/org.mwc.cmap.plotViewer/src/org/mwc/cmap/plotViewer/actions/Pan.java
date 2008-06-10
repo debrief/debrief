@@ -156,10 +156,10 @@ public class Pan extends CoreDragAction
 		protected void setNewArea(PlainProjection proj, WorldArea theArea)
 		{
 			double oldBorder = proj.getDataBorder();
-			proj.setDataBorder(1.0);
+			proj.setDataBorderNoZoom(1.0);
 			proj.setDataArea(theArea);
 			proj.zoom(0.0);
-			proj.setDataBorder(oldBorder);
+			proj.setDataBorderNoZoom(oldBorder);
 		}
 
 		/** ok, assign the cursor for when we're just hovering
