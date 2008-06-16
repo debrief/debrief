@@ -18,9 +18,6 @@
    <feature url="features/org.mwc.cmap.plot3d.feature_1.0.9.jar" id="org.mwc.cmap.plot3d.feature" version="1.0.9">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.20.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.20">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.static_resources.feature_1.0.3.jar" id="org.mwc.cmap.static_resources.feature" version="1.0.3">
       <category name="cmap_features"/>
    </feature>
@@ -40,6 +37,9 @@
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.5.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.5">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.21.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.21">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
