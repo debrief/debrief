@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.20">
+      version="1.0.21">
 
    <description>
-      [1.0.20] Allow us to not perform zoom when data border is set - if we don&apos;t want to
+      [1.0.21] Fix for supporting multiple mouse position trackers
+[1.0.20] Allow us to not perform zoom when data border is set
+- if we don&apos;t want to
 [1.0.19] Improved performance of plotting very long tracks
 [1.0.18] Persist value of last measured range/bearing
 [1.0.17] Show two decimal places for measured range bearing
