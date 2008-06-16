@@ -106,8 +106,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	Label _myLabel;
 
-	private CursorTracker _myTracker;
-
 	protected DataListener _listenForMods;
 
 	private boolean _ignoreDirtyCalls;
@@ -181,10 +179,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 		// stop listening to the time manager
 		_timeManager.removeListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
-
-		// and clear the tracker
-		_myTracker.close();
-		_myTracker = null;
 		
 		_myRngBrg.close();
 		_myRngBrg = null;
@@ -240,9 +234,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		});
 
 		getSite().setSelectionProvider(this);
-
-		// ok, create the lat-long tracker
-		_myTracker = new CursorTracker(_myChart,  this);
 		
 		// and the range bearing tracker
 		_myRngBrg = RangeBearing.getPanel(this);
@@ -273,7 +264,11 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				ActionFactory.COPY.getId(),
 				_copyClipboardAction);			
 		
+		// listen out for us losing focus - so we can drop the selection
 		listenForMeLosingFocus();
+		
+		// listen out for us gaining focus - so we can set the cursort tracker
+		listenForMeGainingFocus();
 	}
 	
 
@@ -287,7 +282,22 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 				if(isMe)
 					_currentSelection = null;
 			}});
+	}
 
+	private void listenForMeGainingFocus()
+	{
+		final EditorPart linkToMe = this;
+		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow().getPartService());
+		_myPartMonitor.addPartListener(CorePlotEditor.class, PartMonitor.ACTIVATED, new PartMonitor.ICallback(){
+			public void eventTriggered(String type, Object instance, IWorkbenchPart parentPart)
+			{
+				boolean isMe = checkIfImTheSameAs(instance);
+				if(isMe)
+				{
+					// tell the cursor track that we're it's bitch.
+					CursorTracker.trackThisChart(_myChart, linkToMe);
+				}
+			}});
 	}
 	
 	private boolean checkIfImTheSameAs(Object target)
@@ -625,9 +635,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			if (_selectionListeners != null)
 			{
 				SelectionChangedEvent sEvent = new SelectionChangedEvent(this, sel);
-				for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+				for (Iterator<ISelectionChangedListener> stepper = _selectionListeners.iterator(); stepper.hasNext();)
 				{
-					ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+					ISelectionChangedListener thisL = stepper.next();
 					if (thisL != null)
 					{
 						thisL.selectionChanged(sEvent);
