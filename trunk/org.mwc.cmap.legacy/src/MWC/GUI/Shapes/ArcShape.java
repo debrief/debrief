@@ -198,6 +198,7 @@ public class ArcShape extends CircleShape implements Serializable, Editable
     _centreBearing = centreBearing;
     _arcWidth = arcWidth;
     _plotOrigin = plotOrigin;
+    _plotSpokes = plotSpokes;
 
     // now represented our arc as an area
     calcPoints();
