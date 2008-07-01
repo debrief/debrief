@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.61"
+      version="1.0.62"
       provider-name="MWC">
 
    <description>
-      [1.0.61] Don&apos;t zoom out at start/end of pan operation
+      [1.0.62] Load plot spokes property when reading in saved Arc
+[1.0.61] Don&apos;t zoom out at start/end of pan operation
 [1.0.60] Don&apos;t show narratives in right click popup [1.0.59]
 Reliable cycle through PartMonitor items in order [1.0.58] Correct
 list of available line styles [1.0.57] Scale
