@@ -6,7 +6,7 @@
    <feature url="features/org.mwc.cmap.layer_manager.feature_1.0.13.jar" id="org.mwc.cmap.layer_manager.feature" version="1.0.13">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.8.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.8">
+   <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.9.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.9">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.cmap.overview.feature_1.0.5.jar" id="org.mwc.cmap.overview.feature" version="1.0.5">
