@@ -163,7 +163,14 @@ public class NarrativeViewer extends KTable {
         
         // ok, try to select this entry
         if(theIndex > -1)
-            super.setSelection(1, theIndex + 1, true);
+        {
+        	// to make sure the desired entry is fully visible (even if it's a multi-line one),
+        	// select the entry after our target one, then our target entry.
+          super.setSelection(1, theIndex + 2, true);
+          
+          // right, it's currently looking at the entry after our one.  Now select our one.
+          super.setSelection(1, theIndex + 1, true);
+        }
 
     }
 }
