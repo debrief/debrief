@@ -52,7 +52,7 @@
          </property>
          <property
                name="aboutImage"
-               value="platform:/plugin/org.mwc.debrief.core/icons/new_logo2.gif">
+               value="icons/WorkBenchLogo.gif">
          </property>
          <property
                name="appName"
