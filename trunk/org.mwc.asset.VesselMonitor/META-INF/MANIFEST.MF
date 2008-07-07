@@ -7,11 +7,10 @@ Bundle-Activator: org.mwc.asset.vesselmonitor.Activator
 Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
+ org.eclipse.draw2d,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy,
- org.mwc.asset.core,
- org.mwc.asset.legacy,
- org.eclipse.draw2d
+ org.mwc.asset.legacy
 Eclipse-LazyStart: true
 Bundle-ClassPath: .,
  images/
