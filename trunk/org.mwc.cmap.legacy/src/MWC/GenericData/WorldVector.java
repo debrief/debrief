@@ -102,7 +102,9 @@ import junit.framework.TestCase;
 
 import java.io.Serializable;
 
-
+/**
+ * class which represents a vector offset in 3 dimensions
+ */
 public final class WorldVector implements Serializable, Cloneable
 {
 
