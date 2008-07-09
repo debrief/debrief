@@ -20,6 +20,9 @@
 
    <windowImages i16="/org.mwc.asset.core/icons/components.gif"/>
 
+   <splash
+      location="org.mwc.asset.core"
+      startupProgressRect="5,275,445,15" />
    <launcher name="AssetNG">
       <solaris/>
       <win useIco="true">
