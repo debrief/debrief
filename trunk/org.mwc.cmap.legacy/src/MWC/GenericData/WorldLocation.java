@@ -386,6 +386,14 @@ public class WorldLocation implements Serializable, Cloneable
     return res.getRange();
   }
 
+  /** calculate the range from the nearest point on the suppled line
+   * @return the range
+   */
+  final public WorldDistance rangeFrom(WorldLocation lineStart, WorldLocation lineEnd)
+  {
+	  return perpendicularDistanceBetween(lineStart, lineEnd);
+  }
+  
   /**
    * calculate the bearing from the other point (rads)
    *
@@ -603,6 +611,9 @@ public class WorldLocation implements Serializable, Cloneable
       res = me.perpendicularDistanceBetween(p1, p2);
       assertEquals("off-track error is correct", 4.9497, res.getValueIn(WorldDistance.DEGS), 0.001);
 
+      res = me.rangeFrom(p1, p2);
+      assertEquals("off-track error is correct (using range from operator)", 4.9497, res.getValueIn(WorldDistance.DEGS), 0.001);
+      
     }
 
 

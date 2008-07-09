@@ -224,10 +224,10 @@ public final class BasicTooltipHandler implements CanvasType.TooltipHandler
       // is it visible?
       if (l.getVisible())
       {
-        final java.util.Enumeration enumer = l.elements();
+        final java.util.Enumeration<Editable> enumer = l.elements();
         while (enumer.hasMoreElements())
         {
-          Editable next = (Editable) enumer.nextElement();
+          Editable next = enumer.nextElement();
           if (next instanceof Plottable)
           {
             final Plottable this_plottable = (Plottable) next;

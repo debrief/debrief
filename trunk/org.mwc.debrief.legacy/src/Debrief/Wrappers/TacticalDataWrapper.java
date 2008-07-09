@@ -24,7 +24,12 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   SnailDrawTacticalContact.HostedList
 {
 
-  ////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	////////////////////////////////////////
   // member variables
   ////////////////////////////////////////
   /**
@@ -211,7 +216,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
    * We don't search through our child objects, the searching algorithms do that for themselves,
    * since we are a layer
    */
-  public final double rangeFrom(final MWC.GenericData.WorldLocation other)
+  public double rangeFrom(final MWC.GenericData.WorldLocation other)
   {
     double res = -1;
     if (!getVisible())

@@ -287,6 +287,15 @@ public final class SensorWrapper extends TacticalDataWrapper
   {
     return "Sensor:" + getName() + " (" + _myContacts.size() + " items)";
   }
+  
+  /** how far away are we from this point?
+   * or return null if it can't be calculated
+   */
+  public final double rangeFrom(final WorldLocation other)
+  {
+  	// and convert back to degrees
+  	return nearestContact.rangeFrom(other);
+  }  
 
   ///////////////////////////////////////////////////////////////////
   // support for WatchableList interface (required for Snail Trail plotting)

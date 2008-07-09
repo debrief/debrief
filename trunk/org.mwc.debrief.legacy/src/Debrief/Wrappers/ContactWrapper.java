@@ -346,10 +346,11 @@ public final class ContactWrapper extends MWC.GUI.PlainWrapper implements Serial
    */
   public final double rangeFrom(final WorldLocation other)
   {
-    // calculate the start and end points
-    return Math.min(other.rangeFrom(getStart()),
-                    other.rangeFrom(getEnd()));
-
+  	// calculate the perpendicular distance from this line
+  	WorldDistance theDist = other.rangeFrom(getStart(), getEnd());
+  	
+  	// and convert back to degrees
+  	return theDist.getValueIn(WorldDistance.DEGS);
   }
 
 

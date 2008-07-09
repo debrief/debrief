@@ -682,12 +682,11 @@ public final class SensorContactWrapper extends
 			if (farEnd != null)
 				res = Math.min(res, farEnd.rangeFrom(other));
 
-			// lastly determine the range from the middle (since the end points are
-			// normally over tracks anyway)
+			// lastly determine the range from the nearest point on the track
 			if ((_origin != null) && (farEnd != null))
 			{
-				final WorldArea area = new WorldArea(_origin, farEnd);
-				res = Math.min(res, area.getCentre().rangeFrom(other));
+				WorldDistance dist = other.rangeFrom(_origin, farEnd);
+				res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
 			}
 		}
 

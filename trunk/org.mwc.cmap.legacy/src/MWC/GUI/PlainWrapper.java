@@ -336,7 +336,8 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
     /**
      * Determine how far away we are from this point or return INVALID_RANGE if
-     * it can't be calculated
+     * it can't be calculated 
+     * @return distance in floating point degrees
      */
     public double rangeFrom(MWC.GenericData.WorldLocation other)
     {
