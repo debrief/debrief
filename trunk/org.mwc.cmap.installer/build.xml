@@ -4,7 +4,7 @@
     <property name="linuxDist" value="${deployDir}/Debrief.zip" description="the name for the linux/debrief dist (without JRE)" />
 
 	<!-- path to the installer (exec command won't take relative path reference -->
-	<property name="advancedInstallerPath" value="C:\Program Files\Caphyon\Advanced Installer 6.2" />
+	<property name="advancedInstallerPath" value="C:\Program Files\Caphyon\Advanced Installer 6.4" />
 
 	<!-- and the zip support filenames -->
     <property name="zipName" value="update.zip"/>
@@ -28,13 +28,19 @@
 				<available file="${deployDir}\..\org.mwc.debrief.help\html\legacy\index.html" />
 			</and>
 		</condition>
+		<condition property="output_present">
+			<and>
+				<!-- start with the output folder -->
+				<available type="dir" file="${distDir}" /> 
+			</and>
+		</condition>
 		<condition property="eclipse_present">
 			<and>
 				<!-- now eclipse itself -->
-				<available file="${distDir}\DebriefNG.exe" />
-				<available file="${distDir}\features\org.eclipse.platform_3.3.2.R33x_v20071022-_19UEksF-G8Yc6bUv3Dz" />
-				<available file="${distDir}\features\org.eclipse.rcp_3.3.2.R33x_r20071022-8y8eE9CEV3FspP8HJrY1M2dS" />
-				<!-- now eclipse itself -->
+				<available file="${distDir}\DebriefNG.exe" /> 
+				<available type="dir" file="${distDir}\features\org.eclipse.platform_3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M" />
+				<available type="dir" file="${distDir}\features\org.eclipse.rcp_3.4.0.v20080324a-989JERhEk-jWnd5IY8K5tjxB" />
+				<!--	 now eclipse itself -->
 			</and>
 		</condition>
 		<condition property="static_present">
@@ -54,9 +60,9 @@
 		<condition property="debrief_present">
 			<and>
 				<!-- first the plugins -->
-				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.33" />
+				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.39" />
 				<!-- now the features -->
-				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.57" />
+				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.64" />
 				<available file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.13" />
 				<available file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.5" />
 				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.9" />
@@ -64,6 +70,7 @@
 		</condition>
 
 		<fail message="the help files have not been built" unless="help_present" />
+		<fail message="the output folder (DebriefNG) isn't there" unless="output_present" />
 		<fail message="some eclipse files are missing" unless="eclipse_present" />
 		<fail message="some static lib files are missing" unless="static_present" />
 		<fail message="some debrief files are missing" unless="debrief_present" />
@@ -72,12 +79,20 @@
 	<target name="build_installer" description="do installer" if="do.installer" depends="">
 		<!-- check everything's in the dist -->
 		<echo message="checking the dist" />
-		<antcall target="check_the_dist" />
+		<antcall target="check_the_dist" /> 
+		
+		<echo message="deleting the old installer"/>
+		<delete file="${deployDir}\InstallDebrief.exe" ></delete>
 
+		
 		<echo message="building the dist" />
 		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
 			<arg line="/build ng_installer_settings.aip" />
 		</exec>
+			<sound>
+			   <success source="C:\windows\media\tada.wav"/>
+			   <fail source="C:\windows\media\Windows XP Critical Stop.wav"/>
+			</sound>			
 	</target>
 
 	<target name="prepareUpdateToZip" description="copy updates to zipDrv" if="do.zipDrive" depends="">
@@ -188,6 +203,10 @@
 		<!-- all complete -->
 		<echo message="All copied.  Dist complete" />
 
+		<sound>
+		   <success source="C:\windows\media\tada.wav"/>
+		   <fail source="C:\windows\media\Windows XP Critical Stop.wav"/>
+		</sound>
 	</target>
 
 	<target name="copyInstallToInternet" description="Copy installer to Internet">

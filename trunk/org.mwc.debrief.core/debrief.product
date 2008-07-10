@@ -41,9 +41,9 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.rcp" version="3.4.0.v20080324a-989JERhEk-jWnd5IY8K5tjxB"/>
       <feature id="org.eclipse.platform" version="3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M"/>
-      <feature id="org.mwc.cmap.feature" version="1.0.63"/>
+      <feature id="org.eclipse.rcp" version="3.4.0.v20080324a-989JERhEk-jWnd5IY8K5tjxB"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.64"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.13"/>
       <feature id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.overview.feature" version="1.0.5"/>
@@ -53,7 +53,7 @@
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.23"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.10"/>
-      <feature id="org.mwc.debrief.feature" version="1.0.64"/>
+      <feature id="org.mwc.debrief.feature" version="1.0.66"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.21"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.5"/>
    </features>
