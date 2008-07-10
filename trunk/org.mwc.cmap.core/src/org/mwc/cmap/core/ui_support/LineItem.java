@@ -57,7 +57,9 @@ public class LineItem extends ControlContribution
 
 	public void setText(String val)
 	{
-		label.setText(val);
+		// handle strange instance where we don't yet have a label.
+		if(label != null)
+			label.setText(val);
 
 		_lastText = val;
 	}
