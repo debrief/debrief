@@ -8,6 +8,8 @@ package MWC.GenericData;
 
 import java.io.Serializable;
 
+import junit.framework.Assert;
+
 
 /**
  * class which represents a distance as a value plus a set of units
@@ -101,7 +103,30 @@ final public class WorldDistanceWithUnits implements Serializable
   // member methods
   /////////////////////////////////////////////////////////////////
 
-  /**
+  @Override
+public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	long temp;
+	temp = Double.doubleToLongBits(_myDistance);
+	result = prime * result + (int) (temp ^ (temp >>> 32));
+	result = prime * result + _myUnits;
+	return result;
+}
+
+@Override
+public boolean equals(Object obj) {
+	if (this == obj)
+		return true;
+	if (obj == null)
+		return false;
+	if (!(obj instanceof WorldDistanceWithUnits))
+		return false;
+	final WorldDistanceWithUnits other = (WorldDistanceWithUnits) obj;
+	return this.getValueIn(WorldDistanceWithUnits.DEGS) == other.getValueIn(WorldDistanceWithUnits.DEGS);
+}
+
+/**
    * accessor to indicate if this distance represents an absolute or angular distance
    */
   public boolean isAngular()
@@ -278,6 +303,13 @@ final public class WorldDistanceWithUnits implements Serializable
       
     }
 
+    public final void testEquals()
+    {
+    	WorldDistanceWithUnits da = new WorldDistanceWithUnits(60, WorldDistanceWithUnits.MINUTES);
+    	WorldDistanceWithUnits db = new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS);
+    	Assert.assertEquals("distances should be equal", da, db);
+    }
+    
     public final void testStrings()
     {
       WorldDistanceWithUnits da = new WorldDistanceWithUnits(12, METRES);
