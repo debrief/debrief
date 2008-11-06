@@ -23,9 +23,13 @@
 
 	<target name="check_the_dist" description="checking all files there" depends="">		
 		<property name="distDir" value="${deployDir}\DebriefNG" />
+		
 		<condition property="help_present">
 			<and>
 				<available file="${deployDir}\..\org.mwc.debrief.help\html\legacy\index.html" />
+					<isfileselected file="${distDir}\plugins\org.mwc.debrief.help_1.0.21.jar">
+						<size value="120" units="Ki" when="more"/>
+					</isfileselected>				
 			</and>
 		</condition>
 		<condition property="output_present">
@@ -36,11 +40,11 @@
 		</condition>
 		<condition property="eclipse_present">
 			<and>
-				<!-- now eclipse itself -->
-				<available file="${distDir}\DebriefNG.exe" /> 
-				<available type="dir" file="${distDir}\features\org.eclipse.platform_3.4.0.v20080610-9I96EhtEm-T_5LxIsybz-3MdGZmOA3uwv7Ka_M" />
-				<available type="dir" file="${distDir}\features\org.eclipse.rcp_3.4.0.v20080324a-989JERhEk-jWnd5IY8K5tjxB" />
-				<!--	 now eclipse itself -->
+				<!-- first Debrief   -->
+				<available file="${distDir}\DebriefNG.exe" />
+				<!-- now eclipse itself   -->
+				<available type="dir" file="${distDir}\features\org.eclipse.platform_3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft" />
+				<available type="dir" file="${distDir}\features\org.eclipse.rcp_3.3.3.r33x_r20080129-8y8eE9UEUWI6qujeED0xT7bc" />
 			</and>
 		</condition>
 		<condition property="static_present">
@@ -60,20 +64,20 @@
 		<condition property="debrief_present">
 			<and>
 				<!-- first the plugins -->
-				<available file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.39" />
+				<available type="dir" file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.39" />
 				<!-- now the features -->
-				<available file="${distDir}\features\org.mwc.cmap.feature_1.0.64" />
-				<available file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.13" />
-				<available file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.5" />
-				<available file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.9" />
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.feature_1.0.66" />
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.13" />
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.5" />
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.9" />
 			</and>
 		</condition>
-
-		<fail message="the help files have not been built" unless="help_present" />
+					
 		<fail message="the output folder (DebriefNG) isn't there" unless="output_present" />
 		<fail message="some eclipse files are missing" unless="eclipse_present" />
 		<fail message="some static lib files are missing" unless="static_present" />
 		<fail message="some debrief files are missing" unless="debrief_present" />
+		<fail message="the help files have not been built" unless="help_present" />
 	</target>
 
 	<target name="build_installer" description="do installer" if="do.installer" depends="">

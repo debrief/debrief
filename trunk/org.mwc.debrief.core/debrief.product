@@ -30,18 +30,31 @@
       </win>
    </launcher>
 
+
    <vm>
+<<<<<<< .mine
+      <linux type="jre">java-6-sun-1.6.0.03</linux>
+      <macos type="jre">JVM 1.5.0 (MacOS X Default)</macos>
+      <windows type="jre">jre6</windows>
+=======
       <linux type="jre">java-6-sun-1.6.0.03</linux>
       <macos type="jre">JVM 1.5.0 (MacOS X Default)</macos>
       <windows type="jre">jre1.6.0_03</windows>
+>>>>>>> .r1844
    </vm>
 
    <plugins>
    </plugins>
 
    <features>
+<<<<<<< .mine
+      <feature id="org.eclipse.platform" version="3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft"/>
+      <feature id="org.eclipse.rcp" version="3.3.3.r33x_r20080129-8y8eE9UEUWI6qujeED0xT7bc"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.66"/>
+=======
       <feature id="org.eclipse.rcp" version="3.3.3.r33x_r20080129-8y8eE9UEUWI6qujeED0xT7bc"/>
       <feature id="org.eclipse.platform" version="3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft"/>
+>>>>>>> .r1844
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.13"/>
       <feature id="org.mwc.cmap.narrative.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.9"/>
@@ -52,8 +65,12 @@
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.23"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.10"/>
+<<<<<<< .mine
+      <feature id="org.mwc.debrief.feature" version="1.0.67"/>
+=======
       <feature id="org.mwc.debrief.data_feed.feature" version="1.0.1"/>
       <feature id="org.mwc.debrief.feature" version="1.0.66"/>
+>>>>>>> .r1844
       <feature id="org.mwc.debrief.help.feature" version="1.0.21"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.5"/>
       <feature id="org.mwc.cmap.feature" version="1.0.66"/>

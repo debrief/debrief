@@ -1,36 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin
-   id="org.mwc.cmap.legacy"
-   name="CMap Legacy Algorithms Plug-in"
-   version="1.0.39"
-   provider-name="MWC">
+<plugin>
 
-   <runtime>
-      <library name="cmap_legacy.jar">
-         <export name="*"/>
-      </library>
-      <library name="libs/xercesImpl.jar">
-         <export name="*"/>
-      </library>
-      <library name="libs/xmlParserAPIs.jar">
-         <export name="*"/>
-      </library>
-      <library name="libs/jcommon-0.7.1.jar">
-         <export name="*"/>
-      </library>
-      <library name="libs/openmap.jar">
-         <export name="*"/>
-      </library>
-      <library name="libs/jmf.jar">
-         <export name="*"/>
-      </library>
-      <library name="libs/vrml97.jar">
-         <export name="*"/>
-      </library>
-   </runtime>
-   <requires>
-      <import plugin="org.junit" export="true"/>
-   </requires>
-
+    
 </plugin>

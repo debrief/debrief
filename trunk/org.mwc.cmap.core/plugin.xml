@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.core"
    name="CMap Core Resources Plug-in"
-   version="1.0.59"
+   version="1.0.58"
    provider-name="MWC"
    class="org.mwc.cmap.core.CorePlugin">
 
@@ -21,14 +21,11 @@
 
    <requires>
       <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
-      <import plugin="org.junit"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.views"/>
-      <import plugin="org.eclipse.ui.cheatsheets"/>
-      <import plugin="org.eclipse.ui.forms"/>
-      <import plugin="org.mwc.debrief.legacy"/>
    </requires>
    
 

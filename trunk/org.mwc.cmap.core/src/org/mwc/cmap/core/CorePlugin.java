@@ -61,7 +61,7 @@ public class CorePlugin extends AbstractUIPlugin
 	/**
 	 * the Debrief tool-parent used to provide legacy access to properties
 	 */
-	private static DebriefToolParent _toolParent;
+	private static ToolParent _toolParent;
 
 	/**
 	 * where we cache our images
@@ -117,14 +117,15 @@ public class CorePlugin extends AbstractUIPlugin
 		// also initialise the ETOPO wrapper (if we have to)
 		CreateTOPO.initialise(_toolParent);
 
-		// and the range calculator
-		rangeCalc.init(_toolParent);
-
 		// and the coastline-reader
 		CoastPainter.initialise(_toolParent);
 
 		// and the application - so we can use our own toolparent for the properties
 		Application.initialise(_toolParent);
+		
+		// and the range calculator (it needs to know for the user pref on units)
+		rangeCalc.init(_toolParent);
+
 	}
 
 	/**
