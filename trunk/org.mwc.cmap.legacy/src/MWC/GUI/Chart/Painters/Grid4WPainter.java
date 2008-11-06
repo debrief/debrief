@@ -146,16 +146,17 @@ import java.beans.*;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
+import junit.framework.Assert;
+
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
-public class Grid4WPainter implements Plottable, Serializable
-{
-  /////////////////////////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////////////////////////
+public class Grid4WPainter implements Plottable, Serializable {
+	// ///////////////////////////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////////////////////////
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
@@ -164,504 +165,520 @@ public class Grid4WPainter implements Plottable, Serializable
 	 * flag for invalid 4w index
 	 * 
 	 */
-	private static final int INVALID_INDEX = -1;	
-	
+	private static final int INVALID_INDEX = -1;
+
 	/**
-   * the colour for this grid
-   */
-  protected Color _myColor;
-
-  /**
-   * the grid separation (in degrees)
-   */
-  protected WorldDistanceWithUnits _myDelta;
-
-  /**
-   * whether this grid is visible
-   */
-  protected boolean _isOn;
-
-  /**
-   * are we plotting lat/long labels?
-   */
-  protected boolean _plotLabels = true;
-
-  /**
-   * the minimum space between grid lines
-   */
-  private int MIN_SEPARATION = 4;
-
-  /**
-   * our editor
-   */
-  transient protected Editable.EditorType _myEditor;
-
-	private String _myName;
-
-	public static String GRID_TYPE_NAME;
-
-  /**
-   * the formatter we use which only shows decimal places when they're present
-   */
-  private static final DecimalFormat _distanceFormatter = new DecimalFormat("0.##");
-
-  /////////////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////////////
-  public Grid4WPainter()
-  {
-    _myColor = Color.darkGray;
-    
-    GRID_TYPE_NAME = "Grid";
-		_myName = GRID_TYPE_NAME;
-
-    setDelta(new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS));
-    // make it visible to start with
-    setVisible(true);
-  }
-
-  /////////////////////////////////////////////////////////////
-  // member functions
-  ////////////////////////////////////////////////////////////
-
-  public void setVisible(boolean val)
-  {
-    _isOn = val;
-  }
-
-  public boolean getVisible()
-  {
-    return _isOn;
-  }
-
-  public void setColor(Color val)
-  {
-    _myColor = val;
-  }
-
-  public Color getColor()
-  {
-    return _myColor;
-  }
-
-  /**
-   * set the delta for this grid
-   *
-   * @param val the size in minutes
-   */
-  public void setDelta(WorldDistanceWithUnits val)
-  {
-    _myDelta = val;
-  }
-
-  /**
-   * get the delta for the grid
-   *
-   * @return the size in minutes
-   */
-  public WorldDistanceWithUnits getDelta()
-  {
-    return _myDelta;
-  }
-
-
-  /**
-   * whether to plot the labels or not
-   */
-  public boolean getPlotLabels()
-  {
-    return _plotLabels;
-  }
-
-  /**
-   * whether to plot the labels or not
-   */
-  public void setPlotLabels(boolean val)
-  {
-    _plotLabels = val;
-  }
-
-
-  /**
-   * whether to plot the labels or not
-   */
-  public void setName(String name)
-  {
-    _myName = name;
-  }
-
-  public void paint(CanvasType g)
-  {
-
-    // check we are visible
-    if (!_isOn)
-      return;
-
-    float oldLineWidth = g.getLineWidth();
-
-    g.setLineWidth(1.0f);
-
-    Dimension screenArea;
-
-    // get the current screen area
-    screenArea = g.getProjection().getScreenArea();
-
-    // check that the projection is initialised
-    if (screenArea == null)
-      return;
-
-    // set the current colour
-    g.setColor(_myColor);
-
-    // create data coordinates from the current corners of the screen
-    WorldLocation checkProjection = new WorldLocation(g.toWorld(new Point(0, 0)));
-
-    // check we have data
-    if (checkProjection == null)
-      return;
-
-    // get the delta in degrees
-    double deltaDegs = _myDelta.getValueIn(WorldDistanceWithUnits.DEGS);
-
-    // ok, find the outer limits of the lines to plot
-    WorldArea bounds = getOuterBounds(g, screenArea, deltaDegs);
-
-    double maxLat = bounds.getTopLeft().getLat();
-    double minLong = bounds.getTopLeft().getLong();
-    double minLat = bounds.getBottomRight().getLat();
-    double maxLong = bounds.getBottomRight().getLong();
-
-    // keep track of the point separation: if they are closer than 3 pixels,
-    // drop out
-    Point lastPoint = null;
-
-    // doDecide if we want to see the decimal portion of the plotted labels
-    boolean plotDecimals;
-
-    // is our delta less than 1 second in width?
-    if (deltaDegs < 1d / 60d / 60d)
-    {
-      plotDecimals = true;
-    }
-    else
-      plotDecimals = false;
-
-    // just trim the latitude, to ensure we plot realistic lats
-    minLat = Math.max(minLat, -90);
-    maxLat = Math.min(maxLat, 90);
-
-    int counter = 0;
-
-    final WorldLocation gridOrigin = getGridLabelOrigin(bounds);
-    int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myDelta.getValueIn(WorldDistanceWithUnits.DEGS));
-    int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myDelta.getValueIn(WorldDistanceWithUnits.DEGS));
-
-    // if we're using a local plot we need to decrement both of these offsets by one
-    if (this.isLocalPlotting())
-    {
-      latGridCounterOffset--;
-      longGridCounterOffset--;
-    }
-
-    ////////////////////////////////////////////////////////////
-    // first draw the lines going across
-    /////////////////////////////////////////////////////////////
-
-    for (double thisLat = minLat;
-         thisLat <= maxLat;
-         thisLat += deltaDegs)
-    {
-      Point p3 = g.toScreen(new WorldLocation(thisLat,
-                                              maxLong,
-                                              0));
-
-      // the delta in screen coordinates
-      int dy = 0;
-
-      if (lastPoint == null)
-        lastPoint = new Point(p3);
-      else
-      {
-        // find how far apart they are
-        dy = lastPoint.y - p3.y;
-
-        // check if we're too close
-        if (dy < MIN_SEPARATION)
-          return;
-
-        lastPoint = new Point(p3);
-      }
-
-      g.drawLine(0, p3.y, screenArea.width, p3.y);
-
-      /////////////////////////////////////////////////////////////
-      // and the labels
-      /////////////////////////////////////////////////////////////
-
-      if (_plotLabels)
-      {
-        // so, we are going to plot a label in the middle of this grid line
-
-        // check if the lines are too close for labels (we'll use 15 pixels)
-        if (dy >= 15)
-        {
-          String val;
-          if (_myDelta.isAngular())
-          {
-            // get the formatted label
-            val = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLat(thisLat, plotDecimals);
-          }
-          else
-          {
-            // ok, use a counter for the units
-            double thisVal = (counter++ - latGridCounterOffset) * _myDelta.getDistance();
-            val = _distanceFormatter.format(thisVal) + " " +
-              _myDelta.getUnitsLabel();
-          }
-          // and output it
-          g.drawText(val, 0, p3.y - 2);
-        }
-      }
-    }
-
-    // just trim the latitude, to ensure we plot realistic lats
-    minLong = Math.max(minLong, -180);
-    maxLong = Math.min(maxLong, 180);
-
-    counter = 0;
-
-    WorldVector symetricUnitOffset = null;
-    if (!_myDelta.isAngular())
-    {
-      symetricUnitOffset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), deltaDegs, 0);
-    }
-
-    /////////////////////////////////////////////////////////////
-    // now draw the lines going down
-    /////////////////////////////////////////////////////////////
-
-    double thisLong = minLong;
-    while (thisLong < maxLong)
-    {
-      // find out if this is one of our "special cases" where lines of long
-      // are in yds (absolute) not degrees (adjusted)
-      if (_myDelta.isAngular())
-      {
-        thisLong += deltaDegs;
-      }
-      else
-      {
-
-        WorldLocation thisLoc = new WorldLocation(minLat,
-                                                  thisLong,
-                                                  0);
-        // move it across a bit
-        thisLoc.addToMe(symetricUnitOffset);
-
-        // and take a copy of it.
-        thisLong = thisLoc.getLong();
-
-      }
-
-      Point p3 = g.toScreen(new WorldLocation(minLat,
-                                              thisLong,
-                                              0));
-
-      int p3x = p3.x;
-      int p3y = p3.y;
-      Point p4 = g.toScreen(new WorldLocation(maxLat,
-                                              thisLong,
-                                              0));
-
-      // just check that both ends of the line are visible
-      if ((p3x >= 0) || (p4.x >= 0))
-      {
-        g.drawLine(p3x, p3y, p4.x, p4.y);
-
-
-        /////////////////////////////////////////////////////////////
-        // and the labels
-        /////////////////////////////////////////////////////////////
-
-        if (_plotLabels)
-        {
-
-          String thisLabel;
-          if (_myDelta.isAngular())
-          {
-            // get the formatted label
-            thisLabel = MWC.Utilities.TextFormatting.BriefFormatLocation.toStringLong(thisLong, plotDecimals);
-          }
-          else
-          {
-            // ok, use a counter for the units
-            double thisVal = (counter++ - longGridCounterOffset) * _myDelta.getDistance();
-            thisLabel = _distanceFormatter.format(thisVal)
-              + " " + _myDelta.getUnitsLabel();
-          }
-
-          // and output it
-          g.drawText(thisLabel, p3x + 2, 15);
-        }
-      }
-    }
-
-    // and restore the line width
-    g.setLineWidth(oldLineWidth);
-    
-  }
-
-  /**
-   * determine where to start counting our grid labels from
-   *
-   * @param bounds
-   * @return
-   */
-  protected WorldLocation getGridLabelOrigin(WorldArea bounds)
-  {
-    return bounds.getBottomLeft();
-  }
-
-  /**
-   * unfortunately we need to do some plotting tricks when we're doing a locally-origined grid.
-   * This method is over-ridden by the LocalGrid to allow this
-   *
-   * @return
-   */
-  protected boolean isLocalPlotting()
-  {
-    return false;
-  }
-
-  /**
-   * find the top, bottom, left and right limits to plot. We've refactored it to a child class
-   * so that it can be overwritten
-   *
-   * @param g          the plotting converter
-   * @param screenArea the visible screen area
-   * @param deltaDegs  the grid separation requested
-   * @return an area providing the coverage requested
-   */
-  protected WorldArea getOuterBounds(CanvasType g, Dimension screenArea, double deltaDegs)
-  {
-    // create data coordinates from the current corners of the screen
-    WorldLocation topLeft = g.toWorld(new Point(0, 0));
-
-    // create new corners just outside the current plot area, and clip
-    // them to the nearest 'delta' value
-    double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
-    double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs) * deltaDegs;
-
-    // now for the bottom right
-    WorldLocation bottomRight = g.toWorld(new Point(screenArea.width, screenArea.height));
-
-    // create new corners just outside the current plot area, and clip
-    // them to the nearest 'delta' value
-    double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
-    double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
-
-    WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
-                                     new WorldLocation(minLat1, maxLong1, 0));
-    return bounds;
-  }
-
-  /**
-   * whether the plotting algorithm should offset the origin to the nearest whole number of selected units
-   *
-   * @return yes/no
-   */
-  protected boolean offsetOrigin()
-  {
-    return true;
-  }
-
-  public MWC.GenericData.WorldArea getBounds()
-  {
-    // doesn't return a sensible size
-    return null;
-  }
-
-  public double rangeFrom(MWC.GenericData.WorldLocation other)
-  {
-    // doesn't return a sensible distance;
-    return INVALID_RANGE;
-  }
-
-  /**
-   * return this item as a string
-   */
-  public String toString()
-  {
-    return getName();
-  }
-
-  public String getName()
-  {
-    return _myName;
-  }
-
-  public boolean hasEditor()
-  {
-    return true;
-  }
-
-  public Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new GridPainterInfo(this);
-
-    return _myEditor;
-  }
-
-
-	public int compareTo(Object arg0)
-	{
+	 * the colour for this grid
+	 */
+	protected Color _myColor;
+
+	/**
+	 * the horizontal grid separation (in degrees)
+	 */
+	protected WorldDistanceWithUnits _myXDelta;
+
+	/**
+	 * the vertical grid separation (in degrees)
+	 */
+	protected WorldDistanceWithUnits _myYDelta;
+
+	/**
+	 * whether this grid is visible
+	 */
+	protected boolean _isOn;
+
+	/**
+	 * are we plotting lat/long labels?
+	 */
+	protected boolean _plotLabels = true;
+	
+	/** the min x-axis square we're plotting
+	 * 
+	 */
+	protected int _minX = 0;
+	
+	/** the max x-axis square we're plotting
+	 * 
+	 */
+	protected int _maxX = 23;
+
+	
+	/** the min y-axis square we're plotting
+	 * 
+	 */
+	protected int _minY = 0;
+	
+	/** the max y-axis square we're plotting
+	 * 	 */
+	protected int _maxY = 23;
+	/**
+	 * the minimum space between grid lines
+	 */
+	private int MIN_SEPARATION = 4;
+
+	/**
+	 * our editor
+	 */
+	transient protected Editable.EditorType _myEditor;
+
+	/**
+	 * the name of this grid
+	 * 
+	 */
+	private String _myName = DEFAULT_NAME;
+
+	public static final String DEFAULT_NAME = "4W Grid";
+
+	/**
+	 * the formatter we use which only shows decimal places when they're present
+	 */
+	private static final DecimalFormat _distanceFormatter = new DecimalFormat(
+			"0.##");
+
+	// ///////////////////////////////////////////////////////////
+	// constructor
+	// //////////////////////////////////////////////////////////
+	public Grid4WPainter() {
+		_myColor = Color.darkGray;
+
+		// give it some default deltas
+		setXDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
+		setYDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
+
+		// make it visible to start with
+		setVisible(true);
+	}
+
+	// ///////////////////////////////////////////////////////////
+	// member functions
+	// //////////////////////////////////////////////////////////
+
+	public void setVisible(boolean val) {
+		_isOn = val;
+	}
+
+	public boolean getVisible() {
+		return _isOn;
+	}
+
+	public void setColor(Color val) {
+		_myColor = val;
+	}
+
+	public Color getColor() {
+		return _myColor;
+	}
+
+	/**
+	 * set the y delta for this grid
+	 * 
+	 * @param val
+	 *            the size
+	 */
+	public void setYDelta(WorldDistanceWithUnits val) {
+		_myYDelta = val;
+	}
+
+	/**
+	 * get the y delta for the grid
+	 * 
+	 * @return the size
+	 */
+	public WorldDistanceWithUnits getYDelta() {
+		return _myYDelta;
+	}
+
+	/**
+	 * set the x delta for this grid
+	 * 
+	 * @param val
+	 *            the size
+	 */
+	public void setXDelta(WorldDistanceWithUnits val) {
+		_myXDelta = val;
+	}
+
+	/**
+	 * get the x delta for the grid
+	 * 
+	 * @return the size
+	 */
+	public WorldDistanceWithUnits getXDelta() {
+		return _myXDelta;
+	}
+
+	/**
+	 * whether to plot the labels or not
+	 */
+	public boolean getPlotLabels() {
+		return _plotLabels;
+	}
+
+	/**
+	 * whether to plot the labels or not
+	 */
+	public void setPlotLabels(boolean val) {
+		_plotLabels = val;
+	}
+
+	/**
+	 * whether to plot the labels or not
+	 */
+	public void setName(String name) {
+		_myName = name;
+	}
+
+	public void paint(CanvasType g) {
+
+		// check we are visible
+		if (!_isOn)
+			return;
+
+		float oldLineWidth = g.getLineWidth();
+
+		g.setLineWidth(1.0f);
+
+		Dimension screenArea;
+
+		// get the current screen area
+		screenArea = g.getProjection().getScreenArea();
+
+		// check that the projection is initialised
+		if (screenArea == null)
+			return;
+
+		// set the current colour
+		g.setColor(_myColor);
+
+		// create data coordinates from the current corners of the screen
+		WorldLocation checkProjection = new WorldLocation(g.toWorld(new Point(
+				0, 0)));
+
+		// check we have data
+		if (checkProjection == null)
+			return;
+
+		// get the delta in degrees
+		double deltaDegs = _myXDelta.getValueIn(WorldDistanceWithUnits.DEGS);
+
+		// ok, find the outer limits of the lines to plot
+		WorldArea bounds = getOuterBounds(g, screenArea, deltaDegs);
+
+		double maxLat = bounds.getTopLeft().getLat();
+		double minLong = bounds.getTopLeft().getLong();
+		double minLat = bounds.getBottomRight().getLat();
+		double maxLong = bounds.getBottomRight().getLong();
+
+		// keep track of the point separation: if they are closer than 3 pixels,
+		// drop out
+		Point lastPoint = null;
+
+		// doDecide if we want to see the decimal portion of the plotted labels
+		boolean plotDecimals;
+
+		// is our delta less than 1 second in width?
+		if (deltaDegs < 1d / 60d / 60d) {
+			plotDecimals = true;
+		} else
+			plotDecimals = false;
+
+		// just trim the latitude, to ensure we plot realistic lats
+		minLat = Math.max(minLat, -90);
+		maxLat = Math.min(maxLat, 90);
+
+		int counter = 0;
+
+		final WorldLocation gridOrigin = getGridLabelOrigin(bounds);
+		int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myXDelta
+				.getValueIn(WorldDistanceWithUnits.DEGS));
+		int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myXDelta
+				.getValueIn(WorldDistanceWithUnits.DEGS));
+
+		// if we're using a local plot we need to decrement both of these
+		// offsets by one
+		if (this.isLocalPlotting()) {
+			latGridCounterOffset--;
+			longGridCounterOffset--;
+		}
+
+		// //////////////////////////////////////////////////////////
+		// first draw the lines going across
+		// ///////////////////////////////////////////////////////////
+
+		for (double thisLat = minLat; thisLat <= maxLat; thisLat += deltaDegs) {
+			Point p3 = g.toScreen(new WorldLocation(thisLat, maxLong, 0));
+
+			// the delta in screen coordinates
+			int dy = 0;
+
+			if (lastPoint == null)
+				lastPoint = new Point(p3);
+			else {
+				// find how far apart they are
+				dy = lastPoint.y - p3.y;
+
+				// check if we're too close
+				if (dy < MIN_SEPARATION)
+					return;
+
+				lastPoint = new Point(p3);
+			}
+
+			g.drawLine(0, p3.y, screenArea.width, p3.y);
+
+			// ///////////////////////////////////////////////////////////
+			// and the labels
+			// ///////////////////////////////////////////////////////////
+
+			if (_plotLabels) {
+				// so, we are going to plot a label in the middle of this grid
+				// line
+
+				// check if the lines are too close for labels (we'll use 15
+				// pixels)
+				if (dy >= 15) {
+					String val;
+					if (_myXDelta.isAngular()) {
+						// get the formatted label
+						val = MWC.Utilities.TextFormatting.BriefFormatLocation
+								.toStringLat(thisLat, plotDecimals);
+					} else {
+						// ok, use a counter for the units
+						double thisVal = (counter++ - latGridCounterOffset)
+								* _myXDelta.getDistance();
+						val = _distanceFormatter.format(thisVal) + " "
+								+ _myXDelta.getUnitsLabel();
+					}
+					// and output it
+					g.drawText(val, 0, p3.y - 2);
+				}
+			}
+		}
+
+		// just trim the latitude, to ensure we plot realistic lats
+		minLong = Math.max(minLong, -180);
+		maxLong = Math.min(maxLong, 180);
+
+		counter = 0;
+
+		WorldVector symetricUnitOffset = null;
+		if (!_myXDelta.isAngular()) {
+			symetricUnitOffset = new WorldVector(MWC.Algorithms.Conversions
+					.Degs2Rads(90), deltaDegs, 0);
+		}
+
+		// ///////////////////////////////////////////////////////////
+		// now draw the lines going down
+		// ///////////////////////////////////////////////////////////
+
+		double thisLong = minLong;
+		while (thisLong < maxLong) {
+			// find out if this is one of our "special cases" where lines of
+			// long
+			// are in yds (absolute) not degrees (adjusted)
+			if (_myXDelta.isAngular()) {
+				thisLong += deltaDegs;
+			} else {
+
+				WorldLocation thisLoc = new WorldLocation(minLat, thisLong, 0);
+				// move it across a bit
+				thisLoc.addToMe(symetricUnitOffset);
+
+				// and take a copy of it.
+				thisLong = thisLoc.getLong();
+
+			}
+
+			Point p3 = g.toScreen(new WorldLocation(minLat, thisLong, 0));
+
+			int p3x = p3.x;
+			int p3y = p3.y;
+			Point p4 = g.toScreen(new WorldLocation(maxLat, thisLong, 0));
+
+			// just check that both ends of the line are visible
+			if ((p3x >= 0) || (p4.x >= 0)) {
+				g.drawLine(p3x, p3y, p4.x, p4.y);
+
+				// ///////////////////////////////////////////////////////////
+				// and the labels
+				// ///////////////////////////////////////////////////////////
+
+				if (_plotLabels) {
+
+					String thisLabel;
+					if (_myXDelta.isAngular()) {
+						// get the formatted label
+						thisLabel = MWC.Utilities.TextFormatting.BriefFormatLocation
+								.toStringLong(thisLong, plotDecimals);
+					} else {
+						// ok, use a counter for the units
+						double thisVal = (counter++ - longGridCounterOffset)
+								* _myXDelta.getDistance();
+						thisLabel = _distanceFormatter.format(thisVal) + " "
+								+ _myXDelta.getUnitsLabel();
+					}
+
+					// and output it
+					g.drawText(thisLabel, p3x + 2, 15);
+				}
+			}
+		}
+
+		// and restore the line width
+		g.setLineWidth(oldLineWidth);
+
+	}
+
+	/**
+	 * determine where to start counting our grid labels from
+	 * 
+	 * @param bounds
+	 * @return
+	 */
+	protected WorldLocation getGridLabelOrigin(WorldArea bounds) {
+		return bounds.getBottomLeft();
+	}
+
+	/**
+	 * unfortunately we need to do some plotting tricks when we're doing a
+	 * locally-origined grid. This method is over-ridden by the LocalGrid to
+	 * allow this
+	 * 
+	 * @return
+	 */
+	protected boolean isLocalPlotting() {
+		return false;
+	}
+
+	/**
+	 * find the top, bottom, left and right limits to plot. We've refactored it
+	 * to a child class so that it can be overwritten
+	 * 
+	 * @param g
+	 *            the plotting converter
+	 * @param screenArea
+	 *            the visible screen area
+	 * @param deltaDegs
+	 *            the grid separation requested
+	 * @return an area providing the coverage requested
+	 */
+	protected WorldArea getOuterBounds(CanvasType g, Dimension screenArea,
+			double deltaDegs) {
+		// create data coordinates from the current corners of the screen
+		WorldLocation topLeft = g.toWorld(new Point(0, 0));
+
+		// create new corners just outside the current plot area, and clip
+		// them to the nearest 'delta' value
+		double maxLat1 = Math.ceil(topLeft.getLat() / deltaDegs) * deltaDegs;
+		double minLong1 = (int) Math.floor(topLeft.getLong() / deltaDegs)
+				* deltaDegs;
+
+		// now for the bottom right
+		WorldLocation bottomRight = g.toWorld(new Point(screenArea.width,
+				screenArea.height));
+
+		// create new corners just outside the current plot area, and clip
+		// them to the nearest 'delta' value
+		double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs)
+				* deltaDegs;
+		double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs)
+				* deltaDegs;
+
+		WorldArea bounds = new WorldArea(
+				new WorldLocation(maxLat1, minLong1, 0), new WorldLocation(
+						minLat1, maxLong1, 0));
+		return bounds;
+	}
+
+	/**
+	 * whether the plotting algorithm should offset the origin to the nearest
+	 * whole number of selected units
+	 * 
+	 * @return yes/no
+	 */
+	protected boolean offsetOrigin() {
+		return true;
+	}
+
+	public MWC.GenericData.WorldArea getBounds() {
+		// doesn't return a sensible size
+		return null;
+	}
+
+	public double rangeFrom(MWC.GenericData.WorldLocation other) {
+		// doesn't return a sensible distance;
+		return INVALID_RANGE;
+	}
+
+	/**
+	 * return this item as a string
+	 */
+	public String toString() {
+		return getName();
+	}
+
+	public String getName() {
+		return _myName;
+	}
+
+	public boolean hasEditor() {
+		return true;
+	}
+
+	public Editable.EditorType getInfo() {
+		if (_myEditor == null)
+			_myEditor = new GridPainterInfo(this);
+
+		return _myEditor;
+	}
+
+	public int compareTo(Object arg0) {
 		Plottable other = (Plottable) arg0;
 		String myName = this.getName() + this.hashCode();
 		String hisName = other.getName() + arg0.hashCode();
 		return myName.compareTo(hisName);
-	}  
-  /////////////////////////////////////////////////////////////
-  // info class
-  ////////////////////////////////////////////////////////////
-  public class GridPainterInfo extends Editable.EditorType implements Serializable
-  {
+	}
 
-    /**
+	// ///////////////////////////////////////////////////////////
+	// info class
+	// //////////////////////////////////////////////////////////
+	public class GridPainterInfo extends Editable.EditorType implements
+			Serializable {
+
+		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public GridPainterInfo(Grid4WPainter data)
-    {
-      super(data, data.getName(), "");
-    }
+		public GridPainterInfo(Grid4WPainter data) {
+			super(data, data.getName(), "");
+		}
 
-    public PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        PropertyDescriptor[] res = {
-          prop("Color", "the Color to draw the grid", FORMAT),
-          prop("Visible", "whether this grid is visible", VISIBILITY),
-          prop("PlotLabels", "whether to plot grid labels", VISIBILITY),
-          prop("Name", "name of this grid", FORMAT),
-          prop("Delta", "the step size for the grid", VISIBILITY)
-        };
+		public PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				PropertyDescriptor[] res = {
+						prop("Color", "the Color to draw the grid", FORMAT),
+						prop("Visible", "whether this grid is visible",
+								VISIBILITY),
+						prop("PlotLabels", "whether to plot grid labels",
+								VISIBILITY),
+						prop("Name", "name of this grid", FORMAT),
+						prop("XDelta", "the x step size for the grid",
+								VISIBILITY),
+						prop("YDelta", "the y step size for the grid",
+								VISIBILITY) };
 
-        return res;
-      }
-      catch (IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
+				return res;
+			} catch (IntrospectionException e) {
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
 
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-  // testing for this class
-  //////////////////////////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	static public class Grid4WTest extends junit.framework.TestCase {
@@ -702,7 +719,41 @@ public class Grid4WPainter implements Plottable, Serializable
 					Grid4WPainter.indexOf("CC"));
 			assertEquals("invalid index not rejected properly", INVALID_INDEX,
 					Grid4WPainter.indexOf("?A"));
+			// now some reverse checks
+			// first some valid ones
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(1), "B");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(0), "A");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(5), "F");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(22), "Y");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(24), "AA");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(26), "AC");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(47), "AZ");
+			
 		}
+
+		public void testInit() {
+			Grid4WPainter pt = new Grid4WPainter();
+			Assert.assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
+			Assert.assertEquals("wrong x def", new WorldDistanceWithUnits(10,
+					WorldDistanceWithUnits.NM), pt.getXDelta());
+			Assert.assertEquals("wrong y def", new WorldDistanceWithUnits(10,
+					WorldDistanceWithUnits.NM), pt.getYDelta());
+		}
+
+		public void testProperties() {
+			Grid4WPainter pt = new Grid4WPainter();
+			pt.setName("new grid");
+			pt.setXDelta(new WorldDistanceWithUnits(12,
+					WorldDistanceWithUnits.DEGS));
+			pt.setYDelta(new WorldDistanceWithUnits(5,
+					WorldDistanceWithUnits.DEGS));
+			Assert.assertEquals("wrong name", "new grid", pt.getName());
+			Assert.assertEquals("wrong x val", new WorldDistanceWithUnits(12,
+					WorldDistanceWithUnits.DEGS), pt.getXDelta());
+			Assert.assertEquals("wrong y val", new WorldDistanceWithUnits(5,
+					WorldDistanceWithUnits.DEGS), pt.getYDelta());
+		}
+
 	}
 
 	private static String indices[] = { "A", "B", "C", "D", "E", "F", "G", "H",
@@ -727,6 +778,16 @@ public class Grid4WPainter implements Plottable, Serializable
 		}
 		return res;
 	}
+	
+	/** convert the integer index to a string
+	 * 
+	 * @param index 4w grid horizontal index
+	 * @return character representation of index
+	 */
+	public static String labelFor(int index)
+	{
+		return indices[index];
+	}
+	
 
 }
-
