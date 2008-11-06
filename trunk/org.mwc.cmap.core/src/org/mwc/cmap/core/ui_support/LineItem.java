@@ -16,31 +16,31 @@ import MWC.Utilities.TextFormatting.BriefFormatLocation;
  * @author ian.mayo
  * 
  */
-public class LineItem extends ControlContribution
-{
+public class LineItem extends ControlContribution {
 	Label label;
 
 	String _lastText = " 00" + BriefFormatLocation.DEGREE_SYMBOL
 			+ "00\'00.00\"N 000" + BriefFormatLocation.DEGREE_SYMBOL
 			+ "00\'00.00\"W ";
-	
-	/** tooltip to show when hovering over panel
+
+	/**
+	 * tooltip to show when hovering over panel
 	 * 
 	 */
 	private final String _tooltip;
 
-	/** preferences dialog id to open when user double-clicks
+	/**
+	 * preferences dialog id to open when user double-clicks
 	 * 
 	 */
-  private final String _prefId;
-	
+	private final String _prefId;
+
 	/**
 	 * constructor - get going
 	 * 
 	 * @param id
 	 */
-	public LineItem(String id, String template, String tooltip, String prefId)
-	{
+	public LineItem(String id, String template, String tooltip, String prefId) {
 		super(id);
 		_prefId = prefId;
 		_tooltip = tooltip;
@@ -50,22 +50,29 @@ public class LineItem extends ControlContribution
 	/**
 	 * @see org.eclipse.jface.action.IContributionItem#isDynamic()
 	 */
-	public boolean isDynamic()
-	{
+	public boolean isDynamic() {
 		return true;
 	}
 
+<<<<<<< .mine
+	public void setText(String val) {
+		if (label == null) {
+		} else if (label.isDisposed()) {
+		} else {
+			label.setText(val);
+		}
+=======
 	public void setText(String val)
 	{
 		// handle strange instance where we don't yet have a label.
 		if(label != null)
 			label.setText(val);
+>>>>>>> .r1843
 
 		_lastText = val;
 	}
 
-	public boolean isDisposed()
-	{
+	public boolean isDisposed() {
 		boolean res = true;
 		if (label != null)
 			res = label.isDisposed();
@@ -76,10 +83,8 @@ public class LineItem extends ControlContribution
 	/**
 	 * @see org.eclipse.jface.action.ControlContribution#createControl(org.eclipse.swt.widgets.Composite)
 	 */
-	protected Control createControl(final Composite parent)
-	{
-		if (label != null)
-		{
+	protected Control createControl(final Composite parent) {
+		if (label != null) {
 			label.dispose();
 			label = null;
 		}
@@ -88,22 +93,20 @@ public class LineItem extends ControlContribution
 		label.setText(_lastText);
 		label.setToolTipText(_tooltip);
 		label.setSize(550, 20);
-		if(_prefId != null)
-		{
-		label.addMouseListener(new MouseAdapter(){
-      public void mouseDoubleClick(MouseEvent e)
-      {
-        // do the parent bits
-        super.mouseDoubleClick(e);
-        
-        // do our bits
-        Display dis = Display.getCurrent();
-        PreferenceDialog  dial = PreferencesUtil.createPreferenceDialogOn(dis.getActiveShell(), 
-            _prefId, 
-            null,
-            null);
-        dial.open();
-      }});
+		if (_prefId != null) {
+			label.addMouseListener(new MouseAdapter() {
+				public void mouseDoubleClick(MouseEvent e) {
+					// do the parent bits
+					super.mouseDoubleClick(e);
+
+					// do our bits
+					Display dis = Display.getCurrent();
+					PreferenceDialog dial = PreferencesUtil
+							.createPreferenceDialogOn(dis.getActiveShell(),
+									_prefId, null, null);
+					dial.open();
+				}
+			});
 		}
 
 		return label;
