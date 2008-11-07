@@ -54,21 +54,12 @@ public class LineItem extends ControlContribution {
 		return true;
 	}
 
-<<<<<<< .mine
 	public void setText(String val) {
 		if (label == null) {
 		} else if (label.isDisposed()) {
 		} else {
 			label.setText(val);
 		}
-=======
-	public void setText(String val)
-	{
-		// handle strange instance where we don't yet have a label.
-		if(label != null)
-			label.setText(val);
->>>>>>> .r1843
-
 		_lastText = val;
 	}
 

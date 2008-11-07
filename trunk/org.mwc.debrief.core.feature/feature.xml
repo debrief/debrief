@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.67">
+      version="1.0.68">
 
    <description>
-      [1.0.67] Switch Debrief legacy project to using OSGI manifest
+      [1.0.68] Provide support for 4W grids
+[1.0.67] Switch Debrief legacy project to using OSGI manifest
 [1.0.66] Better tooltip detection of current bearing line
 [1.0.65] Plot TUAs &amp; Bearing before track in TrackWrapper - since
 large volume of bearings was hiding track

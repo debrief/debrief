@@ -144,14 +144,15 @@ package MWC.GUI.Chart.Painters;
 import java.awt.*;
 import java.beans.*;
 import java.io.Serializable;
-import java.text.DecimalFormat;
-
 import junit.framework.Assert;
 
 import MWC.GUI.*;
+import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.*;
 
-public class Grid4WPainter implements Plottable, Serializable {
+public class Grid4WPainter implements Plottable, Serializable, DraggableItem
+{
 	// ///////////////////////////////////////////////////////////
 	// member variables
 	// //////////////////////////////////////////////////////////
@@ -165,7 +166,7 @@ public class Grid4WPainter implements Plottable, Serializable {
 	 * flag for invalid 4w index
 	 * 
 	 */
-	private static final int INVALID_INDEX = -1;
+	private static final int INVALID_INDEX = 0;
 
 	/**
 	 * the colour for this grid
@@ -188,33 +189,59 @@ public class Grid4WPainter implements Plottable, Serializable {
 	protected boolean _isOn;
 
 	/**
+	 * are we plotting lines?
+	 */
+	protected boolean _plotLines = true;
+
+	/**
 	 * are we plotting lat/long labels?
 	 */
 	protected boolean _plotLabels = true;
-	
-	/** the min x-axis square we're plotting
-	 * 
-	 */
-	protected int _minX = 0;
-	
-	/** the max x-axis square we're plotting
-	 * 
-	 */
-	protected int _maxX = 23;
 
-	
-	/** the min y-axis square we're plotting
+	/**
+	 * whether to fill the grid
+	 */
+	protected boolean _fillGrid = false;
+
+	/**
+	 * the color to fill in the grid
 	 * 
 	 */
-	protected int _minY = 0;
-	
-	/** the max y-axis square we're plotting
-	 * 	 */
-	protected int _maxY = 23;
+	protected Color _fillColor = Color.white;
+
 	/**
-	 * the minimum space between grid lines
+	 * the min x-axis square we're plotting
+	 * 
 	 */
-	private int MIN_SEPARATION = 4;
+	protected int _xMin = 0;
+
+	/**
+	 * the max x-axis square we're plotting
+	 * 
+	 */
+	protected int _xMax = 23;
+
+	/**
+	 * the min y-axis square we're plotting
+	 * 
+	 */
+	protected int _yMin = 0;
+
+	/**
+	 * the max y-axis square we're plotting
+	 * 
+	 */
+	protected int _yMax = 23;
+
+	/**
+	 * the bottom-left corner of the grid
+	 */
+	protected WorldLocation _origin;
+
+	/**
+	 * the orientation of the 4W grid
+	 */
+	private double _orientation;
 
 	/**
 	 * our editor
@@ -230,20 +257,24 @@ public class Grid4WPainter implements Plottable, Serializable {
 	public static final String DEFAULT_NAME = "4W Grid";
 
 	/**
-	 * the formatter we use which only shows decimal places when they're present
+	 * the font to use
 	 */
-	private static final DecimalFormat _distanceFormatter = new DecimalFormat(
-			"0.##");
+	private Font _theFont = new Font("Sans Serif", Font.PLAIN, 8);
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
 	// //////////////////////////////////////////////////////////
-	public Grid4WPainter() {
+	public Grid4WPainter(WorldLocation origin)
+	{
 		_myColor = Color.darkGray;
+
+		_origin = origin;
 
 		// give it some default deltas
 		setXDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
 		setYDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
+
+		_orientation = 10;
 
 		// make it visible to start with
 		setVisible(true);
@@ -253,19 +284,23 @@ public class Grid4WPainter implements Plottable, Serializable {
 	// member functions
 	// //////////////////////////////////////////////////////////
 
-	public void setVisible(boolean val) {
+	public void setVisible(boolean val)
+	{
 		_isOn = val;
 	}
 
-	public boolean getVisible() {
+	public boolean getVisible()
+	{
 		return _isOn;
 	}
 
-	public void setColor(Color val) {
+	public void setColor(Color val)
+	{
 		_myColor = val;
 	}
 
-	public Color getColor() {
+	public Color getColor()
+	{
 		return _myColor;
 	}
 
@@ -273,9 +308,10 @@ public class Grid4WPainter implements Plottable, Serializable {
 	 * set the y delta for this grid
 	 * 
 	 * @param val
-	 *            the size
+	 *          the size
 	 */
-	public void setYDelta(WorldDistanceWithUnits val) {
+	public void setYDelta(WorldDistanceWithUnits val)
+	{
 		_myYDelta = val;
 	}
 
@@ -284,7 +320,8 @@ public class Grid4WPainter implements Plottable, Serializable {
 	 * 
 	 * @return the size
 	 */
-	public WorldDistanceWithUnits getYDelta() {
+	public WorldDistanceWithUnits getYDelta()
+	{
 		return _myYDelta;
 	}
 
@@ -292,9 +329,10 @@ public class Grid4WPainter implements Plottable, Serializable {
 	 * set the x delta for this grid
 	 * 
 	 * @param val
-	 *            the size
+	 *          the size
 	 */
-	public void setXDelta(WorldDistanceWithUnits val) {
+	public void setXDelta(WorldDistanceWithUnits val)
+	{
 		_myXDelta = val;
 	}
 
@@ -303,226 +341,336 @@ public class Grid4WPainter implements Plottable, Serializable {
 	 * 
 	 * @return the size
 	 */
-	public WorldDistanceWithUnits getXDelta() {
+	public WorldDistanceWithUnits getXDelta()
+	{
 		return _myXDelta;
 	}
 
 	/**
 	 * whether to plot the labels or not
 	 */
-	public boolean getPlotLabels() {
+	public boolean getPlotLabels()
+	{
 		return _plotLabels;
 	}
 
 	/**
 	 * whether to plot the labels or not
 	 */
-	public void setPlotLabels(boolean val) {
+	public void setPlotLabels(boolean val)
+	{
 		_plotLabels = val;
+	}
+
+	public Font getFont()
+	{
+		return _theFont;
+	}
+
+	public void setFont(Font theFont)
+	{
+		_theFont = theFont;
 	}
 
 	/**
 	 * whether to plot the labels or not
 	 */
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		_myName = name;
 	}
 
-	public void paint(CanvasType g) {
+	public void paint(CanvasType g)
+	{
 
 		// check we are visible
 		if (!_isOn)
 			return;
 
+    // create a transparent colour
+    g.setColor(new Color(_myColor.getRed(), _myColor.getGreen(), _myColor.getBlue(), 160));		
+
 		float oldLineWidth = g.getLineWidth();
 
 		g.setLineWidth(1.0f);
 
-		Dimension screenArea;
+		// is it filled?
+		if (_fillGrid)
+		{
+			// sort out the bounds
+			int[] xPoints = new int[4];
+			int[] yPoints = new int[4];
+			int ctr = 0;
 
-		// get the current screen area
-		screenArea = g.getProjection().getScreenArea();
+			Point thisP = g.toScreen(calcLocationFor(_xMin, _yMin));
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
 
-		// check that the projection is initialised
-		if (screenArea == null)
-			return;
+			thisP = g.toScreen(calcLocationFor(_xMin, _yMax + 1));
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
 
-		// set the current colour
-		g.setColor(_myColor);
+			thisP = g.toScreen(calcLocationFor(_xMax + 1, _yMax + 1));
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
 
-		// create data coordinates from the current corners of the screen
-		WorldLocation checkProjection = new WorldLocation(g.toWorld(new Point(
-				0, 0)));
+			thisP = g.toScreen(calcLocationFor(_xMax + 1, _yMin));
+			xPoints[ctr] = thisP.x;
+			yPoints[ctr++] = thisP.y;
 
-		// check we have data
-		if (checkProjection == null)
-			return;
-
-		// get the delta in degrees
-		double deltaDegs = _myXDelta.getValueIn(WorldDistanceWithUnits.DEGS);
-
-		// ok, find the outer limits of the lines to plot
-		WorldArea bounds = getOuterBounds(g, screenArea, deltaDegs);
-
-		double maxLat = bounds.getTopLeft().getLat();
-		double minLong = bounds.getTopLeft().getLong();
-		double minLat = bounds.getBottomRight().getLat();
-		double maxLong = bounds.getBottomRight().getLong();
-
-		// keep track of the point separation: if they are closer than 3 pixels,
-		// drop out
-		Point lastPoint = null;
-
-		// doDecide if we want to see the decimal portion of the plotted labels
-		boolean plotDecimals;
-
-		// is our delta less than 1 second in width?
-		if (deltaDegs < 1d / 60d / 60d) {
-			plotDecimals = true;
-		} else
-			plotDecimals = false;
-
-		// just trim the latitude, to ensure we plot realistic lats
-		minLat = Math.max(minLat, -90);
-		maxLat = Math.min(maxLat, 90);
-
-		int counter = 0;
-
-		final WorldLocation gridOrigin = getGridLabelOrigin(bounds);
-		int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myXDelta
-				.getValueIn(WorldDistanceWithUnits.DEGS));
-		int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myXDelta
-				.getValueIn(WorldDistanceWithUnits.DEGS));
-
-		// if we're using a local plot we need to decrement both of these
-		// offsets by one
-		if (this.isLocalPlotting()) {
-			latGridCounterOffset--;
-			longGridCounterOffset--;
+			g.setColor(_fillColor);
+			g.fillPolygon(xPoints, yPoints, xPoints.length);
 		}
 
-		// //////////////////////////////////////////////////////////
-		// first draw the lines going across
-		// ///////////////////////////////////////////////////////////
-
-		for (double thisLat = minLat; thisLat <= maxLat; thisLat += deltaDegs) {
-			Point p3 = g.toScreen(new WorldLocation(thisLat, maxLong, 0));
-
-			// the delta in screen coordinates
-			int dy = 0;
-
-			if (lastPoint == null)
-				lastPoint = new Point(p3);
-			else {
-				// find how far apart they are
-				dy = lastPoint.y - p3.y;
-
-				// check if we're too close
-				if (dy < MIN_SEPARATION)
-					return;
-
-				lastPoint = new Point(p3);
+		// ok, draw the vertical lines
+		for (int x = _xMin; x <= _xMax + 1; x++)
+		{
+			if (_plotLines)
+			{
+				Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
+				Point end = new Point(g.toScreen(calcLocationFor(x, _yMax + 1)));
+				g.drawLine(start.x, start.y, end.x, end.y);
 			}
 
-			g.drawLine(0, p3.y, screenArea.width, p3.y);
+			if ((x <= _xMax) && _plotLabels)
+			{
+				// find the centre-point for the label
+				Point start = new Point(g.toScreen(calcLocationFor(x, _yMin)));
+				Point end = new Point(g.toScreen(calcLocationFor(x + 1, _yMin)));
 
-			// ///////////////////////////////////////////////////////////
-			// and the labels
-			// ///////////////////////////////////////////////////////////
+				Point centre = new Point(start.x + (end.x - start.x) / 2, start.y);
 
-			if (_plotLabels) {
-				// so, we are going to plot a label in the middle of this grid
-				// line
+				// what's this label
+				String thisLbl = labelFor(x);
 
-				// check if the lines are too close for labels (we'll use 15
-				// pixels)
-				if (dy >= 15) {
-					String val;
-					if (_myXDelta.isAngular()) {
-						// get the formatted label
-						val = MWC.Utilities.TextFormatting.BriefFormatLocation
-								.toStringLat(thisLat, plotDecimals);
-					} else {
-						// ok, use a counter for the units
-						double thisVal = (counter++ - latGridCounterOffset)
-								* _myXDelta.getDistance();
-						val = _distanceFormatter.format(thisVal) + " "
-								+ _myXDelta.getUnitsLabel();
-					}
-					// and output it
-					g.drawText(val, 0, p3.y - 2);
-				}
+				// sort out the dimensions of the font
+				int ht = g.getStringHeight(_theFont);
+				int wid = g.getStringWidth(_theFont, thisLbl);
+
+				// and draw it
+				g.drawText(_theFont, thisLbl, centre.x - wid / 2, centre.y + ht);
 			}
+
 		}
 
-		// just trim the latitude, to ensure we plot realistic lats
-		minLong = Math.max(minLong, -180);
-		maxLong = Math.min(maxLong, 180);
-
-		counter = 0;
-
-		WorldVector symetricUnitOffset = null;
-		if (!_myXDelta.isAngular()) {
-			symetricUnitOffset = new WorldVector(MWC.Algorithms.Conversions
-					.Degs2Rads(90), deltaDegs, 0);
-		}
-
-		// ///////////////////////////////////////////////////////////
-		// now draw the lines going down
-		// ///////////////////////////////////////////////////////////
-
-		double thisLong = minLong;
-		while (thisLong < maxLong) {
-			// find out if this is one of our "special cases" where lines of
-			// long
-			// are in yds (absolute) not degrees (adjusted)
-			if (_myXDelta.isAngular()) {
-				thisLong += deltaDegs;
-			} else {
-
-				WorldLocation thisLoc = new WorldLocation(minLat, thisLong, 0);
-				// move it across a bit
-				thisLoc.addToMe(symetricUnitOffset);
-
-				// and take a copy of it.
-				thisLong = thisLoc.getLong();
-
+		// ok, now the horizontal lines
+		for (int y = _yMin; y <= _yMax + 1; y++)
+		{
+			if (_plotLines)
+			{
+				Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
+				Point end = new Point(g.toScreen(calcLocationFor(_xMax + 1, y)));
+				g.drawLine(start.x, start.y, end.x, end.y);
 			}
 
-			Point p3 = g.toScreen(new WorldLocation(minLat, thisLong, 0));
+			if ((y <= _yMax) && _plotLabels)
+			{
+				// find the centre-point for the label
+				Point start = new Point(g.toScreen(calcLocationFor(_xMin, y)));
+				Point end = new Point(g.toScreen(calcLocationFor(_xMin, y + 1)));
 
-			int p3x = p3.x;
-			int p3y = p3.y;
-			Point p4 = g.toScreen(new WorldLocation(maxLat, thisLong, 0));
+				Point centre = new Point(start.x, start.y + (end.y - start.y) / 2);
 
-			// just check that both ends of the line are visible
-			if ((p3x >= 0) || (p4.x >= 0)) {
-				g.drawLine(p3x, p3y, p4.x, p4.y);
+				// what's this label
+				String thisLbl = "" + (y + 1);
 
-				// ///////////////////////////////////////////////////////////
-				// and the labels
-				// ///////////////////////////////////////////////////////////
+				// sort out the dimensions of the font
+				int ht = g.getStringHeight(_theFont);
+				int wid = g.getStringWidth(_theFont, thisLbl);
 
-				if (_plotLabels) {
-
-					String thisLabel;
-					if (_myXDelta.isAngular()) {
-						// get the formatted label
-						thisLabel = MWC.Utilities.TextFormatting.BriefFormatLocation
-								.toStringLong(thisLong, plotDecimals);
-					} else {
-						// ok, use a counter for the units
-						double thisVal = (counter++ - longGridCounterOffset)
-								* _myXDelta.getDistance();
-						thisLabel = _distanceFormatter.format(thisVal) + " "
-								+ _myXDelta.getUnitsLabel();
-					}
-
-					// and output it
-					g.drawText(thisLabel, p3x + 2, 15);
-				}
+				// and draw it
+				g.drawText(_theFont, thisLbl, centre.x - wid, centre.y + ht / 2);
 			}
 		}
+		//		
+		//
+		// Dimension screenArea;
+		//
+		// // get the current screen area
+		// screenArea = g.getProjection().getScreenArea();
+		//
+		// // check that the projection is initialised
+		// if (screenArea == null)
+		// return;
+		//
+		// // set the current colour
+		// g.setColor(_myColor);
+		//
+		// // create data coordinates from the current corners of the screen
+		// WorldLocation checkProjection = new WorldLocation(g.toWorld(new Point(
+		// 0, 0)));
+		//
+		// // check we have data
+		// if (checkProjection == null)
+		// return;
+		//
+		// // get the delta in degrees
+		// double deltaDegs = _myXDelta.getValueIn(WorldDistanceWithUnits.DEGS);
+		//
+		// // ok, find the outer limits of the lines to plot
+		// WorldArea bounds = getOuterBounds(g, screenArea, deltaDegs);
+		//
+		// double maxLat = bounds.getTopLeft().getLat();
+		// double minLong = bounds.getTopLeft().getLong();
+		// double minLat = bounds.getBottomRight().getLat();
+		// double maxLong = bounds.getBottomRight().getLong();
+		//
+		// // keep track of the point separation: if they are closer than 3 pixels,
+		// // drop out
+		// Point lastPoint = null;
+		//
+		// // doDecide if we want to see the decimal portion of the plotted labels
+		// boolean plotDecimals;
+		//
+		// // is our delta less than 1 second in width?
+		// if (deltaDegs < 1d / 60d / 60d) {
+		// plotDecimals = true;
+		// } else
+		// plotDecimals = false;
+		//
+		// // just trim the latitude, to ensure we plot realistic lats
+		// minLat = Math.max(minLat, -90);
+		// maxLat = Math.min(maxLat, 90);
+		//
+		// int counter = 0;
+		//
+		// final WorldLocation gridOrigin = getGridLabelOrigin(bounds);
+		// int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) /
+		// _myXDelta
+		// .getValueIn(WorldDistanceWithUnits.DEGS));
+		// int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) /
+		// _myXDelta
+		// .getValueIn(WorldDistanceWithUnits.DEGS));
+		//
+		// // if we're using a local plot we need to decrement both of these
+		// // offsets by one
+		// if (this.isLocalPlotting()) {
+		// latGridCounterOffset--;
+		// longGridCounterOffset--;
+		// }
+		//
+		// // //////////////////////////////////////////////////////////
+		// // first draw the lines going across
+		// // ///////////////////////////////////////////////////////////
+		//
+		// for (double thisLat = minLat; thisLat <= maxLat; thisLat += deltaDegs) {
+		// Point p3 = g.toScreen(new WorldLocation(thisLat, maxLong, 0));
+		//
+		// // the delta in screen coordinates
+		// int dy = 0;
+		//
+		// if (lastPoint == null)
+		// lastPoint = new Point(p3);
+		// else {
+		// // find how far apart they are
+		// dy = lastPoint.y - p3.y;
+		//
+		// // check if we're too close
+		// if (dy < MIN_SEPARATION)
+		// return;
+		//
+		// lastPoint = new Point(p3);
+		// }
+		//
+		// g.drawLine(0, p3.y, screenArea.width, p3.y);
+		//
+		// // ///////////////////////////////////////////////////////////
+		// // and the labels
+		// // ///////////////////////////////////////////////////////////
+		//
+		// if (_plotLabels) {
+		// // so, we are going to plot a label in the middle of this grid
+		// // line
+		//
+		// // check if the lines are too close for labels (we'll use 15
+		// // pixels)
+		// if (dy >= 15) {
+		// String val;
+		// if (_myXDelta.isAngular()) {
+		// // get the formatted label
+		// val = MWC.Utilities.TextFormatting.BriefFormatLocation
+		// .toStringLat(thisLat, plotDecimals);
+		// } else {
+		// // ok, use a counter for the units
+		// double thisVal = (counter++ - latGridCounterOffset)
+		// * _myXDelta.getDistance();
+		// val = _distanceFormatter.format(thisVal) + " "
+		// + _myXDelta.getUnitsLabel();
+		// }
+		// // and output it
+		// g.drawText(val, 0, p3.y - 2);
+		// }
+		// }
+		// }
+		//
+		// // just trim the latitude, to ensure we plot realistic lats
+		// minLong = Math.max(minLong, -180);
+		// maxLong = Math.min(maxLong, 180);
+		//
+		// counter = 0;
+		//
+		// WorldVector symetricUnitOffset = null;
+		// if (!_myXDelta.isAngular()) {
+		// symetricUnitOffset = new WorldVector(MWC.Algorithms.Conversions
+		// .Degs2Rads(90), deltaDegs, 0);
+		// }
+		//
+		// // ///////////////////////////////////////////////////////////
+		// // now draw the lines going down
+		// // ///////////////////////////////////////////////////////////
+		//
+		// double thisLong = minLong;
+		// while (thisLong < maxLong) {
+		// // find out if this is one of our "special cases" where lines of
+		// // long
+		// // are in yds (absolute) not degrees (adjusted)
+		// if (_myXDelta.isAngular()) {
+		// thisLong += deltaDegs;
+		// } else {
+		//
+		// WorldLocation thisLoc = new WorldLocation(minLat, thisLong, 0);
+		// // move it across a bit
+		// thisLoc.addToMe(symetricUnitOffset);
+		//
+		// // and take a copy of it.
+		// thisLong = thisLoc.getLong();
+		//
+		// }
+		//
+		// Point p3 = g.toScreen(new WorldLocation(minLat, thisLong, 0));
+		//
+		// int p3x = p3.x;
+		// int p3y = p3.y;
+		// Point p4 = g.toScreen(new WorldLocation(maxLat, thisLong, 0));
+		//
+		// // just check that both ends of the line are visible
+		// if ((p3x >= 0) || (p4.x >= 0)) {
+		// g.drawLine(p3x, p3y, p4.x, p4.y);
+		//
+		// // ///////////////////////////////////////////////////////////
+		// // and the labels
+		// // ///////////////////////////////////////////////////////////
+		//
+		// if (_plotLabels) {
+		//
+		// String thisLabel;
+		// if (_myXDelta.isAngular()) {
+		// // get the formatted label
+		// thisLabel = MWC.Utilities.TextFormatting.BriefFormatLocation
+		// .toStringLong(thisLong, plotDecimals);
+		// } else {
+		// // ok, use a counter for the units
+		// double thisVal = (counter++ - longGridCounterOffset)
+		// * _myXDelta.getDistance();
+		// thisLabel = _distanceFormatter.format(thisVal) + " "
+		// + _myXDelta.getUnitsLabel();
+		// }
+		//
+		// // and output it
+		// g.drawText(thisLabel, p3x + 2, 15);
+		// }
+		// }
+		// }
 
 		// and restore the line width
 		g.setLineWidth(oldLineWidth);
@@ -535,35 +683,38 @@ public class Grid4WPainter implements Plottable, Serializable {
 	 * @param bounds
 	 * @return
 	 */
-	protected WorldLocation getGridLabelOrigin(WorldArea bounds) {
+	protected WorldLocation getGridLabelOrigin(WorldArea bounds)
+	{
 		return bounds.getBottomLeft();
 	}
 
 	/**
 	 * unfortunately we need to do some plotting tricks when we're doing a
-	 * locally-origined grid. This method is over-ridden by the LocalGrid to
-	 * allow this
+	 * locally-origined grid. This method is over-ridden by the LocalGrid to allow
+	 * this
 	 * 
 	 * @return
 	 */
-	protected boolean isLocalPlotting() {
+	protected boolean isLocalPlotting()
+	{
 		return false;
 	}
 
 	/**
-	 * find the top, bottom, left and right limits to plot. We've refactored it
-	 * to a child class so that it can be overwritten
+	 * find the top, bottom, left and right limits to plot. We've refactored it to
+	 * a child class so that it can be overwritten
 	 * 
 	 * @param g
-	 *            the plotting converter
+	 *          the plotting converter
 	 * @param screenArea
-	 *            the visible screen area
+	 *          the visible screen area
 	 * @param deltaDegs
-	 *            the grid separation requested
+	 *          the grid separation requested
 	 * @return an area providing the coverage requested
 	 */
 	protected WorldArea getOuterBounds(CanvasType g, Dimension screenArea,
-			double deltaDegs) {
+			double deltaDegs)
+	{
 		// create data coordinates from the current corners of the screen
 		WorldLocation topLeft = g.toWorld(new Point(0, 0));
 
@@ -579,33 +730,48 @@ public class Grid4WPainter implements Plottable, Serializable {
 
 		// create new corners just outside the current plot area, and clip
 		// them to the nearest 'delta' value
-		double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs)
-				* deltaDegs;
-		double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs)
-				* deltaDegs;
+		double maxLong1 = Math.ceil(bottomRight.getLong() / deltaDegs) * deltaDegs;
+		double minLat1 = Math.floor(bottomRight.getLat() / deltaDegs) * deltaDegs;
 
-		WorldArea bounds = new WorldArea(
-				new WorldLocation(maxLat1, minLong1, 0), new WorldLocation(
-						minLat1, maxLong1, 0));
+		WorldArea bounds = new WorldArea(new WorldLocation(maxLat1, minLong1, 0),
+				new WorldLocation(minLat1, maxLong1, 0));
 		return bounds;
 	}
-
-	/**
-	 * whether the plotting algorithm should offset the origin to the nearest
-	 * whole number of selected units
-	 * 
-	 * @return yes/no
-	 */
-	protected boolean offsetOrigin() {
-		return true;
-	}
-
-	public MWC.GenericData.WorldArea getBounds() {
-		// doesn't return a sensible size
+	public MWC.GenericData.WorldArea getBounds()
+	{
 		return null;
 	}
 
-	public double rangeFrom(MWC.GenericData.WorldLocation other) {
+
+	/**
+	 * sort out the location of this point
+	 * 
+	 * @param x
+	 *          how far across to go
+	 * @param y
+	 *          how far down to go
+	 * @return the location at this index
+	 */
+	protected WorldLocation calcLocationFor(int x, int y)
+	{
+		// convert the orientation to radians
+		double orient = MWC.Algorithms.Conversions.Degs2Rads(_orientation);
+
+		// calculate the deltas
+		final double xComponent = x * _myXDelta.getValueIn(WorldDistance.DEGS);
+		final double yComponent = y * _myYDelta.getValueIn(WorldDistance.DEGS);
+		double xNew = xComponent * Math.cos(orient) + yComponent * Math.sin(orient);
+		double yNew = -xComponent * Math.sin(orient) + yComponent
+				* Math.cos(orient);
+
+		WorldLocation res = new WorldLocation(_origin.getLat() + yNew, _origin
+				.getLong()
+				+ xNew, 0);
+		return res;
+	}
+
+	public double rangeFrom(MWC.GenericData.WorldLocation other)
+	{
 		// doesn't return a sensible distance;
 		return INVALID_RANGE;
 	}
@@ -613,26 +779,31 @@ public class Grid4WPainter implements Plottable, Serializable {
 	/**
 	 * return this item as a string
 	 */
-	public String toString() {
+	public String toString()
+	{
 		return getName();
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return _myName;
 	}
 
-	public boolean hasEditor() {
+	public boolean hasEditor()
+	{
 		return true;
 	}
 
-	public Editable.EditorType getInfo() {
+	public Editable.EditorType getInfo()
+	{
 		if (_myEditor == null)
 			_myEditor = new GridPainterInfo(this);
 
 		return _myEditor;
 	}
 
-	public int compareTo(Object arg0) {
+	public int compareTo(Object arg0)
+	{
 		Plottable other = (Plottable) arg0;
 		String myName = this.getName() + this.hashCode();
 		String hisName = other.getName() + arg0.hashCode();
@@ -643,33 +814,44 @@ public class Grid4WPainter implements Plottable, Serializable {
 	// info class
 	// //////////////////////////////////////////////////////////
 	public class GridPainterInfo extends Editable.EditorType implements
-			Serializable {
+			Serializable
+	{
 
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
 
-		public GridPainterInfo(Grid4WPainter data) {
+		public GridPainterInfo(Grid4WPainter data)
+		{
 			super(data, data.getName(), "");
 		}
 
-		public PropertyDescriptor[] getPropertyDescriptors() {
-			try {
-				PropertyDescriptor[] res = {
-						prop("Color", "the Color to draw the grid", FORMAT),
-						prop("Visible", "whether this grid is visible",
-								VISIBILITY),
-						prop("PlotLabels", "whether to plot grid labels",
-								VISIBILITY),
+		public PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				PropertyDescriptor[] res =
+				{ prop("Color", "the Color to draw the grid", FORMAT),
+						prop("Visible", "whether this grid is visible", VISIBILITY),
+						prop("PlotLabels", "whether to plot grid labels", VISIBILITY),
+						prop("PlotLines", "whether to plot grid lines", VISIBILITY),
+						prop("FillGrid", "whether to fill the grid", VISIBILITY),
 						prop("Name", "name of this grid", FORMAT),
-						prop("XDelta", "the x step size for the grid",
-								VISIBILITY),
-						prop("YDelta", "the y step size for the grid",
-								VISIBILITY) };
+						prop("Font", "font to use for labels", FORMAT),
+						prop("FillColor", "color to use to fill the grid", FORMAT),
+						prop("XDelta", "the x step size for the grid", SPATIAL),
+						prop("YDelta", "the y step size for the grid", SPATIAL),
+						prop("Orientation", "the orientation of the grid", SPATIAL),
+						prop("XMin", "the min index shown on the x-axis", SPATIAL),
+						prop("XMax", "the max index shown on the x-axis", SPATIAL),
+						prop("YMin", "the min index shown on the y-axis", SPATIAL),
+						prop("YMax", "the max index shown on the y-axis", SPATIAL),
+						prop("Origin", "the bottom-left corner of the grid", SPATIAL) };
 
 				return res;
-			} catch (IntrospectionException e) {
+			} catch (IntrospectionException e)
+			{
 				return super.getPropertyDescriptors();
 			}
 		}
@@ -681,20 +863,24 @@ public class Grid4WPainter implements Plottable, Serializable {
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public class Grid4WTest extends junit.framework.TestCase {
+	static public class Grid4WTest extends junit.framework.TestCase
+	{
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public Grid4WTest(String val) {
+		public Grid4WTest(String val)
+		{
 			super(val);
 		}
 
-		public void testMyParams() {
-			MWC.GUI.Editable ed = new Grid4WPainter();
+		public void testMyParams()
+		{
+			MWC.GUI.Editable ed = new Grid4WPainter(null);
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 			ed = null;
 		}
 
-		public void testIndexMgt() {
+		public void testIndexMgt()
+		{
 			// first some valid ones
 			assertEquals("index not calculated properly", 1, Grid4WPainter
 					.indexOf("B"));
@@ -721,46 +907,134 @@ public class Grid4WPainter implements Plottable, Serializable {
 					Grid4WPainter.indexOf("?A"));
 			// now some reverse checks
 			// first some valid ones
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(1), "B");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(0), "A");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(5), "F");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(22), "Y");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(24), "AA");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(26), "AC");
-			assertEquals("index not calculated properly", Grid4WPainter.labelFor(47), "AZ");
-			
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(1),
+					"B");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(0),
+					"A");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(5),
+					"F");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(22),
+					"Y");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(24),
+					"AA");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(26),
+					"AC");
+			assertEquals("index not calculated properly", Grid4WPainter.labelFor(47),
+					"AZ");
+
 		}
 
-		public void testInit() {
-			Grid4WPainter pt = new Grid4WPainter();
+		public void testInit()
+		{
+			WorldLocation origin = new WorldLocation(2, 3, 2);
+			Grid4WPainter pt = new Grid4WPainter(origin);
 			Assert.assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
 			Assert.assertEquals("wrong x def", new WorldDistanceWithUnits(10,
 					WorldDistanceWithUnits.NM), pt.getXDelta());
 			Assert.assertEquals("wrong y def", new WorldDistanceWithUnits(10,
 					WorldDistanceWithUnits.NM), pt.getYDelta());
+			Assert.assertEquals("wrong init index", 1, pt.getYMin().getCurrent());
+			Assert.assertEquals("wrong init index", 24, pt.getYMax().getCurrent());
+			Assert.assertEquals("wrong init index", "A", pt.getXMin());
+			Assert.assertEquals("wrong init index", "Z", pt.getXMax());
+			Assert.assertEquals("wrong origin lat", 2d, pt._origin.getLat());
+			Assert.assertEquals("wrong origin lat", 3d, pt._origin.getLong());
 		}
 
-		public void testProperties() {
-			Grid4WPainter pt = new Grid4WPainter();
+		public void testProperties()
+		{
+			Grid4WPainter pt = new Grid4WPainter(null);
 			pt.setName("new grid");
-			pt.setXDelta(new WorldDistanceWithUnits(12,
-					WorldDistanceWithUnits.DEGS));
-			pt.setYDelta(new WorldDistanceWithUnits(5,
-					WorldDistanceWithUnits.DEGS));
+			pt.setXDelta(new WorldDistanceWithUnits(12, WorldDistanceWithUnits.DEGS));
+			pt.setYDelta(new WorldDistanceWithUnits(5, WorldDistanceWithUnits.DEGS));
+			pt.setXMin("C");
+			pt.setXMax("E");
+			pt.setYMin(new BoundedInteger(7, 1, 1));
+			pt.setYMax(new BoundedInteger(12, 1, 1));
+			WorldLocation origin = new WorldLocation(2, 2, 0);
+			pt.setOrigin(origin);
 			Assert.assertEquals("wrong name", "new grid", pt.getName());
 			Assert.assertEquals("wrong x val", new WorldDistanceWithUnits(12,
 					WorldDistanceWithUnits.DEGS), pt.getXDelta());
 			Assert.assertEquals("wrong y val", new WorldDistanceWithUnits(5,
 					WorldDistanceWithUnits.DEGS), pt.getYDelta());
+			Assert.assertEquals("wrong x index", "C", pt.getXMin());
+			Assert.assertEquals("wrong x index", "E", pt.getXMax());
+			Assert.assertEquals("wrong y index", 7, pt.getYMin().getCurrent());
+			Assert.assertEquals("wrong y index", 12, pt.getYMax().getCurrent());
+			Assert.assertEquals("wrong origin", origin, pt.getOrigin());
 		}
+
+		public void testPosCalc()
+		{
+			// coords to get
+			int x = 1, y = 1;
+			WorldLocation origin = new WorldLocation(0, 0, 0);
+			double orientation = 0;
+			WorldDistanceWithUnits xDelta = new WorldDistanceWithUnits(1,
+					WorldDistanceWithUnits.DEGS);
+			WorldDistanceWithUnits yDelta = new WorldDistanceWithUnits(1,
+					WorldDistanceWithUnits.DEGS);
+
+			Grid4WPainter pt = new Grid4WPainter(origin);
+			pt.setXDelta(xDelta);
+			pt.setYDelta(yDelta);
+			pt.setOrientation(orientation);
+			WorldLocation newLoc = pt.calcLocationFor(1, 1);
+			Assert.assertEquals("easy Lat wrong", 0d, newLoc.getLat(), 0.001);
+			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
+			newLoc = pt.calcLocationFor(2, 2);
+			Assert.assertEquals("easy Lat wrong", 1d, newLoc.getLat(), 0.001);
+			Assert.assertEquals("easy Long wrong", 1d, newLoc.getLong(), 0.001);
+
+			// turn, baby
+			pt.setOrientation(90d);
+			newLoc = pt.calcLocationFor(x, y);
+			Assert.assertEquals("easy Lat wrong", 1d, newLoc.getLat(), 0.001);
+			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
+
+			// have another go
+			pt.setXDelta(new WorldDistanceWithUnits(2, WorldDistanceWithUnits.DEGS));
+			pt.setYDelta(new WorldDistanceWithUnits(3, WorldDistanceWithUnits.DEGS));
+			newLoc = pt.calcLocationFor(x, y);
+			Assert.assertEquals("easy Lat wrong", 2d, newLoc.getLat(), 0.001);
+			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
+
+			// and turn back
+			pt.setOrientation(0d);
+			newLoc = pt.calcLocationFor(x, y);
+			Assert.assertEquals("easy Lat wrong", 0d, newLoc.getLat());
+			Assert.assertEquals("easy Long wrong", 3d, newLoc.getLong());
+
+			// now try more complex orientations
+
+		}
+		// public void testBounds()
+		// {
+		// Grid4WPainter pt = new Grid4WPainter();
+		// pt.setOrigin(new WorldLocation(2,2,0));
+		// pt.setXDelta(new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS));
+		// pt.setYDelta(new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS));
+		// pt.setXMin("C");
+		// pt.setXMax("D");
+		// pt.setYMin(3);
+		// pt.setYMax(5);
+		//		  
+		// WorldArea bounds = pt.getBounds();
+		// WorldLocation topLeft = new WorldLocation(4,7,0);
+		// WorldLocation bottomRight= new WorldLocation(6,4,0);
+		// WorldArea eBounds = new WorldArea(topLeft, bottomRight);
+		// Assert.assertEquals("wrong bounds", eBounds, bounds);
+		//		  
+		// }
 
 	}
 
-	private static String indices[] = { "A", "B", "C", "D", "E", "F", "G", "H",
-			"J", "K", "L", "M", "N", "P", "Q", "R", "S", "T", "U", "V", "W",
-			"X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH",
-			"AJ", "AK", "AL", "AM", "AN", "AP", "AQ", "AR", "AS", "AT", "AU",
-			"AV", "AW", "AX", "AY", "AZ" };
+	private static String indices[] =
+	{ "A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N", "P", "Q",
+			"R", "S", "T", "U", "V", "W", "X", "Y", "Z", "AA", "AB", "AC", "AD",
+			"AE", "AF", "AG", "AH", "AJ", "AK", "AL", "AM", "AN", "AP", "AQ", "AR",
+			"AS", "AT", "AU", "AV", "AW", "AX", "AY", "AZ" };
 
 	/**
 	 * find the index of the supplied string
@@ -768,26 +1042,209 @@ public class Grid4WPainter implements Plottable, Serializable {
 	 * @param target
 	 * @return
 	 */
-	public static int indexOf(String target) {
-		int res = INVALID_INDEX;
-		for (int i = 0; i < indices.length; i++) {
-			if (indices[i] == target) {
+	public static int indexOf(String target)
+	{
+		// trim it down
+		target = target.trim();
+
+		// move to upper case
+		target = target.toUpperCase();
+
+		// now find a match
+		int res = 0;
+		for (int i = 0; i < indices.length; i++)
+		{
+			if (indices[i].equals(target))
+			{
 				res = i;
 				break;
 			}
 		}
 		return res;
 	}
-	
-	/** convert the integer index to a string
+
+	/**
+	 * convert the integer index to a string
 	 * 
-	 * @param index 4w grid horizontal index
+	 * @param index
+	 *          4w grid horizontal index
 	 * @return character representation of index
 	 */
-	public static String labelFor(int index)
+	protected static String labelFor(int index)
 	{
 		return indices[index];
 	}
-	
+
+	/**
+	 * @return the xMin
+	 */
+	public String getXMin()
+	{
+		return labelFor(_xMin);
+	}
+
+	/**
+	 * @param min
+	 *          the xMin to set
+	 */
+	public void setXMin(String min)
+	{
+		_xMin = indexOf(min);
+	}
+
+	/**
+	 * @return the xMax
+	 */
+	public String getXMax()
+	{
+		return labelFor(_xMax);
+	}
+
+	/**
+	 * @param max
+	 *          the xMax to set
+	 */
+	public void setXMax(String max)
+	{
+		_xMax = indexOf(max);
+	}
+
+	/**
+	 * @return the yMin
+	 */
+	public BoundedInteger getYMin()
+	{
+		return new BoundedInteger(_yMin + 1, 1, 48);
+	}
+
+	/**
+	 * @param min
+	 *          the yMin to set
+	 */
+	public void setYMin(BoundedInteger min)
+	{
+		_yMin = min.getCurrent() - 1;
+	}
+
+	/**
+	 * @return the yMax
+	 */
+	public BoundedInteger getYMax()
+	{
+		return new BoundedInteger(_yMax + 1, 1, 48);
+	}
+
+	/**
+	 * @param max
+	 *          the yMax to set
+	 */
+	public void setYMax(BoundedInteger max)
+	{
+		_yMax = max.getCurrent() - 1;
+	}
+
+	/**
+	 * @return the origin
+	 */
+	public WorldLocation getOrigin()
+	{
+		return _origin;
+	}
+
+	/**
+	 * @param origin
+	 *          the origin to set
+	 */
+	public void setOrigin(WorldLocation origin)
+	{
+		_origin = origin;
+	}
+
+	/**
+	 * @return the orientation
+	 */
+	public double getOrientation()
+	{
+		return _orientation;
+	}
+
+	/**
+	 * @param orientation
+	 *          the orientation to set
+	 */
+	public void setOrientation(double orientation)
+	{
+		_orientation = orientation;
+	}
+
+	/**
+	 * @return the fillGrid
+	 */
+	public boolean getFillGrid()
+	{
+		return _fillGrid;
+	}
+
+	/**
+	 * @param fillGrid
+	 *          the fillGrid to set
+	 */
+	public void setFillGrid(boolean fillGrid)
+	{
+		_fillGrid = fillGrid;
+	}
+
+	/**
+	 * @return the fillColor
+	 */
+	public Color getFillColor()
+	{
+		return _fillColor;
+	}
+
+	/**
+	 * @param fillColor
+	 *          the fillColor to set
+	 */
+	public void setFillColor(Color fillColor)
+	{
+		_fillColor = fillColor;
+	}
+
+	/**
+	 * @return the plotLines
+	 */
+	public boolean getPlotLines()
+	{
+		return _plotLines;
+	}
+
+	/**
+	 * @param plotLines
+	 *          the plotLines to set
+	 */
+	public void setPlotLines(boolean plotLines)
+	{
+		_plotLines = plotLines;
+	}
+
+	@Override
+	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+			LocationConstruct currentNearest, Layer parentLayer)
+	{
+
+		// initialise thisDist, since we're going to be over-writing it
+		WorldDistance thisDist = new WorldDistance(calcLocationFor(_xMin, _yMin).rangeFrom(cursorLoc), WorldDistance.DEGS);
+
+		// is this our first item?
+		currentNearest.checkMe(this, thisDist, null, parentLayer);
+		
+	}
+
+	@Override
+	public void shift(WorldVector vector)
+	{
+		_origin.addToMe(vector);
+	}
 
 }

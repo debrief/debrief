@@ -186,6 +186,12 @@ public final class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.La
         {
         }
       });
+      _myExporters.put(MWC.GUI.Chart.Painters.Grid4WPainter.class, new Grid4WHandler()
+      {
+        public void addPlottable(MWC.GUI.Plottable plottable)
+        {
+        }
+      });
       _myExporters.put(MWC.GUI.Chart.Painters.ScalePainter.class, new ScaleHandler()
       {
         public void addPlottable(MWC.GUI.Plottable plottable)

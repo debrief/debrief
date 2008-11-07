@@ -97,6 +97,13 @@ public class LayerHandler extends MWCXMLReader
 				addThis(plottable);
 			}
 		});
+		addHandler(new Grid4WHandler()
+		{
+			public void addPlottable(MWC.GUI.Plottable plottable)
+			{
+				addThis(plottable);
+			}
+		});
 
 		addAttributeHandler(new HandleAttribute("Name")
 		{
@@ -196,6 +203,12 @@ public class LayerHandler extends MWCXMLReader
 						}
 					});
 			_myExporters.put(MWC.GUI.Chart.Painters.GridPainter.class, new GridHandler()
+			{
+				public void addPlottable(MWC.GUI.Plottable plottable)
+				{
+				}
+			});
+			_myExporters.put(MWC.GUI.Chart.Painters.Grid4WPainter.class, new Grid4WHandler()
 			{
 				public void addPlottable(MWC.GUI.Plottable plottable)
 				{

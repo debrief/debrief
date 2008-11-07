@@ -33,18 +33,10 @@
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.5.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.5">
       <category name="cmap_features"/>
    </feature>
-<<<<<<< .mine
    <feature url="features/org.mwc.cmap.feature_1.0.66.jar" id="org.mwc.cmap.feature" version="1.0.66">
-=======
-   <feature url="features/org.mwc.debrief.feature_1.0.66.jar" id="org.mwc.debrief.feature" version="1.0.66">
->>>>>>> .r1844
       <category name="cmap_features"/>
    </feature>
-<<<<<<< .mine
    <feature url="features/org.mwc.debrief.feature_1.0.67.jar" id="org.mwc.debrief.feature" version="1.0.67">
-=======
-   <feature url="features/org.mwc.cmap.feature_1.0.66.jar" id="org.mwc.cmap.feature" version="1.0.66">
->>>>>>> .r1844
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

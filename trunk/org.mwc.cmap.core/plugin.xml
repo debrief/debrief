@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.cmap.core"
    name="CMap Core Resources Plug-in"
-   version="1.0.58"
+   version="1.0.59"
    provider-name="MWC"
    class="org.mwc.cmap.core.CorePlugin">
 

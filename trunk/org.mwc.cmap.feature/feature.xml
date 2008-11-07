@@ -6,21 +6,12 @@
       provider-name="MWC">
 
    <description>
-<<<<<<< .mine
       [1.0.66] Switch MWC_Legacy project to use OSGI manifest to export visible elements
 [1.0.65] Better trapping of error for mouse cursor when plot
 not selected
 [1.0.64] Improve support for range from perpendicular measurement
 [1.0.63] Force rebuild
 [1.0.62] Load plot spokes property when reading in saved Arc
-=======
-      [1.0.66] Step back to Europa build
-[1.0.65] Fix minor null pointer bug encountered in lat long display
-code.
-[1.0.64] Improve support for range from perpendicular measurement
-[1.0.63] Force rebuild
-[1.0.62] Load plot spokes property when reading in saved Arc
->>>>>>> .r1844
 [1.0.61] Don&apos;t zoom out at start/end of pan operation
 [1.0.60] Don&apos;t show narratives in right click popup [1.0.59]
 Reliable cycle through PartMonitor items in order [1.0.58] Correct
