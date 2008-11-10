@@ -135,11 +135,16 @@
 
 package MWC.GUI;
 
+import MWC.GUI.Chart.Painters.Grid4WPainter;
+import MWC.GUI.Chart.Painters.GridPainter;
+import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 import java.io.Serializable;
 import java.util.*;
+
+import junit.framework.Assert;
 
 /**
  * a list of Plottables
@@ -566,4 +571,42 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	public static interface PlotMeFirst {
 	}
 
+//////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public class Grid4WTest extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public Grid4WTest(String val)
+		{
+			super(val);
+		}
+
+		public void testAddRemove()
+		{
+			Plottables pl = new Plottables();
+			Assert.assertEquals("Empty list", pl.size(), 0);
+			GridPainter cp = new GridPainter();
+			pl.add(cp);
+			Assert.assertEquals("non-empty list", pl.size(), 1);
+			pl.removeElement(cp);
+			Assert.assertEquals("list", pl.size(), 0);
+			
+			ScalePainter sp = new ScalePainter();
+			pl.add(sp);
+			Assert.assertEquals("non-empty list", pl.size(), 1);
+			pl.removeElement(sp);
+			Assert.assertEquals("list empty", pl.size(), 0);
+			Grid4WPainter c4p = new Grid4WPainter(null);
+			pl.add(c4p);
+			Assert.assertEquals("non-empty list", pl.size(), 1);
+			pl.removeElement(c4p);
+			Assert.assertEquals("list", pl.size(), 0);
+		}
+
+
+	}	
+	
+	
 }

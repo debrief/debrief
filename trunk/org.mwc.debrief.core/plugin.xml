@@ -207,6 +207,14 @@
                style="push"/>
 
 
+         <action
+               class="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
+               icon="icons/grid4w.gif"
+               id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
+               label="&amp;4W Grid"
+               menubarPath="org.mwc.debrief.core.EditorFeatures/features"
+               style="push"/>
+
 
          <action
                class="org.mwc.debrief.core.creators.chartFeatures.InsertScale"
@@ -226,14 +234,6 @@
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
 
-
-         <action
-               class="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
-               icon="icons/grid4w.gif"
-               id="org.mwc.debrief.core.creators.chartFeatures.Insert4WGrid"
-               label="&amp;4W Grid"
-               menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
-               style="push"/>
 
          <action
                class="org.mwc.debrief.core.creators.shapes.InsertCircle"

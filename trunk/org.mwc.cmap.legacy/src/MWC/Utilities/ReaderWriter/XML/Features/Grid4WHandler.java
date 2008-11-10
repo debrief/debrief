@@ -202,8 +202,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements LayerHandler
    	// set the other bits
    	csp.setXMin(_xMin);
    	csp.setXMax(_xMax);
-   	csp.setYMin(new BoundedInteger(_yMin,1,1));
-   	csp.setYMax(new BoundedInteger(_yMax,1,1));
+   	csp.setYMin(_yMin);
+   	csp.setYMax(_yMax);
    	csp.setOrientation(_orientation);
    	csp.setXDelta(new WorldDistanceWithUnits(_xDelta, WorldDistanceWithUnits.NM));
    	csp.setYDelta(new WorldDistanceWithUnits(_yDelta, WorldDistanceWithUnits.NM));
@@ -274,8 +274,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements LayerHandler
     gridElement.setAttribute(YDELTA, writeThis(theGrid.getYDelta().getValueIn(WorldDistanceWithUnits.NM)));
     gridElement.setAttribute(XMIN, theGrid.getXMin());
     gridElement.setAttribute(XMAX, theGrid.getXMax());
-    gridElement.setAttribute(YMIN, writeThis(theGrid.getYMin().getCurrent()));
-    gridElement.setAttribute(YMAX, writeThis(theGrid.getYMax().getCurrent()));
+    gridElement.setAttribute(YMIN, writeThis(theGrid.getYMin().intValue()));
+    gridElement.setAttribute(YMAX, writeThis(theGrid.getYMax().intValue()));
     gridElement.setAttribute(ORIENTATION, writeThis(theGrid.getOrientation()));
     gridElement.setAttribute(PLOT_LABELS, writeThis(theGrid.getPlotLabels()));
     gridElement.setAttribute(PLOT_LINES, writeThis(theGrid.getPlotLines()));
