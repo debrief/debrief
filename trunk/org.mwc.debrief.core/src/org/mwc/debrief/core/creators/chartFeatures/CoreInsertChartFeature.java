@@ -77,14 +77,18 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 		// see if we have an area defined
 		if (wa != null)
 		{
+			// ok, get our layer name
+			final String myLayer = getLayerName();
+			
+			// drop out if we don't have a target layer (the user may have cancelled)
+			if(myLayer == null)
+				return null;
+
 			// ok - get the object we're going to insert
 			Plottable thePlottable = getPlottable(theChart);
 
 			// lastly, get the data
 			Layers theData = theChart.getLayers();
-
-			// ok, get our layer name
-			final String myLayer = getLayerName();
 
 			// hmm, did we get a layer?
 			if (myLayer == null)

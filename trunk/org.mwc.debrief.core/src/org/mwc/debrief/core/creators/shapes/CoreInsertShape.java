@@ -5,6 +5,7 @@ package org.mwc.debrief.core.creators.shapes;
 
 import java.util.*;
 
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.dialogs.ListDialog;
@@ -21,6 +22,7 @@ import MWC.GenericData.*;
 abstract public class CoreInsertShape extends CoreInsertChartFeature
 {
 
+	private static final String NEW_LAYER_COMMAND = "[Add new layer...]";
 	/** the target layer where we dump new items
 	 * 
 	 */
@@ -99,16 +101,58 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 				// yup, store it's name
 				Object[] val = list.getResult();
 				res = val[0].toString();
+				
+				// hmm, is it our add layer command?
+				if(res == NEW_LAYER_COMMAND)
+				{
+					// better create one.  Ask the user
+					
+					// create input box dialog
+					InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(), "New layer",
+							"Enter name for new layer", "name here...", null);
+					
+					// did he cancel?
+					if(inp.open() == InputDialog.OK)
+					{
+						// get the results
+						String txt = inp.getValue();
+
+						// check there's something there
+						if(txt.length() > 0)
+						{
+							res = txt;
+						// create base layer
+						Layer newLayer = new BaseLayer();
+						newLayer.setName(res);
+												
+						// add to layers object
+						theLayers.addThisLayer(newLayer);
+						}
+						else
+						{
+							res = null;
+						}
+					}
+					else
+					{
+						res = null;
+					}
+				}
 			}
 		}
 		
 		return res;
 	}
 
+	/** find the list of layers that could receive a new gui item. We don't
+	 * want to add a rectangle to a track, silly.
+	 * @param theLayers the list to search through
+	 * @return receptive layers (those derived from BaseLayer).
+	 */
 	private String[] trimmedLayers(Layers theLayers)
 	{
 		Vector<String> res = new Vector<String>(0,1);
-		Enumeration enumer = theLayers.elements();
+		Enumeration<Editable> enumer = theLayers.elements();
 		while(enumer.hasMoreElements())
 		{
 			Layer thisLayer = (Layer) enumer.nextElement();
@@ -117,6 +161,9 @@ abstract public class CoreInsertShape extends CoreInsertChartFeature
 				res.add(thisLayer.getName());
 			}
 		}
+		
+		res.add(NEW_LAYER_COMMAND);
+		
 		String[] sampleArray = new String[]{"aa"};
 		return res.toArray(sampleArray);
 	}
