@@ -961,7 +961,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 */
 	public Integer getYMax()
 	{
-		return _yMax;
+		return _yMax + 1;
 	}
 
 	/**
