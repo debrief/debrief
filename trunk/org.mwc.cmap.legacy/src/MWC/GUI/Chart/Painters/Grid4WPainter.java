@@ -274,7 +274,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		setXDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
 		setYDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
 
-		_orientation = 10;
+		_orientation = 0;
 
 		// make it visible to start with
 		setVisible(true);
