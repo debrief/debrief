@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet title="Loading some sample data" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\contentFile.xsd">
+	<intro>
+		<description>Debrief NG is distributed with a folder of sample data.  This data is useful for trialling the application, as well as an illustration of the Debrief data structyures when transforming your data into a compliant formats.</description>
+	</intro>
+	<item title="Check Navigator is open">
+		<description>In the top left hand corner of Debrief you should find the Navigator window.  If is isn't there, select "Navigator" from Debrief's Window/Show View menu.</description>
+	</item>
+	<item title="Check you have a workspace">
+		<description>Before you can link in existing data, you need to define a project for your work.  This is a parent folder within which your links are stored.  If your Navigator window is empty, you must follow the "Generating a project" cheat-sheet accessed from the Help/Cheat Sheets menu.</description>
+	</item>
+	<item title="Add a new Folder">
+		<description>Right-click on your current project in the Navigator view, then select 'Folder' from the 'New' sub-menu.  The New Folder wizard will open.
+		</description>
+	</item>
+	<item title="Show the Advanced options">
+		<description>Still in the New Folder Wizard, click the 'Advanced' button to display the Advanced options.</description>
+	</item>
+	<item title="Linking to an existing folder">
+		<description>Click on the 'Link to folder in the file system'.  Using the file-browser, you now need to navigate to the 'test_data' sub-directory of the 'workspace' folder, itself found within your Debrief NG installation folder. Finally click on 'Finish' to add the folder link. </description>
+	</item>
+	<item title="Done">
+		<description>Well done, there you are - you now have a set of files to experiment with.</description>
+	</item>
+</cheatsheet>

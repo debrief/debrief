@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.mwc.cmap.installer" default="perform_dist" basedir=".">
+	<property name="deployDir" value="../deploy" description="where we start building the output set" />
+    <property name="linuxDist" value="${deployDir}/Debrief.zip" description="the name for the linux/debrief dist (without JRE)" />
+
+	<!-- path to the installer (exec command won't take relative path reference -->
+	<property name="advancedInstallerPath" value="C:\Program Files\Caphyon\Advanced Installer 6.4" />
+
+	<!-- and the zip support filenames -->
+    <property name="zipName" value="update.zip"/>
+    <property name="zipDest" value="${deployDir}/${zipName}"/>
+<!--	<property name="zipPath" value="/Volumes/Untitled/"/> -->
+<!--	<property name="zipPath" value="/media/cdrom0"/> -->
+	<property name="zipPath" value="e:/"/> 
+	
+	
+	<target name="clean" description="clear the output directory" depends="">
+	</target>
+
+	<target name="empty_dist_dir" description="clear the output directory" depends="">
+		<delete dir="${deployDir}" excludes="DebriefNG,DebriefNG/**, .project" />
+	</target>
+
+	<target name="check_the_dist" description="checking all files there" depends="">		
+		<property name="distDir" value="${deployDir}\DebriefNG" />
+		
+		<condition property="help_present">
+			<and>
+				<available file="${deployDir}\..\org.mwc.debrief.help\html\legacy\index.html" />
+					<isfileselected file="${distDir}\plugins\org.mwc.debrief.help_1.0.21.jar">
+						<size value="120" units="Ki" when="more"/>
+					</isfileselected>				
+			</and>
+		</condition>
+		<condition property="output_present">
+			<and>
+				<!-- start with the output folder -->
+				<available type="dir" file="${distDir}" /> 
+			</and>
+		</condition>
+		<condition property="eclipse_present">
+			<and>
+				<!-- first Debrief   -->
+				<available file="${distDir}\DebriefNG.exe" />
+				<!-- now eclipse itself   -->
+				<available type="dir" file="${distDir}\features\org.eclipse.platform_3.3.3.r33x_r20080129-_19UEl7Ezk_gXF1kouft" />
+				<available type="dir" file="${distDir}\features\org.eclipse.rcp_3.3.3.r33x_r20080129-8y8eE9UEUWI6qujeED0xT7bc" />
+			</and>
+		</condition>
+		<condition property="static_present">
+			<and>
+				<!-- and the jre -->
+				<available file="${distDir}\jre" />
+				<available file="${distDir}\jre\bin\java.exe" />
+				<!-- and the workspace 
+				<available file="${distDir}\workspace" />
+				<available file="${distDir}\workspace\sample_data" />
+				<available file="${distDir}\workspace\sample_data\sample.xml" /> -->
+				<!-- and the dlls -->
+				<available file="${distDir}\gdiplus.dll" />
+				<available file="${distDir}\JavaClipboard.dll" />
+			</and>
+		</condition>
+		<condition property="debrief_present">
+			<and>
+				<!-- first the plugins -->
+				<available type="dir" file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.39" />
+				<!-- now the features -->
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.feature_1.0.66" />
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.13" />
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.5" />
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.9" />
+			</and>
+		</condition>
+					
+		<fail message="the output folder (DebriefNG) isn't there" unless="output_present" />
+		<fail message="some eclipse files are missing" unless="eclipse_present" />
+		<fail message="some static lib files are missing" unless="static_present" />
+		<fail message="some debrief files are missing" unless="debrief_present" />
+		<fail message="the help files have not been built" unless="help_present" />
+	</target>
+
+	<target name="build_installer" description="do installer" if="do.installer" depends="">
+		<!-- check everything's in the dist -->
+		<echo message="checking the dist" />
+		<antcall target="check_the_dist" /> 
+		
+		<echo message="deleting the old installer"/>
+		<delete file="${deployDir}\InstallDebrief.exe" ></delete>
+
+		
+		<echo message="building the dist" />
+		<exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
+			<arg line="/build ng_installer_settings.aip" />
+		</exec>
+			<sound>
+			   <success source="C:\windows\media\tada.wav"/>
+			   <fail source="C:\windows\media\Windows XP Critical Stop.wav"/>
+			</sound>			
+	</target>
+
+	<target name="prepareUpdateToZip" description="copy updates to zipDrv" if="do.zipDrive" depends="">
+		<echo message="checking zip present" />
+        <available file="${zipPath}" property="zip.drivePresent" />
+		<fail message="zip drive not found!"  unless="zip.drivePresent"/>
+		<antcall target="copyUpdateToZip"/>
+	</target>
+	
+	<target name="copyUpdateToZip" description="copy updates to zipDrv" if="zip.drivePresent" depends="">
+        <echo message="zip drive found" />
+		
+		<antcall target="zipTheData"/>
+		
+        <echo message="ditching old zip from zip drive" />
+        <delete file="${zipPath}/${zipName}"/>
+        <echo message="copying new zip to zip drive" />
+		<copy file="${zipDest}" todir="${zipPath}" />
+     <!--  don't bother copying the unpack code.  we haven't got it in linux, and it's waiting already on the LAN	    
+     	<echo message="copying unpack script to zip drive" />
+		<copy file="unpack.xml" todir="h:/" /> -->
+	</target>
+	
+	<target name="zipTheData" description="create the zip file for exporting">
+        <echo message="ditching old update zip" />
+        <delete file="${zipDest}"/>
+        <echo message="creating new update zip" />
+		<zip destFile="${zipDest}" whenempty="fail" duplicate="fail">
+			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+		</zip>
+	</target>
+
+
+    <target name="createLinuxDist" description="copy updates to zipDrv" if="do.linux">
+        <echo message="ditching previous linux dist" />
+    	<delete file="${linuxDist}"/>
+        <echo message="collating linux dist" />
+    	<zip destfile="${linuxDist}" basedir="${deployDir}/DebriefNG" excludes="jre" />
+    	<property name="linuxDistComplete" value="true"/>
+    </target>
+
+	<target name="upload_to_internet" if="do.internet">
+		<input message="And the password for target server?" addproperty="sf.pwd" />
+		<echo message="copying fileset to internet" />
+		<scp trust="yes" file="${deployDir}/test2.txt" password="${sf.pwd}" todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/eclipse">
+		</scp>
+<!--
+            <fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+ -->		
+		<echo message="and the linux dist"/>
+		<antcall target="uploadLinuxDist"/>
+	</target>
+		
+	<target name="uploadLinuxDist" if="${linuxDistComplete}">
+		<!-- check if linux dist built -->
+		<fail message="We haven't got the linux dist" unless="${linuxDistComplete}"/>
+        <fail message="we don't know the password" if="${sf.pwd}"/>
+        <scp trust="yes" file="${linuxDist}" password="${sf.pwd}" todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/linux">
+        </scp>
+	</target>
+
+	<target name="perform_dist" description="insert missing bits into dist">
+		<!-- get a name for the new dist -->
+		<tstamp>
+			<format property="TODAY_UK" pattern="yyyyMMdd_HHmm" locale="en" />
+		</tstamp>
+		<input message="Please enter dist title:" addproperty="dist-title" defaultvalue="DebriefNG_${TODAY_UK}" />
+		<echo message="building:${dist-title}" />
+
+		<!-- find out what we're doing -->
+        <input message="Build unix/mac dist? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.linux.answer" />
+        <input message="Export to internet? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.internet.answer" />
+		<input message="Build installer? (y/n)?" defaultvalue="n" validargs="y,n" addproperty="do.installer.answer" />
+		<input message="Export to removeable media? (y/n)?" defaultvalue="y" validargs="y,n" addproperty="do.zipDrive.answer" />
+
+		<!-- convert answers to true/false -->
+		<condition property="do.installer">
+			<equals arg1="y" arg2="${do.installer.answer}" />
+		</condition>
+
+		<condition property="do.zipDrive">
+			<equals arg1="y" arg2="${do.zipDrive.answer}" />
+		</condition>
+
+		<condition property="do.internet">
+			<equals arg1="y" arg2="${do.internet.answer}" />
+		</condition>
+
+        <condition property="do.linux">
+            <equals arg1="y" arg2="${do.linux.answer}" />
+        </condition>
+
+		<!-- clean the target dist -->
+		<antcall target="empty_dist_dir" />
+
+        <!-- do the linux dist -->
+        <antcall target="createLinuxDist" />
+
+		<!-- upload the modified features to the internet -->
+		<antcall target="upload_to_internet" />
+
+		<!-- copy the bits to the zip drive -->
+		<antcall target="prepareUpdateToZip" />
+
+		<!-- do the installer -->
+		<antcall target="build_installer" />
+
+		<!-- all complete -->
+		<echo message="All copied.  Dist complete" />
+
+		<sound>
+		   <success source="C:\windows\media\tada.wav"/>
+		   <fail source="C:\windows\media\Windows XP Critical Stop.wav"/>
+		</sound>
+	</target>
+
+	<target name="copyInstallToInternet" description="Copy installer to Internet">
+		<scp trust="yes" file="${deployDir}/test2.txt" password="${sf.pwd}" todir="ianmayo@shell.sourceforge.net:/home/groups/d/de/debrief/htdocs/eclipse">
+			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+		</scp>
+	</target>
+
+</project>

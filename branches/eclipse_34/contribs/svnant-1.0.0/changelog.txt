@@ -1,0 +1,50 @@
+* 1.0.0
+- Built against svnClientAdapter r2401 and Subversion 1.3.1,
+  incorporating numerous bug fixes and improvements from both.
+  Removed dependency on commons-lang-2.0.jar.
+  Removed dependency on jakarta-regexp-1.4.jar.
+- Fixed revision parameter in Switch task (#305)
+- Added url property to Status task (#327)
+- Still lacks support for Subversion locking (introduced in SVN 1.2.0).
+
+* 1.0.0-rc1
+- Built against svnClientAdapter r1384 and Subversion 1.2.0,
+  incorporating numerous bug fixes and improvements from both.
+- Lacks support for Subversion locking (introduced in SVN 1.2.0).
+- Improved documentation.
+- New 'switch' and 'propget' commands for <svn> task.
+- Repository creation handles SVN file system type.
+- New JAR dependencies added (regexp, lang).
+- Add new/improved tests (e.g. of 'status', 'info', 'annotate',
+  'switch', svnserve, etc.).
+- Adjustments to distribution packaging, including the removal of the
+  bundled JavaHL win32 DLLs.
+
+* 0.9.13
+- createRepository command added
+- status command added
+- linked with subversion 1.0.5
+
+* 0.9.1
+- ignore and diff commands added
+- more improvements to command line interface to subversion
+
+* 0.8.6
+- improvements to command line interface to subversion
+  (should work better on Linux)
+
+* 0.8.5
+- linked with subversion 0.35.1 and Berkeley DB 4.2.52
+- improvements to command line interface to subversion
+- cat, revert, propdel commands added
+
+* 0.8.2
+- linked with subversion 0.31.2
+- command line interface to subversion (experimental)
+- keywordadd, keywordsremove, keywordsset and diff commands added
+
+* 0.6.0 
+- linked with Subversion 0.24.2
+- propset added
+
+* 0.1.0 - Initial Release

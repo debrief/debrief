@@ -1,0 +1,644 @@
+<project name="buildDebrief" default="all" basedir="../">
+
+  <!--            -->
+  <!-- INITIALISE -->
+  <!--            -->
+  <property name="debriefDir" value="."/>
+  <property name="buildDir" value="${debriefDir}/build/classes" description="where the compiled class files are located"/>
+  <property name="distDir" value="${debriefDir}/dist" description="where the installer goes"/>
+  <property name="buildCVSLogDir" value="${debriefDir}/build/cvs"/>
+  <property name="deployDir" value="${debriefDir}/deploy" description="where the executables are placed"/>
+  <property name="sourceDir" value="${debriefDir}/src" description="where the sources are located"/>
+  <property name="toolsDir" value="${debriefDir}/tools" description="where the sources are located"/>
+  <property name="imageDir" value="${sourceDir}/java/debrief/images" description="where the images are located"/>
+  <property name="libDir" value="${debriefDir}/lib" description="where the lib files are located"/>
+  <property name="testOutputDir" value="C:\temp\test_output" description="we put the test results files"/>
+  <property name="exeName" value="D2003.jar" description="The Debrief executable"/>
+
+  <property name="fopVersion" value="fop-0.20.5rc" description="the current version of FOP"/>
+  <property name="fopDir" value="C:\docbook\${fopVersion}" description="where the fop libraries are located"/>
+  <property name="docDir" value="${sourceDir}/xdocs/docbook/html" description="where the docbook xml source is located"/>
+  <property name="docOutputDir" value="${debriefDir}/build/docs" description="where the doc files are located"/>
+  <property name="docName" value="Debrief User Guide.pdf" description="The Debrief document file"/>
+  <property name="docbookFile" value="html\new2.xml" description="The Debrief manual in DocBook XML"/>
+
+  <!-- CVS-related properties -->
+  <property name="CVS_ROOT" value="I:/mwc/coag/asset/cvsroot" description="the CVS root"/>
+
+  <!-- path to the installer (exec command won't take relative path reference -->
+  <property name="advancedInstallerPath" value="d:\dev\debrief\contribs\advancedinstaller\"/>
+
+  <!-- below is the command to extract the sets of Debrief & Util sources from CVS -->
+  <!-- <property name="CVS_exportCommand" value="-Q export -kb -D now" description="the command and arguments to retrieve a source set"/> -->
+
+  <!--     classpath      -->
+  <path id="util_classpath">
+    <fileset dir="${libDir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="debrief_classpath">
+    <pathelement location="${buildDir}/Util"/>
+    <fileset dir="${libDir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="application_classpath">
+    <pathelement location="${buildDir}/Util"/>
+    <pathelement location="${buildDir}/Debrief"/>
+    <fileset dir="${libDir}">
+      <include name="*.jar"/>
+    </fileset>
+  </path>
+
+  <fileset dir="${libDir}" id="compile_libs">
+    <!-- XML support -->
+    <include name="ant.jar"/>
+    <include name="jakarta-ant-1.4.1-optional.jar"/>
+    <include name="license.txt"/>
+    <include name="jfcunit"/>
+    <include name="jcf"/>
+    <include name="junit"/>
+  </fileset>
+
+  <fileset dir="${libDir}" id="executable_libs">
+    <!-- XML support   -->
+    <include name="xercesImpl.jar"/>
+    <include name="xmlParserAPIs.jar"/>
+
+    <!-- others -->
+    <include name="jmf.jar"/>
+    <include name="openmap.jar"/>
+    <include name="license.txt"/>
+    <include name="jcommon-0.7.1.jar"/>
+
+    <!-- 3d support -->
+    <include name="vrml97.jar"/>
+
+
+    <!--
+    <include name="parser.jar"/>
+    <include name="xerces.jar"/>
+  <include name="jaxen-full.jar"/>
+  <include name="jdom.jar"/>
+  <include name="parser.jar"/>
+  <include name="saxpath.jar"/>
+  <include name="xerces.jarxercesImpl.jar "/>  -->
+    <!-- <include name="vrml97.jar"/>
+         jfreeChart support -->
+
+  </fileset>
+
+
+  <fileset dir="${sourceDir}/dist_base" id="installed_data">
+    <!-- read in all files -->
+    <include name="**"/>
+    <exclude name="cvs"/>
+    <exclude name=".cvsignore"/>
+  </fileset>
+
+  <target name="init">
+    <!-- produce the time stamps -->
+    <tstamp/>
+
+    <tstamp>
+      <format property="TODAY_UK" pattern="d-MMMM-yyyy HH:mm" locale="en"/>
+    </tstamp>
+
+
+    <!-- names of the distributions -->
+    <property name="srcDist" value="${distDir}/Debrief-2003-src-${DSTAMP}.zip" description="The source distribution"/>
+    <property name="binDist" value="${distDir}/Debrief-2003-bin-${DSTAMP}.zip" description="The binary distribution"/>
+  </target>
+
+
+
+  <!--                -->
+  <!--     clean      -->
+  <!--                -->
+
+  <target name="clean" description="clear out the working directories" depends="init">
+    <!-- first the build files -->
+    <delete quiet="false" dir="${buildDir}"/>
+    <delete quiet="false" dir="${debriefDir}/build"/>
+
+
+
+    <!-- now the executables -->
+    <delete quiet="false" dir="${deployDir}"/>
+    <!-- now the distributions -->
+    <delete quiet="true" dir="${distDir}"/>
+    <!-- now the library files -->
+
+    <!-- now the test files -->
+    <delete quiet="true" includeEmptyDirs="true">
+      <fileset dir="${testOutputDir}" includes="**\*.*"/>
+      <fileset dir="${testOutputDir}\MWC"/>
+      <fileset dir="${testOutputDir}\Debrief"/>
+    </delete>
+
+    <!-- and the executables on the intranet -->
+    <delete file="I://mwc/coag/sm/debrief/updates/d2003.chm"/>
+    <delete file="I://mwc/coag/sm/debrief/updates/d2003.jar"/>
+
+  </target>
+  <!--                -->
+  <!--    prepare     -->
+  <!--                -->
+
+  <target name="prepare" description="produce the version numbers" depends="init, create_directories">
+  </target>
+
+  <!-- create the output directories -->
+  <target name="create_directories">
+    <!-- create the build directories -->
+    <mkdir dir="${buildDir}"/>
+    <mkdir dir="${debriefDir}/build"/>
+    <!-- create the deploy directories -->
+    <mkdir dir="${deployDir}"/>
+    <!-- create the dist directories -->
+    <mkdir dir="${distDir}"/>
+  </target>
+
+  <!-- update the version number -->
+  <target name="update_version" depends="prepare">
+    <!-- create the output directory -->
+    <mkdir dir="${buildDir}/Debrief/GUI"/>
+
+    <!-- build the create version application -->
+    <javac debug="on" verbose="yes" destdir="${buildDir}/Debrief" includes="**CreateVersion**">
+      <src path="${sourceDir}/java/Debrief"/>
+    </javac>
+
+    <!-- run it to create the version file -->
+    <java classpath="${buildDir}/Debrief" classname="CreateVersion" failonerror="true">
+      <arg value="../src/java/Debrief"/>
+    </java>
+
+
+  </target>
+
+
+  <!--                -->
+  <!--    compile     -->
+  <!--                -->
+  <target name="compile" description="compile the source code" depends="clean, init, update_version,
+compile_util, compile_debrief, compile_help">
+
+  </target>
+
+  <!-- compilations -->
+  <target name="compile_util" depends="prepare">
+    <mkdir dir="${buildDir}/Util"/>
+    <javac srcdir="${sourceDir}/java/Util" debug="on" destdir="${buildDir}/Util">
+      <classpath refid="util_classpath"/>
+    </javac>
+  </target>
+
+  <target name="compile_debrief" depends="prepare, update_version">
+    <mkdir dir="${buildDir}/Debrief"/>
+    <javac srcdir="${sourceDir}/java/Debrief" debug="on" destdir="${buildDir}/Debrief">
+      <classpath refid="debrief_classpath"/>
+    </javac>
+  </target>
+
+
+
+  <target name="compile_docbook_xsl" depends="init, prepare"
+    description="create HTML (XSL) version of User Manual">
+
+    <!--    <delete file="${sourceDir}\xdocs\docbook\d2003.chm"/>
+        <delete file="${sourceDir}\xdocs\docbook\html\out.fo"/>
+        <delete file="${sourceDir}\xdocs\docbook\${docName}"/> -->
+
+    <!-- also clear the output directories -->
+    <delete dir="${docOutputDir}"/>
+    <mkdir dir="${docOutputDir}"/>
+
+    <!-- now copy in our various images -->
+    <!-- first copy the html images -->
+    <copy todir="${docOutputDir}\figures">
+      <fileset dir="${docDir}\figures"/>
+    </copy>
+    <copy todir="${docOutputDir}\images">
+      <fileset dir="${docDir}\images"/>
+    </copy>
+
+    <!-- now copy the style sheet for the document output -->
+    <copy file="${docDir}/header.css" todir="${docOutputDir}/"/>
+
+
+
+    <!-- put todays date into the xsl template -->
+    <!-- delete the old one (to be sure we have the new one) -->
+    <delete file="${toolsDir}/docs\dated_html_style.xsl"/>
+    <!-- copy the blank template first -->
+    <copy file="${toolsDir}/docs\html_style.xsl" tofile="${toolsDir}/docs\dated_html_style.xsl"/>
+    <!-- and replace the marker with the DTG -->
+    <replace file="${toolsDir}/docs\dated_html_style.xsl" token="__DATE__" value="${TODAY_UK}"/>
+
+    <!-- and now for the single-page version -->
+    <!-- delete the old one (to be sure we have the new one) -->
+    <delete file="${toolsDir}/docs\dated_single_html_style.xsl"/>
+    <!-- copy the blank template first -->
+    <copy file="${toolsDir}/docs\single_html_style.xsl" tofile="${toolsDir}/docs\dated_single_html_style.xsl"/>
+    <!-- and replace the marker with the DTG -->
+    <replace file="${toolsDir}/docs\dated_single_html_style.xsl" token="__DATE__" value="${TODAY_UK}"/>
+
+    <!-- produce the user guide web-pages,  ready for uploading to the Intranet,
+      and for production of the HTML-help-->
+    <java classpath="c:\docbook\saxon6_5_2\saxon.jar"
+      fork="yes" dir="${docOutputDir}"
+      classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+      <arg value="../../${docDir}/new2.xml"/>
+      <arg value="../../${toolsDir}/docs/dated_html_style.xsl"/>
+    </java>
+
+    <!-- html (single file) version-->
+    <java classpath="c:\docbook\saxon6_5_2\saxon.jar"
+      fork="yes" dir="${docOutputDir}"
+      classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+      <arg value="../../${docDir}/new2.xml"/>
+      <arg value="../../${toolsDir}/docs/dated_single_html_style.xsl"/>
+    </java>
+
+
+    <!-- eclipse output -->
+    <mkdir dir="${docOutputDir}\..\eclipse"/>
+    <java classpath="c:\docbook\saxon6_5_2\saxon.jar"
+      fork="yes" dir="${docOutputDir}\..\eclipse"
+      classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+      <arg value="../../${docDir}/new2.xml"/>
+      <arg value="../../${toolsDir}/docs/eclipse_html_style.xsl"/>
+    </java>
+
+    <!-- produce the FO file, ready for PDF-->
+    <java classpath="c:\docbook\saxon6_5_2\saxon.jar"
+      fork="yes" dir="${docOutputDir}"
+      classname="com.icl.saxon.StyleSheet" maxmemory="128m">
+      <arg value="-o"/>
+      <arg value="out.fo"/>
+      <arg value="../../${docDir}/new2.xml"/>
+      <arg value="../../${toolsDir}/docs/fo_style.xsl"/>
+    </java>
+
+    <!-- now convert the fo file to PDF format-->
+    <java classpath="${fopDir}\build\fop.jar;${fopDir}\lib\batik.jar;${fopDir}\lib\xalan-2.3.1.jar;${fopDir}\lib\xercesImpl-2.0.1.jar;${fopDir}\lib\xml-apis.jar;${fopDir}\lib\avalon-framework-cvs-20020806.jar;${fopDir}\lib\logkit-1.0.jar;${fopDir}\lib\jimi-1.0.jar"
+      fork="yes" dir="${docOutputDir}"
+      classname="org.apache.fop.apps.Fop" maxmemory="256m">
+      <sysproperty key="FOPD" value="c:\docbook\${fopVersion}\"/>
+      <arg value="-d"/>
+      <arg value="out.fo"/>
+      <arg value="${docName}"/>
+    </java>
+
+  </target>
+
+  <!-- produce javadoc of the fileset -->
+  <target name="collate_javadoc" description="clean api dir, create new javadoc" depends="init">
+    <delete quiet="false" dir="${debriefDir}/api/*"/>
+    <mkdir dir="${debriefDir}/api"/>
+
+    <javadoc packagenames="ASSET.*" doctitle="ASSET source documentation (${TODAY_UK})"
+      destdir="${buildDir}/api" use="yes" nohelp="yes" splitindex="yes" windowtitle="Debrief source docs (created:${TODAY_UK})"
+      maxmemory="256m" private="yes" linksource="yes"
+      bottom="Debrief from PlanetMayo Ltd - &lt;a href='http://intranet2/COAG/SM/debrief.htm' target='_parent'>Return to Debrief homepage&lt;/a>">
+      <packageset dir="${sourceDir}/java/Debrief" defaultexcludes="yes">
+        <include name="Debrief/**"/>
+      </packageset>
+      <packageset dir="${sourceDir}/java/Util" defaultexcludes="yes">
+        <include name="MWC/**"/>
+      </packageset>
+      <group title="Debrief import/export" packages="Debrief.ReaderWriter"/>
+      <group title="Debrief General" packages="Debrief"/>
+      <group title="Core MWC Packages" packages="MWC.*"/>
+    </javadoc>
+  </target>
+
+
+  <!-- find out if a help compiler has been specified -->
+  <target name="check_help_compiler">
+    <available file="${helpCompiler}" property="helpCompilerAvailable"/>
+  </target>
+
+  <!-- do the actual compile -->
+  <target name="compile_help" depends="prepare, check_help_compiler, compile_docbook_xsl" if="helpCompilerAvailable">
+
+    <!-- get an up to date copy of the what's new -->
+    <copy file="${sourceDir}/xdocs/whats_new.htm" toDir="${docOutputDir}"/>
+
+    <!-- get the what's new directory -->
+    <copy file="${sourceDir}/java/Debrief/Debrief/ReaderWriter/XML/plot.dtd" tofile="${docOutputDir}/plot.txt"/>
+
+    <!-- also move the html build files into the output directory, because the help compiler
+       needs to be in the same directory as them -->
+    <copy toDir="${docOutputDir}">
+      <fileset dir="${sourceDir}/xdocs">
+        <include name="*.hh*"/>
+      </fileset>
+    </copy>
+
+    <!-- OLD HELP DEFINITION. Keep, since it includes the what's new files -->
+    <exec dir="${docOutputDir}" executable="${helpCompiler}">
+      <arg line="d2002.hhp"/>
+    </exec>
+
+    <!-- new doc-book generated version, doesn't include what's nwe
+    <exec dir="${sourceDir}/help" executable="${helpCompiler}">
+      <arg line="docbook/htmlhelp.hhp"/>
+    </exec> -->
+
+    <!--  not this one, its the one for docbook   <copy file="${sourceDir}/help/docbook/D2003.chm" toDir="${buildDir}"/> -->
+    <!-- check the help file got produced and copied -->
+    <available file="${docOutputDir}/d2003.chm" property="helpCompiled"/>
+
+  </target>
+
+  <target name="produce_cvs_log" description="produce the cvs change logs" depends="init">
+
+    <!-- clear the output directory -->
+    <delete dir="${buildCVSLogDir}"/>
+
+    <!-- create the output directory if we have to -->
+    <mkdir dir="${buildCVSLogDir}"/>
+    <mkdir dir="${buildCVSLogDir}/statcvs"/>
+    <mkdir dir="${buildCVSLogDir}/statcvs/short"/>
+    <mkdir dir="${buildCVSLogDir}/statcvs/long"/>
+
+    <!-- first produce the CVS log for the debrief sources-->
+    <cvs dest="${sourceDir}/java/Debrief" output="${buildCVSLogDir}/statcvs_debrief.log">
+      <commandline>
+        <argument line="log "/>
+      </commandline>
+    </cvs>
+
+    <!-- and now the log for the util sources-->
+    <cvs dest="${sourceDir}/java/util" output="${buildCVSLogDir}/statcvs_mwc.log">
+      <commandline>
+        <argument line="log "/>
+      </commandline>
+    </cvs>
+
+    <!-- and now the debrief dist files -->
+    <cvs dest="${sourceDir}/dist_base" output="${buildCVSLogDir}/statcvs_dist.log">
+      <commandline>
+        <argument line="log "/>
+      </commandline>
+    </cvs>
+
+    <!-- and the debrief docs -->
+    <cvs dest="${docDir}" output="${buildCVSLogDir}/statcvs_docs.log">
+      <commandline>
+        <argument line="log "/>
+      </commandline>
+    </cvs>
+
+    <!-- and the debrief tools -->
+    <cvs dest="${toolsDir}" output="${buildCVSLogDir}/statcvs_tools.log">
+      <commandline>
+        <argument line="log "/>
+      </commandline>
+    </cvs>
+
+    <!-- and now combine the two logs -->
+    <concat destfile="${buildCVSLogDir}/statcvs.log" append="false">
+      <fileset dir="${buildCVSLogDir}">
+        <include name="statcvs_*.log"/>
+      </fileset>
+    </concat>
+
+
+
+    <!-- and produce the output -->
+    <java dir="${sourceDir}" jar="d:/dev/debrief/contribs/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
+      <jvmarg line="-mx128m"/>
+      <arg line=" -output-dir D:\Dev\debrief\build\cvs\statcvs\short
+            -title 'Debrief CVS Statistics'
+            -suite D:\Dev\debrief\tools/statcvs_template/single_page_suite.xml
+            D:\Dev\debrief\build\cvs/statcvs.log"/>
+    </java>
+
+    <java dir="${sourceDir}" jar="d:/dev/debrief/contribs/statcvs/statcvs-xml-0.9.4-full.jar" fork="true">
+      <jvmarg line="-mx128m"/>
+      <arg line=" -output-dir D:\Dev\debrief\build\cvs\statcvs\long
+            -title 'Debrief CVS Statistics'
+            -suite D:\Dev\debrief\tools/statcvs_template/suite.xml
+            D:\Dev\debrief\build\cvs/statcvs.log"/>
+    </java>
+  </target>
+
+
+  <!--                -->
+  <!--    tests     -->
+  <!--                -->
+  <target name="test" description="do the junit testing" depends="clean, compile_util, compile_debrief, test_debrief_auto">
+  </target>
+
+
+  <target name="test_debrief_auto" description="automatically find and test Debrief classes" depends="init">
+
+    <!--  depends="init, compile_util">-->
+
+    <delete dir="${debriefDir}/build/tests" verbose="true" file="*.*"/>
+    <mkdir dir="${debriefDir}/build/tests"/>
+    <mkdir dir="${debriefDir}/build/tests/results"/>
+
+    <!-- create the output directory for the tests -->
+    <junit fork="true" printsummary="yes" haltonfailure="false" haltonerror="false"
+      failureProperty="test_failed" dir="build/tests">
+      <classpath>
+        <pathelement path="d:/dev/eclipse2/org.mwc.cmap.legacy"/>
+      	<!--        <pathelement path="${buildDir}/Util"/> -->
+<!--        <pathelement path="${buildDir}/Debrief"/> -->
+        <!--       <pathelement location="${distDir}/lib/jdom.jar"/> -->
+        <pathelement location="${libDir}/openmap.jar"/>
+        <pathelement location="${libDir}/xml-apis.jar"/>
+        <pathelement location="${libDir}/xmlParserAPIs.jar"/>
+        <pathelement location="${libDir}/xercesImpl.jar"/>
+        <pathelement location="${libDir}/xerces.jar"/>
+        <pathelement location="${libDir}/parser.jar"/>
+        <pathelement location="${libDir}/jaxen-full.jar"/>
+        <pathelement location="${libDir}/jcommon-0.7.1.jar"/>
+        <pathelement location="${libDir}/saxpath.jar"/>
+        <pathelement location="${libDir}/jdom.jar"/>
+      </classpath>
+
+      <!--      <sysproperty key="dataDir" value="../src/Debrief/"/> -->
+
+
+      <formatter type="xml"/>
+
+      <batchtest todir="${debriefDir}/build/tests/results">
+        <fileset dir="${buildDir}/Debrief">
+          <include name="Debrief/**/*$*Test.class"/>
+          <include name="Debrief/**/*$*test*.class"/>
+          <exclude name="Debrief/**/*$Test*$*.class"/>
+          <exclude name="Debrief/**/*$*test*$*.class"/>
+        </fileset>
+        <fileset dir="${buildDir}/Util">
+          <include name="MWC/**/*$*Test.class"/>
+          <include name="MWC/**/*$*test*.class"/>
+          <exclude name="MWC/**/*$Test*$*.class"/>
+        </fileset>
+      </batchtest>
+    </junit>
+
+
+    <junitreport todir="${debriefDir}/build/tests">
+      <fileset dir="${debriefDir}/build/tests/results">
+        <include name="TEST-*.xml"/>
+      </fileset>
+      <report format="frames" todir="${debriefDir}/build/tests"/>
+    </junitreport>
+
+    <fail message="Debrief Unit tests failed" if="test_failed"/>
+
+  </target>
+
+
+  <!--                -->
+  <!--     link       -->
+  <!--                -->
+  <target name="link" description="collate the jars" depends="compile, copy_images, build_jars">
+  </target>
+
+  <target name="copy_images" depends="prepare">
+    <copy todir="${buildDir}/images">
+      <fileset dir="${imageDir}"/>
+    </copy>
+  </target>
+
+  <target name="build_jars" depends="init, copy_images, compile_util, compile_debrief">
+    <jar jarfile="${buildDir}/${exeName}" manifest="${sourceDir}/java/Debrief/MANIFEST.MF">
+      <fileset dir="${buildDir}/Debrief"/>
+      <fileset dir="${buildDir}/Util"/>
+      <zipfileset dir="${buildDir}/Images" prefix="images"/>
+    </jar>
+  </target>
+
+  <!--                -->
+  <!--     deploy     -->
+  <!--                -->
+  <target name="deploy" description="put everything in the correct directory structure" depends="link,collate_whats_new, deploy_help">
+    <copy file="${buildDir}/${exeName}" todir="${deployDir}"/>
+    <mkdir dir="${deployDir}/lib"/>
+    <copy todir="${deployDir}/lib">
+      <fileset refid="executable_libs"/>
+    </copy>
+    <copy todir="${deployDir}">
+      <fileset refid="installed_data"/>
+    </copy>
+    <!--    <copy todir="${deployDir}/docs">
+          <fileset dir="${docDir}"/>
+        </copy> -->
+    <copy file="readme.txt" todir="${deployDir}"/>
+    <copy file="install.txt" todir="${deployDir}"/>
+    <copy file="${docOutputDir}/${docName}" todir="${deployDir}"/>
+    <copy file="${sourceDir}/xdocs/whats_new.htm" todir="${deployDir}"/>
+
+  </target>
+
+  <!-- collate an updated what's new page -->
+  <target name="collate_whats_new" depends="produce_cvs_log">
+
+
+    <!-- ok, create the new page to host it -->
+    
+
+
+    <!-- add on the textual what's new -->
+
+    <!-- add on the commit log -->
+
+    <!-- move it into the help directories -->
+  </target>
+
+  <target name="deploy_help" if="helpCompiled" depends="init">
+    <copy file="${docOutputDir}/d2003.chm" todir="${deployDir}"/>
+  </target>
+
+  <target name="deploy_to_intranet" description="upload updated files to intranet" depends="init">
+    <copy file="${deployDir}/d2003.chm" todir="I://mwc/coag/sm/debrief/updates"/>
+    <copy file="${deployDir}/d2003.jar" todir="I://mwc/coag/sm/debrief/updates"/>
+
+    <!-- and the installer -->
+    <copy file="${distDir}/Debrief.exe" todir="I://mwc/coag/sm/debrief"/>
+
+    <!-- also upload the tutorial -->
+    <copy todir="I://mwc/coag/sm/debrief/tutorial">
+      <fileset dir="${docOutputDir}"/>
+    </copy>
+
+  </target>
+
+  <target name="deploy_to_td_subs" description="upload updated files to td submarines directory" depends="init">
+    <copy file="${deployDir}/d2003.chm" todir="l://TD Submarines Info/PlanetMayo/Debrief/updates"/>
+    <copy file="${deployDir}/d2003.jar" todir="l://TD Submarines Info/PlanetMayo/Debrief/updates"/>
+
+    <!-- and the installer -->
+    <copy file="${distDir}/Debrief.exe" todir="l://TD Submarines Info/PlanetMayo/Debrief"/>
+
+  </target>
+
+  <target name="collate_source_distribution" depends="init">
+    <tstamp/>
+
+    <!-- force a clean operation  -->
+    <antcall target="clean"/>
+
+    <!-- and create the dist directory  -->
+    <antcall target="create_directories"/>
+
+    <!-- now the existing zip distributions  -->
+    <delete file="${srcDist}"/>
+
+    <!-- put an updated what's new in the top level  -->
+    <copy file="${sourceDir}/xdocs/whats_new.htm" todir="${debriefDir}"/>
+
+    <!-- and produce the zip  -->
+    <zip zipfile="${srcDist}" basedir="." excludes="src/dist_base/etopo/**"/>
+  </target>
+
+  <target name="collate_binary_distribution" depends="init,clean,prepare,compile,test,link,deploy">
+    <tstamp/>
+
+    <!-- now the existing zip distributions  -->
+    <delete file="${binDist}"/>
+
+    <!-- create the new zip  -->
+    <zip zipfile="${binDist}">
+      <zipfileset dir="deploy"/>
+    </zip>
+  </target>
+
+  <target name="collate_etopo">
+    <zip zipfile="../etopo.zip">
+      <zipfileset dir="src/data/etopo" prefix=""/>
+    </zip>
+  </target>
+
+
+  <target name="build_installers">
+
+    <exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
+      <arg line="/build ${debriefDir}\tools\DebriefAdvancedInstaller.aip"/>
+    </exec>
+
+    <exec executable="${advancedInstallerPath}\AdvancedInstaller.exe">
+      <arg line="/build ${debriefDir}\tools\SmallInstall.aip"/>
+    </exec>
+
+  </target>
+
+  <!--                -->
+  <!--    deploy     -->
+  <!--                -->
+  <!--  <target name="all" description="do all stages of the build" depends="clean,compile,produce_cvs_log, test,link,deploy, deploy_to_intranet, deploy_to_td_subs"> -->
+  <target name="all" description="do all stages of the build" depends="clean,compile,link,deploy, build_installers, deploy_to_intranet, deploy_to_td_subs">
+  </target>
+  <target name="main" description="just do a build, compile, and test" depends="clean, test">
+  </target>
+
+</project>

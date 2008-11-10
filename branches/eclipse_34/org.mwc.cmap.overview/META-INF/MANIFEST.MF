@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Overview Plug-in
+Bundle-SymbolicName: org.mwc.cmap.overview; singleton:=true
+Bundle-Version: 1.0.5
+Bundle-Activator: org.mwc.cmap.overview.Activator
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.core,
+ org.mwc.cmap.legacy,
+ org.mwc.cmap.plotViewer
+Eclipse-LazyStart: true

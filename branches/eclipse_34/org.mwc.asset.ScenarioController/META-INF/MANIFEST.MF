@@ -1,0 +1,21 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ScenarioController Plug-in
+Bundle-SymbolicName: org.mwc.asset.ScenarioController; singleton:=true
+Bundle-Version: 1.0.2
+Bundle-Activator: org.mwc.asset.scenariocontroller.ScenarioControllerPlugin
+Bundle-Localization: plugin
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.core.resources,
+ org.mwc.asset.legacy,
+ org.eclipse.ui.ide,
+ org.mwc.cmap.legacy,
+ org.mwc.asset.core,
+ org.mwc.cmap.TimeController,
+ org.mwc.cmap.core,
+ org.eclipse.ui.views,
+ org.mwc.asset.sample_data,
+ org.eclipse.debug.core
+Eclipse-LazyStart: true
+Export-Package: org.mwc.asset.scenariocontroller.views
