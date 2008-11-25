@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.static_resources.feature"
       label="org.mwc.cmap.static_resources.feature"
-      version="1.0.3"
+      version="1.0.4"
       provider-name="MWC">
 
    <description>
-      [1.0.3] Amend online update location
+      [1.0.5] Include some track data
+[1.0.3] Amend online update location
 [1.0.2]  Start exporting world &amp; etopo datasets
 Static data used in Debrief-type projects (Etopo, World Outline,
 Jre installation)

@@ -48,13 +48,13 @@
       <feature id="org.mwc.cmap.overview.feature" version="1.0.5"/>
       <feature id="org.mwc.cmap.plot3d.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.plotviewer.feature" version="1.0.21"/>
-      <feature id="org.mwc.cmap.static_resources.feature" version="1.0.3"/>
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.23"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.9"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.10"/>
       <feature id="org.mwc.debrief.feature" version="1.0.69"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.21"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.5"/>
+      <feature id="org.mwc.cmap.static_resources.feature" version="1.0.4"/>
    </features>
 
 </product>
