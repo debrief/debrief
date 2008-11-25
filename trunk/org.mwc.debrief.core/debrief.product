@@ -33,7 +33,7 @@
    <vm>
       <linux type="jre">java-6-sun-1.6.0.03</linux>
       <macos type="jre">JVM 1.5.0 (MacOS X Default)</macos>
-      <windows type="jre">jre6</windows>
+      <windows type="jre">jre1.6.0_06</windows>
    </vm>
 
    <plugins>

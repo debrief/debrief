@@ -64,7 +64,7 @@
 		<condition property="debrief_present">
 			<and>
 				<!-- first the plugins -->
-				<available type="dir" file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.39" />
+				<available type="dir" file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.40" />
 				<!-- now the features -->
 				<available type="dir" file="${distDir}\features\org.mwc.cmap.feature_1.0.66" />
 				<available type="dir" file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.13" />
