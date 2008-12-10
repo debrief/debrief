@@ -125,7 +125,7 @@
         <delete file="${zipDest}"/>
         <echo message="creating new update zip" />
 		<zip destFile="${zipDest}" whenempty="fail" duplicate="fail">
-			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template" />
+			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template,jre" />
 		</zip>
 	</target>
 
