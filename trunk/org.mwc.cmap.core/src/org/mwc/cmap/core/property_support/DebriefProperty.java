@@ -14,6 +14,7 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.CategorisedPropertyDescriptor;
+import MWC.GenericData.WorldLocation;
 
 public class DebriefProperty implements IPropertyDescriptor
 {
@@ -276,6 +277,10 @@ public class DebriefProperty implements IPropertyDescriptor
 		boolean res = true;
 		if (this.getDisplayName().equals("Name"))
 			res = false;
+		if(this.getDisplayName().equals("DateTimeGroup"))
+				res = false;
+		if(this.getDisplayName().equals("FixLocation"))
+			res = false;
 		return res;
 	}
 
@@ -291,7 +296,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			if(m == null)
 				System.out.println("tripped, prop was:" + _thisProp.getDisplayName());
 
-			res = m.invoke(_subject, null);
+			res = m.invoke(_subject,(Object[]) null);
 		} catch (Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
