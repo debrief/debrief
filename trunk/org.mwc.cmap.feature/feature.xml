@@ -2,12 +2,14 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.67"
+      version="1.0.68"
       provider-name="MWC">
 
    <description>
-      [1.0.67] Allow right-click edit of multiple items
-[1.0.66] Switch MWC_Legacy project to use OSGI manifest to export visible elements
+      [1.0.68] Arbitrary build
+[1.0.67] Allow right-click edit of multiple items
+[1.0.66] Switch MWC_Legacy project to use OSGI manifest to export
+visible elements
 [1.0.65] Better trapping of error for mouse cursor when plot
 not selected
 [1.0.64] Improve support for range from perpendicular measurement

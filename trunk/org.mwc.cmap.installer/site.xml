@@ -15,6 +15,9 @@
    <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.21.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.21">
       <category name="cmap_features"/>
    </feature>
+   <feature url="features/org.mwc.cmap.static_resources.feature_1.0.4.jar" id="org.mwc.cmap.static_resources.feature" version="1.0.4">
+      <category name="cmap_features"/>
+   </feature>
    <feature url="features/org.mwc.cmap.TimeController.feature_1.0.23.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.23">
       <category name="cmap_features"/>
    </feature>
@@ -30,13 +33,10 @@
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.5.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.5">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.69.jar" id="org.mwc.debrief.feature" version="1.0.69">
+   <feature url="features/org.mwc.cmap.feature_1.0.68.jar" id="org.mwc.cmap.feature" version="1.0.68">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.feature_1.0.67.jar" id="org.mwc.cmap.feature" version="1.0.67">
-      <category name="cmap_features"/>
-   </feature>
-   <feature url="features/org.mwc.cmap.static_resources.feature_1.0.4.jar" id="org.mwc.cmap.static_resources.feature" version="1.0.4">
+   <feature url="features/org.mwc.debrief.feature_1.0.70.jar" id="org.mwc.debrief.feature" version="1.0.70">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">
