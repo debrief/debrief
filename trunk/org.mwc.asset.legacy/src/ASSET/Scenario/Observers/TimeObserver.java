@@ -239,6 +239,7 @@ public class TimeObserver extends
       {
         final PropertyDescriptor[] res = {
           prop("Name", "the name of this observer"),
+          prop("Elapsed", "period after which scenario should be stopped")
         };
         return res;
       }
