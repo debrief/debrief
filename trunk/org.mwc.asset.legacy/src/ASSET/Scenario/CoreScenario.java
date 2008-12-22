@@ -157,6 +157,9 @@ public class CoreScenario implements ScenarioType
 
     // create the environment
     _myEnvironment = createEnvironment();
+    
+    // give the scenario a random case id
+    _myCaseId = "Case_" + (int)(Math.random() * 2000d);
   }
 
 
