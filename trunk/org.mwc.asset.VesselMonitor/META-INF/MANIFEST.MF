@@ -4,7 +4,6 @@ Bundle-Name: VesselMonitor Plug-in
 Bundle-SymbolicName: org.mwc.asset.VesselMonitor; singleton:=true
 Bundle-Version: 1.0.1
 Bundle-Activator: org.mwc.asset.vesselmonitor.Activator
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.draw2d,

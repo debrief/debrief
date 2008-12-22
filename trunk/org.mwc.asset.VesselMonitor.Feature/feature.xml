@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.asset.VesselMonitor.Feature"
       label="Feature Feature"
-      version="1.0.1">
+      version="1.0.2">
 
    <description>
-      [1.0.1]  Tidy GC management
+      [1.0.2]  Fix build description, fix cast-problem in debug lines
+[1.0.1]  Tidy GC management
    </description>
 
    <license>
