@@ -21,7 +21,12 @@ public class ActiveInterceptSensor extends BroadbandSensor
   // member constructor
   ////////////////////////////////////////////////////
 
-  public ActiveInterceptSensor(final int id)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public ActiveInterceptSensor(final int id)
   {
     super(id, "BB Intercept");
     super.setDetectionAperture(180);

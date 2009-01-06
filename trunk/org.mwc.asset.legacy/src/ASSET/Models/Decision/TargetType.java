@@ -25,7 +25,7 @@ public class TargetType implements java.io.Serializable
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	private java.util.Vector _myTargets;
+	private java.util.Vector<String> _myTargets;
 
   //////////////////////////////////////////////////////////////////////
   // constructors
@@ -41,7 +41,7 @@ public class TargetType implements java.io.Serializable
 
   public TargetType(final TargetType other)
   {
-    _myTargets = new Vector(0, 1);
+    _myTargets = new Vector<String>(0, 1);
     _myTargets.addAll(other._myTargets);
   }
 
@@ -64,7 +64,7 @@ public class TargetType implements java.io.Serializable
     if (_myTargets != null)
     {
 
-      final java.util.Enumeration enumer = _myTargets.elements();
+      final java.util.Enumeration<String> enumer = _myTargets.elements();
       while (enumer.hasMoreElements())
       {
         final String thisType = (String) enumer.nextElement();
@@ -94,7 +94,7 @@ public class TargetType implements java.io.Serializable
     else
     {
       if (_myTargets == null)
-        _myTargets = new java.util.Vector(1, 1);
+        _myTargets = new java.util.Vector<String>(1, 1);
 
       _myTargets.addElement(type);
     }
@@ -103,16 +103,16 @@ public class TargetType implements java.io.Serializable
   public void removeTargetType(final String val)
   {
     if (_myTargets == null)
-      _myTargets = new java.util.Vector(1, 1);
+      _myTargets = new java.util.Vector<String>(1, 1);
 
     if (_myTargets != null)
       _myTargets.remove(val);
   }
 
-  public java.util.Collection getTargets()
+  public java.util.Collection<String> getTargets()
   {
     if (_myTargets == null)
-      _myTargets = new java.util.Vector(1, 1);
+      _myTargets = new java.util.Vector<String>(1, 1);
 
     return _myTargets;
   }
@@ -120,7 +120,7 @@ public class TargetType implements java.io.Serializable
   public String toString()
   {
     final StringBuffer res = new StringBuffer();
-    final Iterator it = _myTargets.iterator();
+    final Iterator<String> it = _myTargets.iterator();
     while (it.hasNext())
     {
       final String thisCat = (String) it.next();

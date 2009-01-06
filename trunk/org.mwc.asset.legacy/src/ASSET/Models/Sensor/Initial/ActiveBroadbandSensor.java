@@ -17,7 +17,11 @@ import MWC.GenericData.WorldVector;
 
 public class ActiveBroadbandSensor extends BroadbandSensor implements SensorType.ActiveSensor
 {
-  ////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	////////////////////////////////////////////////////
   // member objects
   ////////////////////////////////////////////////////
   private double _sourceLevel; // dB

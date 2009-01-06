@@ -41,6 +41,11 @@ public class Intercept extends CoreDecision implements java.io.Serializable
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * a local copy of our editable object
    */
   protected EditorType _myEditor = null;
@@ -103,7 +108,7 @@ public class Intercept extends CoreDecision implements java.io.Serializable
       double tSpd = target.getSpeed().getValueIn(WorldSpeed.M_sec);
       double tCourse = target.getCourse();
       WorldVector separation = ownship.getLocation().subtract(target.getLocation());
-      double separation_metres = MWC.Algorithms.Conversions.Degs2m(separation.getRange());
+//      double separation_metres = MWC.Algorithms.Conversions.Degs2m(separation.getRange());
       double brg = MWC.Algorithms.Conversions.Rads2Degs(separation.getBearing());
       if (brg < 0)
         brg += 360;
@@ -477,7 +482,7 @@ public class Intercept extends CoreDecision implements java.io.Serializable
       assertNull("shouldn't have generated demanded state", res);
     }
 
-    private static DemandedStatus _demStat = null;
+    protected static DemandedStatus _demStat = null;
 
     public void testWorking()
     {
@@ -510,7 +515,12 @@ public class Intercept extends CoreDecision implements java.io.Serializable
       theTargetType.addTargetType(Category.Force.RED);
       Intercept iA = new Intercept(theTargetType, false)
       {
-        public DemandedStatus decide(Status status, MovementCharacteristics chars, DemandedStatus demStatus,
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public DemandedStatus decide(Status status, MovementCharacteristics chars, DemandedStatus demStatus,
                                      DetectionList detections, ScenarioActivityMonitor monitor, long time)
         {
           DemandedStatus res = super.decide(status, chars, demStatus, detections, monitor, time);    //To change body of overridden methods use File | Settings | File Templates.
@@ -542,7 +552,7 @@ public class Intercept extends CoreDecision implements java.io.Serializable
         public void step()
         {
           super.step();
-          SimpleDemandedStatus sds = (SimpleDemandedStatus) searcher.getDemandedStatus();
+          // SimpleDemandedStatus sds = (SimpleDemandedStatus) searcher.getDemandedStatus();
           //      System.out.println("searcher course:" + searcher.getStatus().getCourse() + " dem:" + sds.getCourse() + " tgt:" + ffta.getStatus().getCourse());
         }
       };
@@ -603,14 +613,14 @@ public class Intercept extends CoreDecision implements java.io.Serializable
       assertNotNull("we haven't received a new demanded status", _demStat);
       assertEquals("we still haven't reported properly", "searcher behaviour:Intercept:Continuing to intercept:FFTA", searcher.getActivity());
 
-      double oldDemCourse = ((SimpleDemandedStatus) searcher.getDemandedStatus()).getCourse();
+//      double oldDemCourse = ((SimpleDemandedStatus) searcher.getDemandedStatus()).getCourse();
 
       // ok, change the target course & see if we have to change intercept course
       userBehaviour.setCourse(66);
       ffta.getStatus().setCourse(66);
 
       cs.step();
-      double newDemCourse = ((SimpleDemandedStatus) searcher.getDemandedStatus()).getCourse();
+//      double newDemCourse = ((SimpleDemandedStatus) searcher.getDemandedStatus()).getCourse();
       cs.step();
 
       assertEquals("we haven't detected target", 1, searcher.getNewDetections().size(), 0);

@@ -6,4 +6,9 @@ package ASSET.Models.Movement;
 public class HeloMovement extends CoreMovement
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 }

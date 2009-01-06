@@ -14,19 +14,22 @@ import MWC.GenericData.WorldSpeed;
 public class SurfaceMovementCharacteristics extends MovementCharacteristics
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * turning circle
    */
   protected WorldDistance _turningCircle;
 
 
   /**
-   * @deprecated
    */
-  public SurfaceMovementCharacteristics(String myName, double accelRate,
+  public static SurfaceMovementCharacteristics generateDebug(String myName, double accelRate,
                                         double decelRate, double fuel_usage_rate,
                                         double maxSpeed, double minSpeed, double turnCircle)
   {
-    this(myName, new WorldAcceleration(accelRate, WorldAcceleration.M_sec_sec),
+    return new SurfaceMovementCharacteristics(myName, new WorldAcceleration(accelRate, WorldAcceleration.M_sec_sec),
          new WorldAcceleration(decelRate, WorldAcceleration.M_sec_sec),
          fuel_usage_rate, new WorldSpeed(maxSpeed, WorldSpeed.M_sec),
          new WorldSpeed(minSpeed, WorldSpeed.M_sec), new WorldDistance(turnCircle, WorldDistance.METRES));

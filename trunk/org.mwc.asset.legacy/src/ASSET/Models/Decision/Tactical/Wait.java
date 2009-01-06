@@ -89,6 +89,11 @@ public class Wait extends CoreDecision implements Serializable
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the time to wait for
    */
   private Duration _myDuration;
@@ -96,7 +101,7 @@ public class Wait extends CoreDecision implements Serializable
   /**
    * the time at which we finish waiting
    */
-  private long _expiryTime = -1;
+  protected long _expiryTime = -1;
 
   //////////////////////////////////////////////////
   // constructor

@@ -35,6 +35,11 @@ public class FixedWingMovementCharacteristics extends ThreeDimMovementCharacteri
   //////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the turn rate for this helo (degs/sec)
    */
   private double _myTurnRate;
@@ -143,7 +148,7 @@ public class FixedWingMovementCharacteristics extends ThreeDimMovementCharacteri
   /**
    * static method used to calculate turning circle diameter from angular velocity and speed
    */
-  private static double _calcTurnCircle(double turn_rate_degs_sec,
+  protected static double _calcTurnCircle(double turn_rate_degs_sec,
                                         double speed_m_sec)
   {
     // so, the equation for the radius of a turning circle using the turn rate and speed is

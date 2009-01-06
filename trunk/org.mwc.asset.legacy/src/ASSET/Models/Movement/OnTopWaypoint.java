@@ -273,7 +273,7 @@ public class OnTopWaypoint extends WaypointVisitor
     OnTopSolution res = null;
 
     // ok. sort out the results data
-    double r = moves.getTurningCircleDiameter(current.getSpeed().getValueIn(WorldSpeed.M_sec));
+ //   double r = moves.getTurningCircleDiameter(current.getSpeed().getValueIn(WorldSpeed.M_sec));
 
     // now the initial position
 
@@ -323,14 +323,14 @@ public class OnTopWaypoint extends WaypointVisitor
         return new Point2D.Double(xVal, yVal);
       }
 
-      public double alpha1(double hyp, double rad1, double hDelta, double kDelta)
+      public double alpha1(double hyp, double rad1a, double hDelta, double kDelta)
       {
-        return Math.asin(rad1 / hyp) + Math.atan2(hDelta, -kDelta);
+        return Math.asin(rad1a / hyp) + Math.atan2(hDelta, -kDelta);
       }
 
-      public double zLength(double hDelta, double alpha1, double rad1)
+      public double zLength(double hDelta, double alpha1, double rad1a)
       {
-        return Math.abs((hDelta + rad1 * Math.cos(alpha1)) / Math.sin(alpha1));
+        return Math.abs((hDelta + rad1a * Math.cos(alpha1)) / Math.sin(alpha1));
       }
 
       public double theta1(double alpha1, double p1)
@@ -358,23 +358,23 @@ public class OnTopWaypoint extends WaypointVisitor
         return new Point2D.Double(xVal, yVal);
       }
 
-      public Point2D secondOrigin(Point2D point,
-                                  double radius,
-                                  double courseRads)
+//      public Point2D secondOrigin(Point2D point,
+//                                  double radius,
+//                                  double courseRads)
+//      {
+//        double xVal = point.getX() - radius * Math.cos(courseRads);
+//        double yVal = point.getY() + radius * Math.sin(courseRads);
+//        return new Point2D.Double(xVal, yVal);
+//      }
+
+      public double alpha1(double hyp, double rad1a, double hDelta, double kDelta)
       {
-        double xVal = point.getX() - radius * Math.cos(courseRads);
-        double yVal = point.getY() + radius * Math.sin(courseRads);
-        return new Point2D.Double(xVal, yVal);
+        return Math.asin(-rad1a / hyp) - Math.atan2(hDelta, kDelta);
       }
 
-      public double alpha1(double hyp, double rad1, double hDelta, double kDelta)
+      public double zLength(double hDelta, double alpha1, double rad1a)
       {
-        return Math.asin(-rad1 / hyp) - Math.atan2(hDelta, kDelta);
-      }
-
-      public double zLength(double hDelta, double alpha1, double rad1)
-      {
-        return Math.abs((-hDelta - rad1 * Math.cos(alpha1)) / Math.sin(alpha1));
+        return Math.abs((-hDelta - rad1a * Math.cos(alpha1)) / Math.sin(alpha1));
       }
 
       public double theta1(double alpha1, double p1)
@@ -665,22 +665,22 @@ public class OnTopWaypoint extends WaypointVisitor
     /**
      * the distance to travel once we're on course
      */
-    private Double distanceToRun = null;
+    protected Double distanceToRun = null;
 
     /**
      * whether this solution is possible
      */
-    private boolean isPossible = false;
+    protected boolean isPossible = false;
 
     /**
      * and the total time taken (secs)
      */
-    private double timeTaken;
+    protected double timeTaken;
 
     /**
      * reason for failure
      */
-    private String failureReason = null;
+    protected String failureReason = null;
 
     /**
      * we can't fit in the turn (too close)
@@ -902,14 +902,14 @@ public class OnTopWaypoint extends WaypointVisitor
           return new Point2D.Double(xVal, yVal);
         }
 
-        public Point2D secondOrigin(Point2D point,
-                                    double radius,
-                                    double courseRads)
-        {
-          double xVal = point.getX() - radius * Math.cos(courseRads);
-          double yVal = point.getY() + radius * Math.sin(courseRads);
-          return new Point2D.Double(xVal, yVal);
-        }
+//        public Point2D secondOrigin(Point2D point,
+//                                    double radius,
+//                                    double courseRads)
+//        {
+//          double xVal = point.getX() - radius * Math.cos(courseRads);
+//          double yVal = point.getY() + radius * Math.sin(courseRads);
+//          return new Point2D.Double(xVal, yVal);
+//        }
 
         public double alpha1(double hyp, double rad1, double hDelta, double kDelta)
         {
@@ -940,7 +940,7 @@ public class OnTopWaypoint extends WaypointVisitor
       double c1r = 0;
       double spd1 = Math.PI / 12;
       double spd2 = spd1;
-      double rt = 3;
+//      double rt = 3;
       double r1 = 5;
 
       OnTopSolution testOne = OnTopWaypoint.calcCombination(p1, p2, firstCase, c1r, r1, spd1, spd2, moves);
@@ -962,14 +962,14 @@ public class OnTopWaypoint extends WaypointVisitor
   }
 
 
-  private static WorldLocation offset(WorldLocation origin,
-                                      double rng_m,
-                                      double brg_degs)
-  {
-    WorldLocation res = origin.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(brg_degs),
-                                                   MWC.Algorithms.Conversions.m2Degs(rng_m), 0));
-    return res;
-  }
+//  private static WorldLocation offset(WorldLocation origin,
+//                                      double rng_m,
+//                                      double brg_degs)
+//  {
+//    WorldLocation res = origin.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(brg_degs),
+//                                                   MWC.Algorithms.Conversions.m2Degs(rng_m), 0));
+//    return res;
+//  }
 
 
   public static CoreParticipant createTestHelo()

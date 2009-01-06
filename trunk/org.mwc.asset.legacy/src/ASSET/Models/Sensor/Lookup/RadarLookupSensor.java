@@ -85,7 +85,7 @@ public class RadarLookupSensor extends LookupSensor
   {
 
     // start off with the aspect dependency 
-  	Vector aspects = new Vector(0,1);
+  	Vector<NamedList> aspects = new Vector<NamedList>(0,1);
 //  	datums.add(new Double())
 
   	aspects.add(new NamedList(Category.Type.CARRIER, new double[]{2000, 8000, 10000, 8000, 2000}));
@@ -97,7 +97,7 @@ public class RadarLookupSensor extends LookupSensor
     IntegerTargetTypeLookup sigmaValues = new IntegerTargetTypeLookup(aspects, new Double(1000d));
 
     // start off with the sea state
-  	Vector states = new Vector(0,1);
+  	Vector<NamedList> states = new Vector<NamedList>(0,1);
 
   	states.add(new NamedList(Category.Type.FRIGATE, new double[]{1.00, 1.00, 1.00, 1.00, 1.00, 0.95, 0.90}));
   	states.add(new NamedList(Category.Type.CARRIER, new double[]{1.00, 1.00, 1.00, 1.00, 1.00, 1.00, 0.95}));
@@ -247,7 +247,7 @@ public class RadarLookupSensor extends LookupSensor
    * @param targetCourseDegs
    * @return
    */
-  private static int determineAspectOf(WorldLocation ownship, WorldLocation target, double targetCourseDegs)
+  protected static int determineAspectOf(WorldLocation ownship, WorldLocation target, double targetCourseDegs)
   {
     // ok, what's the ATB
     double ATB = calcAspect(ownship, target, targetCourseDegs);
@@ -280,7 +280,7 @@ public class RadarLookupSensor extends LookupSensor
    * @param hisCourse his course (degs)
    * @return ATB (degs)
    */
-  private static double calcAspect(WorldLocation ownship, WorldLocation target, double hisCourse)
+  protected static double calcAspect(WorldLocation ownship, WorldLocation target, double hisCourse)
   {
     double hisRel = ownship.subtract(target).getBearing();
     hisRel = MWC.Algorithms.Conversions.Rads2Degs(hisRel);
@@ -501,7 +501,7 @@ public class RadarLookupSensor extends LookupSensor
     }
 
 
-    private class MyEnvironment extends CoreEnvironment
+    protected class MyEnvironment extends CoreEnvironment
     {
       /**
 			 * 
@@ -818,8 +818,8 @@ public class RadarLookupSensor extends LookupSensor
 
     }
 
-    private boolean detectedOther = false;
-    private boolean targetLost = false;
-    private int maxClassification = 0;
+    protected boolean detectedOther = false;
+    protected boolean targetLost = false;
+    protected int maxClassification = 0;
   }
 }

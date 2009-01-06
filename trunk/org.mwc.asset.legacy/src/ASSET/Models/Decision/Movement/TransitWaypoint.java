@@ -42,6 +42,11 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * loop through destinations
    */
   private boolean _loop = true;
@@ -525,7 +530,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -601,7 +606,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+      	ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxDepth,
@@ -675,7 +680,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+      	ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxDepth,
@@ -756,7 +761,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+      	ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -838,7 +843,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+      	ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,

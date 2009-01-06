@@ -32,6 +32,11 @@ public class Move extends CoreDecision implements java.io.Serializable
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the depth to use as INVALID_DEPTH
    */
   public final static double INVALID_DEPTH = -999;
@@ -59,7 +64,7 @@ public class Move extends CoreDecision implements java.io.Serializable
   /**
    * the point we're heading for
    */
-  private WorldLocation _theDestination = null;
+  protected WorldLocation _theDestination = null;
 
   /**
    * the threshold to use to decide if we are at our destination (yds)

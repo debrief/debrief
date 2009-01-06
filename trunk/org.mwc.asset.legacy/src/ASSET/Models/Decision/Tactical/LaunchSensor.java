@@ -42,6 +42,11 @@ public class LaunchSensor extends CoreDecision implements Response, Editable, ja
    ***************************************************/
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * have we finished our processing?
    */
   private boolean _isAlive = true;

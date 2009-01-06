@@ -21,7 +21,11 @@ import MWC.GenericData.WorldVector;
 public class BroadbandSensor extends InitialSensor
 {
 
-  ///////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	///////////////////////////////////
   // member variables
   //////////////////////////////////
   /**

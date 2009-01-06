@@ -82,14 +82,14 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
 {
   private final static String type = "ObserverList";
 
-  private Vector _myList;
+  protected Vector<ScenarioObserver> _myList;
 
   public ObserverListHandler()
   {
     // inform our parent what type of class we are
     super(type);
 
-    _myList = new Vector(0, 1);
+    _myList = new Vector<ScenarioObserver>(0, 1);
 
     addHandler(new TrackPlotObserverHandler()
     {
@@ -224,16 +224,16 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
   }
 
 
-  abstract public void setObserverList(Vector list);
+  abstract public void setObserverList(Vector<ScenarioObserver> list);
 
 
-  public static void exportThis(final Vector list, final Element parent, final Document doc)
+  public static void exportThis(final Vector<ScenarioObserver> list, final Element parent, final Document doc)
   {
     // create ourselves
     final Element sens = doc.createElement(type);
 
     // step through data
-    final Iterator it = list.iterator();
+    final Iterator<ScenarioObserver> it = list.iterator();
     while (it.hasNext())
     {
       final ScenarioObserver observer = (ScenarioObserver) it.next();

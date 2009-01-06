@@ -12,13 +12,15 @@ package ASSET.Util.XML.Control;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import ASSET.Scenario.Observers.ScenarioObserver;
+
 import java.util.Vector;
 
 abstract public class StandaloneObserverListHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   private final static String type = "StandaloneObserverList";
 
-  private Vector _myList;
+  private Vector<ScenarioObserver> _myList;
 
   public StandaloneObserverListHandler()
   {
@@ -28,9 +30,9 @@ abstract public class StandaloneObserverListHandler extends MWC.Utilities.Reader
 
     addHandler(new ASSET.Util.XML.Control.Observers.ObserverListHandler()
     {
-      public void setObserverList(final Vector list)
+      public void setObserverList(final Vector<ScenarioObserver> list)
       {
-        _myList = new Vector(list);
+        _myList = new Vector<ScenarioObserver>(list);
       }
     });
   }
@@ -44,10 +46,10 @@ abstract public class StandaloneObserverListHandler extends MWC.Utilities.Reader
   }
 
 
-  abstract public void setObserverList(Vector list);
+  abstract public void setObserverList(Vector<ScenarioObserver> list);
 
 
-  public static void exportThis(final Vector list, final Element parent, final Document doc)
+  public static void exportThis(final Vector<ScenarioObserver> list, final Element parent, final Document doc)
   {
     // create ourselves
     final Element sens = doc.createElement(type);

@@ -63,7 +63,7 @@ public class TurnAlgorithm implements MWCModel
       if (demStatus != null)
       {
         // get the demanded depth
-        double demHeight = demStatus.getHeight();
+       // double demHeight = demStatus.getHeight();
 
         // ok - what's the delta
         double heightDelta = demHeight - (-status.getLocation().getDepth());
@@ -815,7 +815,7 @@ public class TurnAlgorithm implements MWCModel
       final double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -938,7 +938,7 @@ public class TurnAlgorithm implements MWCModel
       final double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -1039,7 +1039,7 @@ public class TurnAlgorithm implements MWCModel
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
                                                             decelRate, fuel_usage_rate,
                                                             maxSpeed, minSpeed, defaultClimbRate,
                                                             defaultDiveRate, maxHeight,
@@ -1152,14 +1152,14 @@ public class TurnAlgorithm implements MWCModel
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
                                                             decelRate, fuel_usage_rate,
                                                             maxSpeed, minSpeed, turningCircle, defaultClimbRate,
                                                             defaultDiveRate, maxHeight,
                                                             minHeight);
 
       // so, how far should we turn in a second?
-      final double sec_turn = chars.calculateTurnRate(stat.getSpeed().getValueIn(WorldSpeed.M_sec));
+ //     final double sec_turn = chars.calculateTurnRate(stat.getSpeed().getValueIn(WorldSpeed.M_sec));
 
       stat = turner.doTurn(stat, dem, chars, stat.getTime() + 1000);
 
@@ -1207,7 +1207,7 @@ public class TurnAlgorithm implements MWCModel
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
                                                             decelRate, fuel_usage_rate,
                                                             maxSpeed, minSpeed, turningCircle, defaultClimbRate,
                                                             defaultDiveRate, maxHeight,
@@ -1266,7 +1266,7 @@ public class TurnAlgorithm implements MWCModel
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
                                                             decelRate, fuel_usage_rate,
                                                             maxSpeed, minSpeed, turningCircle, defaultClimbRate,
                                                             defaultDiveRate, maxHeight,
@@ -1364,7 +1364,7 @@ public class TurnAlgorithm implements MWCModel
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
                                                             decelRate, fuel_usage_rate,
                                                             maxSpeed, minSpeed, turningCircle, defaultClimbRate,
                                                             defaultDiveRate, maxHeight,
@@ -1435,7 +1435,7 @@ public class TurnAlgorithm implements MWCModel
       final double defaultDiveSpeed = 30;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,

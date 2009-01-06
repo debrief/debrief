@@ -37,7 +37,7 @@ public class ElapsedTime extends Condition.CoreCondition
   /**
    * the time we are due to elapse (start time plus duration)
    */
-  private long _endTime = TimePeriod.INVALID_TIME;
+  protected long _endTime = TimePeriod.INVALID_TIME;
 
   ////////////////////////////////////////////////////
   // constructor

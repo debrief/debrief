@@ -25,7 +25,7 @@ public class MakeWaypoint extends OnTopWaypoint
   // member variables
   ////////////////////////////////////////////////////////////
 
-  static final String _myType = "MakeWaypoint";
+  static final String __myType = "MakeWaypoint";
 
   private MakeWaypointSolution _mySolution = null;
 
@@ -41,7 +41,7 @@ public class MakeWaypoint extends OnTopWaypoint
 
   public String getType()
   {
-    return _myType;
+    return __myType;
   }
 
   /**
@@ -254,7 +254,7 @@ public class MakeWaypoint extends OnTopWaypoint
   }
 
 
-  private MakeWaypointSolution getMakeWaypointSolution(Status current,
+  protected MakeWaypointSolution getMakeWaypointSolution(Status current,
                                                        MovementCharacteristics moves,
                                                        WorldLocation thisWaypoint,
                                                        WorldLocation nextWaypoint,
@@ -365,13 +365,13 @@ public class MakeWaypoint extends OnTopWaypoint
       turn = alpha2;
     }
 
-    String dir = "";
-    if (turn > 0)
-      dir = "Right Turn";
-    else if (turn < 0)
-      dir = "Left Turn";
-    else
-      dir = "Straight";
+//    String dir = "";
+//    if (turn > 0)
+//      dir = "Right Turn";
+//    else if (turn < 0)
+//      dir = "Left Turn";
+//    else
+//      dir = "Straight";
 
     ///////////////
     // STEP 6(b)
@@ -403,11 +403,11 @@ public class MakeWaypoint extends OnTopWaypoint
     ///////////////
 
     // do we have a demanded height?
-    if (demandedHeight != null)
-    {
-      double timeRequired = TurnAlgorithm.calcHeightChangeTime(demandedHeight.doubleValue() - (-current.getLocation().getDepth()),
-                                                               moves, newTime - current.getTime());
-    }
+//    if (demandedHeight != null)
+//    {
+//      double timeRequired = TurnAlgorithm.calcHeightChangeTime(demandedHeight.doubleValue() - (-current.getLocation().getDepth()),
+//                                                               moves, newTime - current.getTime());
+//    }
 
     // ok, store the data
     if (possible)
@@ -417,7 +417,6 @@ public class MakeWaypoint extends OnTopWaypoint
       res.remainingDist = new Double(d);
       res.outgoingCourse = new Double(MWC.Algorithms.Conversions.Rads2Degs(c2));
     }
-
 
     return res;
   }
@@ -479,28 +478,28 @@ public class MakeWaypoint extends OnTopWaypoint
   /**
    * embedded class containing the solution to this manoeuvering problem
    */
-  private static class MakeWaypointSolution
+  protected static class MakeWaypointSolution
   {
 
     /**
      * remember how far we still have to travel
      */
-    private Double remainingDist = null;
+    protected Double remainingDist = null;
 
     /**
      * remember what course (degs) we head towards to get to the waypoint
      */
-    private Double demandedCourseChange = null;
+    protected Double demandedCourseChange = null;
 
     /**
      * and the outgoing course (Degs)
      */
-    private Double outgoingCourse = null;
+    protected Double outgoingCourse = null;
 
     /**
      * the new height to adopt on the straight portion
      */
-    private Double heightToChangeToMake = null;
+    protected Double heightToChangeToMake = null;
   }
 
 

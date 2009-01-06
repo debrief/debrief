@@ -334,31 +334,31 @@ public abstract class LookupSensor extends CoreSensor
 		return res;
 	}
 
-	protected WorldDistance calculateRI(WorldDistance RP, double VDR)
+	protected WorldDistance calculateRI(WorldDistance RP, double VDRa)
 	{
-		double newRandom = RandomGenerator.generateNormalValue(VDR);
+		double newRandom = RandomGenerator.generateNormalValue(VDRa);
 		final double res = RP.getValueIn(WorldDistance.METRES) * (1 + newRandom);
 		WorldDistance RI = new WorldDistance(res, WorldDistance.METRES);
 		return RI;
 	}
 
-	protected WorldDistance calculateCR(WorldDistance RP, double CRF)
+	protected WorldDistance calculateCR(WorldDistance RP, double CRFa)
 	{
-		WorldDistance classRng = new WorldDistance(RP.getValueIn(WorldDistance.METRES) * CRF,
+		WorldDistance classRng = new WorldDistance(RP.getValueIn(WorldDistance.METRES) * CRFa,
 				WorldDistance.METRES);
 		return classRng;
 	}
 
-	protected WorldDistance calculateIR(WorldDistance RP, double IRF)
+	protected WorldDistance calculateIR(WorldDistance RP, double IRFa)
 	{
-		WorldDistance identRng = new WorldDistance(RP.getValueIn(WorldDistance.METRES) * IRF,
+		WorldDistance identRng = new WorldDistance(RP.getValueIn(WorldDistance.METRES) * IRFa,
 				WorldDistance.METRES);
 		return identRng;
 	}
 
-	protected WorldDistance calculateMaxRange(WorldDistance RP, double MRF)
+	protected WorldDistance calculateMaxRange(WorldDistance RP, double MRFa)
 	{
-		WorldDistance MaxRange = new WorldDistance(RP.getValueIn(WorldDistance.METRES) * MRF,
+		WorldDistance MaxRange = new WorldDistance(RP.getValueIn(WorldDistance.METRES) * MRFa,
 				WorldDistance.METRES);
 		return MaxRange;
 	}
@@ -407,7 +407,7 @@ public abstract class LookupSensor extends CoreSensor
 		} // whether within range
 	}
 
-	private static WorldDistance calculateSlantRangeFor(WorldLocation ownship,
+	protected static WorldDistance calculateSlantRangeFor(WorldLocation ownship,
 			WorldLocation target)
 	{
 		WorldDistance res = null;
@@ -763,7 +763,7 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * store the list of double values indexed by string
 		 */
-		private Vector _datums;
+		private Vector<NamedList> _datums;
 
 		/**
 		 * the default value to use if none of the types are recognised
@@ -796,7 +796,7 @@ public abstract class LookupSensor extends CoreSensor
 		// }
 		// }
 
-		public IntegerTargetTypeLookup(Vector datums, Double value)
+		public IntegerTargetTypeLookup(Vector<NamedList> datums, Double value)
 		{
 			_defaultValue = value;
 
@@ -815,7 +815,7 @@ public abstract class LookupSensor extends CoreSensor
 		{
 			Double res = _defaultValue;
 			// right, first get the correct set of datums
-			for (Iterator iterator = _datums.iterator(); iterator.hasNext();)
+			for (Iterator<NamedList> iterator = _datums.iterator(); iterator.hasNext();)
 			{
 				// get the next series
 				NamedList thisList = (NamedList) iterator.next();
@@ -838,7 +838,7 @@ public abstract class LookupSensor extends CoreSensor
 		{
 			NamedList thisSet = null;
 			// right, first get the correct set of datums
-			for (Iterator iterator = _datums.iterator(); iterator.hasNext();)
+			for (Iterator<NamedList> iterator = _datums.iterator(); iterator.hasNext();)
 			{
 				// get the next series
 				thisSet = (NamedList) iterator.next();
@@ -855,7 +855,7 @@ public abstract class LookupSensor extends CoreSensor
 		public Collection<String> getNames()
 		{
 			Vector<String> res = new Vector<String>(0,1);
-			for (Iterator iterator = _datums.iterator(); iterator.hasNext();)
+			for (Iterator<NamedList> iterator = _datums.iterator(); iterator.hasNext();)
 			{
 				// get the next series
 				NamedList thisList = (NamedList) iterator.next();
@@ -1006,7 +1006,7 @@ public abstract class LookupSensor extends CoreSensor
 		/**
 		 * our list of properties
 		 */
-		private Vector<Number> _myList;
+		protected Vector<Number> _myList;
 
 		/**
 		 * the instantaneous range calculated
@@ -1192,128 +1192,7 @@ public abstract class LookupSensor extends CoreSensor
 			_max_m = max_m;
 		}
 
-		/**
-		 * get the version details for this model.
-		 * 
-		 * <pre>
-		 *  $Log: LookupSensor.java,v $
-		 *  Revision 1.6  2006/09/22 10:32:05  Ian.Mayo
-		 *  Provide the time with the sensor components
-		 *
-		 *  Revision 1.5  2006/09/21 15:31:25  Ian.Mayo
-		 *  ease debugging
-		 *
-		 *  Revision 1.4  2006/09/21 12:20:43  Ian.Mayo
-		 *  Reflect introduction of default names
-		 *
-		 *  Revision 1.3  2006/09/14 14:11:33  Ian.Mayo
-		 *  Improve how we manage some lists
-		 *
-		 *  Revision 1.2  2006/09/12 15:15:32  Ian.Mayo
-		 *  Sorting out XML import/export & lookup data structures
-		 *
-		 *  Revision 1.1  2006/08/08 14:21:56  Ian.Mayo
-		 *  Second import
-		 * 
-		 *  Revision 1.1  2006/08/07 12:26:04  Ian.Mayo
-		 *  First versions
-		 * 
-		 *  Revision 1.28  2004/11/04 09:29:20  Ian.Mayo
-		 *  Selectively include Range in the resulst
-		 * 
-		 *  Revision 1.27  2004/11/03 15:57:33  Ian.Mayo
-		 *  More MAD testing, &amp; only produce bearing from sensor capable of it.
-		 *  &lt;p/&gt;
-		 *  Revision 1.26  2004/11/03 15:42:09  Ian.Mayo
-		 *  More support for MAD sensors, better use of canDetectThis method
-		 *  &lt;p/&gt;
-		 *  Revision 1.25  2004/10/27 14:07:04  Ian.Mayo
-		 *  Handle default values better
-		 *  &lt;p/&gt;
-		 *  Revision 1.24  2004/10/27 13:30:08  Ian.Mayo
-		 *  More environment handling
-		 *  &lt;p/&gt;
-		 *  Revision 1.23  2004/10/26 15:02:45  Ian.Mayo
-		 *  Drop out of find loops once match found
-		 *  &lt;p/&gt;
-		 *  Revision 1.22  2004/10/26 10:24:44  Ian.Mayo
-		 *  Rename one of the lookups
-		 *  &lt;p/&gt;
-		 *  Revision 1.21  2004/10/25 15:30:22  Ian.Mayo
-		 *  Start incorporating lookup data tables in environment
-		 *  &lt;p/&gt;
-		 *  Revision 1.20  2004/10/14 13:38:52  Ian.Mayo
-		 *  Refactor listening to sensors - so that we can listen to a sensor &amp; it's detections in the same way that we can listen to a participant
-		 *  &lt;p/&gt;
-		 *  Revision 1.19  2004/10/14 10:24:45  Ian.Mayo
-		 *  Reflect name change of BaseSensor to CoreSensor
-		 *  &lt;p/&gt;
-		 *  Revision 1.18  2004/09/01 15:40:25  Ian.Mayo
-		 *  Tidy find loop
-		 *  &lt;p/&gt;
-		 *  Revision 1.17  2004/09/01 14:47:55  Ian.Mayo
-		 *  Tidy how we find matching lookup value
-		 *  &lt;p/&gt;
-		 *  Revision 1.16  2004/08/31 09:36:59  Ian.Mayo
-		 *  Rename inner static tests to match signature **Test to make automated testing more consistent
-		 *  &lt;p/&gt;
-		 *  Revision 1.15  2004/08/26 16:27:22  Ian.Mayo
-		 *  Implement editable properties
-		 *  &lt;p/&gt;
-		 *  Revision 1.14  2004/08/25 11:21:14  Ian.Mayo
-		 *  Remove main methods which just run junit tests
-		 *  &lt;p/&gt;
-		 *  Revision 1.13  2004/08/23 09:12:31  Ian.Mayo
-		 *  Update tests to reflect new detection list processing
-		 *  &lt;p/&gt;
-		 *  Revision 1.12  2004/08/23 08:06:09  Ian.Mayo
-		 *  Implement clearing old detection lists, minor refactoring
-		 *  &lt;p/&gt;
-		 *  Revision 1.11  2004/08/20 15:08:21  Ian.Mayo
-		 *  Part way through changing detection cycle so that it doesn't start afresh each time - each sensor removes it's previous calls the next time it is called (to allow for TBDO)
-		 *  &lt;p/&gt;
-		 *  Revision 1.10  2004/08/20 13:32:46  Ian.Mayo
-		 *  Implement inspection recommendations to overcome hidden parent objects, let CoreDecision handle the activity bits.
-		 *  &lt;p/&gt;
-		 *  Revision 1.9  2004/08/12 11:09:28  Ian.Mayo
-		 *  Respect observer classes refactored into tidy directories
-		 *  &lt;p/&gt;
-		 *  Revision 1.8  2004/08/10 13:52:25  Ian.Mayo
-		 *  Correction for calc of slant range
-		 *  &lt;p/&gt;
-		 *  Revision 1.7  2004/08/09 15:50:45  Ian.Mayo
-		 *  Refactor category types into Force, Environment, Type sub-classes
-		 *  &lt;p/&gt;
-		 *  Revision 1.6  2004/08/05 15:21:03  Ian.Mayo
-		 *  Refactor utility class so that in debugger we can correctly view child members
-		 *  &lt;p/&gt;
-		 *  Revision 1.5  2004/08/05 09:10:48  Ian.Mayo
-		 *  Switch to centralised random number generation
-		 *  &lt;p/&gt;
-		 *  Revision 1.4  2004/05/24 15:05:32  Ian.Mayo
-		 *  Commit changes conducted at home
-		 *  &lt;p/&gt;
-		 *  Revision 1.4  2004/04/13 20:53:27  ian
-		 *  Provide support for lookup results for unfound target types
-		 *  &lt;p/&gt;
-		 *  Revision 1.3  2004/04/08 20:27:29  ian
-		 *  Restructured contructor for CoreObserver
-		 *  &lt;p/&gt;
-		 *  Revision 1.2  2004/03/25 22:47:00  ian
-		 *  Reflect new simple environment constructor
-		 *  &lt;p/&gt;
-		 *  Revision 1.1.1.1  2004/03/04 20:30:54  ian
-		 *  no message
-		 *  &lt;p/&gt;
-		 *  Revision 1.3  2004/02/18 08:52:03  Ian.Mayo
-		 *  Improvements
-		 *  &lt;p/&gt;
-		 *  Revision 1.2  2003/11/07 14:40:31  Ian.Mayo
-		 *  Include templated javadoc
-		 *  &lt;p/&gt;
-		 *  &lt;p/&gt;
-		 * </pre>
-		 */
+	
 		public String getVersion()
 		{
 			return "not applicable";
@@ -1374,22 +1253,22 @@ public abstract class LookupSensor extends CoreSensor
 			return new WorldDistance(_rp_m, WorldDistance.METRES);
 		}
 
-		protected WorldDistance calculateMaxRange(WorldDistance RP, double VDR)
+		protected WorldDistance calculateMaxRange(WorldDistance RP, double VDRa)
 		{
 			return new WorldDistance(_max_m, WorldDistance.METRES);
 		}
 
-		protected WorldDistance calculateRI(WorldDistance RP, double VDR)
+		protected WorldDistance calculateRI(WorldDistance RP, double VDRa)
 		{
 			return new WorldDistance(_ri_m, WorldDistance.METRES);
 		}
 
-		protected WorldDistance calculateCR(WorldDistance RP, double VDR)
+		protected WorldDistance calculateCR(WorldDistance RP, double VDRa)
 		{
 			return new WorldDistance(_cr_m, WorldDistance.METRES);
 		}
 
-		protected WorldDistance calculateIR(WorldDistance RP, double VDR)
+		protected WorldDistance calculateIR(WorldDistance RP, double VDRa)
 		{
 			return new WorldDistance(_ir_m, WorldDistance.METRES);
 		}
@@ -2157,9 +2036,9 @@ public abstract class LookupSensor extends CoreSensor
 	// ////////////////////////////////////////////////
 	public static class NamedList
 	{
-		final private  String _myType;
+		final protected  String _myType;
 
-		final private Vector<Double> _myValues;
+		final protected Vector<Double> _myValues;
 		
 		public NamedList(String type, Vector<Double> values)
 		{

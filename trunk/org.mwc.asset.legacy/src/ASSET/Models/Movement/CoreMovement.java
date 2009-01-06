@@ -190,7 +190,7 @@ public class CoreMovement implements MovementType, java.io.Serializable
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -239,7 +239,7 @@ public class CoreMovement implements MovementType, java.io.Serializable
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -308,7 +308,7 @@ public class CoreMovement implements MovementType, java.io.Serializable
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,

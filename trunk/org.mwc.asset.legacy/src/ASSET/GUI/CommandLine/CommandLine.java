@@ -112,7 +112,7 @@ public class CommandLine
   /**
    * keep track of whether we're alive or not
    */
-  private boolean _isRunning = false;
+  protected boolean _isRunning = false;
 
   /**
    * *******************************************************************

@@ -64,6 +64,11 @@ public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics
   //////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the turn rate for this helo (degs/sec)
    */
   private double _myTurnRate;
@@ -89,10 +94,9 @@ public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics
   //////////////////////////////////////////////////
 
 
-  /**
-   * @deprecated
+  /** utility generator - used for tests
    */
-  public HeloMovementCharacteristics(String myName, double accelRate,
+  public static HeloMovementCharacteristics generateDebug(String myName, double accelRate,
                                      double decelRate, double fuel_usage_rate,
                                      double maxSpeed, double minSpeed,
                                      double defaultClimbRate,
@@ -100,7 +104,7 @@ public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics
                                      double minHeight, double myTurnRate,
                                      double defaultClimbSpeed, double defaultDiveSpeed)
   {
-    this(myName, new WorldAcceleration(accelRate, WorldAcceleration.M_sec_sec),
+    return new HeloMovementCharacteristics(myName, new WorldAcceleration(accelRate, WorldAcceleration.M_sec_sec),
          new WorldAcceleration(decelRate, WorldAcceleration.M_sec_sec),
          fuel_usage_rate,
          new WorldSpeed(maxSpeed, WorldSpeed.M_sec),
@@ -172,7 +176,7 @@ public class HeloMovementCharacteristics extends ThreeDimMovementCharacteristics
   /**
    * static method used to calculate turning circle diameter from angular velocity and speed
    */
-  private static double _calcTurnCircle(double turn_rate_degs_sec,
+  protected static double _calcTurnCircle(double turn_rate_degs_sec,
                                         double speed_m_sec)
   {
     // so, the equation for the radius of a turning circle using the turn rate and speed is

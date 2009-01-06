@@ -90,6 +90,11 @@ public class CircularDatumSearch extends Sequence
   //////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the number of buoys in the circle
    */
   private int _numBuoys;

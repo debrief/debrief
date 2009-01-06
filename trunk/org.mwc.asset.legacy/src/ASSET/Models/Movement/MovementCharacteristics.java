@@ -406,6 +406,11 @@ public abstract class MovementCharacteristics implements MWC.GUI.Editable, java.
                                        )
     {
       /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			/**
        * get the turning circle diameter (m) at this speed (in m/sec)
        */
       public double getTurningCircleDiameter(double m_sec)

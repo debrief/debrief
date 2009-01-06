@@ -411,37 +411,37 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
     /**
      * the initial turn (relative) we need to make (degs), set to null on completion. -ve means turn to port
      */
-    private Double _initialTurn = null;
+    protected Double _initialTurn = null;
 
     /**
      * the final turn (relative) we need to make (degs), set to null on completion. -ve means turn to port
      */
-    private Double _finalTurn = null;
+    protected Double _finalTurn = null;
 
     /**
      * the distance we travel in a straight line (m)
      */
-    private Double _zLen = null;
+    protected Double _zLen = null;
 
     /**
      * whether this turn is possible or not
      */
-    private boolean _isPossible = true;
+    protected boolean _isPossible = true;
 
     /**
      * whether we fail because the points are too close (the turning circles overlap)
      */
-    private boolean _failTooClose = false;
+    protected boolean _failTooClose = false;
 
     /**
      * whether we fail because there isn't room for the acceleration
      */
-    private boolean _failCantAccelerate = false;
+    protected boolean _failCantAccelerate = false;
 
     /**
      * how long this particular manoeuvre takes (secs)
      */
-    private double _thisLength;
+    protected double _thisLength;
 
 
     public TurnType(double initialTurn, double zLen,
@@ -465,7 +465,12 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
      */
     public static class PointsTooCloseException extends RuntimeException
     {
-      public PointsTooCloseException()
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public PointsTooCloseException()
       {
       }
     }
@@ -762,9 +767,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return new Point2D.Double(xVal, yVal);
       }
 
-      public double alpha1(double hyp, double rad1, double rad2, double hDelta, double kDelta)
+      public double alpha1(double hyp, double rad1a, double rad2a, double hDelta, double kDelta)
       {
-        double rad = rad1 + rad2;
+        double rad = rad1a + rad2a;
         return Math.asin(rad / hyp) - Math.atan2(hDelta, kDelta);
       }
 
@@ -773,9 +778,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return alpha1 + Math.PI;
       }
 
-      public double zLength(double hDelta, double alpha1, double rad1, double rad2)
+      public double zLength(double hDelta, double alpha1, double rad1a, double rad2a)
       {
-        double rad = rad1 + rad2;
+        double rad = rad1a + rad2a;
         return Math.abs((-hDelta + rad * Math.cos(alpha1)) / Math.sin(alpha1));
       }
 
@@ -819,9 +824,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return new Point2D.Double(xVal, yVal);
       }
 
-      public double alpha1(double hyp, double rad1, double rad2, double hDelta, double kDelta)
+      public double alpha1(double hyp, double rad1a, double rad2a, double hDelta, double kDelta)
       {
-        return Math.asin((rad1 - rad2) / hyp) - Math.atan2(hDelta, kDelta);
+        return Math.asin((rad1a - rad2a) / hyp) - Math.atan2(hDelta, kDelta);
       }
 
       public double alpha2(double alpha1)
@@ -829,9 +834,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return alpha1;
       }
 
-      public double zLength(double hDelta, double alpha1, double rad1, double rad2)
+      public double zLength(double hDelta, double alpha1, double rad1a, double rad2a)
       {
-        return Math.abs((-hDelta + (rad1 - rad2) * Math.cos(alpha1)) / Math.sin(alpha1));
+        return Math.abs((-hDelta + (rad1a - rad2a) * Math.cos(alpha1)) / Math.sin(alpha1));
       }
 
       public double theta1(double alpha1, double p1)
@@ -876,9 +881,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return new Point2D.Double(xVal, yVal);
       }
 
-      public double alpha1(double hyp, double rad1, double rad2, double hDelta, double kDelta)
+      public double alpha1(double hyp, double rad1a, double rad2a, double hDelta, double kDelta)
       {
-        double rad = rad1 + rad2;
+        double rad = rad1a + rad2a;
         return -Math.asin(rad / hyp) - Math.atan2(-hDelta, -kDelta);
       }
 
@@ -887,9 +892,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return alpha1 + Math.PI;
       }
 
-      public double zLength(double hDelta, double alpha1, double rad1, double rad2)
+      public double zLength(double hDelta, double alpha1, double rad1a, double rad2a)
       {
-        double rad = rad1 + rad2;
+        double rad = rad1a + rad2a;
         return Math.abs((-hDelta + rad * Math.cos(alpha1)) / Math.sin(alpha1));
       }
 
@@ -935,9 +940,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return new Point2D.Double(xVal, yVal);
       }
 
-      public double alpha1(double hyp, double rad1, double rad2, double hDelta, double kDelta)
+      public double alpha1(double hyp, double rad1a, double rad2a, double hDelta, double kDelta)
       {
-        return Math.asin((rad2 - rad1) / hyp) - Math.atan2(-hDelta, -kDelta);
+        return Math.asin((rad2a - rad1a) / hyp) - Math.atan2(-hDelta, -kDelta);
       }
 
       public double alpha2(double alpha1)
@@ -945,9 +950,9 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
         return alpha1;
       }
 
-      public double zLength(double hDelta, double alpha1, double rad1, double rad2)
+      public double zLength(double hDelta, double alpha1, double rad1a, double rad2a)
       {
-        return Math.abs((-hDelta + (rad1 - rad2) * Math.cos(alpha1)) / Math.sin(alpha1));
+        return Math.abs((-hDelta + (rad1a - rad2a) * Math.cos(alpha1)) / Math.sin(alpha1));
       }
 
       public double theta1(double alpha1, double p1)
@@ -1420,7 +1425,7 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -1456,7 +1461,7 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,

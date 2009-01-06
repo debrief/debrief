@@ -108,6 +108,10 @@ public class MarkDip extends CoreDecision implements Serializable
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the depth to lower the body to (metres)
    */
   private double _bodyDepth = 0;
@@ -415,7 +419,7 @@ public class MarkDip extends CoreDecision implements Serializable
       double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,

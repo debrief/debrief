@@ -38,6 +38,11 @@ import java.util.Vector;
 public class Investigate extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the type of target to investigate
    */
   private TargetType _myTarget = new TargetType();
@@ -57,12 +62,12 @@ public class Investigate extends CoreDecision implements MWC.GUI.Editable, java.
   /**
    * list of targets we've already found
    */
-  private Vector _targetsDone;
+  protected Vector<Integer> _targetsDone;
 
   /**
    * the target id we're currently investigating
    */
-  private Integer _currentTarget;
+  protected Integer _currentTarget;
 
   /**
    * the height at which we conduct investigation
@@ -96,7 +101,7 @@ public class Investigate extends CoreDecision implements MWC.GUI.Editable, java.
    */
   private void init()
   {
-    _targetsDone = new Vector(0, 1);
+    _targetsDone = new Vector<Integer>(0, 1);
     _currentTarget = null;
   }
 
@@ -199,7 +204,7 @@ public class Investigate extends CoreDecision implements MWC.GUI.Editable, java.
     if (validDetection != null)
     {
       // great, plot a bearing to it
-      float brgToTarget = validDetection.getBearing().floatValue();
+//      float brgToTarget = validDetection.getBearing().floatValue();
 
       // NO, GENERATE INTERCEPT BEARING
       // yes, calc the course to it

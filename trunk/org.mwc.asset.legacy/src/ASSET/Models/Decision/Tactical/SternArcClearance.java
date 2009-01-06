@@ -35,6 +35,11 @@ public class SternArcClearance extends CoreDecision implements java.io.Serializa
   ////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the frequency at which we perform stern arc clearance (millis)
    */
   private Duration _frequency;

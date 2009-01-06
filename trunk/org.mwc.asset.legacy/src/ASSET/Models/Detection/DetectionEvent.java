@@ -21,7 +21,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class DetectionEvent implements java.util.Comparator
+public class DetectionEvent implements java.util.Comparator<DetectionEvent>
 {
 
   ////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ public class DetectionEvent implements java.util.Comparator
   /**
    * relative bearing to target (degs)
    */
-  private Float _relBearing;
+  protected Float _relBearing;
 
   /**
    * bearing of detection (degs)
@@ -352,14 +352,10 @@ public class DetectionEvent implements java.util.Comparator
    * ******************************************************************
    */
 
-  public int compare(final Object o1,
-                     final Object o2)
+  public int compare(final DetectionEvent d1,
+                     final DetectionEvent d2)
   {
     int res = 0;
-
-    // check the types
-    final DetectionEvent d1 = (DetectionEvent) o1;
-    final DetectionEvent d2 = (DetectionEvent) o2;
 
     if (d1.getTime() < d2.getTime())
       res = -1;

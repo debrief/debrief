@@ -17,7 +17,12 @@ import MWC.GenericData.WorldSpeed;
 public class BroadbandRadNoise implements ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium,
   java.io.Serializable, MWC.GUI.Editable
 {
-  //////////////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//////////////////////////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////////////////////////
   private double _baseNoiseLevel;

@@ -15,7 +15,12 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
 {
 
 
-  static public final String UPDATED = "Updated";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	static public final String UPDATED = "Updated";
 
   /**
    * the current demanded course (Degs)
@@ -72,10 +77,10 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
     _pSupport.removePropertyChangeListener(type, listener);
   }
 
-  private void fireUpdate(final String type, final ASSET.Models.DecisionType decider)
-  {
-    _pSupport.firePropertyChange(type, null, decider);
-  }
+//  private void fireUpdate(final String type, final ASSET.Models.DecisionType decider)
+//  {
+//    _pSupport.firePropertyChange(type, null, decider);
+//  }
 
 
   /**

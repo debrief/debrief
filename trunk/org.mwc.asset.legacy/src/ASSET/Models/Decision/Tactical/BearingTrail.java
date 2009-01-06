@@ -28,6 +28,10 @@ public class BearingTrail extends Trail implements java.io.Serializable
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the bearing to trail at (degrees)
    */
   private double _trailBearing;

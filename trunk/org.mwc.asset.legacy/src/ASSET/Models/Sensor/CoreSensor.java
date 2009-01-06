@@ -94,7 +94,7 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 	/**
 	 * externally suppled operation to fire when somebody wants to watch us.
 	 */
-	private static SensorOperation _watchMethod;
+	protected static SensorOperation _watchMethod;
 
 	/**
 	 * ok, we keep track of new detections in each cycle. use a static list so
@@ -212,9 +212,9 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 				_newDetections.removeAllElements();
 
 				// step through the participants in the scenario
-				final Collection parts = scenario.getListOfVisibleParticipants();
+				final Collection<ParticipantType> parts = scenario.getListOfVisibleParticipants();
 
-				for (Iterator iterator = parts.iterator(); iterator.hasNext();)
+				for (Iterator<ParticipantType> iterator = parts.iterator(); iterator.hasNext();)
 				{
 					ParticipantType target = (ParticipantType) iterator.next();
 

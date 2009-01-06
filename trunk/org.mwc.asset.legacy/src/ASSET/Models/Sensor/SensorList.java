@@ -40,7 +40,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   /**
    * our sensors
    */
-  private HashMap _mySensors = new HashMap();
+  private HashMap<Integer, SensorType> _mySensors = new HashMap<Integer, SensorType>();
 
   /**
    * whether we are currently active or not
@@ -61,7 +61,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   /**
    * people listening out for my detections
    */
-  private Vector _participantDetectedListeners;
+  private Vector<ParticipantDetectedListener> _participantDetectedListeners;
 
   //////////////////////////////////////////////////
   // constructor
@@ -87,7 +87,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   public void addParticipantDetectedListener(ParticipantDetectedListener listener)
   {
     if (_participantDetectedListeners == null)
-      _participantDetectedListeners = new Vector(1, 2);
+      _participantDetectedListeners = new Vector<ParticipantDetectedListener>(1, 2);
 
     _participantDetectedListeners.add(listener);
   }
@@ -155,7 +155,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   {
     // find any sensors of this medium
     // step through our sensors
-    final Iterator it = _mySensors.values().iterator();
+    final Iterator<SensorType> it = _mySensors.values().iterator();
 
     while (it.hasNext())
     {
@@ -174,7 +174,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
    *
    * @return
    */
-  public Collection getSensors()
+  public Collection<SensorType> getSensors()
   {
     return _mySensors.values();
   }
@@ -185,7 +185,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   public void restart()
   {
     // step through the sensors
-    final Iterator it = _mySensors.values().iterator();
+    final Iterator<SensorType> it = _mySensors.values().iterator();
 
     while (it.hasNext())
     {
@@ -319,7 +319,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   public boolean radiatesThisMedium(final int medium)
   {
     // step through our sensors
-    final Iterator it = _mySensors.values().iterator();
+    final Iterator<SensorType> it = _mySensors.values().iterator();
     boolean res = false;
 
     while (it.hasNext())
@@ -342,7 +342,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   public double getRadiatedNoiseFor(final int medium)
   {
     // step through our sensors
-    final Iterator it = _mySensors.values().iterator();
+    final Iterator<SensorType> it = _mySensors.values().iterator();
     double res = 0;
 
     while (it.hasNext())
@@ -379,11 +379,11 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
     if (_isWorking)
     {
       // don't worry about clearing out the old detections, the sensors themselves do it.
-      Vector oldDetections;
-      oldDetections = new Vector(existingDetections);
+      Vector<DetectionEvent> oldDetections;
+      oldDetections = new Vector<DetectionEvent>(existingDetections);
 
       // step through the sensors
-      final Iterator it = _mySensors.values().iterator();
+      final Iterator<SensorType> it = _mySensors.values().iterator();
 
       while (it.hasNext())
       {
@@ -450,7 +450,7 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
   public ASSET.Models.SensorType getSensorWithId(final int sensorId)
   {
     SensorType res = null;
-    for (Iterator iter = this.getSensors().iterator(); iter.hasNext();)
+    for (Iterator<SensorType> iter = this.getSensors().iterator(); iter.hasNext();)
     {
       SensorType se = (SensorType) iter.next();
       if (se.getId() == sensorId)

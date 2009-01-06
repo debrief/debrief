@@ -20,6 +20,11 @@ import MWC.GenericData.*;
 public class WorkingTransit extends Transit
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * what we do each time we reach a waypoint
    */
   private Sequence _myActivity;
@@ -241,7 +246,6 @@ public class WorkingTransit extends Transit
       WorldPath newPath = new WorldPath(new WorldLocation[]{newLoc1, newLoc2, newLoc3});
       WorldSpeed transitSpeed = new WorldSpeed(12, WorldSpeed.Kts);
       Sequence activity = new Sequence(true, "Sequence");
-      Wait doWait = new Wait(new Duration(12, Duration.MINUTES), "do a wait");
       return new WorkingTransit(newPath, transitSpeed, false, activity);
     }
 

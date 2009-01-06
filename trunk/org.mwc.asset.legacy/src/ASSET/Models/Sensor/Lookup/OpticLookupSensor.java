@@ -63,7 +63,7 @@ public class OpticLookupSensor extends LookupSensor
 		super(id, myName, VDR, TBDO, MRF, CRF, CTP, IRF, ITP, "Optic Lookup");
 	}
 
-	private OpticEnvironment getDefaultLookups()
+	protected OpticEnvironment getDefaultLookups()
 	{
 		// produce the visual attenuation lookup
 		IntegerLookup attenuation = new IntegerLookup(new int[] { EnvironmentType.VERY_CLEAR,
@@ -78,7 +78,7 @@ public class OpticLookupSensor extends LookupSensor
 
 		visibility.setUnknownResult(new Double(0.001));
 
-		Vector states = new Vector(0, 1);
+		Vector<NamedList> states = new Vector<NamedList>(0, 1);
 		states.add(new NamedList(Category.Type.CARRIER, new double[] { 1.00, 1.00, 1.00,
 				1.00, 1.00, 0.95, 0.90 }));
 		states.add(new NamedList(Category.Type.CARRIER, new double[] { 1.00, 1.00, 1.00,
@@ -374,15 +374,15 @@ public class OpticLookupSensor extends LookupSensor
 	// ////////////////////////////////////////////////
 	public static class OpticEnvironment
 	{
-		private IntegerLookup _attenuation;
+		protected IntegerLookup _attenuation;
 
-		private StringLookup _visibility;
+		protected StringLookup _visibility;
 
-		private IntegerTargetTypeLookup _sea_states;
+		protected IntegerTargetTypeLookup _sea_states;
 
-		private IntegerLookup _lightLevel;
+		protected IntegerLookup _lightLevel;
 
-		private String _name;
+		protected String _name;
 
 		public OpticEnvironment(IntegerLookup attenuation, IntegerLookup lightLevel,
 				String name, IntegerTargetTypeLookup sea_states, StringLookup visibility)
@@ -784,11 +784,11 @@ public class OpticLookupSensor extends LookupSensor
 
 		}
 
-		private boolean detectedOther = false;
+		protected boolean detectedOther = false;
 
-		private boolean targetLost = false;
+		protected boolean targetLost = false;
 
-		private int maxClassification = 0;
+		protected int maxClassification = 0;
 	}
 
 }

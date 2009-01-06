@@ -33,6 +33,11 @@ public class SSKRecharge extends CoreDecision implements java.io.Serializable
 
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the maximum level we let the battery reach before we recharge
    */
   private double _minLevel = 20;
@@ -87,7 +92,7 @@ public class SSKRecharge extends CoreDecision implements java.io.Serializable
 
     // what's our depth?
     final double height = -status.getLocation().getDepth();
-    final double spd = status.getSpeed().getValueIn(WorldSpeed.M_sec);
+//    final double spd = status.getSpeed().getValueIn(WorldSpeed.M_sec);
 
     // yes, we're charging, decide if we are in trouble
     boolean _inTrouble = false;

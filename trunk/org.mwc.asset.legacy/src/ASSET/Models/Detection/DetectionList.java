@@ -28,7 +28,7 @@ import java.util.*;
  * Each detections is the product of a {@link ASSET.ParticipantType participant} using
  * a {@link ASSET.Models.SensorType sensor} to detect another {@link ASSET.ParticipantType participant}.
  */
-public class DetectionList extends Vector implements Collection
+public class DetectionList extends Vector<DetectionEvent> implements Collection<DetectionEvent>
 {
 
   /** our list of detections
@@ -65,7 +65,7 @@ public class DetectionList extends Vector implements Collection
    * @throws NullPointerException if the specified collection is null.
    * @since 1.2
    */
-  public DetectionList(Collection collection)
+  public DetectionList(Collection<DetectionEvent> collection)
   {
     super(collection);
   }
@@ -100,7 +100,7 @@ public class DetectionList extends Vector implements Collection
   {
     DetectionList res = null;
 
-    Iterator it = iterator();
+    Iterator<DetectionEvent> it = iterator();
     while (it.hasNext())
     {
       DetectionEvent de = (DetectionEvent) it.next();
@@ -127,22 +127,18 @@ public class DetectionList extends Vector implements Collection
     DetectionEvent res = null;
 
     // create the list to store the items
-    SortedSet ss = new TreeSet(new Comparator()
+    SortedSet<DetectionEvent> ss = new TreeSet<DetectionEvent>(new Comparator<DetectionEvent>()
     {
-      public int compare(Object o1, Object o2)
+      public int compare(DetectionEvent d1, DetectionEvent d2)
       {
-        int res = 0;
-
-        // check the types
-        final DetectionEvent d1 = (DetectionEvent) o1;
-        final DetectionEvent d2 = (DetectionEvent) o2;
+        int resa = 0;
 
         if (d1.getTime() < d2.getTime())
-          res = -1;
+          resa = -1;
         else if (d1.getTime() > d2.getTime())
-          res = 1;
+          resa = 1;
 
-        return res;
+        return resa;
       }
     });
 
@@ -166,28 +162,24 @@ public class DetectionList extends Vector implements Collection
     DetectionEvent res = null;
 
     // create the list to store the items
-    SortedSet<DetectionEvent> ss = new TreeSet<DetectionEvent>(new Comparator()
+    SortedSet<DetectionEvent> ss = new TreeSet<DetectionEvent>(new Comparator<DetectionEvent>()
     {
-      public int compare(Object o1, Object o2)
+      public int compare(DetectionEvent d1, DetectionEvent d2)
       {
-        int res = 0;
-
-        // check the types
-        final DetectionEvent d1 = (DetectionEvent) o1;
-        final DetectionEvent d2 = (DetectionEvent) o2;
+        int resa = 0;
 
         if (d1.getRange().lessThan(d2.getRange()))
-          res = -1;
+          resa = -1;
         else if (d1.getRange().greaterThan(d2.getRange()))
-          res = 1;
+          resa = 1;
 
-        return res;
+        return resa;
 
       }
     });
 
     // only add the detections which have a range
-    Iterator iter = this.iterator();
+    Iterator<DetectionEvent> iter = this.iterator();
     while (iter.hasNext())
     {
       DetectionEvent thisDet = (DetectionEvent) iter.next();
@@ -217,22 +209,18 @@ public class DetectionList extends Vector implements Collection
     DetectionEvent res = null;
 
     // create the list to store the items
-    SortedSet ss = new TreeSet(new Comparator()
+    SortedSet<DetectionEvent> ss = new TreeSet<DetectionEvent>(new Comparator<DetectionEvent>()
     {
-      public int compare(Object o1, Object o2)
+      public int compare(DetectionEvent d1, DetectionEvent d2)
       {
-        int res = 0;
-
-        // check the types
-        final DetectionEvent d1 = (DetectionEvent) o1;
-        final DetectionEvent d2 = (DetectionEvent) o2;
+        int resa = 0;
 
         if (d1.getDetectionState() < d2.getDetectionState())
-          res = -1;
+          resa = -1;
         else if (d1.getDetectionState() > d2.getDetectionState())
-          res = 1;
+          resa = 1;
 
-        return res;
+        return resa;
       }
     });
 
@@ -288,7 +276,7 @@ public class DetectionList extends Vector implements Collection
     DetectionList res = null;
 
     // loop through our detections
-    Iterator it = iterator();
+    Iterator<DetectionEvent> it = iterator();
     while (it.hasNext())
     {
       DetectionEvent de = (DetectionEvent) it.next();
@@ -312,13 +300,15 @@ public class DetectionList extends Vector implements Collection
    *
    * @param event the detection to add
    */
-  public void add(final DetectionEvent event)
+  public boolean add(final DetectionEvent event)
   {
     // extend our time period to include this
     super.add(event);
 
     // and extend our time period
     _thePeriod.extend(new HiResDate(event.getTime()));
+    
+    return true;
   }
 
   /**
@@ -474,7 +464,7 @@ public class DetectionList extends Vector implements Collection
       assertEquals("wrong number of ssnb detections", 2, validDets.size(), 0);
       assertEquals("wrong one returned as most recent", de5, validDets.getMostRecentDetection());
       assertEquals("wrong one returned as overall most recent", de5, dl.getMostRecentDetection());
-      DetectionEvent bestDet = validDets.getBestDetection();
+//      DetectionEvent bestDet = validDets.getBestDetection();
       assertEquals("wrong one returned as best", de6, dl.getBestDetection());
 
     }

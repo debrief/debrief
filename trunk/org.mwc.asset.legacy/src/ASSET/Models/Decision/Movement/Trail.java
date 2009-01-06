@@ -29,6 +29,11 @@ public class Trail extends CoreDecision implements java.io.Serializable
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the range to trail at (yds)
    */
   WorldDistance _trailRange;
@@ -56,7 +61,7 @@ public class Trail extends CoreDecision implements java.io.Serializable
   /**
    * the time at which we will stop staying on bearing
    */
-  transient private long _endStayOnBearing = -1;
+  transient protected long _endStayOnBearing = -1;
 
   /**
    * remember the last valid detection (in case we do intend to stay on bearing)
@@ -183,7 +188,7 @@ public class Trail extends CoreDecision implements java.io.Serializable
       {
 
         // first pass through our organic sensors
-        THROUGH_DETECTIONS: for (int i = 0; i < len; i++)
+        for (int i = 0; i < len; i++)
         {
           final ASSET.Models.Detection.DetectionEvent de = detections.getDetection(i);
           if (isThisValid(de, _myTarget, new Integer(status.getId())))
@@ -199,7 +204,7 @@ public class Trail extends CoreDecision implements java.io.Serializable
         {
           // no, go through the remote senors
           // first pass through our organic sensors
-          THROUGH_DETECTIONS: for (int i = 0; i < len; i++)
+          for (int i = 0; i < len; i++)
           {
             final ASSET.Models.Detection.DetectionEvent de = detections.getDetection(i);
             if (isThisValid(de, _myTarget, null))
@@ -349,7 +354,7 @@ public class Trail extends CoreDecision implements java.io.Serializable
   /**
    * get the course and speed we need to get back on track
    */
-  DemandedStatus getDemanded(long time, ASSET.Participants.Status status,
+  protected DemandedStatus getDemanded(long time, ASSET.Participants.Status status,
                              final ASSET.Models.Detection.DetectionEvent detection)
   {
     SimpleDemandedStatus res = new SimpleDemandedStatus(time, status);

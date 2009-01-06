@@ -42,7 +42,9 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.StringBufferInputStream;
+
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.StringWriter;
 
 /**
@@ -59,7 +61,12 @@ import java.io.StringWriter;
 public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
 {
 
-  /****************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/****************************************************
    * member variables
    ***************************************************/
 
@@ -227,7 +234,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
         final int len = detections.size();
         if (len > 0)
         {
-          THROUGH_DETECTIONS: for (int i = 0; i < len; i++)
+          for (int i = 0; i < len; i++)
           {
 
             final ASSET.Models.Detection.DetectionEvent de = detections.getDetection(i);
@@ -300,7 +307,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
    * utility class provided to overcome String.replace only being
    * present in JDK1.4
    */
-  private static String replaceAll(final String original, final String toBeSwappedOut, final String toBeSwappedIn)
+  protected static String replaceAll(final String original, final String toBeSwappedOut, final String toBeSwappedIn)
   {
     if (original == null)
       return null;
@@ -326,7 +333,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
   /**
    * put our keywords into the XML description
    */
-  private static String swapKeywords(final DetectionEvent detection,
+  protected static String swapKeywords(final DetectionEvent detection,
                                      final Status currentLocation,
                                      final String weapon,
                                      final TargetType theTarget)
@@ -479,7 +486,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
   /**
    * get the participant
    */
-  private static ParticipantType getWeapon(final DetectionEvent detection,
+  protected static ParticipantType getWeapon(final DetectionEvent detection,
                                            final Status currentLocation,
                                            final String weapon,
                                            final TargetType target)
@@ -492,7 +499,8 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
     final String working = swapKeywords(detection, currentLocation, weapon, target);
 
     // put the string into a stream
-    final StringBufferInputStream sr = new StringBufferInputStream(working);
+//    final StringBufferInputStream sr = new StringBufferInputStream(working);
+    final InputStream sr = new ByteArrayInputStream(working.getBytes()); 
 
     // extract the participant
     res = ASSETReaderWriter.importParticipant(fName, sr);
@@ -974,7 +982,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
 
     // todo: re-instate this test, we're having problems with the launch range
 
-    private void untestLaunch()
+    public void testLaunch()
     {
 
       final double rngToHim = 5000;
@@ -995,22 +1003,22 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
       // setup a couple of targets
       final ASSET.Models.Vessels.SSN ssn = new ASSET.Models.Vessels.SSN(1);
       ssn.setName("ssn");
-      ssn.setMovementChars(new SSMovementCharacteristics("scrap", 1, 1, 0, 20, 1, 300, 1, 1, 10, 100));
+      ssn.setMovementChars(SSMovementCharacteristics.generateDebug("scrap", 1, 1, 0, 20, 1, 300, 1, 1, 10, 100));
       ssn.setCategory(new ASSET.Participants.Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.SUBMARINE));
       ssn.setStatus(blueStat);
       final ASSET.Models.Sensor.Initial.OpticSensor periscope = new ASSET.Models.Sensor.Initial.OpticSensor(12);
       ssn.addSensor(periscope);
       RadiatedCharacteristics rc = new RadiatedCharacteristics();
-      rc.add(12, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
+      rc.add(6, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
       ssn.setRadiatedChars(rc);
 
       final ASSET.Models.Vessels.Surface su = new ASSET.Models.Vessels.Surface(4);
       su.setName("su");
-      su.setMovementChars(new SurfaceMovementCharacteristics("scrap", 1, 1, 0.001, 14, 1, 299));
+      su.setMovementChars(SurfaceMovementCharacteristics.generateDebug("scrap", 1, 1, 0.001, 14, 1, 299));
       su.setCategory(new ASSET.Participants.Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.CARRIER));
       su.setStatus(redStat);
       rc = new RadiatedCharacteristics();
-      rc.add(12, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
+      rc.add(6, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
       su.setRadiatedChars(rc);
 
       /** create the scenario

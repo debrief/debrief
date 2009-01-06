@@ -30,7 +30,7 @@ public interface BehaviourList extends ASSET.Models.DecisionType, MWC.GUI.Editab
    *
    * @return
    */
-  Vector getModels();
+  Vector<ASSET.Models.DecisionType> getModels();
 
   /** return the class name as a string (in particular this is used by the Waterfall Editor
    * to indicate what is being edited

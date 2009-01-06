@@ -101,6 +101,11 @@ public class Transit extends CoreDecision implements java.io.Serializable
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * our transit speed for this passage
    */
   private WorldSpeed _mySpeed;
@@ -113,12 +118,12 @@ public class Transit extends CoreDecision implements java.io.Serializable
   /**
    * the current destination
    */
-  private int _currentDestination = 0;
+  protected int _currentDestination = 0;
 
   /**
    * the threshold to use to decide if we are at our destination (yds)
    */
-  private WorldDistance _threshold = new WorldDistance(500, WorldDistance.YARDS);
+  protected WorldDistance _threshold = new WorldDistance(500, WorldDistance.YARDS);
 
   /**
    * loop through destinations
@@ -135,7 +140,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
    * whether we are currently performing the "reverse-loop", heading back
    * to the start
    */
-  private boolean _in_reverse_transit = false;
+  protected boolean _in_reverse_transit = false;
 
   /**
    * a local copy of our editable object
@@ -938,7 +943,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
           decelRate, fuel_usage_rate,
           maxSpeed, minSpeed, turningCircle, defaultClimbRate,
           defaultDiveRate, maxDepth,
@@ -995,7 +1000,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
           decelRate, fuel_usage_rate,
           maxSpeed, minSpeed, turningCircle, defaultClimbRate,
           defaultDiveRate, maxDepth,
@@ -1093,7 +1098,7 @@ public class Transit extends CoreDecision implements java.io.Serializable
 
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
           decelRate, fuel_usage_rate,
           maxSpeed, minSpeed, turningCircle, defaultClimbRate,
           defaultDiveRate, maxDepth,

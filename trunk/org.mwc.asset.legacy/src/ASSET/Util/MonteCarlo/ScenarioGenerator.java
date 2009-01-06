@@ -63,11 +63,6 @@ public final class ScenarioGenerator
   private static final String OUTPUT_DIRECTORY = "OutputDirectory";
 
   /**
-   * the filename to use for the output file(s)
-   */
-  private static final String FILENAME = "Filename";
-
-  /**
    * the attribute name for the random seed
    */
   private static final String RANDOM_SEED = "RandomSeed";
@@ -76,7 +71,7 @@ public final class ScenarioGenerator
   /**
    * the directory to place the new files
    */
-  private String _myDirectory;
+  protected String _myDirectory;
 
   /**
    * the seed to use for the random number generator
@@ -111,7 +106,7 @@ public final class ScenarioGenerator
    * ************************************************************
    */
 
-  public String createScenarios(String templatePath, String controlPath, Vector results)
+  public String createScenarios(String templatePath, String controlPath, Vector<Document> results)
   {
     Document var = null;
     String res = null;
@@ -171,7 +166,7 @@ public final class ScenarioGenerator
    * @param results     vector containing the new scenarios
    * @return error message on failure, or null for success
    */
-  protected String doScenarioGeneration(Document template, Document controlFile, Vector results)
+  protected String doScenarioGeneration(Document template, Document controlFile, Vector<Document> results)
   {
     String res = null;
 
@@ -199,7 +194,7 @@ public final class ScenarioGenerator
    * @param scenarios the list of scenarios to write to file
    * @return String indicating any problems, or void for success
    */
-  public String writeTheseToFile(Vector scenarios, boolean deleteExisting)
+  public String writeTheseToFile(Vector<Document> scenarios, boolean deleteExisting)
   {
     String res = null;
 
@@ -464,7 +459,7 @@ public final class ScenarioGenerator
    * read in the list of variances, and collate them
    * into our list
    */
-  private void setVariances(final Document document)
+  protected void setVariances(final Document document)
   {
 
     try
@@ -551,7 +546,7 @@ public final class ScenarioGenerator
   //    return _targetScenario;
   //  }
 
-  public final String createNewRandomisedPermutations(Vector resultsContainer)
+  public final String createNewRandomisedPermutations(Vector<Document> resultsContainer)
   {
 
     String res = null;
@@ -599,7 +594,7 @@ public final class ScenarioGenerator
       System.out.println("Mutating participants");
       System.out.println("=====================");
 
-      Vector newResults = new Vector(0, 1);
+      Vector<Document> newResults = new Vector<Document>(0, 1);
 
       // start off by creating our long list of scenario duplicates
 
@@ -831,7 +826,7 @@ public final class ScenarioGenerator
 
       final String docPath = code_root + "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
 
-      Vector list = new Vector(0, 1);
+      Vector<Document> list = new Vector<Document>(0, 1);
 
       ScenarioGenerator genny = new ScenarioGenerator();
 
@@ -880,7 +875,7 @@ public final class ScenarioGenerator
 
       final String docPath = code_root + "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
 
-      Vector list = new Vector(0, 1);
+      Vector<Document> list = new Vector<Document>(0, 1);
 
       ScenarioGenerator genny = new ScenarioGenerator();
 
@@ -900,7 +895,7 @@ public final class ScenarioGenerator
 
       final String docPath = code_root + "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
 
-      Vector list = new Vector(0, 1);
+      Vector<Document> list = new Vector<Document>(0, 1);
 
       ScenarioGenerator genny = new ScenarioGenerator();
 
@@ -942,7 +937,7 @@ public final class ScenarioGenerator
 
       final String docPath = code_root + "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
 
-      Vector list = new Vector(0, 1);
+      Vector<Document> list = new Vector<Document>(0, 1);
 
       ScenarioGenerator genny = new ScenarioGenerator();
 
@@ -1026,7 +1021,7 @@ public final class ScenarioGenerator
         {
           // first create the parent directory(s) if needed
           File parentFile = f.getParentFile();
-          boolean res = parentFile.mkdirs();
+          parentFile.mkdirs();
 
           // and now the file itself
           fos = new FileOutputStream(f);

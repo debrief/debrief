@@ -111,7 +111,7 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     // create the new handler
     final ASSETReaderWriter xr = new ASSETReaderWriter();
 
-    final Vector resultsHolder = new Vector(0, 1);
+    final Vector<ResultsContainer> resultsHolder = new Vector<ResultsContainer>(0, 1);
 
     final MWCXMLReader handler = new ScenarioControllerHandler()
     {
@@ -141,17 +141,17 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
   /**
    * handle the import of XML data, creating a new session for it
    */
-  static public Vector importThisObserverList(final String fName,
+  static public Vector<ScenarioObserver> importThisObserverList(final String fName,
                                               final java.io.InputStream is)
   {
     // create the new handler
     final ASSETReaderWriter xr = new ASSETReaderWriter();
 
-    final Vector res = new Vector(0, 1);
+    final Vector<ScenarioObserver> res = new Vector<ScenarioObserver>(0, 1);
 
     final MWCXMLReader handler = new StandaloneObserverListHandler()
     {
-      public void setObserverList(Vector list)
+      public void setObserverList(Vector<ScenarioObserver> list)
       {
         res.addAll(list);
       }
@@ -179,7 +179,7 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
   }
 
 
-  static private ASSET.ParticipantType _tempPart;
+  static protected ASSET.ParticipantType _tempPart;
 
   static public ASSET.ParticipantType importParticipant(String fName,
                                                         final java.io.InputStream is)

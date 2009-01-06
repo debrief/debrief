@@ -201,7 +201,7 @@ public class MADLookupSensor extends LookupSensor
     return res;
   }
 
-  private MADEnvironment getDefaultLookups()
+  protected MADEnvironment getDefaultLookups()
   {
     // and the target visibility
     StringLookup visibility = new StringLookup(new String[]{Category.Type.CARRIER, Category.Type.FRIGATE, Category.Type.SUBMARINE, Category.Type.FISHING_VESSEL},
@@ -289,8 +289,8 @@ public class MADLookupSensor extends LookupSensor
   //////////////////////////////////////////////////
   public static class MADEnvironment
   {
-    private StringLookup _targetSize;
-    private String _name;
+    protected StringLookup _targetSize;
+    protected String _name;
 
     public MADEnvironment(String name, StringLookup visibility)
     {
@@ -414,7 +414,11 @@ public class MADLookupSensor extends LookupSensor
 
     static public class MyEnvironment extends CoreEnvironment
     {
-      protected int _lightLevel = 1;
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			protected int _lightLevel = 1;
       protected int _seaState = 4;
       protected int _atten = EnvironmentType.VERY_CLEAR;
 
@@ -643,9 +647,9 @@ public class MADLookupSensor extends LookupSensor
 
     }
 
-    private boolean detectedOther = false;
-    private boolean targetLost = false;
-    private int maxClassification = 0;
+    protected boolean detectedOther = false;
+    protected boolean targetLost = false;
+    protected int maxClassification = 0;
   }
 
 }

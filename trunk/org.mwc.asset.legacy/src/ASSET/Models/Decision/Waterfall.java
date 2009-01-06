@@ -40,7 +40,7 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
   /**
    * my list of decision models
    */
-  protected Vector _myDecisions;
+  protected Vector<DecisionType> _myDecisions;
 
   /**
    * an instance of our editor
@@ -71,7 +71,7 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
   public Waterfall(final String name)
   {
     super(name);
-    _myDecisions = new Vector(0, 1);
+    _myDecisions = new Vector<DecisionType>(0, 1);
   }
 
   ////////////////////////////////////////////////////////////
@@ -194,7 +194,7 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
     _lastDecision = INVALID_DECISION;
 
     // pass the restart to the child events
-    final Iterator it = _myDecisions.iterator();
+    final Iterator<DecisionType> it = _myDecisions.iterator();
     while (it.hasNext())
     {
       final DecisionType dm = (DecisionType) it.next();
@@ -215,7 +215,7 @@ public class Waterfall extends CoreDecision implements java.io.Serializable, Beh
   }
 
 
-  public Vector getModels()
+  public Vector<DecisionType> getModels()
   {
     return _myDecisions;
   }

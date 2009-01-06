@@ -17,6 +17,11 @@ import MWC.GenericData.WorldDistance;
 public class Detonate extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the range at which we detonate (yds)
    */
   private WorldDistance _myRange;

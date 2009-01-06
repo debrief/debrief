@@ -35,14 +35,18 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
   // member variables
   //////////////////////////////////////////////////
 
-  public static final String ADS_DEPLOYED = "ADS_DEPLOYED";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public static final String ADS_DEPLOYED = "ADS_DEPLOYED";
   public static final String ADS_HOUSED = "ADS_HOUSED";
   public static final String ADS_AT_DEPTH = "ADS_AT_DEPTH";
 
   /**
    * the period which we've waited already (secs)
    */
-  private double _remainingPausePeriod = 0;
+  protected double _remainingPausePeriod = 0;
 
   /**
    * the depth we are instructed to deploy to
@@ -52,7 +56,7 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
   /**
    * the current deployment depth
    */
-  private double _cableLength;
+  protected double _cableLength;
 
   /**
    * the lower rate in water
@@ -77,12 +81,12 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
   /**
    * the pause prior to lowering the sensor  (secs)
    */
-  private double _lowerPause;
+  protected double _lowerPause;
 
   /**
    * the pause prior to housing the sensor  (secs)
    */
-  private double _raisePause;
+  protected double _raisePause;
 
   /**
    * the host id
@@ -260,7 +264,7 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
    * @param myDepth the platform depth/altitude
    * @return yes/no
    */
-  private boolean isAtDepth(double myDepth)
+  protected boolean isAtDepth(double myDepth)
   {
     // what's our altitude?
     double alt = Math.abs(myDepth);
@@ -281,7 +285,7 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
    *
    * @return yes/no
    */
-  private boolean isHoused()
+  protected boolean isHoused()
   {
     return (_cableLength == 0) && (_remainingPausePeriod == 0);
   }
@@ -309,7 +313,7 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
    * @param period how long to descend for
    * @param depth  the current depth/height of the host platform
    */
-  private void lower(long period, double depth)
+  protected void lower(long period, double depth)
   {
 
     // get the period in millis
@@ -377,7 +381,7 @@ public class DippingActiveBroadbandSensor extends ActiveBroadbandSensor implemen
    * @param period how long to ascend for
    * @param depth  the current depth/height of the host platform
    */
-  private void raise(long period, double depth)
+  protected void raise(long period, double depth)
   {
 
     // get the period in millis

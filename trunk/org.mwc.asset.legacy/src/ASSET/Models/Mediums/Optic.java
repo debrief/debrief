@@ -23,6 +23,11 @@ public class Optic implements ASSET.Models.Vessels.Radiated.RadiatedCharacterist
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the cross-sectional area of the target (m squared)
    */
   private double _xSectArea;

@@ -119,6 +119,11 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
   //////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the start point for the search
    */
   private WorldLocation _myOrigin;
@@ -151,7 +156,7 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
   /**
    * the route of points to pass through
    */
-  private TransitWaypoint _myRoute;
+  protected TransitWaypoint _myRoute;
 
   /**
    * the default number of legs to produce
@@ -266,7 +271,7 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
    * @param initialTrack the initial course to steer
    * @return a path containing the route to fly
    */
-  private static WorldPath createSearchRoute(final Integer maxLegs,
+  protected static WorldPath createSearchRoute(final Integer maxLegs,
                                              final MovementCharacteristics chars,
                                              final boolean flyClockwise,
                                              final WorldLocation origin,
@@ -617,7 +622,7 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
       final double turnCircle = 100;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
                                                             decelRate, fuel_usage_rate,
                                                             maxSpeed, minSpeed, turnCircle,
                                                             defaultClimbRate,
@@ -722,7 +727,7 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
       final double defaultDiveSpeed = 20;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.HeloMovementCharacteristics(myName, accelRate,
+         ASSET.Models.Movement.HeloMovementCharacteristics.generateDebug(myName, accelRate,
                                                               decelRate, fuel_usage_rate,
                                                               maxSpeed, minSpeed, defaultClimbRate,
                                                               defaultDiveRate, maxHeight,
@@ -789,7 +794,7 @@ public final class ExpandingSquareSearch extends CoreDecision implements Seriali
       final double turnCircle = 1100;
 
       final ASSET.Models.Movement.MovementCharacteristics chars =
-        new ASSET.Models.Movement.SSMovementCharacteristics(myName, accelRate,
+        ASSET.Models.Movement.SSMovementCharacteristics.generateDebug(myName, accelRate,
                                                             decelRate, fuel_usage_rate,
                                                             maxSpeed, minSpeed, turnCircle,
                                                             defaultClimbRate,

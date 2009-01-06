@@ -31,7 +31,7 @@ public class OrCondition extends Condition.CoreCondition
   /**
    * the list of conditions we are after
    */
-  private Vector _myConditions;
+  private Vector<Condition> _myConditions;
 
   ////////////////////////////////////////////////////
   // constructor
@@ -41,15 +41,15 @@ public class OrCondition extends Condition.CoreCondition
   /**
    *
    */
-  private OrCondition()
+  protected OrCondition()
   {
     super("OR condition");
   }
 
-  private void addCondition(final Condition newCondition)
+  protected void addCondition(final Condition newCondition)
   {
     if (_myConditions == null)
-      _myConditions = new Vector(0, 1);
+      _myConditions = new Vector<Condition>(0, 1);
 
     _myConditions.add(newCondition);
   }
@@ -184,7 +184,6 @@ public class OrCondition extends Condition.CoreCondition
     public void testIt()
     {
       // build it
-      final OrCondition loc = new OrCondition();
 
       // create our real conditions
 

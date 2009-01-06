@@ -39,9 +39,14 @@ public class Sequence extends Waterfall
   ////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the index of the current behaviour
    */
-  private int _currentDecision = 0;
+  protected int _currentDecision = 0;
 
   /**
    * whether or not we should stay alive on completion
@@ -69,7 +74,7 @@ public class Sequence extends Waterfall
   public Sequence(boolean isAlive, String name)
   {
     super(name);
-    _myDecisions = new Vector(0, 1);
+    _myDecisions = new Vector<ASSET.Models.DecisionType>(0, 1);
 
     _originalIsAlive = isAlive;
     _isAlive = isAlive;
@@ -302,8 +307,6 @@ public class Sequence extends Waterfall
   // property editing
   //////////////////////////////////////////////////
 
-  private EditorType _myEditor;
-
   /**
    * whether there is any edit information for this item
    * this is a convenience function to save creating the EditorType data
@@ -453,7 +456,6 @@ public class Sequence extends Waterfall
       // create a valid demanded status to test against
       SimpleDemandedStatus validA = new SimpleDemandedStatus(1, 12000);
       SimpleDemandedStatus validB = new SimpleDemandedStatus(1, 12000);
-      SimpleDemandedStatus validC = new SimpleDemandedStatus(1, 12000);
       SimpleDemandedStatus validD = new SimpleDemandedStatus(1, 12000);
 
       // initialise the settings

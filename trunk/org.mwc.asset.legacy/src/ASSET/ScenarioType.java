@@ -178,7 +178,7 @@ public interface ScenarioType extends ScenarioActivityMonitor
    *
    * @return list of ids of Participant we contain
    */
-  public Collection getListOfVisibleParticipants();
+  public Collection<ParticipantType> getListOfVisibleParticipants();
 
   /**
    * Create a new Participant.  The external client can then request the Participant itself to perform any edits

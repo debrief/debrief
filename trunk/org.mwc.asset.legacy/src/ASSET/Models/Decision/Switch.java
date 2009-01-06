@@ -36,6 +36,11 @@ public class Switch extends Waterfall
   ////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the index of the current behaviour
    */
   private int _selectedActivity = 0;
@@ -57,7 +62,7 @@ public class Switch extends Waterfall
   public Switch()
   {
     super(MY_NAME);
-    _myDecisions = new Vector(0, 1);
+    _myDecisions = new Vector<ASSET.Models.DecisionType>(0, 1);
   }
 
   ////////////////////////////////////////////////////////////
@@ -168,8 +173,6 @@ public class Switch extends Waterfall
   //////////////////////////////////////////////////
   // property editing
   //////////////////////////////////////////////////
-
-  private EditorType _myEditor;
 
   /**
    * whether there is any edit information for this item

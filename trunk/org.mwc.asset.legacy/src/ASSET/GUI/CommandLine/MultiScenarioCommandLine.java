@@ -57,7 +57,7 @@ public class MultiScenarioCommandLine
   /**
    * the set of scenarios we're going to run through
    */
-  private Vector _myScenarios;
+  protected Vector<Document> _myScenarios;
 
   /**
    * ok, get things up and running.  Load the data-files
@@ -72,7 +72,7 @@ public class MultiScenarioCommandLine
     _myGenny = new ScenarioGenerator();
 
     // now create somewhere for the scenarios to go
-    _myScenarios = new Vector(0, 1);
+    _myScenarios = new Vector<Document>(0, 1);
 
     // and now create the list of scenarios
     String res = _myGenny.createScenarios(scenario, control, _myScenarios);
@@ -135,15 +135,15 @@ public class MultiScenarioCommandLine
 
 
     // find out if we have any intra-scenario observers
-    Vector theIntraObservers = new Vector(0, 1);
+    Vector<IntraScenarioObserverType> theIntraObservers = new Vector<IntraScenarioObserverType>(0, 1);
 
-    Vector theObservers = results.observerList;
+    Vector<ScenarioObserver> theObservers = results.observerList;
     for (int i = 0; i < theObservers.size(); i++)
     {
       ScenarioObserver observer = (ScenarioObserver) theObservers.elementAt(i);
       if (observer instanceof IntraScenarioObserverType)
       {
-        theIntraObservers.add(observer);
+        theIntraObservers.add((IntraScenarioObserverType)observer);
       }
     }
 
@@ -222,7 +222,7 @@ public class MultiScenarioCommandLine
    */
   private void runThisOne(InputStream controlStream,
                           InputStream scenarioStream,
-                          Vector theObservers,
+                          Vector<ScenarioObserver> theObservers,
                           File outputDirectory,
                           Integer theSeed,
                           int thisIndex,
@@ -455,11 +455,10 @@ public class MultiScenarioCommandLine
       assertEquals("ran ok", SUCCESS, res);
 
       // check the contents of the error message
-      String str = bes.toString();
       assertEquals("no error reported", 0, bes.size());
 
       // check the scenarios got created
-      Vector scenarios = scen._myScenarios;
+      Vector<Document> scenarios = scen._myScenarios;
       assertEquals("scenarios got created", 3, scenarios.size());
     }
 

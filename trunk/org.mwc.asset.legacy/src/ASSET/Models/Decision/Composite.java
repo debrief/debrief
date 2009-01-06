@@ -18,6 +18,11 @@ import MWC.GenericData.WorldSpeed;
 public class Composite extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the condition object we manage
    */
   private Condition _myCondition = null;

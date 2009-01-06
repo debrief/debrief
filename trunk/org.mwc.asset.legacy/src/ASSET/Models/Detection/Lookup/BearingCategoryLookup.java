@@ -1,14 +1,5 @@
 package ASSET.Models.Detection.Lookup;
 
-import ASSET.Models.Sensor.Initial.InitialSensor;
-import ASSET.Models.SensorType;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Detection.DetectionList;
-import ASSET.ParticipantType;
-import ASSET.ScenarioType;
-import MWC.GenericData.WorldDistance;
-import MWC.GUI.Editable;
-
 /**
  * Title:        ASSET Simulator
  * Description:  Advanced Scenario Simulator for Evaluation of Tactics
@@ -28,7 +19,7 @@ public class BearingCategoryLookup
   /** the set of sigmas for this lookup table
    *
     */
-  private double[][] _sigmaTable;
+//  private double[][] _sigmaTable;
 
   /** constructor - setting the lookup table as we go..
    *
@@ -36,7 +27,7 @@ public class BearingCategoryLookup
    */
   public BearingCategoryLookup(double[][] sigmaTable)
   {
-    this._sigmaTable = sigmaTable;
+ //   this._sigmaTable = sigmaTable;
   }
 
   /** our table of values

@@ -13,7 +13,11 @@ import ASSET.Participants.*;
 
 public class SSKMovement extends CoreMovement{
 
-  /** how quickly we recharge (per second)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/** how quickly we recharge (per second)
    *
    */
   private double _chargeRate = 0.006;

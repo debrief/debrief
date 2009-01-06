@@ -118,37 +118,37 @@ public final class LadderSearch extends CoreDecision implements Serializable
   /**
    * the start point for the search
    */
-  private WorldLocation _myOrigin;
+  protected WorldLocation _myOrigin;
 
   /**
    * the initial heading for the manoeuvre
    */
-  private double _ladderAxis;
+  protected double _ladderAxis;
 
   /**
    * the track spacing
    */
-  private WorldDistance _trackSpacing;
+  protected WorldDistance _trackSpacing;
 
   /**
    * the leg length
    */
-  private WorldDistance _legLength;
+  protected WorldDistance _legLength;
 
   /**
    * the number of legs to run (optional)
    */
-  private Integer _maxLegs;
+  protected Integer _maxLegs;
 
   /**
    * whether we've finished yet or not.
    */
-  private boolean _finished = false;
+  protected boolean _finished = false;
 
   /**
    * the route of points to pass through
    */
-  private TransitWaypoint _myRoute;
+  protected TransitWaypoint _myRoute;
 
   /**
    * the default number of legs to produce
@@ -163,7 +163,7 @@ public final class LadderSearch extends CoreDecision implements Serializable
   /**
    * the (optional) height to conduct search at
    */
-  private WorldDistance _searchHeight;
+  protected WorldDistance _searchHeight;
 
   /**
    * the (optional) speed to conduct search at
@@ -310,7 +310,7 @@ public final class LadderSearch extends CoreDecision implements Serializable
    * @param trackSpacing the spacing between loops of the spiral
    * @return a path containing the route to fly
    */
-  private static WorldPath createSearchRoute(final Integer maxLegs,
+  protected static WorldPath createSearchRoute(final Integer maxLegs,
                                              final WorldLocation origin,
                                              final WorldDistance trackSpacing,
                                              final WorldDistance legLength,

@@ -48,7 +48,7 @@ public class NarrowbandSensor extends InitialSensor
   /**
    * the time at which our array should be steady.
    */
-  private long _timeArraySteady;
+  protected long _timeArraySteady;
 
   /**
    * constant used to indicate that course has not yet been assigned
