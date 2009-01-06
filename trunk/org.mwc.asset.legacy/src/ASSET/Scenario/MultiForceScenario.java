@@ -25,13 +25,14 @@ public class MultiForceScenario extends CoreScenario
    * keep track of the blue force, the CoreScenario stores
    * the red force
    */
-  private HashMap _blueForce;
+  private HashMap<Integer, ParticipantType> _blueForce;
 
   /**
    * keep track of the "full" participants, from both sides
    * (which we use for the Blue stepping forward)
    */
-  private HashMap _fullForce;
+  private HashMap<Integer, ParticipantType> _fullForce;
+  
 
   /**
    * the name of this scenario type
@@ -42,7 +43,7 @@ public class MultiForceScenario extends CoreScenario
   /**
    * the list of blue participants changed listeners
    */
-  private Vector _blueParticipantListeners;
+  private Vector<ParticipantsChangedListener> _blueParticipantListeners;
 
   /**
    * our blue wrapper, to make this look like a normal scenario for red
@@ -64,7 +65,7 @@ public class MultiForceScenario extends CoreScenario
 
   public MultiForceScenario()
   {
-    _fullForce = new HashMap();
+    _fullForce = new HashMap<Integer, ParticipantType>();
   }
 
   /////////////////////////////////////////////////////
@@ -73,7 +74,7 @@ public class MultiForceScenario extends CoreScenario
   public void addBlueParticipantsChangedListener(final ParticipantsChangedListener list)
   {
     if (_blueParticipantListeners == null)
-      _blueParticipantListeners = new Vector(1, 2);
+      _blueParticipantListeners = new Vector<ParticipantsChangedListener>(1, 2);
 
     _blueParticipantListeners.add(list);
   }
@@ -87,7 +88,7 @@ public class MultiForceScenario extends CoreScenario
   {
     if (_blueParticipantListeners != null)
     {
-      final Iterator it = _blueParticipantListeners.iterator();
+      final Iterator<ParticipantsChangedListener> it = _blueParticipantListeners.iterator();
       while (it.hasNext())
       {
         final ParticipantsChangedListener pcl = (ParticipantsChangedListener) it.next();
@@ -161,7 +162,7 @@ public class MultiForceScenario extends CoreScenario
     // do we have list?
     if (_blueForce == null)
     {
-      _blueForce = new java.util.HashMap();
+      _blueForce = new java.util.HashMap<Integer, ParticipantType>();
     }
 
     // store it
@@ -198,11 +199,10 @@ public class MultiForceScenario extends CoreScenario
     super.removeParticipant(index);
 
     // and try to do it from our full force
-    final ParticipantType pt = getThisParticipant(index);
 
     // now remove it (try the full force first)
     final Integer bigI = new Integer(index);
-    final Object res = _fullForce.remove(bigI);
+    _fullForce.remove(bigI);
 
     // now remove it (try the blue force)
     final Object res2 = _blueForce.remove(bigI);
@@ -218,14 +218,14 @@ public class MultiForceScenario extends CoreScenario
    *
    * @return list of ids of Participant we contain
    */
-  private Integer[] getListOfBlueParticipants()
+  protected Integer[] getListOfBlueParticipants()
   {
     Integer[] res = new Integer[0];
 
     if (_blueForce != null)
     {
-      final java.util.Collection vals = _blueForce.keySet();
-      res = (Integer[]) vals.toArray(res);
+      final java.util.Collection<Integer> vals = _blueForce.keySet();
+      res = vals.toArray(res);
     }
 
     return res;
@@ -243,8 +243,8 @@ public class MultiForceScenario extends CoreScenario
 
     if (_blueForce != null)
     {
-      final java.util.Collection vals = _fullForce.keySet();
-      res = (Integer[]) vals.toArray(res);
+      final java.util.Collection<Integer> vals = _fullForce.keySet();
+      res =  vals.toArray(res);
     }
 
     return res;
@@ -255,7 +255,7 @@ public class MultiForceScenario extends CoreScenario
    *
    * @return list of ids of Participant we contain
    */
-  private Integer[] getListOfRedParticipants()
+  protected Integer[] getListOfRedParticipants()
   {
     return super.getListOfParticipants();
   }
@@ -292,10 +292,10 @@ public class MultiForceScenario extends CoreScenario
       //////////////////////////////////////////////////
       // first the decision
       //////////////////////////////////////////////////
-      java.util.Iterator iter = _blueForce.values().iterator();
+      java.util.Iterator<ParticipantType> iter = _blueForce.values().iterator();
       while (iter.hasNext())
       {
-        final ParticipantType pt = (ParticipantType) iter.next();
+        final ParticipantType pt = iter.next();
         // pass it the parent's listof participants
         pt.doDecision(oldTime, _myTime, _blueWrapper);
       }
@@ -329,7 +329,7 @@ public class MultiForceScenario extends CoreScenario
       //////////////////////////////////////////////////
       // first the decision
       //////////////////////////////////////////////////
-      java.util.Iterator iter = _myVisibleParticipants.values().iterator();
+      java.util.Iterator<ParticipantType> iter = _myVisibleParticipants.values().iterator();
       while (iter.hasNext())
       {
         final ParticipantType pt = (ParticipantType) iter.next();
@@ -440,14 +440,14 @@ public class MultiForceScenario extends CoreScenario
       super(val);
     }
 
-    private int stepCounter = 0;
-    private long lastTime = 0;
-    private Boolean lastStartState = null;
-    private int createdCounter = 0;
-    private int destroyedCounter = 0;
+    protected int stepCounter = 0;
+    protected long lastTime = 0;
+    protected Boolean lastStartState = null;
+    protected int createdCounter = 0;
+    protected int destroyedCounter = 0;
 
 
-    private class createdListener implements ParticipantsChangedListener
+    protected class createdListener implements ParticipantsChangedListener
     {
       /**
        * the indicated participant has been added to the scenario
@@ -476,7 +476,7 @@ public class MultiForceScenario extends CoreScenario
 
     int newStepTime;
 
-    private class startStopListener implements ScenarioRunningListener
+    protected class startStopListener implements ScenarioRunningListener
     {
       public void started()
       {
@@ -515,7 +515,7 @@ public class MultiForceScenario extends CoreScenario
 
     }
 
-    private class stepListener implements ScenarioSteppedListener
+    protected class stepListener implements ScenarioSteppedListener
     {
       public void step(final long newTime)
       {
