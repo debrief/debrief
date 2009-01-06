@@ -21,12 +21,12 @@ public class CoreServer implements ServerType
 
   /**
    */
-  private HashMap _myScenarios;
+  private HashMap<Integer, ScenarioType> _myScenarios;
 
   /**
    * our list of listeners
    */
-  private Vector _myCreatedListeners;
+  private Vector<ScenarioCreatedListener> _myCreatedListeners;
 
   ////////////////////////////////////////////////////////////////////////
   // constructor
@@ -43,7 +43,7 @@ public class CoreServer implements ServerType
   {
     // check we have the list
     if (_myCreatedListeners == null)
-      _myCreatedListeners = new Vector(0, 1);
+      _myCreatedListeners = new Vector<ScenarioCreatedListener>(0, 1);
 
     // add this listener
     _myCreatedListeners.add(listener);
@@ -65,7 +65,7 @@ public class CoreServer implements ServerType
     if (_myCreatedListeners == null)
       return;
 
-    final Iterator it = _myCreatedListeners.iterator();
+    final Iterator<ScenarioCreatedListener> it = _myCreatedListeners.iterator();
     while (it.hasNext())
     {
       final ScenarioCreatedListener list = (ScenarioCreatedListener) it.next();
@@ -99,8 +99,8 @@ public class CoreServer implements ServerType
 
     if (_myScenarios != null)
     {
-      final java.util.Collection vals = _myScenarios.keySet();
-      res = (Integer[]) vals.toArray(res);
+      final java.util.Collection<Integer> vals = _myScenarios.keySet();
+      res = vals.toArray(res);
     }
 
     return res;
@@ -150,7 +150,7 @@ public class CoreServer implements ServerType
 
 
     if (_myScenarios == null)
-      _myScenarios = new java.util.HashMap();
+      _myScenarios = new java.util.HashMap<Integer, ScenarioType>();
 
     // get the id
     final int id = getId();
@@ -179,15 +179,15 @@ public class CoreServer implements ServerType
   public static class ServerTest extends junit.framework.TestCase
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
-    private int createdCounter = 0;
-    private int destroyedCounter = 0;
+    protected int createdCounter = 0;
+    protected  int destroyedCounter = 0;
 
     public ServerTest(final String val)
     {
       super(val);
     }
 
-    private class createList implements ScenarioCreatedListener
+    protected class createList implements ScenarioCreatedListener
     {
       public void scenarioCreated(int index)
       {
@@ -211,7 +211,7 @@ public class CoreServer implements ServerType
       srv.addScenarioCreatedListener(cl);
 
       // create new scenarios
-      final int s1 = srv.createNewScenario("scrap");
+      final int s1 = srv.createNewScenario("scrap A");
       final int s2 = srv.createNewScenario("scrap");
 
       // now stop listening for these events
