@@ -211,8 +211,8 @@ public class CoreServer implements ServerType
       srv.addScenarioCreatedListener(cl);
 
       // create new scenarios
-      final int s1 = srv.createNewScenario("scrap A");
-      final int s2 = srv.createNewScenario("scrap");
+      int s2 = srv.createNewScenario("scrap A");
+      s2 = srv.createNewScenario("scrap");
 
       // now stop listening for these events
       srv.removeScenarioCreatedListener(cl);
