@@ -25,31 +25,31 @@ public class CoreScenario implements ScenarioType
   /**
    * The list of participants we maintain
    */
-  HashMap _myVisibleParticipants = new HashMap();
+  HashMap<Integer, ParticipantType> _myVisibleParticipants = new HashMap<Integer, ParticipantType>();
 
   /**
    * The list of monte carlo participants we maintain
    */
-  HashMap _myInvisibleParticipants = new HashMap();
+  HashMap<Integer, ParticipantType> _myInvisibleParticipants = new HashMap<Integer, ParticipantType>();
 
   /**
    * the complete list of participants we store
    */
-  HashMap _completeParticipantList = new HashMap();
+  HashMap<Integer, ParticipantType> _completeParticipantList = new HashMap<Integer, ParticipantType>();
 
   /**
    * the list of any participants which have been destroyed during a step -
    * they are only actually removed at the end of the step
    * - we store the index of any to be destroyed
    */
-  private Vector _pendingDestruction = new Vector(0, 1);
+  private Vector<Integer> _pendingDestruction = new Vector<Integer>(0, 1);
 
   /**
    * the list of any participants which have been created during a step -
    * they are only actually added at the end of the step
    * - we store the participant itself
    */
-  private Vector _pendingCreation = new Vector(0, 1);
+  private Vector<ParticipantType> _pendingCreation = new Vector<ParticipantType>(0, 1);
 
 
   /**
@@ -86,17 +86,17 @@ public class CoreScenario implements ScenarioType
   /**
    * the list of stepping listeners
    */
-  private Vector _stepListeners;
+  private Vector<ScenarioSteppedListener> _stepListeners;
 
   /**
    * the list of participants changed listeners
    */
-  private Vector _participantListeners;
+  private Vector<ParticipantsChangedListener> _participantListeners;
 
   /**
    * the list of running listeners
    */
-  private Vector _runningListeners;
+  private Vector<ScenarioRunningListener> _runningListeners;
 
   /**
    * the timer we are using
@@ -129,7 +129,7 @@ public class CoreScenario implements ScenarioType
    * It's also a flag to indicate that somebody has triggered a scenario stop
    * - note that we only process the stop at the end of a step
    */
-  private String _stopReason = null;
+  protected String _stopReason = null;
 
 
   //////////////////////////////////////
@@ -302,7 +302,7 @@ public class CoreScenario implements ScenarioType
       //////////////////////////////////////////////////
       // first the decision cycle
       //////////////////////////////////////////////////
-      java.util.Iterator iter = _completeParticipantList.values().iterator();
+      java.util.Iterator<ParticipantType> iter = _completeParticipantList.values().iterator();
       while (iter.hasNext())
       {
         final ParticipantType pt = (ParticipantType) iter.next();
@@ -366,10 +366,10 @@ public class CoreScenario implements ScenarioType
     // move the participants forward
     if (_completeParticipantList != null)
     {
-      final java.util.Iterator iter = _completeParticipantList.values().iterator();
+      final java.util.Iterator<ParticipantType> iter = _completeParticipantList.values().iterator();
       while (iter.hasNext())
       {
-        final ParticipantType pt = (ParticipantType) iter.next();
+        final ParticipantType pt = iter.next();
         pt.restart();
       }
     }
@@ -379,10 +379,10 @@ public class CoreScenario implements ScenarioType
     // reset the listeners
     if (_participantListeners != null)
     {
-      final Iterator it = _participantListeners.iterator();
+      final Iterator<ParticipantsChangedListener> it = _participantListeners.iterator();
       while (it.hasNext())
       {
-        final ParticipantsChangedListener pcl = (ParticipantsChangedListener) it.next();
+        final ParticipantsChangedListener pcl =  it.next();
         pcl.restart();
       }
     }
@@ -391,22 +391,22 @@ public class CoreScenario implements ScenarioType
     {
       // work with a copy of the running listeners, to prevent concurrent changes (since in the restart
       // a listener may remove then re-insert itself as a listener
-      Vector copyRunningListeners = new Vector(_runningListeners);
-      final Iterator it = copyRunningListeners.iterator();
+      Vector<ScenarioRunningListener> copyRunningListeners = new Vector<ScenarioRunningListener>(_runningListeners);
+      final Iterator<ScenarioRunningListener> it = copyRunningListeners.iterator();
       while (it.hasNext())
       {
-        final ScenarioRunningListener prl = (ScenarioRunningListener) it.next();
+        final ScenarioRunningListener prl =  it.next();
         prl.restart();
       }
     }
 
     if (_stepListeners != null)
     {
-      final Vector copyStepListeners = new Vector(_stepListeners);
-      final Iterator it = copyStepListeners.iterator();
+      final Vector<ScenarioSteppedListener> copyStepListeners = new Vector<ScenarioSteppedListener>(_stepListeners);
+      final Iterator<ScenarioSteppedListener> it = copyStepListeners.iterator();
       while (it.hasNext())
       {
-        final ScenarioSteppedListener ssl = (ScenarioSteppedListener) it.next();
+        final ScenarioSteppedListener ssl = it.next();
         ssl.restart();
       }
     }
@@ -584,7 +584,7 @@ public class CoreScenario implements ScenarioType
   public void addParticipantsChangedListener(final ParticipantsChangedListener list)
   {
     if (_participantListeners == null)
-      _participantListeners = new Vector(1, 2);
+      _participantListeners = new Vector<ParticipantsChangedListener>(1, 2);
 
     _participantListeners.add(list);
   }
@@ -620,7 +620,7 @@ public class CoreScenario implements ScenarioType
   public void addScenarioRunningListener(final ScenarioRunningListener listener)
   {
     if (_runningListeners == null)
-      _runningListeners = new Vector(1, 2);
+      _runningListeners = new Vector<ScenarioRunningListener>(1, 2);
 
     // right, insert the new running listener at the head of the chain.  This is to overcome a problem with
     // the Loader class - which adds itself as a scenario listener before it's children.  When we STOP
@@ -638,7 +638,7 @@ public class CoreScenario implements ScenarioType
   public void addScenarioSteppedListener(final ScenarioSteppedListener listener)
   {
     if (_stepListeners == null)
-      _stepListeners = new Vector(1, 2);
+      _stepListeners = new Vector<ScenarioSteppedListener>(1, 2);
 
     _stepListeners.add(listener);
   }
@@ -653,7 +653,7 @@ public class CoreScenario implements ScenarioType
   {
     if (_participantListeners != null)
     {
-      final Iterator it = _participantListeners.iterator();
+      final Iterator<ParticipantsChangedListener> it = _participantListeners.iterator();
       while (it.hasNext())
       {
         final ParticipantsChangedListener pcl = (ParticipantsChangedListener) it.next();
@@ -669,7 +669,7 @@ public class CoreScenario implements ScenarioType
   {
     if (_stepListeners != null)
     {
-      final Iterator it = _stepListeners.iterator();
+      final Iterator<ScenarioSteppedListener> it = _stepListeners.iterator();
       while (it.hasNext())
       {
         try
@@ -692,7 +692,7 @@ public class CoreScenario implements ScenarioType
 
     if (_runningListeners != null)
     {
-      final Iterator it = _runningListeners.iterator();
+      final Iterator<ScenarioRunningListener> it = _runningListeners.iterator();
       while (it.hasNext())
       {
         final ScenarioRunningListener pcl = (ScenarioRunningListener) it.next();
@@ -714,13 +714,13 @@ public class CoreScenario implements ScenarioType
     {
       // take a deep copy of the running listeners - when we're cycling through the list there's the chance that
       // a listener may try and remove itself. bugger
-      Vector copyListeners = new Vector(0, 1);
+      Vector<ScenarioRunningListener> copyListeners = new Vector<ScenarioRunningListener>(0, 1);
       copyListeners.addAll(_runningListeners);
 
-      final Iterator it = copyListeners.iterator();
+      final Iterator<ScenarioRunningListener> it = copyListeners.iterator();
       while (it.hasNext())
       {
-        final ScenarioRunningListener pcl = (ScenarioRunningListener) it.next();
+        final ScenarioRunningListener pcl =  it.next();
         pcl.finished(timeTaken, reason);
       }
 
@@ -738,7 +738,7 @@ public class CoreScenario implements ScenarioType
 
     if (_runningListeners != null)
     {
-      final Iterator it = _runningListeners.iterator();
+      final Iterator<ScenarioRunningListener> it = _runningListeners.iterator();
       while (it.hasNext())
       {
         final ScenarioRunningListener pcl = (ScenarioRunningListener) it.next();
@@ -753,7 +753,7 @@ public class CoreScenario implements ScenarioType
 
     if (_runningListeners != null)
     {
-      final Iterator it = _runningListeners.iterator();
+      final Iterator<ScenarioRunningListener> it = _runningListeners.iterator();
       while (it.hasNext())
       {
         final ScenarioRunningListener pcl = (ScenarioRunningListener) it.next();
@@ -767,7 +767,7 @@ public class CoreScenario implements ScenarioType
 
     if (_runningListeners != null)
     {
-      final Iterator it = _runningListeners.iterator();
+      final Iterator<ScenarioRunningListener> it = _runningListeners.iterator();
       while (it.hasNext())
       {
         final ScenarioRunningListener pcl = (ScenarioRunningListener) it.next();
@@ -803,8 +803,8 @@ public class CoreScenario implements ScenarioType
 
     if (_completeParticipantList != null)
     {
-      final java.util.Collection vals = _completeParticipantList.keySet();
-      res = (Integer[]) vals.toArray(res);
+      final java.util.Collection<Integer> vals = _completeParticipantList.keySet();
+      res =  vals.toArray(res);
     }
 
     return res;
@@ -815,9 +815,9 @@ public class CoreScenario implements ScenarioType
    *
    * @return list of ids of Participant we contain
    */
-  public Collection getListOfVisibleParticipants()
+  public Collection<ParticipantType> getListOfVisibleParticipants()
   {
-    Collection res = null;
+    Collection<ParticipantType> res = null;
 
     if (_myVisibleParticipants != null)
     {
@@ -830,7 +830,7 @@ public class CoreScenario implements ScenarioType
   /**
    * convenience method for adding a participant to a hashmap
    */
-  private void addParticipantToThisList(int index, final ASSET.ParticipantType participant, HashMap map)
+  private void addParticipantToThisList(int index, final ASSET.ParticipantType participant, HashMap<Integer, ParticipantType> map)
   {
     // if the index is zero, we will create one
     if (index == INVALID_ID)
@@ -967,7 +967,7 @@ public class CoreScenario implements ScenarioType
     // move the participants forward
     if (_completeParticipantList != null)
     {
-      final java.util.Iterator iter = _completeParticipantList.values().iterator();
+      final java.util.Iterator<ParticipantType> iter = _completeParticipantList.values().iterator();
       while (iter.hasNext())
       {
         final ParticipantType pt = (ParticipantType) iter.next();
@@ -1005,14 +1005,14 @@ public class CoreScenario implements ScenarioType
       super(val);
     }
 
-    private int stepCounter = 0;
-    private long lastTime = 0;
-    private Boolean lastStartState = null;
-    private int createdCounter = 0;
-    private int destroyedCounter = 0;
+    protected int stepCounter = 0;
+    protected long lastTime = 0;
+    protected Boolean lastStartState = null;
+    protected int createdCounter = 0;
+    protected int destroyedCounter = 0;
 
 
-    private class createdListener implements ParticipantsChangedListener
+    protected class createdListener implements ParticipantsChangedListener
     {
       /**
        * the indicated participant has been added to the scenario
@@ -1038,7 +1038,7 @@ public class CoreScenario implements ScenarioType
 
     int newStepTime;
 
-    private class startStopListener implements ScenarioRunningListener
+    protected class startStopListener implements ScenarioRunningListener
     {
       public void started()
       {
@@ -1073,7 +1073,7 @@ public class CoreScenario implements ScenarioType
 
     }
 
-    private class stepListener implements ScenarioSteppedListener
+    protected class stepListener implements ScenarioSteppedListener
     {
       public void step(final long newTime)
       {
@@ -1151,7 +1151,7 @@ public class CoreScenario implements ScenarioType
       {
         try
         {
-          Thread.currentThread().sleep(100);
+          Thread.sleep(100);
         }
         catch (java.lang.InterruptedException e)
         {
@@ -1203,7 +1203,7 @@ public class CoreScenario implements ScenarioType
       {
         try
         {
-          Thread.currentThread().sleep(1);
+          Thread.sleep(1);
         }
         catch (java.lang.InterruptedException e)
         {
@@ -1319,8 +1319,8 @@ public class CoreScenario implements ScenarioType
       scen.addMonteCarloParticipant(ssn_C.getId(), ssn_C);
       scen.addMonteCarloParticipant(ssn_D.getId(), ssn_D);
 
-      final Vector aDetections = new Vector(0, 1);
-      final Vector dDetections = new Vector(0, 1);
+      final Vector<Integer> aDetections = new Vector<Integer>(0, 1);
+      final Vector<Integer> dDetections = new Vector<Integer>(0, 1);
 
       ssn_A.getRadiatedChars().add(EnvironmentType.BROADBAND_PASSIVE, new ASSET.Models.Mediums.BroadbandRadNoise(99));
       ssn_B.getRadiatedChars().add(EnvironmentType.BROADBAND_PASSIVE, new ASSET.Models.Mediums.BroadbandRadNoise(99));
