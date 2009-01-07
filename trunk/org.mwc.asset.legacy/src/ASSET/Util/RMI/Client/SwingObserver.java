@@ -8,29 +8,50 @@
  */
 package ASSET.Util.RMI.Client;
 
-import ASSET.Util.RMI.*;
-import ASSET.Util.XML.ASSETReaderWriter;
-import ASSET.Participants.Status;
-import ASSET.GUI.Core.CoreGUISwing;
-
-import javax.swing.*;
-import javax.swing.event.*;
-import javax.swing.border.BevelBorder;
+import java.awt.Color;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
 import java.rmi.RemoteException;
-import java.awt.*;
-import java.awt.event.*;
-import java.sql.Date;
 import java.util.Vector;
 
-import MWC.GenericData.*;
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.BevelBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
+
+import ASSET.Participants.Status;
+import ASSET.Util.RMI.ParticipantRMI;
+import ASSET.Util.RMI.ScenarioRMI;
+import ASSET.Util.RMI.ServerRMI;
+import ASSET.Util.XML.ASSETReaderWriter;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layers;
 import MWC.GUI.Chart.Swing.SwingChart;
-import MWC.GUI.*;
-import MWC.GUI.Tools.Palette.CreateVPFLayers;
 import MWC.GUI.Tools.Chart.Swing.SwingCursorPosition;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 
 public class SwingObserver extends ObserverBaseImpl
 {
-  /*****************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/*****************************************************************
    * member variables
    ****************************************************************/
   /** the main frame
@@ -41,22 +62,22 @@ public class SwingObserver extends ObserverBaseImpl
   /** the list of scenarios in this server
    *
    */
-  private JList _scenarioList;
+  JList _scenarioList;
 
   /** the list of participants in this scenario
    *
    */
-  private JList _participantList;
+  JList _participantList;
 
   /** the list of compliant servers we've found
    *
    */
-  private JList _serverList;
+  JList _serverList;
 
   /** the name of the server to connect to
    *
    */
-  private JTextField _serverName;
+  JTextField _serverName;
 
   /** the name of the text field we paint into
    *
@@ -114,10 +135,6 @@ public class SwingObserver extends ObserverBaseImpl
     final BaseLayer decs = new BaseLayer();
     decs.setName("Decs");
     _theData.addThisLayer(decs);
-    final CoreGUISwing.ASSETParent theParent = new CoreGUISwing.ASSETParent(_myFrame);
-    final CreateVPFLayers vl = new CreateVPFLayers(theParent, null,
-                                                          decs,
-                                                          _theData, _theChart);
     try
     {
       final java.io.File defLayers = new java.io.File("default_layers.xml");
@@ -153,8 +170,6 @@ public class SwingObserver extends ObserverBaseImpl
       }
     });
 
-
-    final JPanel wholeThing = new JPanel();
 
     final JPanel leftHand = new JPanel();
     leftHand.setLayout(new GridLayout(0,1));
@@ -227,6 +242,7 @@ public class SwingObserver extends ObserverBaseImpl
     final JPanel scenarios = new JPanel();
     scenarios.setBorder(BorderFactory.createBevelBorder(BevelBorder.LOWERED));
     _scenarioList = new JList();
+    final JList localList = _scenarioList;
     _scenarioList.addListSelectionListener(new ListSelectionListener()
     {
       public void valueChanged(final ListSelectionEvent e)
@@ -234,7 +250,7 @@ public class SwingObserver extends ObserverBaseImpl
         // retrieve the value
         if(!e.getValueIsAdjusting())
         {
-          final StubWrapper selection = (StubWrapper)_scenarioList.getSelectedValue();
+          final StubWrapper selection = (StubWrapper)localList.getSelectedValue();
           if(selection != null)
           {
             final ScenarioRMI newVal = (ScenarioRMI)selection.value;
@@ -381,7 +397,7 @@ public class SwingObserver extends ObserverBaseImpl
     }
   }
 
-  private void update()
+  void update()
   {
     // do we know our participant
     if(_currentParticipant != null)
@@ -396,8 +412,6 @@ public class SwingObserver extends ObserverBaseImpl
       catch (RemoteException e)
       {
       }
-      final WorldLocation loc = stat.getLocation();
-
       String val = name + ":" + stat.toString();
       val += System.getProperty("line.separator");
       val += "Course:" + MWC.Utilities.TextFormatting.GeneralFormat.formatBearing(stat.getCourse())
@@ -420,9 +434,9 @@ public class SwingObserver extends ObserverBaseImpl
   /** flag to keep track of whether we are currently doing an update (for when we have threaded updates)
    *
    */
-  private boolean updating = false;
+  boolean updating = false;
 
-  private class DoUpdate implements Runnable
+  protected class DoUpdate implements Runnable
   {
     public void run()
     {
@@ -458,7 +472,12 @@ public class SwingObserver extends ObserverBaseImpl
    ****************************************************************/
   class ParticipantPainter extends BaseLayer
   {
-    public ParticipantPainter()
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ParticipantPainter()
     {
       super.setName("Participant Plotter");
     }
@@ -545,14 +564,14 @@ public class SwingObserver extends ObserverBaseImpl
   }
 
 
-  private void doPing()
+  void doPing()
   {
     // clear the list
     _serverList.removeAll();
     // get the list of remote servers
     final java.rmi.Remote[] list = super.getServers();
 
-    final Vector stubs = new Vector(0,1);
+    final Vector<StubWrapper> stubs = new Vector<StubWrapper>(0,1);
 
 
     if(list != null)
@@ -579,6 +598,7 @@ public class SwingObserver extends ObserverBaseImpl
     try
     {
       final SwingObserver so = new SwingObserver();
+      System.err.println(so.toString());
     }
     catch (RemoteException e)
     {

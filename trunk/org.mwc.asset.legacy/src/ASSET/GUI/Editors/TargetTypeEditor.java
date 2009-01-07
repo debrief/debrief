@@ -8,10 +8,11 @@ package ASSET.GUI.Editors;
  * @author
  * @version 1.0
  */
-import java.beans.*;
+import java.beans.PropertyEditorSupport;
+import java.util.Collection;
+import java.util.Iterator;
+
 import ASSET.Models.Decision.TargetType;
-import ASSET.Participants.Category;
-import java.util.*;
 
 abstract public class TargetTypeEditor extends
            PropertyEditorSupport  {
@@ -50,12 +51,12 @@ abstract public class TargetTypeEditor extends
       return;
 
     // get our categories
-    final Collection coll = _myType.getTargets();
+    final Collection<String> coll = _myType.getTargets();
 
     if(coll == null)
       return;
 
-    final Iterator it = coll.iterator();
+    final Iterator<String> it = coll.iterator();
 
     String types = "";
     while (it.hasNext())

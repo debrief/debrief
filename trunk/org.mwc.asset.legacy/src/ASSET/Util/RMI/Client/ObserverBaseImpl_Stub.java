@@ -7,7 +7,8 @@ public final class ObserverBaseImpl_Stub
     extends java.rmi.server.RemoteStub
     implements java.rmi.Remote, ASSET.Util.RMI.ScenarioCreatedListenerRMI, ASSET.Util.RMI.ScenarioSteppedListenerRMI, ASSET.Util.RMI.ParticipantsChangedListenerRMI, ASSET.Util.RMI.PropertyChangeListenerRMI
 {
-    private static final java.rmi.server.Operation[] operations = {
+    @SuppressWarnings("deprecation")
+		private static final java.rmi.server.Operation[] operations = {
 	new java.rmi.server.Operation("void newParticipant(int)"),
 	new java.rmi.server.Operation("void participantRemoved(int)"),
 	new java.rmi.server.Operation("void propertyChange(java.lang.String, java.lang.Object, java.lang.Object)"),
@@ -63,7 +64,8 @@ public final class ObserverBaseImpl_Stub
     // methods from remote interfaces
     
     // implementation of newParticipant(int)
-    public void newParticipant(final int $param_int_1)
+    @SuppressWarnings("deprecation")
+		public void newParticipant(final int $param_int_1)
 	throws java.rmi.RemoteException
     {
 	try {
@@ -90,7 +92,8 @@ public final class ObserverBaseImpl_Stub
     }
     
     // implementation of participantRemoved(int)
-    public void participantRemoved(final int $param_int_1)
+    @SuppressWarnings("deprecation")
+		public void participantRemoved(final int $param_int_1)
 	throws java.rmi.RemoteException
     {
 	try {
@@ -117,7 +120,8 @@ public final class ObserverBaseImpl_Stub
     }
     
     // implementation of propertyChange(String, Object, Object)
-    public void propertyChange(final java.lang.String $param_String_1, final java.lang.Object $param_Object_2, final java.lang.Object $param_Object_3)
+    @SuppressWarnings("deprecation")
+		public void propertyChange(final java.lang.String $param_String_1, final java.lang.Object $param_Object_2, final java.lang.Object $param_Object_3)
 	throws java.rmi.RemoteException
     {
 	try {
@@ -146,7 +150,8 @@ public final class ObserverBaseImpl_Stub
     }
     
     // implementation of restart()
-    public void restart()
+    @SuppressWarnings("deprecation")
+		public void restart()
 	throws java.rmi.RemoteException
     {
 	try {
@@ -167,7 +172,8 @@ public final class ObserverBaseImpl_Stub
     }
     
     // implementation of scenarioCreated(int)
-    public void scenarioCreated(final int $param_int_1)
+    @SuppressWarnings("deprecation")
+		public void scenarioCreated(final int $param_int_1)
 	throws java.rmi.RemoteException
     {
 	try {
@@ -194,7 +200,8 @@ public final class ObserverBaseImpl_Stub
     }
     
     // implementation of scenarioDestroyed(int)
-    public void scenarioDestroyed(final int $param_int_1)
+    @SuppressWarnings("deprecation")
+		public void scenarioDestroyed(final int $param_int_1)
 	throws java.rmi.RemoteException
     {
 	try {
@@ -221,7 +228,8 @@ public final class ObserverBaseImpl_Stub
     }
     
     // implementation of step(long)
-    public void step(final long $param_long_1)
+    @SuppressWarnings("deprecation")
+		public void step(final long $param_long_1)
 	throws java.rmi.RemoteException
     {
 	try {

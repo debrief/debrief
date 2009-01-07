@@ -8,13 +8,12 @@
  */
 package ASSET.Util.XMLFactory;
 
-import org.jdom.Element;
-import org.jdom.Attribute;
-
-import java.util.Vector;
-import java.util.List;
-import java.util.Iterator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Vector;
+
+import org.jdom.Element;
 
 import ASSET.Util.RandomGenerator;
 
@@ -27,19 +26,20 @@ public class XMLChoice implements XMLOperation
   /** the list of values to choose from
    *
    */
-  private HashMap _myList;
+  private HashMap<List<Element>, String> _myList;
 
   /** the element we will use for this permutation
    *
    */
-  private List _currentVal;
+  private List<Element> _currentVal;
 
 
 
   /***************************************************************
    *  constructor
    ***************************************************************/
-  public XMLChoice(final org.jdom.Element element)
+  @SuppressWarnings("unchecked")
+	public XMLChoice(final org.jdom.Element element)
   {
     this();
 
@@ -56,7 +56,7 @@ public class XMLChoice implements XMLOperation
       final String thisName = thisE.getAttribute("name").getValue();
       final List children = thisE.getChildren();
 
-      final List duplicates = new Vector(0,1);
+      final List<Element> duplicates = new Vector(0,1);
 
       if(children != null)
       {
@@ -68,7 +68,7 @@ public class XMLChoice implements XMLOperation
         while (iter.hasNext())
         {
           final Element el = (Element) iter.next();
-          duplicates.add(el.clone());
+          duplicates.add((Element)el.clone());
           toBeDetached.add(el);
         }
 
@@ -95,7 +95,7 @@ public class XMLChoice implements XMLOperation
 
   private XMLChoice()
   {
-    _myList = new HashMap();
+    _myList = new HashMap<List<Element>, String>();
   }
 
   /***************************************************************
@@ -108,12 +108,11 @@ public class XMLChoice implements XMLOperation
   {
     final int index = (int)(RandomGenerator.nextRandom() * _myList.size());
 
-    final Iterator it = _myList.keySet().iterator();
+    final Iterator<List<Element>> it = _myList.keySet().iterator();
 
     for(int i=0;i<=index;i++)
     {
-      final Object next = it.next();
-      _currentVal = (List)next;
+      _currentVal = it.next();
     }
 
     // done
@@ -134,8 +133,8 @@ public class XMLChoice implements XMLOperation
   public String getValue()
   {
     String res = "";
-    final List ls = _currentVal;
-    final Iterator it = ls.iterator();
+    final List<Element> ls = _currentVal;
+    final Iterator<Element> it = ls.iterator();
     while (it.hasNext())
     {
       final Object o = (Object) it.next();
@@ -149,7 +148,7 @@ public class XMLChoice implements XMLOperation
   /** return our object as a list
    *
    */
-  public List getList()
+  public List<Element> getList()
   {
     return _currentVal;
   }
@@ -171,28 +170,6 @@ public class XMLChoice implements XMLOperation
   public void merge(XMLOperation other)
   {
   }
-
-  public static void main(String[] args)
-  {
-    final XMLChoice ch = new XMLChoice();
-    final Element e1 = new Element("one");
-    final Element e2 = new Element("two");
-    final Element e3 = new Element("three");
-    final Element e4 = new Element("four");
-
-    ch._myList.put(e1, "a1");
-    ch._myList.put(e2, "a2");
-    ch._myList.put(e3, "a3");
-    ch._myList.put(e4, "a4");
-
-    ch.newPermutation();
-
-    final String val = ch.getValue();
-    System.out.println(val);
-
-
-  }
-
 
 
 }

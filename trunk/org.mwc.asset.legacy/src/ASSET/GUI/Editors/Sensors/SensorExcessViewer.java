@@ -9,19 +9,25 @@ package ASSET.GUI.Editors.Sensors;
  * @version 1.0
  */
 
-import javax.swing.*;
-import java.awt.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Font;
 import java.text.DecimalFormat;
+import java.util.Iterator;
 
-import ASSET.Models.Sensor.*;
-import ASSET.Models.Sensor.Initial.InitialSensor;
+import javax.swing.JLabel;
+
 import ASSET.Models.SensorType;
+import ASSET.Models.Sensor.Initial.InitialSensor;
 
 public class SensorExcessViewer extends BaseSensorViewer
 {
 
-  //////////////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//////////////////////////////////////////////////////////////////////
   // GUI components
   //////////////////////////////////////////////////////////////////////
 
@@ -31,18 +37,9 @@ public class SensorExcessViewer extends BaseSensorViewer
    */
   private JLabel _myLabel;
 
-  /** the text formatter we use to align the se values
-   *
-   */
-  private java.text.DecimalFormat _numberFormat;
-
-  ////////////////////////////////////////////////////
-  // constructor
-  ////////////////////////////////////////////////////
-
   public SensorExcessViewer()
   {
-    _numberFormat = new DecimalFormat(" 000;-000");
+    new DecimalFormat(" 000;-000");
   }
 
 
@@ -73,7 +70,7 @@ public class SensorExcessViewer extends BaseSensorViewer
   public void updateForm()
   {
     // step through the detections, collating them into the vector expected by the table
-    Iterator it = _sensorEvents.iterator();
+    Iterator<Object> it = _sensorEvents.iterator();
     String theLabel = "";
     while(it.hasNext())
     {

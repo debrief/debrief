@@ -76,7 +76,7 @@ public class DebriefDeployableSensorLocationObserver extends DebriefReplayObserv
   /**
    * the list of sensors we're watching
    */
-  private Vector _mySensors = null;
+  private Vector<SensorType> _mySensors = null;
 
 
   //////////////////////////////////////////////////
@@ -168,7 +168,7 @@ public class DebriefDeployableSensorLocationObserver extends DebriefReplayObserv
 
       // now the sensors
       SensorList sl = thisP.getSensorFit();
-      Iterator theSensors = sl.getSensors().iterator();
+      Iterator<SensorType> theSensors = sl.getSensors().iterator();
       while (theSensors.hasNext())
       {
         SensorType sensor = (SensorType) theSensors.next();
@@ -205,7 +205,7 @@ public class DebriefDeployableSensorLocationObserver extends DebriefReplayObserv
   private void addSensor(SensorType sensor)
   {
     if (_mySensors == null)
-      _mySensors = new Vector(0, 1);
+      _mySensors = new Vector<SensorType>(0, 1);
 
     _mySensors.add(sensor);
   }

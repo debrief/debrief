@@ -61,10 +61,10 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   private final static String type = "DebriefReplayObserver";
 
 
-  private boolean _recordDetections = false;
-  private boolean _recordPositions = false;
-  private boolean _recordDecisions = false;
-  private TargetType _targetType = null;
+  boolean _recordDetections = false;
+  boolean _recordPositions = false;
+  boolean _recordDecisions = false;
+  TargetType _targetType = null;
 
 
   private static final String RECORD_DETECTIONS = "record_detections";
@@ -102,9 +102,9 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
 
     addHandler(new TargetTypeHandler(TARGET_TYPE)
     {
-      public void setTargetType(TargetType type)
+      public void setTargetType(TargetType type1)
       {
-        _targetType = type;
+        _targetType = type1;
       }
     });
 

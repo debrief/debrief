@@ -1,20 +1,9 @@
 package ASSET.Models.TMA;
 
 import ASSET.Participants.CoreParticipant;
-import ASSET.Participants.Status;
-import ASSET.Participants.DemandedStatus;
-import ASSET.Models.Vessels.SSN;
-import ASSET.Models.Vessels.SSK;
-import ASSET.Models.Movement.SimpleDemandedStatus;
-import ASSET.Scenario.CoreScenario;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
 import MWC.GenericData.WorldSpeed;
-import MWC.Algorithms.Conversions;
-
-import java.io.IOException;
-import java.io.FileNotFoundException;
-import java.util.Vector;
+import MWC.GenericData.WorldVector;
 
 /*
  * Created by IntelliJ IDEA.
@@ -32,11 +21,7 @@ public class TMAHandler
     System.load("d:\\dev\\asset\\lib\\tma.dll");
   }
 
-
-  private static java.io.FileWriter fo = null;
-
-  static private java.text.DecimalFormat df = new java.text.DecimalFormat("0000.0000");
-  static private java.text.DecimalFormat df2 = new java.text.DecimalFormat("0.00000E00");
+  static java.text.DecimalFormat df = new java.text.DecimalFormat("0000.0000");
 
   public native void displayHelloWorld();
   public native double newCalc(double val);

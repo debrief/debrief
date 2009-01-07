@@ -21,10 +21,10 @@ abstract class TimeObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
 
   private final static String ACTIVE = "Active";
 
-  private boolean _isActive;
-  private String _name;
+  boolean _isActive;
+  String _name;
 
-  private Duration _theDuration;
+  Duration _theDuration;
 
   public TimeObserverHandler()
   {

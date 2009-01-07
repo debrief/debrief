@@ -8,11 +8,8 @@
  */
 package ASSET.Util.RMI;
 
-import ASSET.Scenario.ParticipantsChangedListener;
-import ASSET.Scenario.ScenarioRunningListener;
-import ASSET.Scenario.ScenarioSteppedListener;
-import ASSET.ParticipantType;
-import ASSET.Participants.*;
+import ASSET.Participants.Category;
+import ASSET.Participants.Status;
 
 public interface ParticipantRMI extends java.rmi.Remote
 {

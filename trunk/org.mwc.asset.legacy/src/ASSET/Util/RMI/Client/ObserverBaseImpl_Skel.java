@@ -3,6 +3,7 @@
 
 package ASSET.Util.RMI.Client;
 
+@SuppressWarnings("deprecation")
 final class ObserverBaseImpl_Skel
     implements java.rmi.server.Skeleton
 {

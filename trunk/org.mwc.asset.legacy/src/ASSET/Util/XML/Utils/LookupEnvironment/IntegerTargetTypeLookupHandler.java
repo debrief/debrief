@@ -18,7 +18,7 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 
 	private static final String UNKNOWN_TYPE = "UnknownType";
 
-	Vector _myDatums = null;
+	Vector<NamedList> _myDatums = null;
 
 	Double _defaultValue;
 
@@ -50,10 +50,10 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 	 * 
 	 * @param value
 	 */
-	private void addDatum(LookupSensor.NamedList value)
+	void addDatum(LookupSensor.NamedList value)
 	{
 		if (_myDatums == null)
-			_myDatums = new Vector(1, 1);
+			_myDatums = new Vector<LookupSensor.NamedList>(1, 1);
 		_myDatums.add(value);
 	}
 
@@ -90,11 +90,10 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 			itt.setAttribute(UNKNOWN_TYPE, writeThis(unknown.doubleValue()));
 
 		// now the matrix of sea states
-		Collection keys = states.getNames();
-		for (Iterator iter = keys.iterator(); iter.hasNext();)
+		Collection<String> keys = states.getNames();
+		for (Iterator<String> iter = keys.iterator(); iter.hasNext();)
 		{
-			Object obj = (Object) iter.next();
-			String thisN = (String) obj;
+			String thisN = (String)iter.next();
 
 			// ok, cycle through the sea states for this participant
 			NamedList thisList = states.getThisSeries(thisN);
@@ -114,9 +113,9 @@ abstract public class IntegerTargetTypeLookupHandler extends MWCXMLReader
 		datum.setAttribute("Type", name);
 		
 		// and step through its values
-		Collection indices = thisList.getValues();
+		Collection<Double> indices = thisList.getValues();
 		int ctr = 0;
-		for (Iterator iter = indices.iterator(); iter.hasNext();)
+		for (Iterator<Double> iter = indices.iterator(); iter.hasNext();)
 		{
 			Double val = (Double) iter.next();
 			if (val != null)

@@ -19,7 +19,7 @@ abstract public  class OpticSensorHandler extends CoreSensorHandler
   private final static String type = "OpticSensor";
   private static final String MIN_HEIGHT = "MinHeight";
 
-  private WorldDistance _myMinHeight;
+  WorldDistance _myMinHeight;
 
 
   public OpticSensorHandler()

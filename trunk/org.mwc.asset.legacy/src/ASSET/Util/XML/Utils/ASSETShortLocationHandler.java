@@ -24,11 +24,9 @@ abstract public class ASSETShortLocationHandler extends MWCXMLReader
   private final static String LONG = "Long";
   private final static String HEIGHT = "Height";
 
-  private MWC.GUI.Layer _theLayer;
-
-  private double _lat;
-  private double _long;
-  private WorldDistance _height;
+  double _lat;
+  double _long;
+  WorldDistance _height;
 
   public ASSETShortLocationHandler()
   {

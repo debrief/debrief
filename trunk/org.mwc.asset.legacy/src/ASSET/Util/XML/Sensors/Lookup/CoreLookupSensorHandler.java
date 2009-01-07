@@ -29,13 +29,13 @@ abstract class CoreLookupSensorHandler extends CoreSensorHandler
   private static final String IRF = "IRF";
   private static final String ITP = "ITP";
 
-  private double _vdr;
-  private Duration _tbdo;
-  private double _mrf;
-  private double _crf;
-  private Duration _ctp;
-  private double _irf;
-  private Duration _itp;
+  double _vdr;
+  Duration _tbdo;
+  double _mrf;
+  double _crf;
+  Duration _ctp;
+  double _irf;
+  Duration _itp;
 
 
   public CoreLookupSensorHandler(String myType)
@@ -127,8 +127,8 @@ abstract class CoreLookupSensorHandler extends CoreSensorHandler
 
   abstract protected LookupSensor createLookupSensor(int id,
                                                      String name,
-                                                     double VDR, long TBDO, double MRF, double CRF, Duration CTP,
-                                                     double IRF, Duration ITP);
+                                                     double VDR1, long TBDO1, double MRF1, double CRF1, Duration CTP1,
+                                                     double IRF1, Duration ITP1);
 
 
   static public void exportThis(final Object toExport, final org.w3c.dom.Element parent,

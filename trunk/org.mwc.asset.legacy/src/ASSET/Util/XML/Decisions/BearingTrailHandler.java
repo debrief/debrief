@@ -23,10 +23,10 @@ abstract public class BearingTrailHandler extends CoreDecisionHandler
   private final static String TRAIL_RANGE = "TrailRange";
   private final static String TRAIL_BEARING = "TrailBearing";
 
-  private TargetType _myTargetType;
-  private WorldDistance _myRange;
-  private double _myBearing;
-  private WorldDistance _myAllowableError;
+  TargetType _myTargetType;
+  WorldDistance _myRange;
+  double _myBearing;
+  WorldDistance _myAllowableError;
 
   public BearingTrailHandler()
   {

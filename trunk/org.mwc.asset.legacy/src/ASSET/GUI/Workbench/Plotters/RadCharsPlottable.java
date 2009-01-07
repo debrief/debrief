@@ -1,8 +1,9 @@
 package ASSET.GUI.Workbench.Plotters;
 
-import java.util.*;
+import java.util.Enumeration;
 
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 
 public class RadCharsPlottable extends BasePlottable
@@ -17,16 +18,9 @@ public class RadCharsPlottable extends BasePlottable
 		super(chars, parentLayer);
 	}
 
-	public Enumeration elements()
+	public Enumeration<Editable> elements()
 	{
-		Enumeration res = null;
-
-		RadiatedCharacteristics chars = (RadiatedCharacteristics) super.getModel();
-		Collection mediums = chars.getMediums();
-		res = new MWC.GUI.Plottables.IteratorWrapper(mediums.iterator());
-
-		return res;
+		return null;
 	}
-	
 	
 }

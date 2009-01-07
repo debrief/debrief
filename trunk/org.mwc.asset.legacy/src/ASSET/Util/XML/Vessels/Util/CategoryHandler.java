@@ -17,9 +17,9 @@ abstract public class CategoryHandler extends MWC.Utilities.ReaderWriter.XML.MWC
 
   private final static String catType = "Category";
 
-  private String env;
-  private String force;
-  private String type;
+  String env;
+  String force;
+  String type;
 
 
   public CategoryHandler(String catName)

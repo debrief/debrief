@@ -26,11 +26,11 @@ abstract public class TransitWaypointHandler extends CoreDecisionHandler
   private final static String VISITOR = "Visitor";
   private final static String SPEED = "Speed";
 
-  private boolean _looping;
-  private boolean _reverse;
-  private MWC.GenericData.WorldPath _myPath;
-  private WorldSpeed _speed;
-  private String _visitor = null;
+  boolean _looping;
+  boolean _reverse;
+  MWC.GenericData.WorldPath _myPath;
+  WorldSpeed _speed;
+  String _visitor = null;
 
   public TransitWaypointHandler()
   {

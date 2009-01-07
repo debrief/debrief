@@ -45,7 +45,7 @@ public class DetectionObserver extends WatchParticipantObserver implements
   /**
    * the list of target's we've detected
    */
-  protected HashSet _myDetections = null;
+  protected HashSet<Integer> _myDetections = null;
 
   /**
    * the (optional) level of detection required
@@ -210,7 +210,7 @@ public class DetectionObserver extends WatchParticipantObserver implements
       // add this to our list
       if (_myDetections == null)
       {
-        _myDetections = new HashSet();
+        _myDetections = new HashSet<Integer>();
       }
 
       _myDetections.add(thisI);
@@ -473,7 +473,7 @@ public class DetectionObserver extends WatchParticipantObserver implements
     // property editing
     //////////////////////////////////////////////////
 
-    private EditorType _myEditor;
+    private EditorType _myEditor1;
 
     /**
      * whether there is any edit information for this item
@@ -494,10 +494,10 @@ public class DetectionObserver extends WatchParticipantObserver implements
      */
     public EditorType getInfo()
     {
-      if (_myEditor == null)
-        _myEditor = new StopOnProximityDetectionObserverInfo(this);
+      if (_myEditor1 == null)
+        _myEditor1 = new StopOnProximityDetectionObserverInfo(this);
 
-      return _myEditor;
+      return _myEditor1;
     }
 
     //////////////////////////////////////////////////

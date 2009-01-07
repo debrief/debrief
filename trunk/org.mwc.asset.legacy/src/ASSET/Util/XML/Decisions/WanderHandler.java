@@ -65,10 +65,10 @@ abstract class WanderHandler extends CoreDecisionHandler
   private final static String WANDER_RANGE = "Range";
   private final static String LOCATION_NAME = "Location";
 
-  private WorldLocation _myLocation;
-  private WorldDistance _myRange;
-  private WorldSpeed _mySpeed = null;
-  private WorldDistance _myHeight = null;
+  WorldLocation _myLocation;
+  WorldDistance _myRange;
+  WorldSpeed _mySpeed = null;
+  WorldDistance _myHeight = null;
 
   public WanderHandler()
   {

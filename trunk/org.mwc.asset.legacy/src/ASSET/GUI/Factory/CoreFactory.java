@@ -49,7 +49,7 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
   /**
    * our list of observers
    */
-  private Vector _myObservers = new Vector(0, 1);
+  Vector<ScenarioObserver> _myObservers = new Vector<ScenarioObserver>(0, 1);
 
   /**
    * the listener for observer files being dropped in
@@ -69,17 +69,17 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
   /**
    * how many genes to create
    */
-  private int _genes = 0;
+  int _genes = 0;
 
   /**
    * how many stars to retain
    */
-  private int _stars = 0;
+  int _stars = 0;
 
   /**
    * whether to search for low scores instead of high
    */
-  private boolean _lowScoresHigh = false;
+  boolean _lowScoresHigh = false;
 
 
   /**
@@ -124,9 +124,9 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
     _observerDropper = new FileDropSupport();
     _observerDropper.setFileDropListener(new FileDropSupport.FileDropListener()
     {
-      public void FilesReceived(final Vector files)
+      public void FilesReceived(final Vector<File> files)
       {
-        final Iterator it = files.iterator();
+        final Iterator<File> it = files.iterator();
         while (it.hasNext())
         {
           final File file = (File) it.next();
@@ -140,9 +140,9 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
     _scenarioDropper = new FileDropSupport();
     _scenarioDropper.setFileDropListener(new FileDropSupport.FileDropListener()
     {
-      public void FilesReceived(final Vector files)
+      public void FilesReceived(final Vector<File> files)
       {
-        final Iterator it = files.iterator();
+        final Iterator<File> it = files.iterator();
         while (it.hasNext())
         {
           final File file = (File) it.next();
@@ -156,9 +156,9 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
     _varianceDropper = new FileDropSupport();
     _varianceDropper.setFileDropListener(new FileDropSupport.FileDropListener()
     {
-      public void FilesReceived(final Vector files)
+      public void FilesReceived(final Vector<File> files)
       {
-        final Iterator it = files.iterator();
+        final Iterator<File> it = files.iterator();
         while (it.hasNext())
         {
           final File file = (File) it.next();
@@ -210,7 +210,7 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
       final MWC.Utilities.ReaderWriter.XML.MWCXMLReader reader = new
         ASSET.Util.XML.Control.FactoryHandler()
         {
-          public void setFactory(final Vector list, final int genes, final int stars, boolean lowScoresHigh)
+          public void setFactory(final Vector<ScenarioObserver> list, final int genes, final int stars, boolean lowScoresHigh)
           {
             _myObservers.addAll(list);
             _genes = genes;
@@ -253,22 +253,6 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
 
 
   /**
-   * set the document
-   */
-  private void setDocument(final String doc)
-  {
-    _docFile = doc;
-  }
-
-  /**
-   * set the variance file
-   */
-  private void setVariance(final String vary)
-  {
-    _varyFile = vary;
-  }
-
-  /**
    * build the GA
    */
   public boolean build()
@@ -294,8 +278,6 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
     try
     {
       _myGA = new GeneticAlgorithm(_genes, _stars);
-      FileInputStream fs = new FileInputStream(_docFile);
-
       _myGA.createGene(new java.io.FileInputStream(_docFile), new java.io.FileInputStream(_varyFile));
 
       // swap the runner
@@ -391,7 +373,7 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
     System.out.print(".");
   }
 
-  public static void showGenes(final Iterator gene)
+  public static void showGenes(final Iterator<Gene> gene)
   {
     while (gene.hasNext())
     {
@@ -410,7 +392,7 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
   /**
    * basic interface of scenario runner, which just returns a random number
    */
-  private class CoreScenarioRunner implements ScenarioRunner, ASSET.Scenario.ScenarioRunningListener
+  protected class CoreScenarioRunner implements ScenarioRunner, ASSET.Scenario.ScenarioRunningListener
   {
     boolean _running = false;
 

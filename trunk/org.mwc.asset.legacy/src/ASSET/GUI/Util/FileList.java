@@ -17,12 +17,16 @@ import java.io.*;
 
 public class FileList extends JPanel implements FilenameFilter , DragGestureListener, DragSourceListener
 {
-  private JList _myList = new JList();
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JList _myList = new JList();
   private String _myDirectory;
 
-  private DragSource dragSource = new DragSource();
-  private DragGestureRecognizer recogniser =
-      dragSource.createDefaultDragGestureRecognizer(_myList, DnDConstants.ACTION_COPY_OR_MOVE, this);
+//  private DragSource dragSource = new DragSource();
+//  private DragGestureRecognizer recogniser =
+//      dragSource.createDefaultDragGestureRecognizer(_myList, DnDConstants.ACTION_COPY_OR_MOVE, this);
 
   static private final String file_separator = System.getProperty("file.separator");
 
@@ -65,7 +69,7 @@ public class FileList extends JPanel implements FilenameFilter , DragGestureList
 
     _myList.removeAll();
 
-    final java.util.Vector vec = new java.util.Vector(0,1);
+    final java.util.Vector<String> vec = new java.util.Vector<String>(0,1);
 
     // check we've received data
     if(fList != null)

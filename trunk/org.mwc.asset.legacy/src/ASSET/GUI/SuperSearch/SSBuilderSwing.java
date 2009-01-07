@@ -17,7 +17,12 @@ import java.beans.PropertyChangeEvent;
 
 public class SSBuilderSwing extends JPanel implements PropertyChangeListener
 {
-  /***************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/***************************************************************
    *  member variables
    ***************************************************************/
   private SSBuilder _myBuilder;
@@ -95,7 +100,7 @@ public class SSBuilderSwing extends JPanel implements PropertyChangeListener
   /** do the build operatoin
    *
    */
-  private void doBuild()
+  void doBuild()
   {
     _myBuilder.doBuild();
 

@@ -22,7 +22,7 @@ abstract public class SSMovementCharsHandler extends ThreeDimMovementCharsHandle
 
   private final static String TURN_CIRCLE = "TurningCircle";
 
-  private WorldDistance _turningCircle;
+  WorldDistance _turningCircle;
 
 
 

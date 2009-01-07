@@ -33,7 +33,7 @@ public final class MultiParticipantGenerator
   /**
    * the list of participant variances we manage
    */
-  private Vector _myParticipantVariances = null;
+  Vector<ParticipantVariance> _myParticipantVariances = null;
 
   /**
    * our document
@@ -55,7 +55,7 @@ public final class MultiParticipantGenerator
    */
   public MultiParticipantGenerator()
   {
-    _myParticipantVariances = new Vector(0, 1);
+    _myParticipantVariances = new Vector<ParticipantVariance>(0, 1);
   }
 
   /**
@@ -79,7 +79,7 @@ public final class MultiParticipantGenerator
    * read in the list of variances, and collate them
    * into our list
    */
-  private void loadVariances(final Document document)
+  void loadVariances(final Document document)
   {
     try
     {
@@ -160,7 +160,7 @@ public final class MultiParticipantGenerator
     if (newDoc != null)
     {
       // and run through the participants
-      final Iterator it = _myParticipantVariances.iterator();
+      final Iterator<ParticipantVariance> it = _myParticipantVariances.iterator();
 
       while (it.hasNext())
       {

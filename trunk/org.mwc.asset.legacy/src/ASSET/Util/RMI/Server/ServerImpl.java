@@ -8,41 +8,40 @@
  */
 package ASSET.Util.RMI.Server;
 
-import ASSET.Util.RMI.ServerRMI;
-import ASSET.Util.RMI.ScenarioCreatedListenerRMI;
-import ASSET.Util.RMI.ScenarioRMI;
-import ASSET.Util.RMI.Models.ParticipantRMIImpl;
-import ASSET.ServerType;
-import ASSET.ScenarioType;
-import ASSET.ParticipantType;
-import ASSET.Server.ScenarioCreatedListener;
-
-import java.rmi.server.UnicastRemoteObject;
-import java.rmi.RemoteException;
-import java.rmi.RMISecurityManager;
-import java.rmi.Naming;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.*;
+import java.rmi.Naming;
+import java.rmi.RMISecurityManager;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Vector;
+
+import ASSET.ScenarioType;
+import ASSET.ServerType;
+import ASSET.Server.ScenarioCreatedListener;
+import ASSET.Util.RMI.ScenarioCreatedListenerRMI;
+import ASSET.Util.RMI.ScenarioRMI;
+import ASSET.Util.RMI.ServerRMI;
 
 public class ServerImpl extends UnicastRemoteObject implements ServerRMI, ScenarioCreatedListener
 {
-  /*****************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/*****************************************************************
    * member variables
    ****************************************************************/
 
-  private Vector _myListeners;
+  private Vector<ScenarioCreatedListenerRMI> _myListeners;
   private ServerType _myServer;
 
   /** keep an internal cache of wrappers
    *
    */
-  private HashMap _scenarioWrappersCache = new HashMap();
+  private HashMap<ScenarioType, ScenarioRMIImpl> _scenarioWrappersCache = new HashMap<ScenarioType, ScenarioRMIImpl>();
 
-  /** the serializable id of this type
-   *
-   */
-  private static long serialVersionUID = 33;
 
   /*****************************************************************
    * constructor
@@ -51,7 +50,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerRMI, Scenar
   public ServerImpl(final ServerType myServer) throws RemoteException
   {
     super();
-    _myListeners = new Vector(0,1);
+    _myListeners = new Vector<ScenarioCreatedListenerRMI>(0,1);
     _myServer = myServer;
 
     // finally listen to the server
@@ -133,7 +132,7 @@ public class ServerImpl extends UnicastRemoteObject implements ServerRMI, Scenar
 
   public void createScenario(final String type)
   {
-    final int val = _myServer.createNewScenario(type);
+    _myServer.createNewScenario(type);
   }
 
 

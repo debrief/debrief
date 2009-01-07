@@ -75,9 +75,9 @@ public class Category implements java.io.Serializable
   /**
    * the lists of objects
    */
-  static private java.util.Vector _forces;
-  static private java.util.Vector _environments;
-  static private java.util.Vector _types;
+  static private java.util.Vector<String> _forces;
+  static private java.util.Vector<String> _environments;
+  static private java.util.Vector<String> _types;
 
   /**
    * our local objects
@@ -133,13 +133,13 @@ public class Category implements java.io.Serializable
     return force;
   }
 
-  public boolean isA(final String type)
+  public boolean isA(final String type1)
   {
     final boolean res;
 
-    if ((getType() == type) ||
-      (getForce() == type) ||
-      (getEnvironment() == type))
+    if ((getType() == type1) ||
+      (getForce() == type1) ||
+      (getEnvironment() == type1))
       res = true;
     else
       res = false;
@@ -157,19 +157,19 @@ public class Category implements java.io.Serializable
     return getForce() + " " + getType().substring(0, 4) + " " + getEnvironment().substring(0, 3);
   }
 
-  static public java.util.Vector getTypes()
+  static public java.util.Vector<String> getTypes()
   {
     checkLists();
     return _types;
   }
 
-  static public java.util.Vector getForces()
+  static public java.util.Vector<String> getForces()
   {
     checkLists();
     return _forces;
   }
 
-  static public java.util.Vector getEnvironments()
+  static public java.util.Vector<String> getEnvironments()
   {
     checkLists();
     return _environments;
@@ -179,18 +179,18 @@ public class Category implements java.io.Serializable
   {
     if (_types == null)
     {
-      _forces = new java.util.Vector(3, 1);
+      _forces = new java.util.Vector<String>(3, 1);
       _forces.addElement(Force.RED);
       _forces.addElement(Force.GREEN);
       _forces.addElement(Force.BLUE);
 
-      _environments = new java.util.Vector(4, 1);
+      _environments = new java.util.Vector<String>(4, 1);
       _environments.addElement(Environment.SUBSURFACE);
       _environments.addElement(Environment.SURFACE);
       _environments.addElement(Environment.AIRBORNE);
       _environments.addElement(Environment.CROSS);
 
-      _types = new java.util.Vector(6, 1);
+      _types = new java.util.Vector<String>(6, 1);
       _types.addElement(Type.SUBMARINE);
       _types.addElement(Type.MINISUB);
       _types.addElement(Type.TORPEDO);
@@ -212,7 +212,7 @@ public class Category implements java.io.Serializable
   {
     String res = null;
 
-    final java.util.Iterator it = getEnvironments().iterator();
+    final java.util.Iterator<String> it = getEnvironments().iterator();
     while (it.hasNext())
     {
       final String thisC = (String) it.next();
@@ -230,7 +230,7 @@ public class Category implements java.io.Serializable
   {
     String res = null;
 
-    final java.util.Iterator it = getForces().iterator();
+    final java.util.Iterator<String> it = getForces().iterator();
     while (it.hasNext())
     {
       final String thisC = (String) it.next();
@@ -249,7 +249,7 @@ public class Category implements java.io.Serializable
   {
     String res = null;
 
-    final java.util.Iterator it = getTypes().iterator();
+    final java.util.Iterator<String> it = getTypes().iterator();
     while (it.hasNext())
     {
       final String thisC = (String) it.next();

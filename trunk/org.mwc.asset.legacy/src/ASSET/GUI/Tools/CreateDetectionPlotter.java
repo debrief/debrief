@@ -31,11 +31,8 @@
 
 package ASSET.GUI.Tools;
 
-import MWC.GUI.Chart.Painters.GridPainter;
-import MWC.GUI.Tools.Palette.PlainCreate;
-import MWC.GenericData.WorldLocation;
-import ASSET.Models.Environment.EnvironmentType;
 import ASSET.GUI.Painters.Detections.ScenarioDetectionPainter;
+import MWC.GUI.Tools.Palette.PlainCreate;
 
 /** create a point noise source
  *

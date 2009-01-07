@@ -27,9 +27,9 @@ abstract public class ASSETRelativeLocationHandler extends MWCXMLReader
   private final static String NORTH = "North";
   private final static String EAST = "East";
   private final static String HEIGHT = "Height";
-  private WorldDistance _north;
-  private WorldDistance _east;
-  private WorldDistance _height;
+  WorldDistance _north;
+  WorldDistance _east;
+  WorldDistance _height;
 
 
   public ASSETRelativeLocationHandler()

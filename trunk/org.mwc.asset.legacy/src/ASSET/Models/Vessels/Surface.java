@@ -16,7 +16,12 @@ import MWC.GenericData.WorldSpeed;
 public class Surface extends ASSET.Participants.CoreParticipant {
 
 
-  public Surface(final int id) {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Surface(final int id) {
     this(id, null,null,null);
 
     // over-ride the radiated noise levels

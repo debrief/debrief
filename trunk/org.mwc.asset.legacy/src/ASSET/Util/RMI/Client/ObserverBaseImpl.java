@@ -8,19 +8,19 @@
  */
 package ASSET.Util.RMI.Client;
 
-import ASSET.Util.RMI.*;
-import ASSET.Util.RMI.Server.*;
-import ASSET.ParticipantType;
-import ASSET.ScenarioType;
-
 import java.rmi.Naming;
 import java.rmi.NotBoundException;
-import java.rmi.RemoteException;
 import java.rmi.Remote;
+import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
-import java.io.Serializable;
-import java.io.IOException;
 import java.util.Vector;
+
+import ASSET.ScenarioType;
+import ASSET.Util.RMI.ParticipantRMI;
+import ASSET.Util.RMI.ScenarioCreatedListenerRMI;
+import ASSET.Util.RMI.ScenarioRMI;
+import ASSET.Util.RMI.ServerRMI;
+import ASSET.Util.RMI.Server.ServerImpl;
 
 public class ObserverBaseImpl extends UnicastRemoteObject implements
         Remote,
@@ -30,7 +30,12 @@ public class ObserverBaseImpl extends UnicastRemoteObject implements
         ASSET.Util.RMI.PropertyChangeListenerRMI
 {
 
-  /*****************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/*****************************************************************
    * member variables
    ****************************************************************/
 
@@ -47,7 +52,7 @@ public class ObserverBaseImpl extends UnicastRemoteObject implements
   /** the scenarios held within the current server
    *
    */
-  final Vector _theScenarios = new Vector(0,1);
+  final Vector<StubWrapper> _theScenarios = new Vector<StubWrapper>(0,1);
 
   /** the participant we are currently looking at
    *
@@ -57,13 +62,9 @@ public class ObserverBaseImpl extends UnicastRemoteObject implements
   /** the current participant we are inspecting
    *
    */
-  final Vector _theParticipants = new Vector(0,1);
+  final Vector<StubWrapper> _theParticipants = new Vector<StubWrapper>(0,1);
 
 
-  /** the serializable id of this type
-   *
-   */
-  private static long serialVersionUID = 33;
 
   /*****************************************************************
    * constructor
@@ -158,7 +159,6 @@ public class ObserverBaseImpl extends UnicastRemoteObject implements
     try {
       System.out.println("Attempting RMI discovery....");
 
-      final Remote remote=ASSET.Util.jip.rmi.RMIDiscovery.lookup(ServerRMI.class,ServerImpl.LOOKUP_NAME);
       res = ASSET.Util.jip.rmi.RMIDiscovery.lookupAll(ServerRMI.class,ServerImpl.LOOKUP_NAME);
 
       System.out.println("number matching services found:" + res.length);

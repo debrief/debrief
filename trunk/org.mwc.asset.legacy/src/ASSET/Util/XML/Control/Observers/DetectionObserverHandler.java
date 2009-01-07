@@ -29,11 +29,11 @@ abstract public class DetectionObserverHandler extends MWC.Utilities.ReaderWrite
   final static String TARGET_TYPE = "Target";
   final static String WATCH_TYPE = "Watch";
 
-  private TargetType _watchType = null;
-  private TargetType _targetType = null;
-  private boolean _isActive;
-  private String _name;
-  private String _detectionLevel;
+  TargetType _watchType = null;
+  TargetType _targetType = null;
+  boolean _isActive;
+  String _name;
+  String _detectionLevel;
 
   /**
    * get the handler ready
@@ -179,7 +179,7 @@ abstract public class DetectionObserverHandler extends MWC.Utilities.ReaderWrite
    */
   abstract private static class TargetHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   {
-    private TargetType _type = null;
+    TargetType _type = null;
 
     public TargetHandler(final String myType)
     {

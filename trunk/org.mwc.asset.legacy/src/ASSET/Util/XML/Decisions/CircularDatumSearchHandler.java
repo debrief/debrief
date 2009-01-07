@@ -25,13 +25,13 @@ abstract class CircularDatumSearchHandler extends CoreDecisionHandler
   private final static String BUOY_TYPE_FILENAME = "LaunchBuoyFileName";
   private final static String NUM_BUOYS = "NumBuoys";
 
-  private WorldDistance _radius;
-  private TargetType _targetType;
-  private String _weaponType;
-  private String _weaponFileName;
-  private String _buoyType;
-  private String _buoyFileName;
-  private int _numBuoys;
+  WorldDistance _radius;
+  TargetType _targetType;
+  String _weaponType;
+  String _weaponFileName;
+  String _buoyType;
+  String _buoyFileName;
+  int _numBuoys;
 
 
   public CircularDatumSearchHandler()

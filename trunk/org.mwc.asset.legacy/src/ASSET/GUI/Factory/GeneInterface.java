@@ -14,22 +14,25 @@ import javax.swing.*;
 import java.util.Iterator;
 import java.util.Vector;
 import java.awt.*;
-import java.io.FileNotFoundException;
 
 public class GeneInterface extends JComponent
 {
-  /***************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/***************************************************************
    *  member variables
    ***************************************************************/
   /** the gene we are plotting
    *
    */
-  private Gene _myGene = null;
+  protected Gene _myGene = null;
 
   /***************************************************************
    *  constructor
    ***************************************************************/
-  private GeneInterface(final Gene baseGene)
+  GeneInterface(final Gene baseGene)
   {
     initForm(baseGene);
   }
@@ -54,7 +57,7 @@ public class GeneInterface extends JComponent
     // go through the gene
     final XMLVarianceList vl = baseGene.getChromosomes();
 
-    final Iterator it = vl.getIterator();
+    final Iterator<XMLVariance> it = vl.getIterator();
     while (it.hasNext())
     {
       final XMLVariance variable = (XMLVariance) it.next();
@@ -65,7 +68,7 @@ public class GeneInterface extends JComponent
   /** change the gene we are plotting
    *
    */
-  private void setGene(final Gene newGene)
+  void setGene(final Gene newGene)
   {
     _myGene = newGene;
   }
@@ -84,7 +87,12 @@ public class GeneInterface extends JComponent
    ***************************************************************/
   static class VariableWrapper extends JComponent
   {
-    final XMLVariance _var;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		final XMLVariance _var;
 
     JLabel _curVal = null;
 
@@ -120,17 +128,22 @@ public class GeneInterface extends JComponent
   static public class GeneList extends JList
   {
 
-    public GeneList()
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public GeneList()
     {
       this.setCellRenderer(new GeneRenderer());
     }
 
-    public void setGenes(final Iterator iter)
+    public void setGenes(final Iterator<Gene> iter)
     {
       // remove the existing
       this.removeAll();
 
-      final Vector data = new Vector(0,1);
+      final Vector<Gene> data = new Vector<Gene>(0,1);
 
       // pass through, adding the genes
       while (iter.hasNext())
@@ -144,7 +157,12 @@ public class GeneInterface extends JComponent
 
     class GeneRenderer extends JPanel implements javax.swing.ListCellRenderer
     {
-      public Component getListCellRendererComponent(
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public Component getListCellRendererComponent(
            JList list,
            final Object value,
            int index,

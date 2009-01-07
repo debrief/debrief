@@ -1,10 +1,13 @@
 package ASSET.Util.XML.Tools;
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import java.io.*;
-import ASSET.ScenarioType;
+import java.io.BufferedInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+
 import ASSET.ServerType;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
 
 
 public class OpenScenarioXML extends MWC.GUI.Tools.Operations.Open

@@ -1,7 +1,6 @@
 package ASSET.Util.XML.Tools;
 
-import MWC.GUI.*;
-import ASSET.ScenarioType;
+import MWC.GUI.ToolParent;
 
 public class SaveScenarioXML extends SaveScenarioAsXML
 {

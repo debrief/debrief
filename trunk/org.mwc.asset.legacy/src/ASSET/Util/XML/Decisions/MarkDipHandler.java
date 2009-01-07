@@ -21,7 +21,7 @@ abstract public class MarkDipHandler extends CoreDecisionHandler
   private final static String DEPTH = "BodyDepth";
 
 
-  private WorldDistance _theDepth;
+  WorldDistance _theDepth;
 
   public MarkDipHandler()
   {

@@ -19,9 +19,9 @@ abstract public class MADLookupTableHandler extends MWCXMLReader
   private static final String PRED_RANGE_SET = "PredictedRangeSet";
   private static final String PRED_RANGE_DATUM = "PredictedRangeDatum";
 
-  private LookupSensor.StringLookup _visibility;
+  LookupSensor.StringLookup _visibility;
 
-  private String _myName = null;
+  String _myName = null;
   private static final String NAME_ATTRIBUTE = "Name";
   private static final String VISIBLILITY = "PredictedRange";
 

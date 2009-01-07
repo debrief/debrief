@@ -54,10 +54,9 @@
 
 package ASSET.GUI.Tools;
 
-import MWC.GUI.Chart.Painters.GridPainter;
-import MWC.GUI.Tools.Palette.PlainCreate;
-import ASSET.Models.Environment.EnvironmentType;
 import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
+import ASSET.Models.Environment.EnvironmentType;
+import MWC.GUI.Tools.Palette.PlainCreate;
 
 public class CreateNoiseLevel extends PlainCreate
 {

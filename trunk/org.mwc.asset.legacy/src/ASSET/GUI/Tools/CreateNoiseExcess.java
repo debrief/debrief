@@ -28,13 +28,8 @@
 
 package ASSET.GUI.Tools;
 
-import MWC.GUI.Chart.Painters.GridPainter;
-import MWC.GUI.Tools.Palette.PlainCreate;
-import MWC.GenericData.WorldLocation;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
-import ASSET.GUI.Painters.NoiseSourcePainter;
 import ASSET.GUI.Painters.NoiseSourceExcessPainter;
+import MWC.GUI.Tools.Palette.PlainCreate;
 
 /** create a point noise source
  *
@@ -53,7 +48,6 @@ public class CreateNoiseExcess extends PlainCreate
 
 	protected MWC.GUI.Plottable createItem(MWC.GUI.PlainChart theChart)
 	{
-    final WorldLocation origin = new WorldLocation(0,0,0);
     return new NoiseSourceExcessPainter("Noise Excess", super.getLayers());
 	}
 }

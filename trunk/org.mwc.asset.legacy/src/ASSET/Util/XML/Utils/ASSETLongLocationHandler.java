@@ -31,16 +31,16 @@ abstract public class ASSETLongLocationHandler extends MWCXMLReader
   private final static String LONG_HEM = "LongHem";
   private final static String HEIGHT = "Height";
 
-  private int _latDeg;
-  private double _latMin;
-  private double _latSec;
-  private char _latHem;
-  private int _longDeg;
-  private double _longMin;
-  private double _longSec;
-  private char _longHem;
+  int _latDeg;
+  double _latMin;
+  double _latSec;
+  char _latHem;
+  int _longDeg;
+  double _longMin;
+  double _longSec;
+  char _longHem;
 
-  private WorldDistance _height;
+  WorldDistance _height;
 
   public ASSETLongLocationHandler()
   {

@@ -6,15 +6,15 @@
  */
 package ASSET.GUI.SuperSearch;
 
+import java.awt.Color;
+
+import javax.swing.JFrame;
+
 import ASSET.GUI.Core.CoreGUISwing;
-import ASSET.Models.Decision.TargetType;
-import ASSET.Participants.Category;
+import MWC.GUI.Layers;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.MenuItemInfo;
 import MWC.GUI.Tools.PlainTool;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class SuperSearchGUI extends CoreGUISwing
 {
@@ -25,7 +25,7 @@ public class SuperSearchGUI extends CoreGUISwing
   /**
    * our super search object
    */
-  private CoreSuperSearch _searcher;
+  CoreSuperSearch _searcher;
 
   /***************************************************************
    *  constructor
@@ -75,27 +75,31 @@ public class SuperSearchGUI extends CoreGUISwing
     _searcher._myScenario.setTime(0);
     _searcher._myScenario.setScenarioStepTime(60000);
     _searcher._myScenario.setStepTime(0);
+    
+    final Layers localData = _theData;
 
     // connect the layers to the scenario
     _searcher.addScenarioSteppedListener(new ASSET.Scenario.ScenarioSteppedListener()
     {
-      public void step(final long time)
+      @SuppressWarnings("synthetic-access")
+			public void step(final long time)
       {
         if (_searcher != null)
         {
-          _theData.fireModified(_searcher.getDataLayer());
+        	localData.fireModified(_searcher.getDataLayer());
         }
         else
-          _theData.fireModified(null);
+        	localData.fireModified(null);
 
         // update the clock
         setTime(MWC.Utilities.TextFormatting.FullFormatDateTime.toString(time));
       }
 
-      public void restart()
+      @SuppressWarnings("synthetic-access")
+			public void restart()
       {
         // reset the data
-        _theData.fireModified(null);
+      	localData.fireModified(null);
 
         // and reset the time
         setTime("------");
@@ -177,8 +181,8 @@ public class SuperSearchGUI extends CoreGUISwing
 //    public void restart(){;}});
 
     // have a go at our "removed" listener
-    final TargetType watch = new TargetType(Category.Force.BLUE);
-    final TargetType target = new TargetType(Category.Force.RED);
+ //   final TargetType watch = new TargetType(Category.Force.BLUE);
+  //  final TargetType target = new TargetType(Category.Force.RED);
 
   }
 

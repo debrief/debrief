@@ -25,6 +25,7 @@ public class ProportionDetectedObserver extends ASSET.Scenario.Observers.Detecti
    * a running count of how many targets are in the scenario
    */
   private int _numTargets = 0;
+	private HashSet<EntryHolder> _entryHolder;
 
   /**
    * ************************************************************
@@ -39,7 +40,7 @@ public class ProportionDetectedObserver extends ASSET.Scenario.Observers.Detecti
   {
     super(watchVessel, targetVessel, myName, detectionLevel, isActive);
 
-    _myDetections = new HashSet();
+    _entryHolder = new HashSet<EntryHolder>();
 
   }
 
@@ -80,7 +81,7 @@ public class ProportionDetectedObserver extends ASSET.Scenario.Observers.Detecti
     else
     {
       // create combined entry
-      _myDetections.add(eh);
+    	_entryHolder.add(eh);
     }
 
   }

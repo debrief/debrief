@@ -24,9 +24,9 @@ public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.M
   private final static String SPEED = "Speed";
   private final static String LOCATION = "Location";
 
-  private WorldLocation _myLocation;
-  private String _name;
-  private WorldSpeed _mySpeed;
+  WorldLocation _myLocation;
+  String _name;
+  WorldSpeed _mySpeed;
 
 
   public ManoeuvreToLocationHandler()
@@ -159,7 +159,7 @@ public class ManoeuvreToLocationHandler extends MWC.Utilities.ReaderWriter.XML.M
 
     }
 
-    abstract private class MyReaderWriter extends ASSET.Util.XML.ASSETReaderWriter
+    abstract protected class MyReaderWriter extends ASSET.Util.XML.ASSETReaderWriter
     {
 
       abstract public void responseIs(Response rec);

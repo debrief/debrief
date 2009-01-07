@@ -94,7 +94,7 @@ public class ParticipantsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     });
   }
 
-  private void insertThisParticipant(final ASSET.ParticipantType part,
+  void insertThisParticipant(final ASSET.ParticipantType part,
                                      boolean isMonteCarlo)
   {
     if (isMonteCarlo)

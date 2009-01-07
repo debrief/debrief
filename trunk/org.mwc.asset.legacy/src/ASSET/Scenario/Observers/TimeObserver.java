@@ -184,7 +184,7 @@ public class TimeObserver extends
   // property editing
   //////////////////////////////////////////////////
 
-  private EditorType _myEditor;
+  private EditorType _myEditor1;
 
   /**
    * whether there is any edit information for this item
@@ -205,10 +205,10 @@ public class TimeObserver extends
    */
   public EditorType getInfo()
   {
-    if (_myEditor == null)
-      _myEditor = new TimeObserverInfo(this);
+    if (_myEditor1 == null)
+      _myEditor1 = new TimeObserverInfo(this);
 
-    return _myEditor;
+    return _myEditor1;
   }
 
   //////////////////////////////////////////////////

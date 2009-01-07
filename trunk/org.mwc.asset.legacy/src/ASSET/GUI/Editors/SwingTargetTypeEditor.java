@@ -8,14 +8,15 @@ package ASSET.GUI.Editors;
  * @author
  * @version 1.0
  */
-import java.beans.*;
-import ASSET.Models.Decision.TargetType;
-import ASSET.Participants.Category;
-import javax.swing.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
 
 public class SwingTargetTypeEditor extends TargetTypeEditor{
 

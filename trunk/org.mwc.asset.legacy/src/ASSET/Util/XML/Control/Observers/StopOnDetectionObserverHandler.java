@@ -65,7 +65,7 @@ abstract public class StopOnDetectionObserverHandler extends DetectionObserverHa
    */
   abstract protected static class TargetHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   {
-    private TargetType _type = null;
+    TargetType _type = null;
 
     public TargetHandler(final String myType)
     {

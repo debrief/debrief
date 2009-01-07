@@ -49,15 +49,7 @@ abstract public class ASSETLocationHandler extends MWCXMLReader
   // this is one of ours, so get on with it!
   protected void handleOurselves(String name, Attributes attributes)
   {
-    _res = null;
-
-    int len = attributes.getLength();
-    for (int i = 0; i < len; i++)
-    {
-
-      String nm = attributes.getLocalName(i);
-      String val = attributes.getValue(i);
-    }
+  	// ignore attributes
   }
 
 

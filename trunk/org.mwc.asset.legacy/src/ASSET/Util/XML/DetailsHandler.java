@@ -9,9 +9,6 @@ package ASSET.Util.XML;
  * @version 1.0
  */
 
-import org.xml.sax.*;
-import MWC.Utilities.ReaderWriter.XML.XMLHandler;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 class DetailsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader

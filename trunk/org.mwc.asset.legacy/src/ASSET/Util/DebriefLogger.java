@@ -9,7 +9,6 @@ package ASSET.Util;
  * @version 1.0
  */
 
-import java.io.*;
 
 public class DebriefLogger implements java.beans.PropertyChangeListener {
 
@@ -42,8 +41,6 @@ public class DebriefLogger implements java.beans.PropertyChangeListener {
   }
 
 
-
-  private static java.text.DecimalFormat df = new java.text.DecimalFormat("0.00 ");
 
   public void propertyChange(java.beans.PropertyChangeEvent pe)
   {

@@ -36,7 +36,7 @@ public final class LocationOffset implements XMLObject
   /**
    * the pattern in which our random instances are created
    */
-  private int _myRandomModel;
+  protected int _myRandomModel;
 
   /**
    * the current location we're creating
@@ -73,7 +73,7 @@ public final class LocationOffset implements XMLObject
    * @param myArea
    * @param myModel
    */
-  private LocationOffset(WorldLocation myArea, WorldDistance range, int myModel)
+  LocationOffset(WorldLocation myArea, WorldDistance range, int myModel)
   {
     initialise(myArea, range, myModel);
   }
@@ -145,7 +145,7 @@ public final class LocationOffset implements XMLObject
    *
    * @return
    */
-  private WorldLocation thisPermutation()
+  WorldLocation thisPermutation()
   {
     return _currentLoc;
   }
@@ -153,7 +153,7 @@ public final class LocationOffset implements XMLObject
   /**
    * generate a new permutation
    */
-  private void newPermutation()
+  void newPermutation()
   {
     // ok, generate new location
     double bearing = RandomGenerator.nextRandom() * 360;

@@ -35,8 +35,8 @@ abstract class CompositeHandler extends CoreDecisionHandler
 
   private Composite _myComposite;
 
-  private Condition _myCondition;
-  private Response _myResponse;
+  Condition _myCondition;
+  Response _myResponse;
 
   public CompositeHandler()
   {
@@ -57,7 +57,7 @@ abstract class CompositeHandler extends CoreDecisionHandler
     {
       public void setCondition(final Condition dec)
       {
-        _myCondition = dec;
+				_myCondition = dec;
       }
     });
     addHandler(new ElapsedTimeHandler()

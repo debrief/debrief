@@ -17,7 +17,7 @@ abstract public class SSKHandler extends ParticipantHandler
   static private final String type = "SSK";
   static private final String _rechargeRate = "ChargeRate";
 
-  private double _myChargeRate = -1;
+  double _myChargeRate = -1;
 
   public SSKHandler()
   {

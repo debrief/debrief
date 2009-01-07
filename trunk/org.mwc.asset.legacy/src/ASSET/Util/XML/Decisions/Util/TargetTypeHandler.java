@@ -14,10 +14,10 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
 {
 
   static private final String type = "TargetType";
-  static private final String TYPE_NAME = "Type";
-  static private final String ATTRIBUTE_NAME = "Name";
+//  static private final String TYPE_NAME = "Type";
+//  static private final String ATTRIBUTE_NAME = "Name";
 
-  private ASSET.Models.Decision.TargetType tt = new ASSET.Models.Decision.TargetType();
+  ASSET.Models.Decision.TargetType tt = new ASSET.Models.Decision.TargetType();
 
   public TargetTypeHandler(final String myType)
   {
@@ -53,10 +53,10 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
 
   }
 
-  private void addThis(final String type)
-  {
-    tt.addTargetType(type);
-  }
+//  private void addThis(final String type)
+//  {
+//    tt.addTargetType(type);
+//  }
 
   public void elementClosed()
   {
@@ -79,18 +79,18 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
     return getElement(type, targetType, doc);
   }
 
-  static public org.w3c.dom.Element getElement(final String elementName, final ASSET.Models.Decision.TargetType type,
+  static public org.w3c.dom.Element getElement(final String elementName, final ASSET.Models.Decision.TargetType type1,
                                                final org.w3c.dom.Document doc)
   {
     // create the element to store it in
     final org.w3c.dom.Element el = doc.createElement(elementName);
 
     // step through targets
-    final java.util.Collection col = type.getTargets();
+    final java.util.Collection<String> col = type1.getTargets();
     if (col != null)
     {
       //
-      final java.util.Iterator it = col.iterator();
+      final java.util.Iterator<String> it = col.iterator();
 
       // step through the types
       while (it.hasNext())
@@ -113,13 +113,13 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
                                 final org.w3c.dom.Document doc)
   {
     // convert it
-    final ASSET.Models.Decision.TargetType type = (ASSET.Models.Decision.TargetType) toExport;
+    final ASSET.Models.Decision.TargetType type1 = (ASSET.Models.Decision.TargetType) toExport;
 
     // is it a real object?
-    if (type != null)
+    if (type1 != null)
     {
       // get it as an element
-      final org.w3c.dom.Element el = getElement(elementName, type, doc);
+      final org.w3c.dom.Element el = getElement(elementName, type1, doc);
 
       // add to parent
       parent.appendChild(el);
@@ -130,7 +130,7 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
   {
     static final private String thisType = "Type";
     static final private String ATTRIBUTE = "Name";
-    private String _thisType;
+//    private String _thisType;
 
     public TypeHandler()
     {
@@ -146,10 +146,10 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
 
     abstract public void addAttribute(String attr);
 
-    static public void exportThis(final String type, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
+    static public void exportThis(final String type1, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
     {
       final org.w3c.dom.Element myE = doc.createElement(thisType);
-      myE.setAttribute(ATTRIBUTE, type);
+      myE.setAttribute(ATTRIBUTE, type1);
       parent.appendChild(myE);
     }
 

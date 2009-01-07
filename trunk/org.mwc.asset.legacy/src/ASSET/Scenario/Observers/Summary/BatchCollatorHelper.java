@@ -121,7 +121,7 @@ public class BatchCollatorHelper
    *
    * @return string containing results
    */
-  private String getResults()
+  String getResults()
   {
     String res = null;
     if (getActive())
@@ -303,7 +303,7 @@ public class BatchCollatorHelper
     /**
      * my data
      */
-    protected TreeMap _myData;
+    protected TreeMap<String, Object> _myData;
 
     /**
      * whether we do stats overall, or no a per-case basis
@@ -386,7 +386,7 @@ public class BatchCollatorHelper
     {
       // initialse, if we have to
       if (_myData == null)
-        _myData = new TreeMap();
+        _myData = new TreeMap<String, Object>();
 
       // find the matching counter
       Object thisCase = _myData.get(caseIdentifier);
@@ -475,7 +475,7 @@ public class BatchCollatorHelper
         // insert the column header
         res += "Case, Results" + GeneralFormat.LINE_SEPARATOR;
 
-        Iterator iter = _myData.keySet().iterator();
+        Iterator<String> iter = _myData.keySet().iterator();
         while (iter.hasNext())
         {
           Object caseId = iter.next();
@@ -515,7 +515,7 @@ public class BatchCollatorHelper
   private static class CountCollator extends StatsCollator
   {
 
-    private int _myCounter;
+    int _myCounter;
 
     /**
      * constructor, to get us going
@@ -629,7 +629,7 @@ public class BatchCollatorHelper
   {
 
 
-    private ThisAverage _myAverage;
+    ThisAverage _myAverage;
 
     /**
      * constructor, to get us going
@@ -754,7 +754,7 @@ public class BatchCollatorHelper
     /**
      * convenience class to store the components of the average
      */
-    private static class ThisAverage
+    protected static class ThisAverage
     {
       public int counter = 0;
       public double runningTotal = 0;
@@ -891,7 +891,7 @@ public class BatchCollatorHelper
     //////////////////////////////////////////////////
     // member variables
     //////////////////////////////////////////////////
-    protected Vector _myList;
+    protected Vector<String> _myList;
 
     //////////////////////////////////////////////////
     // constructor
@@ -921,7 +921,7 @@ public class BatchCollatorHelper
     protected void processNonCaseResult(String scenario_name, Object datum)
     {
       if (_myList == null)
-        _myList = new Vector(0, 1);
+        _myList = new Vector<String>(0, 1);
 
       _myList.add(objectToString(datum));
     }
@@ -946,10 +946,11 @@ public class BatchCollatorHelper
      * @param datum         the current data item received
      * @return the changed/updated container for the data set
      */
-    protected Object processCaseResult(String scenario_name, Object thisCase, Object datum)
+    @SuppressWarnings("unchecked")
+		protected Object processCaseResult(String scenario_name, Object thisCase, Object datum)
     {
 
-      Vector thisList = (Vector) thisCase;
+      Vector<Object> thisList = (Vector<Object>) thisCase;
       thisList.add(objectToString(datum));
       return thisList;
     }
@@ -1002,7 +1003,7 @@ public class BatchCollatorHelper
     protected Object createCase()
     {
       Object thisCase;
-      thisCase = new Vector();
+      thisCase = new Vector<Object>();
 
       return thisCase;
     }
@@ -1017,7 +1018,7 @@ public class BatchCollatorHelper
       return listToString(_myList);
     }
 
-    private String listToString(Vector list)
+    private String listToString(Vector<String> list)
     {
       String res = null;
       for (int i = 0; i < list.size(); i++)
@@ -1039,9 +1040,10 @@ public class BatchCollatorHelper
      * @param result the collated result
      * @return string ready for output
      */
-    protected String getThisResult(Object caseId, Object result)
+    @SuppressWarnings("unchecked")
+		protected String getThisResult(Object caseId, Object result)
     {
-      Vector thisList = (Vector) result;
+      Vector<String> thisList = (Vector<String>) result;
       return "" + caseId + "," + listToString(thisList);
     }
   }
@@ -1057,7 +1059,7 @@ public class BatchCollatorHelper
     //////////////////////////////////////////////////
     // member variables
     //////////////////////////////////////////////////
-    protected HashMap _myList;
+    protected HashMap<Object, Integer> _myList;
 
     //////////////////////////////////////////////////
     // constructor
@@ -1087,7 +1089,7 @@ public class BatchCollatorHelper
     protected void processNonCaseResult(String scenario_name, Object datum)
     {
       if (_myList == null)
-        _myList = new HashMap();
+        _myList = new HashMap<Object, Integer>();
 
 
       // get our other class to update it
@@ -1114,10 +1116,11 @@ public class BatchCollatorHelper
      * @param datum         the current data item received
      * @return the changed/updated container for the data set
      */
-    protected Object processCaseResult(String scenario_name, Object thisCase, Object datum)
+    @SuppressWarnings("unchecked")
+		protected Object processCaseResult(String scenario_name, Object thisCase, Object datum)
     {
 
-      HashMap thisList = (HashMap) thisCase;
+      HashMap<Object, Integer> thisList = (HashMap<Object, Integer>) thisCase;
 
       // do we already hold this result?
       Object item = thisList.get(datum);
@@ -1186,7 +1189,7 @@ public class BatchCollatorHelper
     protected Object createCase()
     {
       Object thisCase;
-      thisCase = new HashMap();
+      thisCase = new HashMap<Object, Object>();
 
       return thisCase;
     }
@@ -1201,11 +1204,11 @@ public class BatchCollatorHelper
       return listToString(_myList);
     }
 
-    private String listToString(HashMap list)
+    private String listToString(HashMap<Object, Integer> list)
     {
       String res = null;
-      Collection keys = list.keySet();
-      for (Iterator iterator = keys.iterator(); iterator.hasNext();)
+      Collection<Object> keys = list.keySet();
+      for (Iterator<Object> iterator = keys.iterator(); iterator.hasNext();)
       {
         Object key = (Object) iterator.next();
         Integer thisInt = (Integer) list.get(key);
@@ -1227,9 +1230,10 @@ public class BatchCollatorHelper
      * @param result the collated result
      * @return string ready for output
      */
-    protected String getThisResult(Object caseId, Object result)
+    @SuppressWarnings("unchecked")
+		protected String getThisResult(Object caseId, Object result)
     {
-      HashMap thisList = (HashMap) result;
+    	HashMap<Object, Integer> thisList = (HashMap<Object, Integer>) result;
       return " " + caseId + "," + listToString(thisList);
     }
   }
@@ -1265,7 +1269,7 @@ public class BatchCollatorHelper
 
 
       // get the result
-      String thisRes = nonPerCaseCC.getResult(name, units);
+      nonPerCaseCC.getResult(name, units);
       assertTrue("count wrongly performed", nonPerCaseCC.getResult(name, units).indexOf(nonPerCaseString) > 0);
       assertTrue("collator name not included", nonPerCaseCC.getResult(name, units).indexOf(name) > 0);
 
@@ -1284,8 +1288,6 @@ public class BatchCollatorHelper
       // check we've stored them
       assertNotNull("store not created", perCaseCC._myData);
 
-      // get the result
-      String myResults = perCaseCC.getResult(name, units);
       assertTrue("results wrongly performed", perCaseCC.getResult(name, units).indexOf(perCaseString) > 0);
 
     }

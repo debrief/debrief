@@ -28,7 +28,7 @@ public final class MultiScenarioGenerator
 	/**
 	 * the list of participants we manage
 	 */
-	private XMLVarianceList _myVariances = null;
+	XMLVarianceList _myVariances = null;
 
 	/**
 	 * our document
@@ -51,7 +51,7 @@ public final class MultiScenarioGenerator
 	/**
 	 * the directory to place the new files
 	 */
-	private String _myDirectory;
+	protected String _myDirectory;
 
 	/**
 	 * the template to use for creating new filenames
@@ -171,7 +171,7 @@ public final class MultiScenarioGenerator
 	public final Document[] createNewRandomisedPermutations()
 			throws XMLVariance.IllegalExpressionException, XMLVariance.MatchingException
 	{
-		Vector results = new Vector(0, 1);
+		Vector<Document> results = new Vector<Document>(0, 1);
 
 		// take a copy of the document
 		final String currentDoc = ScenarioGenerator.writeToString(_myDocument);
@@ -268,6 +268,7 @@ public final class MultiScenarioGenerator
 			_attribute = attribute;
 		}
 
+		@SuppressWarnings("unchecked")
 		public void applyTo(Document target)
 		{
 			DOMXPath _myPath;
@@ -320,7 +321,7 @@ public final class MultiScenarioGenerator
 				"" + (int) xLoc));
 
 		// and loop through the changes
-		for (Iterator iter = theChanges.iterator(); iter.hasNext();)
+		for (Iterator<AttributeChange> iter = theChanges.iterator(); iter.hasNext();)
 		{
 			AttributeChange change = (AttributeChange) iter.next();
 			change.applyTo(newDoc);
@@ -330,7 +331,7 @@ public final class MultiScenarioGenerator
 	public final Document[] createNewRandomisedPermutationsOld()
 			throws XMLVariance.IllegalExpressionException, XMLVariance.MatchingException
 	{
-		Vector results = new Vector(0, 1);
+		Vector<Document> results = new Vector<Document>(0, 1);
 
 		// take a copy of the document
 		final String currentDoc = ScenarioGenerator.writeToString(_myDocument);
@@ -338,7 +339,7 @@ public final class MultiScenarioGenerator
 		// keep a record of the scenarios we create, since
 		// the user may want to create a specific number of
 		// permutations of each test-case
-		HashMap map = new HashMap();
+		HashMap<String,Integer> map = new HashMap<String, Integer>();
 
 		// keep track of number of compliant instances created
 		int counter = 0;
@@ -462,7 +463,7 @@ public final class MultiScenarioGenerator
 	 * @param path_prefix
 	 *          the path to put the scenarios into
 	 */
-	public static void writeTheseToFile(Vector scenarios, String path_prefix)
+	public static void writeTheseToFile(Vector<Document> scenarios, String path_prefix)
 	{
 		for (int counter = 0; counter < scenarios.size(); counter++)
 		{
@@ -779,10 +780,8 @@ public final class MultiScenarioGenerator
 			}
 
 			// lastly, check we can export the scenarios
-			List resList = Arrays.asList(results);
-
 			// re-check the len
-			assertEquals("got some", 3, resList.size());
+			assertEquals("got some", 3, results.length);
 
 		}
 
@@ -1014,11 +1013,8 @@ public final class MultiScenarioGenerator
 			// check we found a different sea state
 			assertTrue("we generated a different sea state", foundDifferentSeaState);
 
-			// lastly, check we can export the scenarios
-			List resList = Arrays.asList(results);
-
 			// re-check the len
-			assertEquals("got some", numScenariosRequested, resList.size());
+			assertEquals("got some", numScenariosRequested, results.length);
 
 		}
 

@@ -1,14 +1,13 @@
 package ASSET.GUI.SuperSearch.Plotters;
 
-import ASSET.Models.Vessels.SSN;
+import java.util.Enumeration;
+
 import ASSET.ParticipantType;
 import ASSET.Scenario.MultiForceScenario;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldSpeed;
-
-import java.util.*;
 
 /**
  * Title:  SSGuiSupport
@@ -43,18 +42,18 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
   /**
    * whether to plot a course/speed vector for targets
    */
-  private boolean _showVector = true;
+  boolean _showVector = true;
 
 
   /**
    * whether to plot the name of targets
    */
-  private boolean _showNames = false;
+  boolean _showNames = false;
 
   /**
    * whether to plot the activities of targets
    */
-  private boolean _showActivities = false;
+  boolean _showActivities = false;
 
 
   /**
@@ -115,7 +114,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
     return new ParticipantListener(part, this);
   }
 
-  private void newBlueParticipant(final int index)
+  void newBlueParticipant(final int index)
   {
     newParticipant(index);
   }
@@ -135,7 +134,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
    */
   public void participantRemoved(final int index)
   {
-    final java.util.Enumeration enumer = super.elements();
+    final java.util.Enumeration<Editable> enumer = super.elements();
     while (enumer.hasMoreElements())
     {
       final ParticipantListener pl = (ParticipantListener) enumer.nextElement();
@@ -150,7 +149,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
   /**
    * the indicated participant has been removed from the scenario
    */
-  private void blueParticipantRemoved(final int index)
+  void blueParticipantRemoved(final int index)
   {
     participantRemoved(index);
   }
@@ -161,7 +160,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
   public void restart()
   {
     // pass through our elements, resetting them
-    final Enumeration it = super.elements();
+    final Enumeration<Editable> it = super.elements();
     while (it.hasMoreElements())
     {
       final ParticipantListener pl = (ParticipantListener) it.nextElement();
@@ -596,10 +595,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
     public Editable getEditable()
     {
       SSGuiSupport ed = new SSGuiSupport();
-      SSN ssn = new SSN(12);
       ed.setScenario(new MultiForceScenario());
-      MWC.GUI.Editable part;
-      part = ed.getNewParticipantListener(ssn);
       return ed;
     }
   }

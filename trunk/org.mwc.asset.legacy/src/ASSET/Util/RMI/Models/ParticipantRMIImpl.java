@@ -22,16 +22,16 @@ public class ParticipantRMIImpl extends UnicastRemoteObject implements Participa
    * member variables
    ****************************************************************/
 
-  /** the participant we are wrapping
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/** the participant we are wrapping
    *
    */
   private ParticipantType _myPart;
-
-
-  /** the serializable id of this type
-   *
-   */
-  private static long serialVersionUID = 33;
 
   /*****************************************************************
    * constructor

@@ -121,17 +121,17 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	/**
 	 * list of people listening out for us moving
 	 */
-	private Vector _participantMovedListeners;
+	private Vector<ParticipantMovedListener> _participantMovedListeners;
 
 	/**
 	 * list of people listening out for any decisions
 	 */
-	private Vector _participantDecidedListeners;
+	private Vector<ParticipantDecidedListener> _participantDecidedListeners;
 
 	/**
 	 * list of people listening out for any detections
 	 */
-	private Vector _participantDetectedListeners;
+	private Vector<ParticipantDetectedListener> _participantDetectedListeners;
 
 	/**
 	 * the message we use when there's F/A happending
@@ -319,12 +319,12 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		// see if there are any sensor lineup changes
 		if (getSensorFit() != null)
 		{
-			Iterator theSensors = getSensorFit().getSensors().iterator();
+			Iterator<SensorType> theSensors = getSensorFit().getSensors().iterator();
 
 			// do we have any demanded sensor states?
 			if (_myDemandedStatus != null)
 			{
-				Vector theStates = _myDemandedStatus.getSensorStates();
+				Vector<DemandedSensorStatus> theStates = _myDemandedStatus.getSensorStates();
 				if (theStates != null)
 				{
 					if (theStates.size() > 0)
@@ -528,7 +528,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		// inform the listeners
 		if (_participantDecidedListeners != null)
 		{
-			final Iterator it = _participantDecidedListeners.iterator();
+			final Iterator<ParticipantDecidedListener> it = _participantDecidedListeners.iterator();
 			while (it.hasNext())
 			{
 				final ParticipantDecidedListener pdl = (ParticipantDecidedListener) it.next();
@@ -538,7 +538,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 		if (_participantDetectedListeners != null)
 		{
-			final Iterator it = _participantDetectedListeners.iterator();
+			final Iterator<ParticipantDetectedListener> it = _participantDetectedListeners.iterator();
 			while (it.hasNext())
 			{
 				final ParticipantDetectedListener ptl = (ParticipantDetectedListener) it.next();
@@ -548,7 +548,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 		if (_participantMovedListeners != null)
 		{
-			final Iterator it = _participantMovedListeners.iterator();
+			final Iterator<ParticipantMovedListener> it = _participantMovedListeners.iterator();
 			while (it.hasNext())
 			{
 				final ParticipantMovedListener pml = (ParticipantMovedListener) it.next();
@@ -730,7 +730,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	public void addParticipantMovedListener(final ParticipantMovedListener list)
 	{
 		if (_participantMovedListeners == null)
-			_participantMovedListeners = new Vector(1, 2);
+			_participantMovedListeners = new Vector<ParticipantMovedListener>(1, 2);
 
 		_participantMovedListeners.add(list);
 	}
@@ -744,7 +744,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	public void addParticipantDecidedListener(final ParticipantDecidedListener list)
 	{
 		if (_participantDecidedListeners == null)
-			_participantDecidedListeners = new Vector(1, 2);
+			_participantDecidedListeners = new Vector<ParticipantDecidedListener>(1, 2);
 
 		_participantDecidedListeners.add(list);
 	}
@@ -758,7 +758,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	public void addParticipantDetectedListener(final ParticipantDetectedListener list)
 	{
 		if (_participantDetectedListeners == null)
-			_participantDetectedListeners = new Vector(1, 2);
+			_participantDetectedListeners = new Vector<ParticipantDetectedListener>(1, 2);
 
 		_participantDetectedListeners.add(list);
 	}
@@ -773,7 +773,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		if (_participantMovedListeners != null)
 		{
-			final Iterator it = _participantMovedListeners.iterator();
+			final Iterator<ParticipantMovedListener> it = _participantMovedListeners.iterator();
 			while (it.hasNext())
 			{
 				final ParticipantMovedListener pml = (ParticipantMovedListener) it.next();
@@ -786,7 +786,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		if (_participantDetectedListeners != null)
 		{
-			final Iterator it = _participantDetectedListeners.iterator();
+			final Iterator<ParticipantDetectedListener> it = _participantDetectedListeners.iterator();
 			while (it.hasNext())
 			{
 				final ParticipantDetectedListener pml = (ParticipantDetectedListener) it.next();
@@ -799,7 +799,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		if (_participantDecidedListeners != null)
 		{
-			final Iterator it = _participantDecidedListeners.iterator();
+			final Iterator<ParticipantDecidedListener> it = _participantDecidedListeners.iterator();
 			while (it.hasNext())
 			{
 				final ParticipantDecidedListener pml = (ParticipantDecidedListener) it.next();
@@ -820,7 +820,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			super(val);
 		}
 
-		private ASSET.Participants.Status newStat = null;
+		ASSET.Participants.Status newStat = null;
 
 		String dem_state = null;
 
@@ -828,7 +828,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 		ASSET.Models.Detection.DetectionList newDetectionList = null;
 
-		private class DecidedListener implements ParticipantDecidedListener
+		protected class DecidedListener implements ParticipantDecidedListener
 		{
 			public void newDecision(final String state,
 					final ASSET.Participants.DemandedStatus dem_stat)
@@ -856,7 +856,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			}
 		}
 
-		private class MovedListener implements ParticipantMovedListener
+		protected class MovedListener implements ParticipantMovedListener
 		{
 			public void moved(final ASSET.Participants.Status newStatus)
 			{
@@ -886,11 +886,11 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	         new WorldDistance(100, WorldDistance.METRES), new WorldDistance(1, WorldDistance.METRES)));
 			
 			// initialise the participant
-			final Status newStat = new Status(part.getId(), 0);
-			newStat.setLocation(new MWC.GenericData.WorldLocation(0.0, 0.0, 0));
-			newStat.setCourse(45);
-			newStat.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
-			part.setStatus(newStat);
+			final Status newStat1 = new Status(part.getId(), 0);
+			newStat1.setLocation(new MWC.GenericData.WorldLocation(0.0, 0.0, 0));
+			newStat1.setCourse(45);
+			newStat1.setSpeed(new WorldSpeed(12, WorldSpeed.M_sec));
+			part.setStatus(newStat1);
 
 			// create the dummy decision model
 			final ASSET.Models.Decision.Movement.Transit transit = new ASSET.Models.Decision.Movement.Transit();

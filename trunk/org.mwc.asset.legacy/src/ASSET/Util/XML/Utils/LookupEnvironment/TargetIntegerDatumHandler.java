@@ -34,7 +34,7 @@ abstract public class TargetIntegerDatumHandler extends IntegerDatumHandler
   public void elementClosed()
   {
     // ok, extract the values
-    Vector theValues = new Vector(0,1);
+    Vector<Double> theValues = new Vector<Double>(0,1);
    for (int i=0;i<_theCategories.length;i++)
 		{
 			Double val = _res.find(i);

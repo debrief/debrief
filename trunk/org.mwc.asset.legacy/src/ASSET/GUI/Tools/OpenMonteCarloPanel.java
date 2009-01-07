@@ -75,6 +75,11 @@ public class OpenMonteCarloPanel extends PlainTool
       _myLoader = new Loader(_myScenario, _theChart, super.getParent(), _myProperties)
       {
         /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				/**
          * user has tried to close the loader panel = we'll just hide it
          */
         public void doClose()

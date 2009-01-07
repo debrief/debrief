@@ -12,6 +12,7 @@ package ASSET.GUI.Editors;
 import ASSET.Models.Mediums.BroadbandRadNoise;
 import ASSET.Models.Mediums.Optic;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
+import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium;
 import MWC.GUI.PlainChart;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
@@ -33,6 +34,11 @@ public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEdi
   PlainPropertyEditor.EditorUsesToolParent
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the border
    */
   final BorderLayout mainBorder = new BorderLayout();
@@ -40,12 +46,12 @@ public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEdi
   /**
    * the list of radiated noise types
    */
-  private JList _noiseList;
+  JList _noiseList;
 
   /**
    * the radiated noise characeristics we are viewing
    */
-  private RadiatedCharacteristics _chars;
+  RadiatedCharacteristics _chars;
 
   /**
    * panel to contain editors themselves
@@ -134,7 +140,7 @@ public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEdi
    * support for a noise source being selected
    * *************************************************
    */
-  private void itemSelected()
+  void itemSelected()
   {
     final Object newOne = _noiseList.getSelectedValue();
     if (newOne instanceof MWC.GUI.Editable)
@@ -173,8 +179,8 @@ public class RadiatedNoiseViewer extends MWC.GUI.Properties.Swing.SwingCustomEdi
     {
       final DefaultListModel newList = new javax.swing.DefaultListModel();
 
-      final Collection coll = _chars.getMediums();
-      final Iterator iter = coll.iterator();
+      final Collection<Medium> coll = _chars.getMediums();
+      final Iterator<Medium> iter = coll.iterator();
       while (iter.hasNext())
       {
         final RadiatedCharacteristics.Medium thisMed =  (RadiatedCharacteristics.Medium) iter.next();

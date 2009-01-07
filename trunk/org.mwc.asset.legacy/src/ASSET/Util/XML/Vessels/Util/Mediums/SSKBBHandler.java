@@ -19,8 +19,8 @@ abstract public class SSKBBHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   final static private String LEVEL = "BaseNoiseLevel";
   final static private String SNORT_LEVEL = "SnortNoiseLevel";
 
-  private double _myNoise;
-  private double _mySnortNoise;
+  double _myNoise;
+  double _mySnortNoise;
 
   public SSKBBHandler()
   {

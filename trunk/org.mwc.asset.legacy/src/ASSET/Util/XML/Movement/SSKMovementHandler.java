@@ -17,7 +17,7 @@ abstract public class SSKMovementHandler extends MWC.Utilities.ReaderWriter.XML.
   private final static String CHARGE_RATE = "ChargeRate";
 
 
-  private double _chargeRate;
+  double _chargeRate;
 
 
   public SSKMovementHandler()

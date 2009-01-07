@@ -61,7 +61,7 @@ public final class LocationArea implements XMLObject
    * @param myArea
    * @param myModel
    */
-  private LocationArea(WorldArea myArea, int myModel)
+  LocationArea(WorldArea myArea, int myModel)
   {
     initialise(myArea, myModel);
   }
@@ -137,7 +137,7 @@ public final class LocationArea implements XMLObject
    *
    * @return
    */
-  private WorldLocation thisPermutation()
+  WorldLocation thisPermutation()
   {
     return _currentLoc;
   }
@@ -145,7 +145,7 @@ public final class LocationArea implements XMLObject
   /**
    * generate a new permutation
    */
-  private void newPermutation()
+  void newPermutation()
   {
     _currentLoc = XMLVariance.generateRandomLocationInArea(_myArea, _myRandomModel);
   }

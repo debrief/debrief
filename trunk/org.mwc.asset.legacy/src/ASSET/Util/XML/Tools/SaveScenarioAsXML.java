@@ -54,7 +54,7 @@ public class SaveScenarioAsXML extends MWC.GUI.Tools.Operations.Save
 
       // check if the file ends in XML
       final int idx = filename.toLowerCase().indexOf("." + mySuffix);
-      final int CLASS_EXTENSION_LENGTH = 4;
+//      final int CLASS_EXTENSION_LENGTH = 4;
       if(idx == -1)
       {
         filename += "." + mySuffix;

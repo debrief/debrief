@@ -6,18 +6,18 @@
  */
 package ASSET.GUI.Editors.Sensors;
 
-import ASSET.Models.Sensor.Initial.InitialSensor;
-import ASSET.Models.Sensor.Initial.InitialSensor;
-import ASSET.Models.SensorType;
-
 import java.util.Vector;
+
+import ASSET.Models.SensorType;
+import ASSET.Models.Sensor.Initial.InitialSensor;
+import ASSET.Models.Sensor.Initial.InitialSensor.InitialSensorComponentsEvent;
 
 public abstract class BaseSensorViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor implements java.beans.PropertyChangeListener, MWC.GUI.Properties.NoEditorButtons
 {
   /**
    * the list of sensor components we build up, consuming them at each refresh
    */
-  protected Vector _sensorEvents = new Vector(0, 1);
+  protected Vector<Object> _sensorEvents = new Vector<Object>(0, 1);
   /**
    * the sensor we're listening to
    */
@@ -92,7 +92,7 @@ public abstract class BaseSensorViewer extends MWC.GUI.Properties.Swing.SwingCus
     if (type == ASSET.Models.Sensor.Initial.InitialSensor.SENSOR_COMPONENT_EVENT)
     {
       // store these components
-      _sensorEvents.add(pe.getNewValue());
+      _sensorEvents.add((InitialSensorComponentsEvent) pe.getNewValue());
 
     }
     // does it mark the end of this step?

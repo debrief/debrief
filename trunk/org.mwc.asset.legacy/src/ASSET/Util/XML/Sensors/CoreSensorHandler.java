@@ -13,8 +13,8 @@ import ASSET.Models.SensorType;
 public abstract class CoreSensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   private static final String NAME = "Name";
-  private int _myId;
-  private String _myName;
+  int _myId;
+  String _myName;
   private final static String WORKING = "Working";
   protected boolean _working = true;
   private static final String ID_VAL = "id";

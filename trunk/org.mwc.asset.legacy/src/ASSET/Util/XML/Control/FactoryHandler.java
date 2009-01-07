@@ -12,6 +12,8 @@ package ASSET.Util.XML.Control;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
+import ASSET.Scenario.Observers.ScenarioObserver;
+
 import java.util.Vector;
 
 abstract public class FactoryHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -22,10 +24,10 @@ abstract public class FactoryHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
   private final static String LOW_SCORES_HIGH = "LowScoresHigh";
 
 
-  private int _genes;
-  private int _stars;
-  private Vector _myList;
-  private boolean _lowScoresHigh = false;
+  int _genes;
+  int _stars;
+  private Vector<ScenarioObserver> _myList;
+  boolean _lowScoresHigh = false;
 
   public FactoryHandler()
   {
@@ -35,9 +37,9 @@ abstract public class FactoryHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
 
     addHandler(new ASSET.Util.XML.Control.Observers.ObserverListHandler()
     {
-      public void setObserverList(final Vector list)
+      public void setObserverList(final Vector<ScenarioObserver> list)
       {
-        _myList = new Vector(list);
+        _myList = new Vector<ScenarioObserver>(list);
       }
     });
 
@@ -79,10 +81,10 @@ abstract public class FactoryHandler extends MWC.Utilities.ReaderWriter.XML.MWCX
   }
 
 
-  abstract public void setFactory(Vector list, int genes, int stars, boolean lowScoresHigh);
+  abstract public void setFactory(Vector<ScenarioObserver> list, int genes, int stars, boolean lowScoresHigh);
 
 
-  public static void exportThis(final Vector list, final int stars, final int genes, final Element parent,
+  public static void exportThis(final Vector<ScenarioObserver> list, final int stars, final int genes, final Element parent,
                                 final Document doc)
   {
     // create ourselves

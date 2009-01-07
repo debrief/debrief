@@ -1,6 +1,5 @@
 package ASSET.Models.Vessels;
 
-import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Movement.SSKMovement;
 
 /**
@@ -14,7 +13,11 @@ import ASSET.Models.Movement.SSKMovement;
 
 public class SSK extends SSN {
 
-  /** the Height we snort at
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/** the Height we snort at
    *
    */
   static final public double CHARGE_HEIGHT = -15;

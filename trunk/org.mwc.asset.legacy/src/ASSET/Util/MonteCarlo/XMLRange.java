@@ -8,26 +8,26 @@
  */
 package ASSET.Util.MonteCarlo;
 
-import ASSET.Util.RandomGenerator;
-import ASSET.Util.SupportTesting;
-import org.w3c.dom.Element;
-
 import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
+
+import org.w3c.dom.Element;
+
+import ASSET.Util.RandomGenerator;
+import ASSET.Util.SupportTesting;
 
 public final class XMLRange implements XMLOperation
 {
   /**
    * the min value
    */
-  private double _min;
+  double _min;
 
   /**
    * the max value
    */
-  private double _max;
+  double _max;
 
   /**
    * the step to use
@@ -37,13 +37,13 @@ public final class XMLRange implements XMLOperation
   /**
    * how many random permutations to use
    */
-  private Integer _numPerms;
+  Integer _numPerms;
 
   /** an (optional) list of random values to use when the user has
    * specified how many permutations are required
    *
    */
-  private Vector _myPerms;
+  Vector<Double> _myPerms;
 
   /**
    * the text format to use
@@ -53,12 +53,12 @@ public final class XMLRange implements XMLOperation
   /**
    * the current value of this operation
    */
-  private double _currentValue;
+  double _currentValue;
 
   /** the random generator we're going to use
    *
    */
-  private int _model;
+  int _model;
 
   /**
    * ************************************************************
@@ -125,7 +125,7 @@ public final class XMLRange implements XMLOperation
   /** testing constructor
    *
    */
-  private XMLRange()
+  XMLRange()
   {
     // have to set the values using the assign method
   }
@@ -138,7 +138,7 @@ public final class XMLRange implements XMLOperation
   /** store the values in this object - used for refactoring & to help testing
    *
    */
-  private void assign(double max, double min, int model, Integer numPerms, Double step, DecimalFormat format)
+  void assign(double max, double min, int model, Integer numPerms, Double step, DecimalFormat format)
   {
     _max = max;
     _min = min;
@@ -179,7 +179,7 @@ public final class XMLRange implements XMLOperation
       // yes.  Has the list of perms been defined?
       if(_myPerms == null)
       {
-        _myPerms = new Vector(_numPerms.intValue(), 1);
+        _myPerms = new Vector<Double>(_numPerms.intValue(), 1);
 
         // nope, better create it
         for(int i=0;i<_numPerms.intValue();i++)
@@ -323,7 +323,7 @@ public final class XMLRange implements XMLOperation
       }
 
       // and check that we only get the right values
-      HashMap scores = new HashMap();
+      HashMap<Integer, Integer> scores = new HashMap<Integer, Integer>();
       for(int i=0;i<5000;i++)
       {
         newR.newPermutation();
@@ -338,12 +338,12 @@ public final class XMLRange implements XMLOperation
         scores.put(new Integer(index), res);
       }
 
-      Iterator freq = scores.keySet().iterator();
-      while (freq.hasNext())
-      {
-        Integer index = (Integer) freq.next();
-        Integer score = (Integer) scores.get(index);
-      }
+//      Iterator<Integer> freq = scores.keySet().iterator();
+//      while (freq.hasNext())
+//      {
+//        Integer index = (Integer) freq.next();
+//        Integer score = (Integer) scores.get(index);
+//      }
 
     }
 
@@ -367,7 +367,7 @@ public final class XMLRange implements XMLOperation
       }
 
       // and check that we only get the right values
-      HashMap scores = new HashMap();
+      HashMap<Integer, Integer> scores = new HashMap<Integer, Integer>();
       for(int i=0;i<5000;i++)
       {
         newR.newPermutation();
@@ -380,14 +380,6 @@ public final class XMLRange implements XMLOperation
 
         res = new Integer(res.intValue() + 1);
         scores.put(new Integer(index), res);
-      }
-
-      Iterator freq = scores.keySet().iterator();
-      while (freq.hasNext())
-      {
-        Integer index = (Integer) freq.next();
-        Integer score = (Integer) scores.get(index);
-
       }
 
     }

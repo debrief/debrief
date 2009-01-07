@@ -33,12 +33,12 @@ abstract class LoaderCore
   /**
    * our scenario
    */
-  final private CoreScenario _myScenario;
+  final CoreScenario _myScenario;
 
   /**
    * the set of observers we've loaded and now manage.
    */
-  private Vector _myObservers;
+  Vector<ScenarioObserver> _myObservers;
 
   //////////////////////////////////////////////////
   // constructor
@@ -261,8 +261,6 @@ abstract class LoaderCore
 
   public void loadScenario(File tmpFile)
   {
-    ASSETReaderWriter.ResultsContainer controlStuff = null;
-
     // setup the _myObservers
     try
     {

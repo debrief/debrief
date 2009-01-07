@@ -41,7 +41,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
   /**
    * build up the tracks - so we can output them at the end (indexed by the participant
    */
-  private HashMap _myTracks = null;
+  private HashMap<ParticipantType, Track> _myTracks = null;
 
   /**
    * keep track of the area of coverage
@@ -86,7 +86,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
   /**
    * a list of additional items to plot
    */
-  private Vector _additionalPoints = null;
+  private Vector<WorldLocation> _additionalPoints = null;
 
   /**
    * whether to only show the final positions
@@ -229,7 +229,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
     }
 
     // and create a new holder
-    _myTracks = new HashMap();
+    _myTracks = new HashMap<ParticipantType, Track>();
   }
 
   /**
@@ -358,7 +358,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
     SquareSymbol ss = new SquareSymbol();
 
     // step through our tracks
-    for (Iterator thisTrack = _myTracks.keySet().iterator(); thisTrack.hasNext();)
+    for (Iterator<ParticipantType> thisTrack = _myTracks.keySet().iterator(); thisTrack.hasNext();)
     {
       CoreParticipant cp = (CoreParticipant) thisTrack.next();
       Track track = (Track) _myTracks.get(cp);
@@ -396,7 +396,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
       else
       {
         // nope, show the whole track
-        Enumeration enumer = track.getFixes();
+        Enumeration<Fix> enumer = track.getFixes();
         while (enumer.hasMoreElements())
         {
           Fix fix = (Fix) enumer.nextElement();
@@ -529,11 +529,11 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
   public void addPoints(WorldPath newPoints)
   {
     if (_additionalPoints == null)
-      _additionalPoints = new Vector();
+      _additionalPoints = new Vector<WorldLocation>();
 
-    Collection pts = newPoints.getPoints();
+    Collection<WorldLocation> pts = newPoints.getPoints();
 
-    for (Iterator iterator = pts.iterator(); iterator.hasNext();)
+    for (Iterator<WorldLocation> iterator = pts.iterator(); iterator.hasNext();)
     {
       WorldLocation location = (WorldLocation) iterator.next();
       _additionalPoints.add(location);

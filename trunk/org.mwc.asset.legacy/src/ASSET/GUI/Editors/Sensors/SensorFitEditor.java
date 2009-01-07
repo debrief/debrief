@@ -29,7 +29,11 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   // GUI components
   //////////////////////////////////////////////////////////////////////
 
-  private JPanel sensorList = new JPanel();
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JPanel sensorList = new JPanel();
   private BorderLayout mainBorder = new BorderLayout();
 
   //////////////////////////////////////////////////////////////////////
@@ -83,8 +87,8 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   {
     sensorList.removeAll();
 
-    Collection rawSensors = _myList.getSensors();
-    Iterator throughSensors = rawSensors.iterator();
+    Collection<SensorType> rawSensors = _myList.getSensors();
+    Iterator<SensorType> throughSensors = rawSensors.iterator();
     while (throughSensors.hasNext())
     {
       SensorType sensor = (SensorType) throughSensors.next();
@@ -99,7 +103,7 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   }
 
 
-  private void viewThis(SensorType thisSensor)
+  void viewThis(SensorType thisSensor)
   {
     Editable.EditorType theEditor = null;
 
@@ -114,7 +118,7 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
       super.getPanel().addEditor(theEditor, null);
   }
 
-  private void plotThis(SensorType thisSensor)
+  void plotThis(SensorType thisSensor)
   {
 
     Editable.EditorType theEditor = null;
@@ -140,7 +144,7 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
       super.getPanel().addEditor(theEditor, null);
   }
 
-  private void editThis(SensorType thisSensor)
+  void editThis(SensorType thisSensor)
   {
     if (thisSensor.hasEditor())
     {
@@ -243,7 +247,7 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		private SensorType _mySensor;
+		SensorType _mySensor;
 
     public SensorItem(SensorType thisSensor)
     {

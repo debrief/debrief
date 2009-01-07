@@ -61,17 +61,17 @@ abstract class ProximityObserverHandler extends MWC.Utilities.ReaderWriter.XML.M
 
     addHandler(new TargetHandler(TARGET_TYPE)
     {
-      public void setTargetType(final TargetType type)
+      public void setTargetType(final TargetType type1)
       {
-        _targetType = type;
+        _targetType = type1;
       }
     });
 
     addHandler(new TargetHandler(WATCH_TYPE)
     {
-      public void setTargetType(final TargetType type)
+      public void setTargetType(final TargetType type1)
       {
-        _watchType = type;
+        _watchType = type1;
       }
     });
 
@@ -200,7 +200,7 @@ abstract class ProximityObserverHandler extends MWC.Utilities.ReaderWriter.XML.M
    */
   abstract private static class TargetHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   {
-    private TargetType _type = null;
+    TargetType _type = null;
 
     public TargetHandler(final String myType)
     {

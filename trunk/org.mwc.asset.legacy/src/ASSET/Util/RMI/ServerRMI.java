@@ -8,8 +8,6 @@
  */
 package ASSET.Util.RMI;
 
-import ASSET.Server.ScenarioCreatedListener;
-import ASSET.ScenarioType;
 
 public interface ServerRMI extends java.rmi.Remote
 {

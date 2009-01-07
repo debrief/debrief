@@ -105,7 +105,7 @@ public class BasePlottable implements Plottable, Layer
 	{
 	}
 
-	public Enumeration elements()
+	public Enumeration<Editable> elements()
 	{
 		return null;
 	}

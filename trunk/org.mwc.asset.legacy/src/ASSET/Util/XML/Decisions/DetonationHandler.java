@@ -22,9 +22,9 @@ abstract class DetonationHandler extends CoreDecisionHandler
 
   private final static String POWER = "DetonationPower";
 
-  private WorldDistance _theRange;
-  private double _thePower;
-  private TargetType _myTargetType;
+  WorldDistance _theRange;
+  double _thePower;
+  TargetType _myTargetType;
 
 
   public DetonationHandler()

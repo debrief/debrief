@@ -51,7 +51,7 @@ public class JarServer{
         }
     
     }
-    private static void serviceRequest(final Socket request){
+    static void serviceRequest(final Socket request){
         
         try{
             

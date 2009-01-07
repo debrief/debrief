@@ -22,10 +22,10 @@ abstract public class UserControlHandler extends CoreDecisionHandler
   private final static String ACTIVE = "Active";
 
 
-  private double _speed;
-  private double _course;
-  private double _depth;
-  private boolean _isActive = true;
+  double _speed;
+  double _course;
+  double _depth;
+  boolean _isActive = true;
 
 
   public UserControlHandler()

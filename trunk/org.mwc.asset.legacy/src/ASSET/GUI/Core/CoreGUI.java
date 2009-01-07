@@ -44,7 +44,7 @@ abstract public class CoreGUI
   /**
    * the list of tools we use
    */
-  protected final Vector _theTools;
+  protected final Vector<MenuItemInfo> _theTools;
 
   /**
    * the chart we plot
@@ -69,7 +69,7 @@ abstract public class CoreGUI
   /**
    * our layers object
    */
-  protected final Layers _theData;
+  protected Layers _theData;
 
   /**
    * our undo buffer
@@ -85,7 +85,7 @@ abstract public class CoreGUI
   /**
    * the scenario we manage
    */
-  protected final ASSET.Scenario.CoreScenario _theScenario;
+  protected ASSET.Scenario.CoreScenario _theScenario;
 
   /**
    * the server which contains our scenario
@@ -112,7 +112,7 @@ abstract public class CoreGUI
 
     _name = "ASSET";
     _theParent = theParent;
-    _theTools = new Vector(0, 1);
+    _theTools = new Vector<MenuItemInfo>(0, 1);
 
     // add the chart features object
     final BaseLayer chartFeatures = new BaseLayer();
@@ -201,7 +201,7 @@ abstract public class CoreGUI
     addTools();
 
     // retrieve the tools for this interface
-    final Enumeration enumer = getTools();
+    final Enumeration<MenuItemInfo> enumer = getTools();
 
 
     while (enumer.hasMoreElements())
@@ -238,7 +238,7 @@ abstract public class CoreGUI
   /**
    * return the tools we have created
    */
-  private Enumeration getTools()
+  private Enumeration<MenuItemInfo> getTools()
   {
     return _theTools.elements();
   }
@@ -410,7 +410,7 @@ abstract public class CoreGUI
   void close()
   {
     // we'll also try to remove all of the tools
-    final Enumeration enumer = _theTools.elements();
+    final Enumeration<MenuItemInfo> enumer = _theTools.elements();
     while (enumer.hasMoreElements())
     {
       final MenuItemInfo mn = (MenuItemInfo) enumer.nextElement();

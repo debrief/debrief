@@ -14,8 +14,8 @@ public class CoreDecisionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
   protected final static String IS_ACTIVE = "IsActive";
   protected final static String NAME = "Name";
 
-  private String _myName;
-  private boolean _isActive;
+  String _myName;
+  boolean _isActive;
 
   //////////////////////////////////////////////////
   // constructor = get going

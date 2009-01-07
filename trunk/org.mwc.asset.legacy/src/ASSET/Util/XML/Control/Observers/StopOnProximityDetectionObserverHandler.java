@@ -21,7 +21,7 @@ abstract public class StopOnProximityDetectionObserverHandler extends StopOnDete
 
   private final static String MIN_RANGE = "Range";
 
-  private WorldDistance _range;
+  WorldDistance _range;
 
 
   public StopOnProximityDetectionObserverHandler()

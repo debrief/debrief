@@ -26,12 +26,12 @@ abstract class TrackPlotObserverHandler extends CoreFileObserverHandler
   private final static String SHOW_SCALE = "show_scale";
   private static final String GRID_DELTA = "GridDelta";
 
-  private int _myWid = 400;
-  private int _myHeight = 400;
-  private WorldDistance _gridDelta;
-  private boolean _showPositions = true;
-  private boolean _showScale = true;
-  private boolean _finalPositions = false;
+  int _myWid = 400;
+  int _myHeight = 400;
+  WorldDistance _gridDelta;
+  boolean _showPositions = true;
+  boolean _showScale = true;
+  boolean _finalPositions = false;
 
 
   public TrackPlotObserverHandler()

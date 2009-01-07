@@ -25,10 +25,10 @@ abstract public class MoveHandler extends CoreDecisionHandler
   private final static String VECTOR = "Vector";
   private final static String HEIGHT = "Height";
 
-  private WorldSpeed _speed;
-  private Double _course;
-  private WorldDistance _height = null;
-  private WorldDistance _distance;
+  WorldSpeed _speed;
+  Double _course;
+  WorldDistance _height = null;
+  WorldDistance _distance;
 
   public MoveHandler()
   {

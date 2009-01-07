@@ -21,9 +21,9 @@ public class ChangeSensorLineUpHandler extends MWC.Utilities.ReaderWriter.XML.MW
   private final static String MEDIUM = "Medium";
   private final static String SWITCH_ON = "SwitchOn";
 
-  private int _medium;
-  private String _name;
-  private boolean _switchOn;
+  int _medium;
+  String _name;
+  boolean _switchOn;
 
   public static EnvironmentType.MediumPropertyEditor _myEditor =
     new EnvironmentType.MediumPropertyEditor();

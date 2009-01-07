@@ -27,13 +27,9 @@ abstract public class RadarLookupTableHandler extends MWCXMLReader
                                                      "SeaState_8", "SeaState_9", "SeaState_10"};
 
 
-  private LookupSensor.IntegerTargetTypeLookup _targetAspect;
-  private LookupSensor.IntegerTargetTypeLookup _targetSeaState;
-  private static final Double DEFAULT_ASPECT = new Double(1000);
-  private static final Double DEFAULT_SEA_STATE = new Double(1);
-
-
-  private String _myName = null;
+  LookupSensor.IntegerTargetTypeLookup _targetAspect;
+  LookupSensor.IntegerTargetTypeLookup _targetSeaState;
+String _myName = null;
 
 
   public RadarLookupTableHandler(final String myType)

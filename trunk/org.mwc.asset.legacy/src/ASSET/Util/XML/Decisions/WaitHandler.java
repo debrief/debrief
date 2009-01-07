@@ -21,7 +21,7 @@ abstract public class WaitHandler extends CoreDecisionHandler
   private final static String DURATION = "Duration";
 
 
-  private Duration _myDuration;
+  Duration _myDuration;
 
   public WaitHandler()
   {

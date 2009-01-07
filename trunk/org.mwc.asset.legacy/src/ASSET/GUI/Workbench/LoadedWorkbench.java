@@ -68,11 +68,11 @@ public class LoadedWorkbench
     // finally load the data
 
     // put the datafile into a vector
-    Vector theScenarios = new Vector();
+    Vector<File> theScenarios = new Vector<File>();
     theScenarios.add(new File(MY_SCENARIO));
 
 
-    Vector theControls = new Vector();
+    Vector<File> theControls = new Vector<File>();
     theControls.add(new File(MY_OBSERVERS));
 
     // load the data

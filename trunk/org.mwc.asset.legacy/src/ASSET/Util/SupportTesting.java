@@ -50,7 +50,7 @@ public class SupportTesting extends junit.framework.TestCase
   /**
    * the list of participants we're listening to
    */
-  protected HashMap _listeningList;
+  protected HashMap<CoreParticipant, ParticipantMovedListener> _listeningList;
 
   /**
    * our debrief plot observer, if we have one
@@ -194,7 +194,7 @@ public class SupportTesting extends junit.framework.TestCase
 
     // and remember it
     if (_listeningList == null)
-      _listeningList = new HashMap();
+      _listeningList = new HashMap<CoreParticipant, ParticipantMovedListener>();
 
     _listeningList.put(cp, pml);
   }
@@ -209,7 +209,7 @@ public class SupportTesting extends junit.framework.TestCase
     // stop listening to the participants
     if (_listeningList != null)
     {
-      for (Iterator iterator = _listeningList.keySet().iterator(); iterator.hasNext();)
+      for (Iterator<CoreParticipant> iterator = _listeningList.keySet().iterator(); iterator.hasNext();)
       {
         CoreParticipant coreParticipant = (CoreParticipant) iterator.next();
         ParticipantMovedListener pml = (ParticipantMovedListener) _listeningList.get(coreParticipant);
@@ -313,9 +313,9 @@ public class SupportTesting extends junit.framework.TestCase
     {
       FileWriter writer = new FileWriter(TEST_DIR + fileName);
 
-      Collection points = destinations.getPoints();
+      Collection<WorldLocation> points = destinations.getPoints();
       int counter = 1;
-      for (Iterator iterator = points.iterator(); iterator.hasNext();)
+      for (Iterator<WorldLocation> iterator = points.iterator(); iterator.hasNext();)
       {
         WorldLocation worldLocation = (WorldLocation) iterator.next();
         String thisLine = ";CIRCLE: @@ ";
@@ -413,7 +413,8 @@ public class SupportTesting extends junit.framework.TestCase
 
 
 
-  public static void callTestMethods(SupportTesting tt)
+  @SuppressWarnings("unchecked")
+	public static void callTestMethods(SupportTesting tt)
   {
     // find and run all methods beginning with test
     Method[] methods = tt.getClass().getMethods();
@@ -422,7 +423,7 @@ public class SupportTesting extends junit.framework.TestCase
       Method thisMethod = methods[i];
       if (thisMethod.getName().startsWith("test"))
       {
-        Class params[] = {};
+        Object params[] = {};
         try
         {
           thisMethod.invoke(tt, params);
@@ -465,7 +466,6 @@ public class SupportTesting extends junit.framework.TestCase
     public final void testMyParams()
     {
       // just check that our ASSET-specific editors are loaded
-      TargetType tt = new TargetType();
       PropertyEditor pe = PropertyEditorManager.findEditor(TargetType.class);
       if (pe == null)
         CoreGUISwing.registerEditors();

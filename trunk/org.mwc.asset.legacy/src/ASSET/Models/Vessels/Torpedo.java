@@ -12,7 +12,12 @@ import ASSET.Models.Environment.EnvironmentType;
 
 public class Torpedo extends SSN
 {
-  public Torpedo(final int id)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public Torpedo(final int id)
   {
     super(id);
   }

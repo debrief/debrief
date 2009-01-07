@@ -22,10 +22,10 @@ abstract public class EnvironmentHandler extends MWCXMLReader
   private static String type = "Environment";
   public static final String NAME = "Name";
   
-  private int _seaState;
-  private String _atmos;
-  private String _light;
-  private String _myName;
+  int _seaState;
+  String _atmos;
+  String _light;
+  String _myName;
   private static final String SEA_STATE = "SeaState";
   private static final String ATMOS_ATTEN = "AtmosphericAttenuation";
   private static final String LIGHT_LEVEL = "LightLevel";
@@ -35,9 +35,9 @@ abstract public class EnvironmentHandler extends MWCXMLReader
   private static final String MAD_LOOKUP = "MADLookupEnvironment";
 
 
-  private RadarLookupSensor.RadarEnvironment _radarEnv;
-  private OpticLookupSensor.OpticEnvironment _opticEnv;
-  private MADLookupSensor.MADEnvironment _madEnv;
+  RadarLookupSensor.RadarEnvironment _radarEnv;
+  OpticLookupSensor.OpticEnvironment _opticEnv;
+  MADLookupSensor.MADEnvironment _madEnv;
 
 
   public EnvironmentHandler()

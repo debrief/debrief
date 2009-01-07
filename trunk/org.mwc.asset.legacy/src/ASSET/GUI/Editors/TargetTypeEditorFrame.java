@@ -25,6 +25,10 @@ public class TargetTypeEditorFrame extends javax.swing.JDialog
 
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * ************************************************************
    * member variables
    * *************************************************************
@@ -33,7 +37,7 @@ public class TargetTypeEditorFrame extends javax.swing.JDialog
   private JList envList;
   private JList typeList;
 
-  private TargetType _myType;
+  TargetType _myType;
 
   /**
    * ************************************************************
@@ -118,7 +122,7 @@ public class TargetTypeEditorFrame extends javax.swing.JDialog
 
   }
 
-  private void doClose()
+  void doClose()
   {
     setVisible(false);
   }
@@ -141,7 +145,7 @@ public class TargetTypeEditorFrame extends javax.swing.JDialog
     return true;
   }
 
-  private Object getValue()
+  Object getValue()
   {
     final TargetType res = new TargetType();
 
@@ -188,16 +192,16 @@ public class TargetTypeEditorFrame extends javax.swing.JDialog
       return;
 
     // get our categories
-    final Collection coll = _myType.getTargets();
+    final Collection<String> coll = _myType.getTargets();
 
     if (coll == null)
       return;
 
-    final Iterator it = coll.iterator();
+    final Iterator<String> it = coll.iterator();
 
-    final Vector forces = new Vector(0, 1);
-    final Vector envs = new Vector(0, 1);
-    final Vector types = new Vector(0, 1);
+    final Vector<String> forces = new Vector<String>(0, 1);
+    final Vector<String> envs = new Vector<String>(0, 1);
+    final Vector<String> types = new Vector<String>(0, 1);
 
     while (it.hasNext())
     {
@@ -226,9 +230,9 @@ public class TargetTypeEditorFrame extends javax.swing.JDialog
 
   }
 
-  private void setThisList(final JList list, final Vector items)
+  private void setThisList(final JList list, final Vector<String> items)
   {
-    final Vector indices = new Vector(0, 1);
+    final Vector<Integer> indices = new Vector<Integer>(0, 1);
     int[] results = {1, 2, 3};
 
     // step through the items in the list
@@ -239,7 +243,7 @@ public class TargetTypeEditorFrame extends javax.swing.JDialog
       final String thisItem = (String) lm.getElementAt(i);
 
       // is this in our vector?
-      final Iterator it = items.iterator();
+      final Iterator<String> it = items.iterator();
       while (it.hasNext())
       {
         final String val = (String) it.next();

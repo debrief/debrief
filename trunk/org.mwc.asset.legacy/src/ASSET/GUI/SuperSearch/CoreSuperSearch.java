@@ -1,11 +1,8 @@
 package ASSET.GUI.SuperSearch;
 
 import ASSET.GUI.SuperSearch.Plotters.SSGuiSupport;
-import ASSET.Models.Movement.SimpleDemandedStatus;
+import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.GUI.Layer;
-import MWC.GenericData.WorldSpeed;
-
-import java.io.File;
 
 /**
  * Title:     CoreSuperSearch
@@ -54,7 +51,7 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
   /** the list of stepping listeners
    *
    */
-  private java.util.Vector _stepListeners;
+  private java.util.Vector<ScenarioSteppedListener> _stepListeners;
 
   /***********************************************************************
    * constructor
@@ -112,7 +109,7 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
   {
     if(_stepListeners != null)
     {
-      final java.util.Iterator it = _stepListeners.iterator();
+      final java.util.Iterator<ScenarioSteppedListener> it = _stepListeners.iterator();
       while(it.hasNext())
       {
         final ASSET.Scenario.ScenarioSteppedListener pcl = (ASSET.Scenario.ScenarioSteppedListener)it.next();
@@ -125,7 +122,7 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
   {
     if(_stepListeners != null)
     {
-      final java.util.Iterator it = _stepListeners.iterator();
+      final java.util.Iterator<ScenarioSteppedListener> it = _stepListeners.iterator();
       while(it.hasNext())
       {
         final ASSET.Scenario.ScenarioSteppedListener pcl = (ASSET.Scenario.ScenarioSteppedListener)it.next();
@@ -137,7 +134,7 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
   public void addScenarioSteppedListener(final ASSET.Scenario.ScenarioSteppedListener listener)
   {
     if(_stepListeners == null)
-      _stepListeners = new java.util.Vector(1,2);
+      _stepListeners = new java.util.Vector<ScenarioSteppedListener>(1,2);
 
     _stepListeners.add(listener);
   }

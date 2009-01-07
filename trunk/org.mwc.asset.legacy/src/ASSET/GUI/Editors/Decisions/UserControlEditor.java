@@ -27,16 +27,20 @@ public class UserControlEditor extends MWC.GUI.Properties.Swing.SwingCustomEdito
   // GUI components
   //////////////////////////////////////////////////////////////////////
 
-  private DemandedSliders _course;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private DemandedSliders _course;
   private DemandedSliders _speed;
   private DemandedSliders _depth;
-  private JCheckBox _isActive;
+  JCheckBox _isActive;
 
   //////////////////////////////////////////////////////////////////////
   // drag and drop components
   //////////////////////////////////////////////////////////////////////
 
-  private ASSET.Models.Decision.UserControl _userControl;
+  ASSET.Models.Decision.UserControl _userControl;
 
   public UserControlEditor()
   {
@@ -53,21 +57,36 @@ public class UserControlEditor extends MWC.GUI.Properties.Swing.SwingCustomEdito
 
     _course = new DemandedSliders(0, 360, (int) _userControl.getCourse(), JSlider.HORIZONTAL, "Course")
     {
-      void newDemanded(int val)
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			void newDemanded(int val)
       {
         _userControl.setCourse(val);
       }
     };
     _speed = new DemandedSliders(0, 40, (int) _userControl.getSpeed(), JSlider.HORIZONTAL, "Speed")
     {
-      void newDemanded(int val)
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			void newDemanded(int val)
       {
         _userControl.setSpeed(val);
       }
     };
     _depth = new DemandedSliders(0, 300, (int) _userControl.getDepth(), JSlider.HORIZONTAL, "Depth")
     {
-      void newDemanded(int val)
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			void newDemanded(int val)
       {
         _userControl.setDepth(val);
       }
@@ -157,7 +176,7 @@ public class UserControlEditor extends MWC.GUI.Properties.Swing.SwingCustomEdito
     /**
      * the demanded vlaue
      */
-    private JSlider _demanded;
+    JSlider _demanded;
     /**
      * the current value
      */
@@ -245,7 +264,7 @@ public class UserControlEditor extends MWC.GUI.Properties.Swing.SwingCustomEdito
 
     abstract void newDemanded(int val);
 
-    private void demandedChanged(int val)
+    void demandedChanged(int val)
     {
       _demLabel.setText(_df.format(val));
 

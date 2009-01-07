@@ -194,7 +194,8 @@ public final class XMLVariance
   /**
    * modify the supplied document with our operation
    */
-  public final String permutate(final String parentXPath, final Document document)
+  @SuppressWarnings("unchecked")
+	public final String permutate(final String parentXPath, final Document document)
     throws MatchingException, IllegalExpressionException
   {
 
@@ -575,6 +576,11 @@ public final class XMLVariance
   public static class MatchingException extends Exception
   {
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
      * declare a pattern matching failure
      *
      * @param pattern a description of what we were trying to match
@@ -592,6 +598,11 @@ public final class XMLVariance
   public static class IllegalExpressionException extends Exception
   {
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
      * declare a pattern matching failure
      *
      * @param pattern a description of what we were trying to match

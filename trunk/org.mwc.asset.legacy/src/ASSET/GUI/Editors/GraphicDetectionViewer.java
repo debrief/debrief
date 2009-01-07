@@ -6,24 +6,24 @@
  */
 package ASSET.GUI.Editors;
 
-import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Detection.DetectionList;
-import ASSET.Models.Sensor.Initial.BroadbandSensor;
-import ASSET.Models.Sensor.Initial.InitialSensor;
-import ASSET.Participants.Category;
-import ASSET.ScenarioType;
-import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
-import MWC.GUI.ptplot.PlotBox;
-import MWC.GenericData.Duration;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ItemEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyEditorSupport;
-import java.util.Date;
 import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Participants.Category;
+import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
+import MWC.GUI.ptplot.PlotBox;
+import MWC.GenericData.Duration;
 
 public class GraphicDetectionViewer extends DetectionViewer implements java.beans.PropertyChangeListener
 {
@@ -32,9 +32,14 @@ public class GraphicDetectionViewer extends DetectionViewer implements java.bean
   ////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the plot we maintain
    */
-  private MWC.GUI.ptplot.MWCPlot _thePlot = null;
+  MWC.GUI.ptplot.MWCPlot _thePlot = null;
 
   /**
    * the length of back-track to plot
@@ -54,7 +59,7 @@ public class GraphicDetectionViewer extends DetectionViewer implements java.bean
   /**
    * the currently selected date format
    */
-  private SwingPropertyEditor2.TickableComboBox _dateFormatSelecter = null;
+  SwingPropertyEditor2.TickableComboBox _dateFormatSelecter = null;
 
   ////////////////////////////////////////////////////
   // member constructor
@@ -198,7 +203,7 @@ public class GraphicDetectionViewer extends DetectionViewer implements java.bean
    *
    * @param vec the new detections
    */
-  protected void updateGUI(final Vector vec)
+  protected void updateGUI(final Vector<DetectionEvent> vec)
   {
     for (int i = 0; i < vec.size(); i++)
     {
@@ -244,7 +249,7 @@ public class GraphicDetectionViewer extends DetectionViewer implements java.bean
   /**
    * trigger a repaint of the data
    */
-  private void repaintPlot()
+  void repaintPlot()
   {
     // how long is the plot?
     final Duration theDuration = (Duration) _backTrack.getValue();
@@ -298,44 +303,13 @@ public class GraphicDetectionViewer extends DetectionViewer implements java.bean
     final ASSET.Participants.CoreParticipant cp = new ASSET.Models.Vessels.Surface(12)
     {
 
-      long lastTime = -1;
-
       /**
-       * move forward to the indicated time
-       */
-      public void step(long newTime, ScenarioType scenario)
-      {
-        // hey, don't really step, just produce some new detections
-        final ASSET.Participants.CoreParticipant cp = new ASSET.Models.Vessels.SSK(12);
-        final InitialSensor cs = new BroadbandSensor(12);
-        final Float theBrg = new Float(Math.random() * 100);
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+//			long lastTime = -1;
 
-        final Category cat = new Category(Category.Force.RED, Category.Environment.SUBSURFACE, Category.Type.SUBMARINE);
-        final Category cat2 = new Category(Category.Force.BLUE, Category.Environment.SUBSURFACE, Category.Type.SUBMARINE);
-
-        if (lastTime == -1)
-        {
-          final Date theDate = new Date(2002, 4, 3, 2, (int) Math.random() * 45);
-          lastTime = theDate.getTime();
-        }
-        else
-          lastTime += 1000 * 60 * 2;
-
-
-        final DetectionEvent de = new DetectionEvent(lastTime, cp.getId(), null, cs, null, null, theBrg, null, null,
-                                                     cat, null, null, cp);
-
-        final Float theBrg2 = new Float(Math.random() * 100);
-        final InitialSensor cs2 = new BroadbandSensor(33);
-        final DetectionEvent de2 = new DetectionEvent(lastTime, cp.getId(), null, cs2, null, null, theBrg2, null, null,
-                                                      cat2, null, null, cp);
-
-
-        final DetectionList dl = new DetectionList();
-        dl.add(de);
-        dl.add(de2);
-        fireDetected(dl);
-      }
+   
     };
     sp.addEditor(new VesselPane.DetectionViewerHolder(cp), null);
 

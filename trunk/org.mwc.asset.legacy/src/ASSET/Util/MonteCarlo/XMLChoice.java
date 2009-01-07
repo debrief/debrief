@@ -23,7 +23,7 @@ public final class XMLChoice implements XMLOperation
   /** the list of values to choose from
    *
    */
-  private final Vector _myList;
+  private final Vector<String> _myList;
 
   /** the element we will use for this permutation
    *
@@ -82,7 +82,7 @@ public final class XMLChoice implements XMLOperation
     this();
 
     // pass through and copy components
-    final Iterator iter = other._myList.iterator();
+    final Iterator<String> iter = other._myList.iterator();
     while(iter.hasNext())
     {
       final String thisVal = (String)iter.next();
@@ -92,7 +92,7 @@ public final class XMLChoice implements XMLOperation
 
   private XMLChoice()
   {
-    _myList = new Vector();
+    _myList = new Vector<String>();
   }
 
   /***************************************************************

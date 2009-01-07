@@ -62,11 +62,6 @@ public final class XMLAttribute implements XMLObject
     }
   }
 
-  private XMLAttribute(final XMLAttribute other)
-  {
-    _name = other._name;
-    _myOperation = (XMLOperation) other._myOperation.clone();
-  }
 
   /***************************************************************
    *  member methods

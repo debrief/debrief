@@ -30,12 +30,12 @@ abstract public class OpticLookupTableHandler extends MWCXMLReader
   private static final String TARGET_VIS = "TargetVisibilitySet";
   private static final String TARGET_VIS_DATUM = "TargetVisibilityDatum";
 
-  private LookupSensor.IntegerLookup _attenuation;
-  private LookupSensor.StringLookup _visibility;
-  private LookupSensor.IntegerTargetTypeLookup _sea_states;
-  private LookupSensor.IntegerLookup _lightLevel;
+  LookupSensor.IntegerLookup _attenuation;
+  LookupSensor.StringLookup _visibility;
+  LookupSensor.IntegerTargetTypeLookup _sea_states;
+  LookupSensor.IntegerLookup _lightLevel;
 
-  private String _myName = null;
+  String _myName = null;
 
   private static final String NAME_ATTRIBUTE = "Name";
   private static final String VISIBILITY = "Visibility";

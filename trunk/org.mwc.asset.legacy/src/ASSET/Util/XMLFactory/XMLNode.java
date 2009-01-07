@@ -50,11 +50,11 @@ public class XMLNode implements XMLObject
   public void execute(final Element object)
   {
 
-    final List list = _myOperation.getList();
+    final List<Element> list = _myOperation.getList();
 
     // perform deep copy
-    final Vector duplicate = new Vector(0,1);
-    final Iterator iter = list.iterator();
+    final Vector<Element> duplicate = new Vector<Element>(0,1);
+    final Iterator<Element> iter = list.iterator();
     while (iter.hasNext())
     {
       final Object o = (Object) iter.next();
@@ -71,10 +71,10 @@ public class XMLNode implements XMLObject
 
     // set it's parent
     // remove any existing content
-    object.removeChildren();
+    object.getChildren().clear();
 
     // set the data
-   object.setChildren(duplicate);
+    object.setContent(duplicate);
 
   }
 

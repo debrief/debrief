@@ -44,11 +44,11 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
   ///////////////////////////////////////////////////
 
   /**
-   * the bit which does the painting
-   */
-  private PainterComponent _acoustic = null;
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-  /**
+	/**
    * the environment we are calculating for
    */
   private EnvironmentType _myEnvironment;
@@ -103,7 +103,7 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
                                    final Layers theLayers)
   {
     super("Acoustic Painter");
-    _acoustic = new PainterComponent(){
+    new PainterComponent(){
 
 			protected void assignPixel(int width, int thisValue, int x_coord, int y_coord)
 			{
@@ -156,7 +156,7 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
     /**
      * return a list of ParticipantStatus objects
      */
-    public Vector getStatuses(int theMedium);
+    public Vector<ParticipantStatus> getStatuses(int theMedium);
 
     /**
      * listen out for status changes
@@ -178,7 +178,7 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
 
   public void paint(final CanvasType dest)
   {
-    final Vector statuses = _provider.getStatuses(_myMedium);
+    final Vector<ParticipantStatus> statuses = _provider.getStatuses(_myMedium);
 
     // did we find any?
     if (statuses.size() > 0)
@@ -250,11 +250,11 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
   public int getValueAt(final WorldLocation location)
   {
     double res = 0;
-    final Vector stats = _provider.getStatuses(_myMedium);
+    final Vector<ParticipantStatus> stats = _provider.getStatuses(_myMedium);
 
     if (stats != null)
     {
-      final Iterator it = stats.iterator();
+      final Iterator<ParticipantStatus> it = stats.iterator();
       while (it.hasNext())
       {
         final ParticipantStatus ps = (ParticipantStatus) it.next();
@@ -297,7 +297,12 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
   public class ScenarioNoiseInfo extends MWC.GUI.Editable.EditorType implements java.io.Serializable
   {
 
-    public ScenarioNoiseInfo(final ScenarioNoiseLevelPainter data)
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public ScenarioNoiseInfo(final ScenarioNoiseLevelPainter data)
     {
       super(data, data.getName(), "Edit");
     }
@@ -354,7 +359,7 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
         {
         }
 
-        public Vector getStatuses(int theMedium)
+        public Vector<ParticipantStatus> getStatuses(int theMedium)
         {
           return null;
         }
@@ -385,9 +390,9 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
         /**
          * return a list of ParticipantStatus objects
          */
-        public Vector getStatuses(int theMedium)
+        public Vector<ParticipantStatus> getStatuses(int theMedium)
         {
-          final Vector res = new Vector(0, 1);
+          final Vector<ParticipantStatus> res = new Vector<ParticipantStatus>(0, 1);
           final ParticipantStatus ps = new ParticipantStatus();
           ps.location = ssn.getStatus().getLocation();
           ps.sourceLevel = ssn.getRadiatedNoiseFor(EnvironmentType.BROADBAND_PASSIVE, 0);

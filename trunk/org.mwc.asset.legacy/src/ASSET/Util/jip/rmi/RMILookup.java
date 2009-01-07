@@ -42,7 +42,8 @@ public class RMILookup
     /**
      * Interfaces implemented by RMI server
      */
-    private Class [] _serviceInterface;
+    @SuppressWarnings("unchecked")
+		private Class [] _serviceInterface;
 
     /**
      * Unique name of RMI server: used to distinguish between multiple instances
@@ -52,15 +53,16 @@ public class RMILookup
     /**
      * cache of threads created: used in stop() to interrupt
      */
-    private static java.util.List _threadList 
-        = new java.util.ArrayList();
+    private static java.util.List<Thread> _threadList 
+        = new java.util.ArrayList<Thread>();
     
     private RMILookup(final Remote service,final String serviceName){
         _service=service;
         _serviceName=serviceName;
         parseInterfaces();
     }
-    private void parseInterfaces(){
+    @SuppressWarnings("unchecked")
+		private void parseInterfaces(){
         final Class c=_service.getClass();
         _serviceInterface=c.getInterfaces();
     }
@@ -83,7 +85,7 @@ public class RMILookup
             ((Thread)lookup[i]).interrupt();
             Debug.message("Interrupting thread "+lookup[i]);
         }
-        _threadList=new java.util.ArrayList();
+        _threadList=new java.util.ArrayList<Thread>();
         System.gc();
     }
 
@@ -131,7 +133,8 @@ public class RMILookup
     /**
      * Create multicast listener then loop listening for valid requests
      */
-    public void run(){
+    @SuppressWarnings("unchecked")
+		public void run(){
         try{
             Debug.message("RMI lookup: listening....");
             

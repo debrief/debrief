@@ -20,7 +20,7 @@ import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 public abstract class DippingActiveBroadbandHandler extends ActiveBroadbandHandler
 {
 
-  private final static String type = "DippingActiveBroadbandSensor";
+  private final static String type1 = "DippingActiveBroadbandSensor";
   private final static String AIR_LOWER_RATE = "AirLowerRate";
   private final static String AIR_RAISE_RATE = "AirRaiseRate";
   private final static String WATER_LOWER_RATE = "WaterLowerRate";
@@ -39,7 +39,7 @@ public abstract class DippingActiveBroadbandHandler extends ActiveBroadbandHandl
 
   public DippingActiveBroadbandHandler()
   {
-    super(type);
+    super(type1);
 
     addHandler(new WorldSpeedHandler(AIR_LOWER_RATE)
     {
@@ -140,7 +140,7 @@ public abstract class DippingActiveBroadbandHandler extends ActiveBroadbandHandl
                                 final org.w3c.dom.Document doc)
   {
     // create ourselves
-    final org.w3c.dom.Element thisPart = doc.createElement(type);
+    final org.w3c.dom.Element thisPart = doc.createElement(type1);
 
     // get data item
     final ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor bb = (ASSET.Models.Sensor.Initial.DippingActiveBroadbandSensor) toExport;

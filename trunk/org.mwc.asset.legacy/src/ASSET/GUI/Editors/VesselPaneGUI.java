@@ -8,6 +8,7 @@ import MWC.GenericData.WorldSpeed;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * Title:
@@ -26,7 +27,11 @@ public class VesselPaneGUI extends JToolBar
   // UI COMPONENTS
   //////////////////////////////////////////////////////////////////////
 
-  private BorderLayout borderLayout1 = new BorderLayout();
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private BorderLayout borderLayout1 = new BorderLayout();
   private JPanel bottomHolder = new JPanel();
   private GridLayout gridLayout1 = new GridLayout();
   private JPanel topButtons = new JPanel();
@@ -89,10 +94,9 @@ public class VesselPaneGUI extends JToolBar
   private JLabel fuelLabel = new JLabel();
   private MultiLineLabel curActivity = new MultiLineLabel();
   private GridLayout gridLayout6 = new GridLayout();
-  private JButton guiBtn = new SmallButton();
 
   private CourseControl courseControl = new CourseControl();
-  private java.util.Vector _myListeners = new java.util.Vector(0, 1);
+  private java.util.Vector<ActionListener> _myListeners = new java.util.Vector<ActionListener>(0, 1);
 
   //////////////////////////////////////////////////////////////////////
   // my own components
@@ -387,23 +391,15 @@ public class VesselPaneGUI extends JToolBar
 
   private class SmallButton extends JButton
   {
-    public SmallButton()
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public SmallButton()
     {
       this.setMargin(new Insets(1, 1, 1, 1));
     }
-  }
-
-  private class SmallToggleButton extends JToggleButton
-  {
-    public SmallToggleButton()
-    {
-      this.setMargin(new Insets(1, 1, 1, 1));
-    }
-  }
-
-  private void guiBtn_actionPerformed(ActionEvent e)
-  {
-    fireEvent(VesselPane.GUI);
   }
 
   public void addActionListener(final java.awt.event.ActionListener listener)
@@ -416,10 +412,10 @@ public class VesselPaneGUI extends JToolBar
     _myListeners.remove(listener);
   }
 
-  private void fireEvent(final String type)
+  void fireEvent(final String type)
   {
     final ActionEvent e = new ActionEvent(this, 0, type);
-    final java.util.Enumeration enumer = _myListeners.elements();
+    final java.util.Enumeration<ActionListener> enumer = _myListeners.elements();
     while (enumer.hasMoreElements())
     {
       final java.awt.event.ActionListener l = (java.awt.event.ActionListener) enumer.nextElement();

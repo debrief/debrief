@@ -37,29 +37,29 @@ public class ManoeuvreToCourseHandler extends MWC.Utilities.ReaderWriter.XML.MWC
   /**
    * the speed to travel at (kts)
    */
-  private WorldSpeed _mySpeed = null;
+  WorldSpeed _mySpeed = null;
 
   /**
    * whether the speed change is relative
    */
-  private boolean _relativeSpeed;
+  boolean _relativeSpeed;
 
   /**
    * the course to steer to (degs)
    */
-  private Float _myCourse = null;
+  Float _myCourse = null;
 
   /**
    * whether the course change is relative
    */
-  private boolean _relativeCourse;
+  boolean _relativeCourse;
 
   /**
    * the Height to change to (m), always absolute
    */
-  private WorldDistance _myHeight = null;
+  WorldDistance _myHeight = null;
 
-  private String _name;
+  String _name;
 
 
   public ManoeuvreToCourseHandler()
@@ -233,7 +233,7 @@ public class ManoeuvreToCourseHandler extends MWC.Utilities.ReaderWriter.XML.MWC
 
     }
 
-    abstract private class MyReaderWriter extends ASSET.Util.XML.ASSETReaderWriter
+    abstract class MyReaderWriter extends ASSET.Util.XML.ASSETReaderWriter
     {
 
       abstract public void responseIs(Response rec);

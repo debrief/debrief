@@ -20,8 +20,8 @@ abstract public class InterceptHandler extends CoreDecisionHandler
   private final static String TARGET_TYPE = "TargetType";
   private final static String SPEED_CHANGE_ALLLOWED = "AllowSpeedchange";
 
-  private TargetType _myTargetType;
-  private boolean _allowSpeedChange;
+  TargetType _myTargetType;
+  boolean _allowSpeedChange;
 
 
   public InterceptHandler()

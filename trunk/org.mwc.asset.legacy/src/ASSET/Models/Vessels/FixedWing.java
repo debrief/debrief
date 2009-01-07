@@ -14,7 +14,12 @@ public class FixedWing extends ASSET.Participants.CoreParticipant
 {
 
 
-  public FixedWing(final int id)
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public FixedWing(final int id)
   {
     this(id, null, null, null);
   }

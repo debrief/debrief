@@ -24,10 +24,10 @@ abstract public class SternArcClearanceHandler extends CoreDecisionHandler
   private final static String STYLE = "Style";
   private final static String COURSE_CHANGE = "CourseChange";
 
-  private Duration _myFreq = null;
-  private boolean _random;
-  private String _style = null;
-  private Double _turnAngle = null;
+  Duration _myFreq = null;
+  boolean _random;
+  String _style = null;
+  Double _turnAngle = null;
 
   public SternArcClearanceHandler()
   {

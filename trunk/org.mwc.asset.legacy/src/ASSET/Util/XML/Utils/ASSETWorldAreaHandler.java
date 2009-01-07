@@ -20,8 +20,8 @@ abstract public class ASSETWorldAreaHandler extends MWCXMLReader
   static final private String TOP_LEFT = "TopLeft";
   static final private String BOTTOM_RIGHT = "BottomRight";
 
-  private WorldLocation _topLeft;
-  private WorldLocation _bottomRight;
+  WorldLocation _topLeft;
+  WorldLocation _bottomRight;
 
   public ASSETWorldAreaHandler()
   {

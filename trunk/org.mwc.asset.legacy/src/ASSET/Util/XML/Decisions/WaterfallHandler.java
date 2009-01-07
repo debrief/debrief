@@ -9,6 +9,7 @@ package ASSET.Util.XML.Decisions;
  * @version 1.0
  */
 
+import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.*;
 import ASSET.Models.Decision.Movement.*;
 import ASSET.Models.Decision.Tactical.*;
@@ -287,7 +288,7 @@ abstract public class WaterfallHandler extends CoreDecisionHandler
 
     // thisPart.setAttribute("MIN_DEPTH", writeThis(bb.getMinDepth()));
     // step through the models
-    final java.util.Iterator it = bb.getModels().iterator();
+    final java.util.Iterator<DecisionType> it = bb.getModels().iterator();
     while (it.hasNext())
     {
       final ASSET.Models.DecisionType dec = (ASSET.Models.DecisionType) it.next();

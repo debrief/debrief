@@ -72,7 +72,7 @@ public class SSBuilder
   /** the layers we are editing
    *
    */
-  private Layers _theData;
+  Layers _theData;
 
   /***************************************************************
    *  constructor
@@ -86,7 +86,7 @@ public class SSBuilder
     _templateDropper = new FileDropSupport();
     _templateDropper.setFileDropListener(new FileDropSupport.FileDropListener()
     {
-      public void FilesReceived(final Vector files)
+      public void FilesReceived(final Vector<File> files)
       {
         final File fl = (File)files.firstElement();
         setTemplateFile(fl.getPath());
@@ -97,7 +97,7 @@ public class SSBuilder
     _controlDropper = new FileDropSupport();
     _controlDropper.setFileDropListener(new FileDropSupport.FileDropListener()
     {
-      public void FilesReceived(final Vector files)
+      public void FilesReceived(final Vector<File> files)
       {
         // extract the first file
         final File fl = (File)files.firstElement();
@@ -114,9 +114,9 @@ public class SSBuilder
     _blueDropper = new FileDropSupport();
     _blueDropper.setFileDropListener(new FileDropSupport.FileDropListener()
     {
-      public void FilesReceived(final Vector files)
+      public void FilesReceived(final Vector<File> files)
       {
-        final Iterator it = files.iterator();
+        final Iterator<File> it = files.iterator();
         while (it.hasNext())
         {
           final File thisFile = (File) it.next();
@@ -136,15 +136,15 @@ public class SSBuilder
   /** sort out the list of observers
    *
    */
-  private void createObservers(final String file)
+  void createObservers(final String file)
   {
     // get the list of observers
     final MWCXMLReader mxr = new ObserverListHandler()
     {
-      public void setObserverList(final Vector list)
+      public void setObserverList(final Vector<ScenarioObserver> list)
       {
         // add these observers, initialising them as we go
-        final Iterator ii = list.iterator();
+        final Iterator<ScenarioObserver> ii = list.iterator();
         while (ii.hasNext())
         {
           final ScenarioObserver observer = (ScenarioObserver) ii.next();
@@ -194,7 +194,7 @@ public class SSBuilder
   /** record the template file
    *
    */
-  private void setTemplateFile(final String val)
+  void setTemplateFile(final String val)
   {
     _templateFile = val;
 
@@ -205,7 +205,7 @@ public class SSBuilder
   /** record the control file
    *
    */
-  private void setControlFile(final String val)
+  void setControlFile(final String val)
   {
     _controlFile = val;
 
@@ -216,7 +216,7 @@ public class SSBuilder
   /** add a blue participant
    *
    */
-  private void addBlueFile(final String val)
+  void addBlueFile(final String val)
   {
     // read in this participant
     try

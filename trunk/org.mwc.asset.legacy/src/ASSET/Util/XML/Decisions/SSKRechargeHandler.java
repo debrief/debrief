@@ -24,10 +24,10 @@ abstract public class SSKRechargeHandler extends CoreDecisionHandler
   private final static String SNORT_SPEED = "SnortSpeed";
   private final static String EVADE_THESE = "EvadeThese";
 
-  private double _minLevel;
-  private double _safeLevel;
-  private WorldSpeed _snortSpeed;
-  private ASSET.Models.Decision.TargetType _evadeThese;
+  double _minLevel;
+  double _safeLevel;
+  WorldSpeed _snortSpeed;
+  ASSET.Models.Decision.TargetType _evadeThese;
 
   public SSKRechargeHandler()
   {

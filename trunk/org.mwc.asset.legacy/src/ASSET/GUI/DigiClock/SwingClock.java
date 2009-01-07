@@ -14,7 +14,12 @@ import java.text.SimpleDateFormat;
 
 public class SwingClock extends javax.swing.JComponent
 {
-  /***************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/***************************************************************
    *  member variables
    ***************************************************************/
   /** our double buffer

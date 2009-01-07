@@ -48,7 +48,9 @@ public abstract class ActiveInterceptHandler extends CoreSensorHandler
 
     // get data item
     final ASSET.Models.Sensor.Initial.ActiveInterceptSensor bb = (ASSET.Models.Sensor.Initial.ActiveInterceptSensor) toExport;
+    CoreSensorHandler.exportCoreSensorBits(thisPart, bb);
 
+    
     parent.appendChild(thisPart);
 
   }

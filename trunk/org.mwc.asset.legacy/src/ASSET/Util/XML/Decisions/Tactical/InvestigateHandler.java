@@ -25,9 +25,9 @@ abstract public class InvestigateHandler extends CoreDecisionHandler
   private final static String INVESTIGATE_HEIGHT = "Height";
 
 
-  private TargetType _myTargetType;
-  private String _detLevel = null;
-  private WorldDistance _investigateHeight;
+  TargetType _myTargetType;
+  String _detLevel = null;
+  WorldDistance _investigateHeight;
 
   /**
    * get the handler ready

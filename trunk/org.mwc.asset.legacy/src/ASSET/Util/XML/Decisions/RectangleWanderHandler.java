@@ -67,9 +67,9 @@ abstract class RectangleWanderHandler extends CoreDecisionHandler
   private final static String WANDER_HEIGHT = "Height";
   private final static String WANDER_AREA = "Area";
 
-  private WorldArea _myArea;
-  private WorldSpeed _mySpeed = null;
-  private WorldDistance _myHeight = null;
+  WorldArea _myArea;
+  WorldSpeed _mySpeed = null;
+  WorldDistance _myHeight = null;
 
   public RectangleWanderHandler()
   {

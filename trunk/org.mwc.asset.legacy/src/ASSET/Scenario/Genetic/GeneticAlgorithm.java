@@ -72,12 +72,12 @@ public class GeneticAlgorithm
   /** current list of genes
    *
    */
-  private SortedSet _theseGenes;
+  private SortedSet<Gene> _theseGenes;
 
   /** current list of top performers
    *
    */
-  private SortedSet _starGenes;
+  private SortedSet<Gene> _starGenes;
 
   /** the size of each population
    *
@@ -97,12 +97,12 @@ public class GeneticAlgorithm
   /** listeners for use moving through ga
    *
    */
-  private Vector _GAListeners = new Vector(0, 1);
+  private Vector<GAProgressed> _GAListeners = new Vector<GAProgressed>(0, 1);
 
   /** listeners for stepping through population
    *
    */
-  private Vector _stepListeners = new Vector(0, 1);
+  private Vector<GAStepped> _stepListeners = new Vector<GAStepped>(0, 1);
 
   /** the object which performs the run for us
    *
@@ -117,7 +117,7 @@ public class GeneticAlgorithm
   /** TEMPORARY working object which lets us get the gene currently running
    *
    */
-  private static Gene _currentGene = null;
+  static Gene _currentGene = null;
 
   /***************************************************************
    *  constructor
@@ -131,8 +131,8 @@ public class GeneticAlgorithm
     _population_size = population_size;
     _stars_size = stars_size;
 
-    _theseGenes = new TreeSet();
-    _starGenes = new TreeSet();
+    _theseGenes = new TreeSet<Gene>();
+    _starGenes = new TreeSet<Gene>();
 
   }
 
@@ -214,7 +214,7 @@ public class GeneticAlgorithm
     }
 
     // inform the listeners
-    final Iterator it = _GAListeners.iterator();
+    final Iterator<GAProgressed> it = _GAListeners.iterator();
     while (it.hasNext())
     {
       final GAProgressed progressed = (GAProgressed) it.next();
@@ -233,7 +233,7 @@ public class GeneticAlgorithm
       // we now merge the random genes with our stars
       final double percentage_step = 0.3d / _starGenes.size();
       double this_prob = percentage_step;
-      final Iterator it = _starGenes.iterator();
+      final Iterator<Gene> it = _starGenes.iterator();
       while (it.hasNext())
       {
         final Gene nextStar = (Gene) it.next();
@@ -244,7 +244,7 @@ public class GeneticAlgorithm
     }
 
     // inform the listeners
-    final Iterator it = _GAListeners.iterator();
+    final Iterator<GAProgressed> it = _GAListeners.iterator();
     while (it.hasNext())
     {
       final GAProgressed progressed = (GAProgressed) it.next();
@@ -255,7 +255,7 @@ public class GeneticAlgorithm
 
   private void mateWithThis(final Gene star, final double prob)
   {
-    final Iterator it = _theseGenes.iterator();
+    final Iterator<Gene> it = _theseGenes.iterator();
 
     while (it.hasNext())
     {
@@ -282,7 +282,7 @@ public class GeneticAlgorithm
     /***************************************************************
      *  step through the genes
      ***************************************************************/
-    Iterator it = _theseGenes.iterator();
+    Iterator<Gene> it = _theseGenes.iterator();
     while (it.hasNext())
     {
       final Gene thisG = (Gene) it.next();
@@ -319,7 +319,7 @@ public class GeneticAlgorithm
        *  inform the listeners
        ***************************************************************/
       // inform the listeners
-      final Iterator it2 = _stepListeners.iterator();
+      final Iterator<GAStepped> it2 = _stepListeners.iterator();
       while (it2.hasNext())
       {
         final GAStepped progressed = (GAStepped) it2.next();
@@ -334,10 +334,10 @@ public class GeneticAlgorithm
      ***************************************************************/
 
     // inform the listeners
-    it = _GAListeners.iterator();
-    while (it.hasNext())
+    Iterator<GAProgressed> it2 = _GAListeners.iterator();
+    while (it2.hasNext())
     {
-      final GAProgressed progressed = (GAProgressed) it.next();
+      final GAProgressed progressed = (GAProgressed) it2.next();
       progressed.stepCompleted();
     }
 
@@ -348,10 +348,10 @@ public class GeneticAlgorithm
   {
 
     // create a blank list
-    TreeSet ts = new TreeSet();
+    TreeSet<Gene> ts = new TreeSet<Gene>();
 
     // add our exiting genes to it, to sort it
-    Iterator it = _theseGenes.iterator();
+    Iterator<Gene> it = _theseGenes.iterator();
     while (it.hasNext())
     {
       final Gene gene = (Gene) it.next();
@@ -366,15 +366,16 @@ public class GeneticAlgorithm
 
 
     // inform the listeners
-    it = _GAListeners.iterator();
-    while (it.hasNext())
+    Iterator <GAProgressed> it2 = _GAListeners.iterator();
+    while (it2.hasNext())
     {
-      final GAProgressed progressed = (GAProgressed) it.next();
+      final GAProgressed progressed = (GAProgressed) it2.next();
       progressed.sorted();
     }
   }
 
-  public void promote()
+  @SuppressWarnings("unchecked")
+	public void promote()
   {
     // compare the top performers with the one at the bottom of the stars list
 
@@ -387,11 +388,11 @@ public class GeneticAlgorithm
     else
     {
       // get the poorest of our stars
-      final Object lowest = _starGenes.first();
+      final Gene lowest = _starGenes.first();
 
       // get the list of the finished genes which are equal to or greater than
       // the lowest of our start
-      final SortedSet newStars = _theseGenes.tailSet(lowest);
+      final SortedSet<Gene> newStars = _theseGenes.tailSet(lowest);
 
       // add this list to our stars
       _starGenes.addAll(newStars);
@@ -406,16 +407,15 @@ public class GeneticAlgorithm
                   public int compare(final Object o1, final Object o2)
                   {
                     final Gene na = (Gene) o1;
-                    return 1 - na.compareTo(o2);
+                    return 1 - na.compareTo((Gene)o2);
                   }
                 });
 
     // finally trim it down to the desired size
-    final SortedSet ss = new TreeSet();
-    final Iterator it2 = _starGenes.iterator();
+    final SortedSet<Gene> ss = new TreeSet<Gene>();
     for (int ii = 0; ii < _stars_size; ii++)
     {
-      ss.add(list[ii]);
+      ss.add((Gene)list[ii]);
     }
 
     _starGenes = ss;
@@ -423,7 +423,7 @@ public class GeneticAlgorithm
 
 
     // inform the listeners
-    final Iterator it = _GAListeners.iterator();
+    final Iterator<GAProgressed> it = _GAListeners.iterator();
     while (it.hasNext())
     {
       final GAProgressed progressed = (GAProgressed) it.next();
@@ -439,7 +439,7 @@ public class GeneticAlgorithm
 
 
     // inform the listeners
-    final Iterator it = _GAListeners.iterator();
+    final Iterator<GAProgressed> it = _GAListeners.iterator();
     while (it.hasNext())
     {
       final GAProgressed progressed = (GAProgressed) it.next();
@@ -451,12 +451,12 @@ public class GeneticAlgorithm
   /***************************************************************
    *  accessor methods
    ***************************************************************/
-  public Collection getStarGenes()
+  public Collection<Gene> getStarGenes()
   {
     return _starGenes;
   }
 
-  public Collection getGenes()
+  public Collection<Gene> getGenes()
   {
     return _theseGenes;
   }
@@ -490,7 +490,7 @@ public class GeneticAlgorithm
       // get the product of the values in the genes
       ScenarioRunner.ScenarioOutcome res = new ScenarioRunner.ScenarioOutcome();
 
-      final Iterator it = _currentGene._myList.getIterator();
+      final Iterator<XMLVariance> it = _currentGene._myList.getIterator();
       while (it.hasNext())
       {
         final XMLVariance variable = (XMLVariance) it.next();
@@ -507,10 +507,10 @@ public class GeneticAlgorithm
   //////////////////////////////////////////////////////////////////////
   // comparator code
   //////////////////////////////////////////////////////////////////////
-  private class compareGenes implements Comparator
+  protected class compareGenes implements Comparator<Gene>
   {
 
-    public int compare(final Object o1, final Object o2)
+    public int compare(final Gene o1, final Gene o2)
     {
       int res = 0;
       final double fit1 = ((Gene) o1).getFitness();

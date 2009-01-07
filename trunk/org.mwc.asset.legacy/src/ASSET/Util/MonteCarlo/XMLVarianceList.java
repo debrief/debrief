@@ -24,7 +24,7 @@ public class XMLVarianceList
   /**
    * the list of variances we manage
    */
-  private java.util.List _myVariables = null;
+  private java.util.List<XMLVariance> _myVariables = null;
   private static final String VARIANCE = "Variance";
 
   /***************************************************************
@@ -44,7 +44,7 @@ public class XMLVarianceList
 
   public XMLVarianceList()
   {
-    _myVariables = new java.util.Vector();
+    _myVariables = new java.util.Vector<XMLVariance>();
   }
 
   /**
@@ -95,7 +95,7 @@ public class XMLVarianceList
   /**
    * get the list of variances we contain
    */
-  public final Iterator getIterator()
+  public final Iterator<XMLVariance> getIterator()
   {
     return _myVariables.iterator();
   }

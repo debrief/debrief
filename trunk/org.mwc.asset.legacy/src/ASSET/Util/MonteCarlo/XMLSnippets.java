@@ -25,7 +25,7 @@ public final class XMLSnippets
   ////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
-  private final Vector _mySnippets;
+  final Vector<Node> _mySnippets;
 
   private static final String XML_SNIPPET = "XMLSnippet";
 
@@ -59,9 +59,9 @@ public final class XMLSnippets
 
   }
 
-  private XMLSnippets()
+  XMLSnippets()
   {
-    _mySnippets = new Vector(0, 1);
+    _mySnippets = new Vector<Node>(0, 1);
   }
 
 

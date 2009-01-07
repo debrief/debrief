@@ -10,6 +10,7 @@ package ASSET.Util.XML.Vessels.Util;
  */
 
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
+import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium;
 
 
 abstract public class RadiatedCharsHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -49,7 +50,7 @@ abstract public class RadiatedCharsHandler extends MWC.Utilities.ReaderWriter.XM
     this(MY_TYPE);
   }
 
-  private void addMedium(final Integer index,
+  void addMedium(final Integer index,
                          final ASSET.Models.Vessels.Radiated.RadiatedCharacteristics.Medium medium)
   {
     _myChars.add(index.intValue(), medium);
@@ -74,11 +75,11 @@ abstract public class RadiatedCharsHandler extends MWC.Utilities.ReaderWriter.XM
     final org.w3c.dom.Element me = doc.createElement(MY_TYPE);
 
     // step through the mediums
-    final java.util.Iterator indices = chars.getMediums().iterator();
+    final java.util.Iterator<Medium> indices = chars.getMediums().iterator();
 
     while (indices.hasNext())
     {
-      final RadiatedCharacteristics.Medium med = chars.getMedium((Integer) indices.next());
+      final RadiatedCharacteristics.Medium med = indices.next();
       if (med instanceof ASSET.Models.Mediums.BroadbandRadNoise)
         ASSET.Util.XML.Vessels.Util.Mediums.BBHandler.exportThis(med, me, doc);
       else if (med instanceof ASSET.Models.Mediums.Optic)

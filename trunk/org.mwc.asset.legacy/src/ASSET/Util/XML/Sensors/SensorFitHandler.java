@@ -24,8 +24,8 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
 
   private ASSET.Models.Sensor.SensorList _myList;
 	
-	private Boolean _isWorking = null;
-	private String _myName = null;
+	Boolean _isWorking = null;
+	String _myName = null;
 
   public SensorFitHandler()
   {
@@ -128,7 +128,7 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
     _isWorking = null;
   }
 
-  private void addThisSensor(final SensorType sensor)
+  void addThisSensor(final SensorType sensor)
   {
     if (_myList == null)
       _myList = new ASSET.Models.Sensor.SensorList();

@@ -27,10 +27,10 @@ abstract public class EvadeHandler extends CoreDecisionHandler
   private final static String HEIGHT = "FleeHeight";
   private final static String SPEED = "FleeSpeed";
 
-  private Duration _fleePeriod;
-  private WorldSpeed _fleeSpeed;
-  private WorldDistance _fleeHeight;
-  private TargetType _myTargetType;
+  Duration _fleePeriod;
+  WorldSpeed _fleeSpeed;
+  WorldDistance _fleeHeight;
+  TargetType _myTargetType;
 
 
   public EvadeHandler()

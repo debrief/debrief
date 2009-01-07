@@ -21,11 +21,11 @@ abstract public class DemandedStatusHandler extends MWC.Utilities.ReaderWriter.X
 
   private final static String type = "DemandedStatus";
 
-  private double _myCourse;
-  private WorldSpeed _mySpeed;
-  private WorldDistance _myHeight;
-  private long _myTime;
-  private long _myId;
+  double _myCourse;
+  WorldSpeed _mySpeed;
+  WorldDistance _myHeight;
+  long _myTime;
+  long _myId;
 
   public DemandedStatusHandler()
   {

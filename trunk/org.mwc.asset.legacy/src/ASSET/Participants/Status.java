@@ -27,7 +27,12 @@ public class Status implements java.io.Serializable
   // member variables
   ////////////////////////////////////////////////////////
 
-  /**
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * current fuel level (in respective units)
    */
   private double _fuelLevel = 100;
@@ -56,11 +61,6 @@ public class Status implements java.io.Serializable
    * id of participant sending this message
    */
   private int _id;
-
-  /**
-   * the serializable id of this type
-   */
-  private static long serialVersionUID = 33;
 
   /**
    * the formatter for the status string
@@ -306,8 +306,13 @@ public class Status implements java.io.Serializable
   /**
    * the set of vessel states/properties within the status object
    */
-  public static class States extends TreeSet
+  public static class States extends TreeSet<String>
   {
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
     // hey, it's just a normal vector at the end of the day....
 
   }

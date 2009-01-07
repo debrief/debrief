@@ -19,11 +19,11 @@ abstract public class DetectionHandler extends MWC.Utilities.ReaderWriter.XML.MW
 
   private final static String type = "Detection";
 
-  private final static String THRESHOLD = "Threshold";
+//  private final static String THRESHOLD = "Threshold";
 
-  private WorldDistance _rangeThreshold;
-  private String _name;
-  private TargetType _myTargetType;
+  WorldDistance _rangeThreshold;
+  String _name;
+  TargetType _myTargetType;
 
 
   public DetectionHandler()

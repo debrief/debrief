@@ -16,7 +16,7 @@ import java.io.InputStream;
 import java.util.Comparator;
 import java.util.Iterator;
 
-public class Gene implements Comparable
+public class Gene implements Comparable<Gene>
 {
   /***************************************************************
    *  member methods
@@ -116,7 +116,7 @@ public class Gene implements Comparable
     final Gene res = new Gene();
     res._myList = (XMLVarianceList) this._myList.clone();
     ;
-    final Iterator it = res._myList.getIterator();
+    final Iterator<XMLVariance> it = res._myList.getIterator();
     while (it.hasNext())
     {
       final XMLVariance variable = (XMLVariance) it.next();
@@ -137,8 +137,8 @@ public class Gene implements Comparable
   public void mergeWith(final Gene other, final double probability)
   {
     // merge random genes
-    final Iterator it_a = _myList.getIterator();
-    final Iterator it_b = other._myList.getIterator();
+    final Iterator<XMLVariance> it_a = _myList.getIterator();
+    final Iterator<XMLVariance> it_b = other._myList.getIterator();
     while (it_a.hasNext())
     {
       final XMLVariance my_next = (XMLVariance) it_a.next();
@@ -182,7 +182,7 @@ public class Gene implements Comparable
   /**
    * comparison operator
    */
-  private boolean equals(final Gene other)
+  public boolean equals(final Gene other)
   {
     boolean res = true;
     if (_myList.size() != other._myList.size())
@@ -193,8 +193,8 @@ public class Gene implements Comparable
     {
       for (int i = 0; i < _myList.size(); i++)
       {
-        final Iterator it_a = _myList.getIterator();
-        final Iterator it_b = other._myList.getIterator();
+        final Iterator<XMLVariance> it_a = _myList.getIterator();
+        final Iterator<XMLVariance> it_b = other._myList.getIterator();
 
         final XMLVariance mine = (XMLVariance) it_a.next();
         final XMLVariance his = (XMLVariance) it_b.next();
@@ -217,7 +217,7 @@ public class Gene implements Comparable
 
     String res = "Fit:" + _formatter.format(getFitness()) + " || ";
     res += "Summary:" + getSummary() + " || ";
-    final Iterator it = _myList.getIterator();
+    final Iterator<XMLVariance> it = _myList.getIterator();
     while (it.hasNext())
     {
       final XMLVariance variable = (XMLVariance) it.next();
@@ -227,7 +227,7 @@ public class Gene implements Comparable
     return res + " " + getName();
   }
 
-  public int compareTo(final Object o2)
+  public int compareTo(final Gene o2)
   {
     int res = 0;
     final double fit1 = getFitness();
@@ -242,14 +242,14 @@ public class Gene implements Comparable
     return res;
   }
 
-  public static class ReverseComparator implements Comparator
+  public static class ReverseComparator implements Comparator<Gene>
   {
-    public int compare(final Object o1, final Object o2)
+    public int compare(final Gene o1, final Gene o2)
     {
       int res = 0;
       final double fit1 = ((Gene) o1).getFitness();
       final double fit2 = ((Gene) o2).getFitness();
-      if (o2 == this)
+      if (o2 == o1)
         res = 0;
       else if (fit1 < fit2)
         res = 1;
@@ -443,12 +443,12 @@ public class Gene implements Comparable
     /**
      * are these genes completely different?
      */
-    private static boolean allDiff(final Gene a, final Gene b)
+    protected static boolean allDiff(final Gene a, final Gene b)
     {
       boolean diff = true;
       // merge random genes
-      final Iterator it_a = a._myList.getIterator();
-      final Iterator it_b = b._myList.getIterator();
+      final Iterator<XMLVariance> it_a = a._myList.getIterator();
+      final Iterator<XMLVariance> it_b = b._myList.getIterator();
       while (it_a.hasNext())
       {
         final XMLVariance my_next = (XMLVariance) it_a.next();

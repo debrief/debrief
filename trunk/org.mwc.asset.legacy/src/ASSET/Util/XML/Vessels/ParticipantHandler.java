@@ -19,16 +19,16 @@ abstract public class ParticipantHandler extends MWC.Utilities.ReaderWriter.XML.
   public static final String NAME = "Name";
   public static final String MONTE_CARLO_TARGET = "MonteCarloTarget";
 
-  private String _myName;
-  private boolean _isMonteCarlo = false;
-  private int _myId = ASSET.ScenarioType.INVALID_ID;
-  private ASSET.Participants.Category _myCategory;
-  private ASSET.Participants.Status _myStatus;
-  private ASSET.Participants.DemandedStatus _myDemandedStatus;
-  private ASSET.Models.Sensor.SensorList _mySensorList;
-  private ASSET.Models.DecisionType _myDecisionModel;
-  private ASSET.Models.Vessels.Radiated.RadiatedCharacteristics _myRads;
-  private ASSET.Models.Vessels.Radiated.RadiatedCharacteristics _mySelfNoise;
+  String _myName;
+  boolean _isMonteCarlo = false;
+  int _myId = ASSET.ScenarioType.INVALID_ID;
+  ASSET.Participants.Category _myCategory;
+  ASSET.Participants.Status _myStatus;
+  ASSET.Participants.DemandedStatus _myDemandedStatus;
+  ASSET.Models.Sensor.SensorList _mySensorList;
+  ASSET.Models.DecisionType _myDecisionModel;
+  ASSET.Models.Vessels.Radiated.RadiatedCharacteristics _myRads;
+  ASSET.Models.Vessels.Radiated.RadiatedCharacteristics _mySelfNoise;
 
   // MOVEMENT CHARACTERISTICS - retrieved by child classes
   protected ASSET.Models.Movement.MovementCharacteristics _myMoveChars;

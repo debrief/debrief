@@ -20,12 +20,12 @@ abstract public class StatusHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
   private final static String type = "Status";
 
-  private double _myCourse;
-  private WorldSpeed _mySpeed;
-  private double _myFuel;
-  private long _myTime = -1;
-  private int _myId;
-  private MWC.GenericData.WorldLocation _myLoc;
+  double _myCourse;
+  WorldSpeed _mySpeed;
+  double _myFuel;
+  long _myTime = -1;
+  int _myId;
+  MWC.GenericData.WorldLocation _myLoc;
 
   public StatusHandler()
   {

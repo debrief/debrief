@@ -37,47 +37,44 @@ public class RMIDiscovery{
      * 
      * @since 1
      */
-    private Class _serviceInterface;
+    @SuppressWarnings("unchecked")
+		Class _serviceInterface;
 
     /**
      * The unique name of the server we are trying to discover
      */
-    private String _serviceName;
+    String _serviceName;
 
     /**
      * Unicast listener waiting for responses from the RMILookupService
      */
-    private ServerSocket _listener;
+    ServerSocket _listener;
 
     /**
      * The port the _listener socketing is listening on
      */
-    private int _listenerPort;
+    int _listenerPort;
 
     /**
      * Can either be a Remote object or Exception (if failed)
      */
-    private Object _discoveryResult;
+    Object _discoveryResult;
 
     /**
      * thread synchronization/notification lock.
      */
-    private Object _lock=new Object();
+    Object _lock=new Object();
 
-
-    /** flag to indicate that we are still requesting listener implementations
-     *
-     */
-    private static boolean _stillLooking = true;
 
     /** list of remote implementations we've found
      *
      */
-    private java.util.Vector _implFound = null;
+    java.util.Vector<Object> _implFound = null;
 
 
 
-    private RMIDiscovery(final Class serviceInterface,final String serviceName){
+    @SuppressWarnings("unchecked")
+		private RMIDiscovery(final Class serviceInterface,final String serviceName){
         _serviceInterface=serviceInterface;
         _serviceName=serviceName;
         if(_serviceName==null || _serviceName.length()==0){
@@ -93,7 +90,8 @@ public class RMIDiscovery{
      * @return The discovered server ref.
      * @exception java.rmi.ConnectException
      */
-    public static Remote lookup(final Class serviceInterface,final String serviceName)
+    @SuppressWarnings("unchecked")
+		public static Remote lookup(final Class serviceInterface,final String serviceName)
         throws java.rmi.ConnectException{
         
         final RMIDiscovery disco=new RMIDiscovery(serviceInterface,serviceName);
@@ -108,7 +106,8 @@ public class RMIDiscovery{
      * @return The discovered server ref.
      * @exception java.rmi.ConnectException
      */
-    public static Remote[] lookupAll(final Class serviceInterface,final String serviceName)
+    @SuppressWarnings("unchecked")
+		public static Remote[] lookupAll(final Class serviceInterface,final String serviceName)
         throws java.rmi.ConnectException{
 
         final RMIDiscovery disco=new RMIDiscovery(serviceInterface,serviceName);
@@ -185,8 +184,7 @@ public class RMIDiscovery{
     private Remote[] lookupAllImpl() throws java.rmi.ConnectException
     {
 
-      _stillLooking = true;
-      _implFound = new java.util.Vector(0,1);
+      _implFound = new java.util.Vector<Object>(0,1);
 
       startListener();
       startRequester();
@@ -260,7 +258,8 @@ public class RMIDiscovery{
             throw new RuntimeException("Failed to create listener socket in port range "+port+"-"+(port+range));
          }
          final Thread listenerThread=new Thread(){
-            public void run(){
+            @SuppressWarnings("unchecked")
+						public void run(){
                     
                 try{
                     final Socket sock=_listener.accept();
@@ -290,8 +289,6 @@ public class RMIDiscovery{
         final Thread requester=new Thread(){
             public void run(){
                 try{
-                    final String hostName=InetAddress.getLocalHost().getHostName();
-                    
                     final InetAddress address=Discovery.getMulticastAddress();
                     final int multicastPort=Discovery.getMulticastPort();
                     final String header=Discovery.getProtocolHeader();
@@ -316,7 +313,6 @@ public class RMIDiscovery{
                     }        
                     socket.leaveGroup(address);
                     socket.close();
-                    _stillLooking = false;
                     if(_discoveryResult==null){
                         throw new Exception("RMI discovery timed out after "+nAttempts);
                     }

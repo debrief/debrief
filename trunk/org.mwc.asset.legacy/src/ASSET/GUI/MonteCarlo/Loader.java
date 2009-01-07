@@ -37,12 +37,12 @@ abstract public class Loader extends SwingCustomEditor
   /**
    * the loader to handle actually building the scenario
    */
-  private LoaderCore _myLoader;
+  LoaderCore _myLoader;
 
   /**
    * the build scenario button
    */
-  private JButton _buildButton;
+  JButton _buildButton;
 
   /**
    * the label where we show the dropped control file
@@ -67,7 +67,7 @@ abstract public class Loader extends SwingCustomEditor
   /**
    * window to track build progress
    */
-  private JTextArea _progressWindow;
+  JTextArea _progressWindow;
 
   //////////////////////////////////////////////////
   //
@@ -161,7 +161,7 @@ abstract public class Loader extends SwingCustomEditor
    * get the loader to load itself.  Note that we do it in a separate thread so that the GUI
    * can still get updated.
    */
-  private void startGenerate()
+  void startGenerate()
   {
     Thread runner = new Thread()
     {
@@ -226,7 +226,8 @@ abstract public class Loader extends SwingCustomEditor
     {
       scenarioTarget.addDropTargetListener(new DropTargetAdapter()
       {
-        public void drop(DropTargetDropEvent dtde)
+        @SuppressWarnings("unchecked")
+				public void drop(DropTargetDropEvent dtde)
         {
           // see if it's an XML file
           if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
@@ -275,7 +276,8 @@ abstract public class Loader extends SwingCustomEditor
     {
       controllerTarget.addDropTargetListener(new DropTargetAdapter()
       {
-        public void drop(DropTargetDropEvent dtde)
+        @SuppressWarnings("unchecked")
+				public void drop(DropTargetDropEvent dtde)
         {
           // see if it's an XML file
           if (dtde.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
@@ -353,7 +355,7 @@ abstract public class Loader extends SwingCustomEditor
    *
    * @param thisFile
    */
-  private void setController(File thisFile)
+  void setController(File thisFile)
   {
     _myLoader.setControllerFile(thisFile);
     _controllerCatcher.setText("<html>" + CONTROL_LABEL + thisFile.getName() + "</html>");
@@ -365,7 +367,7 @@ abstract public class Loader extends SwingCustomEditor
    *
    * @param thisFile
    */
-  private void setScenario(File thisFile)
+  void setScenario(File thisFile)
   {
     _myLoader.setScenarioFile(thisFile);
     _scenarioCatcher.setText("<html>" + SCENARIO_LABEL + thisFile.getName() + "</html>");

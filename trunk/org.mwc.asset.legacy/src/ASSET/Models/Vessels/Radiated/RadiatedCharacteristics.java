@@ -30,6 +30,11 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
   //////////////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the set of mediums we know about
    */
   private Medium[] _myMediums = new Medium[CoreEnvironment.MAX_NUM_MEDIUMS];
@@ -53,7 +58,7 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
     this("Radiated Noise");
   }
 
-  private RadiatedCharacteristics(final String type)
+  RadiatedCharacteristics(final String type)
   {
     _myNoiseType = type;
   }
@@ -94,9 +99,9 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
     return res;
   }
 
-  public java.util.Collection getMediums()
+  public java.util.Collection<Medium> getMediums()
   {
-    Vector res = new Vector();
+    Vector<Medium> res = new Vector<Medium>();
     for (int i = 0; i < _myMediums.length; i++)
     {
       Medium medium = _myMediums[i];
@@ -288,7 +293,7 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
   // class which builds up a list of noise components, and is able to interpolate between them
   // todo - create import/export handlers for these.
   ////////////////////////////////////////////////////
-  public static class NoiseSignature extends TreeSet
+  public static class NoiseSignature extends TreeSet<BearingSet>
   {
     ////////////////////////////////////////////////////
     // member objects
@@ -299,15 +304,18 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
     ////////////////////////////////////////////////////
 
 
-    public NoiseSignature()
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public NoiseSignature()
     {
-      super(new Comparator()
+      super(new Comparator<BearingSet>()
       {
-        public int compare(final Object o1, final Object o2)
+        public int compare(final BearingSet first, final BearingSet second)
         {
           int res = 0;
-          final BearingSet first = (BearingSet) o1;
-          final BearingSet second = (BearingSet) o2;
           if (first.getBearing() < second.getBearing())
             res = -1;
           else if (first.getBearing() > second.getBearing())
@@ -327,7 +335,7 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
     public double getValueFor(final double bearing, final double speed)
     {
 
-      final Iterator it = this.iterator();
+      final Iterator<BearingSet> it = this.iterator();
       BearingSet nearestBearing = null;
       double nearestDelta = -1;
       while (it.hasNext())
@@ -379,7 +387,7 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
       final double brg = component.getBearing();
 
       // find out if we already store data for this bearing
-      final Iterator it = this.iterator();
+      final Iterator<BearingSet> it = this.iterator();
       while (it.hasNext())
       {
         final BearingSet bs = (BearingSet) it.next();
@@ -407,9 +415,13 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
   /**
    * class which stores a list of noise components for a particular bearing
    */
-  private static class BearingSet extends TreeSet
+  private static class BearingSet extends TreeSet<NoiseComponent>
   {
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		/**
      * the bearing which this set is for
      */
     private double _myBearing;
@@ -420,16 +432,14 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
 
     public BearingSet(final double myBearing)
     {
-      super(new Comparator()
+      super(new Comparator<NoiseComponent>()
       {
         /**
          * compare the speeds of the supplied items
          */
-        public int compare(final Object o1, final Object o2)
+        public int compare(final NoiseComponent first, final NoiseComponent second)
         {
           int res = 0;
-          final NoiseComponent first = (NoiseComponent) o1;
-          final NoiseComponent second = (NoiseComponent) o2;
           if (first.getSpeed() < second.getSpeed())
             res = -1;
           else if (first.getSpeed() > second.getSpeed())
@@ -449,7 +459,7 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
       // find the noise value at this particular speed
       double res = -1;
 
-      final Iterator it = this.iterator();
+      final Iterator<NoiseComponent> it = this.iterator();
       NoiseComponent before = null;
       NoiseComponent after = null;
       while (it.hasNext())
@@ -491,7 +501,7 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
       return res;
     }
 
-    private static double interpolateBetween(final NoiseComponent before,
+    static double interpolateBetween(final NoiseComponent before,
                                              final NoiseComponent after,
                                              final double atSpeed)
     {

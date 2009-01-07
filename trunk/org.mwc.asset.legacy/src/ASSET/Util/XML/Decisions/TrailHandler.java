@@ -24,10 +24,10 @@ abstract public class TrailHandler extends CoreDecisionHandler
   private final static String TRAIL_HEIGHT = "Height";
 
 
-  private TargetType _myTargetType;
-  private WorldDistance _myRange;
-  private WorldDistance _myAllowableError;
-  private WorldDistance _trailHeight = null;
+  TargetType _myTargetType;
+  WorldDistance _myRange;
+  WorldDistance _myAllowableError;
+  WorldDistance _trailHeight = null;
 
   public TrailHandler()
   {

@@ -18,10 +18,10 @@ abstract public class ElapsedTimeHandler extends MWC.Utilities.ReaderWriter.XML.
 
   private final static String type = "ElapsedTime";
 
-  private final static String THRESHOLD = "Duration";
+//  private final static String THRESHOLD = "Duration";
 
-  private Duration _duration;
-  private String _name;
+  Duration _duration;
+  String _name;
 
 
   public ElapsedTimeHandler()

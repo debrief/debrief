@@ -33,6 +33,11 @@ public class NoiseSourceExcessPainter extends SpatialRasterPainter implements No
   ///////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the calculated noise levels across the environment
    */
   private SpatialRasterPainter _wholeScenario = null;
@@ -197,7 +202,12 @@ public class NoiseSourceExcessPainter extends SpatialRasterPainter implements No
   public class NoiseInfo extends Editable.EditorType implements java.io.Serializable
   {
 
-    public NoiseInfo(final NoiseSourceExcessPainter data)
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public NoiseInfo(final NoiseSourceExcessPainter data)
     {
       super(data, data.getName(), "Edit");
     }
@@ -242,7 +252,7 @@ public class NoiseSourceExcessPainter extends SpatialRasterPainter implements No
     {
       String[] res = new String[]{" ", " "};
 
-      final Vector list = new Vector(0, 1);
+      final Vector<String> list = new Vector<String>(0, 1);
 
       // pass through the layers to find any noise sources
       for (int i = 0; i < _myLayers.size(); i++)

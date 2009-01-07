@@ -11,7 +11,12 @@ package ASSET.Models.Vessels;
 
 public class SSN extends ASSET.Participants.CoreParticipant {
 
-  /** default BB rad noise
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/** default BB rad noise
    *
    */
   static final public double DEFAULT_BB_NOISE = 134;

@@ -27,7 +27,7 @@ public interface ParticipantMovedListener extends java.util.EventListener
     /** the list of helpers we support
      *
      */
-    private java.util.Vector _myListeners;
+    private java.util.Vector<ParticipantMovedListener> _myListeners;
 
     /** add the new listener
      *
@@ -35,7 +35,7 @@ public interface ParticipantMovedListener extends java.util.EventListener
     public void addListener(final ParticipantMovedListener listener)
     {
       if(_myListeners == null)
-        _myListeners = new java.util.Vector(1,1);
+        _myListeners = new java.util.Vector<ParticipantMovedListener>(1,1);
 
       _myListeners.add(listener);
     }
@@ -55,7 +55,7 @@ public interface ParticipantMovedListener extends java.util.EventListener
     {
       if(_myListeners != null)
       {
-        final java.util.Iterator it = _myListeners.iterator();
+        final java.util.Iterator<ParticipantMovedListener> it = _myListeners.iterator();
         while(it.hasNext())
         {
           final ParticipantMovedListener list = (ParticipantMovedListener) it.next();

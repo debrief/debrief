@@ -8,19 +8,23 @@
  */
 package ASSET.Util.RMI.Server;
 
-import ASSET.Util.RMI.*;
-import ASSET.Util.RMI.Models.ParticipantRMIImpl;
-import ASSET.ScenarioType;
-import ASSET.ParticipantType;
-import ASSET.Scenario.ScenarioSteppedListener;
-import ASSET.Scenario.ParticipantsChangedListener;
-import ASSET.Scenario.CoreScenario;
-
-import java.rmi.server.UnicastRemoteObject;
-import java.rmi.RemoteException;
-import java.util.*;
-import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.rmi.RemoteException;
+import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.Vector;
+
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
+import ASSET.Scenario.ParticipantsChangedListener;
+import ASSET.Scenario.ScenarioSteppedListener;
+import ASSET.Util.RMI.ParticipantRMI;
+import ASSET.Util.RMI.ParticipantsChangedListenerRMI;
+import ASSET.Util.RMI.PropertyChangeListenerRMI;
+import ASSET.Util.RMI.ScenarioRMI;
+import ASSET.Util.RMI.ScenarioSteppedListenerRMI;
+import ASSET.Util.RMI.Models.ParticipantRMIImpl;
 
 public class ScenarioRMIImpl extends UnicastRemoteObject implements ScenarioRMI,
         ParticipantsChangedListener,
@@ -28,7 +32,13 @@ public class ScenarioRMIImpl extends UnicastRemoteObject implements ScenarioRMI,
         PropertyChangeListener
 {
 
-  /*****************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/*****************************************************************
    * member variables
    ****************************************************************/
 
@@ -41,27 +51,22 @@ public class ScenarioRMIImpl extends UnicastRemoteObject implements ScenarioRMI,
   /** list of participants changed listeners
    *
    */
-  private Vector _partsChangedListeners = new Vector(0,1);
+  private Vector<ParticipantsChangedListenerRMI> _partsChangedListeners = new Vector<ParticipantsChangedListenerRMI>(0,1);
 
   /** list of scenario stepped listenerd
    *
    */
-  private Vector _scenarioSteppedListeners = new Vector(0,1);
+  private Vector<ScenarioSteppedListenerRMI> _scenarioSteppedListeners = new Vector<ScenarioSteppedListenerRMI>(0,1);
 
   /** property change support for this item
    *
    */
-  private Vector _changeListeners = new Vector(0,1);
-
-  /** the serializable id of this type
-   *
-   */
-  private static long serialVersionUID = 33;
+  private Vector<PropertyChangeListenerRMI> _changeListeners = new Vector<PropertyChangeListenerRMI>(0,1);
 
   /** keep a cache of wrapped participants
    *
    */
-  private HashMap _participantWrappersCache = new HashMap();
+  private HashMap<ParticipantType, ParticipantRMIImpl> _participantWrappersCache = new HashMap<ParticipantType, ParticipantRMIImpl>();
 
   /*****************************************************************
    * constructor

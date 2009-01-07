@@ -120,13 +120,12 @@ public class ASSETParticipant3D extends Participant3D implements ScenarioStepped
     //      _myParticipant.removePropertyChangeListener(PlainWrapper.COLOR_CHANGED, this);
   }
 
-  private Collection getTrail(final HiResDate start_time, final HiResDate end_time)
+  private Collection<WorldLocation> getTrail(final HiResDate start_time, final HiResDate end_time)
   {
-    final Vector res = new Vector(0, 1);
-    final WorldLocation newS = _myParticipant.getStatus().getLocation();
+    final Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
     // pass through our list of positions, retrieving all between start and end times
-    final Iterator it = _myPositions.iterator();
+    final Iterator<Status> it = _myPositions.iterator();
     while (it.hasNext())
     {
       final Status thisS = (Status) it.next();
@@ -243,7 +242,7 @@ public class ASSETParticipant3D extends Participant3D implements ScenarioStepped
   {
 
     // find the back-trail
-    final Collection trail = getTrail(start_time, end_time);
+    final Collection<WorldLocation> trail = getTrail(start_time, end_time);
 
     // draw the geometry
     if (trail != null)
@@ -263,7 +262,7 @@ public class ASSETParticipant3D extends Participant3D implements ScenarioStepped
         line = new LineArray((len - 1) * 2, LineArray.COORDINATES);
         line.setCapability(LineArray.ALLOW_COORDINATE_WRITE);
 
-        final java.util.Iterator itar = trail.iterator();
+        final java.util.Iterator<WorldLocation> itar = trail.iterator();
         int index = 0;
 
         Point3d lastPoint = null;
@@ -326,7 +325,7 @@ public class ASSETParticipant3D extends Participant3D implements ScenarioStepped
    */
 
   private final int pos_size = 50;
-  private Vector _myPositions = new Vector(pos_size);
+  private Vector<Status> _myPositions = new Vector<Status>(pos_size);
 
 
   /**

@@ -23,9 +23,9 @@ abstract public class FixedWingMovementCharsHandler extends ThreeDimMovementChar
   private final static String DEFAULT_DIVE_SPEED = "DefaultDiveSpeed";
   private final static String DEFAULT_TURN_RATE = "DefaultTurnRate";
 
-  private double _defaultTurnRate;
-  private WorldSpeed _defaultClimbSpeed;
-  private WorldSpeed _defaultDiveSpeed;
+  double _defaultTurnRate;
+  WorldSpeed _defaultClimbSpeed;
+  WorldSpeed _defaultDiveSpeed;
 
 
 

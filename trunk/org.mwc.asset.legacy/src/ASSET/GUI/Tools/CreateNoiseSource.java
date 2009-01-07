@@ -31,12 +31,10 @@
 
 package ASSET.GUI.Tools;
 
-import MWC.GUI.Chart.Painters.GridPainter;
+import ASSET.GUI.Painters.NoiseSourcePainter;
+import ASSET.Models.Environment.EnvironmentType;
 import MWC.GUI.Tools.Palette.PlainCreate;
 import MWC.GenericData.WorldLocation;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
-import ASSET.GUI.Painters.NoiseSourcePainter;
 
 /** create a point noise source
  *
@@ -44,7 +42,7 @@ import ASSET.GUI.Painters.NoiseSourcePainter;
 public class CreateNoiseSource extends PlainCreate
 {
   private EnvironmentType _theEnv = null;
-  private int _medium;
+  protected int _medium;
 
 	public CreateNoiseSource(final MWC.GUI.ToolParent theParent,
 										final MWC.GUI.Properties.PropertiesPanel thePanel,

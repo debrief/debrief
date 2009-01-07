@@ -20,7 +20,12 @@ import java.awt.*;
 
 public class NoiseSourcePainter extends SpatialRasterPainter implements NoiseSource
 {
-  ///////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	///////////////////////////////////////////////////
   // member variables
   ///////////////////////////////////////////////////
   /**
@@ -51,7 +56,7 @@ public class NoiseSourcePainter extends SpatialRasterPainter implements NoiseSou
   ///////////////////////////////////////////////////
   // constructor
   ///////////////////////////////////////////////////
-  private NoiseSourcePainter(final EnvironmentType theEnv, final int medium)
+  NoiseSourcePainter(final EnvironmentType theEnv, final int medium)
   {
     super("Noise Source Painter");
     _myEnvironment = theEnv;
@@ -150,7 +155,12 @@ public class NoiseSourcePainter extends SpatialRasterPainter implements NoiseSou
   public class NoiseInfo extends Editable.EditorType implements java.io.Serializable
   {
 
-    public NoiseInfo(final NoiseSourcePainter data)
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public NoiseInfo(final NoiseSourcePainter data)
     {
       super(data, data.getName(), "Edit");
     }

@@ -8,10 +8,6 @@
  */
 package ASSET.Util.RMI;
 
-import ASSET.Scenario.ParticipantsChangedListener;
-import ASSET.Scenario.ScenarioRunningListener;
-import ASSET.Scenario.ScenarioSteppedListener;
-import ASSET.ParticipantType;
 
 public interface ScenarioRMI extends java.rmi.Remote
 {

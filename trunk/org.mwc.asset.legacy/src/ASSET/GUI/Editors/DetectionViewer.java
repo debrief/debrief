@@ -29,11 +29,15 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
   ////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * GUI components
    */
   private BorderLayout mainBorder = new BorderLayout();
   private JLabel detectionLabel = new JLabel();
-  private JList detList = new JList();
+  JList detList = new JList();
 
   /**
    * the vessel we listen to
@@ -51,7 +55,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
   /**
    * keep our own list of indices used to represent target held
    */
-  private Vector _datasetIndices;
+  private Vector<String> _datasetIndices;
 
   //////////////////////////////////////////////////
   // CONSTRUCTOR
@@ -107,7 +111,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
 
 
     // my working list
-    final java.util.Vector vec = new java.util.Vector();
+    final java.util.Vector<DetectionEvent> vec = new java.util.Vector<DetectionEvent>();
 
     // do we have any pending detections?
     if (_pendingDetections != null)
@@ -141,7 +145,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
    *
    * @param vec the new detections
    */
-  void updateGUI(final Vector vec)
+  void updateGUI(final Vector<DetectionEvent> vec)
   {
     // set the data, whether it's empty or not
     detList.setListData(vec);
@@ -210,7 +214,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
 
     // check we've got our list
     if (_datasetIndices == null)
-      _datasetIndices = new Vector(0, 1);
+      _datasetIndices = new Vector<String>(0, 1);
 
     // create hash-code representing this data item
     String code = "" + sensorId + " " + targetId;
@@ -251,7 +255,12 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
       set = false;
       final CoreParticipant cp = new CoreParticipant(12)
       {
-        public void addParticipantDetectedListener(final ParticipantDetectedListener list)
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public void addParticipantDetectedListener(final ParticipantDetectedListener list)
         {
           super.addParticipantDetectedListener(list);
           if (list instanceof DetectionViewer)

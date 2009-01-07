@@ -68,8 +68,8 @@ abstract public class IntegerDatumHandler extends MWCXMLReader
     org.w3c.dom.Element envElement = doc.createElement(type);
 
     // now the child bits
-    Collection indices = lightLevel.indices();
-    for (Iterator iter = indices.iterator(); iter.hasNext();)
+    Collection<Integer> indices = lightLevel.indices();
+    for (Iterator<Integer> iter = indices.iterator(); iter.hasNext();)
 		{
 			Integer thisIndex = (Integer) iter.next();
 			Double val = lightLevel.find(thisIndex.intValue());

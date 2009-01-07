@@ -7,6 +7,7 @@ import ASSET.Models.Vessels.SSN;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.Duration;
 
 /**
@@ -54,7 +55,7 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
    * keep our own little register of symbols for participant types
    * - the method to retreive the symbol for a participant type is a compleicated one
    */
-  static private HashMap _mySymbolRegister = new HashMap();
+  static private HashMap<String, PlainSymbol> _mySymbolRegister = new HashMap<String, PlainSymbol>();
 
   /**
    * ********************************************************************
@@ -100,7 +101,7 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
   public void restart()
   {
     // reset our plottables
-    final Enumeration it = super.elements();
+    final Enumeration<Editable> it = super.elements();
     while (it.hasMoreElements())
     {
       final ScenarioParticipantWrapper pl = (ScenarioParticipantWrapper) it.nextElement();
@@ -113,7 +114,7 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
    */
   public void participantRemoved(final int index)
   {
-    final java.util.Enumeration enumer = super.elements();
+    final java.util.Enumeration<Editable> enumer = super.elements();
     while (enumer.hasMoreElements())
     {
       final ScenarioParticipantWrapper pl = (ScenarioParticipantWrapper) enumer.nextElement();
@@ -298,7 +299,7 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
 	/**
 	 * @return the _mySymbolRegister
 	 */
-	public static final HashMap get_mySymbolRegister()
+	public static final HashMap<String, PlainSymbol> get_mySymbolRegister()
 	{
 		return _mySymbolRegister;
 	}
@@ -307,13 +308,13 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
 	/**
 	 * @param symbolRegister the _mySymbolRegister to set
 	 */
-	public static final void set_mySymbolRegister(HashMap symbolRegister)
+	public static final void set_mySymbolRegister(HashMap<String, PlainSymbol> symbolRegister)
 	{
 		_mySymbolRegister = symbolRegister;
 	}
 
 
-	public HashMap getSymbolRegister()
+	public HashMap<String, PlainSymbol> getSymbolRegister()
 	{
 		return _mySymbolRegister;
 	}

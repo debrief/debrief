@@ -25,9 +25,9 @@ abstract public class OpticHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   final static private String HEIGHT = "Height";
 
 
-  private double _myNoise = Optic.INVALID_HEIGHT;
-  private double _myArea = Optic.INVALID_HEIGHT;
-  private WorldDistance _myHeight = new WorldDistance(Optic.INVALID_HEIGHT, WorldDistance.METRES);
+  double _myNoise = Optic.INVALID_HEIGHT;
+  double _myArea = Optic.INVALID_HEIGHT;
+  WorldDistance _myHeight = new WorldDistance(Optic.INVALID_HEIGHT, WorldDistance.METRES);
 
   public OpticHandler()
   {

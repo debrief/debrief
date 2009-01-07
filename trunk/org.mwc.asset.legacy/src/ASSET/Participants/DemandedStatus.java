@@ -41,7 +41,7 @@ abstract public class DemandedStatus
   /**
    * a list of demanded sensor states
    */
-  private Vector _sensorStates = null;
+  private Vector<DemandedSensorStatus> _sensorStates = null;
 
   ////////////////////////////////////////////////////////////////////////
   // constructor
@@ -93,7 +93,7 @@ abstract public class DemandedStatus
 
         // yes, do we have any?
         if (res._sensorStates == null)
-          res._sensorStates = new Vector(0, 1);
+          res._sensorStates = new Vector<DemandedSensorStatus>(0, 1);
 
         res._sensorStates.addAll(other._sensorStates);
       }
@@ -195,7 +195,7 @@ abstract public class DemandedStatus
   public void add(DemandedSensorStatus state)
   {
     if(_sensorStates == null)
-      _sensorStates = new Vector(1,1);
+      _sensorStates = new Vector<DemandedSensorStatus>(1,1);
 
     _sensorStates.add(state);
   }
@@ -203,7 +203,7 @@ abstract public class DemandedStatus
   /**
    * get the list of sensor states
    */
-  public Vector getSensorStates()
+  public Vector<DemandedSensorStatus> getSensorStates()
   {
     return _sensorStates;
   }

@@ -18,6 +18,7 @@ import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Genetic.ScenarioRunner;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
 import ASSET.Scenario.Observers.Summary.BatchCollatorHelper;
+import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
@@ -49,12 +50,12 @@ public class ProximityObserver extends CoreObserver implements
   /**
    * the vessels we're watching
    */
-  private Vector _watchVessels = new Vector(0, 1);
+  private Vector<ParticipantType> _watchVessels = new Vector<ParticipantType>(0, 1);
 
   /**
    * the targets we're concerned about proximity to
    */
-  private Vector _targetVessels = new Vector(0, 1);
+  private Vector<ParticipantType> _targetVessels = new Vector<ParticipantType>(0, 1);
 
   /**
    * the target type for vessels we're watching
@@ -327,13 +328,13 @@ public class ProximityObserver extends CoreObserver implements
   {
 
     // step through our watch vessels
-    final Iterator thisV = _watchVessels.iterator();
+    final Iterator<ParticipantType> thisV = _watchVessels.iterator();
     while (thisV.hasNext())
     {
       final ASSET.ParticipantType thisWatch = (ASSET.ParticipantType) thisV.next();
 
       // and through our target vessels
-      final Iterator thisW = _targetVessels.iterator();
+      final Iterator<ParticipantType> thisW = _targetVessels.iterator();
       while (thisW.hasNext())
       {
         final ASSET.ParticipantType thisTarget = (ASSET.ParticipantType) thisW.next();
@@ -368,7 +369,7 @@ public class ProximityObserver extends CoreObserver implements
   }
 
 
-  private EditorType _myEditor;
+  private EditorType _myEditor1;
 
   /**
    * get the editor for this item
@@ -377,10 +378,10 @@ public class ProximityObserver extends CoreObserver implements
    */
   public EditorType getInfo()
   {
-    if (_myEditor == null)
-      _myEditor = new ProximityObserverInfo(this);
+    if (_myEditor1 == null)
+      _myEditor1 = new ProximityObserverInfo(this);
 
-    return _myEditor;
+    return _myEditor1;
   }
 
   /**
@@ -504,7 +505,7 @@ public class ProximityObserver extends CoreObserver implements
     // property editing
     //////////////////////////////////////////////////
 
-    private EditorType _myEditor;
+    private EditorType _myEditor11;
 
     /**
      * whether there is any edit information for this item
@@ -525,10 +526,10 @@ public class ProximityObserver extends CoreObserver implements
      */
     public EditorType getInfo()
     {
-      if (_myEditor == null)
-        _myEditor = new StopOnProximityObserverInfo(this);
+      if (_myEditor11 == null)
+        _myEditor11 = new StopOnProximityObserverInfo(this);
 
-      return _myEditor;
+      return _myEditor11;
     }
 
     //////////////////////////////////////////////////

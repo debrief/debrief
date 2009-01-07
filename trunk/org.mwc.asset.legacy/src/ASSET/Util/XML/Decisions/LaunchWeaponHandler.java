@@ -24,11 +24,11 @@ abstract class LaunchWeaponHandler extends CoreDecisionHandler
   private final static String TYPE = "LaunchType";
   private final static String TYPE_FILENAME = "LaunchTypeFileName";
 
-  private WorldDistance _launchRange;
-  private Duration _launchTime;
-  private String _launchType;
-  private String _fileName;
-  private TargetType _myTargetType;
+  WorldDistance _launchRange;
+  Duration _launchTime;
+  String _launchType;
+  String _fileName;
+  TargetType _myTargetType;
 
 
   public LaunchWeaponHandler()

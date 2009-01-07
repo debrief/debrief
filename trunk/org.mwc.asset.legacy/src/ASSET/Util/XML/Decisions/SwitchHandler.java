@@ -4,6 +4,7 @@ package ASSET.Util.XML.Decisions;
  * Read in a Switch behaviour object
  */
 
+import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.BehaviourList;
 import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.Switch;
@@ -15,7 +16,7 @@ abstract public class SwitchHandler extends WaterfallHandler
   private final static String type = "Switch";
   private final static String INDEX = "Index";
 
-  private int _index;
+  int _index;
 
   public SwitchHandler(int thisDepth)
   {
@@ -65,7 +66,7 @@ abstract public class SwitchHandler extends WaterfallHandler
 
     // thisPart.setAttribute("MIN_DEPTH", writeThis(bb.getMinDepth()));
     // step through the models
-    final java.util.Iterator it = bb.getModels().iterator();
+    final java.util.Iterator<DecisionType> it = bb.getModels().iterator();
     while (it.hasNext())
     {
       final ASSET.Models.DecisionType dec = (ASSET.Models.DecisionType) it.next();

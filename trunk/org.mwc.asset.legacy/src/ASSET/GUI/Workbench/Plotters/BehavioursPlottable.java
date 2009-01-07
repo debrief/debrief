@@ -4,6 +4,7 @@ import java.util.*;
 
 import ASSET.Models.DecisionType;
 import ASSET.Models.Decision.BehaviourList;
+import MWC.GUI.Editable;
 
 public class BehavioursPlottable extends BasePlottable 
 {
@@ -28,19 +29,23 @@ public class BehavioursPlottable extends BasePlottable
 		return (DecisionType) getModel();
 	}
 	
-	public Enumeration elements()
+	public Enumeration<Editable> elements()
 	{
-		Enumeration res = null;
+		Vector<Editable> list = new Vector<Editable>(0,1);;
 
 		// hmm, do we have child behaviours?
 		if(getModel() instanceof BehaviourList)
 		{
 			BehaviourList bl = (BehaviourList) getModel();
-			Vector theModels = bl.getModels();
-			res = theModels.elements();
+			Vector<DecisionType> theModels = bl.getModels();
+			Iterator<DecisionType> iter = theModels.iterator();
+			while(iter.hasNext())
+			{
+				list.add(iter.next());
+			}
 		}
 		
-		return res;
+		return list.elements();
 	}
 	
 	

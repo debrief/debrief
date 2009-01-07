@@ -22,13 +22,13 @@ abstract public class DetectionForPeriodHandler extends MWC.Utilities.ReaderWrit
   private final static String type = "DetectionForPeriod";
 
   private final static String CONTINUE_MONITORING = "ContinueMonitoring";
-  private final static String THRESHOLD = "Threshold";
+//  private final static String THRESHOLD = "Threshold";
 
-  private WorldDistance _rangeThreshold;
-  private String _name;
-  private TargetType _myTargetType;
-  private Duration _myDuration;
-  private boolean _continueMonitoring;
+  WorldDistance _rangeThreshold;
+  String _name;
+  TargetType _myTargetType;
+  Duration _myDuration;
+  boolean _continueMonitoring;
 
 
   public DetectionForPeriodHandler()

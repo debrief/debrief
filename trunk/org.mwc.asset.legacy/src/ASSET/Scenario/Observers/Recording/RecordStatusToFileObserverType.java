@@ -271,11 +271,11 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
   //////////////////////////////////////////////////////////////////////////////////////////////////
   public static final class recToFileTest extends ContinuousRecordToFileObserver.RecToFileTest
   {
-    private String _buildDate;
-    private String _headerDetails;
-    private boolean _detectionDetailsWritten;
-    private boolean _positionDetailsWritten;
-    private boolean _decisionDetailsWritten;
+    String _buildDate;
+    String _headerDetails;
+    boolean _detectionDetailsWritten;
+    boolean _positionDetailsWritten;
+    boolean _decisionDetailsWritten;
 
     public recToFileTest(final String val)
     {
@@ -306,8 +306,13 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
       ssn.setDecisionModel(new ASSET.Models.Decision.Tactical.Wait(new Duration(12, Duration.HOURS), "do wait"));
       OpticSensor sampleSensor = new OpticSensor(12)
       {
-        // what is the detection strength for this target?
-        protected DetectionEvent detectThis(EnvironmentType environment, ParticipantType host, ParticipantType target,
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				// what is the detection strength for this target?
+        protected DetectionEvent detectThis(EnvironmentType environment, ParticipantType host, ParticipantType target1,
                                             long time, ScenarioType scenario)
         {
           DetectionEvent de = new DetectionEvent(12l, 12, null, this, null, null, null, null, null, null, null, null, ssn);

@@ -25,7 +25,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
   private static final String DEBRIEF_LAYER_NAME = "DebriefLayer";
 
-	private ScenarioType _theScenario;
+	ScenarioType _theScenario;
 
   static final public String SCENARIO_NAME = "Scenario";
   static final private String TIME = "StartTime";

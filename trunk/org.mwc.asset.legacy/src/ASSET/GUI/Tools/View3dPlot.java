@@ -99,33 +99,33 @@
 
 package ASSET.GUI.Tools;
 
-import ASSET.GUI.Tools.Plot3D.ASSETParticipant3D;
-import ASSET.ParticipantType;
-import ASSET.Scenario.ScenarioSteppedListener;
-import ASSET.ScenarioType;
-import MWC.GUI.ETOPO.BathyProvider;
-import MWC.GUI.Java3d.MouseWheelWorldHolder;
-import MWC.GUI.Java3d.Tactical.Participant3D;
-import MWC.GUI.Java3d.WorldHolder;
-import MWC.GUI.Layer;
-import MWC.GUI.Layers;
-import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.StepperListener;
-import MWC.GUI.ToolParent;
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Tools.PlainTool;
-import MWC.GenericData.HiResDate;
-
-import javax.media.j3d.BranchGroup;
-import javax.media.j3d.Group;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
+
+import javax.media.j3d.Group;
+import javax.swing.JFrame;
+
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
+import ASSET.GUI.Tools.Plot3D.ASSETParticipant3D;
+import ASSET.Scenario.ScenarioSteppedListener;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.StepperListener;
+import MWC.GUI.ToolParent;
+import MWC.GUI.ETOPO.BathyProvider;
+import MWC.GUI.Java3d.MouseWheelWorldHolder;
+import MWC.GUI.Java3d.WorldHolder;
+import MWC.GUI.Java3d.Tactical.Participant3D;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
+import MWC.GenericData.HiResDate;
 
 /**
  * command to import a file (initially just Replay) into Debrief.
@@ -220,7 +220,12 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
       {
         tmpHolder = new MouseWheelWorldHolder(_thePanel, _stepperAdapter, _theLayers, _bathyProvider, true)
         {
-          public void dataExtended(final Layers theData)
+          /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void dataExtended(final Layers theData)
           {
             //
             doDataExtended(theData, this);
@@ -243,7 +248,12 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
       {
         tmpHolder = new WorldHolder(_thePanel, _stepperAdapter, _theLayers, _bathyProvider, true)
         {
-          public void dataExtended(final Layers theData)
+          /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+					public void dataExtended(final Layers theData)
           {
             doDataExtended(theData, this);
           }
@@ -266,12 +276,12 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
       final WorldHolder worldHolder = tmpHolder;
 
       // we pass in a dummy branch group
-      final BranchGroup tra = new BranchGroup();
+//      final BranchGroup tra = new BranchGroup();
 
       // add the tracks
-      final Collection tracks = getParticipants(_theScenario);
+      final Collection<ParticipantType> tracks = getParticipants(_theScenario);
 
-      for (final Iterator thisT = tracks.iterator(); thisT.hasNext();)
+      for (final Iterator<ParticipantType> thisT = tracks.iterator(); thisT.hasNext();)
       {
         final ParticipantType thisParticipant = (ParticipantType) thisT.next();
 
@@ -324,16 +334,17 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
    * layers support listening
    * **************************************************************
    */
-  private void doDataReformatted(Layers theData, Layer changedLayer, WorldHolder theHolder)
+  void doDataReformatted(Layers theData, Layer changedLayer, WorldHolder theHolder)
   {
 
   }
 
-  private void doDataExtended(Layers theData, final WorldHolder theHolder)
+  @SuppressWarnings("unchecked")
+	void doDataExtended(Layers theData, final WorldHolder theHolder)
   {
 
     // get the new list of tracks
-    final Collection theParticipants = getParticipants(_theScenario);
+    final Collection<ParticipantType> theParticipants = getParticipants(_theScenario);
 
     // create somewhere to store our existing children
     final Group myTracks = theHolder.getWorld().getTracks();
@@ -366,7 +377,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
     // now see if there are any tracks in the new list which we don't have
     if (theParticipants.size() > 0)
     {
-      final Iterator iter = theParticipants.iterator();
+      final Iterator<ParticipantType> iter = theParticipants.iterator();
       while (iter.hasNext())
       {
         // create a 3d version of this track
@@ -387,10 +398,9 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
 
   }
 
-  private static Collection getParticipants(final ScenarioType theScenario)
+  private static Collection<ParticipantType> getParticipants(final ScenarioType theScenario)
   {
-    final Vector vec = new Vector(0, 1);
-    Collection res = null;
+    final Vector<ParticipantType> vec = new Vector<ParticipantType>(0, 1);
 
     // step through the layers
     final Integer[] list = theScenario.getListOfParticipants();
@@ -400,9 +410,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
       final ParticipantType thisPart = theScenario.getThisParticipant(thisOne.intValue());
       vec.add(thisPart);
     }
-    res = vec;
-
-    return res;
+    return vec;
   }
 
 
@@ -426,7 +434,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
     /**
      * the list of stepper listeners
      */
-    private Vector _theListeners = null;
+    private Vector<StepperListener> _theListeners = null;
 
 
     /****************************************************
@@ -438,7 +446,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
     public StepperControllerAdapter(final ScenarioType theScenario)
     {
       this._myScenario = theScenario;
-      _theListeners = new Vector(0, 1);
+      _theListeners = new Vector<StepperListener>(0, 1);
     }
 
 
@@ -502,7 +510,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
     public void step(final long newTime)
     {
       // pass this through the listeners
-      final Iterator it = _theListeners.iterator();
+      final Iterator<StepperListener> it = _theListeners.iterator();
       while (it.hasNext())
       {
         final StepperListener sl = (StepperListener) it.next();

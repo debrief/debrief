@@ -30,7 +30,7 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
   /**
    * the vessels we have added ourselves to
    */
-  private Vector _watchedVessels = new Vector(0, 1);
+  private Vector<ParticipantType> _watchedVessels = new Vector<ParticipantType>(0, 1);
   /**
    * our batch collator
    */
@@ -104,7 +104,7 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
   protected void removeListeners()
   {
     // remove ourselves from our vessels
-    final Iterator it = _watchedVessels.iterator();
+    final Iterator<ParticipantType> it = _watchedVessels.iterator();
 
     while (it.hasNext())
     {

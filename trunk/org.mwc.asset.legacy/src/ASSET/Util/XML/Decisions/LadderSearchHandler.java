@@ -30,13 +30,13 @@ abstract public class LadderSearchHandler extends CoreDecisionHandler
   private final static String SEARCH_SPEED = "SearchSpeed";
 
 
-  private WorldLocation _origin;
-  private double _ladderAxis;
-  private Integer _numLegs = null;
-  private WorldDistance _spacing;
-  private WorldDistance _legLength;
-  private WorldDistance _searchHeight;
-  private WorldSpeed _searchSpeed;
+  WorldLocation _origin;
+  double _ladderAxis;
+  Integer _numLegs = null;
+  WorldDistance _spacing;
+  WorldDistance _legLength;
+  WorldDistance _searchHeight;
+  WorldSpeed _searchSpeed;
 
   public LadderSearchHandler()
   {

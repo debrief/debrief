@@ -1,10 +1,8 @@
 package ASSET.Models.Vessels;
 
+import ASSET.Models.Sensor.Initial.BroadbandSensor;
 import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.Status;
-import ASSET.Participants.DemandedStatus;
-import ASSET.Models.Sensor.Initial.BroadbandSensor;
-import ASSET.Models.Sensor.Initial.BroadbandSensor;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldSpeed;
 
@@ -21,7 +19,12 @@ public class SonarBuoy extends CoreParticipant {
   // constructor
   //////////////////////////////////////////////////
 
-  /** normal constructor
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/** normal constructor
    *
    */
   public SonarBuoy(final int id,

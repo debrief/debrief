@@ -8,6 +8,8 @@
  */
 package ASSET.GUI.Util;
 
+import java.io.File;
+
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GenericData.WorldLocation;
 
@@ -47,7 +49,7 @@ abstract public class ChartDropAdapter implements MWC.GUI.DragDrop.FileDropLocat
   /** process this list of file
  * @param files the list of files
  */
-  public void FilesReceived(final java.util.Vector files, final java.awt.Point pt) {
+  public void FilesReceived(final java.util.Vector<File> files, final java.awt.Point pt) {
     // import these files
     try
     {

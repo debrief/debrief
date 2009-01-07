@@ -30,7 +30,11 @@ public class CompositeEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   // GUI components
   //////////////////////////////////////////////////////////////////////
 
-  SwingPropertyEditor2 _compositeEditor = null;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	SwingPropertyEditor2 _compositeEditor = null;
   SwingPropertyEditor2 _conditionEditor = null;
   SwingPropertyEditor2 _responseEditor = null;
 

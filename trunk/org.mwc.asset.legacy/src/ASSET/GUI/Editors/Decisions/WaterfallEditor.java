@@ -26,7 +26,11 @@ public class WaterfallEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   // GUI components
   //////////////////////////////////////////////////////////////////////
 
-  private JList modelList = new JList();
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private JList modelList = new JList();
   private BorderLayout mainBorder = new BorderLayout();
   private JPanel dirBtnHolder = new JPanel();
   private JButton upBtn = new JButton();
@@ -36,9 +40,6 @@ public class WaterfallEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
   //////////////////////////////////////////////////////////////////////
   // drag and drop components
   //////////////////////////////////////////////////////////////////////
-
-  private DropTarget dropTarget = new DropTarget(modelList, DnDConstants.ACTION_COPY_OR_MOVE, this);
-
 
   private ASSET.Models.Decision.BehaviourList _myList;
 
@@ -131,7 +132,7 @@ public class WaterfallEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
     });
   }
 
-  private void itemSelected()
+  void itemSelected()
   {
     final ASSET.Models.DecisionType sel = getCurrent();
     if (sel == null)
@@ -158,7 +159,7 @@ public class WaterfallEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
     return (ASSET.Models.DecisionType) modelList.getSelectedValue();
   }
 
-  private void upBtn_actionPerformed(ActionEvent e)
+  void upBtn_actionPerformed(ActionEvent e)
   {
     final DecisionType cur = getCurrent();
     if (cur != null)
@@ -180,7 +181,7 @@ public class WaterfallEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
     }
   }
 
-  private void downBtn_actionPerformed(ActionEvent e)
+  void downBtn_actionPerformed(ActionEvent e)
   {
     final DecisionType cur = getCurrent();
     if (cur != null)
@@ -201,7 +202,7 @@ public class WaterfallEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
     }
   }
 
-  private void deleteBtn_actionPerformed(ActionEvent e)
+  void deleteBtn_actionPerformed(ActionEvent e)
   {
     final DecisionType cur = getCurrent();
 

@@ -9,28 +9,34 @@ package ASSET.GUI.Editors.Sensors;
  * @version 1.0
  */
 
-import ASSET.Models.Decision.Movement.Wander;
-import ASSET.Models.Environment.EnvironmentType;
-import ASSET.Models.Sensor.Initial.BroadbandSensor;
-import ASSET.Models.Sensor.Initial.InitialSensor;
-import ASSET.Models.Sensor.Initial.BroadbandSensor;
-import ASSET.Models.Sensor.Initial.InitialSensor;
-import ASSET.Models.SensorType;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
-import MWC.GenericData.WorldSpeed;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.util.Iterator;
 import java.util.Vector;
 
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTable;
+
+import ASSET.Models.SensorType;
+import ASSET.Models.Decision.Movement.Wander;
+import ASSET.Models.Environment.EnvironmentType;
+import ASSET.Models.Sensor.Initial.BroadbandSensor;
+import ASSET.Models.Sensor.Initial.InitialSensor;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
+
 public class CoreSensorComponentViewer extends BaseSensorViewer
 {
 
-  //////////////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	//////////////////////////////////////////////////////////////////////
   // GUI components
   //////////////////////////////////////////////////////////////////////
 
@@ -48,7 +54,7 @@ public class CoreSensorComponentViewer extends BaseSensorViewer
   /** the list of column names for our data
    *
    */
-  private final Vector _cols;
+  private final Vector<String> _cols;
 
   ////////////////////////////////////////////////////
   // constructor
@@ -56,7 +62,7 @@ public class CoreSensorComponentViewer extends BaseSensorViewer
 
   public CoreSensorComponentViewer() {
     // ok, create the columns
-    _cols = new Vector(6,1);
+    _cols = new Vector<String>(6,1);
     _cols.add("Name");
     _cols.add("Loss");
     _cols.add("Bk Noise");
@@ -101,12 +107,12 @@ public class CoreSensorComponentViewer extends BaseSensorViewer
   public void updateForm()
   {
     // step through the detections, collating them into the vector expected by the table
-    Vector theData = new Vector(1,1);
-    Iterator it = _sensorEvents.iterator();
+    Vector<Vector<String>> theData = new Vector<Vector<String>>(1,1);
+    Iterator<Object> it = _sensorEvents.iterator();
     while(it.hasNext())
     {
       InitialSensor.InitialSensorComponentsEvent sc = (InitialSensor.InitialSensorComponentsEvent)it.next();
-      Vector thisV = new Vector(6,1);
+      Vector<String> thisV = new Vector<String>(6,1);
       thisV.add(sc.getTgtName());
       thisV.add("" + (int)sc.getLoss());
       thisV.add("" + (int)sc.getBkNoise());

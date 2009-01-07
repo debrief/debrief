@@ -26,11 +26,11 @@ abstract public class ExpandingSquareSearchHandler extends CoreDecisionHandler
   private final static String TRACK_SPACING = "TrackSpacing";
 
 
-  private boolean _clockwise;
-  private MWC.GenericData.WorldLocation _origin;
-  private double _track;
-  private Integer _numLegs = null;
-  private WorldDistance _spacing;
+  boolean _clockwise;
+  MWC.GenericData.WorldLocation _origin;
+  double _track;
+  Integer _numLegs = null;
+  WorldDistance _spacing;
 
   public ExpandingSquareSearchHandler()
   {

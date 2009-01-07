@@ -18,7 +18,7 @@ abstract public class BBHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
   final static private String type = "Broadband";
   final static private String LEVEL = "BaseNoiseLevel";
 
-  private double _myNoise;
+  double _myNoise;
 
   public BBHandler()
   {

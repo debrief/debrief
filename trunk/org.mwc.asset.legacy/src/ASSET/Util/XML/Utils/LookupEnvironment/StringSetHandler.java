@@ -18,8 +18,8 @@ import org.w3c.dom.Element;
  */
 abstract public class StringSetHandler extends MWCXMLReader
 {
-  Vector _myTypes;
-  Vector _myValues;
+  Vector<String> _myTypes;
+  Vector<Double> _myValues;
 
 
   private static final String UNKNOWN_TYPE = "UnknownType";
@@ -53,8 +53,8 @@ abstract public class StringSetHandler extends MWCXMLReader
   {
     if (_myValues == null)
     {
-      _myTypes = new Vector(1, 1);
-      _myValues = new Vector(1, 1);
+      _myTypes = new Vector<String>(1, 1);
+      _myValues = new Vector<Double>(1, 1);
     }
 
     _myTypes.add(name);
@@ -102,8 +102,8 @@ abstract public class StringSetHandler extends MWCXMLReader
     	envElement.setAttribute(UNKNOWN_TYPE, writeThisLong(unknownVal.doubleValue()));
 		
     // now cycle through the elements themselves
-    Collection theIndices = atten.getIndices();
-    for (Iterator iter = theIndices.iterator(); iter.hasNext();)
+    Collection<String> theIndices = atten.getIndices();
+    for (Iterator<String> iter = theIndices.iterator(); iter.hasNext();)
 		{
 			String thisIndex = (String) iter.next();
 			Double res = atten.find(thisIndex);

@@ -8,37 +8,26 @@
  */
 package ASSET.Util.RMI.Server;
 
-import ASSET.Util.RMI.ServerRMI;
-import ASSET.Server.CoreServer;
-import ASSET.Scenario.CoreScenario;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.rmi.RemoteException;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+
 import ASSET.ParticipantType;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.Status;
-import ASSET.Participants.DemandedStatus;
-
-import javax.swing.*;
-import java.rmi.Naming;
-import java.rmi.RemoteException;
-import java.rmi.RMISecurityManager;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.awt.*;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-
+import ASSET.Server.CoreServer;
 import MWC.GenericData.WorldSpeed;
 
 public class ServerApp
 {
-  private static ServerImpl rmi = null;
-  private static CoreServer srv = null;
-  private static ASSET.ScenarioType scen = null;
+  static CoreServer srv = null;
+  static ASSET.ScenarioType scen = null;
 
-
-  /** the serializable id of this type
-   *
-   */
-  private static long serialVersionUID = 33;
 
   public static void main(String[] args)
   {
@@ -46,7 +35,7 @@ public class ServerApp
     srv = new CoreServer();
     try
     {
-      rmi = new ServerImpl(srv);
+      new ServerImpl(srv);
     }
     catch (RemoteException e)
     {

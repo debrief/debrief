@@ -21,13 +21,18 @@ public class FactoryGUI extends JPanel implements
       ASSET.Scenario.Genetic.GeneticAlgorithm.GAProgressed,
       ASSET.Scenario.Genetic.GeneticAlgorithm.GAStepped
 {
-  /***************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/***************************************************************
    *  member variables
    ***************************************************************/
   /** our factory
    *
    */
-  private CoreFactory _myFactory;
+  CoreFactory _myFactory;
 
   /** our stars list
    *
@@ -37,7 +42,7 @@ public class FactoryGUI extends JPanel implements
   /** the build button (which gets enabled after all necessary data is loaded
    *
    */
-  private JButton _buildBtn;
+  JButton _buildBtn;
 
   /** our genes list
    *
@@ -52,7 +57,7 @@ public class FactoryGUI extends JPanel implements
   /** our step button
    *
    */
-  private JButton _stepBtn;
+  JButton _stepBtn;
 
   /** our list of discrete steps
    *
@@ -237,7 +242,7 @@ public class FactoryGUI extends JPanel implements
   /** do a step operation
    *
    */
-  private void doStep()
+  void doStep()
   {
     _stepBtn.setEnabled(false);
 
@@ -258,7 +263,7 @@ public class FactoryGUI extends JPanel implements
   /** do the build operation
    *
    */
-  private void doBuild()
+  void doBuild()
   {
  //   _myFactory.setDocument("C:\\Asset\\ASSET2_OUT\\tstFactory.xml");
  //   _myFactory.setVariance("C:\\Asset\\ASSET2_OUT\\vary_factory.xml");
@@ -292,14 +297,14 @@ public class FactoryGUI extends JPanel implements
 
   }
 
-  private void updateGenes(final Iterator iter)
+  private void updateGenes(final Iterator<Gene> iter)
   {
 
     // empty the list
     _geneList.removeAll();
 
     // re-populate it
-    final Vector newL = new Vector(0,1);
+    final Vector<String> newL = new Vector<String>(0,1);
     while (iter.hasNext())
     {
       final Gene gene = (Gene) iter.next();
@@ -315,13 +320,13 @@ public class FactoryGUI extends JPanel implements
   /** usign the supplied iterator put a list of genes
    * into the panel
    */
-  private void updateStars(final Iterator iter)
+  private void updateStars(final Iterator<Gene> iter)
   {
     // empty the list
     _starList.removeAll();
 
     // re-populate it
-    final Vector newL = new Vector(0,1);
+    final Vector<String> newL = new Vector<String>(0,1);
     while (iter.hasNext())
     {
       final Gene gene = (Gene) iter.next();
@@ -339,7 +344,7 @@ public class FactoryGUI extends JPanel implements
    */
   public void generated()
   {
-    final Iterator it = _myFactory._myGA.getGenes().iterator();
+    final Iterator<Gene> it = _myFactory._myGA.getGenes().iterator();
     updateGenes(it);
   }
 
@@ -348,7 +353,7 @@ public class FactoryGUI extends JPanel implements
    */
   public void sorted()
   {
-    final Iterator it = _myFactory._myGA.getGenes().iterator();
+    final Iterator<Gene> it = _myFactory._myGA.getGenes().iterator();
     updateGenes(it);
   }
 
@@ -357,7 +362,7 @@ public class FactoryGUI extends JPanel implements
    */
   public void mutated()
   {
-    final Iterator it = _myFactory._myGA.getGenes().iterator();
+    final Iterator<Gene> it = _myFactory._myGA.getGenes().iterator();
     updateGenes(it);
   }
 
@@ -366,7 +371,7 @@ public class FactoryGUI extends JPanel implements
    */
   public void stepCompleted()
   {
-    final Iterator it = _myFactory._myGA.getGenes().iterator();
+    final Iterator<Gene> it = _myFactory._myGA.getGenes().iterator();
     updateGenes(it);
   }
 
@@ -375,7 +380,7 @@ public class FactoryGUI extends JPanel implements
    */
   public void promoted()
   {
-    final Iterator it = _myFactory._myGA.getStarGenes().iterator();
+    final Iterator<Gene> it = _myFactory._myGA.getStarGenes().iterator();
     updateStars(it);
   }
 
@@ -384,10 +389,10 @@ public class FactoryGUI extends JPanel implements
    */
   public void retired()
   {
-    final Iterator it = _myFactory._myGA.getGenes().iterator();
+    final Iterator<Gene> it = _myFactory._myGA.getGenes().iterator();
 
     // we have to clear out our list of genes
-    _geneList.setListData(new java.util.Vector(0,1));
+    _geneList.setListData(new java.util.Vector<Gene>(0,1));
     updateGenes(it);
   }
 
@@ -396,7 +401,7 @@ public class FactoryGUI extends JPanel implements
    */
   public void stepped()
   {
-    final Iterator it = _myFactory._myGA.getGenes().iterator();
+    final Iterator<Gene> it = _myFactory._myGA.getGenes().iterator();
     updateGenes(it);
     _geneList.repaint();
   }

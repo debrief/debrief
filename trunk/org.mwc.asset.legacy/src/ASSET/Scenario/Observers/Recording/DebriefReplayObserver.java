@@ -27,9 +27,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    * member variables
    * *************************************************************
    */
-
-  private boolean haveOutputPositions = false;
-
+	protected boolean _haveOutputPositions = false;
 
   /***************************************************************
    *  constructor
@@ -83,7 +81,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    * keep our own little register of symbols for participant types
    * - the method to retreive the symbol for a participant type is a compleicated one
    */
-  static private HashMap _mySymbolRegister = new HashMap();
+  static private HashMap<String, String> _mySymbolRegister = new HashMap<String, String>();
 
   static public String writeDetailsToBuffer(final MWC.GenericData.WorldLocation loc,
                                             final ASSET.Participants.Status stat,
@@ -165,7 +163,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
   {
     // make a note that we've output some track positions now
     // (and are now happy to output sensor data)
-    haveOutputPositions = true;
+    _haveOutputPositions = true;
 
     String res = writeDetailsToBuffer(loc, stat, pt, newTime);
     writeToFile(res);
@@ -201,7 +199,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    */
   protected void writeTheseDetectionDetails(ParticipantType pt, DetectionList detections, long dtg)
   {
-    Iterator iter = detections.iterator();
+    Iterator<DetectionEvent> iter = detections.iterator();
     while (iter.hasNext())
     {
       DetectionEvent de = (DetectionEvent) iter.next();
@@ -276,9 +274,9 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    */
   public void outputTheseLocations(WorldPath thePath)
   {
-    Collection pts = thePath.getPoints();
+    Collection<WorldLocation> pts = thePath.getPoints();
     int counter = 0;
-    for (Iterator iterator = pts.iterator(); iterator.hasNext();)
+    for (Iterator<WorldLocation> iterator = pts.iterator(); iterator.hasNext();)
     {
       WorldLocation location = (WorldLocation) iterator.next();
       outputThisLocation(location, _os, "p:" + ++counter);

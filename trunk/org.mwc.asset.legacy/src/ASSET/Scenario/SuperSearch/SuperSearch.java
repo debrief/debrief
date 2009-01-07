@@ -9,21 +9,19 @@ package ASSET.Scenario.SuperSearch;
  * @version 1.0
  */
 
-import ASSET.*;
-import ASSET.Util.XML.ASSETReaderWriter;
-import ASSET.Util.MonteCarlo.XMLVarianceList;
-import org.jdom.input.SAXBuilder;
+import java.util.Iterator;
+import java.util.List;
+
+import org.jaxen.dom.DOMXPath;
 import org.jdom.Document;
 import org.jdom.Element;
-import org.jaxen.dom.DOMXPath;
+import org.jdom.input.SAXBuilder;
 
-import java.util.List;
-import java.util.Iterator;
-import java.io.File;
-
-import MWC.GenericData.WorldLocation;
+import ASSET.ParticipantType;
+import ASSET.Util.MonteCarlo.XMLVarianceList;
+import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldLocation;
 
 public class SuperSearch {
 
@@ -53,22 +51,22 @@ public class SuperSearch {
   /** the template of target to work from
    *
    */
-  private String _templateFile = null;
+  protected String _templateFile = null;
 
   /** the variance file used to create new vessel instances
    *
    */
-  private String _varianceFile = null;
+  protected String _varianceFile = null;
 
   /** the id number to start from
    *
    */
-  private int _startId;
+  protected int _startId;
 
   /** the counter for the current id number
    *
    */
-  private static int _currentId;
+  protected static int _currentId;
 
   /***************************************************************
    *  member methods
@@ -92,10 +90,10 @@ public class SuperSearch {
   /** set the area to fill with targets
    *
    */
-  private void setArea(final MWC.GenericData.WorldArea area)
-  {
-    _area = area;
-  }
+//  private void setArea(final MWC.GenericData.WorldArea area)
+//  {
+//    _area = area;
+//  }
 
   /** get the area to be filled with targets
    *
@@ -117,7 +115,7 @@ public class SuperSearch {
   /** set the number of targets to create along each axis
    *
    */
-  private void setXNumber(final int number)
+  protected void setXNumber(final int number)
   {
     _xNum = number;
   }
@@ -133,7 +131,7 @@ public class SuperSearch {
   /** set the number of targets to create along each axis
    *
    */
-  private void setYNumber(final int number)
+  protected void setYNumber(final int number)
   {
     _yNum = number;
   }
@@ -230,7 +228,7 @@ public class SuperSearch {
   /** build a single target, at the indicated location
    *
    */
-  private ASSET.ParticipantType buildTarget(final MWC.GenericData.WorldLocation origin,
+  protected ASSET.ParticipantType buildTarget(final MWC.GenericData.WorldLocation origin,
                                             final XMLVarianceList xl)
   {
 
@@ -304,7 +302,8 @@ public class SuperSearch {
   /** read in our control data from the specified file
    *
    */
-  private void configure(final java.io.InputStream input)
+  @SuppressWarnings("unchecked")
+	protected void configure(final java.io.InputStream input)
   {
 
     // read the stream into a document
@@ -336,8 +335,8 @@ public class SuperSearch {
         WorldLocation loc_a = null;
         WorldLocation loc_b = null;
         final Element area = genny.getChild("WorldArea");
-        final List points = area.getChildren("Location");
-        final Iterator it = points.iterator();
+        final List<Object> points = area.getChildren("Location");
+        final Iterator<Object> it = points.iterator();
         while (it.hasNext())
         {
           final Element thisLoc = (Element) it.next();

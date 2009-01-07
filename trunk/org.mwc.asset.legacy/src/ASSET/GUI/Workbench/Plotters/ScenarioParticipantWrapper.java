@@ -64,7 +64,7 @@ public class ScenarioParticipantWrapper implements
 	/**
 	 * utility to represent us as a vector
 	 */
-	private Vector _theElements;
+	private Vector<Editable> _theElements;
 
 	/**
 	 * sort out if we have created sensor fit in our elements array
@@ -478,11 +478,11 @@ public class ScenarioParticipantWrapper implements
 	{
 	}
 
-	public Enumeration elements()
+	public Enumeration<Editable> elements()
 	{
 		if (_theElements == null)
 		{
-			_theElements = new Vector(3, 1);
+			_theElements = new Vector<Editable>(3, 1);
 
 			// ok add the movement chars
 			Editable moveChars = new MoveCharsPlottable(_myPart.getMovementChars(), _myParent);

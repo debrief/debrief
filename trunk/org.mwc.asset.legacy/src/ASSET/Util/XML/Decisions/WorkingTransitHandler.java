@@ -19,8 +19,8 @@ abstract public class WorkingTransitHandler extends TransitHandler
   private final static String NUM_STOPS = "NumStops";
   private final static String ACTIVITY = "Activity";
 
-  private Sequence _myActivity;
-  private int _numStops;
+  Sequence _myActivity;
+  int _numStops;
 
   public WorkingTransitHandler(int thisDepth)
   {

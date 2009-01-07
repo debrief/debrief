@@ -1,14 +1,13 @@
 package ASSET.Scenario.Observers.Recording;
 
-import ASSET.Scenario.CoreScenario;
-import ASSET.Scenario.Observers.RecordToFileObserverType;
-import ASSET.ScenarioType;
-import ASSET.Util.SupportTesting;
-
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+
+import ASSET.ScenarioType;
+import ASSET.Scenario.CoreScenario;
+import ASSET.Scenario.Observers.RecordToFileObserverType;
+import ASSET.Util.SupportTesting;
 
 /**
  * Created by IntelliJ IDEA.
@@ -132,13 +131,13 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
   //////////////////////////////////////////////////////////////////////////////////////////////////
   public static class RecToFileTest extends SupportTesting
   {
-    private boolean _listenersRemoved = false;
-    private boolean _listenersAdded = false;
-    private boolean _closeProcessingPerformed = false;
-    private boolean _setupProcessingPerformed = false;
-    private boolean _headerInfoSent = false;
-    private boolean _newNameCalled;
-    private boolean _getSuffixCalled;
+    boolean _listenersRemoved = false;
+    boolean _listenersAdded = false;
+    boolean _closeProcessingPerformed = false;
+    boolean _setupProcessingPerformed = false;
+    boolean _headerInfoSent = false;
+//    private boolean _newNameCalled;
+//    private boolean _getSuffixCalled;
 
     public RecToFileTest(final String val)
     {
@@ -148,7 +147,7 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
     public final void testInActiveRecorder()
     {
 
-      File theOutputFile = null;
+//      File theOutputFile = null;
 
       ContinuousRecordToFileObserver observer = getObserver(false);
       assertNotNull("observer wasn't created", observer);
@@ -163,8 +162,8 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
       _setupProcessingPerformed = false;
       _closeProcessingPerformed = false;
       _headerInfoSent = false;
-      _newNameCalled = false;
-      _getSuffixCalled = false;
+//      _newNameCalled = false;
+//      _getSuffixCalled = false;
 
       // and do the setup
       observer.setup(cs);
@@ -201,8 +200,8 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
       _setupProcessingPerformed = false;
       _closeProcessingPerformed = false;
       _headerInfoSent = false;
-      _newNameCalled = false;
-      _getSuffixCalled = false;
+//      _newNameCalled = false;
+//      _getSuffixCalled = false;
 
 
       // and do the setup
@@ -248,13 +247,13 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
 
         protected String getMySuffix()
         {
-          _getSuffixCalled = true;
+//          _getSuffixCalled = true;
           return "tmp";  //To change body of implemented methods use File | Settings | File Templates.
         }
 
         protected String newName(String name)
         {
-          _newNameCalled = true;
+//          _newNameCalled = true;
           return "new_name";  //To change body of implemented methods use File | Settings | File Templates.
         }
 

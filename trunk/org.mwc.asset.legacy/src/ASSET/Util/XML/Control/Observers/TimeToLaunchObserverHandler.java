@@ -23,9 +23,9 @@ abstract class TimeToLaunchObserverHandler extends MWC.Utilities.ReaderWriter.XM
 
   private final static String TARGET_TYPE = "Target";
 
-  private TargetType _targetType = null;
-  private boolean _isActive;
-  private String _name;
+  TargetType _targetType = null;
+  boolean _isActive;
+  String _name;
 
   public TimeToLaunchObserverHandler()
   {
@@ -98,7 +98,7 @@ abstract class TimeToLaunchObserverHandler extends MWC.Utilities.ReaderWriter.XM
    */
   abstract private static class TargetHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   {
-    private TargetType _type = null;
+    TargetType _type = null;
 
     public TargetHandler(final String myType)
     {

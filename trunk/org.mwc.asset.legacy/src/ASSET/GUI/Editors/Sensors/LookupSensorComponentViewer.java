@@ -9,24 +9,31 @@ package ASSET.GUI.Editors.Sensors;
  * @version 1.0
  */
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.event.ActionEvent;
+import java.util.Iterator;
+import java.util.Vector;
+
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JTable;
+
+import ASSET.Models.SensorType;
 import ASSET.Models.Decision.Movement.Wander;
-import ASSET.Models.Environment.*;
-import ASSET.Models.Movement.*;
+import ASSET.Models.Environment.EnvironmentType;
+import ASSET.Models.Environment.SimpleEnvironment;
+import ASSET.Models.Movement.HeloMovementCharacteristics;
+import ASSET.Models.Movement.MovementCharacteristics;
+import ASSET.Models.Movement.SSMovementCharacteristics;
 import ASSET.Models.Sensor.Initial.BroadbandSensor;
 import ASSET.Models.Sensor.Lookup.LookupSensor;
 import ASSET.Models.Sensor.Lookup.OpticLookupSensor;
-import ASSET.Models.SensorType;
 import ASSET.Participants.Category;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
-
-import javax.swing.*;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.util.Iterator;
-import java.util.Vector;
 
 public class LookupSensorComponentViewer extends BaseSensorViewer
 {
@@ -54,7 +61,7 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
   /**
    * the list of column names for our data
    */
-  private final Vector _cols;
+  private final Vector<String> _cols;
 
   ////////////////////////////////////////////////////
   // constructor
@@ -63,7 +70,7 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
   public LookupSensorComponentViewer()
   {
     // ok, create the columns
-    _cols = new Vector(1, 1);
+    _cols = new Vector<String>(1, 1);
     _cols.add("Name");
     _cols.add("State");
     _cols.add("RP (m)");
@@ -103,12 +110,12 @@ public class LookupSensorComponentViewer extends BaseSensorViewer
   public void updateForm()
   {
     // step through the detections, collating them into the vector expected by the table
-    Vector theData = new Vector(1, 1);
-    Iterator it = _sensorEvents.iterator();
+    Vector<Vector<String>> theData = new Vector<Vector<String>>(1, 1);
+    Iterator<Object> it = _sensorEvents.iterator();
     while (it.hasNext())
     {
       LookupSensor.LookupSensorComponentsEvent sc = (LookupSensor.LookupSensorComponentsEvent) it.next();
-      Vector thisV = new Vector(1, 1);
+      Vector<String> thisV = new Vector<String>(1, 1);
       thisV.add(sc.getTgtName());
       thisV.add(sc.getStateString());
       thisV.add("" + (int) sc.getRP().getValueIn(WorldDistance.METRES));

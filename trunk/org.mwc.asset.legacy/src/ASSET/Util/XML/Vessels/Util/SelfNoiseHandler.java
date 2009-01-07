@@ -10,8 +10,6 @@ package ASSET.Util.XML.Vessels.Util;
 
 public abstract class SelfNoiseHandler extends RadiatedCharsHandler
 {
-  final static private String type = null;
-
   public SelfNoiseHandler()
   {
     super("SelfNoiseCharacteristics");

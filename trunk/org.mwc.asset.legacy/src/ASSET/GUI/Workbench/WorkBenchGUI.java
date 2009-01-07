@@ -9,6 +9,7 @@ package ASSET.GUI.Workbench;
 import ASSET.GUI.Core.CoreGUISwing;
 import ASSET.GUI.MonteCarlo.Loader;
 import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
+import ASSET.GUI.Painters.ScenarioNoiseLevelPainter.ParticipantStatus;
 import ASSET.GUI.Tools.View3dPlot;
 import ASSET.GUI.Util.FileList;
 import ASSET.Models.Environment.EnvironmentType;
@@ -18,6 +19,8 @@ import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Util.XML.ASSETReaderWriter;
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
 import MWC.GUI.DragDrop.FileDropLocationSupport;
 import MWC.GUI.DragDrop.FileDropSupport;
 import MWC.GUI.Layer;
@@ -59,12 +62,12 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
   /**
    * the object which handles plotting the scenario data onto the plot
    */
-  private ASSET.GUI.Workbench.Plotters.ScenarioLayer _scenarioPlotter = null;
+  ASSET.GUI.Workbench.Plotters.ScenarioLayer _scenarioPlotter = null;
 
   /**
    * container for the Monte Carlo loader, if required.
    */
-  private static JComponent _loaderHolder = null;
+  static JComponent _loaderHolder = null;
   private static final String USER_QUIT_MESSAGE = "User quit";
 
   /***************************************************************
@@ -92,9 +95,9 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
    */
 
 
-  private void participantDropped(final Vector files, final Point point)
+  void participantDropped(final Vector<File> files, final Point point)
   {
-    final Iterator ii = files.iterator();
+    final Iterator<File> ii = files.iterator();
     while (ii.hasNext())
     {
       final File file = (File) ii.next();
@@ -124,9 +127,9 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     }
   }
 
-  public void scenarioDropped(final Vector files) throws FileNotFoundException
+  public void scenarioDropped(final Vector<File> files) throws FileNotFoundException
   {
-    final Iterator ii = files.iterator();
+    final Iterator<File> ii = files.iterator();
     while (ii.hasNext())
     {
       final File file = (File) ii.next();
@@ -148,7 +151,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     _participantDropper = new FileDropLocationSupport();
     _participantDropper.setFileDropListener(new FileDropLocationSupport.FileDropLocationListener()
     {
-      public void FilesReceived(final Vector files, final Point point)
+      public void FilesReceived(final Vector<File> files, final Point point)
       {
         participantDropped(files, point);
       }
@@ -157,7 +160,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     _scenarioDropper = new FileDropSupport();
     _scenarioDropper.setFileDropListener(new FileDropSupport.FileDropListener()
     {
-      public void FilesReceived(final Vector files)
+      public void FilesReceived(final Vector<File> files)
       {
         try
         {
@@ -177,9 +180,9 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
   /**
    * get the current list of vessel statuses, put into an array of structures
    */
-  public Vector getStatuses(final int theMedium)
+  public Vector<ParticipantStatus> getStatuses(final int theMedium)
   {
-    final Vector res = new Vector(0, 1);
+    final Vector<ScenarioNoiseLevelPainter.ParticipantStatus> res = new Vector<ParticipantStatus>(0, 1);
     final Integer[] list = _theScenario.getListOfParticipants();
     for (int j = 0; j < list.length; j++)
     {
@@ -246,17 +249,19 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     _theData.addThisLayer(_scenarioPlotter);
 
 
+    final Layers localData = _theData;
+    
     // listen out for new participants
     _theScenario.addParticipantsChangedListener(new ASSET.Scenario.ParticipantsChangedListener()
     {
       public void newParticipant(int index)
       {
-        _theData.fireModified(null);
+      	localData.fireModified(null);
       }
 
       public void participantRemoved(int index)
       {
-        _theData.fireModified(null);
+      	localData.fireModified(null);
       }
 
       public void restart()
@@ -271,7 +276,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
       {
         // tell the data it's been modified
         //  _theData.fireModified(null);
-        _theData.fireModified(_scenarioPlotter);
+      	localData.fireModified(_scenarioPlotter);
         // update the clock
         setTime(time);
       }
@@ -353,7 +358,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
   /**
    * update the time displayed
    */
-  private void setTime(final long time)
+  void setTime(final long time)
   {
     final String newT = MWC.Utilities.TextFormatting.FullFormatDateTime.toString(time);
     _theTime.setText(newT);
@@ -365,12 +370,15 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
    */
   protected void addUniqueTools()
   {
+  	final CoreScenario localScenario = _theScenario;
+  	final PlainChart localChart = getChart();
+  	
     _theTools.addElement(new MenuItemInfo("ASSET", null, "Step",
                                           new PlainTool(_theParent, "Step", "images/VCRForward.gif")
                                           {
                                             public Action getData()
                                             {
-                                              _theScenario.step();
+                                            	localScenario.step();
                                               return null;
                                             }
                                           }, null, 't'));
@@ -380,7 +388,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                           {
                                             public Action getData()
                                             {
-                                              _theScenario.start();
+                                            	localScenario.start();
                                               return null;
                                             }
                                           }, null, 'a'));
@@ -391,7 +399,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                           {
                                             public void execute()
                                             {
-                                              _theScenario.pause();
+                                            	localScenario.pause();
                                             }
 
                                             public Action getData()
@@ -406,10 +414,10 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                             public Action getData()
                                             {
                                               // get the scenario to go back to the start
-                                              _theScenario.restart();
+                                            	localScenario.restart();
 
                                               // and redraw the plot
-                                              getChart().update();
+                                            	localChart.update();
                                               return null;
                                             }
                                           }, null, 'o'));
@@ -425,11 +433,11 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                               try
                                               {
                                                 // tell the scenario to stop after this cycle
-                                                _theScenario.stop(USER_QUIT_MESSAGE);
+                                              	localScenario.stop(USER_QUIT_MESSAGE);
 
                                                 // trigger another cycle so that the scenario can find out that
                                                 // we've stopped it
-                                                _theScenario.step();
+                                              	localScenario.step();
                                               }
                                               catch (Exception e)
                                               {
@@ -536,7 +544,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
       // one file has been dropped in, load it
       try
       {
-        Vector theFiles = new Vector();
+        Vector<File> theFiles = new Vector<File>();
         for (int i = 0; i < args.length; i++)
         {
           String thisFile = args[i];
@@ -567,6 +575,11 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
                                           viewer.getChart(), viewer.getParent(), viewer.getProperties())
       {
         /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				/**
          * user has tried to close the loader panel = we'll just hide it
          */
         public void doClose()

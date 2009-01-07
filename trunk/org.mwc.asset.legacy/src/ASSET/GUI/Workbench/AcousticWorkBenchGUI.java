@@ -8,15 +8,15 @@
  */
 package ASSET.GUI.Workbench;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JFrame;
+
 import ASSET.GUI.Core.CoreGUISwing;
-import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
 import ASSET.GUI.Painters.NoiseSourcePainter;
+import ASSET.GUI.Painters.ScenarioNoiseLevelPainter;
 import ASSET.Models.Environment.EnvironmentType;
 import MWC.GenericData.WorldLocation;
-import MWC.GUI.ToolParent;
-
-import javax.swing.*;
-import java.awt.*;
 
 public class AcousticWorkBenchGUI extends WorkBenchGUI
 {
