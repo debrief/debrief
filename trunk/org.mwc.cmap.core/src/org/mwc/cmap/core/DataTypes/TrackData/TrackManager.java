@@ -19,13 +19,13 @@ public class TrackManager implements TrackDataProvider // ,
 // TrackDataProvider.TrackDataListener
 {
 
-	private WatchableList _thePrimary;
+	WatchableList _thePrimary;
 
-	private WatchableList[] _theSecondaries;
+	WatchableList[] _theSecondaries;
 
 	private Vector<TrackDataListener> _myDataListeners;
 
-	private Layers _theLayers;
+	Layers _theLayers;
 
 	private Vector<TrackShiftListener> _myShiftListeners;
 

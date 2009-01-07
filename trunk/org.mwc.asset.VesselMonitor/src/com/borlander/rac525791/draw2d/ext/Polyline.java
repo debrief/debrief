@@ -58,6 +58,7 @@ public void addPoint(Point pt) {
 /**
  * @see org.eclipse.draw2d.IFigure#containsPoint(int, int)
  */
+@SuppressWarnings("unchecked")
 public boolean containsPoint(int x, int y) {
 	int tolerance = lineWidth / 2 + TOLERANCE;
 	LINEBOUNDS.setBounds(getBounds());

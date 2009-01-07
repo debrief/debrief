@@ -256,7 +256,7 @@ public class CorePlugin extends AbstractUIPlugin
 					{
 						SelectionChangedEvent sEvent = new SelectionChangedEvent(
 								selectionProvider, asSelection);
-						for (Iterator stepper = selectionListeners.iterator(); stepper
+						for (Iterator<ISelectionChangedListener> stepper = selectionListeners.iterator(); stepper
 								.hasNext();)
 						{
 							ISelectionChangedListener thisL = (ISelectionChangedListener) stepper

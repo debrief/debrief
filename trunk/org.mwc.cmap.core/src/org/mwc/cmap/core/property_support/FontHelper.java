@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.*;
 public class FontHelper extends EditorHelper
 {
 
-	private static HashMap _myFontList;
+	private static HashMap<java.awt.Font, Font> _myFontList;
 
 	private static FontRegistry _fontRegistry;
 
@@ -105,7 +105,7 @@ public class FontHelper extends EditorHelper
 			_fontRegistry = new FontRegistry(Display.getCurrent(), true);
 
 		if (_myFontList == null)
-			_myFontList = new HashMap();
+			_myFontList = new HashMap<java.awt.Font, Font>();
 
 		// see if we've got the font in our local list
 		org.eclipse.swt.graphics.Font thisFont = (Font) _myFontList.get(javaFont);

@@ -173,13 +173,13 @@ public class TargetTypeHelper extends EditorHelper
 		 */
 		private void setCurrentValues()
 		{
-			Vector forces = new Vector(0, 1);
-			Vector types = new Vector(0, 1);
-			Vector envs = new Vector(0, 1);
+			Vector<String> forces = new Vector<String>(0, 1);
+			Vector<String> types = new Vector<String>(0, 1);
+			Vector<String> envs = new Vector<String>(0, 1);
 
 			// ok, sort out the forces
-			Collection targetTypes = _current.getTargets();
-			for (Iterator iter = targetTypes.iterator(); iter.hasNext();)
+			Collection<String> targetTypes = _current.getTargets();
+			for (Iterator<String> iter = targetTypes.iterator(); iter.hasNext();)
 			{
 				String type = (String) iter.next();
 

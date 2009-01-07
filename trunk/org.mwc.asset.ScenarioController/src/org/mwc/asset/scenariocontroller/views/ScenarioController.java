@@ -48,17 +48,17 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	/**
 	 * hey, it's our scenario
 	 */
-	private ScenarioType _theScenario;
+	ScenarioType _theScenario;
 
-	private Label _timeLabel;
+	Label _timeLabel;
 
-	private Composite _holder;
+	Composite _holder;
 
 	private Action _editProperties;
 
 	protected StructuredSelection _propsAsSelection;
 
-	private TimeControllerProperties _myStepperProperties;
+	TimeControllerProperties _myStepperProperties;
 
 	private PropertyChangeListener _myPropertyListener;
 
@@ -278,17 +278,17 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				.getImageDescriptor("icons/properties.gif"));
 	}
 
-	private Vector _selectionListeners;
+	Vector<ISelectionChangedListener> _selectionListeners;
 
 	/** the play button, which we update when switching to a new sceanrio
 	 * 
 	 */
-	private Button _playBtn;
+	Button _playBtn;
 
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
-			_selectionListeners = new Vector(0, 1);
+			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
 		// see if we don't already contain it..
 		if (!_selectionListeners.contains(listener))
@@ -709,16 +709,6 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	//
 	// }
 
-	public Object getAdapter(Class adapter)
-	{
-		Object res = null;
-
-		// did we find anything?
-		if (res == null)
-			res = super.getAdapter(adapter);
-
-		return res;
-	}
 
 	public static String toStringHiRes(HiResDate time, String pattern)
 			throws IllegalArgumentException
@@ -801,7 +791,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	 * @param playBtn
 	 * @return
 	 */
-	private void showPaused(final Button playBtn)
+	void showPaused(final Button playBtn)
 	{
 		ImageDescriptor thisD;
 		_theScenario.pause();
@@ -816,7 +806,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	 * @param playBtn
 	 * @return
 	 */
-	private void showPlaying(final Button playBtn)
+	void showPlaying(final Button playBtn)
 	{
 		ImageDescriptor thisD;
 		thisD = ScenarioControllerPlugin

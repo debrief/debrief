@@ -124,8 +124,8 @@ public class OldTargetTypeCellEditor extends CellEditor
 		TargetType _myCat = (TargetType) value;
 
 		// ok, sort out the forces
-		Collection types = _myCat.getTargets();
-		for (Iterator iter = types.iterator(); iter.hasNext();)
+		Collection<String> types = _myCat.getTargets();
+		for (Iterator<String> iter = types.iterator(); iter.hasNext();)
 		{
 			String type = (String) iter.next();
 

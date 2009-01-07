@@ -39,7 +39,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 
 public class SensorMonitor extends ViewPart
 {
-	private Table _table;
+	Table _table;
 
 	/**
 	 * who we're listening to.
@@ -48,15 +48,15 @@ public class SensorMonitor extends ViewPart
 
 	private Action _followSelection;
 
-	private ISelectionChangedListener _selectionChangeListener;
+	ISelectionChangedListener _selectionChangeListener;
 
-	private Action _keepHistory;
+	Action _keepHistory;
 
 	private SensorType _mySensor;
 
 	private PropertyChangeListener _sensorCalcListener;
 
-	private long _lastTime = -1;
+	long _lastTime = -1;
 
 	/**
 	 * open a new sensor monitor
@@ -305,7 +305,7 @@ public class SensorMonitor extends ViewPart
 		});
 	}
 
-	private void generateCol(Table table, String name, int wid)
+	void generateCol(Table table, String name, int wid)
 	{
 		TableColumn col = new TableColumn(table, SWT.LEFT);
 		col.setText(name);

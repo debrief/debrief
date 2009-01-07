@@ -30,7 +30,7 @@ public class VesselMonitor extends ViewPart
 	/**
 	 * we listen out for participants being selected
 	 */
-	private ISelectionChangedListener _selectionChangeListener;
+	ISelectionChangedListener _selectionChangeListener;
 
 	private Action _trackParticipant;
 
@@ -40,9 +40,9 @@ public class VesselMonitor extends ViewPart
 
 	private ParticipantDecidedListener _decisionListener;
 
-	private DashboardDataModel _dashModel;
+	DashboardDataModel _dashModel;
 
-	private Dashboard _dashboard;
+	Dashboard _dashboard;
 
 	/**
 	 * The constructor.

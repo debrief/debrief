@@ -255,6 +255,7 @@ public class DTGHelper extends EditorHelper
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean editsThis(Class target)
 	{
 		return (target == HiResDate.class);

@@ -32,7 +32,6 @@ public class FileNameHelper extends EditorHelper
 
 		protected Object openDialogBox(Control cellEditorWindow)
 		{
-			String res = null;
 			FileDialog ftDialog = new FileDialog(cellEditorWindow.getShell(), SWT.SAVE);
 			File theFile = (File) getValue();
 			if(theFile != null)

@@ -163,7 +163,7 @@ public class EditableWrapper implements IPropertySource
 		
 		if (_myDescriptors == null)
 		{
-			Vector list = new Vector(0, 1);
+			Vector<IPropertyDescriptor> list = new Vector<IPropertyDescriptor>(0, 1);
 			IPropertyDescriptor[] res = new IPropertyDescriptor[] { null };
 			Editable.EditorType editor = _editable.getInfo();
 			if (editor != null)
@@ -336,6 +336,7 @@ public class EditableWrapper implements IPropertySource
 		return (_editable instanceof Layer);
 	}
 
+	@SuppressWarnings("unchecked")
 	final protected static Class getPropertyClass(PropertyDescriptor thisProp)
 	{
 
@@ -456,7 +457,7 @@ public class EditableWrapper implements IPropertySource
 
 	}
 	
-	public static class OrderedEditableWrapper extends EditableWrapper implements Comparable
+	public static class OrderedEditableWrapper extends EditableWrapper implements Comparable<OrderedEditableWrapper>
 	{
 		private final int _myIndex;
 		
@@ -466,7 +467,7 @@ public class EditableWrapper implements IPropertySource
 			_myIndex  = myIndex;
 		}
 
-		public int compareTo(Object o)
+		public int compareTo(OrderedEditableWrapper o)
 		{
 			OrderedEditableWrapper other = (OrderedEditableWrapper) o;
 			int hisIndex = other._myIndex;

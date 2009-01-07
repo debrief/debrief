@@ -141,6 +141,7 @@ public class BoundedIntegerHelper extends EditorHelper
 	 * back up the chain
 	 * @param targetClass
 	 */
+	@SuppressWarnings("unchecked")
 	public BoundedIntegerHelper(Class targetClass)
 	{
 		super(targetClass);

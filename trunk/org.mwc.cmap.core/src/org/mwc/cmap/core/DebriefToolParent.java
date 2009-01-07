@@ -91,9 +91,9 @@ public class DebriefToolParent implements ToolParent
 	 * @param pattern
 	 * @return
 	 */
-	public Map getPropertiesLike(String pattern)
+	public Map<String, String> getPropertiesLike(String pattern)
 	{
-		Map retMap = new HashMap();
+		Map<String, String> retMap = new HashMap<String, String>();
 
 		// SPECIAL PROCESSING. THE ONLY TIME WE USE CURRENTLY USE THIS IS FOR THE VPF PATHS
 		if(pattern.equals(CreateVPFLayers.VPF_DATABASE_PROPERTY))

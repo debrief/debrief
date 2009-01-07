@@ -330,6 +330,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 	{
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;

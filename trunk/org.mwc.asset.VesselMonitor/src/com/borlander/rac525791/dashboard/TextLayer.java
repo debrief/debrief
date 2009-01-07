@@ -21,12 +21,12 @@ public class TextLayer extends AbstractTextLayer {
 
 	private final TextDrawer[] myTextDrawers;
 	
-	private TwoLinesText myLeftText;
-	private TwoLinesText myRightText;
-	private CenteredText myCenterText;
+	TwoLinesText myLeftText;
+	TwoLinesText myRightText;
+	CenteredText myCenterText;
 	
-	private ShadowRectangle myLeftPanel;
-	private ShadowRectangle myRightPanel;
+	ShadowRectangle myLeftPanel;
+	ShadowRectangle myRightPanel;
 
 	public TextLayer(DashboardUIModel uiModel){
 		setForegroundColor(TEXT_COLOR);

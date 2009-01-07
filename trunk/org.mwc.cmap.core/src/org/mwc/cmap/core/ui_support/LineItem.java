@@ -33,7 +33,7 @@ public class LineItem extends ControlContribution {
 	 * preferences dialog id to open when user double-clicks
 	 * 
 	 */
-	private final String _prefId;
+	final String _prefId;
 
 	/**
 	 * constructor - get going

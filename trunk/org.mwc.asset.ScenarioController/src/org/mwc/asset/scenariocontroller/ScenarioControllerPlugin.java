@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.asset.core.property_support.TargetTypeHelper;
 import org.mwc.cmap.core.property_support.DebriefProperty;
+import org.mwc.cmap.core.property_support.EditorHelper;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -34,7 +35,7 @@ public class ScenarioControllerPlugin extends AbstractUIPlugin {
 	public void start(BundleContext context) throws Exception {
 		super.start(context);
 		// sort out the additional helpers for asset-related items
-		Vector myHelpers = getHelpers();
+		Vector<EditorHelper> myHelpers = getHelpers();
 		DebriefProperty.addSupplementalHelpers(myHelpers);
 	}
 
@@ -42,9 +43,9 @@ public class ScenarioControllerPlugin extends AbstractUIPlugin {
 	 * 
 	 * @return
 	 */
-	private Vector getHelpers()
+	private Vector<EditorHelper> getHelpers()
 	{
-		Vector res = new Vector(1,1);
+		Vector<EditorHelper> res = new Vector<EditorHelper>(1,1);
 		res.add(new TargetTypeHelper());
 		return res;
 	}

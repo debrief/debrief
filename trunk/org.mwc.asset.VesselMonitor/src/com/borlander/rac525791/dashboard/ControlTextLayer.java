@@ -24,11 +24,11 @@ public class ControlTextLayer extends AbstractTextLayer {
 	private static final Color LIGHT_GREEN = new Color(null, 191, 255, 180);
 	private static final Color DARK_GREEN = new Color(null, 92, 255, 64);
 	
-	private GradientRoundedRectangle mySpeed;
-	private GradientRoundedRectangle myDepth;
+	GradientRoundedRectangle mySpeed;
+	GradientRoundedRectangle myDepth;
 	
-	private final CenteredText mySpeedText;
-	private final CenteredText myDepthText;
+	final CenteredText mySpeedText;
+	final CenteredText myDepthText;
 	
 	private final TextDrawer[] myTextDrawers;
 	

@@ -109,7 +109,7 @@ public class Track implements Serializable {
 	/**
 	 * the list of fixes we are storing
 	 */
-	private java.util.Vector _theFixes;
+	private java.util.Vector<Fix> _theFixes;
 
 	/**
 	 * the vessel name
@@ -137,13 +137,13 @@ public class Track implements Serializable {
 	 * default constructor
 	 */
 	public Track() {
-		_theFixes = new Vector(0, 1);
+		_theFixes = new Vector<Fix>(0, 1);
 	}
 
 	/**
 	 * constructor receives reference to list of fixes which make up the track
 	 */
-	public Track(java.util.Vector theFixesVal) {
+	public Track(java.util.Vector<Fix> theFixesVal) {
 		this();
 
 		// hey, check we've received some fixes
@@ -151,7 +151,7 @@ public class Track implements Serializable {
 
 			// ok - add the fixes incrementally, so we can sort out the time
 			// limits
-			for (Iterator iter = theFixesVal.iterator(); iter.hasNext();) {
+			for (Iterator<Fix> iter = theFixesVal.iterator(); iter.hasNext();) {
 				Fix thisFix = (Fix) iter.next();
 				addFix(thisFix);
 			}
@@ -167,7 +167,7 @@ public class Track implements Serializable {
 	// member functions
 	// ////////////////////////////////////////////////
 
-	public Enumeration getFixes() {
+	public Enumeration<Fix> getFixes() {
 		return _theFixes.elements();
 	}
 

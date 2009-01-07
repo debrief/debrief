@@ -11,13 +11,16 @@ import org.eclipse.swt.widgets.*;
 
 public abstract class EditorHelper
 {
+	@SuppressWarnings("unchecked")
 	final protected Class _myTargetClass;
 
+	@SuppressWarnings("unchecked")
 	public EditorHelper(Class targetClass)
 	{
 		_myTargetClass = targetClass;
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean editsThis(Class target)
 	{
 		return (target == _myTargetClass);

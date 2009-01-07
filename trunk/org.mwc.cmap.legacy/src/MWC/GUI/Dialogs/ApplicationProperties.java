@@ -95,9 +95,9 @@ public class ApplicationProperties {
   @return Map - a Map of all property name/value pairs whose names matched the given
           String.
   */
-  /*FIXME:  Perhaps offer beginsWith and endsWith functionality?*/
-  public Map /*String propertyName, String value*/ getPropertiesLike(String propertyNameToMatch) {
-    Map retMap = new HashMap();
+  @SuppressWarnings("unchecked")
+	public Map<String, String> /*String propertyName, String value*/ getPropertiesLike(String propertyNameToMatch) {
+    Map<String, String> retMap = new HashMap<String, String>();
     Enumeration allPropertyNames = appProperties.propertyNames();
     while (allPropertyNames.hasMoreElements()) {
       String propertyName = (String)allPropertyNames.nextElement();

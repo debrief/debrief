@@ -41,7 +41,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	/**
 	 * the people listening to us
 	 */
-	private Vector _selectionListeners;
+	private Vector<ISelectionChangedListener> _selectionListeners;
 
 	private StructuredSelection _currentSelection;
 
@@ -291,7 +291,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	/**
 	 * ok, we've received some data. store it.
 	 */
-	private void updateUI()
+	void updateUI()
 	{
 		// remove the current list items = we're going to put them back in, in a mo.
 		clearOut();
@@ -361,15 +361,15 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	/**
 	 * @param dest
 	 */
-	private void paintPolygon(CanvasType dest)
+	void paintPolygon(CanvasType dest)
 	{
 		// ok - draw the polygon
 		int counter = 2;
 		dest.setColor(java.awt.Color.WHITE);
-		Collection pts = _myPath.getPoints();
+		Collection<WorldLocation> pts = _myPath.getPoints();
 		Point lastP = null;
 		Point startP = null;
-		for (Iterator iter = pts.iterator(); iter.hasNext();)
+		for (Iterator<WorldLocation> iter = pts.iterator(); iter.hasNext();)
 		{
 			WorldLocation thisL = (WorldLocation) iter.next();
 			if (lastP == null)
@@ -416,7 +416,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		super.dispose();
 	}
 
-	private static class CountingLabelProvider extends LabelProvider
+	protected static class CountingLabelProvider extends LabelProvider
 	{
 		int counter = 0;
 
@@ -451,7 +451,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		if (_selectionListeners != null)
 		{
 			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, selection);
-			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners.iterator(); stepper.hasNext();)
 			{
 				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
 				if (thisL != null)
@@ -465,7 +465,7 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
 		if (_selectionListeners == null)
-			_selectionListeners = new Vector(0, 1);
+			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
 		// see if we don't already contain it..
 		if (!_selectionListeners.contains(listener))

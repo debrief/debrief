@@ -47,6 +47,7 @@ public class LatLongHelper extends EditorHelper
 		return res;
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean editsThis(Class target)
 	{
 		return (target == WorldLocation.class);

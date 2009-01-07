@@ -8,6 +8,8 @@
  */
 package MWC.GUI.DragDrop;
 
+import java.io.File;
+
 public class FileDropLocationSupport extends FileDropSupport
 {
   /***************************************************************
@@ -37,7 +39,7 @@ public class FileDropLocationSupport extends FileDropSupport
   }
 
 
-  protected void fileReceived(java.util.Vector theFiles, java.awt.Point thePoint)
+  protected void fileReceived(java.util.Vector<File> theFiles, java.awt.Point thePoint)
   {
     if(_locationListener != null)
       _locationListener.FilesReceived(theFiles, thePoint);
@@ -52,7 +54,7 @@ public class FileDropLocationSupport extends FileDropSupport
      * @param files the list of files
      * @param point the location in the component where the files were dropped
      */
-    public void FilesReceived(java.util.Vector files, java.awt.Point point);
+    public void FilesReceived(java.util.Vector<File> files, java.awt.Point point);
   }
 
 

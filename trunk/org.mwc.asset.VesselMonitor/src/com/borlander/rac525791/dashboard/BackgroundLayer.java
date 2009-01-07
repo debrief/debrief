@@ -14,9 +14,9 @@ import com.borlander.rac525791.dashboard.layout.SelectableImageFigure;
 import com.borlander.rac525791.draw2d.ext.InvisibleRectangle;
 
 public class BackgroundLayer extends InvisibleRectangle {
-	private IFigure myBack;
-	private ImageFigure myControls;
-	private ImageFigure myTopText;
+	IFigure myBack;
+	ImageFigure myControls;
+	ImageFigure myTopText;
 	
 	public BackgroundLayer(DashboardUIModel uiModel){
 		setLayoutManager(new Layout(uiModel));
@@ -40,7 +40,7 @@ public class BackgroundLayer extends InvisibleRectangle {
 //		this.add(myTopText);
 	}
 	
-	private static class DoubleGradientRectangle extends InvisibleRectangle {
+	protected static class DoubleGradientRectangle extends InvisibleRectangle {
 		private static final Color TOP = new Color(null, 129, 129, 129);
 		private static final Color BOTTOM = new Color(null, 88, 88, 88);
 		private static final Color MIDDLE = new Color(null, 200, 200, 200);

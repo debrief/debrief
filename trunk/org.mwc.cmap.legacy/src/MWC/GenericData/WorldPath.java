@@ -26,7 +26,7 @@ public final class WorldPath implements java.io.Serializable
   /**
    * our points
    */
-  private Vector _myPoints;
+  Vector<WorldLocation> _myPoints;
 
   /**
    * the area we cover
@@ -38,7 +38,7 @@ public final class WorldPath implements java.io.Serializable
 
   public WorldPath()
   {
-    _myPoints = new Vector(0, 1);
+    _myPoints = new Vector<WorldLocation>(0, 1);
   }
 
   public WorldPath(WorldLocation[] path)
@@ -62,7 +62,7 @@ public final class WorldPath implements java.io.Serializable
   /**
    * get the list of locations
    */
-  public final Collection getPoints()
+  public final Collection<WorldLocation> getPoints()
   {
     return _myPoints;
   }
@@ -114,7 +114,7 @@ public final class WorldPath implements java.io.Serializable
   public final void refreshBounds()
   {
     WorldArea res = null;
-    Iterator it = _myPoints.iterator();
+    Iterator<WorldLocation> it = _myPoints.iterator();
     while (it.hasNext())
     {
       WorldLocation nx = (WorldLocation) it.next();
@@ -336,7 +336,7 @@ public final class WorldPath implements java.io.Serializable
   {
     double degs = 0d;
     WorldLocation lastLocation = null;
-    for (Iterator iterator = _myPoints.iterator(); iterator.hasNext();)
+    for (Iterator<WorldLocation> iterator = _myPoints.iterator(); iterator.hasNext();)
     {
       WorldLocation thisPoint = (WorldLocation) iterator.next();
       if (lastLocation != null)
@@ -510,7 +510,7 @@ public final class WorldPath implements java.io.Serializable
 
     private void showPath(WorldPath path)
     {
-      Vector pts = path._myPoints;
+      Vector<WorldLocation> pts = path._myPoints;
       for (int i = 0; i < pts.size(); i++)
       {
         WorldLocation location = (WorldLocation) pts.elementAt(i);

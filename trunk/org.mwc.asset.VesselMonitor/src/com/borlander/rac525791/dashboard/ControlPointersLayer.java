@@ -24,17 +24,17 @@ import com.borlander.rac525791.draw2d.ext.RotatableDecorationExt;
 public class ControlPointersLayer {
 	private final LayoutManager myLayouter;
 
-	private final RotatableDecorationExt myArrow;
+	final RotatableDecorationExt myArrow;
 
-	private final RotatableDecorationExt myDemandedPointer;
+	final RotatableDecorationExt myDemandedPointer;
 
-	private final AngleMapper myMapper;
+	final AngleMapper myMapper;
 
-	private final RedSector myRedSector;
+	final RedSector myRedSector;
 
-	private int myActualValue;
+	int myActualValue;
 
-	private int myDemandedValue;
+	int myDemandedValue;
 
 	public static interface Factory {
 		public RotatableDecorationExt createActualArrow();

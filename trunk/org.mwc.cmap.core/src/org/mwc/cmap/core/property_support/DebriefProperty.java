@@ -14,7 +14,6 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Editable.CategorisedPropertyDescriptor;
-import MWC.GenericData.WorldLocation;
 
 public class DebriefProperty implements IPropertyDescriptor
 {
@@ -40,6 +39,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		_myHelper = findHelperFor(prop, subject);
 	}
 
+	@SuppressWarnings("unchecked")
 	private EditorHelper findHelperFor(PropertyDescriptor prop, Editable subject)
 	{
 		EditorHelper res = null;
@@ -102,13 +102,13 @@ public class DebriefProperty implements IPropertyDescriptor
 		return res;
 	}
 	
-	public static void addSupplementalHelpers(Vector newHelpers)
+	public static void addSupplementalHelpers(Vector<EditorHelper> newHelpers)
 	{
 		// make sure our starter list is created
 		initialiseHelpers();
 		
 		// now add the new ones
-		for (Iterator iter = newHelpers.iterator(); iter.hasNext();)
+		for (Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();)
 		{
 			EditorHelper thisHelper = (EditorHelper) iter.next();
 			_myHelperList.add(thisHelper);

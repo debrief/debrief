@@ -383,7 +383,8 @@ public class BaseLayer extends Plottables implements Layer
     }
 
 
-    public MethodDescriptor[] getMethodDescriptors()
+    @SuppressWarnings("unchecked")
+		public MethodDescriptor[] getMethodDescriptors()
     {
       // just add the reset color field first
       Class c = Layer.class;

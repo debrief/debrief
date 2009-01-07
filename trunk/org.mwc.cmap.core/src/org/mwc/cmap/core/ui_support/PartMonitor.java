@@ -43,7 +43,7 @@ public class PartMonitor implements IPartListener
 
 	public final static String OPENED = "OPENED";
 
-	private HashMap _myEvents = null;
+	HashMap<String, HashMap<Class<?>, Vector<ICallback>>> _myEvents = null;
 	
 	private final IPartService _myPartService;
 
@@ -82,14 +82,14 @@ public class PartMonitor implements IPartListener
 		partService.removePartListener(this);
 		
 		// hey, ditch our lists aswell
-		Iterator iter = _myEvents.values().iterator();
+		Iterator<HashMap<Class<?>, Vector<ICallback>>> iter = _myEvents.values().iterator();
 		while(iter.hasNext())
 		{
-			HashMap thisEventList = (HashMap) iter.next();
-			Iterator iter2 = thisEventList.values().iterator();
+			HashMap<Class<?>, Vector<ICallback>> thisEventList = iter.next();
+			Iterator<Vector<ICallback>> iter2 = thisEventList.values().iterator();
 			while(iter2.hasNext())
 			{
-				Vector callbacks = (Vector) iter2.next();
+				Vector<ICallback> callbacks =  iter2.next();
 				
 				// right. ditch the callbacks
 				callbacks.clear();
@@ -125,29 +125,29 @@ public class PartMonitor implements IPartListener
 		_myEvents.clear();
 	}
 	
-	public void addPartListener(Class Subject, String event, PartMonitor.ICallback callback)
+	public void addPartListener(Class<?> Subject, String event, PartMonitor.ICallback callback)
 	{
 
 		if (_myEvents == null)
-			_myEvents = new HashMap();
+			_myEvents = new HashMap<String, HashMap<Class<?>, Vector<ICallback>>>();
 
 		// ok, see if we are watching for this event type
-		HashMap thisEventList = (HashMap) _myEvents.get(event);
+		HashMap<Class<?>, Vector<ICallback>> thisEventList =  _myEvents.get(event);
 
 		// are we already looking for this event?
 		if (thisEventList == null)
 		{
 			// nope, better create it
-			thisEventList = new HashMap();
+			thisEventList = new HashMap<Class<?>, Vector<ICallback>>();
 			_myEvents.put(event, thisEventList);
 		}
 
-		Vector thisSubjectList = (Vector) thisEventList.get(Subject);
+		Vector<ICallback> thisSubjectList = thisEventList.get(Subject);
 
 		// are we already looking for this subject
 		if (thisSubjectList == null)
 		{
-			thisSubjectList = new Vector();
+			thisSubjectList = new Vector<ICallback>();
 			thisEventList.put(Subject, thisSubjectList);
 		}
 
@@ -165,17 +165,17 @@ public class PartMonitor implements IPartListener
 			 return;
 		
 		// ok. see if we are looking for any subjects related to this event
-		HashMap thisEventList = (HashMap) _myEvents.get(event);
+		 HashMap<Class<?>, Vector<ICallback>> thisEventList = _myEvents.get(event);
 		if (thisEventList != null)
 		{
 			// double-check
 			if (thisEventList.size() > 0)
 			{
 				// yup. work though and check the objects
-				Set theSet = thisEventList.keySet();
+				Set<Class<?>> theSet = thisEventList.keySet();
 
 				// have a go at sorting the events, so we can process them in a predictable fashion
-				Comparator myComparator = new Comparator(){
+				Comparator<Object> myComparator = new Comparator<Object>(){
 					public int compare(Object arg0, Object arg1)
 					{
 						// the following comparison test is relied upon in order to fire
@@ -183,22 +183,22 @@ public class PartMonitor implements IPartListener
 						// time control preferences callback event (all in TimeController view)
 						return arg1.toString().compareTo(arg0.toString());
 					}};
-				SortedSet ss = new java.util.TreeSet(myComparator );
+				SortedSet<Class<?>> ss = new java.util.TreeSet<Class<?>>(myComparator );
 				
 				// add all the current entries
 				ss.addAll(theSet);
 				
 				// and work through them.
-				Iterator iter = ss.iterator();
+				Iterator<Class<?>> iter = ss.iterator();
 				while (iter.hasNext())
 				{
-					Class thisType = (Class) iter.next();
+					Class<?> thisType = iter.next();
 					Object adaptedItem = part.getAdapter(thisType);
 					if (adaptedItem != null)
 					{
 						// yup, here we are. fire away.
-						Vector callbacksForThisSubject = (Vector) thisEventList.get(thisType);
-						Iterator iter2 = callbacksForThisSubject.iterator();
+						Vector<PartMonitor.ICallback> callbacksForThisSubject =  thisEventList.get(thisType);
+						Iterator<ICallback> iter2 = callbacksForThisSubject.iterator();
 						while(iter2.hasNext())
 						{
 							PartMonitor.ICallback callback = (PartMonitor.ICallback) iter2.next();
@@ -272,15 +272,15 @@ public class PartMonitor implements IPartListener
 			super("test narrative viewer");
 		}
 
-		private static IPartListener _ipsRegistered = null;
+		static IPartListener _ipsRegistered = null;
 
-		private static boolean _openedCalled = false;
+		static boolean _openedCalled = false;
 
-		private static boolean _closedCalled = false;
+		static boolean _closedCalled = false;
 
-		private static Vector _eventNames = new Vector(0, 1);
+		static Vector<String> _eventNames = new Vector<String>(0, 1);
 
-		private static Vector _eventTypes = new Vector(0, 1);
+		static Vector<Class<?>> _eventTypes = new Vector<Class<?>>(0, 1);
 
 		public void testPartMonitor()
 		{
@@ -331,6 +331,7 @@ public class PartMonitor implements IPartListener
 			// ok, try some calls (without any listeners)
 			pm.partOpened(new TestPart()
 			{
+				@SuppressWarnings("unchecked")
 				public Object getAdapter(Class adapter)
 				{
 					return new String("string");
@@ -370,6 +371,7 @@ public class PartMonitor implements IPartListener
 			// fire one of the correct type
 			pm.partOpened(new TestPart()
 			{
+				@SuppressWarnings("unchecked")
 				public Object getAdapter(Class adapter)
 				{
 					return new String("string");
@@ -412,6 +414,7 @@ public class PartMonitor implements IPartListener
 			// fire the event, just for strings.
 			pm.partOpened(new TestPart()
 					{
+						@SuppressWarnings("unchecked")
 						public Object getAdapter(Class adapter)
 						{
 							Object res = null;
@@ -436,6 +439,7 @@ public class PartMonitor implements IPartListener
 			// fire one of both classes
 			pm.partOpened(new TestPart()
 			{
+				@SuppressWarnings("unchecked")
 				public Object getAdapter(Class adapter)
 				{
 					Object res = null;
@@ -467,6 +471,7 @@ public class PartMonitor implements IPartListener
 			// fire both events for both classes
 			pm.partOpened(new TestPart()
 			{
+				@SuppressWarnings("unchecked")
 				public Object getAdapter(Class adapter)
 				{
 					Object res = null;
@@ -483,6 +488,7 @@ public class PartMonitor implements IPartListener
 			});
 			pm.partClosed(new TestPart()
 					{
+						@SuppressWarnings("unchecked")
 						public Object getAdapter(Class adapter)
 						{
 							Object res = null;
@@ -515,7 +521,7 @@ public class PartMonitor implements IPartListener
 		 * @author ian.mayo
 		 *
 		 */
-		private abstract static class TestPart implements IWorkbenchPart
+		protected abstract static class TestPart implements IWorkbenchPart
 		{
 			public void addPropertyListener(IPropertyListener listener)
 			{
@@ -557,6 +563,7 @@ public class PartMonitor implements IPartListener
 			{
 			}
 
+			@SuppressWarnings("unchecked")
 			public abstract Object getAdapter(Class adapter);
 
 		}

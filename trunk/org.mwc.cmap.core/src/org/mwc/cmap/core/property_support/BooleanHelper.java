@@ -23,6 +23,7 @@ public class BooleanHelper extends EditorHelper
 		return res; 
 	}
 
+	@SuppressWarnings("unchecked")
 	public boolean editsThis(Class target)
 	{
 		return ((target == Boolean.class) || (target == boolean.class));

@@ -35,6 +35,7 @@ public class BaseDashboardLayout extends AbstractHintLayout {
 		return myUiModel.getUISuite(width, height).getPreferredSize();
 	}
 	
+	@SuppressWarnings("unchecked")
 	public void layout(IFigure container) {
 		ControlUISuite suite = getSuite(container);
 		List children = container.getChildren();
@@ -64,7 +65,7 @@ public class BaseDashboardLayout extends AbstractHintLayout {
 		rectangle.setLocation(TEMP);
 	}
 	
-	private static class Cache {
+	protected static class Cache {
 		private final Rectangle myCachedBounds = new Rectangle();
 		private final Point myCachedTopLeft = new Point();
 		

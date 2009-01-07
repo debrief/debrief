@@ -17,12 +17,12 @@ public class ControlUnitsLayer extends AbstractTextLayer {
 	private TextDrawer[] myDrawers;
 	private static final Color GRAY = new Color(null, 196, 196, 196);
 	
-	private CenteredText mySpeedUnits;
-	private CenteredText mySpeedMultiplier;
+	CenteredText mySpeedUnits;
+	CenteredText mySpeedMultiplier;
 	
-	private CenteredText myDepthUnits;
-	private CenteredText myDepthMultiplier;
-	private CenteredText myDepthXOnly;
+	CenteredText myDepthUnits;
+	CenteredText myDepthMultiplier;
+	CenteredText myDepthXOnly;
 	
 	public ControlUnitsLayer(DashboardUIModel uiModel){
 		setLayoutManager(new Layout(uiModel));

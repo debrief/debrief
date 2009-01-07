@@ -22,7 +22,7 @@ public class ColorHelper extends EditorHelper
 	// also keep a local hashmap of colours. we need to generate a string to get a
 	// color using
 	// the SWT color-registry. we'll keep our own local list instead...
-	private static HashMap _myColorList = new HashMap();
+	private static HashMap<Color, org.eclipse.swt.graphics.Color> _myColorList = new HashMap<Color, org.eclipse.swt.graphics.Color>();
 	
 	private final static java.awt.Color OFF_WHITE = new Color(255,255,254);;
 
@@ -120,7 +120,7 @@ public class ColorHelper extends EditorHelper
 		return res;
 	}
 
-	private static ImageData createColorImage(RGB color)
+	static ImageData createColorImage(RGB color)
 	{
 
 		ImageData data = null;

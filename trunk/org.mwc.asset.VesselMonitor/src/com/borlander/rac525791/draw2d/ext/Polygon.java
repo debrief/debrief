@@ -20,6 +20,7 @@ public class Polygon
  * @param y the Y coordinate
  * @return whether the point (x,y) is contained in this polygon
  */
+@SuppressWarnings("unchecked")
 public boolean containsPoint(int x, int y) {
 	if (!getBounds().contains(x, y))
 		return false;

@@ -371,6 +371,7 @@ public class RightClickSupport
 	 * @param thisP
 	 * @return yes/no
 	 */
+	@SuppressWarnings("unchecked")
 	static private boolean supportsBooleanEditor(PropertyDescriptor thisP)
 	{
 		final boolean res;
@@ -397,6 +398,7 @@ public class RightClickSupport
 	 * @param thisP
 	 * @return yes/no
 	 */
+	@SuppressWarnings("unchecked")
 	static private boolean supportsListEditor(PropertyDescriptor thisP)
 	{
 		boolean res = false;
@@ -502,6 +504,7 @@ public class RightClickSupport
 		return subMenu;
 	}
 
+	@SuppressWarnings("unchecked")
 	static private MenuManager generateListEditorFor(IMenuManager manager,
 			MenuManager subMenu, final PropertyDescriptor thisP,
 			final Editable[] editables, final Layers theLayers,

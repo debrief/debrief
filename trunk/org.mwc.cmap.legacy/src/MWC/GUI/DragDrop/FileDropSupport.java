@@ -7,12 +7,14 @@
 
 package MWC.GUI.DragDrop;
 
+import java.awt.Component;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
 import java.awt.datatransfer.UnsupportedFlavorException;
 import java.awt.dnd.DnDConstants;
 import java.awt.dnd.DropTarget;
 import java.awt.dnd.DropTargetListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -39,13 +41,13 @@ public class FileDropSupport implements DropTargetListener
     /** process this list of file
      * @param files the list of files
      */
-    public void FilesReceived(java.util.Vector files);
+    public void FilesReceived(java.util.Vector<File> files);
   }
 
   //////////////////////////////////////////
   // member variables
   //////////////////////////////////////////
-  protected HashMap targets;
+  protected HashMap<Component, DropTarget> targets;
   protected String _suffixes;
   protected FileDropListener _listener;
 
@@ -61,7 +63,7 @@ public class FileDropSupport implements DropTargetListener
     DropTarget dropTarget = new DropTarget(comp, DnDConstants.ACTION_COPY, this);
 
     if(targets == null)
-      targets = new HashMap();
+      targets = new HashMap<Component, DropTarget>();
 
     targets.put(comp, dropTarget);
 
@@ -127,17 +129,18 @@ public class FileDropSupport implements DropTargetListener
     checkThis(p1);
   }
 
-  protected void fileReceived(java.util.Vector theFiles, java.awt.Point thePoint)
+  protected void fileReceived(java.util.Vector<File> theFiles, java.awt.Point thePoint)
   {
     if(_listener != null)
       _listener.FilesReceived(theFiles);
   }
 
-  public void drop(final java.awt.dnd.DropTargetDropEvent p1) {
+  @SuppressWarnings("unchecked")
+	public void drop(final java.awt.dnd.DropTargetDropEvent p1) {
     // fire this drop event to all targets
     Transferable tra = p1.getTransferable();
 
-    Vector res = new Vector(0,1);
+    Vector<File> res = new Vector<File>(0,1);
 
     // find out if string data is being dropped
     if(tra.isDataFlavorSupported(DataFlavor.javaFileListFlavor))
@@ -145,8 +148,8 @@ public class FileDropSupport implements DropTargetListener
       p1.acceptDrop(DnDConstants.ACTION_COPY);
       try
       {
-        List lt = (List)tra.getTransferData(DataFlavor.javaFileListFlavor);
-        Iterator enumer=lt.iterator();
+        List<java.io.File> lt = (List<java.io.File>)tra.getTransferData(DataFlavor.javaFileListFlavor);
+        Iterator<java.io.File> enumer=lt.iterator();
         while(enumer.hasNext())
         {
           java.io.File file = (java.io.File)enumer.next();
