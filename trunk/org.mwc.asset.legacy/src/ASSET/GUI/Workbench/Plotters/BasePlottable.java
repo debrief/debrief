@@ -90,7 +90,7 @@ public class BasePlottable implements Plottable, Layer
 	{
 	}
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		BasePlottable other = (BasePlottable) arg0;
 		Editable otherM = other._myModel;

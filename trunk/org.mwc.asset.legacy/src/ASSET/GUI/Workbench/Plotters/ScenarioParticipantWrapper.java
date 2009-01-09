@@ -463,7 +463,7 @@ public class ScenarioParticipantWrapper implements
 	 * @param arg0
 	 * @return
 	 */
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		ScenarioParticipantWrapper other = (ScenarioParticipantWrapper) arg0;
 		String otherName = other.getName();

@@ -440,7 +440,7 @@ public class ScenarioDetectionPainter implements Plottable
     }
   }
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		ScenarioDetectionInfo other = (ScenarioDetectionInfo) arg0;
 		return getName().compareTo(other.getName());

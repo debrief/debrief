@@ -9,6 +9,7 @@ package ASSET.Scenario.Observers;
 import ASSET.ScenarioType;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.GeneralFormat;
@@ -93,7 +94,7 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
    * @param arg0
    * @return
    */
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		CoreObserver other = (CoreObserver) arg0;
 		return getName().compareTo(other.getName());

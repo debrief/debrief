@@ -6,6 +6,7 @@ import ASSET.ParticipantType;
 import ASSET.Scenario.MultiForceScenario;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 import MWC.GenericData.Duration;
 import MWC.GenericData.WorldSpeed;
 
@@ -542,7 +543,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
      * @param arg0
      * @return
      */
-		public int compareTo(Object arg0)
+		public int compareTo(Plottable arg0)
 		{
 			ParticipantListener other = (ParticipantListener) arg0;
 			String otherName = other.getName();
