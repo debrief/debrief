@@ -20,10 +20,10 @@ import Debrief.ReaderWriter.XML.GUI.*;
 public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private final Debrief.GUI.Frames.Session _session;
+  final Debrief.GUI.Frames.Session _session;
   private Debrief.GUI.Views.AnalysisView _analysisView;
 
-  static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
+  static private final java.util.Hashtable<String, StepperHandler> _myCreators = new java.util.Hashtable<String, StepperHandler>();
 
   static private StepperHandler _myStepperHandler;
 
@@ -55,10 +55,10 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     {
       public void setBackgroundColor(Color theColor)
       {
-        PlainView pv = _session.getCurrentView();
-        if(pv instanceof AnalysisView)
+        PlainView pv1 = _session.getCurrentView();
+        if(pv1 instanceof AnalysisView)
         {
-          AnalysisView av = (AnalysisView)pv;
+          AnalysisView av = (AnalysisView)pv1;
           av.getChart().getCanvas().setBackgroundColor(theColor);
         }
       }
@@ -71,12 +71,12 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     _myCreators.put("Stepper", _myStepperHandler);
   }
 
-  private void addThisComponent(ComponentDetails details)
+  void addThisComponent(ComponentDetails details)
   {
     // sort out this component
     String cType = details.type;
 
-    ComponentCreator cc = (ComponentCreator)_myCreators.get(cType);
+    ComponentCreator cc = _myCreators.get(cType);
     if(cc != null)
     {
       cc.makeThis(details, _analysisView);
@@ -87,7 +87,7 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
 
   static public final class ComponentDetails
   {
-    public final java.util.Hashtable properties = new java.util.Hashtable();
+    public final java.util.Hashtable<String, String> properties = new java.util.Hashtable<String, String>();
     public String type = null;
     public final void addProperty(String name, String val)
     {
@@ -97,11 +97,11 @@ public final class GUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReade
     {
       Element comp = doc.createElement("component");
       comp.setAttribute("Type", title);
-      java.util.Enumeration iter = properties.keys();
+      java.util.Enumeration<String> iter = properties.keys();
       while(iter.hasMoreElements())
       {
-        String thisK = (String)iter.nextElement();
-        String value = (String)properties.get(thisK);
+        String thisK = iter.nextElement();
+        String value = properties.get(thisK);
         MWC.Utilities.ReaderWriter.XML.Util.PropertyHandler.exportProperty(thisK, value, comp, doc);
       }
 

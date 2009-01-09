@@ -87,7 +87,7 @@ public class TimeSeriesCollection extends AbstractSeriesDataset
     public static final int END = 2;
 
     /** Storage for the time series. */
-    private List data;
+    private List<BasicTimeSeries> data;
 
     /** A working calendar (to recycle) */
     private Calendar workingCalendar;
@@ -137,7 +137,7 @@ public class TimeSeriesCollection extends AbstractSeriesDataset
      */
     public TimeSeriesCollection(BasicTimeSeries series, TimeZone zone) {
 
-        this.data = new java.util.ArrayList();
+        this.data = new java.util.ArrayList<BasicTimeSeries>();
         if (series != null) {
             data.add(series);
             series.addChangeListener(this);
@@ -456,7 +456,7 @@ public class TimeSeriesCollection extends AbstractSeriesDataset
 
         Range result = null;
         Range temp = null;
-        Iterator iterator = data.iterator();
+        Iterator<BasicTimeSeries> iterator = data.iterator();
         while (iterator.hasNext()) {
             BasicTimeSeries series = (BasicTimeSeries) iterator.next();
             int count = series.getItemCount();

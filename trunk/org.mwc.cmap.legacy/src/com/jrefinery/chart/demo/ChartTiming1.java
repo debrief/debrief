@@ -108,8 +108,6 @@ public class ChartTiming1 {
      */
     public static void main(String[] args) {
 
-        ChartTiming1 app = new ChartTiming1();
-
     }
 }
 

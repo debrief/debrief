@@ -167,7 +167,7 @@ public final class TMAWrapper  extends TacticalDataWrapper
     setUnderlyingBearingLineVisibility(showBearingLines);
 
     // also reset the children's bearing line data
-    Iterator iter = _myContacts.iterator();
+    Iterator<Editable> iter = _myContacts.iterator();
     while(iter.hasNext())
     {
       TMAContactWrapper nextSol = (TMAContactWrapper) iter.next();
@@ -186,7 +186,7 @@ public final class TMAWrapper  extends TacticalDataWrapper
     _showLabels = showLabels;
 
     // also reset the children's bearing line data
-    Iterator iter = _myContacts.iterator();
+    Iterator<Editable> iter = _myContacts.iterator();
     while(iter.hasNext())
     {
       TMAContactWrapper nextSol = (TMAContactWrapper) iter.next();
@@ -242,7 +242,7 @@ public final class TMAWrapper  extends TacticalDataWrapper
     }
     else
     {
-      final Iterator it = this._myContacts.iterator();
+      final Iterator<Editable> it = this._myContacts.iterator();
       while (it.hasNext())
       {
         final TMAContactWrapper fw = (TMAContactWrapper) it.next();
@@ -327,9 +327,9 @@ public final class TMAWrapper  extends TacticalDataWrapper
           nearestSolution.setDTG(DTG);
 
         // get the data..
-        final java.util.Vector list = new java.util.Vector(0, 1);
+        final java.util.Vector<TMAContactWrapper> list = new java.util.Vector<TMAContactWrapper>(0, 1);
         boolean finished = false;
-        final Iterator it = _myContacts.iterator();
+        final Iterator<Editable> it = _myContacts.iterator();
         while ((it.hasNext()) && (!finished))
         {
           final TMAContactWrapper scw = (TMAContactWrapper) it.next();
@@ -362,16 +362,16 @@ public final class TMAWrapper  extends TacticalDataWrapper
         if (list.size() > 0)
         {
           final Watchable[] dummy = new Watchable[]{null};
-          res = (Watchable[]) list.toArray(dummy);
+          res = list.toArray(dummy);
         }
       }
       else if (DTG.greaterThanOrEqualTo(theLast.getDTG()))
       {
         // is it after the last one?  If so, just plot the last one.  This helps us when we're doing snail trails.
-        final java.util.Vector list = new java.util.Vector(0, 1);
+        final java.util.Vector<TMAContactWrapper> list = new java.util.Vector<TMAContactWrapper>(0, 1);
         list.add(theLast);
         final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]{null};
-        res = (Debrief.Tools.Tote.Watchable[]) list.toArray(dummy);
+        res = list.toArray(dummy);
       }
 
       // and remember this fix
@@ -518,7 +518,7 @@ public final class TMAWrapper  extends TacticalDataWrapper
       solution.filterListTo(new HiResDate(cal.getTime().getTime()), new HiResDate(cal_other.getTime().getTime()));
 
       // see how many remain visible
-      java.util.Enumeration iter = solution.elements();
+      java.util.Enumeration<Editable> iter = solution.elements();
       int counter = 0;
       while (iter.hasMoreElements())
       {
@@ -545,7 +545,7 @@ public final class TMAWrapper  extends TacticalDataWrapper
 
       ////////////////////////////////////////////////////////
       // get items between
-      java.util.Collection res = solution.getItemsBetween(new HiResDate(cal.getTime().getTime()), new HiResDate(cal_other.getTime().getTime()));
+      java.util.Collection<Editable> res = solution.getItemsBetween(new HiResDate(cal.getTime().getTime()), new HiResDate(cal_other.getTime().getTime()));
       assertTrue("get items between", (res.size() == 2));
 
       // do recheck, since this time we will be resetting the working variables, rather and creating them

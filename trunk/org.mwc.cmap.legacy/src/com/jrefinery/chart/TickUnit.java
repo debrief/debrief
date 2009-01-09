@@ -53,7 +53,7 @@ package com.jrefinery.chart;
  *
  * @author DG
  */
-public abstract class TickUnit implements Comparable {
+public abstract class TickUnit implements Comparable<TickUnit> {
 
     /** The size of the tick unit. */
     private double size;
@@ -98,7 +98,7 @@ public abstract class TickUnit implements Comparable {
      *      <code>0</code> if both have the same size and <code>-1</code> this
      *      size is less than the others.
      */
-    public int compareTo(Object object) {
+    public int compareTo(TickUnit object) {
 
         if (object instanceof TickUnit) {
             TickUnit other = (TickUnit) object;

@@ -61,7 +61,8 @@ public class XYStepChartDemo {
     /**
      * Displays a sample chart in its own frame.
      */
-    private void displayChart() {
+    @SuppressWarnings("deprecation")
+		private void displayChart() {
 
         if (frame == null) {
 

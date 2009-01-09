@@ -64,7 +64,7 @@ public class Control3d extends JPanel implements WatchableTransformGroup.Transfo
   /** whether we are already processing a value change
    *
    */
-  private boolean _adjusting = false;
+  boolean _adjusting = false;
 
   /** the projection object (used to convert depth)
    *
@@ -618,7 +618,7 @@ public class Control3d extends JPanel implements WatchableTransformGroup.Transfo
 
     }
 
-    private void doStep(boolean up)
+    void doStep(boolean up)
     {
       int thisStep = _delta;
 

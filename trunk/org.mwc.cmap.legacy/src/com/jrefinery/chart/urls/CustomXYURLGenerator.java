@@ -49,7 +49,7 @@ import com.jrefinery.data.XYDataset;
 public class CustomXYURLGenerator implements XYURLGenerator {
 
     /** Storage for the URLs. */
-    private ArrayList urlSeries = new ArrayList();
+    private ArrayList<List<String>> urlSeries = new ArrayList<List<String>>();
 
     /**
      * Default constructor.
@@ -68,8 +68,8 @@ public class CustomXYURLGenerator implements XYURLGenerator {
      */
     public String generateURL(XYDataset data, int series, int item) {
         String url = "";
-        List urls = (List) this.urlSeries.get(series);
-        url = (String) urls.get(item);
+        List<String> urls = this.urlSeries.get(series);
+        url = urls.get(item);
         return url;
     }
 
@@ -78,7 +78,7 @@ public class CustomXYURLGenerator implements XYURLGenerator {
      *
      * @param urls  the list of URLs.
      */
-    public void addURLSeries(List urls) {
+    public void addURLSeries(List<String> urls) {
         this.urlSeries.add(urls);
     }
 

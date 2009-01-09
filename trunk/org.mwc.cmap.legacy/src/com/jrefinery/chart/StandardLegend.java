@@ -82,9 +82,6 @@ public class StandardLegend extends Legend {
     /** The color used to draw the background of the legend. */
     private Paint backgroundPaint;
 
-    /** The blank space inside the legend box. */
-    private Spacer innerGap;
-
     /** The font used to display the legend item names. */
     private Font itemFont;
 
@@ -131,7 +128,6 @@ public class StandardLegend extends Legend {
                           Font itemFont, Paint itemPaint) {
 
         super(chart, outerGap);
-        this.innerGap = innerGap;
         this.backgroundPaint = backgroundPaint;
         this.outlineStroke = outlineStroke;
         this.outlinePaint = outlinePaint;
@@ -467,29 +463,6 @@ public class StandardLegend extends Legend {
         else {
             return available;
         }
-    }
-
-    /**
-     * Returns a box that will be positioned next to the name of the specified
-     * series within the legend area.  The box will be square and 65% of the
-     * height of a line.
-     *
-     * @param series  the index of the series.
-     * @param seriesCount  number of series.
-     * @param textHeight  the height of one line of text.
-     * @param innerLegendArea  the upper left corner of the inner legend.
-     *
-     * @return a box.
-     */
-    private Rectangle2D getLegendBox(int series, int seriesCount,
-                                     float textHeight, Rectangle2D innerLegendArea) {
-
-        int innerGap = 2;  // added to make this compile
-        float boxHeightAndWidth = textHeight * 0.70f;
-        float xx = (float) innerLegendArea.getX() + innerGap + 0.15f * textHeight;
-        float yy = (float) innerLegendArea.getY() + innerGap + (series + 0.15f) * textHeight;
-        return new Rectangle2D.Float(xx, yy, boxHeightAndWidth, boxHeightAndWidth);
-
     }
 
     /**

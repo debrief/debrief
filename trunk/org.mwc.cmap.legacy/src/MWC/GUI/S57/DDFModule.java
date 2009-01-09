@@ -290,13 +290,13 @@ public class DDFModule implements DDFConstants {
     public String dump() {
         StringBuffer buf = new StringBuffer(toString());
 
-        DDFRecord poRecord;
+        DDFRecord poRecord1;
         int iRecord = 0;
-        while ((poRecord = readRecord()) != null) {
-            buf.append("  Record " + (iRecord++) + "(" + poRecord.getDataSize()
+        while ((poRecord1 = readRecord()) != null) {
+            buf.append("  Record " + (iRecord++) + "(" + poRecord1.getDataSize()
                     + " bytes)\n");
 
-            for (Iterator it = poRecord.iterator(); it.hasNext(); buf.append(((DDFField) it.next()).toString())) {
+            for (Iterator<DDFField> it = poRecord1.iterator(); it.hasNext(); buf.append(((DDFField) it.next()).toString())) {
             }
         }
         return buf.toString();
@@ -318,7 +318,7 @@ public class DDFModule implements DDFConstants {
      */
     public DDFFieldDefinition findFieldDefn(String pszFieldName) {
 
-        for (Iterator it = paoFieldDefns.iterator(); it.hasNext();) {
+        for (Iterator<DDFFieldDefinition> it = paoFieldDefns.iterator(); it.hasNext();) {
             DDFFieldDefinition ddffd = (DDFFieldDefinition) it.next();
             String pszThisName = ddffd.getName();
 

@@ -107,7 +107,7 @@ public class RightClickEditGridPainterAdaptor extends RightClickEdit.BaseMenuCre
     final PropertiesPanel _thePanel = thePanel;
     if (decorations != null)
     {
-      Enumeration decs = decorations.elements();
+      Enumeration<Editable> decs = decorations.elements();
       while (decs.hasMoreElements())
       {
         Plottable p = (Plottable) decs.nextElement();

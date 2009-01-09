@@ -37,10 +37,9 @@
 //
 package MWC.GUI.Tools.Swing;
 
-import javax.swing.*;
-import java.io.*;
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
+import javax.swing.JMenuItem;
+
+import MWC.GUI.Tool;
 
 
 /** extension of normal Swing menu to create a menu item containing
@@ -48,7 +47,11 @@ import MWC.GUI.*;
  */
 public class SwingMenuItem extends JMenuItem implements java.awt.event.ActionListener
 {
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
   /** the Debrief tool we are calling

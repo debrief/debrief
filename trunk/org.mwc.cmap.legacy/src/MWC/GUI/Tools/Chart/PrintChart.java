@@ -45,21 +45,15 @@ package MWC.GUI.Tools.Chart;
 
 
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.*;
-import MWC.GenericData.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 /** tool to instruct a particular chart to do a resize to fit all
  * of the current data
  */
 public class PrintChart extends PlainTool {
-
-  /////////////////////////////////////////////////////////
-  // member variables
-  /////////////////////////////////////////////////////////
-
-  /** keep a reference to the chart which we are acting upon*/
-  private PlainChart _theChart;
 
   /////////////////////////////////////////////////////////
   // constructor
@@ -72,8 +66,6 @@ public class PrintChart extends PlainTool {
    */
   public PrintChart(ToolParent theParent,PlainChart theChart){
     super(theParent, "Print Chart","images/fit_to_win.gif");
-    // remember the chart we are acting upon
-    _theChart = theChart;
   }
 
   /////////////////////////////////////////////////////////

@@ -1220,7 +1220,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 	{
 		Method _theSetter;
 
-		Object _theData;
+		Object _theData1;
 
 		boolean _newVal;
 
@@ -1236,7 +1236,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 		{
 			super(theData, theEditor, descriptor, theChart);
 			_theSetter = theSetter;
-			_theData = theData;
+			_theData1 = theData;
 			_newVal = newVal;
 			_theLayers = theLayers;
 			_theParent = theParent;
@@ -1259,7 +1259,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 			try
 			{
 				Object args[] = { new Boolean(!_newVal) };
-				_theSetter.invoke(_theData, args);
+				_theSetter.invoke(_theData1, args);
 
 				// inform the editable that we've updated it
 				fireAction(new Boolean(_newVal), new Boolean(!_newVal));
@@ -1280,7 +1280,7 @@ public class RightClickEdit implements PlainChart.ChartClickListener, Serializab
 			try
 			{
 				Object args[] = { new Boolean(_newVal) };
-				_theSetter.invoke(_theData, args);
+				_theSetter.invoke(_theData1, args);
 
 				// inform the editable that we've updated it
 				fireAction(new Boolean(!_newVal), new Boolean(_newVal));

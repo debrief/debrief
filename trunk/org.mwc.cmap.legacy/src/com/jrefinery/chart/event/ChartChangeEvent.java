@@ -49,7 +49,12 @@ import com.jrefinery.chart.JFreeChart;
  */
 public class ChartChangeEvent extends java.util.EventObject {
 
-    /** Event type indicating a general change to a chart (typically just requires a redraw). */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Event type indicating a general change to a chart (typically just requires a redraw). */
     public static final int GENERAL = 1;
 
     /** Event type indicating that the chart has a new dataset. */

@@ -13,13 +13,6 @@
 package org.j3d.texture;
 
 // Standard imports
-import java.io.IOException;
-import java.net.URL;
-
-import javax.media.j3d.ImageComponent;
-import javax.media.j3d.Texture;
-
-// Application specific imports
 import org.j3d.util.IntHashMap;
 
 /**

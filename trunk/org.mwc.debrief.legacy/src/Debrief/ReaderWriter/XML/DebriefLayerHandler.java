@@ -9,11 +9,24 @@ package Debrief.ReaderWriter.XML;
  * @version 1.0
  */
 
-import Debrief.ReaderWriter.XML.Shapes.*;
+import Debrief.ReaderWriter.XML.Shapes.ArcHandler;
+import Debrief.ReaderWriter.XML.Shapes.CircleHandler;
+import Debrief.ReaderWriter.XML.Shapes.EllipseHandler;
+import Debrief.ReaderWriter.XML.Shapes.LabelHandler;
+import Debrief.ReaderWriter.XML.Shapes.LineHandler;
+import Debrief.ReaderWriter.XML.Shapes.PolygonHandler;
+import Debrief.ReaderWriter.XML.Shapes.RectangleHandler;
+import Debrief.ReaderWriter.XML.Shapes.WheelHandler;
 import Debrief.Wrappers.ShapeWrapper;
-import MWC.GUI.S57.S57Layer;
+import MWC.GUI.Editable;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
-import MWC.Utilities.ReaderWriter.XML.Features.*;
+import MWC.Utilities.ReaderWriter.XML.Features.CoastlineHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.LocalGridHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.ScaleHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.VPFCoastlineHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
 public final class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.LayerHandler
 {
@@ -125,7 +138,7 @@ public final class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.La
   {
     if (_myExporters == null)
     {
-      _myExporters = new java.util.Hashtable<Class, LayerHandler.exporter>();
+      _myExporters = new java.util.Hashtable<Class<?>, LayerHandler.exporter>();
       _myExporters.put(MWC.GUI.Shapes.ArcShape.class, new ArcHandler()
       {
         public void addPlottable(MWC.GUI.Plottable plottable)
@@ -246,7 +259,7 @@ public final class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.La
     eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
 
     // step through the components of the layer
-    java.util.Enumeration iter = layer.elements();
+    java.util.Enumeration<Editable> iter = layer.elements();
     while (iter.hasMoreElements())
     {
       MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) iter.nextElement();

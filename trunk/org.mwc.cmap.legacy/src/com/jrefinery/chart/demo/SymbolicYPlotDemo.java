@@ -74,7 +74,8 @@ public class SymbolicYPlotDemo {
      * @param xAxisLabel  the x-axis label.
      * @param yAxisLabel  the y-axis label.
      */
-    private static void displayYSymbolic(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayYSymbolic(String frameTitle,
                                          XYDataset data, String chartTitle,
                                          String xAxisLabel, String yAxisLabel) {
 
@@ -95,7 +96,8 @@ public class SymbolicYPlotDemo {
      * @param data1  dataset1.
      * @param data2  dataset2.
      */
-    private static void displayYSymbolicOverlaid(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayYSymbolicOverlaid(String frameTitle,
                                                  XYDataset data1, XYDataset data2) {
 
         String title = "Animals Overlaid";
@@ -176,7 +178,8 @@ public class SymbolicYPlotDemo {
      * @param data1  dataset1.
      * @param data2  dataset2.
      */
-    private static void displayYSymbolicCombinedHorizontally(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayYSymbolicCombinedHorizontally(String frameTitle,
                                                              SampleYSymbolicDataset data1,
                                                              SampleYSymbolicDataset data2) {
 
@@ -262,7 +265,8 @@ public class SymbolicYPlotDemo {
      * @param data1  dataset 1.
      * @param data2  dataset 2.
      */
-    private static void displayYSymbolicCombinedVertically(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayYSymbolicCombinedVertically(String frameTitle,
                                                            SampleYSymbolicDataset data1,
                                                            SampleYSymbolicDataset data2) {
 

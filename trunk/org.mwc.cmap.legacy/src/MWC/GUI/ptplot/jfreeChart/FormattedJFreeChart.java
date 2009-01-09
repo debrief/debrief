@@ -164,7 +164,7 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
   public String getTitle()
   {
     // get the titles for the plot
-    java.util.List theTitles = this.getTitles();
+    java.util.List<AbstractTitle> theTitles = this.getTitles();
     TextTitle tt = (TextTitle) theTitles.get(0);
     return tt.getText();
   }
@@ -177,7 +177,7 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
   public void setTitle(String title)
   {
     // add the chart title, if one has been specified...
-    ArrayList newTitles = new ArrayList();
+    ArrayList<AbstractTitle> newTitles = new ArrayList<AbstractTitle>();
     if (title != null)
     {
       TextTitle textTitle = new TextTitle(title, JFreeChart.DEFAULT_TITLE_FONT);
@@ -195,11 +195,11 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
   public void setTitleFont(Font titleFont)
   {
     // add the chart title, if one has been specified...
-    List theTitles = super.getTitles();
+    List<AbstractTitle> theTitles = super.getTitles();
     if (theTitles != null)
     {
     	// find the title
-    	for (Iterator iter = theTitles.iterator(); iter.hasNext();)
+    	for (Iterator<AbstractTitle> iter = theTitles.iterator(); iter.hasNext();)
 			{
 				TextTitle thisT = (TextTitle) iter.next();
 				thisT.setFont(titleFont);
@@ -216,11 +216,11 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
   {
   	Font res = null;
   	 // add the chart title, if one has been specified...
-    List theTitles = super.getTitles();
+    List<AbstractTitle> theTitles = super.getTitles();
     if (theTitles != null)
     {
     	// find the title
-    	for (Iterator iter = theTitles.iterator(); iter.hasNext();)
+    	for (Iterator<AbstractTitle> iter = theTitles.iterator(); iter.hasNext();)
 			{
 				TextTitle thisT = (TextTitle) iter.next();
 				res = thisT.getFont();

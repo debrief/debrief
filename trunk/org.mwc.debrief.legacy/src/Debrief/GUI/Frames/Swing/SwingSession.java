@@ -119,7 +119,7 @@ public final class SwingSession extends Session implements Serializable, MyMetal
   // member variables
   ////////////////////////////////////////////////////////////
 
-  private transient ToolParent _theParent;
+  transient ToolParent _theParent;
 
   transient private javax.swing.JInternalFrame _thePanel;
   transient private SwingAnalysisView _theView;
@@ -306,7 +306,8 @@ public final class SwingSession extends Session implements Serializable, MyMetal
     }
   }
 
-  protected final boolean wantsToClose()
+  @SuppressWarnings("deprecation")
+	protected final boolean wantsToClose()
   {
     // try to do a file save - ask the user
     final JPanel jp = new JPanel();

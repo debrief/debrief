@@ -264,9 +264,9 @@ public final class SwingStepControl extends StepControl implements
 
 	private SwingPropertiesPanel _theEditor;
 
-	private JToggleButton _autoBtn;
+	JToggleButton _autoBtn;
 
-	private JComboBox _thePainterSelector;
+	JComboBox _thePainterSelector;
 
 	/**
 	 * slider to move quickly through the time period
@@ -338,7 +338,7 @@ public final class SwingStepControl extends StepControl implements
 	 * processing a time change we set _updatingForm to true, so that we know to
 	 * ignore any slider position updates. cool.
 	 */
-	private boolean _updatingForm = false;
+	boolean _updatingForm = false;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -611,7 +611,7 @@ public final class SwingStepControl extends StepControl implements
 
 	}
 
-	private void newSliderTime()
+	void newSliderTime()
 	{
 		// calculate the new time
 		HiResDate currentSliderTime = getSliderDate();
@@ -919,7 +919,7 @@ public final class SwingStepControl extends StepControl implements
 	/**
 	 * edit step button has been pressed
 	 */
-	private void doEditStep()
+	void doEditStep()
 	{
 		// has the editor been assigned?
 		if (_theToolbar != null)
@@ -947,7 +947,7 @@ public final class SwingStepControl extends StepControl implements
 	/**
 	 * handler for filter button being pressed
 	 */
-	private void doFilter()
+	void doFilter()
 	{
 		createToolbox();
 
@@ -1023,7 +1023,7 @@ public final class SwingStepControl extends StepControl implements
 	/**
 	 * edit step button has been pressed
 	 */
-	private void doShowLayerManager()
+	void doShowLayerManager()
 	{
 		// do we have our information?
 		final MWC.GUI.Tools.Operations.ShowLayers shower = new MWC.GUI.Tools.Operations.ShowLayers(
@@ -1046,7 +1046,7 @@ public final class SwingStepControl extends StepControl implements
 	 * @param go
 	 *          boolean whether to go auto or not
 	 */
-	private void doAuto(final boolean go)
+	void doAuto(final boolean go)
 	{
 
 		if (go)

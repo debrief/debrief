@@ -29,9 +29,9 @@ ENHANCEMENTS, OR MODIFICATIONS.
 */
 package MWC.GUI.ptplot;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Button;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 //////////////////////////////////////////////////////////////////////////
 //// PlotLive

@@ -17,9 +17,14 @@ public class MWCPlot extends Plot implements StepperListener
   ///////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * list of data series wer plot
    */
-  private Hashtable _mySeries;
+  private Hashtable<Integer, DataSeries> _mySeries;
 
   /**
    * the step control we listen to
@@ -38,7 +43,7 @@ public class MWCPlot extends Plot implements StepperListener
   public MWCPlot(StepperListener.StepperController theStepper)
   {
     // create the list of data series
-    _mySeries = new Hashtable();
+    _mySeries = new Hashtable<Integer, DataSeries>();
 
     // remember the stepoper
     _theStepper = theStepper;
@@ -188,7 +193,7 @@ public class MWCPlot extends Plot implements StepperListener
   ///////////////////////////////////////
   public class DataSeries
   {
-    private Vector _myPoints;
+    private Vector<DataPoint> _myPoints;
     private Color _myCol;
     private int _index;
     private String _name;
@@ -196,7 +201,7 @@ public class MWCPlot extends Plot implements StepperListener
 
     public DataSeries(int index)
     {
-      _myPoints = new Vector(0, 1);
+      _myPoints = new Vector<DataPoint>(0, 1);
       _index = index;
     }
 
@@ -233,7 +238,7 @@ public class MWCPlot extends Plot implements StepperListener
       return _lastPointPlotted;
     }
 
-    public Enumeration elements()
+    public Enumeration<DataPoint> elements()
     {
       return _myPoints.elements();
     }
@@ -288,11 +293,11 @@ public class MWCPlot extends Plot implements StepperListener
     // Plot the points in reverse order so that the first colors
     // appear on top.
     // work through our series
-    Enumeration enumer = _mySeries.elements();
+    Enumeration<DataSeries> enumer = _mySeries.elements();
     while (enumer.hasMoreElements())
     {
       DataSeries ds = (DataSeries) enumer.nextElement();
-      Enumeration pts = ds.elements();
+      Enumeration<DataPoint> pts = ds.elements();
       boolean firstPoint = true;
       while (pts.hasMoreElements())
       {

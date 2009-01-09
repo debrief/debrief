@@ -59,7 +59,7 @@ import com.jrefinery.data.Range;
 public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
 
     /** Storage for the subplot references. */
-    private List subplots;
+    private List<CategoryPlot> subplots;
 
     /** The total number of series. */
     private int seriesCount = 0;
@@ -96,7 +96,7 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
         DefaultCategoryDataset empty = new DefaultCategoryDataset(emptyArray);
         empty.setCategories(categories);
         setDataset(empty);
-        this.subplots = new java.util.ArrayList();
+        this.subplots = new java.util.ArrayList<CategoryPlot>();
 
     }
 
@@ -132,7 +132,8 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
      *
      * @deprecated use getLegendItems().
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
 
         List result = new java.util.ArrayList();
 
@@ -159,7 +160,7 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
         LegendItemCollection result = new LegendItemCollection();
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<CategoryPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 CategoryPlot plot = (CategoryPlot) iterator.next();
                 LegendItemCollection more = plot.getLegendItems();
@@ -181,7 +182,7 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
     public void render(Graphics2D g2, Rectangle2D dataArea,
                        ChartRenderingInfo info, Shape backgroundPlotArea) {
 
-        Iterator iterator = subplots.iterator();
+        Iterator<CategoryPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             VerticalCategoryPlot subplot = (VerticalCategoryPlot) iterator.next();
             subplot.render(g2, dataArea, info, backgroundPlotArea);
@@ -206,7 +207,7 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
 
         int result = 0;
 
-        Iterator iterator = subplots.iterator();
+        Iterator<CategoryPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             VerticalCategoryPlot subplot = (VerticalCategoryPlot) iterator.next();
             result = result + subplot.getSeriesCount();
@@ -229,7 +230,7 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
         Range result = null;
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<CategoryPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 VerticalCategoryPlot plot = (VerticalCategoryPlot) iterator.next();
                 result = Range.combine(result, plot.getVerticalDataRange());
@@ -253,7 +254,7 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
         Number result = null;
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<CategoryPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 VerticalCategoryPlot plot = (VerticalCategoryPlot) iterator.next();
                 Number subMin = plot.getMinimumVerticalDataValue();
@@ -285,7 +286,7 @@ public class OverlaidVerticalCategoryPlot extends VerticalCategoryPlot {
         Number result = null;
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<CategoryPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 VerticalCategoryPlot plot = (VerticalCategoryPlot) iterator.next();
                 Number subMax = plot.getMaximumVerticalDataValue();

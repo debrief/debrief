@@ -18,26 +18,19 @@ import java.net.URL;
 import javax.media.j3d.InputDevice;
 import javax.media.j3d.Sensor;
 import javax.media.j3d.Transform3D;
-
-import javax.xml.parsers.DocumentBuilderFactory;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 
-import javax.vecmath.Vector3f;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Point3d;
-
-import org.w3c.dom.Attr;
+import org.j3d.util.SAXEntityResolver;
+import org.j3d.util.SAXErrorHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-
 import org.xml.sax.SAXException;
-
-// Application specific imports
-import org.j3d.util.SAXEntityResolver;
-import org.j3d.util.SAXErrorHandler;
 
 /**
  * An input device that takes information from a file and uses that as a
@@ -68,9 +61,6 @@ public class FileInputDevice implements InputDevice
     private static final String DEFAULT_FILE_NAME = "input_data.xml";
 
     // Constants related to the DOM/XML access
-
-    /** Element name describing a sensor data item */
-    private static final String DATA_ELEMENT = "data";
 
     /** Element name describing a sensor button item */
     private static final String SENSOR_BUTTON_ELEMENT = "button";
@@ -118,9 +108,6 @@ public class FileInputDevice implements InputDevice
 
     /** The mode we are operating in now */
     private int mode;
-
-    private Transform3D position_tx = new Transform3D();
-    private Vector3f translation = new Vector3f();
 
     /**
      * Construct a new file input device that uses the value of the system
@@ -265,7 +252,8 @@ public class FileInputDevice implements InputDevice
      *
      * @return The URL of the file to load
      */
-    private URL findInputFile()
+    @SuppressWarnings("deprecation")
+		private URL findInputFile()
     {
         URL ret_val = null;
 
@@ -412,11 +400,7 @@ public class FileInputDevice implements InputDevice
         int buttons = Integer.parseInt(value);
 
         value = sensor.getAttribute(TIME_ATTR);
-        int time = Integer.parseInt(value);
-
         value = sensor.getAttribute(SENSOR_LOOP_ATTR);
-        int loops = Integer.parseInt(value);
-
         // if the index is dud or out of range, let the exception go
         FileInputSensor file_sensor = new FileInputSensor(this, buttons);
         sensorList[index] = file_sensor;
@@ -471,7 +455,7 @@ public class FileInputDevice implements InputDevice
         size = data.getLength();
         int button_index;
         int button_size;
-        int button_state, button_value;
+        int button_value;
         NodeList button_data;
 
         for(i = 0; i < size; i++)

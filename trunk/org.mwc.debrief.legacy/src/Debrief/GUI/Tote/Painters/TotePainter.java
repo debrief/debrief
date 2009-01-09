@@ -440,13 +440,13 @@ public class TotePainter implements StepperListener,
         newPrimary = list[0];
 
     // so, step through the participants
-		final java.util.Vector theParticipants = _theTote.getSecondary();
+		final Vector<WatchableList> theParticipants = _theTote.getSecondary();
 
 		if(theParticipants != null)
 		{
 			// the watchables are used as keys in the hashtable, so
 			// just retrieve them and we can look through them
-			final Enumeration iter = theParticipants.elements();
+			final Enumeration<WatchableList> iter = theParticipants.elements();
 			while(iter.hasMoreElements())
 			{
 				final Object oj = iter.nextElement();
@@ -508,12 +508,12 @@ public class TotePainter implements StepperListener,
 		}
 
 		// now step through our old highlights, hiding them
-		final Iterator oldies = oldHighlights.keySet().iterator();
+		final Iterator<Watchable> oldies = oldHighlights.keySet().iterator();
 
 		// get rid of the old ones
 		while(oldies.hasNext())
 		{
-			final Watchable oldWt = (Watchable)oldies.next();
+			final Watchable oldWt = oldies.next();
 
 			if(_firstStep)
 			{
@@ -523,9 +523,9 @@ public class TotePainter implements StepperListener,
 			{
         // if the primary highlighter is symbols, we use them for both tracks
         if(plottingSymbols)
-          getCurrentPrimaryHighlighter().highlightIt(proj, dest, (WatchableList)oldHighlights.get(oldWt), oldWt);
+          getCurrentPrimaryHighlighter().highlightIt(proj, dest, oldHighlights.get(oldWt), oldWt);
         else
-			    getCurrentSecondaryHighlighter().highlightIt(proj, dest, (WatchableList)oldHighlights.get(oldWt), oldWt);
+			    getCurrentSecondaryHighlighter().highlightIt(proj, dest, oldHighlights.get(oldWt), oldWt);
 			}
 
 		}
@@ -538,18 +538,18 @@ public class TotePainter implements StepperListener,
     }
 
 		// now step through our new highlights, showing them
-		final Iterator newies = newHighlights.keySet().iterator();
+		final Iterator<Watchable> newies = newHighlights.keySet().iterator();
 
 		// paint the new updates
 		while(newies.hasNext())
 		{
-			final Watchable newWt = (Watchable)newies.next();
+			final Watchable newWt = newies.next();
 
        // if the primary highlighter is symbols, we use them for both tracks
       if(plottingSymbols)
-        getCurrentPrimaryHighlighter().highlightIt(proj, dest, (WatchableList)newHighlights.get(newWt), newWt);
+        getCurrentPrimaryHighlighter().highlightIt(proj, dest, newHighlights.get(newWt), newWt);
       else
-  			getCurrentSecondaryHighlighter().highlightIt(proj, dest, (WatchableList)newHighlights.get(newWt),newWt);
+  			getCurrentSecondaryHighlighter().highlightIt(proj, dest, newHighlights.get(newWt),newWt);
 		}
 
 		// restore the painting setup

@@ -40,12 +40,7 @@ package MWC.GUI.Properties;
 //
 
 
-import java.beans.*;
-import MWC.GUI.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
+import java.beans.PropertyEditorSupport;
 
 public abstract class SteppingBoundedIntegerEditor extends PropertyEditorSupport 
 {

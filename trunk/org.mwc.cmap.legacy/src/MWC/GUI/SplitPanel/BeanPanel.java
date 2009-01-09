@@ -27,9 +27,15 @@ package MWC.GUI.SplitPanel;
 
 
 
-import java.awt.*;
-import java.util.*;
-import java.awt.event.*;
+import java.awt.AWTEvent;
+import java.awt.Dimension;
+import java.awt.LayoutManager;
+import java.awt.Panel;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
 //import borland.jbcl.util.*;
 //import borland.jbcl.model.*;
@@ -42,7 +48,11 @@ import java.awt.event.*;
  */
 public class BeanPanel extends Panel
 {
-  public BeanPanel() {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public BeanPanel() {
     enableEvents(AWTEvent.FOCUS_EVENT_MASK |
                  AWTEvent.KEY_EVENT_MASK |
                  AWTEvent.MOUSE_EVENT_MASK |

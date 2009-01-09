@@ -12,18 +12,15 @@ package org.j3d.geom.overlay;
 // Standard imports
 import java.awt.AWTEvent;
 import java.awt.Color;
-import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
-import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Behavior;
 import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
-import javax.media.j3d.TransformGroup;
 import javax.media.j3d.WakeupOnAWTEvent;
-
 import javax.vecmath.Point3d;
 
 // Application specific imports
@@ -60,13 +57,13 @@ import javax.vecmath.Point3d;
 public class MouseOverlay extends OverlayBase
 {
     /** The criteria for the current event requirements */
-    private WakeupOnAWTEvent critter;
+    WakeupOnAWTEvent critter;
 
     /**
      * Flag describing whether we should pass all events through, or just the
      * last event received.
      */
-    private boolean processAllEvents;
+    boolean processAllEvents;
 
     /**
      * Inner class that provides the mouse handling behaviour required by this
@@ -89,7 +86,8 @@ public class MouseOverlay extends OverlayBase
             wakeupOn(critter);
         }
 
-        public void processStimulus(Enumeration criteria)
+        @SuppressWarnings("unchecked")
+				public void processStimulus(Enumeration criteria)
         {
             WakeupOnAWTEvent input = (WakeupOnAWTEvent)criteria.nextElement();
             AWTEvent[] events = input.getAWTEvent();

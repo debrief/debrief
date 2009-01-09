@@ -608,7 +608,7 @@ public class GridPainter implements Plottable, Serializable
   }
 
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		String myName = this.getName() + this.hashCode();

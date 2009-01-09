@@ -1,4 +1,4 @@
-// Copyright MWC 1999, Debrief 3 Project
+//Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: PlainPropertyEditor.java,v $
 // @author $Author: ian $
 // @version $Revision: 1.5 $
@@ -260,13 +260,13 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   /**
    * the property editors we are adding
    */
-  protected Hashtable _theEditors;
+  protected Hashtable<PropertyDescriptor, PropertyEditorItem> _theEditors;
 
   /**
    * the list of modifications made (plus their old values
    * and the setter methods)
    */
-  protected Vector _theModifications;
+  protected Vector<PropertyChangeItem> _theModifications;
 
   /**
    * our chart, so that we can do an update
@@ -276,7 +276,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
   /**
    * the custom editor, if there is one
    */
-  protected Class _theCustomEditor;
+  protected Class<?> _theCustomEditor;
 
   /**
    * the panel which is holding us
@@ -342,7 +342,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     declarePropertyEditors();
 
     // do the editors
-    _theEditors = new Hashtable();
+    _theEditors = new Hashtable<PropertyDescriptor, PropertyEditorItem>();
 
     // see if there is a custom editor
     _theCustomEditor = theInfo.getBeanDescriptor().getCustomizerClass();
@@ -377,7 +377,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
     /** get ready to store the list of changes, for our undoable action
      */
-    _theModifications = new Vector(0, 1);
+    _theModifications = new Vector<PropertyChangeItem>(0, 1);
 
     // see if we should be listening to this object
     theInfo.addPropertyChangeListener(this);
@@ -445,7 +445,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     else
     {
       // update the editors in turn
-      Enumeration enumer = _theEditors.elements();
+      Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
       while (enumer.hasMoreElements())
       {
         PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
@@ -628,10 +628,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
     // find out the type of the editor
     Method m = p.getReadMethod();
-    Class cl = m.getReturnType();
+    Class<?> cl = m.getReturnType();
 
     // is there a custom editor for this type?
-    Class c = p.getPropertyEditorClass();
+    Class<?> c = p.getPropertyEditorClass();
 
     if (c == null)
     {
@@ -661,7 +661,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       // find out the type of the editor
       Method m = p.getReadMethod();
 
-      res = m.invoke(data, null);
+      res = m.invoke(data,(Object[]) null);
     }
     catch (Exception e)
     {
@@ -676,7 +676,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
   public void doRefresh()
   {
-    Enumeration enumer = _theEditors.elements();
+    Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
     while (enumer.hasMoreElements())
     {
       PropertyEditorItem pi = (PropertyEditorItem) enumer.nextElement();
@@ -704,7 +704,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     boolean _someChanged = false;
 
     // update the editors in turn
-    Enumeration enumer = _theEditors.elements();
+    Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
     while (enumer.hasMoreElements())
     {
       PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
@@ -771,7 +771,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     }
 
     // pass through and see if any editors need closing
-    Iterator it = _theEditors.values().iterator();
+    Iterator<PropertyEditorItem> it = _theEditors.values().iterator();
     while (it.hasNext())
     {
       PropertyEditorItem pei = (PropertyEditorItem) it.next();
@@ -857,20 +857,20 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     /**
      * the list of things to change
      */
-    protected Vector _theMods;
+    protected Vector<PropertyChangeItem> _theMods;
 
     /**
      * the item being edited
      */
-    protected Object _theData;
+    protected Object _theData1;
 
-    public PropertyChangeAction(Vector theModifications, Object theData)
+    public PropertyChangeAction(Vector<PropertyChangeItem> theModifications, Object theData)
     {
       // take a copy of the vector, not the vector itself
       _theMods = copyVector(theModifications);
 
       // store the object
-      _theData = theData;
+      _theData1 = theData;
     }
 
     /**
@@ -878,7 +878,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
      */
     public Object getData()
     {
-      return _theData;
+      return _theData1;
     }
 
     public int size()
@@ -886,10 +886,11 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       return _theMods.size();
     }
 
-    protected Vector copyVector(Vector other)
+    protected Vector<PropertyChangeItem> copyVector(Vector<PropertyChangeItem> other)
     {
-      Vector res = new Vector(other.size(), 1);
-      Enumeration enumer = other.elements();
+      Vector<PropertyChangeItem> vector = new Vector<PropertyChangeItem>(other.size(), 1);
+			Vector<PropertyChangeItem> res = vector;
+      Enumeration<PropertyChangeItem> enumer = other.elements();
       while (enumer.hasMoreElements())
       {
         PropertyChangeItem oldP = (PropertyChangeItem) enumer.nextElement();
@@ -924,7 +925,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     {
       // go through the vector and reset to the old values
       // go through the vector and make the changes
-      Enumeration enumer = _theMods.elements();
+      Enumeration<PropertyChangeItem> enumer = _theMods.elements();
       while (enumer.hasMoreElements())
       {
         PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
@@ -943,7 +944,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
     public void execute()
     {
       // go through the vector and make the changes
-      Enumeration enumer = _theMods.elements();
+      Enumeration<PropertyChangeItem> enumer = _theMods.elements();
       while (enumer.hasMoreElements())
       {
         PropertyChangeItem it = (PropertyChangeItem) enumer.nextElement();
@@ -972,7 +973,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
 
       Object args[] = {val};
 
-      Class p1 = null;
+      Class<?> p1 = null;
 
       try
       {
@@ -981,7 +982,7 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
           return;
 
         // see if the setter is expecting a double
-        Class[] params = setter.getParameterTypes();
+        Class<?>[] params = setter.getParameterTypes();
         // get the first parameter
         p1 = params[0];
 

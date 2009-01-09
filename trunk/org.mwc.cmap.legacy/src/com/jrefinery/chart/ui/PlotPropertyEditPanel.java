@@ -74,7 +74,12 @@ import com.jrefinery.ui.InsetsTextField;
  */
 public class PlotPropertyEditPanel extends JPanel implements ActionListener {
 
-    /** The paint (color) used to fill the background of the plot. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The paint (color) used to fill the background of the plot. */
     private PaintSample backgroundPaintSample;
 
     /** The stroke (pen) used to draw the outline of the plot. */

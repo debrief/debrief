@@ -9,11 +9,6 @@
 
 package org.j3d.geom.particle;
 
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Color3f;
-import javax.vecmath.Tuple3d;
-
 import javax.media.j3d.Shape3D;
 import javax.media.j3d.Transform3D;
 

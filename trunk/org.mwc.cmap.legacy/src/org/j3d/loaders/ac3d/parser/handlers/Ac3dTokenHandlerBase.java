@@ -43,13 +43,13 @@ public abstract class Ac3dTokenHandlerBase extends TokenHandler {
     protected int surfaceIndex;
             
     /** The call stack. */
-    protected Stack callStack;
+    protected Stack<Object> callStack;
     
     /** The materials index. */
-    protected Vector materials;
+    protected Vector<Ac3dMaterial> materials;
     
     /** The rendering display list. */
-    protected Vector displayList;
+    protected Vector<Object> displayList;
     
     /** The latest version of the file format this parser supports. */
     public static final int SUPPORTED_FORMAT_VERSION=0xb;
@@ -335,9 +335,9 @@ public abstract class Ac3dTokenHandlerBase extends TokenHandler {
     public void reset() {
         materialIndexPtr=0;
         surfaceIndex=-1;
-        callStack=new Stack();
-        materials=new Vector();
-        displayList=new Vector();
+        callStack=new Stack<Object>();
+        materials=new Vector<Ac3dMaterial>();
+        displayList=new Vector<Object>();
     }
     
     

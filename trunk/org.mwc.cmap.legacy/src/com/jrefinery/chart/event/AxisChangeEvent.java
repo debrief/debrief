@@ -47,7 +47,11 @@ import com.jrefinery.chart.Axis;
  */
 public class AxisChangeEvent extends ChartChangeEvent {
 
-    /** The axis that generated the change event. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** The axis that generated the change event. */
     private Axis axis;
 
     /**

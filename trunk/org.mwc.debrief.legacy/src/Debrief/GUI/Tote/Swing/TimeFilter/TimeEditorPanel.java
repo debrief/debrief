@@ -12,6 +12,7 @@ import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
@@ -40,17 +41,17 @@ final public class TimeEditorPanel extends JPanel
   /**
    * the data we sort out our time period limits from
    */
-  private final Layers _theData;
+  final Layers _theData;
 
   /**
    * the slider representing the start of the time period
    */
-  private SwingCompositeTimeEditor _starter;
+  SwingCompositeTimeEditor _starter;
 
   /**
    * the slider representing the end of the time period
    */
-  private SwingCompositeTimeEditor _finisher;
+  SwingCompositeTimeEditor _finisher;
 
   /**
    * the panel we need to inform when we are closing
@@ -69,12 +70,12 @@ final public class TimeEditorPanel extends JPanel
   /**
    * the chart we need to update
    */
-  private final MWC.GUI.PlainChart _theChart;
+  final MWC.GUI.PlainChart _theChart;
 
   /**
    * the step control we need to constrain
    */
-  private final Debrief.GUI.Tote.StepControl _theStepper;
+  final Debrief.GUI.Tote.StepControl _theStepper;
 
   /**
    * the list of operations we allow
@@ -94,7 +95,7 @@ final public class TimeEditorPanel extends JPanel
   /**
    * the list of time filter operations we can perform
    */
-  private final java.util.Vector _myOperations;
+  private final java.util.Vector<FilterOperation> _myOperations;
 
   /**
    * the list of tracks which can be selected
@@ -147,7 +148,7 @@ final public class TimeEditorPanel extends JPanel
     setName("Time/Track Toolbox");
 
     // the list of operations we can perform
-    _myOperations = new Vector(0, 1);
+    _myOperations = new Vector<FilterOperation>(0, 1);
 
     // put the operations into the list
     populateLists(_theStepper);
@@ -157,17 +158,17 @@ final public class TimeEditorPanel extends JPanel
 
     Layers.DataListener theListener = new Layers.DataListener()
     {
-      public void dataModified(final Layers theData, final Layer changedLayer)
+      public void dataModified(final Layers theData1, final Layer changedLayer)
       {
       }
 
-      public void dataExtended(final Layers theData)
+      public void dataExtended(final Layers theData1)
       {
         // ok, find the time-data items, re-set slider limits
         reIntitialise();
       }
 
-      public void dataReformatted(final Layers theData, final Layer changedLayer)
+      public void dataReformatted(final Layers theData1, final Layer changedLayer)
       {
 
         // we show a marker to indicate if an item is hidden or not, we need to update our list following
@@ -317,11 +318,11 @@ final public class TimeEditorPanel extends JPanel
     _myOperations.addElement(new HideRevealObjects(_theData));
 
     // now populate the list
-    final Enumeration iter = _myOperations.elements();
+    final Enumeration<FilterOperation> iter = _myOperations.elements();
     while (iter.hasMoreElements())
     {
       final Debrief.Tools.FilterOperations.FilterOperation fo =
-        (Debrief.Tools.FilterOperations.FilterOperation) iter.nextElement();
+        iter.nextElement();
 
       final DefaultListModel dm = (DefaultListModel) _theOperationsList.getModel();
       dm.addElement(fo.getLabel());
@@ -334,13 +335,13 @@ final public class TimeEditorPanel extends JPanel
   /**
    * find out which tracks are watchable, then populate the JList
    */
-  private void populateTracks()
+  void populateTracks()
   {
     // clear out the list to start with (by setting a new, blank, list)
     _theTracksList.setModel(new DefaultListModel());
 
     // find out what data is watchable
-    final Vector watches = getWatchables(_theData);
+    final Vector<LabelledWatchableHolder> watches = getWatchables(_theData);
 
     // set the new size of the List item
     _theTracksList.setVisibleRowCount(Math.min(9, watches.size()));
@@ -349,10 +350,10 @@ final public class TimeEditorPanel extends JPanel
     final DefaultListModel wdm = (DefaultListModel) _theTracksList.getModel();
 
     // now for the watchables list
-    final Enumeration iter = watches.elements();
+    final Enumeration<LabelledWatchableHolder> iter = watches.elements();
     while (iter.hasMoreElements())
     {
-      final LabelledWatchableHolder oj = (LabelledWatchableHolder) iter.nextElement();
+      final LabelledWatchableHolder oj = iter.nextElement();
       wdm.addElement(oj);
     }
   }
@@ -420,7 +421,7 @@ final public class TimeEditorPanel extends JPanel
    * @param start start point for the sliders
    * @param end   end point for the sliders
    */
-  private void doResetMe(final HiResDate start, final HiResDate end)
+  void doResetMe(final HiResDate start, final HiResDate end)
   {
     // reset the original times
     resetMe(start, end, start, end);
@@ -429,7 +430,7 @@ final public class TimeEditorPanel extends JPanel
   /**
    * push the sliders back out to the extreme values
    */
-  private void resetMe()
+  void resetMe()
   {
     resetMe(_startTime, _endTime, _starter.get_DTG(), _finisher.get_DTG());
 
@@ -447,7 +448,7 @@ final public class TimeEditorPanel extends JPanel
   /**
    * we're finished, just close
    */
-  private void closeMe()
+  void closeMe()
   {
     _theParent.remove(this);
   }
@@ -462,12 +463,12 @@ final public class TimeEditorPanel extends JPanel
     boolean found = false;
 
     // find the limits
-    final Vector watches = getWatchables(_theData);
+    final Vector<LabelledWatchableHolder> watches = getWatchables(_theData);
 
-    final Enumeration iter = watches.elements();
+    final Enumeration<LabelledWatchableHolder> iter = watches.elements();
     while (iter.hasMoreElements())
     {
-      final LabelledWatchableHolder wh = (LabelledWatchableHolder) iter.nextElement();
+      final LabelledWatchableHolder wh = iter.nextElement();
       final WatchableList wl = wh.getList();
 
       final HiResDate thisStart = wl.getStartDTG();
@@ -521,9 +522,9 @@ final public class TimeEditorPanel extends JPanel
    * @param theData the data to search
    * @return any watchable items on the plot
    */
-  private Vector getWatchables(final Layers theData)
+  Vector<LabelledWatchableHolder> getWatchables(final Layers theData)
   {
-    final Vector res = new Vector(0, 1);
+    final Vector<LabelledWatchableHolder> res = new Vector<LabelledWatchableHolder>(0, 1);
 
     // step through the layers
     final int cnt = theData.size();
@@ -538,7 +539,7 @@ final public class TimeEditorPanel extends JPanel
         // and solutions
         if (l instanceof TrackWrapper)
         {
-          Enumeration solutions = ((TrackWrapper) l).getSolutions();
+          Enumeration<TMAWrapper> solutions = ((TrackWrapper) l).getSolutions();
           if (solutions != null)
           {
             while (solutions.hasMoreElements())
@@ -547,7 +548,7 @@ final public class TimeEditorPanel extends JPanel
               addElement(tmaWrapper, res);
             }
           }
-          Enumeration sensors = ((TrackWrapper) l).getSensors();
+          Enumeration<SensorWrapper> sensors = ((TrackWrapper) l).getSensors();
           if (sensors != null)
           {
             while (sensors.hasMoreElements())
@@ -560,7 +561,7 @@ final public class TimeEditorPanel extends JPanel
       }
       else
       {
-        final Enumeration iter = l.elements();
+        final Enumeration<Editable> iter = l.elements();
         while (iter.hasMoreElements())
         {
           final Plottable p = (Plottable) iter.nextElement();
@@ -580,7 +581,7 @@ final public class TimeEditorPanel extends JPanel
    * utility method to wrap the watchable in a labelled object whihc
    * indicates if that object is hidden or not
    */
-  private static void addElement(final WatchableList watchable, final Vector theList)
+  private static void addElement(final WatchableList watchable, final Vector<LabelledWatchableHolder> theList)
   {
     theList.add(new LabelledWatchableHolder(watchable));
   }
@@ -602,16 +603,16 @@ final public class TimeEditorPanel extends JPanel
    *
    * @return the list of tracks
    */
-  private java.util.Vector getSelectedTracks()
+  private java.util.Vector<WatchableList> getSelectedTracks()
   {
-    java.util.Vector res = null;
+    java.util.Vector<WatchableList> res = null;
 
     // check we have some tracks selected
     final Object[] selections = _theTracksList.getSelectedValues();
 
     if (selections.length > 0)
     {
-      res = new Vector(0, 1);
+      res = new Vector<WatchableList>(0, 1);
       for (int i = 0; i < selections.length; i++)
       {
         final LabelledWatchableHolder wh = (LabelledWatchableHolder) selections[i];
@@ -667,10 +668,10 @@ final public class TimeEditorPanel extends JPanel
 
     if (val != null)
     {
-      final Enumeration iter = _myOperations.elements();
+      final Enumeration<FilterOperation> iter = _myOperations.elements();
       while (iter.hasMoreElements())
       {
-        final FilterOperation fo = (FilterOperation) iter.nextElement();
+        final FilterOperation fo = iter.nextElement();
         if (fo.getLabel().equals(val))
         {
           res = fo;
@@ -685,7 +686,7 @@ final public class TimeEditorPanel extends JPanel
   /**
    * an operation has been selected, put the textual details into the description box
    */
-  private void operationSelected()
+  void operationSelected()
   {
     // retrieve the operation currently selected
     final Debrief.Tools.FilterOperations.FilterOperation fo = getOperation();
@@ -697,7 +698,7 @@ final public class TimeEditorPanel extends JPanel
   /**
    * run the selected operation
    */
-  private void runOperation()
+  void runOperation()
   {
     // retrieve the operation selected in the list
     final FilterOperation fo = getOperation();
@@ -739,12 +740,12 @@ final public class TimeEditorPanel extends JPanel
    * one of the operations we provide (filtering).  When all tracks are selected for this operation,
    * we reduce the range of coverage of the sliders and the time stepper (if assigned)
    */
-  final private class DoFilter implements FilterOperation
+  final protected class DoFilter implements FilterOperation
   {
     /**
      * the tracks which have been selected for this operation
      */
-    private Vector _theTracks;
+    private Vector<WatchableList> _theTracks;
     /**
      * line-break character
      */
@@ -783,7 +784,7 @@ final public class TimeEditorPanel extends JPanel
      *
      * @param selectedTracks the selected tracks
      */
-    public void setTracks(final Vector selectedTracks)
+    public void setTracks(final Vector<WatchableList> selectedTracks)
     {
       _theTracks = selectedTracks;
     }
@@ -845,10 +846,10 @@ final public class TimeEditorPanel extends JPanel
       else
       {
         // do the dirty to the watchables
-        final Enumeration iter = _theTracks.elements();
+        final Enumeration<WatchableList> iter = _theTracks.elements();
         while (iter.hasMoreElements())
         {
-          final WatchableList wl = (WatchableList) iter.nextElement();
+          final WatchableList wl = iter.nextElement();
           wl.filterListTo(start, end);
         }
 

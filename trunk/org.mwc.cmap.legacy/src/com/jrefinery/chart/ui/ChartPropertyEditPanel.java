@@ -64,7 +64,12 @@ import com.jrefinery.ui.PaintSample;
  */
 public class ChartPropertyEditPanel extends JPanel implements ActionListener {
 
-    /** A panel for displaying/editing the properties of the title. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** A panel for displaying/editing the properties of the title. */
     private TitlePropertyEditPanel titlePropertiesPanel;
 
     /** A panel for displaying/editing the properties of the legend. */

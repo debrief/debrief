@@ -81,7 +81,7 @@ public final class ModifiedVerticalNumberAxis extends VerticalNumberAxis
     double xx = dataArea.getX();
     g2.setFont(tickLabelFont);
     
-    Iterator iterator = ticks.iterator();
+    Iterator<Tick> iterator = ticks.iterator();
     while (iterator.hasNext()) {
       Tick tick = (Tick) iterator.next();
       float yy = (float) translateValueToJava2D(tick.getNumericalValue(), dataArea);

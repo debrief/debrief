@@ -315,7 +315,8 @@ public class PeriodMarkerPlot extends XYPlot implements HorizontalValuePlot, Ver
      *
      * @deprecated use getLegendItems().
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
         return null;
     }
 

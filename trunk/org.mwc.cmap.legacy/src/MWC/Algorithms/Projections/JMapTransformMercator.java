@@ -8,7 +8,11 @@ import MWC.Algorithms.*;
 public class JMapTransformMercator extends PlainProjection
 {
   
-  protected Rectangle screen_;                   // screen space rectangle
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected Rectangle screen_;                   // screen space rectangle
   protected double scale_;                       // default scale factor  (screen width)/(map width)
 	protected double centerMap_, centerScreen_;    // map center coordinate (lon) and the screen center (x)
 	protected double latScale_;                    // x scale factor.. based on y with Mercator

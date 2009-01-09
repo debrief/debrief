@@ -216,6 +216,7 @@ package Debrief.GUI.Tote;
 // Initial revision
 //
 
+import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
 import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
@@ -267,7 +268,7 @@ abstract public class StepControl implements Editable,
   /**
    * the list of listeners to this control
    */
-  private final Vector _listeners;
+  private final Vector<StepperListener> _listeners;
 
   /**
    * the start time for the stepping
@@ -286,7 +287,7 @@ abstract public class StepControl implements Editable,
    * The values for  time period (expressed as a somePeriod) for a participant are
    * updated following a property change from that item
    */
-  private final Hashtable _participants;
+  private final Hashtable<Object, somePeriod> _participants;
 
   /**
    * the automatic timer we are using
@@ -321,7 +322,7 @@ abstract public class StepControl implements Editable,
   /**
    * the list of highlighters we know about
    */
-  private static Vector _myHighlighters;
+  static Vector<PlotHighlighter> _myHighlighters;
 
   /**
    * the highlighter currently selected
@@ -359,8 +360,8 @@ abstract public class StepControl implements Editable,
     // sort out the small & large time steps
     initialiseTimeStepSizes();
 
-    _listeners = new Vector(0, 1);
-    _participants = new Hashtable();
+    _listeners = new Vector<StepperListener>(0, 1);
+    _participants = new Hashtable<Object, somePeriod>();
 
     /** the timer-related settings
      */
@@ -377,13 +378,13 @@ abstract public class StepControl implements Editable,
 
     if (_myHighlighters == null)
     {
-      _myHighlighters = new Vector(0, 1);
+      _myHighlighters = new Vector<PlotHighlighter>(0, 1);
       _myHighlighters.add(_defaultHighlighter);
       _myHighlighters.add(new Debrief.GUI.Tote.Painters.Highlighters.RangeHighlighter());
       _myHighlighters.add(new Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter());
     }
 
-    _currentHighlighter = (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) _myHighlighters.elementAt(0);
+    _currentHighlighter = _myHighlighters.elementAt(0);
 
     // initialise the date format
     _dateFormatter = new java.text.SimpleDateFormat(MWC.Utilities.TextFormatting.FormatRNDateTime.getExample());
@@ -737,7 +738,7 @@ abstract public class StepControl implements Editable,
 
   public final void setHighlighter(final String val)
   {
-    final Enumeration iter = _myHighlighters.elements();
+    final Enumeration<PlotHighlighter> iter = _myHighlighters.elements();
     while (iter.hasMoreElements())
     {
       final Object l = iter.nextElement();
@@ -840,7 +841,7 @@ abstract public class StepControl implements Editable,
   /**
    * return the participants as a hashtable
    */
-  public final java.util.Hashtable getParticipants()
+  public final java.util.Hashtable<Object, somePeriod> getParticipants()
   {
     return _participants;
   }
@@ -870,12 +871,12 @@ abstract public class StepControl implements Editable,
     somePeriod sp = null;
 
     // go through the participant data
-    final Enumeration iter = _participants.elements();
+    final Enumeration<somePeriod> iter = _participants.elements();
 
     while (iter.hasMoreElements())
     {
       // get our data next item
-      sp = (somePeriod) iter.nextElement();
+      sp = iter.nextElement();
 
       // are we in our first cycle?
       if (res == null)
@@ -962,10 +963,10 @@ abstract public class StepControl implements Editable,
     updateForm(roundedTime);
 
     // inform the listeners
-    final Enumeration iter = _listeners.elements();
+    final Enumeration<StepperListener> iter = _listeners.elements();
     while (iter.hasMoreElements())
     {
-      final StepperListener l = (StepperListener) iter.nextElement();
+      final StepperListener l = iter.nextElement();
       try
       {
         l.newTime(oldTime, roundedTime, null);
@@ -1019,7 +1020,7 @@ abstract public class StepControl implements Editable,
    * we've moved it out of the newTime box so that we can access
    * it from a tester
    */
-  protected String getNewTime(final HiResDate DTG)
+  public String getNewTime(final HiResDate DTG)
   {
     final String pattern = _dateFormatter.toPattern();
 
@@ -1225,7 +1226,7 @@ abstract public class StepControl implements Editable,
     public final MethodDescriptor[] getMethodDescriptors()
     {
       // just add the reset color field first
-      final Class c = StepControl.class;
+      final Class<StepControl> c = StepControl.class;
       final MethodDescriptor[] mds = {
         method(c, "editHighlighter", null, "Edit current highlighter"),
         method(c, "editDisplay", null, "Edit current display mode"),
@@ -1271,11 +1272,11 @@ abstract public class StepControl implements Editable,
     {
 
       String[] strings = null;
-      final Vector res = new Vector(0, 1);
-      final Enumeration iter = _myHighlighters.elements();
+      final Vector<String> res = new Vector<String>(0, 1);
+      final Enumeration<PlotHighlighter> iter = _myHighlighters.elements();
       while (iter.hasMoreElements())
       {
-        final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter l = (Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter) iter.nextElement();
+        final Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter l = iter.nextElement();
         res.addElement(l.toString());
       }
 

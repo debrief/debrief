@@ -42,10 +42,8 @@ public class Mobius
     private Shape3D mobius;
     public QuadArray mobiusGeometry;
     private float[] qverts;
-    private float x, y, z, theta, t, previousx, previousz,
-        calct, rlower, rupper, num, mag, x1, x2, x3, x4, y1, y2, y3, y4,
+    private float  mag, x1, x2, x3, x4, y1, y2, y3, y4,
         z1, z2, z3, z4, xn, yn, zn;
-    private int half, numcirc, upcount = 1;
     private int vertCount = 0;
     private int normalcount = 0;
     private Vector3f[] normals;

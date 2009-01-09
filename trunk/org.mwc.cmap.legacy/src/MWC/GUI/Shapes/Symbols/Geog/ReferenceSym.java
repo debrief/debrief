@@ -66,7 +66,13 @@ public class ReferenceSym extends PlainSymbol
   // member objects
   ////////////////////////////////
 
-  private static java.awt.Font _myFont = new java.awt.Font("Arial",
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	private static java.awt.Font _myFont = new java.awt.Font("Arial",
                                                            java.awt.Font.PLAIN,
                                                            12);
 
@@ -225,11 +231,9 @@ public class ReferenceSym extends PlainSymbol
 
     public void testMyParams()
     {
-      MWC.GUI.Editable.editableTesterSupport _tester = new MWC.GUI.Editable.editableTesterSupport();
       MWC.GUI.Editable ed = new ReferenceSym();
-      _tester.testParams(ed, this);
+      editableTesterSupport.testParams(ed, this);
       ed = null;
-      _tester = null;
     }
   }
 }

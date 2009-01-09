@@ -11,6 +11,7 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import org.w3c.dom.Element;
 
+import MWC.GUI.Editable;
 import MWC.GUI.VPF.*;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
@@ -23,10 +24,10 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
   private static final String _myType = "vpf_library";
 
 
-  private boolean _isVisible;
-  private String _myName;
+  boolean _isVisible;
+  String _myName;
 
-  private java.util.Vector _myCoverages = null;
+  private java.util.Vector<CoverageLayer> _myCoverages = null;
 
   public VPFLibraryHandler()
   {
@@ -49,7 +50,7 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
     });
     addHandler(new VPFCoverageHandler()
     {
-      public void addCoverage(String type, String description, boolean visible, java.util.Enumeration features)
+      public void addCoverage(String type, String description, boolean visible, java.util.Enumeration<FeaturePainter> features)
       {
         addThisCoverage(type, description, visible, features);
       }
@@ -61,13 +62,13 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
 
   abstract public DebriefFeatureWarehouse getWarehouse();
 
-  abstract public void addLibrary(String name, boolean visible, java.util.Vector coverages);
+  abstract public void addLibrary(String name, boolean visible, java.util.Vector<CoverageLayer> coverages);
 
-  private void addThisCoverage(String type, String description, boolean visible, java.util.Enumeration features)
+  void addThisCoverage(String type, String description, boolean visible, java.util.Enumeration<FeaturePainter> features)
   {
     // do we have our list?
     if (_myCoverages == null)
-      _myCoverages = new java.util.Vector(0, 1);
+      _myCoverages = new java.util.Vector<CoverageLayer>(0, 1);
 
     // create this coverage
     LibrarySelectionTable lsTable = getLST(_myName);
@@ -121,7 +122,7 @@ abstract public class VPFLibraryHandler extends MWCXMLReader
     coast.setAttribute("Name", ll.getName());
 
     // now pass throuth the coverages, outputting each one
-    java.util.Enumeration enumer = ll.elements();
+    java.util.Enumeration<Editable> enumer = ll.elements();
     while (enumer.hasMoreElements())
     {
       CoverageLayer cl = (CoverageLayer) enumer.nextElement();

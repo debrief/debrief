@@ -121,17 +121,17 @@ public final class ReformatFixes implements FilterOperation
   /** the specified start time
    *
    */
-  private HiResDate _start_time = null;
+  HiResDate _start_time = null;
 
   /** the specified end time
    *
    */
-  private HiResDate _end_time = null;
+  HiResDate _end_time = null;
 
   /** the selected tracks
    *
    */
-  private Vector _theTracks = null;
+  private Vector<WatchableList> _theTracks = null;
 
   /** the set of layers which we will update
    *
@@ -197,29 +197,36 @@ public final class ReformatFixes implements FilterOperation
   /** new method, which gets the property from a list supplied
    *
    */
-  private Vector getProperty(HashMap propertyList)
+  @SuppressWarnings("unchecked")
+	private Vector<SetterHolder> getProperty(HashMap<String, Vector<SetterHolder>> propertyList)
   {
     // find out which one the user wants to edit
-    Vector[] list = new Vector[propertyList.size()];
+  	Vector<Vector<SetterHolder>> list = new Vector<Vector<SetterHolder>>();
 
-    int thisIndex = 0;
-    Collection theKeys = propertyList.keySet();
+    Collection<String> theKeys = propertyList.keySet();
 
-    for(Iterator iterator = theKeys.iterator(); iterator.hasNext();)
+    for(Iterator<String> iterator = theKeys.iterator(); iterator.hasNext();)
     {
-      Vector thisVector = (Vector) propertyList.get(iterator.next());
-      list[thisIndex++] = thisVector;
+    	Vector<SetterHolder> thisVector = propertyList.get(iterator.next());
+      list.add(thisVector);
     }
 
+    Vector<?>[] resList = new Vector[list.size()];
+    int ctr = 0;
+    for(Iterator<Vector<SetterHolder>> iter = list.iterator();iter.hasNext();)
+    {
+    	resList[ctr++] = iter.next();
+    }
+    
     Object val = JOptionPane.showInputDialog(null,
                                              "Which property do you wish to edit?",
                                              "Reformat objects",
                                              JOptionPane.QUESTION_MESSAGE,
                                              null,
-                                             list,
+                                             resList,
                                              null);
 
-    Vector res = (Vector) val;
+    Vector<SetterHolder> res = (Vector<SetterHolder>) val;
     return res;
   }
 
@@ -229,7 +236,7 @@ public final class ReformatFixes implements FilterOperation
     _end_time = finishDTG;
   }
 
-  public final void setTracks(Vector selectedTracks)
+  public final void setTracks(Vector<WatchableList> selectedTracks)
   {
     _theTracks = selectedTracks;
   }
@@ -259,10 +266,10 @@ public final class ReformatFixes implements FilterOperation
     }
 
     // find the list of properties to be edited
-    HashMap commonProps = getCommonProperties(_theTracks);
+    HashMap<String, Vector<SetterHolder>> commonProps = getCommonProperties(_theTracks);
 
     // find out what is to be edited
-    Vector theSetters = getProperty(commonProps);
+    Vector<SetterHolder> theSetters = getProperty(commonProps);
 
     if(theSetters == null)
       return null;
@@ -277,7 +284,7 @@ public final class ReformatFixes implements FilterOperation
     // the value selected by the user
     Object newVal = null;
 
-    SetterHolder firstEditor = (SetterHolder) theSetters.firstElement();
+    SetterHolder firstEditor = theSetters.firstElement();
     PropertyEditor pe = firstEditor._propertyEditor;
     String tags[] = pe.getTags();
     if(tags != null)
@@ -356,22 +363,22 @@ public final class ReformatFixes implements FilterOperation
    * @param position_type whether to do few or all points
    * @return
    */
-  private ReformatAction performTheOperation(SetterHolder sampleEditor, Object newValue, Vector theSetters, String position_type)
+  ReformatAction performTheOperation(SetterHolder sampleEditor, Object newValue, Vector<SetterHolder> theSetters, String position_type)
   {
     // create the results object
     ReformatAction res = new ReformatAction(sampleEditor._propertyName, newValue, _theLayers);
 
     // make our symbols and labels visible
-    Enumeration iter = theSetters.elements();
+    Enumeration<SetterHolder> iter = theSetters.elements();
     while(iter.hasMoreElements())
     {
-      SetterHolder wl = (SetterHolder) iter.nextElement();
+      SetterHolder wl = iter.nextElement();
 
       // pass through our items and check if editing them is applicable.  If so, create some
       // reformat actions to make/undo the change
       WatchableList thisList = (WatchableList) wl._object;
 
-      Collection validItems = null;
+      Collection<Editable> validItems = null;
 
       // find if it is, or has any valid points
       // get the correct type of data
@@ -402,9 +409,9 @@ public final class ReformatFixes implements FilterOperation
       if(validItems != null)
       {
         // so, we now have a list of items to edit
-        for(Iterator iterator = validItems.iterator(); iterator.hasNext();)
+        for(Iterator<Editable> iterator = validItems.iterator(); iterator.hasNext();)
         {
-          Editable editable = (Editable) iterator.next();
+          Editable editable = iterator.next();
 
           // ok, now add it to our list of edits
           res.submitNewEdit(new SetterHolder(editable, wl._setter, wl._getter, wl._propertyName, wl._propertyEditor));
@@ -419,9 +426,9 @@ public final class ReformatFixes implements FilterOperation
    * @param theObjects the currently selected list of objects
    * @return the properties common to all items in the list
    */
-  private static HashMap getCommonProperties(Vector theObjects)
+  static HashMap<String, Vector<SetterHolder>> getCommonProperties(Vector<WatchableList> theObjects)
   {
-    HashMap theProperties = null;
+    HashMap<String, Vector<SetterHolder>> theProperties = null;
 
     // create our core property editor
     java.beans.PropertyEditorManager propMan = getPropertyManager();
@@ -429,9 +436,9 @@ public final class ReformatFixes implements FilterOperation
     // iterate through the list of objects
     for(int i = 0; i < theObjects.size(); i++)
     {
-      HashMap propertiesForThisObject = new HashMap();
+      HashMap<String, SetterHolder> propertiesForThisObject = new HashMap<String, SetterHolder>();
 
-      WatchableList thisObject = (WatchableList) theObjects.elementAt(i);
+      WatchableList thisObject = theObjects.elementAt(i);
 
       // find the editable properties for this object
       propertiesForThisObject = getSuitablePropertiesFor(thisObject, propMan);
@@ -442,18 +449,18 @@ public final class ReformatFixes implements FilterOperation
         // so, is this our first list?
         if(theProperties == null)
         {
-          theProperties = new HashMap();
+          theProperties = new HashMap<String, Vector<SetterHolder>>();
 
           // yup, create and insert ours
-          for(Iterator iterator = propertiesForThisObject.keySet().iterator(); iterator.hasNext();)
+          for(Iterator<String> iterator = propertiesForThisObject.keySet().iterator(); iterator.hasNext();)
           {
-            final String thisProperty = (String) iterator.next();
+            final String thisProperty = iterator.next();
 
             // get the property editor
-            SetterHolder pe = (SetterHolder) propertiesForThisObject.get(thisProperty);
+            SetterHolder pe = propertiesForThisObject.get(thisProperty);
 
             // create a list of these setters
-            Vector thisList = new Vector(0, 1)
+            Vector<SetterHolder> thisList = new Vector<SetterHolder>(0, 1)
             {
               /**
 							 * 
@@ -483,8 +490,8 @@ public final class ReformatFixes implements FilterOperation
           // two lists
 
           // get the list of names
-          Set existingKeys = theProperties.keySet();
-          Set newKeys = propertiesForThisObject.keySet();
+          Set<String> existingKeys = theProperties.keySet();
+          Set<String> newKeys = propertiesForThisObject.keySet();
 
           // find the intersection
           newKeys.retainAll(existingKeys);
@@ -493,11 +500,11 @@ public final class ReformatFixes implements FilterOperation
           existingKeys.retainAll(newKeys);
 
           // we should now have the combined list - collate the items into a new list
-          HashMap newProps = new HashMap();
-          for(Iterator iterator = existingKeys.iterator(); iterator.hasNext();)
+          HashMap<String, Vector<SetterHolder>> newProps = new HashMap<String, Vector<SetterHolder>>();
+          for(Iterator<String> iterator = existingKeys.iterator(); iterator.hasNext();)
           {
-            String s = (String) iterator.next();
-            Vector thisList = (Vector) theProperties.get(s);
+            String s = iterator.next();
+            Vector<SetterHolder> thisList = theProperties.get(s);
             newProps.put(s, thisList);
           }
 
@@ -508,14 +515,14 @@ public final class ReformatFixes implements FilterOperation
           theProperties = newProps;
 
           // lastly, add our new property editors to this new list
-          for(Iterator iterator = existingKeys.iterator(); iterator.hasNext();)
+          for(Iterator<String> iterator = existingKeys.iterator(); iterator.hasNext();)
           {
-            String s = (String) iterator.next();
+            String s = iterator.next();
             // get the new property
-            SetterHolder sh = (SetterHolder) propertiesForThisObject.get(s);
+            SetterHolder sh = propertiesForThisObject.get(s);
 
             // find this vector in our big properties list
-            Vector thisV = (Vector) theProperties.get(s);
+            Vector<SetterHolder> thisV =  theProperties.get(s);
 
             // append our setter to this list
             thisV.add(sh);
@@ -534,10 +541,10 @@ public final class ReformatFixes implements FilterOperation
    * @param thisList the object we're looking at
    * @return the list of props for this object
    */
-  private static HashMap getSuitablePropertiesFor(WatchableList thisList,
+  static HashMap<String, SetterHolder> getSuitablePropertiesFor(WatchableList thisList,
                                                   PropertyEditorManager propMan)
   {
-    HashMap propertiesForThisObject = new HashMap();
+    HashMap<String, SetterHolder> propertiesForThisObject = new HashMap<String, SetterHolder>();
 
     // check it's an editable object
     if(!(thisList instanceof Editable))
@@ -608,7 +615,7 @@ public final class ReformatFixes implements FilterOperation
     return propertiesForThisObject;
   }
 
-  private static PropertyEditorManager getPropertyManager()
+  public static PropertyEditorManager getPropertyManager()
   {
     PropertyEditorManager pm = new PropertyEditorManager();
     PropertyEditorManager.registerEditor(java.awt.Color.class, ColorPropertyEditor.class);
@@ -629,10 +636,10 @@ public final class ReformatFixes implements FilterOperation
     // see if we can create an editor
     PropertyEditor pe = null;
 
-    Class returnClass = theReadMethod.getReturnType();
+    Class<?> returnClass = theReadMethod.getReturnType();
 
     // is there a custom editor for this type?
-    Class c = thisProperty.getPropertyEditorClass();
+    Class<?> c = thisProperty.getPropertyEditorClass();
 
     // did we find a custom instance
     if(c != null)
@@ -729,26 +736,26 @@ public final class ReformatFixes implements FilterOperation
     /** the object we are editing
      *
      */
-    final private Editable _object;
+    final Editable _object;
     /** the setter method in question
      *
      */
-    final private Method _setter;
+    final Method _setter;
 
     /** the getter method for this object
      *
      */
-    final private Method _getter;
+    final Method _getter;
 
     /** the name of the property being edited
      *
      */
-    final private String _propertyName;
+    final String _propertyName;
 
     /** the property editor to use
      *
      */
-    final private PropertyEditor _propertyEditor;
+    final PropertyEditor _propertyEditor;
 
     /** the existing value for this value
      *
@@ -828,7 +835,7 @@ public final class ReformatFixes implements FilterOperation
     /** the list of single edit operations
      *
      */
-    final List _myEdits;
+    final List<SetterHolder> _myEdits;
 
     /** the name of this edit operation
      *
@@ -862,7 +869,7 @@ public final class ReformatFixes implements FilterOperation
                           Layers theLayers)
     {
       _myName = theName;
-      _myEdits = new Vector(0, 1);
+      _myEdits = new Vector<SetterHolder>(0, 1);
       _newValue = newValue;
       _theLayers = theLayers;
     }
@@ -893,12 +900,12 @@ public final class ReformatFixes implements FilterOperation
 
       for(int i = 0; i < _myEdits.size(); i++)
       {
-        SetterHolder setterHolder = (SetterHolder) _myEdits.get(i);
+        SetterHolder setterHolder = _myEdits.get(i);
 
         try
         {
           // get the old (existing) value for this object
-          Object existingValue = setterHolder._getter.invoke(setterHolder._object, null);
+          Object existingValue = setterHolder._getter.invoke(setterHolder._object, (Object[])null);
 
           // and store it
           setterHolder.setExistingValue(existingValue);
@@ -925,7 +932,7 @@ public final class ReformatFixes implements FilterOperation
 
       for(int i = 0; i < _myEdits.size(); i++)
       {
-        SetterHolder setterHolder = (SetterHolder) _myEdits.get(i);
+        SetterHolder setterHolder = _myEdits.get(i);
 
         try
         {
@@ -978,16 +985,16 @@ public final class ReformatFixes implements FilterOperation
 
       System.out.println("test 1");
       // produce the objects to test
-      Vector theObjects2 = getTestObjects(5);
+      Vector<WatchableList> theObjects2 = getTestObjects(5);
 
       // now find the common list of properties
-      HashMap res = ReformatFixes.getCommonProperties(theObjects2);
+      HashMap<String, Vector<SetterHolder>> res = ReformatFixes.getCommonProperties(theObjects2);
 
       // check we have our two items
       assertEquals("found right number of properties", 4, res.keySet().size());
 
       // get the first list
-      Vector firstList = (Vector) res.get(res.keySet().iterator().next());
+      Vector<SetterHolder> firstList =  res.get(res.keySet().iterator().next());
       assertEquals("have editors for correct number of properties", 4, firstList.size());
     }
 
@@ -1004,10 +1011,10 @@ public final class ReformatFixes implements FilterOperation
       assertNotNull("found editable data", et);
 
       // now check we can get the suitable properties
-      HashMap props = getSuitablePropertiesFor(tw, ReformatFixes.getPropertyManager());
+      HashMap<String, SetterHolder> props = getSuitablePropertiesFor(tw, ReformatFixes.getPropertyManager());
 
       // so, how many are there?
-      Collection keys = props.keySet();
+      Collection<String> keys = props.keySet();
 
       // did we get the correct number
 //      for(Iterator iterator = keys.iterator(); iterator.hasNext();)
@@ -1031,9 +1038,9 @@ public final class ReformatFixes implements FilterOperation
      * @param num the number of objects to return
      * @return a list of sample objects
      */
-    private Vector getTestObjects(int num)
+    private Vector<WatchableList> getTestObjects(int num)
     {
-      Vector res = new Vector();
+      Vector<WatchableList> res = new Vector<WatchableList>();
 
       // ok, start with a track
       Debrief.Wrappers.TrackWrapper tw = new Debrief.Wrappers.TrackWrapper();
@@ -1082,14 +1089,14 @@ public final class ReformatFixes implements FilterOperation
     public void testIntersect()
     {
       System.out.println("test 3");
-      TreeSet t1 = new TreeSet();
+      TreeSet<String> t1 = new TreeSet<String>();
       t1.add("a");
       t1.add("b");
       t1.add("c");
       t1.add("d");
       t1.add("e");
 
-      TreeSet t2 = new TreeSet();
+      TreeSet<String> t2 = new TreeSet<String>();
       t2.add("c");
       t2.add("d");
       t2.add("e");
@@ -1143,7 +1150,7 @@ public final class ReformatFixes implements FilterOperation
       assertEquals("label is blue", java.awt.Color.blue, lw.getColor());
       assertEquals("shape is blue", java.awt.Color.blue, sw.getColor());
 
-      Vector theTracks = new Vector(0,1);
+      Vector<WatchableList> theTracks = new Vector<WatchableList>(0,1);
       theTracks.add(lw);
       theTracks.add(sw);
       theTracks.add(tw);
@@ -1152,10 +1159,10 @@ public final class ReformatFixes implements FilterOperation
       ReformatFixes rf = new ReformatFixes(ly);
 
       // find the list of properties to be edited
-       HashMap commonProps = ReformatFixes.getCommonProperties(theTracks);
+       HashMap<String, Vector<SetterHolder>> commonProps = ReformatFixes.getCommonProperties(theTracks);
 
        // get the color setter
-       Vector theSetters = (Vector) commonProps.get("Color");
+       Vector<SetterHolder> theSetters = (Vector<SetterHolder>) commonProps.get("Color");
 
       // find out what types of position to use
       String position_type = ALL_ITEMS;
@@ -1163,7 +1170,7 @@ public final class ReformatFixes implements FilterOperation
       // the value selected by the user
       Object newVal = null;
 
-      SetterHolder firstEditor = (SetterHolder) theSetters.firstElement();
+      SetterHolder firstEditor = theSetters.firstElement();
       PropertyEditor pe = firstEditor._propertyEditor;
       String tags[] = pe.getTags();
       if(tags != null)

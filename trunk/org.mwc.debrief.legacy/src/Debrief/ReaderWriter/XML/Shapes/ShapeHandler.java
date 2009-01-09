@@ -19,23 +19,23 @@ import MWC.Utilities.ReaderWriter.XML.Util.TimeRangeHandler;
 abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private java.awt.Color _col = null;
-  private HiResDate _startDTG = null;
-  private HiResDate _endDTG = null;
+  java.awt.Color _col = null;
+  HiResDate _startDTG = null;
+  HiResDate _endDTG = null;
   String _myType = null;
-  private String _label = null;
-  private java.awt.Font _font = null;
-  private Integer _theLocation = null;;
-  private Integer _lineStyle = null;
-  private Integer _lineThickness = null;
-  private java.awt.Color _fontCol = null;
-  private boolean _isVisible = false;
-  private boolean _labelVisible = true;
+  String _label = null;
+  java.awt.Font _font = null;
+  Integer _theLocation = null;;
+  Integer _lineStyle = null;
+  Integer _lineThickness = null;
+  java.awt.Color _fontCol = null;
+  boolean _isVisible = false;
+  boolean _labelVisible = true;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static private final MWC.GUI.Properties.LocationPropertyEditor lp
+  static final MWC.GUI.Properties.LocationPropertyEditor lp
     = new MWC.GUI.Properties.LocationPropertyEditor();
 
   /** and define the strings used to describe the shape

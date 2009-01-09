@@ -28,6 +28,7 @@ package Debrief.Tools.FilterOperations;
 //
 
 import Debrief.Tools.Tote.*;
+
 import java.util.*;
 
 import MWC.GUI.Tools.Action;
@@ -53,7 +54,7 @@ public final class HideRevealObjects implements FilterOperation
   /** the selected objects
    *
    */
-  private Vector _theObjects = null;
+  private Vector<WatchableList> _theObjects = null;
 
   /** the set of layers which we will update
    *
@@ -126,7 +127,7 @@ public final class HideRevealObjects implements FilterOperation
     // ignore, since we don't mind
   }
 
-  public final void setTracks(Vector selectedTracks)
+  public final void setTracks(java.util.Vector<WatchableList> selectedTracks)
   {
     // store the objects
     _theObjects = selectedTracks;
@@ -161,7 +162,7 @@ public final class HideRevealObjects implements FilterOperation
     boolean hideIt = getHideReveal();
 
     // make our symbols and labels visible
-    Enumeration iter = _theObjects.elements();
+    Enumeration<WatchableList> iter = _theObjects.elements();
     while(iter.hasMoreElements())
     {
       WatchableList wl = (WatchableList)iter.nextElement();
@@ -207,15 +208,15 @@ public final class HideRevealObjects implements FilterOperation
   ///////////////////////////////////////////////////////
   final class HideRevealAction implements Action
   {
-    private final Vector _valuesChanged;
+    private final Vector<ItemEdit> _valuesChanged;
     private final boolean _hideIt;
-    private final Layers _theLayers;
+    private final Layers _theLayers1;
 
     public HideRevealAction(boolean hideIt, Layers theLayers)
     {
       _hideIt = hideIt;
-      _theLayers = theLayers;
-      _valuesChanged = new Vector(0,1);
+      _theLayers1 = theLayers;
+      _valuesChanged = new Vector<ItemEdit>(0,1);
     }
 
     /** add an update to a new object
@@ -259,7 +260,7 @@ public final class HideRevealObjects implements FilterOperation
      */
     public final void undo()
     {
-      Iterator it = _valuesChanged.iterator();
+      Iterator<ItemEdit> it = _valuesChanged.iterator();
       while(it.hasNext())
       {
         ItemEdit ie = (ItemEdit)it.next();
@@ -267,14 +268,14 @@ public final class HideRevealObjects implements FilterOperation
         theO.setVisible(ie._oldValue);
       }
 
-      _theLayers.fireReformatted(null);
+      _theLayers1.fireReformatted(null);
     }
 
     /** make it so!
      */
     public final void execute()
     {
-      Iterator it = _valuesChanged.iterator();
+      Iterator<ItemEdit> it = _valuesChanged.iterator();
       while(it.hasNext())
       {
         ItemEdit ie = (ItemEdit)it.next();
@@ -282,13 +283,13 @@ public final class HideRevealObjects implements FilterOperation
         theO.setVisible(!_hideIt);
       }
 
-      _theLayers.fireReformatted(null);
+      _theLayers1.fireReformatted(null);
     }
 
     /** embedded class to store the changes we make
      *
      */
-    private final class ItemEdit
+    public final class ItemEdit
     {
       public final Object _object;
       public final boolean _oldValue;

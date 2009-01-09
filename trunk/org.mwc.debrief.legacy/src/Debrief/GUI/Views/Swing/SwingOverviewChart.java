@@ -27,7 +27,7 @@ final class SwingOverviewChart extends SwingChart implements java.beans.Property
   /** the chart we update when double-clicking.
    *
    */
-  private final PlainChart _targetChart;
+  final PlainChart _targetChart;
 
   /** our own pan tool, to put the pan events onto the buffer.
    *
@@ -165,7 +165,7 @@ final class SwingOverviewChart extends SwingChart implements java.beans.Property
    * @param dest - where we are going to paint to
    *
    */
-  private void paintRect(final Graphics dest)
+  void paintRect(final Graphics dest)
   {
     // we want to draw a rectangle representing the current data area.  But,
     // sometimes the data area doesn't cover the whole area, when the user

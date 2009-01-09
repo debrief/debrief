@@ -149,8 +149,6 @@ public class BTParser
         int columns = header.columns;
         boolean floats_used = false;
 
-        int data_size = readShort();
-
         if(version > 0)
             floats_used = (readShort() == 1);
 
@@ -192,8 +190,6 @@ public class BTParser
         }
 
         heights = new float[rows][columns];
-        int i = 0;
-
         if(floats_used)
         {
             for(int c = 0; c < columns; c++)

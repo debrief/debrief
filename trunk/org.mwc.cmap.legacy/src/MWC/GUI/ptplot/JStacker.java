@@ -3,8 +3,8 @@
 package MWC.GUI.ptplot;
 
 
-import java.awt.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Panel;
 
 /** act as a wrapper to this implementation of a plot - 
  * separate the interface from the plot object
@@ -39,6 +39,7 @@ abstract public class JStacker extends Panel {
 	
   /** draw the bare content for the plot
    */
+	@SuppressWarnings("deprecation")
 	protected void initForm(String name){
     
     setName(name);
@@ -79,7 +80,8 @@ abstract public class JStacker extends Panel {
     sPlot.setTitle(theName);
   }
   
-  protected void setNumSets(int numSets){
+  @SuppressWarnings("deprecation")
+	protected void setNumSets(int numSets){
     sPlot.setNumSets(numSets);
   }
   

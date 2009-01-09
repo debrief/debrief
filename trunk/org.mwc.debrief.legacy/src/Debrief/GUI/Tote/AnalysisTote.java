@@ -204,7 +204,7 @@ abstract public class AnalysisTote implements Pane,
   /**
    * the list of secondary tracks we are watching
    */
-  protected final Vector _theSecondary;
+  protected final Vector<WatchableList> _theSecondary;
 
   /**
    * the stepping control we are watching
@@ -219,12 +219,12 @@ abstract public class AnalysisTote implements Pane,
   /**
    * the list of types of calculations we want to do
    */
-  protected final Vector _theCalculationTypes;
+  protected final Vector<Class<?>> _theCalculationTypes;
 
   /**
    * the list of calculations we are actually doing
    */
-  protected final Vector _theCalculations;
+  protected final Vector<toteCalculation> _theCalculations;
 
   /**
    * the current set of data (used for auto assignment of tracks)
@@ -248,11 +248,11 @@ abstract public class AnalysisTote implements Pane,
   ////////////////////////////////////////////////////////////
   public AnalysisTote(final Layers theData)
   {
-    _theSecondary = new Vector(0, 1);
+    _theSecondary = new Vector<WatchableList>(0, 1);
 
-    _theCalculationTypes = new Vector(0, 1);
+    _theCalculationTypes = new Vector<Class<?>>(0, 1);
 
-    _theCalculations = new Vector(0, 1);
+    _theCalculations = new Vector<toteCalculation>(0, 1);
 
     addCalculations();
 
@@ -298,8 +298,8 @@ abstract public class AnalysisTote implements Pane,
       pw = list[0];
 
     // prepare the list of secondary watchables
-    final Vector secWatch = new Vector(0, 1);
-    final Enumeration secs = _theSecondary.elements();
+    final Vector<Watchable> secWatch = new Vector<Watchable>(0, 1);
+    final Enumeration<WatchableList> secs = _theSecondary.elements();
     while (secs.hasMoreElements())
     {
       final WatchableList wl = (WatchableList) secs.nextElement();
@@ -313,7 +313,7 @@ abstract public class AnalysisTote implements Pane,
     }
 
     // get our list of calcs to be updated
-    final Enumeration calcLabels = _theCalculations.elements();
+    final Enumeration<toteCalculation> calcLabels = _theCalculations.elements();
 
     // so, we have to go across the table first
     while (calcLabels.hasMoreElements())
@@ -386,7 +386,7 @@ abstract public class AnalysisTote implements Pane,
   /**
    * return the list of secondary tracks for the tote
    */
-  public final Vector getSecondary()
+  public final Vector<WatchableList> getSecondary()
   {
     return _theSecondary;
   }
@@ -426,7 +426,7 @@ abstract public class AnalysisTote implements Pane,
   /**
    * assign the secondary track for the tote
    */
-  protected final void removeParticipant(final WatchableList theList)
+  public final void removeParticipant(final WatchableList theList)
   {
     // there isn't a remove button for the primary track,
     // so the user must have clicked on the secondary
@@ -483,7 +483,7 @@ abstract public class AnalysisTote implements Pane,
   /**
    * return the current time
    */
-  protected final HiResDate getCurrentTime()
+  public final HiResDate getCurrentTime()
   {
     return _theCurrentTime;
   }
@@ -512,7 +512,7 @@ abstract public class AnalysisTote implements Pane,
         boolean haveAlready = false;
 
         // check that this isn't one of our secondaries
-        final Enumeration secs = _theSecondary.elements();
+        final Enumeration<WatchableList> secs = _theSecondary.elements();
         while (secs.hasMoreElements())
         {
           final WatchableList secW = (WatchableList) secs.nextElement();
@@ -543,7 +543,7 @@ abstract public class AnalysisTote implements Pane,
    *
    * @param onlyAssignTracks - as we scan through the layers, only put TrackWrappers onto the tote
    */
-  protected final void assignWatchables(boolean onlyAssignTracks)
+  public final void assignWatchables(boolean onlyAssignTracks)
   {
     // check we have some data to search
     if (_theData != null)
@@ -567,7 +567,7 @@ abstract public class AnalysisTote implements Pane,
         }
         else
         {
-          final Enumeration iter = layer.elements();
+          final Enumeration<Editable> iter = layer.elements();
           while (iter.hasMoreElements())
           {
             final Plottable p = (Plottable) iter.nextElement();
@@ -595,7 +595,7 @@ abstract public class AnalysisTote implements Pane,
   public void closeMe()
   {
     // remove the secondaries
-    final Enumeration iter = _theSecondary.elements();
+    final Enumeration<WatchableList> iter = _theSecondary.elements();
     while (iter.hasMoreElements())
     {
       final WatchableList wl = (WatchableList) iter.nextElement();

@@ -185,7 +185,8 @@ public class SymbolicXYPlotDemo {
      * @param xAxisLabel  the x axis label.
      * @param yAxisLabel  the y axis label.
      */
-    private static void displayXYSymbolic(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayXYSymbolic(String frameTitle,
                                           XYDataset data, String chartTitle,
                                           String xAxisLabel, String yAxisLabel) {
 
@@ -205,7 +206,8 @@ public class SymbolicXYPlotDemo {
     * @param data1  the dataset 1.
     * @param data2  the dataset 2.
     */
-    private static void displayXYSymbolicOverlaid(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayXYSymbolicOverlaid(String frameTitle,
                                                   XYDataset data1, XYDataset data2) {
 
         String title = "Pollutant Overlaid";
@@ -265,7 +267,8 @@ public class SymbolicXYPlotDemo {
      * @param data1  the dataset 1.
      * @param data2  the dataset 2.
      */
-    private static void displayXYSymbolicCombinedHorizontally(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayXYSymbolicCombinedHorizontally(String frameTitle,
                                                               XYDataset data1, XYDataset data2) {
 
         String title = "Pollutant Horizontally Combined";
@@ -326,7 +329,8 @@ public class SymbolicXYPlotDemo {
      * @param data1  the dataset 1.
      * @param data2  the dataset 2.
      */
-    private static void displayXYSymbolicCombinedVertically(String frameTitle,
+    @SuppressWarnings("deprecation")
+		private static void displayXYSymbolicCombinedVertically(String frameTitle,
                                                             XYDataset data1, XYDataset data2) {
 
         String title = "Pollutant Vertically Combined";
@@ -387,7 +391,8 @@ public class SymbolicXYPlotDemo {
      *
      * @return an array.
      */
-    private static Object toArray(Object arr) {
+    @SuppressWarnings("unchecked")
+		private static Object toArray(Object arr) {
 
         if (arr == null) {
             return arr;

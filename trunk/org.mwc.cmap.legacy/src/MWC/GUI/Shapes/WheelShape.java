@@ -287,7 +287,7 @@ public class WheelShape extends PlainShape implements Serializable, Editable
   /**
    * get the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
    */
-  public Collection getDataPoints()
+  public Collection<WorldLocation> getDataPoints()
   {
     return null;
   }

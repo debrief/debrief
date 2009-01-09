@@ -63,7 +63,12 @@ import com.jrefinery.data.DefaultMeterDataset;
  */
 public class ThermometerDemo extends JPanel {
 
-    /** Options for the value label position combo box. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Options for the value label position combo box. */
     protected static final String[] OPTIONS = {"None", "Right", "Bulb"};
 
     /** The dataset. */
@@ -382,7 +387,7 @@ public class ThermometerDemo extends JPanel {
      * @param thermometer  the thermometer index.
      * @param value  the value.
      */
-    private void setValue(int thermometer, double value) {
+    void setValue(int thermometer, double value) {
         if ((thermometer >= 0) && (thermometer < 3)) {
             try {
                 thermo[thermometer].setValue(thermo[thermometer].getValue().doubleValue() + value);
@@ -398,7 +403,7 @@ public class ThermometerDemo extends JPanel {
      *
      * @param value  the value.
      */
-    private void setMeterValue(double value) {
+    void setMeterValue(double value) {
         try {
             double newValue = value;
             if (data.isValueValid()) {
@@ -416,7 +421,7 @@ public class ThermometerDemo extends JPanel {
      *
      * @param thermometer  the thermometer index.
      */
-    private void setShowValue(int thermometer) {
+    void setShowValue(int thermometer) {
         if ((thermometer >= 0) && (thermometer < 3)) {
             thermo[thermometer].setValueLocation(pickShow[thermometer].getSelectedIndex());
         }

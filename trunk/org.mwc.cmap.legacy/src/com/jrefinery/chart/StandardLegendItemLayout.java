@@ -92,7 +92,8 @@ public class StandardLegendItemLayout implements LegendItemLayout {
      * Lays out the items horizontally, with a constraint on the width.
      * @param collection    The collection to be laid out.
      */
-    private void doHorizontalLayout(LegendItemCollection collection) {
+    @SuppressWarnings("unchecked")
+		private void doHorizontalLayout(LegendItemCollection collection) {
 
         // run through the items in the collection and set their coordinates
         // relative to (0, 0)
@@ -129,7 +130,8 @@ public class StandardLegendItemLayout implements LegendItemLayout {
      * Lays out the items vertically, with a constraint on the height.
      * @param collection    The collection to be laid out.
      */
-    private void doVerticalLayout(LegendItemCollection collection) {
+    @SuppressWarnings("unchecked")
+		private void doVerticalLayout(LegendItemCollection collection) {
 
         // run through the items in the collection and set their coordinates
         // relative to (0, 0)

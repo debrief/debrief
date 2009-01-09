@@ -10,10 +10,11 @@ import java.util.Date;
 
 import MWC.GUI.Editable;
 import MWC.GUI.ExcludeFromRightClickEdit;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-public final class NarrativeEntry implements java.lang.Comparable,
+public final class NarrativeEntry implements 
         MWC.GUI.Plottable, Serializable, ExcludeFromRightClickEdit
 {
     // ///////////////////////////////////////////
@@ -127,7 +128,7 @@ public final class NarrativeEntry implements java.lang.Comparable,
     /**
      * member function to meet requirements of comparable interface *
      */
-    public final int compareTo(final Object o)
+    public final int compareTo(final Plottable o)
     {
         final NarrativeEntry other = (NarrativeEntry) o;
         int res = 0;

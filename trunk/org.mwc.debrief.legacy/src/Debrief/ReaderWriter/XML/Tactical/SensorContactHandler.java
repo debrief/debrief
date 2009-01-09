@@ -17,24 +17,24 @@ import MWC.Utilities.ReaderWriter.XML.Util.*;
 
 abstract public class SensorContactHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  private Debrief.Wrappers.SensorContactWrapper _theContact;
+  Debrief.Wrappers.SensorContactWrapper _theContact;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static private final MWC.GUI.Properties.LocationPropertyEditor lp
+  static final MWC.GUI.Properties.LocationPropertyEditor lp
     = new MWC.GUI.Properties.LocationPropertyEditor();
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static private final MWC.GUI.Properties.LineLocationPropertyEditor ll
+  static final MWC.GUI.Properties.LineLocationPropertyEditor ll
     = new MWC.GUI.Properties.LineLocationPropertyEditor();
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static private final MWC.GUI.Properties.LineStylePropertyEditor ls
+  static final MWC.GUI.Properties.LineStylePropertyEditor ls
     = new MWC.GUI.Properties.LineStylePropertyEditor();
 
   public SensorContactHandler()

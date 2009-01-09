@@ -37,12 +37,7 @@ package MWC.GUI.Properties;
 //
 
 
-import java.beans.*;
-import MWC.GUI.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
+import java.beans.PropertyEditorSupport;
 
 abstract public class BoundedIntegerEditor extends 
            PropertyEditorSupport 

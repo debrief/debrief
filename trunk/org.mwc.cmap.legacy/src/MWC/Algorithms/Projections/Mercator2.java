@@ -54,18 +54,26 @@ package MWC.Algorithms.Projections;
 // Initial revision
 //
 
-import java.io.*;
-import java.beans.*;
-import java.awt.*;
-import MWC.GenericData.*;
-import MWC.Algorithms.*;
-import MWC.GUI.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.io.Serializable;
+
+import MWC.Algorithms.Conversions;
+import MWC.Algorithms.PlainProjection;
+import MWC.GUI.Editable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 
 public class Mercator2 extends PlainProjection implements Serializable,
                                                           Editable
 {
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
 
@@ -362,7 +370,11 @@ public class Mercator2 extends PlainProjection implements Serializable,
   ////////////////////////////////////////////////////////////
   protected class Ellipse implements Serializable
   {
-    final protected double _eccent;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		final protected double _eccent;
     final protected double _radius; // nautical metres
 
 

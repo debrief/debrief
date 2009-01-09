@@ -92,7 +92,7 @@ public class View8211
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
-				Iterator iter = poRecord.iterator();
+				Iterator<DDFField> iter = poRecord.iterator();
 				while (iter.hasNext())
 				{
 					viewRecordField((DDFField) iter.next());

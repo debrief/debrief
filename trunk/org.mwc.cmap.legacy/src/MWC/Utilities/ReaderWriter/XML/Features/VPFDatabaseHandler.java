@@ -11,8 +11,13 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import org.w3c.dom.Element;
 
-import MWC.GUI.VPF.*;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.GUI.Editable;
+import MWC.GUI.VPF.CoverageLayer;
+import MWC.GUI.VPF.DebriefFeatureWarehouse;
+import MWC.GUI.VPF.LibraryLayer;
+import MWC.GUI.VPF.VPFDatabase;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 
@@ -22,9 +27,9 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 	private static final String _myType = "vpf_database";
 
-	private boolean _isVisible;
+	boolean _isVisible;
 
-	private VPFDatabase _myDatabase;
+	VPFDatabase _myDatabase;
 
 	public VPFDatabaseHandler()
 	{
@@ -41,7 +46,7 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 		addHandler(new VPFLibraryHandler()
 		{
 			public void addLibrary(String name, boolean visible,
-					java.util.Vector coverages)
+					java.util.Vector<CoverageLayer> coverages)
 			{
 				addThisLibrary(name, visible, coverages);
 			}
@@ -67,7 +72,7 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 
 	}
 
-	private void checkDatabase()
+	void checkDatabase()
 	{
 		if (_myDatabase == null)
 		{
@@ -78,7 +83,7 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 	}
 
 	public void addThisLibrary(String name, boolean visible,
-			java.util.Vector coverages)
+			java.util.Vector<CoverageLayer> coverages)
 	{
 		checkDatabase();
 
@@ -104,10 +109,10 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 			{
 
 				// now add the coverages to the library
-				java.util.Enumeration enumer = coverages.elements();
+				java.util.Enumeration<CoverageLayer> enumer = coverages.elements();
 				while (enumer.hasMoreElements())
 				{
-					CoverageLayer cl = (CoverageLayer) enumer.nextElement();
+					CoverageLayer cl = enumer.nextElement();
 					lib.add(cl);
 				}
 			}
@@ -150,7 +155,7 @@ abstract public class VPFDatabaseHandler extends MWCXMLReader implements
 		coast.setAttribute("Visible", writeThis(ll.getVisible()));
 
 		// now pass throuth the coverages, outputting each one
-		java.util.Enumeration enumer = ll.elements();
+		java.util.Enumeration<Editable> enumer = ll.elements();
 		while (enumer.hasMoreElements())
 		{
 			LibraryLayer cl = (LibraryLayer) enumer.nextElement();

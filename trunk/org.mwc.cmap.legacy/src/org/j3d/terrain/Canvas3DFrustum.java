@@ -46,13 +46,8 @@
 
 package org.j3d.terrain;
 
-import javax.vecmath.Point4d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector4d;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Matrix4d;
-import javax.media.j3d.Transform3D;
-import javax.media.j3d.Canvas3D;
 
 /**
  * ViewFrustum planes for a single Canvas3D and determining if

@@ -141,12 +141,6 @@ public abstract class ValueAxis extends Axis {
      */
     private double lowerMargin;
 
-    /** The minimum range length for the axis. */
-    private double minimumRangeLength;
-
-    /** The maximum range length for the axis. */
-    private double maximumRangeLength;
-
     /**
      * If this value is positive, the amount is subtracted from the maximum
      * data value to determine the lower axis range.  This can be used to
@@ -282,8 +276,6 @@ public abstract class ValueAxis extends Axis {
         this.lowerMargin = DEFAULT_LOWER_MARGIN;
 
         this.fixedAutoRange = 0.0;
-        this.minimumRangeLength = Double.MIN_VALUE;
-        this.maximumRangeLength = Double.MAX_VALUE;
         this.autoTickUnitSelection = autoTickUnitSelection;
         this.standardTickUnits = standardTickUnits;
         this.gridLinesVisible = gridLinesVisible;
@@ -945,12 +937,12 @@ public abstract class ValueAxis extends Axis {
      * To halve the length of the axis range, use 50% (0.5).
      *
      * @param percent  The resize factor.
-     * @param anchorValue  The new central value after the resize.
+     * @param anchorValue1  The new central value after the resize.
      */
-    public void resizeRange(double percent, double anchorValue) {
+    public void resizeRange(double percent, double anchorValue1) {
 
         double halfLength = range.getLength() * percent / 2;
-        Range adjusted = new Range(anchorValue - halfLength, anchorValue + halfLength);
+        Range adjusted = new Range(anchorValue1 - halfLength, anchorValue1 + halfLength);
         setRange(adjusted);
 
     }

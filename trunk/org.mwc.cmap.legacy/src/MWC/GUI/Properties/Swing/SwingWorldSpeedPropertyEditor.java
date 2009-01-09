@@ -80,7 +80,7 @@ public class SwingWorldSpeedPropertyEditor extends
   /**
    * the formatting object used to write to screen
    */
-  protected DecimalFormat _formatter = new DecimalFormat("0.######");
+  protected DecimalFormat _formatter1 = new DecimalFormat("0.######");
 
   /**
    * property change support for objects which want to listen to us changing
@@ -149,7 +149,7 @@ public class SwingWorldSpeedPropertyEditor extends
    */
   protected double getSpeed() throws java.text.ParseException
   {
-    double val = _formatter.parse(_theSpeed.getText()).doubleValue();
+    double val = _formatter1.parse(_theSpeed.getText()).doubleValue();
     return val;
   }
 
@@ -168,7 +168,7 @@ public class SwingWorldSpeedPropertyEditor extends
   {
     if (_theHolder != null)
     {
-      _theSpeed.setText(_formatter.format(val));
+      _theSpeed.setText(_formatter1.format(val));
     }
   }
 

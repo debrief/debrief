@@ -9,15 +9,14 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import org.xml.sax.*;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 
 abstract public class PropertyHandler extends MWCXMLReader
 {
-  private String _name = null;
-  private String _value = null;
+  String _name = null;
+  String _value = null;
 
   public PropertyHandler()
   {

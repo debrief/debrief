@@ -1079,7 +1079,6 @@ public class IntersectionUtils
 
         double shortest_length = -1;
         double this_length;
-        int offset = 0;
         int i0, i1, i2;
 
         for(int i = 0; i < numIndex * 3; )
@@ -1161,7 +1160,6 @@ public class IntersectionUtils
 
         double shortest_length = -1;
         double this_length;
-        int offset = 0;
         int i0, i1, i2, i3;
 
         for(int i = 0; i < numIndex * 3; )

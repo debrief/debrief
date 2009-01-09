@@ -171,7 +171,7 @@ public class EllipseShape extends PlainShape implements Serializable, Editable
   /**
    * the series of world locations which represent this ellipse
    */
-  private Vector _theDataPoints;
+  private Vector<WorldLocation> _theDataPoints;
 
   /**
    * the orientation of the ellipse (in degrees)
@@ -260,7 +260,7 @@ public class EllipseShape extends PlainShape implements Serializable, Editable
   /**
    * get the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
    */
-  public Collection getDataPoints()
+  public Collection<WorldLocation> getDataPoints()
   {
     return _theDataPoints;
   }
@@ -268,10 +268,10 @@ public class EllipseShape extends PlainShape implements Serializable, Editable
   /**
    * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
    */
-  private Vector calcDataPoints()
+  private Vector<WorldLocation> calcDataPoints()
   {
     // get ready to store the list
-    Vector res = new Vector(0, 1);
+    Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
     // produce the orientation in radians
     double orient = MWC.Algorithms.Conversions.Degs2Rads(_theOrientation);

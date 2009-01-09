@@ -326,11 +326,11 @@ public abstract class AbstractTitle extends Object implements Cloneable {
      * Returns true if the title can assume the specified location, and false
      * otherwise.
      *
-     * @param position  the position.
+     * @param position1  the position.
      *
      * @return <code>true</code> if the title can assume the specified position.
      */
-    public abstract boolean isValidPosition(int position);
+    public abstract boolean isValidPosition(int position1);
 
     /**
      * Returns the preferred width of the title.  When a title is displayed at

@@ -51,7 +51,12 @@ public class BasicJApplet extends JApplet {
     ///////////////////////////////////////////////////////////////////
     ////                         public methods                    ////
 
-    /** Return generic applet information.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Return generic applet information.
      *  @return A string giving minimal information about Ptolemy II.
      */
     public String getAppletInfo() {

@@ -52,7 +52,11 @@ import MWC.GUI.*;
 public class FeaturePainter implements Plottable, Serializable
 {
 
-  private String _featureType;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private String _featureType;
   private String _description;
   private boolean _isOn = false;
   private java.awt.Color _myColor = java.awt.Color.white;
@@ -81,7 +85,7 @@ public class FeaturePainter implements Plottable, Serializable
   }
 
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());
@@ -133,7 +137,12 @@ public class FeaturePainter implements Plottable, Serializable
   public class FeaturePainterInfo extends Editable.EditorType implements Serializable
   {
 
-    public FeaturePainterInfo(FeaturePainter data)
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public FeaturePainterInfo(FeaturePainter data)
     {
       super(data, data.getName(), "");
     }

@@ -10,10 +10,6 @@
 
 package MWC.GUI.Tools.Swing;
 
-import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
-
-import javax.swing.*;
-import javax.swing.event.*;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -21,17 +17,41 @@ import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Frame;
 import java.awt.Graphics;
+import java.awt.IllegalComponentStateException;
 import java.awt.Insets;
 import java.awt.Point;
-import java.awt.Rectangle;
 import java.awt.Window;
-import java.awt.event.*;
-import java.awt.IllegalComponentStateException;
+import java.awt.event.ActionEvent;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 
-import java.beans.*;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.LookAndFeel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.InternalFrameEvent;
+import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.ActionMapUIResource;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
 
-import javax.swing.border.*;
-import javax.swing.plaf.*;
+import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 
 /**
  * A Basic L&F implementation of ToolBarUI.  This implementation
@@ -262,7 +282,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
 
   protected void installKeyboardActions( )
   {
-    InputMap km = getInputMap(JComponent.
+    InputMap km = getInputMap2(JComponent.
                               WHEN_ANCESTOR_OF_FOCUSED_COMPONENT);
 
     SwingUtilities.replaceUIInputMap(toolBar, JComponent.
@@ -275,7 +295,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
     }
   }
 
-  InputMap getInputMap(int condition) {
+  InputMap getInputMap2(final int condition) {
     if (condition == JComponent.WHEN_ANCESTOR_OF_FOCUSED_COMPONENT) {
       return (InputMap)UIManager.get("ToolBar.ancestorInputMap");
     }
@@ -311,7 +331,8 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
                                      null);
   }
 
-  protected void navigateFocusedComp( int direction )
+  @SuppressWarnings("deprecation")
+	protected void navigateFocusedComp( int direction )
   {
     int nComp = toolBar.getComponentCount();
     int j;
@@ -440,8 +461,8 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
     }
     frame = floatingFrame;
 
-    DragWindow dragWindow = new DragWindow(frame);
-    return dragWindow;
+    DragWindow dragWindow1 = new DragWindow(frame);
+    return dragWindow1;
   }
 
   public Dimension getMinimumSize(JComponent c) {
@@ -465,7 +486,8 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
     return floating;
   }
 
-  public void setFloating(boolean b, Point p) {
+  @SuppressWarnings("deprecation")
+	public void setFloating(boolean b, Point p) {
     if (toolBar.isFloatable() == true) {
       if (dragWindow != null)
         dragWindow.setVisible(false);
@@ -607,7 +629,8 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
     return BorderLayout.CENTER;
   }
 
-  protected void dragTo(Point position, Point origin)
+  @SuppressWarnings("deprecation")
+	protected void dragTo(Point position, Point origin)
   {
     if (toolBar.isFloatable() == true)
     {
@@ -724,32 +747,56 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
     }
   };
 
-  private static class RightAction extends KeyAction {
-    public void actionPerformed(ActionEvent e) {
+  @SuppressWarnings("synthetic-access")
+	static class RightAction extends KeyAction {
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
       JToolBar toolBar = (JToolBar)e.getSource();
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(EAST);
     }
   };
 
-  private static class LeftAction extends KeyAction {
-    public void actionPerformed(ActionEvent e) {
+  @SuppressWarnings("synthetic-access")
+	static class LeftAction extends KeyAction {
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
       JToolBar toolBar = (JToolBar)e.getSource();
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(WEST);
     }
   };
 
-  private static class UpAction extends KeyAction {
-    public void actionPerformed(ActionEvent e) {
+  @SuppressWarnings("synthetic-access")
+	static class UpAction extends KeyAction {
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
       JToolBar toolBar = (JToolBar)e.getSource();
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(NORTH);
     }
   };
 
-  private static class DownAction extends KeyAction {
-    public void actionPerformed(ActionEvent e) {
+  @SuppressWarnings("synthetic-access")
+	static class DownAction extends KeyAction {
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e) {
       JToolBar toolBar = (JToolBar)e.getSource();
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(SOUTH);
@@ -819,23 +866,23 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
    * Instantiate it only within subclasses of MyBasicToolBarUI.
    */
   public class DockingListener implements MouseInputListener {
-    protected JToolBar toolBar;
+    protected JToolBar toolBar1;
     protected boolean isDragging = false;
     protected Point origin = null;
 
     public DockingListener(JToolBar t) {
-      this.toolBar = t;
+      this.toolBar1 = t;
     }
 
     public void mouseClicked(MouseEvent e) {}
     public void mousePressed(MouseEvent e) {
-      if (!toolBar.isEnabled()) {
+      if (!toolBar1.isEnabled()) {
         return;
       }
       isDragging = false;
     }
     public void mouseReleased(MouseEvent e) {
-      if (!toolBar.isEnabled()) {
+      if (!toolBar1.isEnabled()) {
         return;
       }
       if (isDragging == true) {
@@ -851,7 +898,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
     public void mouseExited(MouseEvent e) { }
 
     public void mouseDragged(MouseEvent e) {
-      if (!toolBar.isEnabled()) {
+      if (!toolBar1.isEnabled()) {
         return;
       }
       isDragging = true;
@@ -866,7 +913,11 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
 
   protected class DragWindow extends Window
   {
-    Color borderColor = Color.gray;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		Color borderColor = Color.gray;
     int orientation = toolBar.getOrientation();
     Point offset; // offset of the mouse cursor inside the DragWindow
 

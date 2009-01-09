@@ -71,16 +71,24 @@ package MWC.GUI.Tools.Chart;
 // Initial revision
 //
 
-import MWC.GUI.Tools.*;
-import java.awt.*;
-import MWC.Algorithms.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import java.io.*;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.io.Serializable;
+
+import MWC.GUI.PlainChart;
+import MWC.GUI.Rubberband;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainDragTool;
+import MWC.GenericData.WorldArea;
 
 public class ZoomIn extends PlainDragTool  implements Serializable
 {
-  //////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////
   transient WorldArea _oldArea;

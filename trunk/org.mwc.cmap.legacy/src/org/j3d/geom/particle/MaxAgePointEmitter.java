@@ -9,7 +9,6 @@
 
 package org.j3d.geom.particle;
 
-import javax.vecmath.Vector3d;
 
 /**
  * MaxAgePointEmitter checks the age of a Particle

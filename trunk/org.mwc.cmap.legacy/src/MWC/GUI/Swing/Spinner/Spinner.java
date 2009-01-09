@@ -31,9 +31,13 @@ import javax.swing.JScrollBar;
  * @version (RCS: $Revision: 1.1.1.1 $)
  */
 public class Spinner extends JPanel {
-    private String ac = null;
-    private JComponent component;
-    private JScrollBar scroller;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		String ac = null;
+    JComponent component;
+    JScrollBar scroller;
 
     /**
      * Create a Spinner for a given component. The height of the spinner

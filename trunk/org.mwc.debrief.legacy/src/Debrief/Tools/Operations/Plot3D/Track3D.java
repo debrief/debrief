@@ -102,8 +102,8 @@ public final class Track3D extends Participant3D implements StepperListener {
     }
   }
 
-  private Collection getTrail(HiResDate start_time, HiResDate end_time) {
-    Collection res = _myTrack.getUnfilteredItems(start_time, end_time);
+  private Collection<Editable> getTrail(HiResDate start_time, HiResDate end_time) {
+  	Collection<Editable> res = _myTrack.getUnfilteredItems(start_time, end_time);
     return res;
   }
 
@@ -224,7 +224,7 @@ public final class Track3D extends Participant3D implements StepperListener {
   protected final void buildSnailTrail(HiResDate start_time, HiResDate end_time) {
 
     // find the back-trail
-    Collection trail = getTrail(start_time, end_time);
+  	Collection<Editable> trail = getTrail(start_time, end_time);
 
     // draw the geometry
     if(trail != null)
@@ -244,7 +244,7 @@ public final class Track3D extends Participant3D implements StepperListener {
         line = new LineArray((len-1) * 2, LineArray.COORDINATES);
         line.setCapability(LineArray.ALLOW_COORDINATE_WRITE);
 
-        java.util.Iterator itar = trail.iterator();
+        java.util.Iterator<Editable> itar = trail.iterator();
         int index = 0;
 
         Point3d lastPoint = null;

@@ -31,9 +31,14 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    ***************************************************************/
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the list we show our path inside
    */
-  private JList _myList;
+  JList _myList;
 
   /**
    * the sub-panel we use to show individual points
@@ -68,7 +73,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * our property editor
    */
-  private SwingWorldLocationPropertyEditor _editor = new SwingWorldLocationPropertyEditor();
+  SwingWorldLocationPropertyEditor _editor = new SwingWorldLocationPropertyEditor();
 
   /**
    * the tool parent
@@ -155,7 +160,6 @@ public class WorldPathDetailEditor extends SwingCustomEditor
     info.setText(msg);
     // make the text a little smaller
     Font infoFont = info.getFont();
-    int size = infoFont.getSize();
     info.setFont(infoFont.deriveFont((float) 10.0));
 
     // create the top panel (with the new, up, down button)
@@ -341,7 +345,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * move the current point up or down
    */
-  private void doUpDown(boolean up)
+  void doUpDown(boolean up)
   {
 
     // can we get the current point
@@ -372,7 +376,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * add a new location, based on the centre of the currently visible area
    */
-  private void addNew()
+  void addNew()
   {
     WorldLocation center = getChart().getDataArea().getCentre();
     getPath().addPoint(center);
@@ -394,7 +398,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * add a new location, based on the centre of the currently visible area
    */
-  private void deleteCurrent()
+  void deleteCurrent()
   {
 
     // can we get the current point
@@ -440,7 +444,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * an item has been selected, edit it
    */
-  private void editThis(Object val)
+  void editThis(Object val)
   {
     _editor.setValue(val);
   }
@@ -448,7 +452,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * accessor to get the path object
    */
-  private WorldPath getPath()
+  WorldPath getPath()
   {
     return _myPath;
   }
@@ -483,14 +487,14 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   /**
    * update our data
    */
-  private void updateData()
+  void updateData()
   {
 
     // find out which one is selected
     int curSel = _myList.getSelectedIndex();
 
     // create an object to put the data into
-    Vector list = new Vector(0, 1);
+    Vector<WorldLocationHolder> list = new Vector<WorldLocationHolder>(0, 1);
 
     if (getPath() != null)
     {
@@ -562,13 +566,18 @@ public class WorldPathDetailEditor extends SwingCustomEditor
   protected class PathPlotter extends BaseLayer
   {
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
      * paint this list to the canvas
      */
     public void paint(CanvasType dest)
     {
       Point lastPoint = null;
 
-      Enumeration enumer = this.elements();
+      Enumeration<Editable> enumer = this.elements();
       while (enumer.hasMoreElements())
       {
         // get the next location
@@ -631,7 +640,7 @@ public class WorldPathDetailEditor extends SwingCustomEditor
       //
     }
 
-  	public int compareTo(Object arg0)
+  	public int compareTo(Plottable arg0)
   	{
   		Plottable other = (Plottable) arg0;
   		return this.getName().compareTo(other.getName());
@@ -759,7 +768,11 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    */
   private class DragButton extends javax.swing.JToggleButton implements ActionListener
   {
-    private MoveableDragger _myDragger;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private MoveableDragger _myDragger;
 
     public DragButton(PlainChart chart, ToolParent parent)
     {
@@ -769,7 +782,12 @@ public class WorldPathDetailEditor extends SwingCustomEditor
       // update our GUI after a position has been moved
       _myDragger = new MoveableDragger(chart, parent, "Drag")
       {
-        public void areaSelected(MWC.GenericData.WorldLocation theLocation, Point thePoint)
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public void areaSelected(MWC.GenericData.WorldLocation theLocation, Point thePoint)
         {
           super.areaSelected(theLocation, thePoint);
           updateData();
@@ -813,7 +831,11 @@ public class WorldPathDetailEditor extends SwingCustomEditor
    */
   private class WorldLocationHolder extends WorldLocation
   {
-    private int _myIndex;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private int _myIndex;
 
     public WorldLocationHolder(WorldLocation location, int index)
     {

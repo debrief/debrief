@@ -1,5 +1,10 @@
 package Debrief.ReaderWriter.XML.GUI;
 
+import java.util.Vector;
+
+import Debrief.Tools.Tote.WatchableList;
+import MWC.GUI.Editable;
+
 /**
  * Title:        Debrief 2000
  * Description:  Debrief 2000 Track Analysis Software
@@ -14,7 +19,7 @@ package Debrief.ReaderWriter.XML.GUI;
 public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private final Debrief.GUI.Tote.AnalysisTote _myTote;
+  final Debrief.GUI.Tote.AnalysisTote _myTote;
   private final MWC.GUI.Layers _theData;
 
   public ToteHandler(Debrief.GUI.Tote.AnalysisTote theTote, MWC.GUI.Layers theData)
@@ -63,7 +68,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
   }
 
-  private Debrief.Tools.Tote.WatchableList getTrack(String name)
+  Debrief.Tools.Tote.WatchableList getTrack(String name)
   {
     Debrief.Tools.Tote.WatchableList res = null;
 
@@ -80,7 +85,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
       {
         MWC.GUI.Layer thisL = _theData.elementAt(i);
         // go through this layer
-        java.util.Enumeration iter = thisL.elements();
+        java.util.Enumeration<Editable> iter = thisL.elements();
         while (iter.hasMoreElements())
         {
           MWC.GUI.Plottable p = (MWC.GUI.Plottable) iter.nextElement();
@@ -125,7 +130,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     // now output the parts of the tote
     // find the primary
     Debrief.Tools.Tote.WatchableList primary = _theTote.getPrimary();
-    java.util.Vector secondaries = _theTote.getSecondary();
+    Vector<WatchableList> secondaries = _theTote.getSecondary();
 
     if (primary != null)
     {
@@ -138,10 +143,10 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     {
       if (secondaries.size() > 0)
       {
-        java.util.Enumeration iter = secondaries.elements();
+        java.util.Enumeration<WatchableList> iter = secondaries.elements();
         while (iter.hasMoreElements())
         {
-          Debrief.Tools.Tote.WatchableList was = (Debrief.Tools.Tote.WatchableList) iter.nextElement();
+          Debrief.Tools.Tote.WatchableList was = iter.nextElement();
           org.w3c.dom.Element sec = doc.createElement("secondary");
           sec.setAttribute("Name", was.getName());
           tote.appendChild(sec);

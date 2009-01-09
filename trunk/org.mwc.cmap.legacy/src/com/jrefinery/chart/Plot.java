@@ -563,7 +563,8 @@ public abstract class Plot implements AxisChangeListener, DatasetChangeListener,
      *
      * @deprecated use getLegendItems().
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
         // by default, return an empty list (subclasses will override).
         return new java.util.ArrayList();
     }

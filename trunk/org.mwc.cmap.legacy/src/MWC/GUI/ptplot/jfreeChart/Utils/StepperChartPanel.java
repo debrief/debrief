@@ -14,6 +14,10 @@ import com.jrefinery.chart.JFreeChart;
 public final class StepperChartPanel extends ChartPanel implements StepperListener
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the step control we monitor
    */
   private final StepperListener.StepperController _myStepper;

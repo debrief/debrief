@@ -63,9 +63,6 @@ public class StatisticalBarChartDemo {
     /** The data colors. */
     private static Color[] dataColors = null;
 
-    /** The label font. */
-    private static Font labelFont = null;
-
     /** The title font. */
     private static Font titleFont = null;
 
@@ -75,7 +72,7 @@ public class StatisticalBarChartDemo {
     static {
         dataColors = new Color[1];
         dataColors[0] = new Color(51, 102, 153);
-        labelFont = new Font("Helvetica", Font.PLAIN, 10);
+        new Font("Helvetica", Font.PLAIN, 10);
         titleFont = new Font("Helvetica", Font.BOLD, 14);
     }
 

@@ -68,13 +68,13 @@ public class VerticalSymbolicAxis extends VerticalNumberAxis implements Vertical
     public static final Paint DEFAULT_SYMBOLIC_GRID_LINE_PAINT = new Color(232, 234, 232);
 
     /** The list of symbolic value to display instead of the numeric values */
-    private java.util.List symbolicValue;
+    private java.util.List<String> symbolicValue;
 
     /** Enable or not the zoom **/
     private boolean ySymbolicZoomIsAccepted = false;
 
     /** List of the symbolic grid lines shapes */
-    private java.util.List symbolicGridLineList = null;
+    private java.util.List<Rectangle2D> symbolicGridLineList = null;
 
     /** Color of the dark part of the symbolic grid line **/
     private Paint symbolicGridPaint;
@@ -393,7 +393,7 @@ public class VerticalSymbolicAxis extends VerticalNumberAxis implements Vertical
     public void drawSymbolicGridLines(Graphics2D g2, Rectangle2D drawArea,
                                       Rectangle2D plotArea, boolean firstGridLineIsDark) {
 
-        this.symbolicGridLineList = new Vector(ticks.size());
+        this.symbolicGridLineList = new Vector<Rectangle2D>(ticks.size());
         boolean currentGridLineIsDark = firstGridLineIsDark;
         double xx = plotArea.getX();
         double yy1, yy2;
@@ -407,7 +407,7 @@ public class VerticalSymbolicAxis extends VerticalNumberAxis implements Vertical
             outlineStrokeWidth = 1d;
         }
 
-        Iterator iterator = ticks.iterator();
+        Iterator<Tick> iterator = ticks.iterator();
         Tick tick;
         Rectangle2D symbolicGridLine;
         while (iterator.hasNext()) {

@@ -10,7 +10,6 @@
 package MWC.GUI.ETOPO;
 
 // Standard imports
-import java.util.Random;
 import javax.vecmath.Vector3f;
 
 // Application specific imports
@@ -1454,8 +1453,6 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
             throw new InvalidArraySizeException("3D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
 
         System.out.println("Unhandled textured generation case in " +
             "ElevationGridGenerator");

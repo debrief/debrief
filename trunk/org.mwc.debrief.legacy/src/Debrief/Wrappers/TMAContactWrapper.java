@@ -79,6 +79,7 @@
 package Debrief.Wrappers;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.EllipseShape;
 import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
@@ -100,7 +101,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 
 public final class TMAContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		Comparable, MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
+		 MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
 		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////
@@ -115,27 +116,27 @@ public final class TMAContactWrapper extends
 	/**
 	 * the name of the parent track (the host vessel)
 	 */
-	private String _parentTrackName;
+	String _parentTrackName;
 
 	/**
 	 * long _DTG
 	 */
-	private HiResDate _DTG;
+	HiResDate _DTG;
 
 	/**
 	 * vector representing the target location
 	 */
-	private WorldVector _targetPosVector = null;
+	WorldVector _targetPosVector = null;
 
 	/**
 	 * the depth estimate for the target
 	 */
-	private double _targetDepth;
+	double _targetDepth;
 
 	/**
 	 * track name (for this solution)
 	 */
-	private String _trackName;
+	String _trackName;
 
 	/**
 	 * whether to show the symbol
@@ -160,12 +161,12 @@ public final class TMAContactWrapper extends
 	/**
 	 * the ellipse respresenting the solution
 	 */
-	private MWC.GUI.Shapes.EllipseShape _theEllipse;
+	MWC.GUI.Shapes.EllipseShape _theEllipse;
 
 	/**
 	 * the wrapper object containing the labelled ellipse
 	 */
-	private Debrief.Wrappers.ShapeWrapper _labelledEllipse = null;
+	Debrief.Wrappers.ShapeWrapper _labelledEllipse = null;
 
 	/**
 	 * the wrapper object containing the symbol
@@ -175,17 +176,17 @@ public final class TMAContactWrapper extends
 	/**
 	 * the course parameter
 	 */
-	private double _targetCourseDegs = 0d;
+	double _targetCourseDegs = 0d;
 
 	/**
 	 * the speed paramter
 	 */
-	private double _targetSpeedKts = 0d;
+	double _targetSpeedKts = 0d;
 
 	/**
 	 * the symbol to use to plot the target location
 	 */
-	private String _theSymbol;
+	String _theSymbol;
 
 	/**
 	 * whether to show the target vector
@@ -405,7 +406,7 @@ public final class TMAContactWrapper extends
 	/**
 	 * member function to meet requirements of comparable interface *
 	 */
-	public final int compareTo(final Object o)
+	public final int compareTo(final Plottable o)
 	{
 		final TMAContactWrapper other = (TMAContactWrapper) o;
 		int res = 0;
@@ -1119,7 +1120,7 @@ public final class TMAContactWrapper extends
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class c = TMAContactWrapper.class;
+			final Class<TMAContactWrapper> c = TMAContactWrapper.class;
 			final MethodDescriptor[] mds = { method(c, "resetColor", null, "Reset Color"), };
 			return mds;
 		}

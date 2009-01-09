@@ -1,5 +1,5 @@
 /* ===============
- * JFreeChart Demo
+// * JFreeChart Demo
  * ===============
  *
  * Project Info:  http://www.object-refinery.com/jfreechart/index.html
@@ -57,6 +57,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class Pie3DChartDemo2 extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new demo.
      *
      * @param title  the frame title.
@@ -117,7 +122,12 @@ public class Pie3DChartDemo2 extends ApplicationFrame {
  */
 class Rotator extends Timer implements ActionListener {
 
-    private Pie3DPlot plot;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		private Pie3DPlot plot;
 
     private int angle = 270;
 

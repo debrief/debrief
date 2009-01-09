@@ -326,7 +326,7 @@ public class World extends BranchGroup implements PickSelectBehaviour.SelectionL
   /**
    * method to update the bathy visibility
    */
-  private void updateBathyVis(boolean val)
+  void updateBathyVis(boolean val)
   {
     if (val)
       _bathymetrySurface.setWhichChild(Switch.CHILD_ALL);
@@ -431,7 +431,8 @@ public class World extends BranchGroup implements PickSelectBehaviour.SelectionL
    *
    * @see WorldMember#doClose
    */
-  public void doClose()
+  @SuppressWarnings("unchecked")
+	public void doClose()
   {
 
     // stop everything which listens to the stepper control

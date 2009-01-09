@@ -141,15 +141,25 @@ package MWC.GUI.Chart.Painters;
 // Initial revision
 //
 
-import java.awt.*;
-import java.beans.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import junit.framework.Assert;
 
-import MWC.GUI.*;
-import MWC.GUI.Properties.BoundedInteger;
+import junit.framework.Assert;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.DraggableItem;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldDistanceWithUnits;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 {
@@ -632,7 +642,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		return _myEditor;
 	}
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		String myName = this.getName() + this.hashCode();

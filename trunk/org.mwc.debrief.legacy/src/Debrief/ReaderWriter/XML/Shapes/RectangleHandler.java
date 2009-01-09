@@ -17,9 +17,9 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 abstract public class RectangleHandler extends ShapeHandler implements LayerHandler.exporter
 {
 
-  private MWC.GenericData.WorldLocation _start;
-  private MWC.GenericData.WorldLocation _end;
-  private Boolean _filled;
+  MWC.GenericData.WorldLocation _start;
+  MWC.GenericData.WorldLocation _end;
+  Boolean _filled;
 
   public RectangleHandler()
   {

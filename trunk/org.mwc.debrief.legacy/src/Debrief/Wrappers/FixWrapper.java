@@ -255,8 +255,7 @@ import java.util.*;
 public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
         Watchable,
         DynamicPlottable,
-        Comparable,
-  CanvasType.MultiLineTooltipProvider
+        CanvasType.MultiLineTooltipProvider
 {
 
   ////////////////////////////////////////
@@ -759,7 +758,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   /** meet the requirements of the comparable interface
    *
    */
-  public final int compareTo(final Object o)
+  public final int compareTo(Plottable o)
   {
     int res = 0;
 
@@ -847,7 +846,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     public final MethodDescriptor[] getMethodDescriptors()
     {
       // just add the reset color field first
-      final Class c = FixWrapper.class;
+      final Class<FixWrapper> c = FixWrapper.class;
       final MethodDescriptor[] mds = {
         method(c, "resetColor", null, "Reset Color"),
         method(c, "resetName", null, "Reset Label"),
@@ -889,7 +888,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   {
   	static private final String NULL_VALUE = "N/A";
   	
-    static private final String[] stringTags =
+    static final String[] stringTags =
     {
                        NULL_VALUE,
                        "mm:ss.SSS",

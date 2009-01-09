@@ -192,7 +192,7 @@ public class LiveStream implements PushBufferStream, Runnable {
           {
             try
             {
-              Thread.currentThread().sleep(wait);
+              Thread.sleep(wait);
             }
             catch(Exception e)
             {
@@ -246,10 +246,10 @@ public class LiveStream implements PushBufferStream, Runnable {
 	}
     }
 
-    void start(boolean started) {
+    void start(boolean started1) {
 	synchronized ( this ) {
-	    this.started = started;
-	    if (started && !thread.isAlive()) {
+	    this.started = started1;
+	    if (started1 && !thread.isAlive()) {
 		thread = new Thread(this);
 		thread.start();
 	    }
@@ -284,7 +284,7 @@ public class LiveStream implements PushBufferStream, Runnable {
 		      transferHandler.transferData(this);
 		      try
           {
-		        Thread.currentThread().sleep( 10 );
+		        Thread.sleep( 10 );
 		      }
           catch (InterruptedException ise)
           {
@@ -299,7 +299,8 @@ public class LiveStream implements PushBufferStream, Runnable {
 	    return controls;
     }
 
-    public Object getControl(String controlType) {
+    @SuppressWarnings("unchecked")
+		public Object getControl(String controlType) {
        try {
           Class  cls = Class.forName(controlType);
           Object cs[] = getControls();

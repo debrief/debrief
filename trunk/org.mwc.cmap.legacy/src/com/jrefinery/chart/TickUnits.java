@@ -60,12 +60,14 @@ import java.util.List;
 public class TickUnits {
 
     /** Storage for the tick units. */
-    private List units;
+    @SuppressWarnings("unchecked")
+		private List units;
 
     /**
      * Constructs a new collection of tick units.
      */
-    public TickUnits() {
+    @SuppressWarnings("unchecked")
+		public TickUnits() {
         this.units = new java.util.ArrayList();
     }
 
@@ -76,7 +78,8 @@ public class TickUnits {
      *
      * @param unit  the tick unit to add.
      */
-    public void add(TickUnit unit) {
+    @SuppressWarnings("unchecked")
+		public void add(TickUnit unit) {
 
         units.add(unit);
         Collections.sort(units);
@@ -90,7 +93,8 @@ public class TickUnits {
      *
      * @return a tick unit that is larger than the supplied unit.
      */
-    public TickUnit getLargerTickUnit(TickUnit unit) {
+    @SuppressWarnings("unchecked")
+		public TickUnit getLargerTickUnit(TickUnit unit) {
 
         int index = Collections.binarySearch(units, unit);
         if (index >= 0) {
@@ -112,7 +116,8 @@ public class TickUnits {
      *
      * @return a unit from the collection.
      */
-    public TickUnit getCeilingTickUnit(TickUnit unit) {
+    @SuppressWarnings("unchecked")
+		public TickUnit getCeilingTickUnit(TickUnit unit) {
 
         int index = Collections.binarySearch(units, unit);
         if (index >= 0) {

@@ -89,7 +89,7 @@ public class Output8211
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
-				for (Iterator it = poRecord.iterator(); it != null && it.hasNext();
+				for (Iterator<DDFField> it = poRecord.iterator(); it != null && it.hasNext();
 				// dOut(((DDFField)it.next()).toString()));
 				viewRecordField(((DDFField) it.next())))
 					;

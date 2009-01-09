@@ -67,6 +67,8 @@ public class Performance {
 
         for (int i = 0; i < count; i++) {
             Line2D line = new Line2D.Double(1.0, 1.0, 1.0, 1.0);
+            double d = line.getX2();
+            d--;
         }
 
     }
@@ -94,6 +96,7 @@ public class Performance {
 
         for (int i = 0; i < count; i++) {
             double d = this.number.doubleValue();
+            d--;
         }
 
     }
@@ -107,6 +110,7 @@ public class Performance {
 
         for (int i = 0; i < count; i++) {
             double d = this.value;
+            d--;
         }
 
     }

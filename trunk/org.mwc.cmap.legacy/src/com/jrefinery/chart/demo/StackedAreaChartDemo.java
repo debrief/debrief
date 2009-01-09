@@ -59,11 +59,17 @@ import com.jrefinery.ui.RefineryUtilities;
 public class StackedAreaChartDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new demo.
      *
      * @param title  the frame title.
      */
-    public StackedAreaChartDemo(String title) {
+    @SuppressWarnings("deprecation")
+		public StackedAreaChartDemo(String title) {
 
         super(title);
 

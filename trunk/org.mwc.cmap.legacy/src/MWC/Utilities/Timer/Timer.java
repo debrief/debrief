@@ -35,7 +35,11 @@ import java.util.Enumeration;
 public class Timer extends Object
 implements java.io.Serializable {
 
-  public static final String PROP_ONCE_ONLY = "onceOnly";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public static final String PROP_ONCE_ONLY = "onceOnly";
   public static final String PROP_DELAY = "delay";
 
   public static final long DEFAULT_DELAY = 1000;
@@ -56,7 +60,8 @@ implements java.io.Serializable {
     timerThread.start ();
   }
 
-  public synchronized void stop () {
+  @SuppressWarnings("deprecation")
+	public synchronized void stop () {
     if (!running) return;
     timerThread.stop ();
     timerThread = null;
@@ -117,7 +122,7 @@ implements java.io.Serializable {
 
   public void addTimerListener (TimerListener l) {
     if (listeners == null)
-      listeners = new Vector();
+      listeners = new Vector<TimerListener>();
 
     listeners.addElement (l);
   }
@@ -128,11 +133,11 @@ implements java.io.Serializable {
     listeners.removeElement (l);
   }
 
-  private void fireTimerEvent () {
+  @SuppressWarnings("unchecked") void fireTimerEvent () {
     if (listeners == null) return;
-    Vector l;
+    Vector<TimerListener> l;
     synchronized (this) {
-      l = (Vector)listeners.clone ();
+      l = (Vector<TimerListener>) listeners.clone ();
     }
 
     for (Enumeration e = l.elements (); e.hasMoreElements ();) {
@@ -168,19 +173,19 @@ implements java.io.Serializable {
   transient private TimerThread timerThread;
 
   /** The timer listeners */
-  transient private Vector listeners;
+  transient private Vector<TimerListener> listeners;
 
   /** The support for firing property changes */
   private PropertyChangeSupport propertySupport;
 
   /** The flag indicating whether the timer is running */
-  private boolean running;
+  boolean running;
 
   /** If true, the timer stops after firing the first onTime, if false
   * it keeps ticking until stopped */
-  private boolean onceOnly;
+  boolean onceOnly;
 
   /** Delay in milliseconds */
-  private long delay;
+  long delay;
 }
 

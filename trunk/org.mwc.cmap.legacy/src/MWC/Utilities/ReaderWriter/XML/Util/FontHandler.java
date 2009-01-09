@@ -10,18 +10,16 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import org.xml.sax.*;
-
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 abstract public class FontHandler extends MWCXMLReader
 {
 
-  private String _family;
-  private int _size;
-  private boolean _isBold;
-  private boolean _isItalic;
+  String _family;
+  int _size;
+  boolean _isBold;
+  boolean _isItalic;
 
   public FontHandler()
   {

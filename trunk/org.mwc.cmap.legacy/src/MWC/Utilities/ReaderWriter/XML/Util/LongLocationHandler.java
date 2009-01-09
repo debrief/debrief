@@ -18,8 +18,6 @@ import MWC.Utilities.ReaderWriter.XML.*;
 abstract public class LongLocationHandler extends MWCXMLReader
 {
 
-  private MWC.GUI.Layer _theLayer;
-
   private int _latDeg;
   private float _latMin;
   private float _latSec;

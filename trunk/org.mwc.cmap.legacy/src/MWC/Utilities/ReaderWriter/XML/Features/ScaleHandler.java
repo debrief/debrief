@@ -19,13 +19,13 @@ import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 abstract public class ScaleHandler extends MWCXMLReader  implements LayerHandler.exporter
 {
 
-  private java.awt.Color _theColor;
-  private boolean _isVisible;
-  private long _ScaleMax;
-  private long _ScaleStep;
-  private boolean _AutoMode;
-  private String _LabelLocation;
-  private String _displayUnits;
+  java.awt.Color _theColor;
+  boolean _isVisible;
+  long _ScaleMax;
+  long _ScaleStep;
+  boolean _AutoMode;
+  String _LabelLocation;
+  String _displayUnits;
 
   MWC.GUI.Properties.DiagonalLocationPropertyEditor _dp =
     new MWC.GUI.Properties.DiagonalLocationPropertyEditor();

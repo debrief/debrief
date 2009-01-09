@@ -24,7 +24,12 @@ import java.util.EventObject;
  */
 public class ScrollEvent extends EventObject
 {
-    /** The scroll type/direction is up */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The scroll type/direction is up */
     public final static int SCROLLED_UP = 0;
 
     /** The scroll type/direction is down */

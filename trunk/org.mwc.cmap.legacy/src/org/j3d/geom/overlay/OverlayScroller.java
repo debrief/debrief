@@ -56,7 +56,6 @@ public class OverlayScroller implements Overlay, UpdateManager {
     private boolean visible = true;
     private Color borderBackgroundColor;
     private BufferedImage borderBackgroundImage;
-    private int backgroundMode;
     private boolean antialiased = true;
     private Canvas3D canvas3D;
     
@@ -68,12 +67,10 @@ public class OverlayScroller implements Overlay, UpdateManager {
     //  if it is an appropriate update is made
 
     private final static int VISIBLE =                 Integer.parseInt("1", 2);
-    private final static int ORDER =                   Integer.parseInt("10", 2);
-    private final static int LINE_POSITION =           Integer.parseInt("100", 2);
-    private final static int BORDER_POSITION =         Integer.parseInt("1000", 2);
+    final static int LINE_POSITION =           Integer.parseInt("100", 2);
+    final static int BORDER_POSITION =         Integer.parseInt("1000", 2);
     private final static int BORDER_BACKGROUND_IMAGE = Integer.parseInt("10000", 2);
     private final static int BORDER_BACKGROUND_COLOR = Integer.parseInt("100000", 2);
-    private final static int BACKGROUND_MODE =         Integer.parseInt("1000000", 2);
     private final static int ANTIALIASED =             Integer.parseInt("10000000", 2);
     private final static int ITEM =                    Integer.parseInt("100000000", 2);
 
@@ -522,10 +519,10 @@ public class OverlayScroller implements Overlay, UpdateManager {
     }
 
     public void fireItemScrolled(ScrollEvent e) {
-	Object[] listeners = this.listeners.getListenerList();
-	for (int i = listeners.length - 2; i >= 0; i -= 2) {
-	    if (listeners[i] == ScrollEventListener.class) {
-		((ScrollEventListener)listeners[i + 1]).itemScrolled(e);
+	Object[] listeners1 = this.listeners.getListenerList();
+	for (int i = listeners1.length - 2; i >= 0; i -= 2) {
+	    if (listeners1[i] == ScrollEventListener.class) {
+		((ScrollEventListener)listeners1[i + 1]).itemScrolled(e);
 	    }
 	}
     }

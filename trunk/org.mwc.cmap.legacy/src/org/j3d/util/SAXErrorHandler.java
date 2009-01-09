@@ -29,15 +29,11 @@ import org.xml.sax.SAXParseException;
 public class SAXErrorHandler implements ErrorHandler
 {
 
-    /** The output stream to write to */
-    private PrintStream output;
-
     /**
      * Create a new error handler that prints to the standard System.out.
      */
     public SAXErrorHandler()
     {
-        output = System.out;
     }
 
     /**
@@ -47,9 +43,10 @@ public class SAXErrorHandler implements ErrorHandler
     public SAXErrorHandler(PrintStream out)
     {
         if(out == null)
-            output = System.out;
-        else
-            output = out;
+				{
+				} else
+				{
+				}
     }
 
     /**

@@ -929,7 +929,12 @@ public abstract class ButtonBase extends Canvas
 
 	class Focus extends java.awt.event.FocusAdapter implements java.io.Serializable
 	{
-	    public void focusGained(FocusEvent e)
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			public void focusGained(FocusEvent e)
 	    {
 	        hasFocus = true;
 	        repaint();
@@ -944,7 +949,11 @@ public abstract class ButtonBase extends Canvas
 
 	class Key extends java.awt.event.KeyAdapter implements java.io.Serializable
 	{
-	    public void keyPressed(KeyEvent evt)
+	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+			public void keyPressed(KeyEvent evt)
 	    {
 	        boolean isSpaceBar = (evt.getKeyCode() & KeyEvent.VK_SPACE) == KeyEvent.VK_SPACE;
 
@@ -1002,6 +1011,11 @@ public abstract class ButtonBase extends Canvas
 	 */
 	class Mouse extends java.awt.event.MouseAdapter implements java.io.Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		/**
 	     * Handles the Mouse Pressed events
 		 * If the notifyWhilePressed flag is true the notification Timer is started
@@ -1123,6 +1137,11 @@ public abstract class ButtonBase extends Canvas
 	 */
 	class Action implements java.awt.event.ActionListener, java.io.Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		//Implement ActionListener to catch ActionEvents sent by either the notifyTimer.
 		/**
 		 * Handles Action events
@@ -1146,6 +1165,11 @@ public abstract class ButtonBase extends Canvas
 	class BevelVeto implements java.beans.VetoableChangeListener, java.io.Serializable
 	{
 	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			/**
 	     * This method gets called when an attempt to change the constrained BevelHeight property is made.
 	     * Ensures the given bevel size is valid for this button.
 	     *
@@ -1171,6 +1195,11 @@ public abstract class ButtonBase extends Canvas
 	class FrameVeto implements java.beans.VetoableChangeListener, java.io.Serializable
 	{
 	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			/**
 	     * This method gets called when an attempt to change the constrained Frame property is made.
 	     * Ensures the given Frame string is valid for this button.
 	     *

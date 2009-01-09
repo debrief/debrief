@@ -53,7 +53,7 @@ public interface PieDataset extends Dataset {
      *
      * @return the categories.
      */
-    public List getCategories();
+		public List<Object> getCategories();
 
     /**
      * Returns the value for a category.

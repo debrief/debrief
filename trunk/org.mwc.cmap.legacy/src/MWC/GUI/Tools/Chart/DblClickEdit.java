@@ -173,7 +173,7 @@ public class DblClickEdit implements PlainChart.ChartDoubleClickListener, PlainC
       if (thisL.getVisible())
       {
         // go through this layer
-        Enumeration enumer = null;
+        Enumeration<Editable> enumer = null;
         if(thisL instanceof Layer.ProvidesContiguousElements)
         {
         	Layer.ProvidesContiguousElements contig = (ProvidesContiguousElements) thisL;

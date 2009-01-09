@@ -418,7 +418,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 //    System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (addPainter)");
   }
 
-  public java.util.Enumeration getPainters()
+  @SuppressWarnings("unchecked")
+	public java.util.Enumeration getPainters()
   {
 //    System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (getPainters)");
     return null;
@@ -458,7 +459,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
    * @param hints the rendering hints to be set
    * @see RenderingHints
    */
-  public void addRenderingHints(Map hints) {
+  @SuppressWarnings("unchecked")
+	public void addRenderingHints(Map hints) {
 //    System.out.println("addRenderingHints");
   }
 
@@ -560,7 +562,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
    * The <code>GlyphVector</code> can also contain the glyph positions.
    * This is the fastest way to render a set of characters to the
    * screen.
-   * @param g the <code>GlyphVector</code> to be rendered
+   * @param g1 the <code>GlyphVector</code> to be rendered
    * @param x position in User Space where the glyphs should
    * be rendered
    *
@@ -572,7 +574,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
    * @see #setComposite
    * @see #setClip
    */
-  public void drawGlyphVector(GlyphVector g, float x, float y) {
+  public void drawGlyphVector(GlyphVector g1, float x, float y) {
 //    System.out.println("drawGlyphVector");
   }
 
@@ -1159,7 +1161,8 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
    * @see #getRenderingHints
    * @see RenderingHints
    */
-  public void setRenderingHints(Map hints) {
+  @SuppressWarnings("unchecked")
+	public void setRenderingHints(Map hints) {
 //    System.out.println("setRenderingHints");
   }
 

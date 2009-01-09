@@ -12,10 +12,6 @@ package org.j3d.geom;
 // Standard imports
 //import java.lang.Math.*;
 
-import javax.media.j3d.Appearance;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.QuadArray;
-
 import javax.vecmath.Vector3f;
 
 // Application specific imports
@@ -1481,7 +1477,6 @@ public class CylinderGenerator extends GeometryGenerator
 
         int i;
         float[] normals = data.normals;
-        Vector3f norm;
         int count = 0;
         int vtx = 0;
 
@@ -1608,7 +1603,6 @@ public class CylinderGenerator extends GeometryGenerator
 
         int i;
         float[] normals = data.normals;
-        Vector3f norm;
         int count = 0;
         int vtx = 0;
 
@@ -1688,7 +1682,6 @@ public class CylinderGenerator extends GeometryGenerator
 
         int i;
         float[] normals = data.normals;
-        Vector3f norm;
         int count = 0;
         int vtx = 0;
 
@@ -1777,7 +1770,6 @@ public class CylinderGenerator extends GeometryGenerator
 
         int i;
         float[] normals = data.normals;
-        Vector3f norm;
         int count = 0;
         int vtx = 0;
 
@@ -1896,7 +1888,6 @@ public class CylinderGenerator extends GeometryGenerator
 
         int i;
         float[] normals = data.normals;
-        Vector3f norm;
         int count = 0;
         int vtx = 0;
 
@@ -1961,8 +1952,6 @@ public class CylinderGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("2D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     /**
@@ -1987,8 +1976,6 @@ public class CylinderGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("3D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     /**

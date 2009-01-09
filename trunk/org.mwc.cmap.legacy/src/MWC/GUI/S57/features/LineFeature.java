@@ -37,9 +37,7 @@ public class LineFeature extends S57Feature
 	{
 		dest.setColor(_myColor);
 		int ctr = 0;
-		int yOffset = 0;
 		int xOffset = 0;
-		Font myFont = new Font("Arial", 14, 0);
 		for (Iterator<Vector<WorldLocation>> iterator = _lines.iterator(); iterator.hasNext();)
 		{
 			Vector<WorldLocation> thisLine = (Vector<WorldLocation>) iterator.next();

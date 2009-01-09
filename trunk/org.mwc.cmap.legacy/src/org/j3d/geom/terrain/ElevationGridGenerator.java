@@ -10,15 +10,12 @@
 package org.j3d.geom.terrain;
 
 // Standard imports
-import java.util.Random;
 import javax.vecmath.Vector3f;
 
-// Application specific imports
-import org.j3d.geom.GeometryGenerator;
 import org.j3d.geom.GeometryData;
+import org.j3d.geom.GeometryGenerator;
 import org.j3d.geom.InvalidArraySizeException;
 import org.j3d.geom.UnsupportedTypeException;
-import org.j3d.util.interpolator.ColorInterpolator;
 
 /**
  * A generator that takes a set of height values as a grid and turns it into
@@ -1454,8 +1451,6 @@ System.out.println("Total strip index count " + (num_strips * widthPoints * 2));
             throw new InvalidArraySizeException("3D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
 
         System.out.println("Unhandled textured generation case in " +
             "ElevationGridGenerator");

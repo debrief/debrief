@@ -705,7 +705,7 @@ public class BinaryFile {
      * Maintains a list of objects that can be closed so that other
      * files can be opened.
      */
-    private static Vector<WeakReference> closableList = new Vector<WeakReference>();
+    private static Vector<WeakReference<Closable>> closableList = new Vector<WeakReference<Closable>>();
 
     /**
      * Add an object that can be closed if needed. Duplicates are
@@ -715,7 +715,7 @@ public class BinaryFile {
      * @param it the object that can be closed
      */
     public static synchronized void addClosable(Closable it) {
-        closableList.add(new WeakReference(it));
+        closableList.add(new WeakReference<Closable>(it));
     }
 
     /**
@@ -725,7 +725,7 @@ public class BinaryFile {
      */
     public static synchronized void removeClosable(Closable it) {
         for (int i = 0; i < closableList.size(); i++) {
-            Object o = ((WeakReference) closableList.elementAt(i)).get();
+            Object o = ((WeakReference<Closable>) closableList.elementAt(i)).get();
             if ((o == it) || (o == null)) {
                 closableList.removeElementAt(i);
                 i--; // in case its in the list more than once
@@ -736,7 +736,7 @@ public class BinaryFile {
     public static synchronized void closeClosable() {
         System.out.println("closeClosable " + closableList.size());
         for (int i = 0; i < closableList.size(); i++) {
-            Closable c = (Closable) ((WeakReference) closableList.elementAt(i)).get();
+            Closable c = (Closable) (closableList.elementAt(i)).get();
             if ((c == null) || !c.close(false)) {
                 closableList.removeElementAt(i);
                 i--;

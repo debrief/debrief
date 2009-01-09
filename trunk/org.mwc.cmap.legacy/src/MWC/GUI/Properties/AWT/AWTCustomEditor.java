@@ -42,11 +42,12 @@ package MWC.GUI.Properties.AWT;
 // Initial revision
 //
 
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import MWC.GUI.*;
-import MWC.GUI.Properties.*;
+import java.awt.Panel;
+import java.beans.Customizer;
+import java.beans.PropertyChangeListener;
+
+import MWC.GUI.PlainChart;
+import MWC.GUI.Properties.PropertiesPanel;
 
 abstract public class AWTCustomEditor extends Panel implements Customizer
 {

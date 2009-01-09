@@ -10,17 +10,27 @@
 package org.j3d.geom.overlay;
 
 // Standard imports
-import java.awt.*;
-import javax.media.j3d.*;
-
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.MouseListener;
-
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 import java.util.List;
 
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Canvas3D;
+import javax.media.j3d.PolygonAttributes;
+import javax.media.j3d.RenderingAttributes;
+import javax.media.j3d.TextureAttributes;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color4f;
 import javax.vecmath.Vector3d;
 
@@ -342,7 +352,7 @@ public class OverlayBase
             textureAttributes.setTextureBlendColor(new Color4f(0, 0, 0, 1));
         }
 
-        List overlays =
+        List<Rectangle> overlays =
             OverlayUtilities.subdivide(overlayBounds.getSize(), minDivSize, 256);
 
         subOverlay = new SubOverlay[overlays.size()];
@@ -942,7 +952,7 @@ public class OverlayBase
 
             overlayTexGrp.addChild(consoleTG);
 
-            List overlays = OverlayUtilities.subdivide(overlayBounds.getSize(),
+            List<Rectangle> overlays = OverlayUtilities.subdivide(overlayBounds.getSize(),
                                                        minDivSize,
                                                        256);
 

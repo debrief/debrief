@@ -50,17 +50,17 @@ import java.util.Date;
 public class DefaultWindDataset extends AbstractSeriesDataset implements WindDataset {
 
     /** The names of the series. */
-    private List seriesNames;
+    private List<String> seriesNames;
 
     /** Storage for the series data. */
-    private List allSeriesData;
+    private List<List<WindDataItem>> allSeriesData;
 
     /**
      * Constructs a new, empty, WindDataset.
      */
     public DefaultWindDataset() {
-        seriesNames = new java.util.ArrayList();
-        allSeriesData = new java.util.ArrayList();
+        seriesNames = new java.util.ArrayList<String>();
+        allSeriesData = new java.util.ArrayList<List<WindDataItem>>();
     }
 
     /**
@@ -88,16 +88,17 @@ public class DefaultWindDataset extends AbstractSeriesDataset implements WindDat
      * @param seriesNames    the names of the series.
      * @param data  the wind dataset.
      */
-    public DefaultWindDataset(List seriesNames, Object[][][] data) {
+    @SuppressWarnings("unchecked")
+		public DefaultWindDataset(List<String> seriesNames, Object[][][] data) {
 
         this.seriesNames = seriesNames;
 
         int seriesCount = data.length;
 
-        allSeriesData = new java.util.ArrayList(seriesCount);
+        allSeriesData = new java.util.ArrayList<List<WindDataItem>>(seriesCount);
 
         for (int seriesIndex = 0; seriesIndex < seriesCount; seriesIndex++) {
-            List oneSeriesData = new java.util.ArrayList();
+            List<WindDataItem> oneSeriesData = new java.util.ArrayList<WindDataItem>();
             int maxItemCount = data[seriesIndex].length;
             for (int itemIndex = 0; itemIndex < maxItemCount; itemIndex++) {
                 Object xObject = data[seriesIndex][itemIndex][0];
@@ -140,7 +141,7 @@ public class DefaultWindDataset extends AbstractSeriesDataset implements WindDat
      * @return The number of items in a series.
      */
     public int getItemCount(int series) {
-        List oneSeriesData = (List) allSeriesData.get(series);
+        List<WindDataItem> oneSeriesData =  allSeriesData.get(series);
         return oneSeriesData.size();
     }
 
@@ -163,7 +164,7 @@ public class DefaultWindDataset extends AbstractSeriesDataset implements WindDat
      * @return The x-value for the item within the series.
      */
     public Number getXValue(int series, int item) {
-        List oneSeriesData = (List) allSeriesData.get(series);
+        List<WindDataItem> oneSeriesData =  allSeriesData.get(series);
         WindDataItem windItem = (WindDataItem) oneSeriesData.get(item);
         return windItem.x;
     }
@@ -189,7 +190,7 @@ public class DefaultWindDataset extends AbstractSeriesDataset implements WindDat
      * @return The wind direction for the item within the series.
      */
     public Number getWindDirection(int series, int item) {
-        List oneSeriesData = (List) allSeriesData.get(series);
+        List<WindDataItem> oneSeriesData =  allSeriesData.get(series);
         WindDataItem windItem = (WindDataItem) oneSeriesData.get(item);
         return windItem.windDir;
     }
@@ -202,7 +203,7 @@ public class DefaultWindDataset extends AbstractSeriesDataset implements WindDat
      * @return The wind force for the item within the series.
      */
     public Number getWindForce(int series, int item) {
-        List oneSeriesData = (List) allSeriesData.get(series);
+        List<WindDataItem> oneSeriesData = allSeriesData.get(series);
         WindDataItem windItem = (WindDataItem) oneSeriesData.get(item);
         return windItem.windForce;
     }
@@ -213,10 +214,10 @@ public class DefaultWindDataset extends AbstractSeriesDataset implements WindDat
      *
      * @return an array of <i>Series N</i> with N = { 1 .. data.length }.
      */
-    public static List seriesNameListFromDataArray(Object[][] data) {
+    public static List<String> seriesNameListFromDataArray(Object[][] data) {
 
         int seriesCount = data.length;
-        List seriesNameList = new java.util.ArrayList(seriesCount);
+        List<String> seriesNameList = new java.util.ArrayList<String>(seriesCount);
         for (int i = 0; i < seriesCount; i++) {
             seriesNameList.add("Series " + (i + 1));
         }
@@ -229,6 +230,7 @@ public class DefaultWindDataset extends AbstractSeriesDataset implements WindDat
 /**
  * A wind data item.
  */
+@SuppressWarnings("unchecked")
 class WindDataItem implements Comparable {
 
     /** The x-value. */

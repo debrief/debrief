@@ -13,12 +13,11 @@
 package MWC.GUI.Java3d.j3d;
 
 // Standard imports
-import java.awt.Color;
 import java.awt.Component;
 import java.awt.Rectangle;
 
-import javax.swing.JList;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.ListCellRenderer;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
@@ -41,7 +40,12 @@ import javax.swing.border.EmptyBorder;
 class ViewpointCellRenderer extends JLabel implements ListCellRenderer
 {
 
-    /** The selected border when the cell has focus */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The selected border when the cell has focus */
     private Border focusBorder;
 
     /** The empty border when there is no focus */

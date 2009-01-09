@@ -10,9 +10,6 @@
 package org.j3d.geom.particle;
 
 import javax.vecmath.Vector3d;
-import javax.vecmath.Point3d;
-import javax.vecmath.AxisAngle4d;
-import javax.media.j3d.Transform3D;
 
 /**
  * GravityMovementFunction applied a gravity force to

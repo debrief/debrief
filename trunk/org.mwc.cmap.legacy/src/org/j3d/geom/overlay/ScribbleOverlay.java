@@ -10,7 +10,6 @@
 package org.j3d.geom.overlay;
 
 // Standard imports
-import java.awt.*;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -19,7 +18,6 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 
 import javax.media.j3d.Canvas3D;
-import javax.media.j3d.TransformGroup;
 
 // Application specific imports
 // none
@@ -41,7 +39,7 @@ public class ScribbleOverlay extends MouseOverlay
      * so that we may have a set of LineDetails with the same color more than
      * once in the list.
      */
-    private ArrayList lineList;
+    private ArrayList<LineDetails> lineList;
 
     /** The current colour that we are drawing new lines in */
     private Color currentColor;
@@ -51,9 +49,6 @@ public class ScribbleOverlay extends MouseOverlay
 
     /** The current set of lines that match the current color */
     private LineDetails currentLineDetails;
-
-    /** Working variable to prevent garbage generation */
-    private Point worldPoint;
 
     /**
      * Create a new scribble overlay that bases its size on the canvas it
@@ -82,8 +77,8 @@ public class ScribbleOverlay extends MouseOverlay
     {
         super(canvas, bounds, true, true, true, true, true);
 
-        lineList = new ArrayList();
-        worldPoint = new Point();
+        lineList = new ArrayList<LineDetails>();
+        new Point();
 
         currentColor = new Color(lineColor.getRed(),
                                  lineColor.getGreen(),

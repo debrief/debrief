@@ -415,7 +415,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	/**
 	 * get the longitude for the indicated index
 	 */
-	private static double getLongitudeFor(final int index)
+	static double getLongitudeFor(final int index)
 	{
 		double res;
 
@@ -437,7 +437,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	/**
 	 * get the latitude for the indicated index
 	 */
-	private static double getLatitudeFor(final int index)
+	static double getLatitudeFor(final int index)
 	{
 		double res;
 

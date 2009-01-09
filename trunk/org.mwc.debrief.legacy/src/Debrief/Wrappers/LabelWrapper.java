@@ -225,7 +225,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	/**
 	 * the symbol for this label
 	 */
-	private MWC.GUI.Shapes.Symbols.PlainSymbol _theShape;
+	MWC.GUI.Shapes.Symbols.PlainSymbol _theShape;
 
 	/**
 	 * the origin for this text label
@@ -250,7 +250,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	/**
 	 * an editable parent class, if applicable
 	 */
-	private Editable _myParent = null;
+	Editable _myParent = null;
 
 	/**
 	 * whether to show the label
@@ -632,10 +632,10 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * has an "alive" period which overlaps this period then it will be returned.
 	 * If the item has no time set, then return it as being valid
 	 */
-	public final java.util.Collection getItemsBetween(final HiResDate start,
+	public final java.util.Collection<Editable> getItemsBetween(final HiResDate start,
 			final HiResDate end)
 	{
-		java.util.Vector res = null;
+		java.util.Vector<Editable> res = null;
 
 		if (this.getStartDTG() != null)
 		{
@@ -653,7 +653,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 					if ((startTime.lessThanOrEqualTo(end))
 							&& (endTime.greaterThanOrEqualTo(start)))
 					{
-						res = new Vector(0, 1);
+						res = new Vector<Editable>(0, 1);
 					}
 				} else
 				{
@@ -661,7 +661,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 					if ((startTime.greaterThanOrEqualTo(start))
 							&& (startTime.lessThanOrEqualTo(end)))
 					{
-						res = new Vector(0, 1);
+						res = new Vector<Editable>(0, 1);
 					}
 				}
 
@@ -710,13 +710,13 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			} else
 			{
 				// no dates have been set - just say yes we are visible
-				res = new Vector(0, 1);
+				res = new Vector<Editable>(0, 1);
 				res.add(this);
 			}
 		} else
 		{
 			// no times are set - just return ourselves
-			res = new Vector(0, 1);
+			res = new Vector<Editable>(0, 1);
 			res.add(this);
 		}
 
@@ -871,7 +871,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		public final BeanInfo[] getAdditionalBeanInfo()
 		{
 
-			java.util.Vector list = null;
+			java.util.Vector<BeanInfo> list = null;
 
 			// see if we have a parent class
 			BeanInfo[] res = null;
@@ -881,7 +881,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			if (_myParent != null)
 			{
 				// create list
-				list = new Vector(0, 1);
+				list = new Vector<BeanInfo>(0, 1);
 
 				// add this item to the list
 				list.addElement(_myParent.getInfo());
@@ -899,7 +899,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 				// do we need to create our list?
 				if (list == null)
-					list = new Vector(0, 1);
+					list = new Vector<BeanInfo>(0, 1);
 
 				// remember it
 				list.addElement(info);
@@ -912,7 +912,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				{ sampler };
 
 				// put the list onto the array
-				res = (BeanInfo[]) list.toArray(dummy);
+				res = list.toArray(dummy);
 			}
 
 			return res;
@@ -956,7 +956,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class c = ShapeWrapper.class;
+			final Class<ShapeWrapper> c = ShapeWrapper.class;
 			final MethodDescriptor[] mds =
 			{ method(c, "exportThis", null, "Export Shape") };
 			return mds;

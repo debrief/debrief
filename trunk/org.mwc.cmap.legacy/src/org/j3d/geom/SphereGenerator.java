@@ -77,19 +77,6 @@ public class SphereGenerator extends GeometryGenerator
      */
     private float[] texCoordinates2D;
 
-    /** The number of values used in the 2D tex coord array */
-    private int numTexCoords2D;
-
-    /**
-     * The 3D texture coordinates for the sphere. These match the order of
-     * vertex declaration in the quadCoordinates field thus making life
-     * easy for dealing with half spheres
-     */
-    private float[] texCoordinates3D;
-
-    /** The number of values used in the 2D tex coord array */
-    private int numTexCoords3D;
-
     /**
      * Constructs a default sphere of radius 1 and uses 16 segments on the
      * radius.
@@ -604,19 +591,6 @@ public class SphereGenerator extends GeometryGenerator
     }
 
     /**
-     * Generate a new set of points for a triangle fan array. Each facet on the
-     * side of the cone is a single fan, but the base is one big fan.
-     *
-     * @param data The data to base the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void triangleFans(GeometryData data)
-        throws InvalidArraySizeException
-    {
-    }
-
-    /**
      * Generate a new set of points for an indexed triangle strip array. We
      * build the strip from the existing points, and there's no need to
      * re-order the points for the indexes this time.
@@ -716,25 +690,6 @@ public class SphereGenerator extends GeometryGenerator
             }
         }
     }
-
-    /**
-     * Generate a new set of points for an indexed triangle fan array. We
-     * build the strip from the existing points, and there's no need to
-     * re-order the points for the indexes this time. As for the simple fan,
-     * we use the first index, the lower-right corner as the apex for the fan.
-     *
-     * @param data The data to base the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void indexedTriangleFans(GeometryData data)
-        throws InvalidArraySizeException
-    {
-    }
-
-    //------------------------------------------------------------------------
-    // Coordinate generation routines
-    //------------------------------------------------------------------------
 
     /**
      * Generates new set of points suitable for use in an unindexed array. Each
@@ -1077,7 +1032,6 @@ public class SphereGenerator extends GeometryGenerator
                                                 data.coordinates.length,
                                                 vtx_cnt * 3);
 
-        float[] coords = data.coordinates;
         data.vertexCount = vtx_cnt;
 
         recalculateQuadSphere();
@@ -1158,8 +1112,6 @@ public class SphereGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("2D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] tex_coords = data.textureCoordinates;
 
         recalc2DTexture();
     }
@@ -1300,8 +1252,6 @@ public class SphereGenerator extends GeometryGenerator
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
 
-        float[] tex_coords = data.textureCoordinates;
-
         recalc2DTexture();
     }
 
@@ -1341,8 +1291,6 @@ public class SphereGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("3D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     /**
@@ -1376,7 +1324,6 @@ public class SphereGenerator extends GeometryGenerator
         // local constant to make math calcs faster
         double segment_angle = 2.0 * Math.PI / facetCount;
         int count = 0;
-        double angle;
         double y_radius = radius;
         int i, k;
         float y = 0;
@@ -1504,7 +1451,6 @@ public class SphereGenerator extends GeometryGenerator
 
         if(!useHalf)
         {
-            int mid_pt = count;
             for(k = 0; k < half; k++)
             {
                 t = t_table[k];

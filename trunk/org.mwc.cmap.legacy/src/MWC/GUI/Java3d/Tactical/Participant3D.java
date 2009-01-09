@@ -200,7 +200,8 @@ public abstract class Participant3D extends BranchGroup implements java.beans.Pr
   /**
    * replace the model used in our object
    */
-  protected void buildModel()
+  @SuppressWarnings("unchecked")
+	protected void buildModel()
   {
     // remove any existing model
     Enumeration enumer = _modelHolder.getAllChildren();
@@ -255,7 +256,8 @@ public abstract class Participant3D extends BranchGroup implements java.beans.Pr
   /**
    * set the capability bits for the supplied model in order to allow child reading
    */
-  private void setChildCapabilities(Node node)
+  @SuppressWarnings("unchecked")
+	private void setChildCapabilities(Node node)
   {
     if (node instanceof Group)
     {
@@ -278,7 +280,8 @@ public abstract class Participant3D extends BranchGroup implements java.beans.Pr
   /**
    * apply our colour to the model and it's children
    */
-  protected void colourModel(Node model)
+  @SuppressWarnings("unchecked")
+	protected void colourModel(Node model)
   {
     if (model instanceof Group)
     {

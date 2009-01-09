@@ -50,14 +50,11 @@ import com.jrefinery.data.XYDataset;
  */
 public class MovingAveragePlotFitAlgorithm implements PlotFitAlgorithm {
 
-    /** The underlying dataset. */
-    private XYDataset dataset;
-
     /** The moving average period. */
     private int period = 5;
 
     /** ?? */
-    private Vector plots;
+    private Vector<ArrayHolder> plots;
 
     /**
      * @return the name that you want to see in the legend.
@@ -80,14 +77,12 @@ public class MovingAveragePlotFitAlgorithm implements PlotFitAlgorithm {
      */
     public void setXYDataset(XYDataset ds) {
 
-        this.dataset = ds;
-
         /*
          * build the x and y data arrays to be passed to the
          * statistics class to get a linear fit and store them
          * for each dataset in the datasets Vector
          */
-        Vector datasets = new Vector();
+        Vector<Vector<Number[]>> datasets = new Vector<Vector<Number[]>>();
         for (int i = 0; i < ds.getSeriesCount(); i++) {
             int seriessize = ds.getItemCount(i);
             Number[] xData = new Number[seriessize];
@@ -96,14 +91,14 @@ public class MovingAveragePlotFitAlgorithm implements PlotFitAlgorithm {
                 xData[j] = ds.getXValue(i, j);
                 yData[j] = ds.getYValue(i, j);
             }
-            Vector pair = new Vector();
+            Vector<Number[]> pair = new Vector<Number[]>();
             pair.addElement(xData);
             pair.addElement(yData);
             datasets.addElement(pair);
         }
-        plots = new Vector();
+        plots = new Vector<ArrayHolder>();
         for (int j = 0; j < datasets.size(); j++) {
-            Vector pair = (Vector) datasets.elementAt(j);
+            Vector<?> pair = (Vector<?>) datasets.elementAt(j);
             Number[] xData = (Number[]) pair.elementAt(0);
             Number[] yData = (Number[]) pair.elementAt(1);
             plots.addElement(new ArrayHolder(Statistics.getMovingAverage(xData, yData, period)));

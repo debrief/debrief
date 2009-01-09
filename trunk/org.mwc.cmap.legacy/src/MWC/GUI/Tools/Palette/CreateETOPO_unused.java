@@ -45,7 +45,6 @@
 
 package MWC.GUI.Tools.Palette;
 
-import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 

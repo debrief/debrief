@@ -354,7 +354,7 @@ public class HorizontalCategoryPlot extends CategoryPlot implements HorizontalVa
 
             // draw the range markers...
             if ((this.rangeMarkers != null) && (renderer != null)) {
-                Iterator iterator = this.rangeMarkers.iterator();
+                Iterator<Marker> iterator = this.rangeMarkers.iterator();
                 while (iterator.hasNext()) {
                     Marker marker = (Marker) iterator.next();
                     renderer.drawRangeMarker(g2, this, getRangeAxis(), marker,
@@ -378,7 +378,8 @@ public class HorizontalCategoryPlot extends CategoryPlot implements HorizontalVa
      * @param info  an optional object for collection dimension information.
      * @param backgroundPlotArea  the chart's background area.
      */
-    public void render(Graphics2D g2, Rectangle2D dataArea,
+    @SuppressWarnings("unchecked")
+		public void render(Graphics2D g2, Rectangle2D dataArea,
                        ChartRenderingInfo info, Shape backgroundPlotArea) {
 
         CategoryDataset data = getCategoryDataset();

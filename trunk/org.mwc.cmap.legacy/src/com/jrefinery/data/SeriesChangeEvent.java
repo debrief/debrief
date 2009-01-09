@@ -45,6 +45,11 @@ package com.jrefinery.data;
 public class SeriesChangeEvent extends java.util.EventObject {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs a new event.
      *
      * @param source  the source of the change event.

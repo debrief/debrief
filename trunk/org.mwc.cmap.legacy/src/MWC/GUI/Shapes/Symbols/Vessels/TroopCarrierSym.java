@@ -36,14 +36,15 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
 
 public class TroopCarrierSym extends MerchantSym {
 
-  public String getType()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public String getType()
   {
     return "Troop_Carrier";
   }

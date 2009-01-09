@@ -91,20 +91,11 @@ public class FractalTerrainGenerator extends GeometryGenerator
     /** Flag indicating terrain values have changed */
     private boolean terrainChanged;
 
-    /** Working values for the normal generation */
-    private Vector3f normal;
-
     /** Random number generator for the heights */
     private Random randomiser;
 
-    /** The number of facets in this generator */
-    private int facetCount;
-
     /** Generator for creating the actual grid points */
     private ElevationGridGenerator gridGenerator;
-
-    /** Working value for subdividing a given quad */
-    private float[] subdivPoints;
 
     /** The seed terrain, if provided */
     private float[][] seedTerrain;
@@ -354,7 +345,7 @@ public class FractalTerrainGenerator extends GeometryGenerator
         if(seed != 0)
             randomiser.setSeed(seed);
 
-        normal = new Vector3f();
+        new Vector3f();
 
         if(terrain == null)
             seedTerrain = new float[][] {{0, 0}, {0, 0}};
@@ -374,8 +365,6 @@ public class FractalTerrainGenerator extends GeometryGenerator
                                                    side_points,
                                                    side_points);
 
-        facetCount = side_points * side_points;
-        subdivPoints = new float[5];
         terrainChanged = true;
     }
 
@@ -433,8 +422,6 @@ public class FractalTerrainGenerator extends GeometryGenerator
                                     terrainDepth,
                                     side_points,
                                     side_points);
-
-        facetCount = side_points * side_points;
     }
 
     /**
@@ -459,8 +446,6 @@ public class FractalTerrainGenerator extends GeometryGenerator
                                         terrainDepth,
                                         side_points,
                                         side_points);
-
-            facetCount = side_points * side_points;
         }
     }
 
@@ -512,7 +497,6 @@ public class FractalTerrainGenerator extends GeometryGenerator
                                                    side_points,
                                                    side_points);
 
-        facetCount = side_points * side_points;
         terrainChanged = true;
     }
 

@@ -427,8 +427,6 @@ public class StandardXYItemRenderer extends AbstractXYItemRenderer
             }
 
             if (this.plotImages) {
-                // use shape scale with transform??
-                double scale = getShapeScale(plot, series, item, transX1, transY1);
                 Image image = getImage(plot, series, item, transX1, transY1);
                 if (image != null) {
                     Point hotspot = getImageHotspot(plot, series, item, transX1, transY1, image);

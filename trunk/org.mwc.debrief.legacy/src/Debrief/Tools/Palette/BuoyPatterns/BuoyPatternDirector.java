@@ -85,7 +85,7 @@ final class BuoyPatternDirector
 
   public final Object[] getPatterns()
   {
-    Vector res = new Vector(0,1);
+    Vector<String> res = new Vector<String>(0,1);
     Object[] res2 = new String[]{"d1", "d2"};
     res.addElement("Field");
     res.addElement("Barrier");

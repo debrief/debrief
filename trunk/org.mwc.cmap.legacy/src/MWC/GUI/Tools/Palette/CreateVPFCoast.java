@@ -36,7 +36,6 @@
 
 package MWC.GUI.Tools.Palette;
 
-import MWC.GenericData.*;
 import MWC.GUI.VPF.*;
 
 public class CreateVPFCoast extends PlainCreate

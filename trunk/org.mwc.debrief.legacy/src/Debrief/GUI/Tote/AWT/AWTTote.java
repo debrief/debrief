@@ -171,19 +171,19 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
     // and now add the members (going across first)
     _theTote.add(new Label("  "));
     _theTote.add(new Label(_thePrimary.getName(), Label.CENTER));
-    Enumeration iter = _theSecondary.elements();
-    while(iter.hasMoreElements())
+    Enumeration<WatchableList> iter2 = _theSecondary.elements();
+    while(iter2.hasMoreElements())
     {
-      final WatchableList w = (WatchableList) iter.nextElement();
+      final WatchableList w = (WatchableList) iter2.nextElement();
       _theTote.add(new Label(w.getName(), Label.CENTER));
     }
     _theTote.add(new Label("  "));
     
     // and now the data for each row
-    iter = _theCalculationTypes.elements();
+    Enumeration<Class<?>> iter = _theCalculationTypes.elements();
     while(iter.hasMoreElements())
     {
-      final Class cl = (Class)iter.nextElement();
+      final Class<?> cl = (Class<?>)iter.nextElement();
       try
       {
         final toteCalculation tc = (toteCalculation)cl.newInstance();
@@ -197,7 +197,7 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
         _theTote.add(cp);
         
         // secondaries
-        final Enumeration secs = _theSecondary.elements();
+        final Enumeration<WatchableList> secs = _theSecondary.elements();
         while(secs.hasMoreElements())
         {
           final WatchableList wl = (WatchableList)secs.nextElement();
@@ -219,7 +219,7 @@ public final class AWTTote extends Debrief.GUI.Tote.AnalysisTote
     // put on the list of remove buttons
     _theTote.add(new Label("  "));
     _theTote.add(new Label("  "));
-    final Enumeration secs2 = _theSecondary.elements();
+    final Enumeration<WatchableList> secs2 = _theSecondary.elements();
     while(secs2.hasMoreElements())
     {
       final WatchableList l = (WatchableList)secs2.nextElement();

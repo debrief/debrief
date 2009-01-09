@@ -121,17 +121,17 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
   /**
    * the value we are editing
    */
-  private TrackWrapper _theTrack;
+  TrackWrapper _theTrack;
 
   /**
    * the chart object which we are letting the user select from
    */
-  private PlainChart _theChart;
+  PlainChart _theChart;
 
   /**
    * whether to put the dtgs on the track
    */
-  private boolean _showDTG;
+  boolean _showDTG;
 
   /**
    * the old chart drag listener
@@ -141,7 +141,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
   /**
    * working location
    */
-  private final transient WorldLocation _dragOrigin = new WorldLocation(0.0, 0.0, 0.0);
+  final transient WorldLocation _dragOrigin = new WorldLocation(0.0, 0.0, 0.0);
 
   /**
    * working location
@@ -151,17 +151,17 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
   /**
    * working location
    */
-  private final transient WorldLocation _tmpLocation = new WorldLocation(0.0, 0.0, 0.0);
+  final transient WorldLocation _tmpLocation = new WorldLocation(0.0, 0.0, 0.0);
 
   /**
    * working location
    */
-  private final transient Point _tmpPointA = new Point();
+  final transient Point _tmpPointA = new Point();
 
   /**
    * working location
    */
-  private final transient Point _tmpPointB = new Point();
+  final transient Point _tmpPointB = new Point();
 
   /**
    * our rubber band singleton.  We create this afresh each time to get a new draggable track
@@ -192,12 +192,12 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
   /**
    * the plot we're updating
    */
-  private XYPlot _myPlot;
+  XYPlot _myPlot;
 
   /**
    * flag indicating whether we should override the y-axis to ensure that zero is always in the centre
    */
-  private boolean _centreYAxis = true;
+  boolean _centreYAxis = true;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -432,7 +432,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
   /**
    * the track has been moved, update the dots
    */
-  private void updateStackedDots(final WorldVector offset)
+  void updateStackedDots(final WorldVector offset)
   {
     // get the current set of data to plot
     final TimeSeriesCollection newData = _myHelper.getUpdatedSeries(offset);
@@ -578,7 +578,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
   //////////////////////////////////////////////////
   // helper class to provide support to the stacked dots
   //////////////////////////////////////////////////
-  private static final class StackedDotHelper
+  public static final class StackedDotHelper
   {
     /**
      * the set of layers for this plot
@@ -598,12 +598,12 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
     /**
      * the set of points to watch on the primary track
      */
-    private Vector _primaryDoublets;
+    private Vector<Doublet> _primaryDoublets;
 
     /**
      * the set of points to watch on the secondary track
      */
-    private Vector _secondaryDoublets;
+    private Vector<Doublet> _secondaryDoublets;
 
     //////////////////////////////////////////////////
     // CONSTRUCTOR
@@ -645,7 +645,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
       final BasicTimeSeries secondarySeries = new BasicTimeSeries(_secondaryTrack.getName(), FixedMillisecond.class);
 
       // ok, run through the points on the primary track
-      Iterator iter = _primaryDoublets.iterator();
+      Iterator<Doublet> iter = _primaryDoublets.iterator();
       while (iter.hasNext())
       {
         final Doublet thisD = (Doublet) iter.next();
@@ -720,12 +720,12 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
     /**
      * initialise the data, check we've got sensor data & the correct number of visible tracks
      */
-    private void initialise()
+    void initialise()
     {
 
       _secondaryTrack = null;
 
-      final Enumeration theLayers = getData().elements();
+      final Enumeration<Editable> theLayers = getData().elements();
       while (theLayers.hasMoreElements())
       {
         final Layer thisLayer = (Layer) theLayers.nextElement();
@@ -770,12 +770,12 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
       }
     }
 
-    private Vector getDoublets(final TrackWrapper sensorHost, final TrackWrapper targetTrack)
+    private Vector<Doublet> getDoublets(final TrackWrapper sensorHost, final TrackWrapper targetTrack)
     {
-      final Vector res = new Vector(0, 1);
+      final Vector<Doublet> res = new Vector<Doublet>(0, 1);
 
       // ok, cycle through the sensor points on the host track
-      final Enumeration iter = sensorHost.elements();
+      final Enumeration<Editable> iter = sensorHost.elements();
       while (iter.hasMoreElements())
       {
         final PlainWrapper pw = (PlainWrapper) iter.nextElement();
@@ -786,7 +786,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
             final SensorWrapper sw = (SensorWrapper) pw;
 
             // right, work through the contacts in this sensor
-            final Enumeration theContacts = sw.elements();
+            final Enumeration<Editable> theContacts = sw.elements();
             while (theContacts.hasMoreElements())
             {
               final SensorContactWrapper scw = (SensorContactWrapper) theContacts.nextElement();
@@ -850,7 +850,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
     //////////////////////////////////////////////////
     // class to store combination of sensor & target at same time stamp
     //////////////////////////////////////////////////
-    private static final class Doublet
+    public static final class Doublet
     {
       private final SensorContactWrapper _sensor;
       private final WorldLocation _targetLocation;
@@ -989,7 +989,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
       final Point lastPoint = new Point();
 
       // apply this offset to the track
-      final Enumeration iter = _theTrack.elements();
+      final Enumeration<Editable> iter = _theTrack.elements();
       while (iter.hasMoreElements())
       {
         final Object thisO = iter.nextElement();
@@ -1037,7 +1037,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
           final SensorWrapper sw = (SensorWrapper) thisO;
           if (sw.getVisible())
           {
-            final Enumeration enumS = sw.elements();
+            final Enumeration<Editable> enumS = sw.elements();
             while (enumS.hasMoreElements())
             {
               final SensorContactWrapper scw = (SensorContactWrapper) enumS.nextElement();

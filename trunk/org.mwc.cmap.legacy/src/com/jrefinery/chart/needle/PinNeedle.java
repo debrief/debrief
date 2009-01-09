@@ -65,10 +65,8 @@ public class PinNeedle extends MeterNeedle {
         GeneralPath pointer = new GeneralPath();
 
         int minY = (int) (plotArea.getMinY());
-        int maxX = (int) (plotArea.getMaxX());
         int maxY = (int) (plotArea.getMaxY());
         int midX = (int) (plotArea.getMinX() + (plotArea.getWidth() / 2));
-        int midY = (int) (plotArea.getMinY() + (plotArea.getHeight() / 2));
         int lenX = (int) (plotArea.getWidth() / 10);
         if (lenX < 2) {
             lenX = 2;

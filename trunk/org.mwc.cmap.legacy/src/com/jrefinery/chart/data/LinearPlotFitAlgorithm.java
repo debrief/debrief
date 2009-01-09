@@ -50,9 +50,6 @@ import com.jrefinery.data.XYDataset;
  */
 public class LinearPlotFitAlgorithm implements PlotFitAlgorithm {
 
-    /** Underlying dataset. */
-    private XYDataset dataset;
-
     /** The data for the linear fit. */
     private double[][] linearFit;
 
@@ -70,13 +67,7 @@ public class LinearPlotFitAlgorithm implements PlotFitAlgorithm {
      */
     public void setXYDataset(XYDataset data) {
 
-        this.dataset = data;
-
-        // build the x and y data arrays to be passed to the
-        // statistics class to get a linear fit and store them
-        // for each dataset in the datasets Vector
-
-        Vector datasets = new Vector();
+        Vector<Vector<Number[]>> datasets = new Vector<Vector<Number[]>>();
         for (int i = 0; i < data.getSeriesCount(); i++) {
             int seriessize = data.getItemCount(i);
             Number[] xData = new Number[seriessize];
@@ -85,7 +76,7 @@ public class LinearPlotFitAlgorithm implements PlotFitAlgorithm {
                 xData[j] = data.getXValue(i, j);
                 yData[j] = data.getYValue(i, j);
             }
-            Vector pair = new Vector();
+            Vector<Number[]> pair = new Vector<Number[]>();
             pair.addElement(xData);
             pair.addElement(yData);
             datasets.addElement(pair);
@@ -94,7 +85,7 @@ public class LinearPlotFitAlgorithm implements PlotFitAlgorithm {
         // put in the linear fit array
         linearFit = new double[datasets.size()][2];
         for (int i = 0; i < datasets.size(); i++) {
-            Vector pair = (Vector) datasets.elementAt(i);
+            Vector<?> pair = (Vector<?>) datasets.elementAt(i);
             linearFit[i] = Statistics.getLinearFit((Number[]) pair.elementAt(0),
                                                    (Number[]) pair.elementAt(1));
         }

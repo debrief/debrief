@@ -48,9 +48,6 @@ public class RasterTextLabel extends Shape3D
     /** The current color of the border. Null if not in use */
     private Color borderColor;
 
-    /** The font of the label. Null if using system default */
-    private Font labelFont;
-
     /**
      * Create a new blank label with no text. It is located at the origin.
      */
@@ -111,8 +108,6 @@ public class RasterTextLabel extends Shape3D
     {
         textColor = col;
         borderColor = border;
-        labelFont = font;
-
         Appearance app = new Appearance();
         RenderingAttributes ra = new RenderingAttributes();
         ra.setDepthBufferEnable(false);

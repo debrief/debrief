@@ -55,9 +55,9 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 			if (parent instanceof Layers)
 			{
 				// cool - run through the layers
-				Vector list = new Vector(0, 1);
+				Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
 				Layers theLayers = (Layers) parent;
-				Enumeration numer = theLayers.elements();
+				Enumeration<Editable> numer = theLayers.elements();
 				while (numer.hasMoreElements())
 				{
 					Layer thisL = (Layer) numer.nextElement();
@@ -91,7 +91,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 			EditableWrapper pl = (EditableWrapper) parent;
 			if (pl.hasChildren())
 			{
-				Vector list = new Vector(0, 1);
+				Vector<EditableWrapper> list = new Vector<EditableWrapper>(0, 1);
 
 				Layer thisL = (Layer) pl.getEditable();
 				
@@ -99,7 +99,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 				if(thisL.hasOrderedChildren())
 				{
 					int index = 0;
-					Enumeration numer = thisL.elements();
+					Enumeration<Editable> numer = thisL.elements();
 					while (numer.hasMoreElements())
 					{
 						Editable thisP = (Editable) numer.nextElement();
@@ -110,7 +110,7 @@ public class ViewContentProvider implements IStructuredContentProvider,	ITreeCon
 				}
 				else
 				{
-					Enumeration numer = thisL.elements();
+					Enumeration<Editable> numer = thisL.elements();
 					if(numer != null)
 					{
 						while (numer.hasMoreElements())

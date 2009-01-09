@@ -50,7 +50,8 @@ public class Util
      * @param f the font
      * @return the font height, in pixels
      */
-    public static int getFontHeight(Font f)
+    @SuppressWarnings("deprecation")
+		public static int getFontHeight(Font f)
     {
         return getFontHeight(Toolkit.getDefaultToolkit().getFontMetrics(f));
     }
@@ -85,7 +86,8 @@ public class Util
      * @param s the string to determine the width of
      * @return the width of the string, in pixels
      */
-    public static int getStringWidth(Font f, String s)
+    @SuppressWarnings("deprecation")
+		public static int getStringWidth(Font f, String s)
     {
         return getStringWidth(Toolkit.getDefaultToolkit().getFontMetrics(f), s);
     }

@@ -36,9 +36,6 @@ public class Ac3dObject {
     /** The number of children for this object. */
     private int numKids;
     
-    /** References to all of the children for this object. */
-    private Ac3dObject kids[];
-    
     /** The number of verticies for this object. */
     private int numvert;
     
@@ -80,7 +77,6 @@ public class Ac3dObject {
         type="";
         texture="";
         numKids=0;
-        kids=new Ac3dObject[numKids];
         numvert=0;
         loc=new float[3];
         data=new char[0];
@@ -142,7 +138,6 @@ public class Ac3dObject {
     
     public void setNumKids(int numKids) {
         this.numKids=numKids;
-        kids=new Ac3dObject[numKids];
     }
     
     

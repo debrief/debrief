@@ -136,6 +136,7 @@
 package Debrief.Wrappers;
 
 import MWC.GUI.CanvasType;
+import MWC.GUI.Plottable;
 import MWC.GenericData.*;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -149,7 +150,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		java.lang.Comparable, MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
+		MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
 		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe
 {
 	/**
@@ -358,7 +359,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * member function to meet requirements of comparable interface *
 	 */
-	public final int compareTo(final Object o)
+	public final int compareTo(Plottable o)
 	{
 		final SensorContactWrapper other = (SensorContactWrapper) o;
 		int res = 0;
@@ -881,7 +882,7 @@ public final class SensorContactWrapper extends
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class c = SensorContactWrapper.class;
+			final Class<SensorContactWrapper> c = SensorContactWrapper.class;
 			final MethodDescriptor[] mds = { method(c, "resetColor", null, "Reset Color"), };
 			return mds;
 		}

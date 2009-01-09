@@ -45,6 +45,7 @@ package com.jrefinery.data;
  *
  * @author DG
  */
+@SuppressWarnings("unchecked")
 public class XYDataPair implements Cloneable, Comparable {
 
     /** The x-value. */

@@ -21,7 +21,7 @@ public class WatchableTransformGroup extends TransformGroup {
   /** the list of listeners to this transform
    *
    */
-  protected java.util.Vector _myListeners = new java.util.Vector(0,1);
+  protected java.util.Vector<TransformListener> _myListeners = new java.util.Vector<TransformListener>(0,1);
 
 
 
@@ -37,7 +37,7 @@ public class WatchableTransformGroup extends TransformGroup {
     d.getRotationScale(m3);
 
     // fire the event
-    java.util.Iterator iter = _myListeners.iterator();
+    java.util.Iterator<TransformListener> iter = _myListeners.iterator();
     while(iter.hasNext())
     {
       TransformListener tl = (TransformListener)iter.next();

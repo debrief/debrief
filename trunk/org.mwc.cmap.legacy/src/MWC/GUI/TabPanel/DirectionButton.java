@@ -1,14 +1,12 @@
 package MWC.GUI.TabPanel;
 
-import java.awt.Rectangle;
-import java.awt.Dimension;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Graphics;
-import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
-import java.beans.VetoableChangeListener;
 import java.beans.PropertyChangeEvent;
-import java.lang.IllegalArgumentException;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
 
 //	01/29/97	TWB	Integrated changes from Windows
@@ -44,6 +42,11 @@ import java.lang.IllegalArgumentException;
 public class DirectionButton extends ButtonBase implements java.io.Serializable
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * The point LEFT style constant.
      */
     public static final int LEFT = 0;
@@ -463,6 +466,11 @@ public class DirectionButton extends ButtonBase implements java.io.Serializable
 	class SizeVeto implements java.beans.VetoableChangeListener, java.io.Serializable
 	{
 	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			/**
 	     * This method gets called when an attempt to change the constrained Direction property is made.
 	     * Ensures the given direction size is valid for this button.
 	     *
@@ -488,6 +496,11 @@ public class DirectionButton extends ButtonBase implements java.io.Serializable
 	class IndntVeto implements java.beans.VetoableChangeListener, java.io.Serializable
 	{
 	    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			/**
 	     * This method gets called when an attempt to change the constrained ArrowIndent property is made.
 	     * Ensures the given arrow indent size is valid for this button.
 	     *
@@ -585,7 +598,7 @@ public class DirectionButton extends ButtonBase implements java.io.Serializable
 	 * @param aY the vertical coordinate of one of the two points defining the straight side.
 	 * @param bX the horizontal coordinate of one of the two points defining the straight side.
 	 * @param bY the vertical coordinate of one of the two points defining the straight side.
-	 * @param direction the direction of the straight line UP, DOWN, or LEFT, RIGHT.
+	 * @param direction1 the direction of the straight line UP, DOWN, or LEFT, RIGHT.
 	 *
 	 * aX and bX should be the same for UP or Down.  aY and bY should be the same for LEFT or RIGHT.
 	 * If not, then the a coordinates are used.
@@ -595,15 +608,14 @@ public class DirectionButton extends ButtonBase implements java.io.Serializable
 	 * @see #LEFT
 	 * @see #RIGHT
 	 */
-	protected void fillTriangle(Graphics g, int tipX, int tipY, int aX, int aY, int bX, int bY, int direction)
+	protected void fillTriangle(Graphics g, int tipX, int tipY, int aX, int aY, int bX, int bY, int direction1)
 	{
-		int dist, max, min;
+		int max, min;
 
-		switch(direction)
+		switch(direction1)
 		{
 			case UP:
 			case DOWN:
-				dist = Math.abs(aX - bX);
 				max = Math.max(aX, bX);
 				min = Math.min(aX, bX);
 				for(int i = min; i <= max; ++i)
@@ -613,7 +625,6 @@ public class DirectionButton extends ButtonBase implements java.io.Serializable
 				break;
 			case RIGHT:
 			case LEFT:
-				dist = Math.abs(aY - bY);
 				max = Math.max(aY, bY);
 				min = Math.min(aY, bY);
 				for(int i = min; i <= max; ++i)

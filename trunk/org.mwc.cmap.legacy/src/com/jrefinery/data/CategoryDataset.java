@@ -70,7 +70,7 @@ public interface CategoryDataset extends SeriesDataset {
      *
      * @return the category list.
      */
-    public List getCategories();
+		public List<Object> getCategories();
 
     /**
      * Returns the value for a series and category.

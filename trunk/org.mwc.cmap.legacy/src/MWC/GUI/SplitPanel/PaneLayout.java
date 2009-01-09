@@ -29,9 +29,12 @@ package MWC.GUI.SplitPanel;
 
 
 
-import java.awt.event.*;
-//import borland.jbcl.util.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.LayoutManager2;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 /**
  * A Pane Layout Manager
@@ -854,9 +857,7 @@ class PaneNode
    */
 
   void drag(int x, int y) {
-     boolean goodDrag = true;
-
-    if (childComponent == null) {
+     if (childComponent == null) {
       //if (selected) {
         if (heightDivide == 1.0f) {
           // if (reverse)
@@ -867,12 +868,10 @@ class PaneNode
              widthDivide = 1.0f - widthDivide ;
           if (widthDivide < (float)0){
            widthDivide = (float)0;
-            goodDrag = false;
           }
           else
           if (widthDivide >= 1.0f) {
              widthDivide = 0.999f;
-             goodDrag = false;
           }
         }
         else {
@@ -883,13 +882,11 @@ class PaneNode
           if (reverse)
             heightDivide = 1.0f - heightDivide ;
           if (heightDivide < (float)0){
-            goodDrag = false;
             heightDivide = (float)0;
           }
           else
 
           if (heightDivide >= 1.0f){
-            goodDrag = false;
             heightDivide = 0.999f;
           }
         }
@@ -965,7 +962,7 @@ class PaneNode
     }
   }
 
-  void calculateLocations(Rectangle location,
+  void calculateLocations(Rectangle location1,
                           Rectangle childALocation,
                           Rectangle childBLocation,
                           int Border) {
@@ -979,17 +976,17 @@ class PaneNode
         proportion = 1.0f - proportion;
 
       // Work out the location of the two children
-      xOffset = (int)((float)(location.width -Border)* proportion);
+      xOffset = (int)((float)(location1.width -Border)* proportion);
 
-      childALocation.x = location.x;
-      childALocation.y = location.y;
+      childALocation.x = location1.x;
+      childALocation.y = location1.y;
       childALocation.width = xOffset ;
-      childALocation.height = location.height;
+      childALocation.height = location1.height;
 
-      childBLocation.x = location.x + xOffset + Border ;
-      childBLocation.y = location.y;
-      childBLocation.width = location.width - xOffset - Border  ;
-      childBLocation.height = location.height;
+      childBLocation.x = location1.x + xOffset + Border ;
+      childBLocation.y = location1.y;
+      childBLocation.width = location1.width - xOffset - Border  ;
+      childBLocation.height = location1.height;
 
     }
     else {
@@ -997,16 +994,16 @@ class PaneNode
       if (reverse)
         proportion = 1.0f - proportion;
       // Work out the location of the two children
-      yOffset = (int)((float)(location.height -Border) * proportion);
-      childALocation.x = location.x;
-      childALocation.y = location.y;
-      childALocation.width = location.width;
+      yOffset = (int)((float)(location1.height -Border) * proportion);
+      childALocation.x = location1.x;
+      childALocation.y = location1.y;
+      childALocation.width = location1.width;
       childALocation.height = yOffset ;
 
-      childBLocation.x = location.x ;
-      childBLocation.y = location.y + yOffset + Border;
-      childBLocation.width = location.width;
-      childBLocation.height =  location.height - yOffset - Border;
+      childBLocation.x = location1.x ;
+      childBLocation.y = location1.y + yOffset + Border;
+      childBLocation.width = location1.width;
+      childBLocation.height =  location1.height - yOffset - Border;
 
     }
     if (reverse) {

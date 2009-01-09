@@ -5,8 +5,8 @@
 
 package MWC.Utilities.TextFormatting;
 
-import java.text.*;
-import java.util.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 /** Format this bearing in relative (reg/green) form
  */

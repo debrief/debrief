@@ -59,6 +59,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class VerticalBarChartDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new demo instance.
      *
      * @param title  the frame title.

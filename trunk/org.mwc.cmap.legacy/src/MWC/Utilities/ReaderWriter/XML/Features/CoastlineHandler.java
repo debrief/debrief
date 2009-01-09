@@ -11,8 +11,8 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import org.w3c.dom.Element;
 
-import MWC.GUI.Coast.Coastline;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 
@@ -20,8 +20,8 @@ import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 abstract public class CoastlineHandler extends MWCXMLReader  implements LayerHandler.exporter
 {
 
-  private java.awt.Color _theColor;
-  private boolean _isVisible;
+  java.awt.Color _theColor;
+  boolean _isVisible;
 
 
   public CoastlineHandler()

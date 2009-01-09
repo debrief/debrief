@@ -12,13 +12,9 @@ package org.j3d.ui;
 // Standard imports
 import java.awt.GridLayout;
 import java.util.List;
-import javax.swing.ButtonGroup;
-import javax.swing.ButtonModel;
-import javax.swing.JPanel;
-import javax.swing.JToggleButton;
-// import javax.swing.border.
 
-// Application specific imports
+import javax.swing.JPanel;
+
 import org.j3d.util.device.InputDeviceDescriptor;
 
 /**
@@ -39,14 +35,13 @@ import org.j3d.util.device.InputDeviceDescriptor;
  */
 public class InputSelectionPanel extends JPanel
 {
-  /** The mode we are running in. True if multiple select */
-  private boolean multi = false;
-
   /**
-   * The buttom model representing all of the items. Used when running in
-   * single select mode.
-   */
-  private ButtonGroup selection_model;
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/** The mode we are running in. True if multiple select */
+  private boolean multi = false;
 
   /**
    * Construct a blank instance of the panel. The panel operates in a single
@@ -75,7 +70,8 @@ public class InputSelectionPanel extends JPanel
    *
    * @param devs The list of devices to add
    */
-  public void setDeviceList(List devs)
+  @SuppressWarnings("unchecked")
+	public void setDeviceList(List devs)
   {
     removeAll();
   }
@@ -86,7 +82,8 @@ public class InputSelectionPanel extends JPanel
    *
    * @return A list of the selected devices.
    */
-  public List getSelectedItems()
+  @SuppressWarnings("unchecked")
+	public List getSelectedItems()
   {
 	  return null;
   }

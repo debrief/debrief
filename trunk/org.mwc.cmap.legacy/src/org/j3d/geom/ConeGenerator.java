@@ -58,9 +58,6 @@ public class ConeGenerator extends GeometryGenerator
     /** The points on the base of the cone for each facet in [x, z] */
     private float[] baseCoordinates;
 
-    /** The number of values used in the base coordinate array */
-    private int numBaseValues;
-
     /** Flag indicating base values have changed */
     private boolean baseChanged;
 
@@ -324,18 +321,6 @@ public class ConeGenerator extends GeometryGenerator
 
 
     /**
-     * Generate a new set of points for an unindexed quad array
-     *
-     * @param data The data to base the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void unindexedQuads(GeometryData data)
-        throws InvalidArraySizeException
-    {
-    }
-
-    /**
      * Generate a new set of points for an indexed quad array. Uses the same
      * points as an indexed triangle, but repeats the top coordinate index.
      *
@@ -464,46 +449,6 @@ public class ConeGenerator extends GeometryGenerator
             indexes[idx++] = middle + 1;
             indexes[idx++] = vtx;
         }
-    }
-
-    /**
-     * Generate a new set of points for a triangle strip array. Each side is a
-     * strip of two faces.
-     *
-     * @param data The data to base the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void triangleStrips(GeometryData data)
-        throws InvalidArraySizeException
-    {
-    }
-
-    /**
-     * Generate a new set of points for a triangle fan array. Each facet on the
-     * side of the cone is a single fan, but the base is one big fan.
-     *
-     * @param data The data to base the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void triangleFans(GeometryData data)
-        throws InvalidArraySizeException
-    {
-    }
-
-    /**
-     * Generate a new set of points for an indexed triangle strip array. We
-     * build the strip from the existing points, and there's no need to
-     * re-order the points for the indexes this time.
-     *
-     * @param data The data to base the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void indexedTriangleStrips(GeometryData data)
-        throws InvalidArraySizeException
-    {
     }
 
     /**
@@ -710,7 +655,6 @@ public class ConeGenerator extends GeometryGenerator
 
         regenerateBase();
 
-        int base_offset = 1;
         int count = 0;
         int base_count = 0;
         int i;
@@ -928,8 +872,6 @@ public class ConeGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("2D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     /**
@@ -954,8 +896,6 @@ public class ConeGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("3D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     /**
@@ -976,9 +916,7 @@ public class ConeGenerator extends GeometryGenerator
             baseCoordinates = new float[facetCount * 2];
         }
 
-        numBaseValues = facetCount * 2;
-
-         // local constant to make math calcs faster
+        // local constant to make math calcs faster
         double segment_angle = 2.0 * Math.PI / facetCount;
         int count = 0;
         float x, z;

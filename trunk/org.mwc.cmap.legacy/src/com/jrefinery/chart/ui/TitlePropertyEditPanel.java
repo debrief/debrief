@@ -67,7 +67,12 @@ import com.jrefinery.ui.FontChooserPanel;
  */
 public class TitlePropertyEditPanel extends JPanel implements ActionListener {
 
-    /** A field for displaying/editing the title text. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** A field for displaying/editing the title text. */
     private JTextField titleField;
 
     /** The font used to draw the title. */

@@ -54,12 +54,6 @@ public abstract class LegendTitle extends AbstractTitle {
     private LegendItemCollection items;
 
     /**
-     * The object responsible for arranging the legend items to fit in whatever
-     * space is available.
-     */
-    private LegendItemLayout layout;
-
-    /**
      * Constructs a new, empty LegendTitle.
      */
     public LegendTitle() {
@@ -72,7 +66,6 @@ public abstract class LegendTitle extends AbstractTitle {
      * @param layout  the layout.
      */
     public LegendTitle(LegendItemLayout layout) {
-        this.layout = layout;
     }
 
     /**

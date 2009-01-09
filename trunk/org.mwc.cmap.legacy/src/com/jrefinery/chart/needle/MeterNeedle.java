@@ -37,16 +37,14 @@
 
 package com.jrefinery.chart.needle;
 
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.Paint;
-import java.awt.Color;
-import java.awt.Stroke;
 import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Paint;
+import java.awt.Shape;
+import java.awt.Stroke;
 import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
-import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
 
 /**
@@ -72,8 +70,6 @@ public abstract class MeterNeedle {
     protected double rotateY = 0.5;
 
     protected static AffineTransform t = new AffineTransform();
-
-    private final static double ANGLE180 = Math.toRadians(180);
 
     public MeterNeedle() {
         //this(null, null, null);

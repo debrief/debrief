@@ -5,6 +5,11 @@ import java.awt.event.*;
 import java.applet.Applet;
 
 public class YesNoDialogTest extends Applet {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	public void init() {
 		setLayout(new BorderLayout());
 		add(new YesNoDialogLauncher(this), "Center");
@@ -12,10 +17,13 @@ public class YesNoDialogTest extends Applet {
 }
 class YesNoDialogLauncher extends Panel 
 						implements DialogClient, ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Applet         applet;
 	private YesNoDialog    yesNoDialog;
 	private int            cupCnt = 0, coffeeLimit = 3;
-	private Image          image = null;
 	private Checkbox       modal = new Checkbox("modal");
 
 	private Button yesNoDialogButton;

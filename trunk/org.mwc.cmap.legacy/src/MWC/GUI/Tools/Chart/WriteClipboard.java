@@ -1,10 +1,12 @@
 package MWC.GUI.Tools.Chart;
 
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import MWC.GUI.Canvas.*;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Canvas.Clip.WindowsClipboard;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 public class WriteClipboard extends PlainTool
 {
@@ -13,8 +15,6 @@ public class WriteClipboard extends PlainTool
   ////////////////////////////////////////////////////////////
   /** keep a reference to the chart which we are acting upon*/
   private PlainChart _theChart;  
-  private Layers _theData;
-  
   /////////////////////////////////////////////////////////
   // constructor
   /////////////////////////////////////////////////////////
@@ -28,7 +28,6 @@ public class WriteClipboard extends PlainTool
     super(theParent, "Write Clipboard","images/write_wmf.gif");
     // remember the chart we are acting upon
     _theChart = theChart;
-    _theData = theData;
   }
   
   /////////////////////////////////////////////////////////
@@ -103,7 +102,6 @@ public class WriteClipboard extends PlainTool
 
 		// now local members
 		_theChart = null;
-		_theData = null;
 	}
   
 	protected java.io.Serializable cloneThis(java.io.Serializable item)

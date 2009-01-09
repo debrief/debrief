@@ -10,7 +10,6 @@
 package org.j3d.terrain.roam;
 
 // Standard imports
-import java.util.TreeSet;
 
 // Application specific imports
 // none

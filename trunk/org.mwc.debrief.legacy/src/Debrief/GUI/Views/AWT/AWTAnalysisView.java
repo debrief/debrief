@@ -172,13 +172,13 @@ public final class AWTAnalysisView extends AnalysisView {
 
     // create the main components of the panel
     final AWTChart _theChart = new AWTChart(theSession.getData());
-    final AWTToolbar _theToolbar = new AWTToolbar(AWTToolbar.VERTICAL);
-    final AWTPropertiesPanel _theProperties = new AWTPropertiesPanel(_theChart,
+    final AWTToolbar _theToolbar1 = new AWTToolbar(AWTToolbar.VERTICAL);
+    final AWTPropertiesPanel _theProperties1 = new AWTPropertiesPanel(_theChart,
                                                                theSession.getUndoBuffer(),
                                                                super.getParent());
     final Debrief.GUI.Tote.AWT.AWTTote _theTote = new
-       Debrief.GUI.Tote.AWT.AWTTote(_theProperties, theSession.getData(), getParent());
-    _theProperties.addTabPanel("Tote", true, _theTote.getPanel());
+       Debrief.GUI.Tote.AWT.AWTTote(_theProperties1, theSession.getData(), getParent());
+    _theProperties1.addTabPanel("Tote", true, _theTote.getPanel());
 
     final Debrief.GUI.Tote.Painters.TotePainter sp
       = new Debrief.GUI.Tote.Painters.SnailPainter(_theChart,
@@ -204,7 +204,7 @@ public final class AWTAnalysisView extends AnalysisView {
 		pm.addPainter(rp);
 		pm.setCurrentListener(tp);
 
-    _theStatusBar = new MWC.GUI.AWT.AWTStatusBar(_theProperties, getParent());
+    _theStatusBar = new MWC.GUI.AWT.AWTStatusBar(_theProperties1, getParent());
 
     // and configure the tote
     final Label cursorPos = new Label("000 00 00.00 N 000 00 00.00W");
@@ -212,9 +212,9 @@ public final class AWTAnalysisView extends AnalysisView {
     _theChart.addCursorMovedListener(new AWTCursorPosition(_theChart, cursorPos));
 
     // inform the parent of the components
-    setToolbar(_theToolbar);
+    setToolbar(_theToolbar1);
     setChart(_theChart);
-    setProperties(_theProperties);
+    setProperties(_theProperties1);
     setTote(_theTote);
     setStatusBar(_theStatusBar);
 
@@ -241,12 +241,12 @@ public final class AWTAnalysisView extends AnalysisView {
                             0.1f));
 
 
-    _theInfoPanel.add(_theToolbar,
+    _theInfoPanel.add(_theToolbar1,
                       new PaneConstraints("toolbar",
                                           "",
                                           PaneConstraints.ROOT,
                                           1.0f));
-    _theInfoPanel.add(_theProperties,
+    _theInfoPanel.add(_theProperties1,
                       new PaneConstraints("properties",
                                           "toolbar",
                                           PaneConstraints.BOTTOM,

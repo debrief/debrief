@@ -7,9 +7,13 @@ import MWC.GUI.*;
 import MWC.GenericData.*;
 
 /** Represents a single section of coastline.*/
-public class CoastSegment extends Vector implements Plottable, Serializable
+public class CoastSegment extends Vector<WorldLocation> implements Plottable, Serializable
 {
-  WorldArea myArea;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	WorldArea myArea;
 
   public CoastSegment(){
     super(0,1);
@@ -25,7 +29,7 @@ public class CoastSegment extends Vector implements Plottable, Serializable
 
   }
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());

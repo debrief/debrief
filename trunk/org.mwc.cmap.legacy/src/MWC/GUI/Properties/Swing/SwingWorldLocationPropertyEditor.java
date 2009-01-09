@@ -73,12 +73,15 @@ package MWC.GUI.Properties.Swing;
 //
 
 
-import java.beans.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import javax.swing.*;
-import java.awt.event.*;
-import MWC.GUI.Properties.*;
+import java.awt.event.ActionEvent;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import MWC.GUI.PlainChart;
+import MWC.GUI.Properties.WorldLocationPropertyEditor;
+import MWC.GenericData.WorldLocation;
 
 public class SwingWorldLocationPropertyEditor extends
 					WorldLocationPropertyEditor

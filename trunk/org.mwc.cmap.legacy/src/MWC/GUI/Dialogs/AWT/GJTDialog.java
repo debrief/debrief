@@ -4,6 +4,10 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class GJTDialog extends Dialog {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected DialogClient client;
 	protected boolean      centered;
 	public void setVisible(boolean visible) {

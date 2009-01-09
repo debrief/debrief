@@ -57,7 +57,12 @@ import com.jrefinery.data.DefaultMeterDataset;
  */
 public class JThermometer extends JPanel {
 
-    /** The dataset. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The dataset. */
     private DefaultMeterDataset data;
 
     /** The chart. */

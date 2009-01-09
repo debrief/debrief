@@ -116,10 +116,10 @@ public final class CreateBuoyPattern extends PlainTool
   {
     /** the panel we are going to show the initial editor in
      */
-    final PropertiesPanel _thePanel;
+    final PropertiesPanel _thePanel1;
     final Layers _theLayers;
-    final MWC.GUI.PlainChart _theChart;
-    final BuoyPatternDirector _theDirector;
+    final MWC.GUI.PlainChart _theChart1;
+    final BuoyPatternDirector _theDirector1;
 
     PatternBuilderType _myBuilder;
 
@@ -128,9 +128,9 @@ public final class CreateBuoyPattern extends PlainTool
                                MWC.GUI.PlainChart theChart,
                                BuoyPatternDirector theDirector)
     {
-      _thePanel = thePanel;
-      _theChart = theChart;
-      _theDirector = theDirector;
+      _thePanel1 = thePanel;
+      _theChart1 = theChart;
+      _theDirector1 = theDirector;
       _theLayers = theLayers;
     }
 
@@ -173,7 +173,7 @@ public final class CreateBuoyPattern extends PlainTool
     public final void execute()
     {
       // find the centre of the plot
-      WorldArea wa = _theChart.getDataArea();
+      WorldArea wa = _theChart1.getDataArea();
 
       // have we actually got data?
       if(wa == null)
@@ -197,20 +197,20 @@ public final class CreateBuoyPattern extends PlainTool
 
       // create the pattern builder, informing it of the Layers object which
       // it is to insert itself into
-      _myBuilder = _theDirector.createBuilder(centre,
+      _myBuilder = _theDirector1.createBuilder(centre,
                                               selection,
-                                              _thePanel,
+                                              _thePanel1,
                                               _theLayers);
 
       // pass the pattern builder to the property editor
-      _thePanel.addConstructor(_myBuilder.getInfo(), null);
+      _thePanel1.addConstructor(_myBuilder.getInfo(), null);
 
       // finished.
     }
   }
 
 
-  private String getChoice()
+  String getChoice()
   {
     Object[] opts = _theDirector.getPatterns();
     String res = (String)javax.swing.JOptionPane.showInputDialog(null,

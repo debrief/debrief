@@ -88,11 +88,11 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
    * calculate course and speed from last point, and the time of
    * next valid point).
    */
-  private Hashtable _lastPoints = null;
+  private Hashtable<String, Fix> _lastPoints = null;
 
   /** the indexed list of colours we are using
    */
-  private Vector colors = null;
+  private Vector<Color> colors = null;
 
   // keep track of how many tracks have been read in (so that we can
   // set unique colours).
@@ -136,7 +136,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
 
     // create a list of colours
     if(colors == null){
-      colors = new Vector(0,1);
+      colors = new Vector<Color>(0,1);
       colors.addElement(Color.white);
       colors.addElement(Color.blue);
       colors.addElement(Color.green);
@@ -285,7 +285,7 @@ final class ImportPMRF extends MWC.Utilities.ReaderWriter.PlainImporterBase
     // insert/retrieve the points in the readLine method
     if(_lastPoints != null)
       _lastPoints.clear();
-    _lastPoints = new Hashtable();
+    _lastPoints = new Hashtable<String, Fix>();
 
     // we initialise the importer once we have opened the file,
     // because we extract the date

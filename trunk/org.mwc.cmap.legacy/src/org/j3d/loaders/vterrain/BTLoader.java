@@ -10,8 +10,12 @@
 package org.j3d.loaders.vterrain;
 
 // Standard imports
-import java.io.*;
-
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
@@ -20,19 +24,16 @@ import javax.media.j3d.BranchGroup;
 import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Shape3D;
 import javax.media.j3d.TriangleStripArray;
-
 import javax.vecmath.Point2d;
 
-import com.sun.j3d.loaders.LoaderBase;
-import com.sun.j3d.loaders.Scene;
-import com.sun.j3d.loaders.SceneBase;
-import com.sun.j3d.loaders.IncorrectFormatException;
-import com.sun.j3d.loaders.ParsingErrorException;
-
-// Application specific imports
 import org.j3d.geom.GeometryData;
 import org.j3d.geom.terrain.ElevationGridGenerator;
 import org.j3d.loaders.HeightMapLoader;
+
+import com.sun.j3d.loaders.IncorrectFormatException;
+import com.sun.j3d.loaders.ParsingErrorException;
+import com.sun.j3d.loaders.Scene;
+import com.sun.j3d.loaders.SceneBase;
 
 /**
  * Loader for the VTerrain Project's BT file format.
@@ -175,7 +176,8 @@ public class BTLoader extends HeightMapLoader
      *    understands
      * @throws ParsingErrorException An error parsing the file
      */
-    private Scene load()
+    @SuppressWarnings("deprecation")
+		private Scene load()
         throws IncorrectFormatException,
                ParsingErrorException
     {

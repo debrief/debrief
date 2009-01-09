@@ -9,6 +9,7 @@ package MWC.Utilities.ReaderWriter.XML.Features;
  * @version 1.0
  */
 
+import MWC.GUI.Editable;
 import MWC.GUI.VPF.FeaturePainter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import org.w3c.dom.Element;
@@ -18,11 +19,11 @@ abstract public class VPFCoverageHandler extends MWCXMLReader
 
   private static final String _myType = "vpf_coverage";
 
-  private boolean _isVisible;
-  private String _description;
-  private String _type;
+  boolean _isVisible;
+  String _description;
+  String _type;
 
-  private java.util.Vector _currentFeatures = null;
+  private java.util.Vector<FeaturePainter> _currentFeatures = null;
 
   public VPFCoverageHandler()
   {
@@ -71,7 +72,7 @@ abstract public class VPFCoverageHandler extends MWCXMLReader
 
     // has the list of features been initialised?
     if (_currentFeatures == null)
-      _currentFeatures = new java.util.Vector(0, 1);
+      _currentFeatures = new java.util.Vector<FeaturePainter>(0, 1);
 
     // and add to our list of features
     _currentFeatures.add(fp);
@@ -80,7 +81,7 @@ abstract public class VPFCoverageHandler extends MWCXMLReader
 
   public void elementClosed()
   {
-    java.util.Enumeration enumer = null;
+    java.util.Enumeration<FeaturePainter> enumer = null;
     if (_currentFeatures != null)
     {
       enumer = _currentFeatures.elements();
@@ -93,7 +94,7 @@ abstract public class VPFCoverageHandler extends MWCXMLReader
     _type = null;
   }
 
-  abstract public void addCoverage(String type, String description, boolean visible, java.util.Enumeration features);
+  abstract public void addCoverage(String type, String description, boolean visible, java.util.Enumeration<FeaturePainter> features);
 
 
   public static void exportThisCoverage(MWC.GUI.Plottable plottable, org.w3c.dom.Element parent,
@@ -113,7 +114,7 @@ abstract public class VPFCoverageHandler extends MWCXMLReader
     coverage.setAttribute("Description", cl.getName());
 
     // do the features
-    java.util.Enumeration enumer = cl.elements();
+    java.util.Enumeration<Editable> enumer = cl.elements();
     while (enumer.hasMoreElements())
     {
       FeaturePainter fp = (FeaturePainter) enumer.nextElement();

@@ -1,10 +1,14 @@
 package MWC.GUI.Properties.Swing;
 
-import javax.swing.*; 
-import javax.swing.event.*; 
-import javax.swing.table.*;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
-public class TableModelDecorator extends AbstractTableModel { //implements TableModel {
+public class TableModelDecorator extends AbstractTableModel { /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+//implements TableModel {
 	protected TableModel model;
 
 	public TableModelDecorator(TableModel model) {
@@ -22,7 +26,7 @@ public class TableModelDecorator extends AbstractTableModel { //implements Table
 	public String getColumnName(int columnIndex) {
 		return model.getColumnName(columnIndex);
 	}
-	public Class getColumnClass(int columnIndex) {
+	public Class<?> getColumnClass(int columnIndex) {
 		return model.getColumnClass(columnIndex);
 	}
 	public boolean isCellEditable(int rowIndex, int columnIndex) {

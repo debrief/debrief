@@ -41,11 +41,9 @@ public class  Shell
     private Shape3D shell;
     public QuadArray shellGeometry;
     private float[] qverts;
-    private float x, y, z, theta, t, previousx, previousz,
-        calct, rlower, rupper, num, mag, x1, x2, x3,
+    private float mag, x1, x2, x3,
         x4, y1, y2, y3, y4,
         z1, z2, z3, z4, xn, yn, zn;
-    private int half, numcirc, upcount = 1;
     private int vertCount = 0;
     private int normalcount = 0;
     private Vector3f[] normals;
@@ -87,7 +85,6 @@ public class  Shell
         }
         int viter = strips;
 
-        int counter = 1;
         float vmin = 0.1f;
         float vmax = (float) (2*Math.PI);
         float umin = 0.0f;
@@ -98,9 +95,6 @@ public class  Shell
         float b = 1.0f;
         float c = 0.1f;
         float n = 2.0f;
-
-        float r, xx, yy, zz, dx, dy, dz;
-        Vector3f vfa, qn, vfb, qvn, ww;
 
         qverts = new float[8*(uiter+1)*viter*12];
 
@@ -184,8 +178,6 @@ public class  Shell
             vv = vv + iv;
         }
         // End Algorithm
-
-        int lenMaker = qverts.length;
 
         //position the shell strip corectly
         for (int j=0; j < vertCount; j = j+3)

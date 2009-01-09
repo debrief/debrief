@@ -13,9 +13,10 @@
 package org.j3d.util;
 
 // Standard imports
-import java.awt.image.*;
-
-import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ImageConsumer;
+import java.awt.image.WritableRaster;
 import java.util.Hashtable;
 
 // Application specific imports
@@ -37,7 +38,7 @@ class ImageGenerator implements ImageConsumer
     private Object holder;
 
     private ColorModel colorModel;
-    private Hashtable properties;
+    private Hashtable<?,?> properties;
     private WritableRaster raster;
     private int width;
     private int height;
@@ -174,7 +175,8 @@ class ImageGenerator implements ImageConsumer
      *
      * @param props The map of properties for this image
      */
-    public void setProperties(Hashtable props)
+    @SuppressWarnings("unchecked")
+		public void setProperties(Hashtable props)
     {
         properties = props;
         createImage();

@@ -82,9 +82,9 @@ public abstract class Particle
        newPosition.set( this.position );
    }
 
-   public void getPreviousPosition( Tuple3d position )
+   public void getPreviousPosition( Tuple3d position1 )
    {
-       position.set( previousPosition );
+       position1.set( previousPosition );
    }
 
    public double getPositionX()

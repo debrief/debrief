@@ -48,7 +48,12 @@ public class NavigationToolbar extends JPanel
 {
     // Constants for images
 
-    /** The name of the file for the pan cursor image */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The name of the file for the pan cursor image */
     private static final String PAN_BUTTON = "images/navigation/ButtonPan.gif";
 
     /** The name of the file for the tilt cursor image */

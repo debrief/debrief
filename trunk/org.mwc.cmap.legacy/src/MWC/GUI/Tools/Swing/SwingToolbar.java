@@ -77,9 +77,9 @@
 package MWC.GUI.Tools.Swing;
 
 import javax.swing.*;
+
 import java.awt.event.*;
 import java.util.*;
-import java.awt.*;
 import MWC.GUI.*;
 
 /** implementation of toolbar using Swing controls
@@ -90,9 +90,14 @@ public class SwingToolbar extends JToolBar implements Toolbar {
   // member objects
   /////////////////////////////////////////////////////////
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** keep track of the button groups we are creating
 	 */
-	Dictionary _theGroups;
+	Dictionary<String, ButtonGroup> _theGroups;
 
   /** the name of this toolbar - used for when it's dragged out
    */
@@ -118,7 +123,7 @@ public class SwingToolbar extends JToolBar implements Toolbar {
 
 		/** get ready to store any button groups we have to create
 		 */
-		_theGroups = new Hashtable();
+		_theGroups = new Hashtable<String, ButtonGroup>();
 
     // store the name
     _myName = name;

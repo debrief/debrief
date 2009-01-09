@@ -66,7 +66,7 @@ public interface ToolParent{
   public void restoreCursor();
   public void addActionToBuffer(Action theAction);
   public String getProperty(String name);
-  public java.util.Map getPropertiesLike(String pattern);
+  public java.util.Map<String, String> getPropertiesLike(String pattern);
   public void setProperty(String name, String value);
   public void logError(int status, String text, Exception e);
   

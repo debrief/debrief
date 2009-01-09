@@ -563,19 +563,6 @@ public class TorusGenerator extends GeometryGenerator
     }
 
     /**
-     * Generate a new set of points for a triangle fan array. Each facet on the
-     * side of the cone is a single fan, but the shape is one big fan.
-     *
-     * @param data The data to shape the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void triangleFans(GeometryData data)
-        throws InvalidArraySizeException
-    {
-    }
-
-    /**
      * Generate a new set of points for an indexed triangle strip array. We
      * build the strip from the existing points, and there's no need to
      * re-order the points for the indexes. The strips go around the major
@@ -667,36 +654,6 @@ public class TorusGenerator extends GeometryGenerator
             indexes[count++] = k_facet + outerFacetCount;
         }
     }
-
-    /**
-     * Generate a new set of points for an indexed triangle fan array. We
-     * build the strip from the existing points, and there's no need to
-     * re-order the points for the indexes this time. As for the simple fan,
-     * we use the first index, the lower-right corner as the apex for the fan.
-     *
-     * @param data The data to shape the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void indexedTriangleFans(GeometryData data)
-        throws InvalidArraySizeException
-    {
-        generateIndexedCoordinates(data);
-
-        if((data.geometryComponents & GeometryData.NORMAL_DATA) != 0)
-            generateIndexedNormals(data);
-
-        if((data.geometryComponents & GeometryData.TEXTURE_2D_DATA) != 0)
-            generateTriTexture2D(data);
-        else if((data.geometryComponents & GeometryData.TEXTURE_3D_DATA) != 0)
-            generateTriTexture3D(data);
-
-        // now let's do the index list
-    }
-
-    //------------------------------------------------------------------------
-    // Coordinate generation routines
-    //------------------------------------------------------------------------
 
     /**
      * Generates new set of points suitable for use in an unindexed array. Each
@@ -1021,7 +978,6 @@ public class TorusGenerator extends GeometryGenerator
                                                 data.coordinates.length,
                                                 vtx_cnt * 3);
 
-        float[] coords = data.coordinates;
         data.vertexCount = vtx_cnt;
 
         generateShape();
@@ -1062,9 +1018,7 @@ public class TorusGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_offset = 0;
-        int vtx_in_loop = outerFacetCount * 4;
         int i, k;
 
         // Wonder if we can do any loop unravelling here?
@@ -1235,9 +1189,7 @@ public class TorusGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_offset = 0;
-        int vtx_in_loop = outerFacetCount * 4;
         int i, k;
 
         // Wonder if we can do any loop unravelling here?
@@ -1357,9 +1309,7 @@ public class TorusGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_offset = 0;
-        int vtx_in_loop = outerFacetCount * 4;
         int i, k;
 
         // Wonder if we can do any loop unravelling here?
@@ -1445,7 +1395,6 @@ public class TorusGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_count = 0;
         int i, k;
 
@@ -1509,8 +1458,6 @@ public class TorusGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("2D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     /**
@@ -1535,8 +1482,6 @@ public class TorusGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("3D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
 

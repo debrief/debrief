@@ -17,8 +17,6 @@ import MWC.Utilities.ReaderWriter.XML.*;
 abstract public class ShortLocationHandler extends MWCXMLReader
 {
 
-  private MWC.GUI.Layer _theLayer;
-
   private double _lat;
   private double _long;
   private double _depth;

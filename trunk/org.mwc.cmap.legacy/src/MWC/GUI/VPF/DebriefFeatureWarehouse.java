@@ -46,12 +46,20 @@ package MWC.GUI.VPF;
 
 import java.awt.Polygon;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Hashtable;
+import java.util.Vector;
 
 import MWC.GenericData.WorldArea;
 
 import com.bbn.openmap.LatLonPoint;
-import com.bbn.openmap.layer.vpf.*;
+import com.bbn.openmap.layer.vpf.AreaTable;
+import com.bbn.openmap.layer.vpf.CoordFloatString;
+import com.bbn.openmap.layer.vpf.CoverageTable;
+import com.bbn.openmap.layer.vpf.EdgeTable;
+import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
+import com.bbn.openmap.layer.vpf.TextTable;
+import com.bbn.openmap.layer.vpf.VPFFeatureGraphicWarehouse;
 
 
 /**
@@ -73,12 +81,12 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
   /**
    * the set of features which we are currently plotting to
    */
-  private Hashtable _currentFeatures;
+  private Hashtable<String, FeaturePainter> _currentFeatures;
 
   /**
    * the vector of features names we create for each new coverage
    */
-  private Vector _currentFeatureList = null;
+  private Vector<String> _currentFeatureList = null;
 
   /**
    * a working variable to stop us excessively creating new objects
@@ -149,7 +157,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
    *
    * @param theFeatures the set of features for this coverage
    */
-  public void setCurrentFeatures(Hashtable theFeatures)
+  public void setCurrentFeatures(Hashtable<String, FeaturePainter> theFeatures)
   {
     _currentFeatures = theFeatures;
     _currentFeatureList = null;
@@ -160,15 +168,15 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
    * Returned with the area features first, then text features, then
    * line features.
    */
-  public Vector getFeatures()
+  public Vector<String> getFeatures()
   {
     if (_currentFeatureList == null)
     {
-      _currentFeatureList = new Vector();
+      _currentFeatureList = new Vector<String>();
 
       if (_currentFeatures != null)
       {
-        Enumeration enumer = _currentFeatures.elements();
+        Enumeration<FeaturePainter> enumer = _currentFeatures.elements();
         while (enumer.hasMoreElements())
         {
           FeaturePainter fp = (FeaturePainter) enumer.nextElement();
@@ -232,7 +240,7 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
   protected java.awt.Color getColor(String featureType)
   {
     java.awt.Color res = null;
-    Hashtable hash = this._currentFeatures;
+    Hashtable<String, FeaturePainter> hash = this._currentFeatures;
     FeaturePainter thisFeature = null;
     if (hash != null)
     {
@@ -352,7 +360,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
    * We can't build up the coastline into a single large polyline, since
    * it jumps around a little!
    */
-  public void createEdge(CoverageTable c, EdgeTable edgetable,
+  @SuppressWarnings("unchecked")
+	public void createEdge(CoverageTable c, EdgeTable edgetable,
                          Vector edgevec,
                          LatLonPoint ll1,
                          LatLonPoint ll2,
@@ -435,7 +444,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
    * @param coords      list of coordinates which make up this edge
    * @param featureType the type for this feature
    */
-  public void createEdge(CoverageTable c, EdgeTable edgetable,
+  @SuppressWarnings("unchecked")
+	public void createEdge(CoverageTable c, EdgeTable edgetable,
                          Vector edgevec,
                          LatLonPoint ll1,
                          LatLonPoint ll2,
@@ -501,7 +511,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
   }
 
 
-  public void createText(CoverageTable c, TextTable texttable,
+  @SuppressWarnings("unchecked")
+	public void createText(CoverageTable c, TextTable texttable,
                          Vector textvec,
                          float latitude,
                          float longitude,
@@ -538,7 +549,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
   }
 
 
-  public void createText(CoverageTable c, TextTable texttable,
+  @SuppressWarnings("unchecked")
+	public void createText(CoverageTable c, TextTable texttable,
                          Vector textvec,
                          float latitude,
                          float longitude,
@@ -566,7 +578,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
   /**
    *
    */
-  public void createArea(CoverageTable covtable, AreaTable areatable,
+  @SuppressWarnings("unchecked")
+	public void createArea(CoverageTable covtable, AreaTable areatable,
                          Vector facevec,
                          LatLonPoint ll1,
                          LatLonPoint ll2,
@@ -581,7 +594,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
   /**
    * method to convert multiple polylines into a single area
    */
-  private java.awt.Polygon extendArea(Vector ipts, int totalSize,
+  @SuppressWarnings("unchecked")
+	private java.awt.Polygon extendArea(Vector ipts, int totalSize,
                                       LatLonPoint ll1, LatLonPoint ll2,
                                       float dpplat, float dpplon,
                                       boolean doAntarcticaWorkaround,
@@ -652,7 +666,8 @@ public class DebriefFeatureWarehouse extends VPFFeatureGraphicWarehouse implemen
    * @param dpplon      parameter for createArea
    * @param featureType the type of feature we are plotting
    */
-  public void createArea(CoverageTable covtable,
+  @SuppressWarnings("unchecked")
+	public void createArea(CoverageTable covtable,
                          AreaTable areatable,
                          Vector facevec,
                          LatLonPoint ll1,

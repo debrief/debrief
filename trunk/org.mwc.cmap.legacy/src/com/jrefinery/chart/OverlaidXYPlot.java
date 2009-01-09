@@ -66,7 +66,7 @@ import com.jrefinery.data.Range;
 public class OverlaidXYPlot extends XYPlot {
 
     /** Storage for the subplot references. */
-    private List subplots;
+    private List<XYPlot> subplots;
 
     /**
      * Constructs a new overlaid XY plot.  Number axes are created for the X
@@ -101,7 +101,7 @@ public class OverlaidXYPlot extends XYPlot {
         super(null, // dataset not required for parent plot
               domain, range);
 
-        this.subplots = new java.util.ArrayList();
+        this.subplots = new java.util.ArrayList<XYPlot>();
 
     }
 
@@ -149,7 +149,7 @@ public class OverlaidXYPlot extends XYPlot {
         LegendItemCollection result = new LegendItemCollection();
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<XYPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 XYPlot plot = (XYPlot) iterator.next();
                 LegendItemCollection more = plot.getLegendItems();
@@ -175,7 +175,7 @@ public class OverlaidXYPlot extends XYPlot {
     public void render(Graphics2D g2, Rectangle2D dataArea,
                        ChartRenderingInfo info, CrosshairInfo crosshairInfo) {
 
-        Iterator iterator = subplots.iterator();
+        Iterator<XYPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             XYPlot subplot = (XYPlot) iterator.next();
             subplot.render(g2, dataArea, info, crosshairInfo);
@@ -204,7 +204,7 @@ public class OverlaidXYPlot extends XYPlot {
         Range result = null;
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<XYPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 XYPlot plot = (XYPlot) iterator.next();
                 result = Range.combine(result, plot.getHorizontalDataRange());
@@ -226,7 +226,7 @@ public class OverlaidXYPlot extends XYPlot {
         Range result = null;
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<XYPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 XYPlot plot = (XYPlot) iterator.next();
                 result = Range.combine(result, plot.getVerticalDataRange());
@@ -249,7 +249,7 @@ public class OverlaidXYPlot extends XYPlot {
 
         int result = 0;
 
-        Iterator iterator = subplots.iterator();
+        Iterator<XYPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             XYPlot subplot = (XYPlot) iterator.next();
             result = result + subplot.getSeriesCount();
@@ -266,7 +266,8 @@ public class OverlaidXYPlot extends XYPlot {
      *
      * @deprecated use getLegendItems.
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
 
         List result = new java.util.ArrayList();
 

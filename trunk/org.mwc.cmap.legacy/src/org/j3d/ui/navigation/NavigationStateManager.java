@@ -61,37 +61,37 @@ public class NavigationStateManager
 
 
     /** The canvas this handler is operating on */
-    private Canvas3D canvas;
+    Canvas3D canvas;
 
     /** Cursor used to represent the pan state */
-    private Cursor panCursor = null;
+    Cursor panCursor = null;
 
     /** Cursor used to represent the tilt state */
-    private Cursor tiltCursor = null;
+    Cursor tiltCursor = null;
 
     /** Cursor used to represent the walk state */
-    private Cursor walkCursor = null;
+    Cursor walkCursor = null;
 
     /** Cursor used to represent the fly state */
-    private Cursor flyCursor = null;
+    Cursor flyCursor = null;
 
     /** Cursor used to represent the examine state */
-    private Cursor examineCursor = null;
+    Cursor examineCursor = null;
 
     /** The last used cursor */
-    private Cursor previousCursor;
+    Cursor previousCursor;
 
     /** The current navigation state either set from us or externally */
-    private int navigationState;
+    int navigationState;
 
     /** The mouse view handler for mouse events */
-    private NavigationHandler mouseHandler;
+    NavigationHandler mouseHandler;
 
     /** The mouse view handler for mouse events */
-    private NavigationToolbar toolbarHandler;
+    NavigationToolbar toolbarHandler;
 
     /** An observer for navigation state change information */
-    private NavigationStateListener navigationListener;
+    NavigationStateListener navigationListener;
 
     //----------------------------------------------------------
     // Inner class definitions
@@ -107,7 +107,7 @@ public class NavigationStateManager
      * <p>
      * All events are passed from here to the canvas and the mouse handler.
      */
-    private class ToolbarHandler implements NavigationStateListener
+    protected class ToolbarHandler implements NavigationStateListener
     {
         /**
          * Notification that the panning state has changed to the new state.
@@ -175,7 +175,7 @@ public class NavigationStateManager
      * <p>
      * All events are passed from here to the canvas and the mouse handler.
      */
-    private class MouseHandler implements NavigationStateListener
+    protected class MouseHandler implements NavigationStateListener
     {
         /**
          * Notification that the panning state has changed to the new state.

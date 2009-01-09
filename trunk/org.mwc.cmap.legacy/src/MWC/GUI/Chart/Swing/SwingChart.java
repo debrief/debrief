@@ -135,7 +135,7 @@ public class SwingChart extends PlainChart implements Serializable
   /**
    * our list of layered images.
    */
-  private HashMap _myLayers = new HashMap();
+  private HashMap<Layer, Image> _myLayers = new HashMap<Layer, Image>();
 
   /**
    * the data area we last plotted (so that we know when a full layered repaint is needed).

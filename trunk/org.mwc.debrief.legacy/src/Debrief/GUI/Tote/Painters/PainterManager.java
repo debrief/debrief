@@ -13,7 +13,7 @@ public final class PainterManager implements StepperListener, Editable
   ///////////////////////////////////
   // member variables
   //////////////////////////////////
-	private static Vector _thePainters;
+	private static Vector<StepperListener> _thePainters;
 	private StepperListener _current;
   private java.beans.PropertyChangeSupport _pSupport;
   transient private MWC.GUI.Editable.EditorType  _myEditor = null;
@@ -22,7 +22,7 @@ public final class PainterManager implements StepperListener, Editable
   //////////////////////////////////
 	public PainterManager(StepControl stepper)
 	{
-    _thePainters = new Vector(0,1);
+    _thePainters = new Vector<StepperListener>(0,1);
 
     _pSupport = new PropertyChangeSupport(this);
 
@@ -91,7 +91,7 @@ public final class PainterManager implements StepperListener, Editable
 
 	public final void setDisplay(final String listener)
 	{
-		final Enumeration iter = _thePainters.elements();
+		final Enumeration<StepperListener> iter = _thePainters.elements();
 		while(iter.hasMoreElements())
 		{
 			final StepperListener l = (StepperListener) iter.nextElement();
@@ -124,8 +124,8 @@ public final class PainterManager implements StepperListener, Editable
 	public static String[] getListeners()
 	{
 		String[] strings = null;
-		final Vector res = new Vector(0,1);
-		final Enumeration iter = _thePainters.elements();
+		final Vector<String> res = new Vector<String>(0,1);
+		final Enumeration<StepperListener> iter = _thePainters.elements();
 		while(iter.hasMoreElements())
 		{
 			final StepperListener l = (StepperListener) iter.nextElement();

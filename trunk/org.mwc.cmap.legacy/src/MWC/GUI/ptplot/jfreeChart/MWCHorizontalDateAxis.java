@@ -203,7 +203,7 @@ public class MWCHorizontalDateAxis extends MWCDateAxis implements HorizontalAxis
     float maxY = (float)plotArea.getMaxY();
 
 
-    Iterator iterator = ticks.iterator();
+    Iterator<Tick> iterator = ticks.iterator();
     while (iterator.hasNext())
     {
       Tick tick = (Tick)iterator.next();
@@ -226,10 +226,10 @@ public class MWCHorizontalDateAxis extends MWCDateAxis implements HorizontalAxis
   /**
    * Returns the height required to draw the axis in the specified draw area.
    * @param g2 The graphics device;
-   * @param plot The plot that the axis belongs to;
+   * @param plot1 The plot that the axis belongs to;
    * @param drawArea The area within which the plot should be drawn.
    */
-  public double reserveHeight(Graphics2D g2, PlotBox plot, Rectangle2D drawArea) {
+  public double reserveHeight(Graphics2D g2, PlotBox plot1, Rectangle2D drawArea) {
 //
 //    // calculate the height of the axis label...
 //    double labelHeight = 0.0;
@@ -254,7 +254,7 @@ public class MWCHorizontalDateAxis extends MWCDateAxis implements HorizontalAxis
   /**
    * Returns area in which the axis will be displayed.
    */
-  public Rectangle2D reserveAxisArea(Graphics2D g2, PlotBox plot, Rectangle2D drawArea,
+  public Rectangle2D reserveAxisArea(Graphics2D g2, PlotBox plot1, Rectangle2D drawArea,
                                      double reservedWidth) {
 //
 //    // calculate the height of the axis label...
@@ -294,12 +294,12 @@ public class MWCHorizontalDateAxis extends MWCDateAxis implements HorizontalAxis
       this.autoTickIndex=index;
     }
     else {
-      this.autoTickIndex=Math.min(index+1, this.standardTickUnitMagnitudes.length);
+      this.autoTickIndex=Math.min(index+1, MWCDateAxis.standardTickUnitMagnitudes.length);
     }
 
-    this.tickLabelFormatter.applyPattern(this.standardTickFormats[autoTickIndex]);
-    this.tickUnit = new DateUnit(this.standardTickUnits[autoTickIndex][0],
-                                 this.standardTickUnits[autoTickIndex][1]);
+    this.tickLabelFormatter.applyPattern(MWCDateAxis.standardTickFormats[autoTickIndex]);
+    this.tickUnit = new DateUnit(MWCDateAxis.standardTickUnits[autoTickIndex][0],
+                                 MWCDateAxis.standardTickUnits[autoTickIndex][1]);
 
     // there are two special cases to handle
     // (1) the highest index doesn't fit, but there is no "next one up" to use;
@@ -315,15 +315,13 @@ public class MWCHorizontalDateAxis extends MWCDateAxis implements HorizontalAxis
 
     // generate one label at a time until all are done OR there is an overlap (so fit==FALSE)
     SimpleDateFormat dateFormatter = new SimpleDateFormat(standardTickFormats[index]);
-    DateUnit units = new DateUnit(this.standardTickUnits[index][0],
-                                  this.standardTickUnits[index][1]);
+    DateUnit units = new DateUnit(MWCDateAxis.standardTickUnits[index][0],
+                                  MWCDateAxis.standardTickUnits[index][1]);
     double lastLabelExtent = Double.NEGATIVE_INFINITY;
     double labelExtent;
     boolean labelsFit = true;
     Date tickDate = this.calculateLowestVisibleTickValue(units);
 
-    String thisD = dateFormatter.format(this.maximumDate);
-    String tickD = dateFormatter.format(tickDate);
     int ct = 0;
 
 

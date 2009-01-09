@@ -42,7 +42,12 @@ import MWC.GUI.*;
 
 public class FrigateSym extends PlainSymbol {
 
-  public void getMetafile()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void getMetafile()
   {  }
 
   public java.awt.Dimension getBounds(){

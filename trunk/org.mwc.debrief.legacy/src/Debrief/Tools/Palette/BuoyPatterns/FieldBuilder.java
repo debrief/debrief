@@ -88,9 +88,9 @@ public final class FieldBuilder extends PatternBuilderType
 
   /** the enumerated types used for the offset
    */
-  final private static Integer LEFT = new Integer(0);
-  final private static Integer RIGHT = new Integer(1);
-  final private static Integer CENTRE = new Integer(2);
+  final static Integer LEFT = new Integer(0);
+  final static Integer RIGHT = new Integer(1);
+  final static Integer CENTRE = new Integer(2);
 
   //////////////////////////////////////////
   // Constructor

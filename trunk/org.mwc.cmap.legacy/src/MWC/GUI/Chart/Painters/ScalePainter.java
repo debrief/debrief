@@ -184,7 +184,7 @@ public class ScalePainter implements Plottable, Serializable
   /**
    * the list of units types we know about (we don't remember this when serialising, we create it afresh)
    */
-  private static transient java.util.HashMap _unitsList;
+  private static transient java.util.HashMap<String, UnitsConverter> _unitsList;
 
   /**
    * the font we use for the D DifarSymbols
@@ -225,7 +225,7 @@ public class ScalePainter implements Plottable, Serializable
   		return;
   	
     // create the list itself
-    _unitsList = new java.util.HashMap();
+    _unitsList = new java.util.HashMap<String, UnitsConverter>();
 
     // and put in the converters
     _unitsList.put(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS, new UnitsConverter(MWC.GUI.Properties.UnitsPropertyEditor.KM_UNITS)
@@ -875,7 +875,7 @@ public class ScalePainter implements Plottable, Serializable
     }
   }
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());

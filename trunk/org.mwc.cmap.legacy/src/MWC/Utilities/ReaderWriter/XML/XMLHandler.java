@@ -17,15 +17,16 @@ import java.util.Vector;
 /**
  * @author IAN MAYO
  */
+@SuppressWarnings("deprecation")
 public class XMLHandler extends HandlerBase
 {
 
-  protected Vector _myHandlers;
+  protected Vector<XMLHandler> _myHandlers;
   private String _myType;
   protected Parser _theParser;
   protected DocumentHandler _theParent;
 
-  protected Vector _myAttributeHandlers;
+  protected Vector<HandleAttribute> _myAttributeHandlers;
 
   // Buffer for collecting data from
   // the "characters" SAX event.
@@ -41,7 +42,7 @@ public class XMLHandler extends HandlerBase
    * number formatter used by our "writeThis" methods
    */
   static private java.text.DecimalFormat shortFormat = new java.text.DecimalFormat("0.000");
-  static private java.text.DecimalFormat longFormat = new java.text.DecimalFormat("0.0000000");
+  static java.text.DecimalFormat longFormat = new java.text.DecimalFormat("0.0000000");
 
   //////////////////////////////////////////////////
   // constructor
@@ -49,8 +50,8 @@ public class XMLHandler extends HandlerBase
   public XMLHandler(String myType)
   {
     _myType = myType;
-    _myHandlers = new Vector(0, 1);
-    _myAttributeHandlers = new Vector(0, 1);
+    _myHandlers = new Vector<XMLHandler>(0, 1);
+    _myAttributeHandlers = new Vector<HandleAttribute>(0, 1);
     RNdateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
   }
 
@@ -61,7 +62,7 @@ public class XMLHandler extends HandlerBase
   {
 
     // go through our list of handlers
-    Enumeration enumer = _myAttributeHandlers.elements();
+    Enumeration<HandleAttribute> enumer = _myAttributeHandlers.elements();
     while (enumer.hasMoreElements())
     {
       HandleAttribute ha = (HandleAttribute) enumer.nextElement();
@@ -163,7 +164,7 @@ public class XMLHandler extends HandlerBase
     // see if we have a handler for this object
       if (_myHandlers != null)
       {
-        Enumeration enumer = _myHandlers.elements();
+        Enumeration<XMLHandler> enumer = _myHandlers.elements();
         while (enumer.hasMoreElements())
         {
           XMLHandler hand = (XMLHandler) enumer.nextElement();

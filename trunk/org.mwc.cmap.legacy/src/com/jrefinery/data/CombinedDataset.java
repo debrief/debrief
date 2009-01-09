@@ -1,5 +1,5 @@
 /* ============================================
- * JFreeChart : a free Java chart class library
+// * JFreeChart : a free Java chart class library
  * ============================================
  *
  * Project Info:  http://www.object-refinery.com/jfreechart/index.html
@@ -61,7 +61,7 @@ public class CombinedDataset extends AbstractSeriesDataset
                                         CombinationDataset {
 
     /** Storage for the datasets we combine. */
-    private List datasetInfo = new java.util.ArrayList();
+    private List<DatasetInfo> datasetInfo = new java.util.ArrayList<DatasetInfo>();
 
     /**
      * Default constructor for an empty combination.
@@ -496,10 +496,10 @@ public class CombinedDataset extends AbstractSeriesDataset
     private class DatasetInfo {
 
         /** The dataset. */
-        private SeriesDataset data;
+        SeriesDataset data;
 
         /** The series. */
-        private int series;
+        int series;
 
         /**
          * Creates a new dataset info record.

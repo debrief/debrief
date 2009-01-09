@@ -60,11 +60,17 @@ import com.jrefinery.ui.RefineryUtilities;
 public class VerticalBarChartDemo2 extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new demo.
      *
      * @param title  the frame title.
      */
-    public VerticalBarChartDemo2(String title) {
+    @SuppressWarnings("deprecation")
+		public VerticalBarChartDemo2(String title) {
 
         super(title);
 

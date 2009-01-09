@@ -17,7 +17,7 @@ import MWC.Utilities.ReaderWriter.XML.Util.PropertyHandler;
 abstract public class ComponentHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private GUIHandler.ComponentDetails details = new GUIHandler.ComponentDetails();
+  GUIHandler.ComponentDetails details = new GUIHandler.ComponentDetails();
 
   public ComponentHandler()
   {
@@ -48,7 +48,7 @@ abstract public class ComponentHandler extends MWC.Utilities.ReaderWriter.XML.MW
   }
 
 
-  abstract public void addComponent(GUIHandler.ComponentDetails details);
+  abstract public void addComponent(GUIHandler.ComponentDetails details1);
 
   // the exporter for this component details item
 

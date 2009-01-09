@@ -54,7 +54,8 @@ import java.util.List;
 public class XYSeries extends Series {
 
     /** The list of data pairs in the series. */
-    private List data;
+    @SuppressWarnings("unchecked")
+		private List data;
 
     /** A flag that controls whether or not duplicate x-values are allowed. */
     private boolean allowDuplicateXValues;
@@ -77,7 +78,8 @@ public class XYSeries extends Series {
      * @param name  the series name.
      * @param allowDuplicateXValues  a flag that controls whether duplicate x-values are allowed.
      */
-    public XYSeries(String name, boolean allowDuplicateXValues) {
+    @SuppressWarnings("unchecked")
+		public XYSeries(String name, boolean allowDuplicateXValues) {
         super(name);
         this.allowDuplicateXValues = allowDuplicateXValues;
         this.data = new java.util.ArrayList();
@@ -99,7 +101,8 @@ public class XYSeries extends Series {
      *
      * @throws SeriesException if there is a problem adding the data.
      */
-    public void add(XYDataPair pair) throws SeriesException {
+    @SuppressWarnings("unchecked")
+		public void add(XYDataPair pair) throws SeriesException {
 
         // check arguments...
         if (pair == null) {
@@ -262,7 +265,8 @@ public class XYSeries extends Series {
      *
      * @return A series containing a copy of this series from start until end.
      */
-    public XYSeries createCopy(int start, int end) {
+    @SuppressWarnings("unchecked")
+		public XYSeries createCopy(int start, int end) {
 
         XYSeries copy = (XYSeries) super.clone();
         //copy.listeners = new java.util.ArrayList();

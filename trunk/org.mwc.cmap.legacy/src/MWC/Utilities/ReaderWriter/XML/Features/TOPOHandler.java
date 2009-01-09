@@ -20,20 +20,20 @@ import MWC.GUI.ETOPO.ETOPO_2_Minute;
 public class TOPOHandler extends MWCXMLReader
 {
 
-  private java.awt.Color _theColor;
-  private boolean _isVisible;
+  java.awt.Color _theColor;
+  boolean _isVisible;
   private Layers _theLayers;
-  private Integer _scaleLocation;
-  private Boolean _showLand = null;
-  private String _contourDepths = null;
+  Integer _scaleLocation;
+  Boolean _showLand = null;
+  String _contourDepths = null;
 
-  private Boolean _showContours = null;
-  private Boolean _showBathy = null;
+  Boolean _showContours = null;
+  Boolean _showBathy = null;
 
 
   /** class which contains list of textual representations of scale locations
    */
-  static private ETOPOPainter.KeyLocationPropertyEditor lp
+  static ETOPOPainter.KeyLocationPropertyEditor lp
           = new ETOPOPainter.KeyLocationPropertyEditor();
 
 

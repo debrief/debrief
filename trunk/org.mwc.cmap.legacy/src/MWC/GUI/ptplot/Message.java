@@ -29,9 +29,15 @@
 
 package MWC.GUI.ptplot;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.Button;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.Panel;
+import java.awt.TextArea;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 /** A simple message display with a close button.
  *  This will eventually replaced by a class from JFC.
@@ -41,7 +47,12 @@ import java.util.*;
  */
 public class Message extends Frame {
 
-    /** Pop up a text widget with no scroll bar and close button.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Pop up a text widget with no scroll bar and close button.
      */
     public Message(String msg) {
         this(msg, null, null, 12, 40, TextArea.SCROLLBARS_NONE);

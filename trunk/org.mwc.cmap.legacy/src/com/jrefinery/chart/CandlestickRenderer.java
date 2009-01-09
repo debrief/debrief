@@ -300,12 +300,12 @@ public class CandlestickRenderer extends AbstractXYItemRenderer implements XYIte
                     maxVolume = thisVolume;
                 }
             }
-            double drawVolume = volume / (double) maxVolume;
+            double drawVolume1 = volume / (double) maxVolume;
 
             double minY = dataArea.getMinY();
             double maxY = dataArea.getMaxY();
 
-            double yyVolume = drawVolume * (maxY - minY);
+            double yyVolume = drawVolume1 * (maxY - minY);
 
             g2.setPaint(Color.gray);
             Composite originalComposite = g2.getComposite();

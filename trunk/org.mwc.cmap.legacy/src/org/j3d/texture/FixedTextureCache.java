@@ -13,11 +13,8 @@
 package org.j3d.texture;
 
 // Standard imports
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageProducer;
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 import javax.media.j3d.ImageComponent;
@@ -26,9 +23,6 @@ import javax.media.j3d.ImageComponent3D;
 import javax.media.j3d.Texture;
 import javax.media.j3d.Texture2D;
 import javax.media.j3d.Texture3D;
-
-// Application specific imports
-import org.j3d.util.ImageUtils;
 
 /**
  * A cache for texture instance management where the objects always stay in
@@ -40,16 +34,16 @@ import org.j3d.util.ImageUtils;
  */
 class FixedTextureCache extends AbstractTextureCache
 {
-    private HashMap textureMap;
-    private HashMap componentMap;
+    private HashMap<String, Texture> textureMap;
+    private HashMap<String, ImageComponent> componentMap;
 
     /**
      * Construct a new instance of the empty cache.
      */
     FixedTextureCache()
     {
-        textureMap = new HashMap();
-        componentMap = new HashMap();
+        textureMap = new HashMap<String, Texture>();
+        componentMap = new HashMap<String, ImageComponent>();
     }
 
     /**

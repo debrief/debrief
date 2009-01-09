@@ -22,10 +22,10 @@ abstract public class ArcHandler extends CircleHandler
   private final static String ARC_WIDTH = "ArcWidth";
   private final static String PLOT_SPOKES = "PlotSpokes";
 
-  private boolean _plotOrigin;
-  private double _centreBearing;
-  private double _arcWidth;
-  private boolean _plotSpokes;
+  boolean _plotOrigin;
+  double _centreBearing;
+  double _arcWidth;
+  boolean _plotSpokes;
 
   public ArcHandler()
   {

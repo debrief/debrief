@@ -58,7 +58,7 @@ final public class PlotHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     });
   }
 
-  private void addThisSession(Debrief.GUI.Frames.Session data)
+  void addThisSession(Debrief.GUI.Frames.Session data)
   {
     // tidy up the session, and add it to the application
     _parent.newSession(data);

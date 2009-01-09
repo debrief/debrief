@@ -1,8 +1,5 @@
 package MWC.Utilities.Errors.Testing;
 
-import java.util.*;
-
-import junit.framework.*;
 
 public class TestEmpty extends EmptyTestCase {
     /**
@@ -16,7 +13,7 @@ public class TestEmpty extends EmptyTestCase {
         public InnerTestEmpty (final String s) {
             super (s);
         }
-        public static final String TEST_ALL_TEST_TYPE = "UNIT";
+        public static final String TEST_ALL_TEST_TYPE1 = "UNIT";
     }
 
     public static final String TEST_ALL_TEST_TYPE = "UNIT";

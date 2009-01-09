@@ -384,7 +384,7 @@ public class VerticalCategoryPlot extends CategoryPlot implements VerticalValueP
 
             // draw the range markers, if there are any...
             if ((this.rangeMarkers != null) && (this.renderer != null)) {
-                Iterator iterator = this.rangeMarkers.iterator();
+                Iterator<Marker> iterator = this.rangeMarkers.iterator();
                 while (iterator.hasNext()) {
                     Marker marker = (Marker) iterator.next();
                     renderer.drawRangeMarker(g2, this, getRangeAxis(), marker,
@@ -407,7 +407,8 @@ public class VerticalCategoryPlot extends CategoryPlot implements VerticalValueP
      * @param backgroundPlotArea  the chart's background area.
      *
      */
-    public void render(Graphics2D g2, Rectangle2D dataArea,
+    @SuppressWarnings("unchecked")
+		public void render(Graphics2D g2, Rectangle2D dataArea,
                        ChartRenderingInfo info, Shape backgroundPlotArea) {
 
         CategoryDataset data = getCategoryDataset();

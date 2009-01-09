@@ -45,7 +45,12 @@ public class HistogramApplet extends PlotApplet {
     ///////////////////////////////////////////////////////////////////
     ////                         public methods                    ////
 
-    /** Return a string describing this applet.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Return a string describing this applet.
      *  @return A string describing the applet.
      */
     public String getAppletInfo() {

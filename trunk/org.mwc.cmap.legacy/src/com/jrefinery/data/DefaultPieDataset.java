@@ -54,20 +54,20 @@ public class DefaultPieDataset extends AbstractDataset implements PieDataset {
     /**
      * Storage for keys
      */
-    protected List keys = null;
+    protected List<Object> keys = null;
 
     /**
      * Storage for values
      */
-    protected List vals = null;
+    protected List<Number> vals = null;
 
     /**
      * Constructs a pie dataset, initially empty.
      */
     public DefaultPieDataset() {
 
-        keys = new java.util.ArrayList();
-        vals = new java.util.ArrayList();
+        keys = new java.util.ArrayList<Object>();
+        vals = new java.util.ArrayList<Number>();
 
     }
 
@@ -87,10 +87,10 @@ public class DefaultPieDataset extends AbstractDataset implements PieDataset {
      *
      * @param values  a collection of values.
      */
-    public DefaultPieDataset(Collection values) {
+    public DefaultPieDataset(Collection<Number> values) {
 
-        keys = new java.util.ArrayList(values.size());
-        vals = new java.util.ArrayList(values);
+        keys = new java.util.ArrayList<Object>(values.size());
+        vals = new java.util.ArrayList<Number>(values);
 
         for (int i = 0; i < vals.size(); i++) {
             keys.add(String.valueOf(i + 1));
@@ -103,7 +103,7 @@ public class DefaultPieDataset extends AbstractDataset implements PieDataset {
      *
      * @return the categories in the dataset.
      */
-    public List getCategories() {
+    public List<Object> getCategories() {
         return keys;
     }
 

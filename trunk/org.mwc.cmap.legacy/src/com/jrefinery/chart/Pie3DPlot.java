@@ -115,7 +115,8 @@ public class Pie3DPlot extends PiePlot {
      * @param plotArea  the area within which the plot should be drawn.
      * @param info  collects info about the drawing.
      */
-    public void draw(Graphics2D g2, Rectangle2D plotArea, ChartRenderingInfo info) {
+    @SuppressWarnings("unchecked")
+		public void draw(Graphics2D g2, Rectangle2D plotArea, ChartRenderingInfo info) {
 
         Shape savedClip = g2.getClip();
         Rectangle2D clipArea = savedClip != null
@@ -215,9 +216,8 @@ public class Pie3DPlot extends PiePlot {
         ArrayList arcList = new ArrayList();
         Arc2D.Double arc;
         Paint paint;
-        Paint outlinePaint;
+        Paint outlinePaint1;
 
-        boolean hasElement = false;
         Iterator iterator = categories.iterator();
         while (iterator.hasNext()) {
 
@@ -228,7 +228,6 @@ public class Pie3DPlot extends PiePlot {
                 arcList.add(null);
                 continue;
             }
-            hasElement = true;
             double startAngle = getStartAngle();
             int direction = getDirection();
             double angle1 = startAngle + (direction * (runningTotal * 360)) / totalValue;
@@ -281,7 +280,7 @@ public class Pie3DPlot extends PiePlot {
         // draw the bottom circle
         int xs[];
         int ys[];
-        outlinePaint = getSeriesOutlinePaint(0);
+        outlinePaint1 = getSeriesOutlinePaint(0);
         arc = new Arc2D.Double(arcX,
                                arcY + depth,
                                pieArea.getWidth(),
@@ -292,18 +291,15 @@ public class Pie3DPlot extends PiePlot {
         for (int categoryIndex = 0; categoryIndex < categoryCount; categoryIndex++) {
             arc = (Arc2D.Double) arcList.get(categoryIndex);
             paint = getSeriesPaint(categoryIndex);
-            outlinePaint = getSeriesOutlinePaint(categoryIndex);
+            outlinePaint1 = getSeriesOutlinePaint(categoryIndex);
 
             g2.setPaint(paint);
             g2.fill(arc);
-            g2.setPaint(outlinePaint);
+            g2.setPaint(outlinePaint1);
             g2.draw(arc);
             g2.setPaint(paint);
 
             Point2D p1 = arc.getStartPoint();
-
-            double x0 = arc.getCenterX();
-            double y0 = arc.getCenterY();
 
             // draw the height
             xs = new int[] {(int) arc.getCenterX(), (int) arc.getCenterX(),
@@ -313,7 +309,7 @@ public class Pie3DPlot extends PiePlot {
             Polygon polygon = new Polygon(xs, ys, 4);
             g2.setPaint(java.awt.Color.lightGray);
             g2.fill(polygon);
-            g2.setPaint(outlinePaint);
+            g2.setPaint(outlinePaint1);
             g2.draw(polygon);
             g2.setPaint(paint);
 
@@ -349,12 +345,12 @@ public class Pie3DPlot extends PiePlot {
                                         arc.getAngleExtent(),
                                         Arc2D.PIE);
             paint = this.getSeriesPaint(categoryIndex);
-            outlinePaint = this.getSeriesOutlinePaint(categoryIndex);
+            outlinePaint1 = this.getSeriesOutlinePaint(categoryIndex);
 
             g2.setPaint(paint);
             g2.fill(upperArc);
             g2.setStroke(new BasicStroke());
-            g2.setPaint(outlinePaint);
+            g2.setPaint(outlinePaint1);
             g2.draw(upperArc);
 
            // add a tooltip for the section...

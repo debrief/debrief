@@ -60,18 +60,22 @@
 
 package MWC.GUI.Shapes.Symbols.Geog;
 
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-
-import java.util.Collection;
+import java.awt.Point;
+import java.awt.geom.Point2D;
 import java.util.Vector;
-import java.awt.*;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class CrossSymbol extends PlainSymbol {
 
-  public void getMetafile()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void getMetafile()
   {
   }
 
@@ -79,11 +83,11 @@ public class CrossSymbol extends PlainSymbol {
    *
    * @return
    */
-  public Collection getCoordinates() {
-    Vector res = new Vector(0,1);
+  public Vector<Vector<Point2D>> getCoordinates() {
+  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
 
-    Vector line1 = new Vector(0,1);
-    Vector line2 = new Vector(0,1);
+  	Vector<Point2D> line1 = new Vector<Point2D>(0,1);
+  	Vector<Point2D> line2 = new Vector<Point2D>(0,1);
 
     int wid = (int)(2 * getScaleVal());
     line1.add(new Point(-wid, 0));

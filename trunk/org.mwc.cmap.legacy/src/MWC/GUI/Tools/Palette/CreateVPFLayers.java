@@ -123,17 +123,17 @@ public class CreateVPFLayers extends PlainCreate
     }
 
     // see if there are any data directories
-    java.util.Map paths = _myParent.getPropertiesLike(VPF_DATABASE_PROPERTY);
+    java.util.Map<String, String> paths = _myParent.getPropertiesLike(VPF_DATABASE_PROPERTY);
 
     // did we get anything
     if(paths == null)
     {
-      paths = new java.util.HashMap();
+      paths = new java.util.HashMap<String, String>();
       paths.put("VPF_PATH_DEFAULT", VPF_PATH_DEFAULT);
   	}
 
     String [] demo = new String[paths.size()];
-    String [] the_paths = (String[]) paths.values().toArray(demo);
+    String [] the_paths = paths.values().toArray(demo);
 
     database = createMyLibrary(the_paths, autoPopulate);
 

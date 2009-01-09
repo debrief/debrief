@@ -13,7 +13,6 @@
 package org.j3d.ui.navigation;
 
 // Standard imports
-import  javax.media.j3d.Transform3D;
 
 // Application specific imports
 // none

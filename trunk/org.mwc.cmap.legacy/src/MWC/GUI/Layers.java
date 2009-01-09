@@ -776,7 +776,7 @@ public class Layers implements Serializable, Editable, Plottable, PlottablesType
 		return new LayersInfo(this);
 	}
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		final int res;
 		Plottable other = (Plottable) arg0;

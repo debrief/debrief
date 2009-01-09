@@ -20,7 +20,7 @@ abstract public class BackgroundHandler extends MWC.Utilities.ReaderWriter.XML.M
 {
   private static final String MY_TYPE = "Background";
 
-  private Color _theColor;
+  Color _theColor;
 
   public BackgroundHandler()
   {

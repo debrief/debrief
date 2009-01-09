@@ -32,7 +32,7 @@ class LineDetails
      * An array of all lines held by this array. The array contains a list
      * of LineData items.
      */
-    ArrayList lines;
+    ArrayList<LineData> lines;
 
     /**
      * Construct a new set of line details for a line of the given color.
@@ -43,7 +43,7 @@ class LineDetails
     LineDetails(Color c)
     {
         color = c;
-        lines = new ArrayList();
+        lines = new ArrayList<LineData>();
     }
 
     /**

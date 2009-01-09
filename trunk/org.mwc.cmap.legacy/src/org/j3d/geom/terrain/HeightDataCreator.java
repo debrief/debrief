@@ -10,16 +10,11 @@
 package org.j3d.geom.terrain;
 
 // Standard imports
-import java.awt.image.*;
-
 import java.awt.color.ColorSpace;
-import javax.vecmath.Color4b;
-
-// Application specific imports
-import org.j3d.geom.GeometryData;
-import org.j3d.geom.InvalidArraySizeException;
-import org.j3d.geom.UnsupportedTypeException;
-import org.j3d.util.interpolator.ColorInterpolator;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorConvertOp;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
 
 /**
  * A converter utility for changing an image into a height field set of
@@ -41,9 +36,6 @@ public class HeightDataCreator
 
     /** The default maximum height */
     private static final float MAX_HEIGHT = 1;
-
-    /** The default spacing between cells */
-    private static final float DEFAULT_SPACING = 1;
 
     /** The working minimum height */
     private float minHeight;
@@ -130,7 +122,6 @@ public class HeightDataCreator
         int[] data = new int[width];
 
         int i, j;
-        float x, y, z;
         float range = maxHeight - minHeight;
 
         // Fetch data from the image one row at a time. This cuts down on

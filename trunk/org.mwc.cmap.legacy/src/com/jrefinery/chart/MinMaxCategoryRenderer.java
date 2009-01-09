@@ -142,7 +142,8 @@ public class MinMaxCategoryRenderer extends AbstractCategoryItemRenderer {
      * @param previousCategory The previous category (will be null when the first category is
      *                         drawn).
      */
-    public void drawCategoryItem (Graphics2D g2, Rectangle2D dataArea, CategoryPlot plot,
+    @SuppressWarnings("deprecation")
+		public void drawCategoryItem (Graphics2D g2, Rectangle2D dataArea, CategoryPlot plot,
                                   ValueAxis axis,
                                   CategoryDataset data,
                                   int series,

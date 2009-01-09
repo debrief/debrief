@@ -3,7 +3,11 @@ package MWC.GUI.Dialogs.AWT;
 import java.awt.*;
 
 public class ButtonPanel extends Panel {
-    Panel     buttonPanel = new Panel();
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		Panel     buttonPanel = new Panel();
     Separator separator   = new Separator();
 
 	public ButtonPanel() {

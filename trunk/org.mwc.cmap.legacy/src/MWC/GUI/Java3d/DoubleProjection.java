@@ -16,7 +16,12 @@ import javax.vecmath.Point3d;
 
 public class DoubleProjection extends FlatProjection{
 
-  /** working vector object, to reduce object creation ins screen operations
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/** working vector object, to reduce object creation ins screen operations
    */
   private WorldVector _workingVector = new WorldVector(0,0,0);
 

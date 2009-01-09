@@ -19,8 +19,8 @@ import org.w3c.dom.NodeList;
 abstract public class WorldDistanceHandler extends MWCXMLReader
 {
 
-  private String _units;
-  private double _value;
+  String _units;
+  double _value;
   private static final String UNITS = "Units";
   private static final String VALUE = "Value";
 

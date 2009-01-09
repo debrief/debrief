@@ -72,12 +72,11 @@
 
 package MWC.GUI.Tools;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import MWC.GenericData.*;
+import java.awt.Point;
 
-import MWC.GUI.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GenericData.WorldLocation;
 
 /** abstract class for tools which 'watch' the canvas,
  * normally trapping movements
@@ -149,10 +148,6 @@ abstract public class PlainDragTool extends
   abstract public MWC.GUI.Rubberband getRubberband();
 
   public void execute(){
-
-    // do we have a rubber band defined?
-    MWC.GUI.Rubberband myRubber = getRubberband();
-
 
     if(_isAlternateDragger)
     {

@@ -9,17 +9,14 @@ package MWC.GUI.Properties.Swing;
  * @version 1.0
  */
 
-import java.beans.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
 
-import MWC.GenericData.WorldPath;
-import MWC.GUI.PlainChart;
-import MWC.GUI.ToolParent;
-import MWC.GUI.Properties.PropertiesPanel;
-
-import javax.swing.*;
+import javax.swing.JButton;
+import javax.swing.JPanel;
 
 public class SwingWorldPathPropertyEditor extends MWC.GUI.Properties.WorldPathPropertyEditor implements java.beans.PropertyChangeListener
 {

@@ -19,8 +19,8 @@ abstract public class LocalGridHandler extends GridHandler
   private final static String MY_TYPE = "LocalGrid";
   private static final String PLOT_ORIGIN = "PlotOrigin";
 
-  private WorldLocation _myOrigin = null;
-  private boolean _plotOrigin = true;
+  WorldLocation _myOrigin = null;
+  boolean _plotOrigin = true;
 
   public LocalGridHandler()
   {

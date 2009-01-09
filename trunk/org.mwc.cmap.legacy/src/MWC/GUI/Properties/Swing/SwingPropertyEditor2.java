@@ -287,7 +287,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	/**
 	 * the table we place the properties into
 	 */
-	private MyTable _table;
+	MyTable _table;
 
 	/**
 	 * the model which stores the data for the table
@@ -297,7 +297,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	/**
 	 * the list of editor components (indexed by the component itself)
 	 */
-	private Hashtable _theEditorList;
+	Hashtable<Component, Component> _theEditorList;
 
 	/**
 	 * our parent panel, so that we can trigger an update
@@ -312,7 +312,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	/**
 	 * the code to keep the table sorted
 	 */
-	private TableSortDecorator _tableSorter;
+	TableSortDecorator _tableSorter;
 
 	/**
 	 * the custom editor currently in use, if there is one
@@ -382,26 +382,26 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			createCorePropertyEditors();
 
 			// now register the specific editors
-			_myPropertyManager.registerEditor(MWC.GenericData.HiResDate.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.HiResDate.class,
 					SwingDatePropertyEditor.class);
-			_myPropertyManager.registerEditor(MWC.GenericData.WorldLocation.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldLocation.class,
 					SwingWorldLocationPropertyEditor.class);
-			_myPropertyManager.registerEditor(boolean.class, SwingBooleanPropertyEditor.class);
-			_myPropertyManager.registerEditor(SteppingBoundedInteger.class,
+			PropertyEditorManager.registerEditor(boolean.class, SwingBooleanPropertyEditor.class);
+			PropertyEditorManager.registerEditor(SteppingBoundedInteger.class,
 					SwingSteppingBoundedIntegerEditor.class);
-			_myPropertyManager.registerEditor(BoundedInteger.class,
+			PropertyEditorManager.registerEditor(BoundedInteger.class,
 					SwingBoundedIntegerEditor.class);
-			_myPropertyManager.registerEditor(MWC.GenericData.WorldDistance.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldDistance.class,
 					SwingDistancePropertyEditor.class);
-			_myPropertyManager.registerEditor(MWC.GenericData.WorldDistanceWithUnits.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldDistanceWithUnits.class,
 					SwingDistanceWithUnitsPropertyEditor.class);
-			_myPropertyManager.registerEditor(MWC.GenericData.Duration.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.Duration.class,
 					SwingDurationPropertyEditor.class);
-			_myPropertyManager.registerEditor(MWC.GenericData.WorldSpeed.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldSpeed.class,
 					SwingWorldSpeedPropertyEditor.class);
-			_myPropertyManager.registerEditor(MWC.GenericData.WorldAcceleration.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldAcceleration.class,
 					SwingWorldAccelerationPropertyEditor.class);
-			_myPropertyManager.registerEditor(MWC.GenericData.WorldPath.class,
+			PropertyEditorManager.registerEditor(MWC.GenericData.WorldPath.class,
 					MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor.class);
 			// we were adding the Color editor in this method - but instead
 			// we've added it in the Swing application initialisation classes
@@ -434,6 +434,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		// go through the editors, creating them
 		_main = new SwingPropertiesPanel.CloseableJPanel()
 		{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			// somebody is telling us to close - to be added by the implementing class
 			public void triggerClose()
 			{
@@ -516,7 +521,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			_table.sizeColumnsToFit(-1);
 
 			// show all of the editor entities
-			Enumeration enumer = _theEditors.elements();
+			Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
 			while (enumer.hasMoreElements())
 			{
 				PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
@@ -723,9 +728,6 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			}
 			else
 			{
-
-				// and lastly see if there is a text editor
-				String res = pe.getAsText();
 
 				// note, we used to check that there was a string present before
 				// creating this text
@@ -937,12 +939,12 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		PropertyEditorItem pei = (PropertyEditorItem) _theEditors.get(p);
 		pei.theEditorGUI = c;
 
-		Vector v = new Vector();
+		Vector<Object> v = new Vector<Object>();
 		v.addElement(p);
 		v.addElement(c);
 
 		if (_theEditorList == null)
-			_theEditorList = new Hashtable();
+			_theEditorList = new Hashtable<Component, Component>();
 
 		_theEditorList.put(c, c);
 
@@ -961,7 +963,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		_methodsPanel.add(btn);
 	}
 
-	private void apply()
+	void apply()
 	{
 		super.doUpdate();
 		_theParent.doApply();
@@ -1041,7 +1043,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		_toolParent = null;
 	}
 
-	private void reset()
+	void reset()
 	{
 		// process the RESET event
 		if (_theSwingCustomEditor != null)
@@ -1178,11 +1180,12 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			_myMethod = method;
 		}
 
+		@SuppressWarnings("synthetic-access")
 		public void actionPerformed(ActionEvent e)
 		{
 			try
 			{
-				_myMethod.getMethod().invoke(_theData, null);
+				_myMethod.getMethod().invoke(_theData,(Object[]) null);
 
 				// inform the object that we've updated it.
 				_theInfo.fireChanged(this, _myMethod.getMethod().toString(), null, null);
@@ -1204,6 +1207,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 	protected class paintLabel extends JPanel
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		protected PropertyEditor _myEditor;
 
 		protected JLabel _myLabel;
@@ -1213,6 +1221,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			_myEditor = pe;
 			_myLabel = new JLabel("  ")
 			{
+				/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
 				public void paint(Graphics p1)
 				{
 					Rectangle area = _myLabel.getBounds();
@@ -1391,6 +1404,11 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			java.awt.event.ActionListener
 	{
 
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public TickableComboBox()
 		{
 			this.setRenderer(new TickableComboBoxRenderer());
@@ -1426,9 +1444,14 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 		// not depend on whether the value is selected
 		// //////////////////////////////////////////////////////////
 
-		private class TickableComboBoxRenderer extends JLabel implements
+		protected  class TickableComboBoxRenderer extends JLabel implements
 				javax.swing.ListCellRenderer
 		{
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
 			/**
 			 * red border, to show the currently selected item
 			 */
@@ -1483,6 +1506,10 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 	 */
 	public static class MyTable extends JTable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
 		/**
 		 * the object being edited by the table
 		 */

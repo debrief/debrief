@@ -86,7 +86,7 @@ public class CombinedXYPlot extends XYPlot {
     private int type;
 
     /** Storage for the subplot references. */
-    private List subplots;
+    private List<XYPlot> subplots;
 
     /** Total weight of all charts. */
     private int totalWeight = 0;
@@ -115,7 +115,7 @@ public class CombinedXYPlot extends XYPlot {
         }
 
         this.type = type;
-        this.subplots = new java.util.ArrayList();
+        this.subplots = new java.util.ArrayList<XYPlot>();
 
     }
 
@@ -397,7 +397,7 @@ public class CombinedXYPlot extends XYPlot {
      */
     protected void setHorizontalAxisHeight(double height) {
 
-        Iterator iterator = subplots.iterator();
+        Iterator<XYPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             XYPlot plot = (XYPlot) iterator.next();
             Axis axis = plot.getDomainAxis();
@@ -413,7 +413,7 @@ public class CombinedXYPlot extends XYPlot {
      */
     protected void setVerticalAxisWidth(double width) {
 
-        Iterator iterator = subplots.iterator();
+        Iterator<XYPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             XYPlot plot = (XYPlot) iterator.next();
             Axis axis = plot.getRangeAxis();
@@ -432,7 +432,7 @@ public class CombinedXYPlot extends XYPlot {
         LegendItemCollection result = new LegendItemCollection();
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<XYPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 XYPlot plot = (XYPlot) iterator.next();
                 LegendItemCollection more = plot.getLegendItems();
@@ -482,7 +482,7 @@ public class CombinedXYPlot extends XYPlot {
         super.setSeriesPaint(paint);  // not strictly necessary, since the colors set for the
                                       // parent plot are not used now
 
-        Iterator iterator = subplots.iterator();
+        Iterator<XYPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             XYPlot plot = (XYPlot) iterator.next();
             plot.setSeriesPaint(paint);
@@ -504,7 +504,7 @@ public class CombinedXYPlot extends XYPlot {
         super.setRenderer(renderer);  // not strictly necessary, since the renderer set for the
                                       // parent plot is not used
 
-        Iterator iterator = subplots.iterator();
+        Iterator<XYPlot> iterator = subplots.iterator();
         while (iterator.hasNext()) {
             XYPlot plot = (XYPlot) iterator.next();
             plot.setRenderer(renderer);
@@ -527,7 +527,7 @@ public class CombinedXYPlot extends XYPlot {
 
         if (type == VERTICAL) {
             if (subplots != null) {
-                Iterator iterator = subplots.iterator();
+                Iterator<XYPlot> iterator = subplots.iterator();
                 while (iterator.hasNext()) {
                     XYPlot subplot = (XYPlot) iterator.next();
                     result = Range.combine(result, subplot.getHorizontalDataRange());
@@ -550,7 +550,7 @@ public class CombinedXYPlot extends XYPlot {
 
         if (type == HORIZONTAL) {
             if (subplots != null) {
-                Iterator iterator = subplots.iterator();
+                Iterator<XYPlot> iterator = subplots.iterator();
                 while (iterator.hasNext()) {
                     XYPlot subplot = (XYPlot) iterator.next();
                     result = Range.combine(result, subplot.getVerticalDataRange());
@@ -580,12 +580,13 @@ public class CombinedXYPlot extends XYPlot {
      *
      * @deprecated use getLegendItems.
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
 
         List result = new java.util.ArrayList();
 
         if (subplots != null) {
-            Iterator iterator = subplots.iterator();
+            Iterator<XYPlot> iterator = subplots.iterator();
             while (iterator.hasNext()) {
                 XYPlot plot = (XYPlot) iterator.next();
                 List more = plot.getLegendItemLabels();

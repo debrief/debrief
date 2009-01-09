@@ -57,6 +57,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class XYSeriesDemo2 extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * A demonstration application showing an XY series containing a null value.
      *
      * @param title  the frame title.

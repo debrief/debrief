@@ -71,7 +71,11 @@ import java.util.Vector;
 
 public class SwingGrabControl extends JPanel
 {
-  // supporting class containing the detailed grabbing stuff
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	// supporting class containing the detailed grabbing stuff
   GrabControlSupport _grabber = null;
   // the component we are listening to
   Component _target = null;
@@ -224,8 +228,6 @@ public class SwingGrabControl extends JPanel
 
     res += _destination.getText();
 
-    // does the destination have an avi suffix?
-    int found;
     if (res.toUpperCase().endsWith(".AVI"))
     {
       // everything's ok, relax
@@ -240,7 +242,8 @@ public class SwingGrabControl extends JPanel
     return res;
   }
 
-  protected void configure()
+  @SuppressWarnings("deprecation")
+	protected void configure()
   {
 
     // get the dimensions, using the screen location of the target
@@ -331,7 +334,11 @@ public class SwingGrabControl extends JPanel
 
   protected static class Mobile extends JComponent implements Runnable
   {
-    Thread updater;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		Thread updater;
 
     public Mobile()
     {
@@ -346,7 +353,7 @@ public class SwingGrabControl extends JPanel
         {
           //     this.invalidate();
           this.repaint();
-          updater.sleep(500);
+          Thread.sleep(500);
         }
         catch (java.lang.InterruptedException e)
         {
@@ -374,7 +381,8 @@ public class SwingGrabControl extends JPanel
     }
   }
 
-  public static void main6(String[] args)
+  @SuppressWarnings("unchecked")
+	public static void main6(String[] args)
   {
     Vector lst = PlugInManager.getPlugInList(null, null, PlugInManager.CODEC);
     Enumeration enumer = lst.elements();
@@ -400,7 +408,8 @@ public class SwingGrabControl extends JPanel
     fr.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
   }
 
-  public static void main(String[] args)
+  @SuppressWarnings("unchecked")
+	public static void main(String[] args)
   {
     System.out.println("working");
 
@@ -454,7 +463,7 @@ public class SwingGrabControl extends JPanel
       System.out.println("about to start!");
       p.start();
       System.out.println("about to sleep!");
-      Thread.currentThread().sleep(1000);
+      Thread.sleep(1000);
       System.out.println("about to stop!");
       p.stop();
       fileWriter.stop();

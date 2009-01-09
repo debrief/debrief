@@ -26,6 +26,11 @@ package org.j3d.geom;
 public class InvalidArraySizeException extends RuntimeException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Create an exception that contains a prefabricated message.
      *
      * @param requested The required size of the array

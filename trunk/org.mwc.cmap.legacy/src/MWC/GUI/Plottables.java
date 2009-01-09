@@ -473,7 +473,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		}
 	}
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		return getName().compareTo(other.getName());

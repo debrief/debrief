@@ -81,7 +81,7 @@ package MWC.GUI;
 
 /** an object which may be plotted to a canvas
  */
-public interface Plottable extends Editable, Comparable {
+public interface Plottable extends Editable, Comparable<Plottable> {
 
   public final static int INVALID_RANGE = -1;
 

@@ -56,6 +56,7 @@ package com.jrefinery.data;
  *
  * @author DG
  */
+@SuppressWarnings("unchecked")
 public class TimeSeriesDataPair implements Cloneable, Comparable {
 
     /** The time period. */

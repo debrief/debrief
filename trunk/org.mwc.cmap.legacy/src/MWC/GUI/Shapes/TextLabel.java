@@ -369,7 +369,7 @@ public class TextLabel extends PlainShape implements Serializable, Editable
 	private void paintMultiLine(CanvasType dest, String theStr, Font theFont, Point thePoint)
 	{
 		int _numLines = 0;
-		Vector _subStrings = new Vector();
+		Vector<String> _subStrings = new Vector<String>();
 
 		// break it up into a Vector of substrings,
 		// one substring for each line.
@@ -423,10 +423,6 @@ public class TextLabel extends PlainShape implements Serializable, Editable
 			else
 			// single line of text
 			{
-				// Calculate the width of this portion of the string
-				// and use it to figure out the left-right centering.
-				int lineWidth = dest.getStringWidth(getFont(), theStr);
-
 				xpos = thePoint.x;// - (lineWidth) / 2;
 				
 				// move to the right, by this 1/2 of the distance between
@@ -550,7 +546,7 @@ public class TextLabel extends PlainShape implements Serializable, Editable
 	 * get the shape as a series of WorldLocation points. Joined up, these form a
 	 * representation of the shape
 	 */
-	public Collection getDataPoints()
+	public Collection<WorldLocation> getDataPoints()
 	{
 		return null;
 	}

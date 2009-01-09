@@ -72,7 +72,7 @@ public class UndoBuffer extends Observable
   /////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
-  private Vector theActions;
+  private Vector<Action> theActions;
   private int presentAction;
   static protected final int undo = 1;
   static protected final int redo = 2;
@@ -81,7 +81,7 @@ public class UndoBuffer extends Observable
   // constructor
   ////////////////////////////////////////////////////////////
   public UndoBuffer(){
-    theActions = new Vector(0, 1);
+    theActions = new Vector<Action>(0, 1);
   }
 
   /////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ public class UndoBuffer extends Observable
 
     // check that we are not at the start of the list
     if(presentAction >= 0){
-      Action act = (Action)theActions.elementAt(presentAction);
+      Action act = theActions.elementAt(presentAction);
 
       // check we have found it correctly
       if(act != null){
@@ -149,7 +149,7 @@ public class UndoBuffer extends Observable
   public void redo(){
     // check that we are not at the start of the list
     if(presentAction < theActions.size()-1){
-      Action act = (Action)theActions.elementAt(presentAction+1);
+      Action act = theActions.elementAt(presentAction+1);
 
       // check we have found it correctly
       if(act != null){

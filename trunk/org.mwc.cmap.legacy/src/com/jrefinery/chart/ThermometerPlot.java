@@ -233,9 +233,6 @@ public class ThermometerPlot extends Plot implements VerticalValuePlot {
     /** The stroke for the sub-range indicators. */
     private Stroke subrangeIndicatorStroke = new BasicStroke(2.0f);
 
-    /** The range indicator stroke. */
-    private Stroke rangeIndicatorStroke = new BasicStroke(3.0f);
-
     /**
      * Creates a new thermometer plot.
      */
@@ -1147,7 +1144,8 @@ public class ThermometerPlot extends Plot implements VerticalValuePlot {
      *
      * @deprecated use getLegendItems().
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
         return null;
     }
 
@@ -1206,14 +1204,14 @@ public class ThermometerPlot extends Plot implements VerticalValuePlot {
     /**
      * Returns true if the value is in the specified range, and false otherwise.
      *
-     * @param subrange  the subrange.
+     * @param subrange1  the subrange.
      * @param value  the value to check.
      *
      * @return true or false.
      */
-    private boolean inSubrange(int subrange, double value) {
-        return (value > subrangeInfo[subrange][RANGE_LOW]
-                && value <= subrangeInfo[subrange][RANGE_HIGH]);
+    private boolean inSubrange(int subrange1, double value) {
+        return (value > subrangeInfo[subrange1][RANGE_LOW]
+                && value <= subrangeInfo[subrange1][RANGE_HIGH]);
     }
 
     /**

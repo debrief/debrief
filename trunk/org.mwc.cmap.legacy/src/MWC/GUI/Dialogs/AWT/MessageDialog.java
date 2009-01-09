@@ -5,6 +5,10 @@ import java.awt.event.*;
 
 public class MessageDialog extends WorkDialog 
                            implements ActionListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Button       okButton;
 	private MessagePanel messagePanel;
 
@@ -31,14 +35,12 @@ public class MessageDialog extends WorkDialog
 	public void actionPerformed(ActionEvent event) {
 		dispose();
 	}
-	private void setMessage(String message) {
-		messagePanel.setMessage(message);
-	}
-	private void setImage(Image image) {
-		messagePanel.setImage(image);
-	}
 }
 class MessagePanel extends Postcard {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Label label;
 
 	public MessagePanel(String message) {

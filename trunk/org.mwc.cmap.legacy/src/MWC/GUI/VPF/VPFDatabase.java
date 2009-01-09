@@ -55,6 +55,8 @@ package MWC.GUI.VPF;
 //
 
 
+import MWC.GUI.Editable;
+
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 
 import java.util.Enumeration;
@@ -101,7 +103,7 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
     //    _myLST = new LibrarySelectionTable();
 
     // a hashmap to store databases we know about
-    java.util.HashMap _myDatabases = new java.util.HashMap();
+    java.util.HashMap<String, LibrarySelectionTable> _myDatabases = new java.util.HashMap<String, LibrarySelectionTable>();
 
     // add the paths
     for (int i = 0; i < paths.length; i++)
@@ -126,7 +128,7 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
 
           String thisName = tmpL.getDatabaseName().toUpperCase();
 
-          LibrarySelectionTable thisLibrary = (LibrarySelectionTable) _myDatabases.get(thisName);
+          LibrarySelectionTable thisLibrary = _myDatabases.get(thisName);
 
           // do we have it already?
           if (thisLibrary == null)
@@ -150,11 +152,11 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
     // so, we now have a list of library selection tables, one for each database we are handling
 
     // create a library for each library we know of
-    Iterator enumer = _myDatabases.values().iterator();
+    Iterator<LibrarySelectionTable> enumer = _myDatabases.values().iterator();
     while (enumer.hasNext())
     {
       // get the table
-      LibrarySelectionTable thisLib = (LibrarySelectionTable) enumer.next();
+      LibrarySelectionTable thisLib = enumer.next();
 
       // create the layer to manage this
       LibraryLayer layer = new LibraryLayer(thisLib, thisLib.getDatabaseName(), _myWarehouse, autoPopulate);
@@ -193,7 +195,7 @@ public class VPFDatabase extends MWC.GUI.BaseLayer implements MWC.GUI.Plottables
   public LibraryLayer getLibrary(String theName)
   {
     LibraryLayer res = null;
-    Enumeration enumer = this.elements();
+    Enumeration<Editable> enumer = this.elements();
     while (enumer.hasMoreElements())
     {
       LibraryLayer ll = (LibraryLayer) enumer.nextElement();

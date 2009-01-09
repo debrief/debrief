@@ -438,7 +438,7 @@ public class CoastPainter implements Runnable, Serializable, Plottable
 		}
 	}
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());

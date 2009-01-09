@@ -21,7 +21,7 @@ import java.util.Comparator;
  * @author Justin Couch
  * @version $Revision: 1.1.1.1 $
  */
-class TriangleComparator implements Comparator
+class TriangleComparator implements Comparator<TreeNode>
 {
     //----------------------------------------------------------
     // Methods defined by Comparator
@@ -46,7 +46,7 @@ class TriangleComparator implements Comparator
      * @return a negative integer, zero, or a positive integer as this object
      *    is less than, equal to, or greater than the specified object
      */
-    public int compare(Object o1, Object o2)
+    public int compare(TreeNode o1, TreeNode o2)
     {
         TreeNode t1 = (TreeNode)o1;
         TreeNode t2 = (TreeNode)o2;

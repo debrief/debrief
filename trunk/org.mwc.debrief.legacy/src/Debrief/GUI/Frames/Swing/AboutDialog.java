@@ -121,7 +121,7 @@ public final class AboutDialog extends javax.swing.JDialog
 
   }//GEN-END:initComponents
 
-  private void okPressed(final java.awt.event.ActionEvent evt)
+  void okPressed(final java.awt.event.ActionEvent evt)
   {//GEN-FIRST:event_okPressed
 // Add your handling code here:
     setVisible(false);
@@ -129,7 +129,7 @@ public final class AboutDialog extends javax.swing.JDialog
   }//GEN-LAST:event_okPressed
 
   /** Closes the dialog */
-  private void closeDialog(final java.awt.event.WindowEvent evt)
+  void closeDialog(final java.awt.event.WindowEvent evt)
   {//GEN-FIRST:event_closeDialog
     setVisible(false);
     dispose();
@@ -138,14 +138,16 @@ public final class AboutDialog extends javax.swing.JDialog
   /**
    * @param args the command line arguments
    */
-  public static void main(final String[] args)
+  @SuppressWarnings("deprecation")
+	public static void main(final String[] args)
   {
     new AboutDialog(
       "some title",
       "some main message" + System.getProperties().getProperty("line.separator") + " new line").show();
   }
 
-  public static void showIt(final java.awt.Frame parent,
+  @SuppressWarnings("deprecation")
+	public static void showIt(final java.awt.Frame parent,
                             final String title,
                             final String message)
   {

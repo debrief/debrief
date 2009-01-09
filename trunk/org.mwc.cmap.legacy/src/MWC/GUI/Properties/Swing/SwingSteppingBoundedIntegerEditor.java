@@ -69,10 +69,11 @@ package MWC.GUI.Properties.Swing;
 // Initial revision
 //
 
-import java.beans.*;
-import MWC.GUI.*;
-import java.util.*;
-import javax.swing.*;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+
 import MWC.GUI.Properties.SteppingBoundedInteger;
 
 public class SwingSteppingBoundedIntegerEditor extends MWC.GUI.Properties.SteppingBoundedIntegerEditor implements javax.swing.event.ChangeListener

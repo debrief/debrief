@@ -33,14 +33,18 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class FishingVesselSym extends PlainSymbol {
 
-  public void getMetafile()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void getMetafile()
   {
   }
 
@@ -67,7 +71,6 @@ public class FishingVesselSym extends PlainSymbol {
     int wid = (int)(6 * getScaleVal());
     int tinyWid = (int) getScaleVal();
 
-    int wid_2 = (int)(wid * 0.5);
     int wid_3_4 = (int)(wid * 0.75);
     int wid_4 = (int)(wid * 0.25);
 

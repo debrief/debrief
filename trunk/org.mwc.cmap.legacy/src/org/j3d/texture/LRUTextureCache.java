@@ -13,11 +13,8 @@
 package org.j3d.texture;
 
 // Standard imports
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageProducer;
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 import javax.media.j3d.ImageComponent;
@@ -27,8 +24,6 @@ import javax.media.j3d.Texture;
 import javax.media.j3d.Texture2D;
 import javax.media.j3d.Texture3D;
 
-// Application specific imports
-import org.j3d.util.ImageUtils;
 import org.j3d.util.Queue;
 
 /**
@@ -61,8 +56,8 @@ class LRUTextureCache extends AbstractTextureCache
     public static final String DEFAULT_SIZE_PROP =
         "org.j3d.texture.LRUSize";
 
-    private HashMap textureMap;
-    private HashMap componentMap;
+    private HashMap<String, Texture> textureMap;
+    private HashMap<String, ImageComponent> componentMap;
 
     /** The maximum number of items in the cache */
     private final int maxCacheSize;
@@ -78,8 +73,8 @@ class LRUTextureCache extends AbstractTextureCache
      */
     LRUTextureCache()
     {
-        textureMap = new HashMap();
-        componentMap = new HashMap();
+        textureMap = new HashMap<String, Texture>();
+        componentMap = new HashMap<String, ImageComponent>();
         textureQueue = new Queue();
         componentQueue = new Queue();
 
@@ -354,7 +349,8 @@ class LRUTextureCache extends AbstractTextureCache
         if(textureQueue.size() > maxCacheSize)
         {
             // we should only ever overstep by one
-            Object reject = textureQueue.getNext();
+            @SuppressWarnings("unused")
+						Object reject = textureQueue.getNext();
             textureMap.remove(name);
         }
     }
@@ -374,7 +370,8 @@ class LRUTextureCache extends AbstractTextureCache
         if(componentQueue.size() > maxCacheSize)
         {
             // we should only ever overstep by one
-            Object reject = componentQueue.getNext();
+            @SuppressWarnings("unused")
+						Object reject = componentQueue.getNext();
             componentMap.remove(name);
         }
     }

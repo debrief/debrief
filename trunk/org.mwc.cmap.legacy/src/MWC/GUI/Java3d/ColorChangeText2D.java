@@ -68,7 +68,7 @@ public class ColorChangeText2D extends Shape3D {
 
   // This table caches FontMetrics objects to avoid the huge cost
   // of re-retrieving metrics for a font we've already seen.
-  private static Hashtable metricsTable = new Hashtable();
+  private static Hashtable<Font, FontMetrics> metricsTable = new Hashtable<Font, FontMetrics>();
   float rectangleScaleFactor = 1f/256f;
 
   Color3f   color = new Color3f();
@@ -126,10 +126,10 @@ public class ColorChangeText2D extends Shape3D {
 
 
 
-  private void updateText2D(String text, Color3f color, String fontName,
-                            int fontSize, int fontStyle) {
-    BufferedImage bImage = setupImage(text, color, fontName,
-      fontSize, fontStyle);
+  private void updateText2D(String text1, Color3f color1, String fontName1,
+                            int fontSize1, int fontStyle1) {
+    BufferedImage bImage = setupImage(text1, color1, fontName1,
+      fontSize1, fontStyle1);
 
     Texture2D t2d = setupTexture(bImage);
 
@@ -175,8 +175,8 @@ public class ColorChangeText2D extends Shape3D {
       Texture.RGBA,
       bImage.getWidth(),
       bImage.getHeight());
-    t2d.setMinFilter(t2d.BASE_LEVEL_LINEAR);
-    t2d.setMagFilter(t2d.BASE_LEVEL_LINEAR);
+    t2d.setMinFilter(Texture.BASE_LEVEL_LINEAR);
+    t2d.setMagFilter(Texture.BASE_LEVEL_LINEAR);
     t2d.setImage(0, imageComponent);
     t2d.setEnable(true);
 
@@ -189,7 +189,8 @@ public class ColorChangeText2D extends Shape3D {
    * the given color.  The background of the image is transparent
    * (alpha = 0).
    */
-  private BufferedImage setupImage(String text, Color3f color,
+  @SuppressWarnings("deprecation")
+	private BufferedImage setupImage(String text, Color3f color,
                                    String fontName,
                                    int fontSize, int fontStyle) {
     Toolkit toolkit = Toolkit.getDefaultToolkit();

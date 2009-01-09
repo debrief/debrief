@@ -87,7 +87,12 @@ public class SwingToolbarButton extends JButton implements ActionListener
   // member variables
   /////////////////////////////////////////////////////////
 
-  protected Tool _theTool;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	protected Tool _theTool;
 
 	/** flag to indicate if we are currently processing this button or not
 	 */

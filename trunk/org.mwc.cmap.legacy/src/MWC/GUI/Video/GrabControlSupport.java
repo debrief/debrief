@@ -39,16 +39,19 @@
 
 package MWC.GUI.Video;
 
-import javax.media.format.*;
-import javax.media.protocol.*;
-import javax.media.*;
-import javax.media.datasink.*;
+import java.awt.Rectangle;
+
+import javax.media.DataSink;
+import javax.media.Format;
+import javax.media.Manager;
+import javax.media.MediaLocator;
+import javax.media.Processor;
+import javax.media.ProcessorModel;
+import javax.media.datasink.DataSinkEvent;
+import javax.media.datasink.DataSinkListener;
+import javax.media.format.VideoFormat;
 import javax.media.protocol.DataSource;
-
-import javax.swing.*;
-import java.awt.*;
-
-import java.util.*;
+import javax.media.protocol.FileTypeDescriptor;
 
 public class GrabControlSupport
 {
@@ -139,10 +142,6 @@ public class GrabControlSupport
         // provide the screen area and frame rate
         _mySource.setLocator(getSourceLocator());
 
-        // force the initialisation
-        Object[] the_streams = _mySource.getStreams();
-        LiveStream str = (LiveStream)  the_streams[0];
-
         // connect to the source
         _mySource.connect();
       }
@@ -162,8 +161,6 @@ public class GrabControlSupport
 
       // prepare the output file
       FileTypeDescriptor output_format = new FileTypeDescriptor(_myFileType);
-      ContentDescriptor cd_out = new ContentDescriptor(VideoFormat.JPEG);
-
       // create the processor model
       ProcessorModel theModel = new ProcessorModel(_mySource,
                                                    inter_format,

@@ -9,6 +9,7 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import MWC.GUI.Editable;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,7 +25,7 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
   private static final String SHOW_LABELS = "LabelsVisible";
 
   // our "working" track
-  private Debrief.Wrappers.TMAWrapper _mySolutionTrack;
+  Debrief.Wrappers.TMAWrapper _mySolutionTrack;
 
   public TMAHandler()
   {
@@ -100,7 +101,7 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
 
   }
 
-  private void addThisContact(MWC.GUI.Plottable val)
+  void addThisContact(MWC.GUI.Plottable val)
   {
     // store in our list
     _mySolutionTrack.add(val);
@@ -146,7 +147,7 @@ abstract public class TMAHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRe
     ColourHandler.exportColour(sensor.getColor(), trk, doc);
 
     // now the points
-    java.util.Enumeration iter = sensor.elements();
+    java.util.Enumeration<Editable> iter = sensor.elements();
     while (iter.hasMoreElements())
     {
       MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();

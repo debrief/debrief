@@ -140,9 +140,9 @@ public class SwingDatePropertyEditor extends
 
     _theHolder.setLayout(new java.awt.GridLayout(0, 2));
     _theDate = new JTextField();
-    _theDate.setToolTipText("Format: " + super.NULL_DATE);
+    _theDate.setToolTipText("Format: " + NULL_DATE);
     _theTime = new JTextField();
-    _theTime.setToolTipText("Format: " + super.NULL_TIME);
+    _theTime.setToolTipText("Format: " + NULL_TIME);
     lPanel.add("Center", new JLabel("Date:", JLabel.RIGHT));
     lPanel.add("East", _theDate);
     rPanel.add("Center", new JLabel("Time:", JLabel.RIGHT));
@@ -181,7 +181,7 @@ public class SwingDatePropertyEditor extends
   /**
    * user wants to edit the microseconds.  give him a popup
    */
-  private void editMicrosPressed()
+  void editMicrosPressed()
   {
     //To change body of created methods use File | Settings | File Templates.
     Integer res = DialogFactory.getInteger("Edit microseconds", "Enter microseconds",(int) _theMicros);

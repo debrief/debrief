@@ -16,6 +16,11 @@ public class SwingPlot extends SwingPropertiesPanel.CloseableJPanel
 	///////////////////////////////////////////
 
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	/** the plot we are holding
 	 */
 	protected JPanel _thePlot;

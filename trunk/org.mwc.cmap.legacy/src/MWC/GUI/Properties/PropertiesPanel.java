@@ -2,8 +2,6 @@ package MWC.GUI.Properties;
 
 import MWC.GUI.Layer;
 
-import java.beans.*;
-
 /** Interface definition for classes which implement a properties panel
  */
 public interface PropertiesPanel

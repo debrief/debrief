@@ -100,13 +100,11 @@ class TreeNode
 
     boolean diamond = false;
 
-    private boolean textured;
-
     /**
      * A cache of instances of ourselves to help avoid too much object
      * creation and deletion.
      */
-    private static LinkedList nodeCache = new LinkedList();
+    private static LinkedList<TreeNode> nodeCache = new LinkedList<TreeNode>();
 
 
     /**
@@ -150,29 +148,29 @@ class TreeNode
      * Used to populate a node retrieved from the TreeNodeCache
      * setting the same state as creating a new TreeNode would.
      */
-    void newNode(int leftX,
-                 int leftY,
-                 int rightX,
-                 int rightY,
-                 int apexX,
-                 int apexY,
-                 int node,
-                 TerrainData terrainData,
+    void newNode(int leftX1,
+                 int leftY1,
+                 int rightX1,
+                 int rightY1,
+                 int apexX1,
+                 int apexY1,
+                 int node1,
+                 TerrainData terrainData1,
                  ViewFrustum landscapeView,
                  int parentVisible,
-                 int depth,
-                 VarianceTree varianceTree)
+                 int depth1,
+                 VarianceTree varianceTree1)
     {
-        this.leftX = leftX;
-        this.leftY = leftY;
-        this.rightX = rightX;
-        this.rightY = rightY;
-        this.apexX = apexX;
-        this.apexY = apexY;
-        this.node = node;
-        this.terrainData = terrainData;
-        this.depth = depth;
-        this.varianceTree = varianceTree;
+        this.leftX = leftX1;
+        this.leftY = leftY1;
+        this.rightX = rightX1;
+        this.rightY = rightY1;
+        this.apexX = apexX1;
+        this.apexY = apexY1;
+        this.node = node1;
+        this.terrainData = terrainData1;
+        this.depth = depth1;
+        this.varianceTree = varianceTree1;
 
 
         init(landscapeView, parentVisible);
@@ -425,7 +423,7 @@ class TreeNode
      */
     void updateTree(Tuple3f position,
                     ViewFrustum landscapeView,
-                    VarianceTree varianceTree,
+                    VarianceTree varianceTree1,
                     int parentVisible,
                     QueueManager queueManager)
     {
@@ -445,7 +443,7 @@ class TreeNode
 
         if(leftChild == null &&
            rightChild == null &&
-           depth < varianceTree.getMaxDepth() &&
+           depth < varianceTree1.getMaxDepth() &&
            visible != ViewFrustum.OUT)
         {
             computeVariance(position);
@@ -455,10 +453,10 @@ class TreeNode
         else
         {
             if(leftChild != null)
-                leftChild.updateTree(position, landscapeView, varianceTree, visible, queueManager);
+                leftChild.updateTree(position, landscapeView, varianceTree1, visible, queueManager);
 
             if(rightChild != null)
-                rightChild.updateTree(position, landscapeView, varianceTree, visible, queueManager);
+                rightChild.updateTree(position, landscapeView, varianceTree1, visible, queueManager);
 
             //System.out.println(diamond+"  "+diamondVariance);
             if(diamond)

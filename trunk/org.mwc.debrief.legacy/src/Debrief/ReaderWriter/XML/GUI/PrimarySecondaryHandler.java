@@ -15,7 +15,7 @@ package Debrief.ReaderWriter.XML.GUI;
 
 abstract public class PrimarySecondaryHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  private String _name;
+  String _name;
 
   public PrimarySecondaryHandler(String type)
   {

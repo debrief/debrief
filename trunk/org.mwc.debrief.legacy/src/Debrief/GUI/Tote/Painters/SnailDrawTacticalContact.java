@@ -3,6 +3,7 @@ package Debrief.GUI.Tote.Painters;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
@@ -62,7 +63,7 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
       final HiResDate start_time = new HiResDate(0, dtg.getMicros() - trail_len);
 
       // get the list of contacts
-      final java.util.Collection contacts = list.getItemsBetween(start_time, dtg);
+      final java.util.Collection<Editable> contacts = list.getItemsBetween(start_time, dtg);
 
       // get the parent track - so we can plot relative to it..
       final TrackWrapper hostTrack = (TrackWrapper) wrapper.getHost();
@@ -75,7 +76,7 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
         if (len > 0)
         {
           // ok, work back from the last one
-          final java.util.Iterator cons = contacts.iterator();
+          final java.util.Iterator<Editable> cons = contacts.iterator();
           while (cons.hasNext())
           {
             // get the next contact

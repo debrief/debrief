@@ -260,7 +260,8 @@ public class VerticalBarRenderer3D extends VerticalBarRenderer {
      * @param categoryIndex  the category index (zero-based).
      * @param previousCategory  the previous category.
      */
-    public void drawCategoryItem(Graphics2D g2, Rectangle2D dataArea,
+    @SuppressWarnings("deprecation")
+		public void drawCategoryItem(Graphics2D g2, Rectangle2D dataArea,
                                  CategoryPlot plot, ValueAxis axis,
                                  CategoryDataset data, int series, Object category,
                                  int categoryIndex, Object previousCategory) {
@@ -352,19 +353,19 @@ public class VerticalBarRenderer3D extends VerticalBarRenderer {
 
             GeneralPath bar3dRight = null;
             GeneralPath bar3dTop = null;
-            double effect3d = 0.00;
+            double effect3d1 = 0.00;
             VerticalAxis vAxis = (VerticalAxis) plot.getRangeAxis();
             if (rectHeight != 0 && vAxis instanceof VerticalNumberAxis3D) {
-                effect3d = ((VerticalNumberAxis3D) vAxis).getEffect3d();
+                effect3d1 = ((VerticalNumberAxis3D) vAxis).getEffect3d();
                 bar3dRight = new GeneralPath();
                 bar3dRight.moveTo((float) (rectX + rectWidth),
                                   (float) rectY);
                 bar3dRight.lineTo((float) (rectX + rectWidth),
                                   (float) (rectY + rectHeight));
-                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d),
-                                  (float) (rectY + rectHeight - effect3d));
-                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d),
-                                  (float) (rectY - effect3d));
+                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d1),
+                                  (float) (rectY + rectHeight - effect3d1));
+                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d1),
+                                  (float) (rectY - effect3d1));
 
                 if (itemPaint instanceof Color) {
                     g2.setPaint(((Color) itemPaint).darker());
@@ -374,10 +375,10 @@ public class VerticalBarRenderer3D extends VerticalBarRenderer {
                 bar3dTop = new GeneralPath();
                 bar3dTop.moveTo((float) rectX,
                                 (float) rectY);
-                bar3dTop.lineTo((float) (rectX + effect3d),
-                                (float) (rectY - effect3d));
-                bar3dTop.lineTo((float) (rectX + rectWidth + effect3d),
-                                (float) (rectY - effect3d));
+                bar3dTop.lineTo((float) (rectX + effect3d1),
+                                (float) (rectY - effect3d1));
+                bar3dTop.lineTo((float) (rectX + rectWidth + effect3d1),
+                                (float) (rectY - effect3d1));
                 bar3dTop.lineTo((float) (rectX + rectWidth),
                                 (float) (rectY));
                 g2.fill(bar3dTop);
@@ -404,7 +405,7 @@ public class VerticalBarRenderer3D extends VerticalBarRenderer {
                     java.awt.FontMetrics fm = g2.getFontMetrics();
                     int ix = (int) ((itemWidth - fm.stringWidth(s)) / 2);
                     // Center above bar
-                    g2.drawString(s, (int) (rectX + effect3d + ix), (int) (rectY - effect3d - 5));
+                    g2.drawString(s, (int) (rectX + effect3d1 + ix), (int) (rectY - effect3d1 - 5));
 
                 }
             }

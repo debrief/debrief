@@ -6,7 +6,7 @@ import junit.framework.*;
 
 
 public class TestCaseLoader {
-    final private Vector classList = new Vector ();
+    final private Vector<Class<?>> classList = new Vector<Class<?>> ();
     final private String requiredType;
 
     /**
@@ -14,7 +14,7 @@ public class TestCaseLoader {
      * if the class is a test case we wish to load. Calls
      * <code>shouldLoadTestCase ()</code> to determine that.
      */
-    private void addClassIfTestCase (final Class testCaseClass) {
+    private void addClassIfTestCase (final Class<?> testCaseClass) {
         if (shouldAddTestCase (testCaseClass)) {
             classList.add (testCaseClass);
         }
@@ -25,14 +25,14 @@ public class TestCaseLoader {
      * to determine if the test case should be
      * added to the class list.
      */
-    private boolean shouldAddTestCase (final Class testCaseClass) {
+    private boolean shouldAddTestCase (final Class<?> testCaseClass) {
         return isATestCaseOfTheCorrectType (testCaseClass);
     }
 
     /**
      * Determine if this is a test case of the correct type
      */
-    private boolean isATestCaseOfTheCorrectType (final Class testCaseClass) {
+    private boolean isATestCaseOfTheCorrectType (final Class<?> testCaseClass) {
         boolean isOfTheCorrectType = false;
         if (TestCase.class.isAssignableFrom(testCaseClass)) {
             try {
@@ -60,11 +60,11 @@ public class TestCaseLoader {
      * Load the classes that represent test cases we are interested.
      * @param classNamesIterator An iterator over a collection of fully qualified class names
      */
-    public void loadTestCases (final Iterator classNamesIterator) {
+    public void loadTestCases (final Iterator<?> classNamesIterator) {
         while (classNamesIterator.hasNext ()) {
             String className = (String)classNamesIterator.next ();
             try {
-                Class candidateClass = Class.forName (className);
+                Class<?> candidateClass = Class.forName (className);
                 addClassIfTestCase (candidateClass);
             } catch (ClassNotFoundException e) {
                 System.err.println ("Cannot load class: " + className);
@@ -92,7 +92,7 @@ public class TestCaseLoader {
     /**
      * Obtain an iterator over the collection of test case classes loaded by <code>loadTestCases</code>
      */
-    public Iterator getClasses () {
+    public Iterator<Class<?>> getClasses () {
         return classList.iterator ();
     }
 }

@@ -1,5 +1,5 @@
 /*****************************************************************************
- *                      J3D.org Copyright (c) 2000
+// *                      J3D.org Copyright (c) 2000
  *                           Java Source
  *
  * This source is licensed under the GNU LGPL v2.1
@@ -10,10 +10,6 @@
 package org.j3d.geom;
 
 // Standard imports
-import javax.media.j3d.Appearance;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.QuadArray;
-
 import javax.vecmath.Vector3f;
 
 // Application specific imports
@@ -77,9 +73,6 @@ public class SpringGenerator extends GeometryGenerator
      * and then centreline to the lower apex and cover one turn of the spring.
      */
     private float[] shapeCoordinates;
-
-    /** The number of values used in the shape coordinate array */
-    private int numShapeValues;
 
     /** Flag indicating shape values have changed */
     private boolean shapeChanged;
@@ -483,7 +476,7 @@ public class SpringGenerator extends GeometryGenerator
         data.indexesCount = index_size;
         int count = 0;
 
-        int i, j, k;
+        int i, k;
         int pos;
         int k_facet;
 
@@ -565,7 +558,7 @@ public class SpringGenerator extends GeometryGenerator
         data.indexesCount = index_size;
         int count = 0;
 
-        int i, j, k;
+        int i, k;
         int pos;
         int k_facet;
 
@@ -658,19 +651,6 @@ public class SpringGenerator extends GeometryGenerator
 
         for(int i = num_strips; --i >= 0; )
             stripCounts[i] = strip_length;
-    }
-
-    /**
-     * Generate a new set of points for a triangle fan array. Each facet on the
-     * side of the cone is a single fan, but the shape is one big fan.
-     *
-     * @param data The data to shape the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void triangleFans(GeometryData data)
-        throws InvalidArraySizeException
-    {
     }
 
     /**
@@ -769,36 +749,6 @@ public class SpringGenerator extends GeometryGenerator
                 indexes[count++] += index_count * k;
         }
     }
-
-    /**
-     * Generate a new set of points for an indexed triangle fan array. We
-     * build the strip from the existing points, and there's no need to
-     * re-order the points for the indexes this time. As for the simple fan,
-     * we use the first index, the lower-right corner as the apex for the fan.
-     *
-     * @param data The data to shape the calculations on
-     * @throws InvalidArraySizeException The array is not big enough to contain
-     *   the requested geometry
-     */
-    private void indexedTriangleFans(GeometryData data)
-        throws InvalidArraySizeException
-    {
-        generateIndexedCoordinates(data);
-
-        if((data.geometryComponents & GeometryData.NORMAL_DATA) != 0)
-            generateIndexedNormals(data);
-
-        if((data.geometryComponents & GeometryData.TEXTURE_2D_DATA) != 0)
-            generateTriTexture2D(data);
-        else if((data.geometryComponents & GeometryData.TEXTURE_3D_DATA) != 0)
-            generateTriTexture3D(data);
-
-        // now let's do the index list
-    }
-
-    //------------------------------------------------------------------------
-    // Coordinate generation routines
-    //------------------------------------------------------------------------
 
     /**
      * Generates new set of points suitable for use in an unindexed array. Each
@@ -1149,7 +1099,6 @@ public class SpringGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_offset = 0;
         int i, k;
 
@@ -1301,7 +1250,6 @@ public class SpringGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_offset = 0;
         int i, k;
 
@@ -1408,7 +1356,6 @@ public class SpringGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_offset = 0;
         int i, k;
 
@@ -1470,7 +1417,6 @@ public class SpringGenerator extends GeometryGenerator
         float[] normals = data.normals;
         Vector3f norm;
         int count = 0;
-        float[] origin = new float[3];
         int facet_count = 0;
         int i, k;
 
@@ -1528,8 +1474,6 @@ public class SpringGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("2D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     /**
@@ -1554,8 +1498,6 @@ public class SpringGenerator extends GeometryGenerator
             throw new InvalidArraySizeException("3D Texture coordinates",
                                                 data.textureCoordinates.length,
                                                 vtx_cnt);
-
-        float[] texCoords = data.textureCoordinates;
     }
 
     //------------------------------------------------------------------------
@@ -1586,8 +1528,6 @@ public class SpringGenerator extends GeometryGenerator
             shapeCoordinates = new float[vtx_total];
             oradiusCoordinates = new float[(outerFacetCount + 1) * 3];
         }
-
-        numShapeValues = vtx_total;
 
         // Increment angles for the inner and outer radius facets.
         double arc_length = (2 * Math.PI * outerRadius) / outerFacetCount;

@@ -13,7 +13,11 @@ import java.net.URL;
 public class SplashScreen extends Window
 {
 
-  /****************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/****************************************************
    * member fields
    ***************************************************/
   /** the image we plot

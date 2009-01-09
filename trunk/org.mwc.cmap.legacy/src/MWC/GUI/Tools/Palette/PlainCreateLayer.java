@@ -51,11 +51,13 @@
 
 package MWC.GUI.Tools.Palette;
 
-import MWC.GUI.*;
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Tools.*;
-import MWC.GUI.Properties.*;
-import MWC.GenericData.*;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 abstract public class PlainCreateLayer extends PlainTool
 {
@@ -142,18 +144,18 @@ abstract public class PlainCreateLayer extends PlainTool
 	{
 		/** the panel we are going to show the initial editor in
 		 */
-		final protected PropertiesPanel _thePanel;
+		final protected PropertiesPanel _thePanel1;
 		final protected Layer _theLayer;
-    final protected Layers _theData;
+    final protected Layers _theData1;
 
 
 		public CreateLabelAction(PropertiesPanel thePanel,
 															 Layer theLayer,
                                Layers theData)
 		{
-			_thePanel = thePanel;
+			_thePanel1 = thePanel;
 			_theLayer = theLayer;
-      _theData = theData;
+      _theData1 = theData;
 		}
 
 		/** specify is this is an operation which can be undone
@@ -182,8 +184,8 @@ abstract public class PlainCreateLayer extends PlainTool
 		 */
 		public void undo()
 		{
-      _theData.removeThisLayer(_theLayer);
-      _theData.fireExtended();
+      _theData1.removeThisLayer(_theLayer);
+      _theData1.fireExtended();
 		}
 
     /** make it so!
@@ -195,9 +197,9 @@ abstract public class PlainCreateLayer extends PlainTool
       {
         // add the Shape to the layer, and put it
         // in the property editor
-        _theData.addThisLayer(_theLayer);
-        _thePanel.addEditor(_theLayer.getInfo(), _theLayer);
-        _theData.fireModified(_theLayer);
+        _theData1.addThisLayer(_theLayer);
+        _thePanel1.addEditor(_theLayer.getInfo(), _theLayer);
+        _theData1.fireModified(_theLayer);
       }
     }
   }

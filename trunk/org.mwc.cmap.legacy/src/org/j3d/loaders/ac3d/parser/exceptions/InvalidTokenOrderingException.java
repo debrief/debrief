@@ -22,6 +22,12 @@ package org.j3d.loaders.ac3d.parser.exceptions;
 public class InvalidTokenOrderingException extends AC3DParseException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+		/**
      * Creates new <code>InvalidTokenOrderingException</code> without detail message.
      */
     public InvalidTokenOrderingException() {

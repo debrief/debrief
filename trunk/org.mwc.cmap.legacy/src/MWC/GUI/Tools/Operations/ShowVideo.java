@@ -36,9 +36,9 @@ package MWC.GUI.Tools.Operations;
 //
 
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import java.io.*;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 
  public class ShowVideo extends PlainTool
@@ -70,14 +70,6 @@ import java.io.*;
 
     // and remember the object we're listing to
     _theSubject = theSubject;
-
-    // hey, just have a go at creating a JMF-dependent object
-    // to check that the classes are loaded
-    MWC.GUI.Video.SwingGrabControl ls = new MWC.GUI.Video.SwingGrabControl(_theSubject, theParent, thePanel);
-
-    // ok, if we hadn't got the classes loaded an exception would have been thrown by now, so we
-    // can drop out if we want to
-    ls = null;
   }
 
   /////////////////////////////////////////////////////////////

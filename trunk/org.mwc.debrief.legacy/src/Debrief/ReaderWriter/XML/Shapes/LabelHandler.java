@@ -19,18 +19,18 @@ import MWC.Utilities.ReaderWriter.XML.Util.*;
 abstract public class LabelHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader implements LayerHandler.exporter
 {
 
-  private java.awt.Color _theColor;
-  private boolean _isVisible;
-  private MWC.GenericData.WorldLocation _centre;
-  private String _labelLocation;
-  private HiResDate _startDTG = null;
-  private HiResDate _endDTG = null;
-  private java.awt.Font _font = null;
-  private String _symbol;
-  private String _label;
-  private boolean _symbolVisible;
-  private boolean _labelVisible;
-  private String _scale;
+  java.awt.Color _theColor;
+  boolean _isVisible;
+  MWC.GenericData.WorldLocation _centre;
+  String _labelLocation;
+  HiResDate _startDTG = null;
+  HiResDate _endDTG = null;
+  java.awt.Font _font = null;
+  String _symbol;
+  String _label;
+  boolean _symbolVisible;
+  boolean _labelVisible;
+  String _scale;
 
   /** class which contains list of textual representations of label locations
    */

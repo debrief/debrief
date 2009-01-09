@@ -33,14 +33,18 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class MerchantSym extends PlainSymbol {
 
-  public void getMetafile()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void getMetafile()
   {
   }
 

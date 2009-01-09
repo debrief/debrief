@@ -1,13 +1,17 @@
 package MWC.GUI.Properties.Swing;
 
 
-import javax.swing.*;
-import javax.swing.table.*;
-import javax.swing.event.*;
-import java.util.*;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
+import javax.swing.table.AbstractTableModel;
+import javax.swing.table.TableModel;
 
 public class TableSortDecorator extends TableModelDecorator 
 								implements TableModelListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int indexes[];
 
 	public TableSortDecorator(TableModel m) {

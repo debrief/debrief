@@ -59,6 +59,7 @@ import com.jrefinery.date.MonthConstants;
  *
  * @author DG
  */
+@SuppressWarnings("unchecked")
 public abstract class TimePeriod implements Comparable, MonthConstants {
 
     /**

@@ -59,17 +59,17 @@ import java.util.ResourceBundle;
 public class DefaultXYDataset extends AbstractSeriesDataset implements XYDataset {
 
     /** A list of series names. */
-    private List seriesNames;
+    private List<String> seriesNames;
 
     /** A list of Lists containing the data for each series. */
-    private List allSeriesData;
+    private List<List<XYDataPair>> allSeriesData;
 
     /**
      * Constructs a new dataset, initially empty.
      */
     public DefaultXYDataset() {
-        seriesNames = new java.util.ArrayList();
-        allSeriesData = new java.util.ArrayList();
+        seriesNames = new java.util.ArrayList<String>();
+        allSeriesData = new java.util.ArrayList<List<XYDataPair>>();
     }
 
     /**
@@ -102,16 +102,17 @@ public class DefaultXYDataset extends AbstractSeriesDataset implements XYDataset
      * @param seriesNames  the names of the series.
      * @param data  the dataset.
      */
-    public DefaultXYDataset(List seriesNames, Object[][][] data) {
+    @SuppressWarnings("unchecked")
+		public DefaultXYDataset(List<String> seriesNames, Object[][][] data) {
 
         this.seriesNames = seriesNames;
 
         int seriesCount = data.length;
 
-        allSeriesData = new java.util.ArrayList(seriesCount);
+        allSeriesData = new java.util.ArrayList<List<XYDataPair>>(seriesCount);
 
         for (int series = 0; series < seriesCount; series++) {
-            List oneSeriesData = new java.util.ArrayList();
+            List<XYDataPair> oneSeriesData = new java.util.ArrayList<XYDataPair>();
             int maxItemCount = data[series].length;
             for (int itemIndex = 0; itemIndex < maxItemCount; itemIndex++) {
                 Object xObject = data[series][itemIndex][0];
@@ -156,7 +157,7 @@ public class DefaultXYDataset extends AbstractSeriesDataset implements XYDataset
      * @return the number of items in the specified series.
      */
     public int getItemCount(int series) {
-        List oneSeriesData = (List) allSeriesData.get(series);
+        List<XYDataPair> oneSeriesData = allSeriesData.get(series);
         return oneSeriesData.size();
     }
 
@@ -191,7 +192,7 @@ public class DefaultXYDataset extends AbstractSeriesDataset implements XYDataset
      * @return the x value for the specified series and index.
      */
     public Number getXValue(int series, int item) {
-        List oneSeriesData = (List) allSeriesData.get(series);
+        List<XYDataPair> oneSeriesData = allSeriesData.get(series);
         XYDataPair xy = (XYDataPair) oneSeriesData.get(item);
         return xy.getX();
     }
@@ -205,7 +206,7 @@ public class DefaultXYDataset extends AbstractSeriesDataset implements XYDataset
      * @return the y value for the specified series and index
      */
     public Number getYValue(int series, int item) {
-        List oneSeriesData = (List) allSeriesData.get(series);
+        List<XYDataPair> oneSeriesData = allSeriesData.get(series);
         XYDataPair xy = (XYDataPair) oneSeriesData.get(item);
         return xy.getY();
     }
@@ -217,7 +218,7 @@ public class DefaultXYDataset extends AbstractSeriesDataset implements XYDataset
      *
      * @return a List of String objects that can be used as series names.
      */
-    public static List seriesNameListFromDataArray(Object[][] data) {
+    public static List<String> seriesNameListFromDataArray(Object[][] data) {
 
         String baseName = "com.jrefinery.data.resources.DataPackageResources";
         ResourceBundle resources = ResourceBundle.getBundle(baseName);
@@ -225,7 +226,7 @@ public class DefaultXYDataset extends AbstractSeriesDataset implements XYDataset
         String prefix = resources.getString("series.default-prefix") + " ";
 
         int seriesCount = data.length;
-        List seriesNameList = new java.util.ArrayList(seriesCount);
+        List<String> seriesNameList = new java.util.ArrayList<String>(seriesCount);
         for (int i = 0; i < seriesCount; i++) {
             seriesNameList.add(prefix + (i + 1));
         }

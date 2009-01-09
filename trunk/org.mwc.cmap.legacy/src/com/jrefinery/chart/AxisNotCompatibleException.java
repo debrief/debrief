@@ -50,6 +50,11 @@ package com.jrefinery.chart;
 public class AxisNotCompatibleException extends RuntimeException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs a new exception.
      *
      * @param message  a message describing the exception.

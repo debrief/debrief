@@ -419,7 +419,7 @@ public final class ContactWrapper extends MWC.GUI.PlainWrapper implements Serial
     public final MethodDescriptor[] getMethodDescriptors()
     {
       // just add the reset color field first
-      final Class c = ContactWrapper.class;
+      final Class<ContactWrapper> c = ContactWrapper.class;
       final MethodDescriptor[] mds = {
         method(c, "exportThis", null, "Export Shape")
       };

@@ -26,36 +26,39 @@
 package MWC.GUI.ETOPO;
 
 /*  Java Core  */
-import java.awt.Component;
-import java.awt.GridLayout;
-import java.awt.Point;
-import java.awt.event.*;
-import java.io.*;
-import java.net.URL;
-import java.util.Properties;
-import java.util.StringTokenizer;
 import java.awt.Color;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 
-/*  OpenMap  */
-import com.bbn.openmap.*;
-import com.bbn.openmap.event.*;
+import javax.swing.Box;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import com.bbn.openmap.LatLonPoint;
+import com.bbn.openmap.Layer;
+import com.bbn.openmap.event.InfoDisplayEvent;
+import com.bbn.openmap.event.LayerStatusEvent;
+import com.bbn.openmap.event.ProjectionEvent;
+import com.bbn.openmap.event.ProjectionListener;
 import com.bbn.openmap.io.BinaryBufferedFile;
 import com.bbn.openmap.io.FormatException;
 import com.bbn.openmap.layer.util.LayerUtils;
-import com.bbn.openmap.omGraphics.OMColor;
 import com.bbn.openmap.omGraphics.OMGraphicList;
 import com.bbn.openmap.omGraphics.OMRaster;
-import com.bbn.openmap.omGraphics.OMRasterObject;
-import com.bbn.openmap.omGraphics.OMRect;
-import com.bbn.openmap.omGraphics.OMText;
-import com.bbn.openmap.proj.*;
+import com.bbn.openmap.proj.CADRG;
+import com.bbn.openmap.proj.Projection;
 import com.bbn.openmap.util.Debug;
 import com.bbn.openmap.util.PaletteHelper;
 import com.bbn.openmap.util.SwingWorker;
-
-import javax.swing.*;
-import javax.swing.event.ChangeListener;
-import javax.swing.event.ChangeEvent;
  
 /**
  * MWCETOPOLayer extends Layer to provide rendering of
@@ -122,7 +125,12 @@ import javax.swing.event.ChangeEvent;
 public class MWCETOPOLayer extends Layer implements ProjectionListener, ActionListener
 {
     
-    /** Gray scale slope shading, sun from the Northwest. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Gray scale slope shading, sun from the Northwest. */
     public static final int SLOPESHADING = 0;
 
     /** Colorized slope shading.  Color basnds are based on elevation,
@@ -609,9 +617,7 @@ public class MWCETOPOLayer extends Layer implements ProjectionListener, ActionLi
 
 	    // read data
       int i = 0;
-      int j = 0;
-
-	    for (i=0;i<bufferWidth*bufferHeight;i++)
+      for (i=0;i<bufferWidth*bufferHeight;i++)
       {
         dataBuffer[i] = binFile.readShort();
       }
@@ -966,7 +972,7 @@ public class MWCETOPOLayer extends Layer implements ProjectionListener, ActionLi
 	    // The ETOPO Contrast Adjuster
 	    JPanel contrastPanel = PaletteHelper.createPaletteJPanel("Contrast Adjustment");
 	    JSlider contrastSlide = new JSlider(JSlider.HORIZONTAL, 1/*min*/, 5/*max*/, 3/*inital*/);
-	    java.util.Hashtable dict = new java.util.Hashtable();
+	    java.util.Hashtable<Integer, JLabel> dict = new java.util.Hashtable<Integer, JLabel>();
 	    dict.put(new Integer(1), new JLabel("min"));
 	    dict.put(new Integer(5), new JLabel("max"));
 	    contrastSlide.setLabelTable(dict);

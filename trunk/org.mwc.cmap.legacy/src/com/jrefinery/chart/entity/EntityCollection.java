@@ -78,6 +78,7 @@ public interface EntityCollection {
      *
      * @return an iterator.
      */
-    public Iterator iterator();
+    @SuppressWarnings("unchecked")
+		public Iterator iterator();
 
 }

@@ -63,12 +63,9 @@
 
 package MWC.GUI.Tools;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import MWC.GenericData.*;
-
-import MWC.GUI.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GenericData.WorldLocation;
 
 /** abstract class for tools which 'watch' the canvas, 
  * normally trapping movements

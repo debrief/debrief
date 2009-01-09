@@ -27,7 +27,11 @@ package MWC.GUI.S57.support;
  */
 public class InvalidCharException extends FormatException {
 
-    /** the invalid character that we found */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** the invalid character that we found */
     final public char c;
 
     /**

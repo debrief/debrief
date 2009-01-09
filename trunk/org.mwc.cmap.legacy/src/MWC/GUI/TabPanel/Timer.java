@@ -1,15 +1,13 @@
 package MWC.GUI.TabPanel;
 
 
-import java.awt.Component;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
-import java.beans.VetoableChangeListener;
-import java.awt.event.ActionListener;
-import java.awt.AWTEvent;
 import java.awt.AWTEventMulticaster;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
 
 //	05/30/97	LAB	Updated to support Java 1.1
 //	06/06/97	LAB	Removed deprecated (unusable in 1.1) functions:
@@ -46,6 +44,10 @@ import java.awt.AWTEventMulticaster;
 public class Timer implements Runnable, java.io.Serializable
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/**
      * Creates a timer with the default delay.
      * After 1000 miliseconds this timer will fire an ActionEvent.
 	 * It will not repeat.
@@ -228,7 +230,8 @@ public class Timer implements Runnable, java.io.Serializable
      * @see #start
      * @see #stop
      */
-    public void resume()
+    @SuppressWarnings("deprecation")
+		public void resume()
     {
     	if(execute != true)
     	{
@@ -245,7 +248,8 @@ public class Timer implements Runnable, java.io.Serializable
      * @see #stop
      * @see #run
      */
-    public void start()
+    @SuppressWarnings("deprecation")
+		public void start()
     {
 	    execute = true;
 	    live	= true;
@@ -320,7 +324,8 @@ public class Timer implements Runnable, java.io.Serializable
      * Stops the timer.  After return the timer will generate no more events.
      * @see #start
      */
-    public void stop()
+    @SuppressWarnings("deprecation")
+		public void stop()
     {
 	    execute		= false;
 	    repeating	= false;
@@ -337,7 +342,8 @@ public class Timer implements Runnable, java.io.Serializable
      * @see #start(int, boolean)
      * @see #stop
      */
-    public void run()
+    @SuppressWarnings({ "deprecation", "deprecation" })
+		public void run()
     {
         if(!execute) thread.suspend();
 		try
@@ -347,7 +353,7 @@ public class Timer implements Runnable, java.io.Serializable
                 do
                 {
 					repeating = repeat;
-                    thread.sleep(delay);
+                    Thread.sleep(delay);
                     if (execute)
                     {
                     	sourceActionEvent();

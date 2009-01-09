@@ -17,9 +17,6 @@ import javax.media.j3d.Transform3D;
 import javax.media.j3d.TransformGroup;
 import javax.media.j3d.View;
 
-// Application specific imports
-import org.j3d.util.ImageLoader;
-
 /**
  * A handler for viewpoint information for a given canvas.
  *

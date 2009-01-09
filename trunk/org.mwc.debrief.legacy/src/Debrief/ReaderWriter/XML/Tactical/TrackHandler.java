@@ -12,7 +12,9 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
+import MWC.GUI.Editable;
 import MWC.Utilities.ReaderWriter.XML.Util.*;
 
 public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -22,19 +24,19 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 
 	private static final String INTERPOLATE_POINTS = "InterpolatePoints";
 
-	private final MWC.GUI.Layers _theLayers;
+	 final MWC.GUI.Layers _theLayers;
 
 	// private MWC.GUI.Layer _myLayer;
 
 	// our "working" track
-	private Debrief.Wrappers.TrackWrapper _myTrack;
+	 Debrief.Wrappers.TrackWrapper _myTrack;
 
-	private MWC.TacticalData.Track _theTrack;
+	 MWC.TacticalData.Track _theTrack;
 
 	/**
 	 * class which contains list of textual representations of label locations
 	 */
-	static private final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
+	static final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
 
 	public TrackHandler(MWC.GUI.Layers theLayers)
 	{
@@ -173,7 +175,7 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 
 	}
 
-	private void addThis(MWC.GUI.Plottable val)
+	void addThis(MWC.GUI.Plottable val)
 	{
 		_myTrack.add(val);
 	}
@@ -220,7 +222,7 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 		}
 
 		// first output any sensor data
-		java.util.Enumeration sensors = track.getSensors();
+		java.util.Enumeration<SensorWrapper> sensors = track.getSensors();
 
 		// check if there is any data!
 		if (sensors != null)
@@ -234,7 +236,7 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 		}
 
 		// first output any sensor data
-		java.util.Enumeration solutions = track.getSolutions();
+		java.util.Enumeration<TMAWrapper> solutions = track.getSolutions();
 
 		// check if there is any data!
 		if (solutions != null)
@@ -248,7 +250,7 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 		}
 
 		// now the points
-		java.util.Enumeration iter = track.getPositions();
+		java.util.Enumeration<Editable> iter = track.getPositions();
 		while (iter.hasMoreElements())
 		{
 			MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();

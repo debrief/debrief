@@ -19,7 +19,7 @@ final public class WorldAcceleration
   /**
    * the actual speed (in minutes)
    */
-  private double _mySpeed;
+  double _mySpeed;
 
   /**
    * the types of units we can handle

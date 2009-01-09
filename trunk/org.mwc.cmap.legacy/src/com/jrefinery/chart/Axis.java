@@ -625,7 +625,7 @@ public abstract class Axis implements AxisConstants {
         Font font = getTickLabelFont();
         FontRenderContext frc = g2.getFontRenderContext();
 
-        Iterator iterator = ticks.iterator();
+        Iterator<Tick> iterator = ticks.iterator();
         while (iterator.hasNext()) {
             Tick tick = (Tick) iterator.next();
             Rectangle2D labelBounds = font.getStringBounds(tick.getText(), frc);
@@ -640,11 +640,11 @@ public abstract class Axis implements AxisConstants {
     /**
      * Returns true if the plot is compatible with the axis.
      *
-     * @param plot  the plot.
+     * @param plot1  the plot.
      *
      * @return <code>true</code> if the plot is compatible with the axis.
      */
-    protected abstract boolean isCompatiblePlot(Plot plot);
+    protected abstract boolean isCompatiblePlot(Plot plot1);
 
     /**
      * Registers an object for notification of changes to the axis.

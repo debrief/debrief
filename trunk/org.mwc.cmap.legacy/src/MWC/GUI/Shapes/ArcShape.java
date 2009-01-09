@@ -162,7 +162,7 @@ public class ArcShape extends CircleShape implements Serializable, Editable
   /**
    * the number of segments to use to plot this shape (when applicable)
    */
-  public static final int NUM_SEGMENTS = 40;
+  public static final int NUM_SEGMENTS1 = 40;
 
   /**
    * whether to plot the origin of the arc
@@ -508,19 +508,19 @@ public class ArcShape extends CircleShape implements Serializable, Editable
   /**
    * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
    */
-  public Collection getDataPoints()
+  public Collection<WorldLocation> getDataPoints()
   {
     // get ready to store the list
-    Collection res = new Vector(0, 1);
+    Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
     // convert the radius to degs
     double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
 
 
-    for (int i = 0; i <= NUM_SEGMENTS; i++)
+    for (int i = 0; i <= NUM_SEGMENTS1; i++)
     {
       // produce the current bearing
-      double this_brg = (360.0 / NUM_SEGMENTS * i) / 180.0 * Math.PI;
+      double this_brg = (360.0 / NUM_SEGMENTS1 * i) / 180.0 * Math.PI;
 
       // create a new point at our indicated radius on the current bearing
       WorldLocation wl = new WorldLocation(_theCentre.add(new WorldVector(this_brg, radDegs, 0)));

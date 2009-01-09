@@ -45,8 +45,7 @@ package MWC.GUI.Shapes.Symbols;
 // Initial revision
 //
 
-import java.beans.*;
-import java.awt.*;
+import java.beans.PropertyEditorSupport;
 
 public class SymbolFactoryPropertyEditor extends PropertyEditorSupport
 {

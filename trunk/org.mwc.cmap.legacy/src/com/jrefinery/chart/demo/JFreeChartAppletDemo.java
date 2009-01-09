@@ -54,6 +54,11 @@ import com.jrefinery.chart.ChartFactory;
 public class JFreeChartAppletDemo extends JApplet {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs the demo applet.
      */
     public JFreeChartAppletDemo() {

@@ -1,8 +1,6 @@
 package MWC.Utilities.Errors.Testing;
 
-import java.util.*;
-
-import junit.framework.*;
+import junit.framework.TestCase;
 
 /**
  */

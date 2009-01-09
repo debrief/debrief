@@ -64,7 +64,8 @@ import java.io.*;
  */
 public class AWTFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 {
-  public File[] getExistingFile(String filter,
+  @SuppressWarnings("deprecation")
+	public File[] getExistingFile(String filter,
 																	String description,
 																	String lastDirectory){
     Frame frm = new Frame("dummy");
@@ -79,7 +80,8 @@ public class AWTFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 		return res;
   }
   
-  public java.io.File getNewFile(String filter,
+  @SuppressWarnings("deprecation")
+	public java.io.File getNewFile(String filter,
 																	String description,
 																	String lastDirectory){
     Frame frm = new Frame("dummy");

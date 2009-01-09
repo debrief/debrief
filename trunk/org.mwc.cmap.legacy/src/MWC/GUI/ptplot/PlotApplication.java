@@ -28,12 +28,16 @@
 */
 
 package MWC.GUI.ptplot;
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.util.StringTokenizer;
-import java.net.URL;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.net.URL;
+
 import javax.swing.JOptionPane;
 
 //////////////////////////////////////////////////////////////////////////
@@ -100,7 +104,12 @@ have, then alter the above accordingly.
 */
 public class PlotApplication extends PlotFrame {
 
-    /** Construct a plot with no command-line arguments.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Construct a plot with no command-line arguments.
      *  It initially displays a sample plot.
      *  @exception Exception Not thrown.
      */
@@ -152,7 +161,8 @@ public class PlotApplication extends PlotFrame {
      */
     public static void main(String args[]) {
         try {
-            PlotApplication plot = null;
+            @SuppressWarnings("unused")
+						PlotApplication plot = null;
 						plot = new PlotApplication(new Plot(), args);
         } catch (Exception ex) {
             System.err.println(ex.toString());
@@ -163,7 +173,7 @@ public class PlotApplication extends PlotFrame {
         // If the -test arg was set, then exit after 2 seconds.
         if (_test) {
             try {
-                Thread.currentThread().sleep(2000);
+                Thread.sleep(2000);
             }
             catch (InterruptedException e) {
             }
@@ -215,7 +225,7 @@ public class PlotApplication extends PlotFrame {
      */
     protected int _parseArgs(String args[]) throws CmdLineArgException,
             FileNotFoundException, IOException {
-        int i = 0, j, argumentsRead;
+        int i = 0, argumentsRead;
         String arg;
         String title = "Ptolemy plot";
 

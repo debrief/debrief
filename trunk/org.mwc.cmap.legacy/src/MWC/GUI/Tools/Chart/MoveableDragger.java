@@ -78,7 +78,12 @@ import java.util.Enumeration;
 public class MoveableDragger extends PlainDragTool implements Serializable,
   PlainChart.ChartCursorMovedListener
 {
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
   /**
@@ -146,9 +151,6 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
 
     // convert this to screen
     Moveable res = null;
-    double dist = 0;
-
-
     // find the nearest editable item
     RightClickEdit.ObjectConstruct vals = new RightClickEdit.ObjectConstruct();
     int num = theData.size();
@@ -165,8 +167,6 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
 
     // retrieve the results
     res = (Moveable) vals.object;
-    dist = vals.distance;
-
     // see if the nearest moveable is within range
     if (res != null)
     {
@@ -322,7 +322,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
     if (thisLayer.getVisible())
     {
       // go through this layer
-      Enumeration enumer = thisLayer.elements();
+      Enumeration<Editable> enumer = thisLayer.elements();
       while (enumer.hasMoreElements())
       {
         Plottable p = (Plottable) enumer.nextElement();
@@ -377,7 +377,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
   protected class MoveableDraggerAction implements Action
   {
 
-    private PlainChart _theChart;
+    private PlainChart _theChart1;
     private WorldLocation _oldLocation;
     private WorldLocation _newLocation;
     private Moveable _theMoveable;
@@ -389,7 +389,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
                                  WorldLocation newLocation)
     {
       _theMoveable = theMoveable;
-      _theChart = theChart;
+      _theChart1 = theChart;
       _oldLocation = oldLocation;
       _newLocation = newLocation;
     }
@@ -415,7 +415,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
       _theMoveable.doMove(_newLocation, _oldLocation);
 
       // and redraw
-      _theChart.update();
+      _theChart1.update();
     }
 
     public void execute()
@@ -424,7 +424,7 @@ public class MoveableDragger extends PlainDragTool implements Serializable,
       _theMoveable.doMove(_oldLocation, _newLocation);
 
       // and redraw
-      _theChart.update();
+      _theChart1.update();
     }
   }
 

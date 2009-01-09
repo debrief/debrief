@@ -94,12 +94,12 @@ public class Tick {
     public double getNumericalValue() {
 
         if (value instanceof Number) {
-            Number x = (Number) value;
-            return x.doubleValue();
+            Number x1 = (Number) value;
+            return x1.doubleValue();
         }
         else if (value instanceof Date) {
-            Date x = (Date) value;
-            return (double) x.getTime();
+            Date x1 = (Date) value;
+            return (double) x1.getTime();
         }
         else {
             return 0.0;

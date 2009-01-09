@@ -56,7 +56,7 @@ abstract public class WorldPathHandler extends MWCXMLReader {
     org.w3c.dom.Element eLoc = doc.createElement(_myType);
 
     // step through the list
-    Iterator it = path.getPoints().iterator();
+    Iterator<WorldLocation> it = path.getPoints().iterator();
 
     while(it.hasNext())
     {

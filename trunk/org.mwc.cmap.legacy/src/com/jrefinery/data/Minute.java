@@ -66,9 +66,6 @@ public class Minute extends TimePeriod {
     /** Useful constant for the last minute in a day. */
     public static final int LAST_MINUTE_IN_HOUR = 59;
 
-    /** Useful constant for the number of milliseconds in one minute. */
-    private static final long MILLISECONDS_PER_MINUTE = 60 * 1000L;
-
     /** The hour in which the minute falls. */
     private Hour hour;
 

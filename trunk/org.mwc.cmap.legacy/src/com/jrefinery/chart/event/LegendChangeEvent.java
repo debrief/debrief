@@ -48,7 +48,11 @@ import com.jrefinery.chart.Legend;
  */
 public class LegendChangeEvent extends ChartChangeEvent {
 
-    /** The chart legend that generated the event. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** The chart legend that generated the event. */
     private Legend legend;
 
     /**

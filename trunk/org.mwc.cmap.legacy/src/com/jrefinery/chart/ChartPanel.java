@@ -121,11 +121,16 @@ public class ChartPanel extends JPanel implements ChartPanelConstants,
                                                   MouseMotionListener,
                                                   Printable {
 
-    /** The chart that is displayed in the panel. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The chart that is displayed in the panel. */
     private JFreeChart chart;
 
     /** Storage for registered (chart) mouse listeners. */
-    private List chartMouseListeners;
+    private List<ChartMouseListener> chartMouseListeners;
 
     /** A flag that controls whether or not the off-screen buffer is used. */
     private boolean useBuffer;
@@ -191,17 +196,11 @@ public class ChartPanel extends JPanel implements ChartPanelConstants,
     /** A flag that controls whether or not vertical tracing is enabled. */
     private boolean verticalAxisTrace = false;
 
-    /** Menu item for zooming in on a chart (both axes). */
-    private JMenuItem zoomInBothAxesMenuItem;
-
     /** Menu item for zooming in on a chart (horizontal axis). */
     private JMenuItem zoomInHorizontalMenuItem;
 
     /** Menu item for zooming in on a chart (vertical axis). */
     private JMenuItem zoomInVerticalMenuItem;
-
-    /** Menu item for zooming out on a chart. */
-    private JMenuItem zoomOutBothMenuItem;
 
     /** Menu item for zooming out on a chart (horizontal axis). */
     private JMenuItem zoomOutHorizontalMenuItem;
@@ -350,7 +349,7 @@ public class ChartPanel extends JPanel implements ChartPanelConstants,
                       boolean tooltips) {
 
         this.chart = chart;
-        this.chartMouseListeners = new java.util.ArrayList();
+        this.chartMouseListeners = new java.util.ArrayList<ChartMouseListener>();
         this.info = new ChartRenderingInfo();
         setPreferredSize(new Dimension(width, height));
         this.useBuffer = useBuffer;
@@ -1088,7 +1087,7 @@ public class ChartPanel extends JPanel implements ChartPanelConstants,
         ChartEntity entity = this.info.getEntityCollection().getEntity(x, y);
         ChartMouseEvent chartEvent = new ChartMouseEvent(event, entity);
 
-        Iterator iterator = chartMouseListeners.iterator();
+        Iterator<ChartMouseListener> iterator = chartMouseListeners.iterator();
         while (iterator.hasNext()) {
             ChartMouseListener listener = (ChartMouseListener) iterator.next();
             listener.chartMouseClicked(chartEvent);
@@ -1122,7 +1121,7 @@ public class ChartPanel extends JPanel implements ChartPanelConstants,
         ChartEntity entity = this.info.getEntityCollection().getEntity(x, y);
         ChartMouseEvent event = new ChartMouseEvent(e, entity);
 
-        Iterator iterator = chartMouseListeners.iterator();
+        Iterator<ChartMouseListener> iterator = chartMouseListeners.iterator();
         while (iterator.hasNext()) {
             ChartMouseListener listener = (ChartMouseListener) iterator.next();
             listener.chartMouseMoved(event);

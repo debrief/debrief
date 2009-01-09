@@ -117,6 +117,7 @@ import Debrief.Tools.Tote.*;
 import Debrief.Tools.Tote.Calculations.*;
 import MWC.Algorithms.Plotting.*;
 import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.Editable;
 import MWC.GUI.StepperListener;
 import MWC.GUI.Canvas.MetafileCanvasGraphics2d;
 import MWC.GUI.Properties.PropertiesPanel;
@@ -152,7 +153,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 	/**
 	 * the tracks we should cover
 	 */
-	private Vector _theTracks = null;
+	private Vector<WatchableList> _theTracks = null;
 
 	/**
 	 * the panel we put our graph into
@@ -162,7 +163,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 	/**
 	 * the operations we provide
 	 */
-	private final Vector _theOperations;
+	private final Vector<CalculationHolder> _theOperations;
 
 	/**
 	 * store a local copy of the line separator
@@ -187,7 +188,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 		// remember the stepper
 		_theStepper = theStepper;
 
-		_theOperations = new Vector(0, 1);
+		_theOperations = new Vector<CalculationHolder>(0, 1);
 		_theOperations.addElement(new CalculationHolder(new depthCalc(),
 				new DepthFormatter(), false, 0));
 
@@ -236,7 +237,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 		_end_time = finishDTG;
 	}
 
-	public final void setTracks(final Vector selectedTracks)
+	public final void setTracks(final Vector<WatchableList> selectedTracks)
 	{
 		_theTracks = selectedTracks;
 	}
@@ -485,7 +486,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 	 * @see TimeSeriesCollection#addSeries(BasicTimeSeries series)
 	 */
 	public static AbstractDataset getDataSeries(final WatchableList primaryTrack,
-			final CalculationHolder myOperation, final Vector theTracks, HiResDate start_time,
+			final CalculationHolder myOperation, final Vector<WatchableList> theTracks, HiResDate start_time,
 			HiResDate end_time, ColouredDataItem.OffsetProvider provider)
 	{
 
@@ -503,7 +504,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 			{
 				public void add(Series thisSeries, HiResDate theTime, double data,
 						Color thisColor, boolean connectToPrevious,
-						ColouredDataItem.OffsetProvider provider)
+						ColouredDataItem.OffsetProvider provider1)
 				{
 					// HI-RES NOT DONE - FixedMillisecond should be converted some-how to
 					// FixedMicroSecond
@@ -533,12 +534,12 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 			{
 				public void add(Series thisSeries, HiResDate theTime, double data,
 						Color thisColor, boolean connectToPrevious,
-						ColouredDataItem.OffsetProvider provider)
+						ColouredDataItem.OffsetProvider provider1)
 				{
 					// HI-RES NOT DONE - FixedMillisecond should be converted some-how to
 					// FixedMicroSecond
 					ColouredDataItem newItem = new ColouredDataItem(new FixedMillisecond(theTime
-							.getDate().getTime()), data, thisColor, connectToPrevious, provider);
+							.getDate().getTime()), data, thisColor, connectToPrevious, provider1);
 
 					// To change body of implemented methods use File | Settings | File
 					// Templates.
@@ -556,7 +557,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 		}
 
 		// calculate the data variables for our tracks
-		final Enumeration iter = theTracks.elements();
+		final Enumeration<WatchableList> iter = theTracks.elements();
 		while (iter.hasMoreElements())
 		{
 			WatchableList thisSecondaryTrack = (WatchableList) iter.nextElement();
@@ -575,7 +576,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 			// ////////////////////////////////////////////////////
 			// step through the track
 			//
-			Collection ss = thisSecondaryTrack.getItemsBetween(start_time, end_time);
+			Collection<Editable> ss = thisSecondaryTrack.getItemsBetween(start_time, end_time);
 
 			// indicator for whether we join this data point to the previous one
 			boolean connectToPrevious = false;
@@ -624,17 +625,17 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 							// so, we don't have primary or secondary data. produce data
 							// values at the start and end of the track
 							// produce data points at the primary track locations
-							Iterator it = ss.iterator();
+							Iterator<Editable> it = ss.iterator();
 							Watchable theSecondaryPoint = (Watchable) it.next();
 
 							// get an iterator for the primary track
-							Collection primaryPoints = primaryTrack.getItemsBetween(start_time,
+							Collection<Editable> primaryPoints = primaryTrack.getItemsBetween(start_time,
 									end_time);
 
 							// do we have any primary data in this period
 							if (primaryPoints != null)
 							{
-								Iterator throughPrimary = primaryPoints.iterator();
+								Iterator<Editable> throughPrimary = primaryPoints.iterator();
 								Watchable thisPrimary = (Watchable) throughPrimary.next();
 
 								// ok, create the series with it's two points in
@@ -660,12 +661,12 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 							Color thisColor = theSecondaryPoint.getColor();
 
 							// get an iterator for the primary track
-							Collection primaryPoints = primaryTrack.getItemsBetween(start_time,
+							Collection<Editable> primaryPoints = primaryTrack.getItemsBetween(start_time,
 									end_time);
 
 							if (primaryPoints != null)
 							{
-								Iterator throughPrimary = primaryPoints.iterator();
+								Iterator<Editable> throughPrimary = primaryPoints.iterator();
 								while (throughPrimary.hasNext())
 								{
 									Watchable thisPrimary = (Watchable) throughPrimary.next();
@@ -693,7 +694,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 						// yes, we do have DTG data for this track - hooray!
 
 						// ok, step through the list
-						Iterator it = ss.iterator();
+						Iterator<Editable> it = ss.iterator();
 
 						// remember the last point - used to check if we're passing through
 						// zero degs
@@ -795,7 +796,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 
 						// ok, create the series with it's two points in
 						// ok, step through the list
-						Iterator it = ss.iterator();
+						Iterator<Editable> it = ss.iterator();
 						Watchable thisSecondary = (Watchable) it.next();
 
 						// and
@@ -811,7 +812,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 						// ////////////////////////////////////////////////
 
 						// ok, step through the list
-						Iterator it = ss.iterator();
+						Iterator<Editable> it = ss.iterator();
 
 						// remember the last point - used to check if we're passing through
 						// zero degs

@@ -12,19 +12,37 @@
 
 package org.j3d.loaders.ac3d;
 
-import java.io.*;
-import java.net.*;
-import java.util.*;
-import javax.vecmath.*;
-import javax.media.j3d.*;
-import com.sun.j3d.loaders.*;
-import com.sun.j3d.utils.geometry.*;
-import com.sun.j3d.utils.image.*;
+import java.net.URL;
+import java.util.Stack;
+
+import javax.media.j3d.Appearance;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.Geometry;
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.LineArray;
+import javax.media.j3d.Material;
+import javax.media.j3d.PolygonAttributes;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Texture2D;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.vecmath.Color3f;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Vector3f;
+
+import org.j3d.loaders.ac3d.models.Ac3dMaterial;
+import org.j3d.loaders.ac3d.models.Ac3dObject;
+import org.j3d.loaders.ac3d.models.Ac3dSurface;
+import org.j3d.loaders.ac3d.parser.exceptions.AC3DParseException;
+import org.j3d.loaders.ac3d.parser.handlers.Ac3dTokenHandlerBase;
 import org.j3d.loaders.ac3d.util.TextureLoaderHelper;
-import org.j3d.loaders.ac3d.models.*;
-import org.j3d.loaders.ac3d.parser.*;
-import org.j3d.loaders.ac3d.parser.handlers.*;
-import org.j3d.loaders.ac3d.parser.exceptions.*;
+
+import com.sun.j3d.loaders.Scene;
+import com.sun.j3d.loaders.SceneBase;
+import com.sun.j3d.utils.geometry.GeometryInfo;
+import com.sun.j3d.utils.geometry.NormalGenerator;
+import com.sun.j3d.utils.geometry.Triangulator;
 
 
 /**
@@ -61,7 +79,7 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
     private BranchGroup currentGroup;
     
     /** The call stack, used to handle objects. */
-    private Stack callStack;
+    private Stack<CallStackPlaceholder> callStack;
     
     /** Indicates the number of children left at a point in the parse. */
     private int kidsLeft;
@@ -70,10 +88,6 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
     private static final double FLAT_CREASE_ANGLE=0.0, 
         SMOOTH_CREASE_ANGLE=(22.0/7.0);
     
-    /** Specify what the base source is. */
-    private boolean sourceIsFile;
-    
-    
     /**
      * <p>Default constructor.</p>
      */
@@ -81,7 +95,6 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
     public LoaderTokenHandler() {
         super();
         scene=null;
-        sourceIsFile=true;
     }
     
     
@@ -241,7 +254,8 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
      *         surface information.
      */
     
-    private static final Geometry buildSurfaceGeometry(Ac3dSurface surf, 
+    @SuppressWarnings("deprecation")
+		private static final Geometry buildSurfaceGeometry(Ac3dSurface surf, 
         Ac3dObject obj, boolean isTextured) {
         
         GeometryInfo geomInfo;
@@ -420,8 +434,7 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
         currentGroup=null;
         scene.setSceneGroup(world);
         kidsLeft=0;
-        callStack=new Stack();
-        sourceIsFile=true;
+        callStack=new Stack<CallStackPlaceholder>();
     }
     
     
@@ -444,8 +457,6 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
      */
     
     public void setBasePath(String basePath) {
-        //textureLoaderHelper.setBasePath(basePath);
-        sourceIsFile=true;
     }
     
     
@@ -457,8 +468,6 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
      */
     
     public void setBaseUrl(URL baseUrl) {
-        //textureLoaderHelper.setBaseUrl(baseUrl);
-        sourceIsFile=false;
     }
     
     
@@ -468,19 +477,19 @@ public class LoaderTokenHandler extends Ac3dTokenHandlerBase {
     
     private class CallStackPlaceholder {
         private BranchGroup branchGroup;
-        private int kidsLeft;
+        private int kidsLeft1;
         
-        private CallStackPlaceholder(BranchGroup branchGroup, int kidsLeft) {
+        CallStackPlaceholder(BranchGroup branchGroup, int kidsLeft) {
             this.branchGroup=branchGroup;
-            this.kidsLeft=kidsLeft;
+            this.kidsLeft1=kidsLeft;
         }
         
-        private BranchGroup getBranchGroup() {
+        BranchGroup getBranchGroup() {
             return branchGroup;
         }
         
-        private int getKidsLeft() {
-            return kidsLeft;
+        int getKidsLeft() {
+            return kidsLeft1;
         }        
     }
 }

@@ -9,10 +9,11 @@ package MWC.Utilities.ReaderWriter.XML.Features;
  * @version 1.0
  */
 
-import org.xml.sax.*;
-import org.w3c.dom.*;
-import MWC.Utilities.ReaderWriter.XML.*;
-import MWC.Utilities.ReaderWriter.XML.Util.*;
+import org.w3c.dom.Element;
+
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 
 
@@ -23,8 +24,8 @@ abstract public class VPFCoastlineHandler extends MWCXMLReader  implements Layer
 
   private static MWC.GUI.ToolParent _myParent;
 
-  private java.awt.Color _theColor;
-  private boolean _isVisible;
+  java.awt.Color _theColor;
+  boolean _isVisible;
 
 
   public VPFCoastlineHandler()

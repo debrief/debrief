@@ -29,14 +29,26 @@
 
 package MWC.GUI.ptplot;
 
-import java.awt.*;
-import javax.swing.JPanel;
-import javax.swing.JOptionPane;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Menu;
+import java.awt.MenuBar;
+import java.awt.MenuItem;
+import java.awt.MenuShortcut;
+import java.awt.PrintJob;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
-import java.util.StringTokenizer;
-import java.util.Vector;
+
+import javax.swing.JOptionPane;
 
 // TO DO:
 //   - Add a mechanism for combining two plots into one
@@ -76,7 +88,13 @@ field is set once in the constructor and immutable afterwards.
 */
 public class PlotFrame extends Frame {
 
-    /** Construct a plot frame with a default title and by default contains
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+		/** Construct a plot frame with a default title and by default contains
      *  an instance of Plot. After constructing this, it is necessary
      *  to call setVisible(true) to make the plot appear.
      */
@@ -382,65 +400,6 @@ public class PlotFrame extends Frame {
 
     ///////////////////////////////////////////////////////////////////
     ////                         private methods                   ////
-
-    // Get the current connected state of all the point in the
-    // plot.  NOTE: This method reaches into the protected members of
-    // the Plot class, taking advantage of the fact that this class is
-    // in the same package.
-    private boolean[][] _getConnected() {
-        Vector points = ((Plot)plot)._points;
-        boolean[][] result = new boolean[points.size()][];
-        for (int dataset = 0; dataset < points.size(); dataset++) {
-            Vector pts = (Vector)points.elementAt(dataset);
-            result[dataset] = new boolean[pts.size()];
-            for (int i = 0; i < pts.size(); i++) {
-                PlotPoint pt = (PlotPoint)pts.elementAt(i);
-                result[dataset][i] = pt.connected;
-            }
-        }
-        return result;
-    }
-
-    // Set the current connected state of all the point in the
-    // plot.  NOTE: This method reaches into the protected members of
-    // the Plot class, taking advantage of the fact that this class is
-    // in the same package.
-    private void _setConnected(boolean value) {
-        Vector points = ((Plot)plot)._points;
-        // Make sure the default matches.
-        ((Plot)plot).setConnected(value);
-        boolean[][] result = new boolean[points.size()][];
-        for (int dataset = 0; dataset < points.size(); dataset++) {
-            Vector pts = (Vector)points.elementAt(dataset);
-            result[dataset] = new boolean[pts.size()];
-            boolean first = true;
-            for (int i = 0; i < pts.size(); i++) {
-                PlotPoint pt = (PlotPoint)pts.elementAt(i);
-                pt.connected = value && !first;
-                first = false;
-            }
-        }
-    }
-
-    // Set the current connected state of all the point in the
-    // plot.  NOTE: This method reaches into the protected members of
-    // the plot class, taking advantage of the fact that this class is
-    // in the same package.
-    private void _restoreConnected(boolean[][] original) {
-        Vector points = ((Plot)plot)._points;
-        boolean[][] result = new boolean[points.size()][];
-        for (int dataset = 0; dataset < points.size(); dataset++) {
-            Vector pts = (Vector)points.elementAt(dataset);
-            result[dataset] = new boolean[pts.size()];
-            for (int i = 0; i < pts.size(); i++) {
-                PlotPoint pt = (PlotPoint)pts.elementAt(i);
-                pt.connected = original[dataset][i];
-            }
-        }
-    }
-
-    ///////////////////////////////////////////////////////////////////
-    ////                         inner classes                     ////
 
     class FileMenuListener implements ActionListener {
         public void actionPerformed(ActionEvent e) {

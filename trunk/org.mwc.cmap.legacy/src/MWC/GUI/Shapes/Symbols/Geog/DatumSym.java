@@ -36,18 +36,22 @@
 
 package MWC.GUI.Shapes.Symbols.Geog;
 
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-
-import java.util.Collection;
-import java.util.Vector;
-import java.awt.*;
+import java.awt.Point;
 import java.awt.geom.Point2D;
+import java.util.Vector;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class DatumSym extends PlainSymbol {
 
-  public void getMetafile()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void getMetafile()
   {
   }
 
@@ -67,13 +71,13 @@ public class DatumSym extends PlainSymbol {
    *
    * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
    */
-  public Collection getCoordinates() {
-    Vector res = new Vector(0,1);
+  public Vector<Vector<Point2D>> getCoordinates() {
+  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
 
     // first do the cross
 
-    Vector line1 = new Vector(0,1);
-    Vector line2 = new Vector(0,1);
+    Vector<Point2D> line1 = new Vector<Point2D>(0,1);
+    Vector<Point2D> line2 = new Vector<Point2D>(0,1);
 
     int wid = (int)(2 * getScaleVal());
     line1.add(new Point(-wid, 0));
@@ -85,7 +89,7 @@ public class DatumSym extends PlainSymbol {
     res.add(line2);
 
     // now the circle
-    Collection circle = new Vector(0,1);
+    Vector<Point2D> circle = new Vector<Point2D>(0,1);
 
     // work our way around the circle, adding the pts
 
@@ -115,8 +119,6 @@ public class DatumSym extends PlainSymbol {
     java.awt.Point centre = dest.toScreen(theLocation);
 
     int wid = (int)(6 * getScaleVal());
-    int tinyWid = (int) getScaleVal();
-    int tinyWid_2 = (int)(tinyWid/2d);
     int wid_2 = (int)(wid/2d);
 
     // now the outer circle

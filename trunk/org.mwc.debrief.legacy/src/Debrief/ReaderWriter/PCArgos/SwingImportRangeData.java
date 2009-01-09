@@ -211,7 +211,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
     thisPanel.add (jp, java.awt.BorderLayout.CENTER);
   }
 
-  private void editOrigin()
+  void editOrigin()
   {
       WorldLocation val = MWC.GUI.Properties.Swing.SwingWorldLocationEditorFrame.doEdit(_theOrigin);
       if(val != null)
@@ -221,7 +221,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
       }
   }
 
-  private void doEditFilename()
+  void doEditFilename()
   {
     // create the file open dialog
     JFileChooser jf = new JFileChooser();
@@ -293,7 +293,7 @@ public final class SwingImportRangeData extends ImportRangeDataPanel
 
   }
 
-  private void checkDTG()
+  void checkDTG()
   {
     try{
       _theDTG = _dateF.parse(_theDate.getText()).getTime();

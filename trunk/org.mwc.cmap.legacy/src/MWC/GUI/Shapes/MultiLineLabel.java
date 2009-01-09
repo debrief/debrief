@@ -102,7 +102,8 @@ public class MultiLineLabel extends Canvas {
    * it doesn't have to worry about the color or font--the superclass
    * takes care of setting those in the Graphics object we're passed.
    */
-  public void paint(Graphics g) {
+  @SuppressWarnings("deprecation")
+	public void paint(Graphics g) {
     int x, y;
     Dimension size = this.size();  // use getSize() in Java 1.1
     if (!measured) measure();
@@ -130,7 +131,8 @@ public class MultiLineLabel extends Canvas {
 
   /** This internal method figures out how the font is, and how wide each
    *  line of the label is, and how wide the widest line is. */
-  protected synchronized void measure() {
+  @SuppressWarnings("deprecation")
+	protected synchronized void measure() {
     FontMetrics fm = this.getToolkit().getFontMetrics(this.getFont());
     line_height = fm.getHeight();
     line_ascent = fm.getAscent();

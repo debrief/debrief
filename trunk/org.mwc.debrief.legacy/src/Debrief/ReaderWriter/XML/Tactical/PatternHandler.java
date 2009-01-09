@@ -61,6 +61,7 @@ import Debrief.Wrappers.LabelWrapper;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.TimeRangeHandler;
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -72,12 +73,12 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
   private final MWC.GUI.Layers _theLayers;
 
   // our "working" track
-  private Debrief.Wrappers.BuoyPatternWrapper _myPattern;
+  Debrief.Wrappers.BuoyPatternWrapper _myPattern;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static private final MWC.GUI.Properties.LocationPropertyEditor lp
+  static final MWC.GUI.Properties.LocationPropertyEditor lp
     = new MWC.GUI.Properties.LocationPropertyEditor();
 
   public PatternHandler(MWC.GUI.Layers theLayers)
@@ -181,7 +182,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 
   }
 
-  private void addThis(MWC.GUI.Plottable val)
+  void addThis(MWC.GUI.Plottable val)
   {
     _myPattern.add(val);
     // if this is a LabelWrapper, we need to set it's parent
@@ -238,7 +239,7 @@ public final class PatternHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
     }
 
     // now the points
-    java.util.Enumeration iter = pattern.elements();
+    java.util.Enumeration<Editable> iter = pattern.elements();
     while (iter.hasMoreElements())
     {
       MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();

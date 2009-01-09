@@ -24,6 +24,12 @@ public class CacheAlreadySetException extends Exception
 {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+		/**
      * Creates a new exception without detail message.
      */
     public CacheAlreadySetException()

@@ -6,7 +6,7 @@ package MWC.GUI.S57.features;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
-public abstract class S57Feature implements Plottable, Comparable
+public abstract class S57Feature implements Plottable
 {
 
 	private boolean _visible = true;
@@ -49,10 +49,10 @@ public abstract class S57Feature implements Plottable, Comparable
 			if (_minScale != null)
 			{
 				// sort out the scale
-				double worldVal = dest.getProjection().getVisibleDataArea().getFlatEarthWidth();
-				double worldMetres = worldVal * 60 * 60 * 30;
-				double scrMetres = 0.3;
-				double theScale = worldMetres / scrMetres;
+//				double worldVal = dest.getProjection().getVisibleDataArea().getFlatEarthWidth();
+//				double worldMetres = worldVal * 60 * 60 * 30;
+//				double scrMetres = 0.3;
+//				double theScale = worldMetres / scrMetres;
 				
 //				if (theScale > _minScale.doubleValue())
 //				{
@@ -104,7 +104,7 @@ public abstract class S57Feature implements Plottable, Comparable
 		return true;
 	}
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		return 0;
 	}

@@ -6,13 +6,15 @@ package MWC.GUI.Properties.Swing;
  * Created on 26 September 2000, 15:43
  */
 
-import MWC.GenericData.*;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.text.DecimalFormat;
+
 import javax.swing.ButtonGroup;
 import javax.swing.JFrame;
-import java.awt.*;
-import java.awt.event.*;
-import MWC.Utilities.TextFormatting.*;
-import java.text.*;
+
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 /**
  *
@@ -23,7 +25,11 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
 
 
-  //////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//////////////////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////////////////
 
@@ -434,7 +440,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
   }//GEN-END:initComponents
 
-  private void CancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelBtnActionPerformed
+  void CancelBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_CancelBtnActionPerformed
 // Add your handling code here:
     // reset the results
     _result = _initial;
@@ -442,7 +448,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
     exitForm(null);
   }//GEN-LAST:event_CancelBtnActionPerformed
 
-  private void AcceptBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AcceptBtnActionPerformed
+  void AcceptBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AcceptBtnActionPerformed
 
     // Add your handling code here:
 
@@ -525,7 +531,7 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
   }//GEN-LAST:event_AcceptBtnActionPerformed
 
     /** Exit the Application */
-    private void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
+    void exitForm(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_exitForm
         setVisible(false);
     }//GEN-LAST:event_exitForm
 
@@ -590,7 +596,11 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
 
   protected class FocusText extends javax.swing.JTextField implements FocusListener
   {
-    public FocusText()
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		public FocusText()
     {
       super();
       super.addFocusListener(this);

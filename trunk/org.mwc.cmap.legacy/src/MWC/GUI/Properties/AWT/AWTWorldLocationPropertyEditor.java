@@ -46,12 +46,16 @@ package MWC.GUI.Properties.AWT;
 //
 
 
-import java.beans.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import java.awt.*;
-import java.awt.event.*;
-import MWC.GUI.Properties.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+
+import MWC.GUI.PlainChart;
+import MWC.GUI.Properties.WorldLocationPropertyEditor;
+import MWC.GenericData.WorldLocation;
 
 public class AWTWorldLocationPropertyEditor extends
 					WorldLocationPropertyEditor

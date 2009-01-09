@@ -35,14 +35,14 @@
 
 package MWC.GUI.ptplot.jfreeChart;
 
-import MWC.GUI.ptplot.PlotBox;
+import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Vector;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.awt.geom.*;
-import java.text.*;
-import java.util.*;
-import javax.swing.*;
+import MWC.GUI.ptplot.PlotBox;
 
 /**
  * The base class for axes that display java.util.Date values.
@@ -58,7 +58,7 @@ public class MWCDateAxis/*  extends ValueAxis*/ {
   /** the list of ticks we plot
    *
    */
-  public Vector ticks = new Vector(0,1);
+  public Vector<Tick> ticks = new Vector<Tick>(0,1);
 
   /** The earliest date showing on the axis. */
   protected Date minimumDate;
@@ -172,7 +172,6 @@ public class MWCDateAxis/*  extends ValueAxis*/ {
    * Returns the previous "standard" date (based on the specified field and units).
    */
   protected Date previousStandardDate(Date date, int field, int units) {
-    int milliseconds;
     int seconds;
     int minutes;
     int hours;

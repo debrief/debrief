@@ -54,17 +54,17 @@ public class GanttSeriesCollection extends AbstractSeriesDataset
                                    implements IntervalCategoryDataset {
 
     /** Storage for the aggregate task list. */
-    private List tasks;
+    private List<Object> tasks;
 
     /** Storage for the series. */
-    private List data;
+    private List<GanttSeries> data;
 
     /**
      * Default constructor.
      */
     public GanttSeriesCollection() {
-        this.tasks = new java.util.ArrayList();
-        this.data = new java.util.ArrayList();
+        this.tasks = new java.util.ArrayList<Object>();
+        this.data = new java.util.ArrayList<GanttSeries>();
     }
 
     /**
@@ -102,7 +102,7 @@ public class GanttSeriesCollection extends AbstractSeriesDataset
      *
      * @return the category list.
      */
-    public List getCategories() {
+    public List<Object> getCategories() {
         return this.tasks;
     }
 
@@ -113,7 +113,7 @@ public class GanttSeriesCollection extends AbstractSeriesDataset
      */
     public void add(GanttSeries series) {
         data.add(series);
-        Iterator iterator = series.getTasks().iterator();
+        Iterator<Object> iterator = series.getTasks().iterator();
         while (iterator.hasNext()) {
             Object category = iterator.next();
             int index = this.tasks.indexOf(category);

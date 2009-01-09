@@ -63,17 +63,22 @@ package MWC.GUI.LayerManager;
 // Initial revision
 //
 
-import MWC.GUI.Tools.Chart.*;
-import MWC.GUI.*;
-import java.awt.*;
-import java.awt.event.*;
-import MWC.GUI.Properties.*;
-import java.io.*;
+import java.io.Serializable;
+
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Chart.RightClickEdit;
 
 public class EditLayersPopupMenuAdaptor  extends RightClickEdit.BaseMenuCreator implements Serializable
 {
 
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
 

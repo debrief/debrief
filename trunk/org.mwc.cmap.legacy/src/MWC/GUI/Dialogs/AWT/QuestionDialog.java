@@ -5,14 +5,15 @@ import java.awt.event.*;
 
 public class QuestionDialog extends WorkDialog 
                             implements ActionListener{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	static private int  _defaultTextFieldSize = 20;
 	private Button      okButton;
 	private Button      cancelButton;
-	private String      question;
 	private TextField   textField;
 	private boolean     wasCancelled;
-	private ButtonPanel buttonPanel = new ButtonPanel();
-
 	public QuestionDialog(Frame  frame, DialogClient client,
 							String title, String question,
 							String initialResponse, Image image) {
@@ -84,13 +85,14 @@ public class QuestionDialog extends WorkDialog
 	public boolean wasCancelled() {
 		return wasCancelled;
 	}
-	private void setQuestion(String question) {
-		this.question = question;
-	}
 }
 class QuestionPanel extends Postcard {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private TextField      field;
-	private QuestionDialog dialog;
+	QuestionDialog dialog;
 
 	public QuestionPanel(QuestionDialog dialog, 
 							String question, Image image) {

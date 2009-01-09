@@ -19,11 +19,11 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 abstract public class EllipseHandler extends ShapeHandler implements LayerHandler.exporter
 {
 
-  private MWC.GenericData.WorldLocation _centre;
-  private double _maxima; // in kiloyards
-  private double _minima; // in kiloyards
-  private double _orient;
-  private Boolean _filled;
+  MWC.GenericData.WorldLocation _centre;
+  double _maxima; // in kiloyards
+  double _minima; // in kiloyards
+  double _orient;
+  Boolean _filled;
 
   public EllipseHandler()
   {

@@ -326,7 +326,7 @@ public class SwingCanvas extends javax.swing.JComponent
   }
 
   // constructor taking projection.
-  private SwingCanvas(final PlainProjection theProjection)
+  SwingCanvas(final PlainProjection theProjection)
   {
     this();
     // take copy of projection
@@ -439,7 +439,7 @@ public class SwingCanvas extends javax.swing.JComponent
    * handler for a screen resize - inform our projection of the resize
    * then inform the painters.
    */
-  private void setScreenSize(final java.awt.Dimension p1)
+  void setScreenSize(final java.awt.Dimension p1)
   {
     // check if this is a real resize
     if ((_theSize == null) ||

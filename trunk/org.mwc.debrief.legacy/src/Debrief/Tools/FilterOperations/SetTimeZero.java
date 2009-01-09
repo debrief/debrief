@@ -73,7 +73,10 @@ package Debrief.Tools.FilterOperations;
 //
 
 import Debrief.Tools.Tote.*;
+
 import java.util.*;
+
+import MWC.GUI.Editable;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -83,7 +86,7 @@ abstract public class SetTimeZero implements FilterOperation
 {
   private HiResDate _start_time = null;
   private HiResDate _end_time = null;
-  private java.util.Vector _theTracks = null;
+  private java.util.Vector<WatchableList> _theTracks = null;
 
   private final String _theSeparator = System.getProperties().getProperty("line.separator");
 
@@ -111,7 +114,7 @@ abstract public class SetTimeZero implements FilterOperation
     _end_time = finishDTG;
   }
 
-  public final void setTracks(java.util.Vector selectedTracks)
+  public final void setTracks(java.util.Vector<WatchableList> selectedTracks)
   {
     _theTracks = selectedTracks;
   }
@@ -178,7 +181,7 @@ abstract public class SetTimeZero implements FilterOperation
     labStep = (long)(tmpLabStep.doubleValue() * 1000 * 1000);
 
     // make our symbols and labels visible
-    Enumeration iter = _theTracks.elements();
+    Enumeration<WatchableList> iter = _theTracks.elements();
     while(iter.hasMoreElements())
     {
       WatchableList wl = (WatchableList)iter.nextElement();
@@ -248,10 +251,10 @@ abstract public class SetTimeZero implements FilterOperation
         TrackWrapper tw = (TrackWrapper)wl;
 
         // step through the track
-        Collection ss = tw.getItemsBetween(tw.getStartDTG(),
+        Collection<Editable> ss = tw.getItemsBetween(tw.getStartDTG(),
                                           tw.getEndDTG());
 
-        Iterator it = ss.iterator();
+        Iterator<Editable> it = ss.iterator();
 
         while(it.hasNext())
         {
@@ -334,14 +337,14 @@ abstract public class SetTimeZero implements FilterOperation
   {
     private final String _theTimeString;
     private HiResDate _theTime;
-    private final java.util.Vector _theChanges;
+    private final java.util.Vector<someUpdate> _theChanges;
 
     public SetTimeAction(String theTimeString,
                          HiResDate theTime)
     {
       _theTimeString = theTimeString;
       _theTime = theTime;
-      _theChanges = new java.util.Vector(0,1);
+      _theChanges = new java.util.Vector<someUpdate>(0,1);
     }
 
     public final void addAction(FixWrapper fw,
@@ -382,7 +385,7 @@ abstract public class SetTimeZero implements FilterOperation
     {
       // work back through the list, removing the updates
       // work through the list, making the changes
-      Enumeration iter = _theChanges.elements();
+      Enumeration<someUpdate> iter = _theChanges.elements();
       while(iter.hasMoreElements())
       {
         someUpdate sm = (someUpdate)iter.nextElement();
@@ -397,7 +400,7 @@ abstract public class SetTimeZero implements FilterOperation
     public final void execute()
     {
       // work through the list, making the changes
-      Enumeration iter = _theChanges.elements();
+      Enumeration<someUpdate> iter = _theChanges.elements();
       while(iter.hasMoreElements())
       {
         someUpdate sm = (someUpdate)iter.nextElement();
@@ -407,7 +410,7 @@ abstract public class SetTimeZero implements FilterOperation
       setTimeZero(_theTime);
     }
 
-    private final class someUpdate
+    public final class someUpdate
     {
       public final String newVal;
       public final String oldVal;

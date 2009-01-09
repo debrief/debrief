@@ -92,6 +92,8 @@ import MWC.GUI.Dialogs.Swing.SwingFile;
 
 import java.awt.*;
 
+import javax.swing.JOptionPane;
+
 public class DialogFactory
 {
 
@@ -202,7 +204,7 @@ public class DialogFactory
     javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
     myMessage.setInputValue("" + defaultVal);
 
-    String s = myMessage.showInputDialog(message, new String("" + defaultVal));
+    String s = JOptionPane.showInputDialog(message, new String("" + defaultVal));
 
     if (s == null)
     {
@@ -238,7 +240,7 @@ public class DialogFactory
     javax.swing.JOptionPane myMessage = new javax.swing.JOptionPane();
     myMessage.setInitialSelectionValue("" + defaultVal);
 
-    String s = myMessage.showInputDialog(message);
+    String s = JOptionPane.showInputDialog(message);
 
     if (s == null)
     {

@@ -52,15 +52,21 @@ package MWC.GUI.Properties.Swing;
 //
 
 
-import java.beans.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Vector;
 
-import MWC.GUI.Properties.*;
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.JColorChooser;
+import javax.swing.JComboBox;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.ListCellRenderer;
 
 /** Swing implementation of colour property editor
  */
@@ -90,9 +96,9 @@ public class ColorPropertyEditor extends
 
   /** initialise the list of colours
    */
-  protected Vector createColors()
+  protected Vector<NamedColor> createColors()
   {
-    Vector res = super.createColors();
+    Vector<NamedColor> res = super.createColors();
 
     // and append our custom item
     res.add(new NamedColor(CUSTOM_LABEL, Color.white));
@@ -264,12 +270,16 @@ public class ColorPropertyEditor extends
   //////////////////////////////////////
   private class TickableComboBox extends JComboBox implements java.awt.event.ActionListener
   {
-    /** the current value - either set from code, or following
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		/** the current value - either set from code, or following
      *  and ActionEvent (user selecting the value)
      */
     private int _currentValue;
 
-    public TickableComboBox(java.util.Vector list)
+    public TickableComboBox(java.util.Vector<?> list)
     {
       super(list);
       this.setRenderer(new ColorRenderer());
@@ -320,7 +330,12 @@ public class ColorPropertyEditor extends
     /** class which provides a "Label" rendition of a colour together with a rectangle in that colour
      */
     class ColorRenderer extends JLabel implements ListCellRenderer {
-      /** rectangular object which gets shaded in a particular colour
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			/** rectangular object which gets shaded in a particular colour
        */
       private ColorIcon icon = new ColorIcon();
 

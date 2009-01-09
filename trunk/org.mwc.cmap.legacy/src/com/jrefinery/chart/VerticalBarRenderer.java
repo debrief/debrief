@@ -191,7 +191,8 @@ public class VerticalBarRenderer extends BarRenderer implements CategoryItemRend
      * @param categoryIndex  the category number (zero-based index).
      * @param previousCategory  the previous category.
      */
-    public void drawCategoryItem(Graphics2D g2,
+    @SuppressWarnings("deprecation")
+		public void drawCategoryItem(Graphics2D g2,
                                  Rectangle2D dataArea,
                                  CategoryPlot plot,
                                  ValueAxis axis,

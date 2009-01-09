@@ -9,10 +9,8 @@ package MWC.GUI.Properties;
  * @version 1.0
  */
 
-import java.awt.event.*;
-import MWC.GUI.Properties.*;
 import MWC.GUI.ToolParent;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldPath;
 
 abstract public class WorldPathPropertyEditor  extends
            java.beans.PropertyEditorSupport implements PlainPropertyEditor.EditorUsesChart,

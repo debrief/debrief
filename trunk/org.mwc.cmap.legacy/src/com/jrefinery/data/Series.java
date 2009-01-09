@@ -65,7 +65,7 @@ public class Series implements Cloneable {
     private String description;
 
     /** Storage for registered change listeners. */
-    private List listeners;
+    private List<SeriesChangeListener> listeners;
 
     /** Object to support property change notification. */
     private PropertyChangeSupport propertyChangeSupport;
@@ -89,7 +89,7 @@ public class Series implements Cloneable {
 
         this.name = name;
         this.description = description;
-        this.listeners = new java.util.ArrayList();
+        this.listeners = new java.util.ArrayList<SeriesChangeListener>();
         propertyChangeSupport = new PropertyChangeSupport(this);
 
     }
@@ -164,7 +164,7 @@ public class Series implements Cloneable {
         }
 
         Series clone = (Series) obj;
-        clone.listeners = new java.util.ArrayList();
+        clone.listeners = new java.util.ArrayList<SeriesChangeListener>();
         clone.propertyChangeSupport = new PropertyChangeSupport(clone);
 
         return clone;
@@ -218,9 +218,9 @@ public class Series implements Cloneable {
      */
     protected void notifyListeners(SeriesChangeEvent event) {
 
-        Iterator iterator = listeners.iterator();
+        Iterator<SeriesChangeListener> iterator = listeners.iterator();
         while (iterator.hasNext()) {
-            SeriesChangeListener listener = (SeriesChangeListener) iterator.next();
+            SeriesChangeListener listener = iterator.next();
             listener.seriesChanged(event);
         }
 

@@ -47,6 +47,7 @@ package Debrief.ReaderWriter.Replay;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 
@@ -97,7 +98,7 @@ public final class FormatTracks implements ImportReplay.LayersFormatter
       long lastStamp = -1;
 
       // right, get the fixes in the track
-      Enumeration iter = track.elements();
+      Enumeration<Editable> iter = track.elements();
 
       // working values
       Date worker = new Date();

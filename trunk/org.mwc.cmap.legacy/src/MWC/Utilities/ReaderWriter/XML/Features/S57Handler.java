@@ -24,7 +24,7 @@ abstract public class S57Handler extends MWCXMLReader implements LayerHandler.ex
 
 	private static final String SOURCE_FILE = "SourceFile";
 
-	private boolean _isVisible;
+	boolean _isVisible;
 
 	protected String _myName = null;
 

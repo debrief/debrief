@@ -5,7 +5,12 @@ import java.awt.*;
 // Grid Layout which allows components of differrent sizes
 public class GridLayout2 extends GridLayout 
 {
-  public GridLayout2() {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public GridLayout2() {
     this(1, 0, 0, 0);
   }
 

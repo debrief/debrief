@@ -37,34 +37,32 @@ public abstract class ParticleSystem implements ParticleFactory
     */
    public static final String PARTICLE_TEXTURE = "texture";
 
-   private int systemType;
-   protected List particles;
+   protected List<Particle> particles;
    protected int particleCount;
 
-   protected List movementFunctions = new ArrayList();
+   protected List<MovementFunction> movementFunctions = new ArrayList<MovementFunction>();
    protected ParticleInitializer particleInitializer = null;
    protected ParticleFactory particleFactory = null;
 
    protected boolean running = false;
 
    /** The environment entries pass to the system for initialisation. */
-   protected Map environment;
+   protected Map<String, Object> environment;
 
-   public ParticleSystem( int systemType, Map environment )
+   public ParticleSystem( int systemType, Map<String, Object> environment )
    {
-       this.systemType = systemType;
-       this.environment = new HashMap(environment);
+       this.environment = new HashMap<String, Object>(environment);
        particleFactory = this;
    }
 
-   protected void createParticles( ParticleInitializer particleInitializer, int particleCount )
+   protected void createParticles( ParticleInitializer particleInitializer1, int particleCount1 )
    {
-       this.particleCount = particleCount;
-       this.particleInitializer = particleInitializer;
+       this.particleCount = particleCount1;
+       this.particleInitializer = particleInitializer1;
 
-       particles = new ArrayList();
+       particles = new ArrayList<Particle>();
 
-       for( int n = 0; n < particleCount; n++ )
+       for( int n = 0; n < particleCount1; n++ )
        {
            Particle particle = particleFactory.createParticle( n );
            initParticle( particle );

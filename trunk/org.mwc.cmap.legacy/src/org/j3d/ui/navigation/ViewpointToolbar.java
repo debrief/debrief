@@ -46,7 +46,12 @@ import org.j3d.util.ImageLoader;
 public class ViewpointToolbar extends JPanel
     implements ActionListener, ItemListener
 {
-    /** The name of the file for the pan cursor image */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The name of the file for the pan cursor image */
     private static final String NEXT_BUTTON = "images/navigation/ButtonForward.gif";
 
     /** The name of the file for the tilt cursor image */

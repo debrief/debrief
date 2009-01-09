@@ -12,18 +12,18 @@ public class BaseNarrativeProvider implements IRollingNarrativeProvider
 	/** our list of listeners
 	 * 
 	 */
-	public HashMap _myListeners = new HashMap();
+	public HashMap<String, Vector<INarrativeListener>> _myListeners = new HashMap<String, Vector<INarrativeListener>>();
 
 	
 	public void addNarrativeListener(String category, INarrativeListener listener)
 	{
 		// do we hold a list of this type?
-		Vector theList = (Vector) _myListeners.get(category);
+		Vector<INarrativeListener> theList =  _myListeners.get(category);
 		
 		// do we hold one?
 		if(theList == null)
 		{
-			theList = new Vector(1,1);
+			theList = new Vector<INarrativeListener>(1,1);
 			_myListeners.put(category, theList);
 		}
 		
@@ -35,7 +35,7 @@ public class BaseNarrativeProvider implements IRollingNarrativeProvider
 	public void removeNarrativeListener(String category, INarrativeListener listener)
 	{
 		// do we hold a list of this type?
-		Vector theList = (Vector) _myListeners.get(category);
+		Vector<INarrativeListener> theList = _myListeners.get(category);
 //		
 //		if(theList == null)
 //		{
@@ -60,7 +60,7 @@ public class BaseNarrativeProvider implements IRollingNarrativeProvider
 	public void fireEntry(NarrativeEntry newEntry)
 	{
 		// right, first fire it the the "all" category
-		Vector theListeners = (Vector) _myListeners.get(IRollingNarrativeProvider.ALL_CATS);
+		Vector<INarrativeListener> theListeners =  _myListeners.get(IRollingNarrativeProvider.ALL_CATS);
 		
 		// and fire it to them
 		fireThisEntry(newEntry, theListeners);
@@ -70,7 +70,7 @@ public class BaseNarrativeProvider implements IRollingNarrativeProvider
 		
 		if(theType != null)
 		{
-			theListeners = (Vector) _myListeners.get(theType);
+			theListeners =  _myListeners.get(theType);
 			fireThisEntry(newEntry, theListeners);
 		}
 	}
@@ -80,13 +80,13 @@ public class BaseNarrativeProvider implements IRollingNarrativeProvider
 	 * @param newEntry what we're firing off
 	 * @param theListeners the people who're interested.
 	 */
-	private void fireThisEntry(NarrativeEntry newEntry, Vector theListeners)
+	private void fireThisEntry(NarrativeEntry newEntry, Vector<INarrativeListener> theListeners)
 	{
 		// do we have any listeners?
 		if(theListeners != null)
 		{
 			// ok, cycle through them
-			for (Iterator iter = theListeners.iterator(); iter.hasNext();)
+			for (Iterator<INarrativeListener> iter = theListeners.iterator(); iter.hasNext();)
 			{
 				INarrativeListener element = (INarrativeListener) iter.next();
 				// fire away...

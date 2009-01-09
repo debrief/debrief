@@ -68,7 +68,12 @@ import com.jrefinery.ui.StrokeChooserPanel;
  */
 class NumberAxisPropertyEditPanel extends AxisPropertyEditPanel implements FocusListener {
 
-    /** A flag that indicates whether or not the axis range is determined
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** A flag that indicates whether or not the axis range is determined
      *  automatically.
      */
     private boolean autoRange;

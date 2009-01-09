@@ -26,8 +26,8 @@ public class MruMenuManager implements ActionListener {
   private int startIndex;
   private JMenu mruMenu;
   private int mruSize;
-  private List mruItems;
-  private List mruListeners;
+  private List<JMenuItem> mruItems;
+  private List<ActionListener> mruListeners;
   private ApplicationProperties properties;
   private String propertyPrefix;
 
@@ -71,10 +71,10 @@ public class MruMenuManager implements ActionListener {
     this.mruMenu = mruMenu;
     startIndex = startMenuIndex;
     this.mruSize = mruSize;
-    mruItems = new ArrayList(mruSize + 1);
+    mruItems = new ArrayList<JMenuItem>(mruSize + 1);
     this.properties = appProperties;
     this.propertyPrefix = propertyPrefix;
-    mruListeners = new ArrayList();
+    mruListeners = new ArrayList<ActionListener>();
     loadMruItems();
 
   }
@@ -108,7 +108,7 @@ public class MruMenuManager implements ActionListener {
                               part of this method.
   */
   public void addMruItem(String itemToAdd, boolean refreshImmediately) {
-    Iterator it = mruItems.iterator();
+    Iterator<JMenuItem> it = mruItems.iterator();
     while (it.hasNext()) {
       JMenuItem menuItem = (JMenuItem)it.next();
       if (menuItem.getText().equals(itemToAdd)) {
@@ -179,8 +179,8 @@ public class MruMenuManager implements ActionListener {
   public void storeMruItems() {
     if (properties == null) return;
     // First get rid of all current mru items
-    Map currentItemMap = properties.getPropertiesLike(propertyPrefix);
-    Iterator keyIt = currentItemMap.keySet().iterator();
+    Map<String, String> currentItemMap = properties.getPropertiesLike(propertyPrefix);
+    Iterator<String> keyIt = currentItemMap.keySet().iterator();
     while (keyIt.hasNext()) {
       properties.removeProperty((String)keyIt.next());
     } // while
@@ -223,7 +223,7 @@ public class MruMenuManager implements ActionListener {
   broadcast them to all ActionListeners attached to it.
   */
   public void actionPerformed(ActionEvent e) {
-    Iterator listenerIt = mruListeners.iterator();
+    Iterator<ActionListener> listenerIt = mruListeners.iterator();
     while (listenerIt.hasNext()) {
       ActionListener listener = (ActionListener)listenerIt.next();
       listener.actionPerformed(e);

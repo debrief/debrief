@@ -217,7 +217,8 @@ public class HorizontalShapeRenderer extends AbstractCategoryItemRenderer {
      * @param previousCategory The previous category (will be null when the first category is
      *                         drawn).
      */
-    public void drawCategoryItem(Graphics2D g2, Rectangle2D dataArea,
+    @SuppressWarnings("deprecation")
+		public void drawCategoryItem(Graphics2D g2, Rectangle2D dataArea,
                                  CategoryPlot plot,
                                  ValueAxis axis,
                                  CategoryDataset data,
@@ -282,10 +283,6 @@ public class HorizontalShapeRenderer extends AbstractCategoryItemRenderer {
                     String tip = null;
                     if (getToolTipGenerator() != null) {
                         tip = getToolTipGenerator().generateToolTip(data, series, category);
-                    }
-                    String url = null;
-                    if (getURLGenerator() != null) {
-                        url = getURLGenerator().generateURL(data, series, category);
                     }
 
                     CategoryItemEntity entity = new CategoryItemEntity(shape, tip, series, category,

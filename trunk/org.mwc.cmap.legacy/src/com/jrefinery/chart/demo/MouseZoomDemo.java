@@ -58,14 +58,19 @@ import com.jrefinery.ui.RefineryUtilities;
  */
 public class MouseZoomDemo extends ApplicationFrame {
 
-    /** The chart panel. */
-    private ChartPanel chartPanel;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The chart panel. */
+    ChartPanel chartPanel;
 
     /** X zoom. */
-    private JCheckBox xzoom;
+    JCheckBox xzoom;
 
     /** Y zoom. */
-    private JCheckBox yzoom;
+    JCheckBox yzoom;
 
     /**
      * A demonstration of mouse zooming.

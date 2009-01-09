@@ -3,7 +3,11 @@ package MWC.GUI.Dialogs.AWT;
 import java.awt.*;
 
 public class Postcard extends Panel {
-	private Panel       panel, panelContainer = new Panel();
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Panel       panelContainer = new Panel();
 	private ImageCanvas canvas = new ImageCanvas();
 
 	public Postcard(Image image, Panel panel) {
@@ -28,7 +32,6 @@ public class Postcard extends Panel {
 		if(panelContainer.getComponentCount() == 1) {
 			panelContainer.remove(getComponent(0));
 		}
-		this.panel = panel;
 		panelContainer.add(panel);
 	}
     public Insets getInsets() {

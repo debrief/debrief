@@ -49,14 +49,16 @@ import javax.swing.table.AbstractTableModel;
  */
 public class TimeSeriesTableModel extends AbstractTableModel implements SeriesChangeListener {
 
-    /** The series. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The series. */
     private BasicTimeSeries series;
 
     /** A flag that controls whether the series is editable. */
     private boolean editable;
-
-    /** The edits. */
-    private BasicTimeSeries edits;
 
     /** The new time period. */
     private TimePeriod newTimePeriod;
@@ -92,10 +94,9 @@ public class TimeSeriesTableModel extends AbstractTableModel implements SeriesCh
         this.series.addChangeListener(this);
         this.editable = editable;
         if (editable) {
-            this.edits = new BasicTimeSeries("EDITS");
+            new BasicTimeSeries("EDITS");
         }
         else {
-            this.edits = null;
         }
 
     }
@@ -116,7 +117,7 @@ public class TimeSeriesTableModel extends AbstractTableModel implements SeriesCh
      * @param column    The column index.
      * @return the column class in the table model.
      */
-    public Class getColumnClass(int column) {
+    public Class<?> getColumnClass(int column) {
 
         if (column == 0) {
             return String.class;

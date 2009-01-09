@@ -20,7 +20,7 @@ import MWC.GUI.VPF.FeaturePainter;
 public class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
 {
 
-	static Vector imageHelpers = null;
+	static Vector<ViewLabelImageHelper> imageHelpers = null;
 
 	/**
 	 * image to indicate that item is visible
@@ -54,7 +54,7 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 	public static void addImageHelper(ViewLabelImageHelper helper)
 	{
 		if (imageHelpers == null)
-			imageHelpers = new Vector(1, 1);
+			imageHelpers = new Vector<ViewLabelImageHelper>(1, 1);
 		imageHelpers.add(helper);
 	}
 
@@ -82,7 +82,7 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 		ImageDescriptor thirdPartyImageDescriptor = null;
 		if (imageHelpers != null)
 		{
-			for (Iterator iter = imageHelpers.iterator(); iter.hasNext();)
+			for (Iterator<ViewLabelImageHelper> iter = imageHelpers.iterator(); iter.hasNext();)
 			{
 				ViewLabelImageHelper helper = (ViewLabelImageHelper) iter.next();
 				thirdPartyImageDescriptor = helper.getImageFor(editable);

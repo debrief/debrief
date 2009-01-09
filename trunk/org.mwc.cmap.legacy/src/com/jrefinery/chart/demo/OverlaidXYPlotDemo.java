@@ -71,6 +71,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class OverlaidXYPlotDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs a new demonstration application.
      *
      * @param title  the frame title.

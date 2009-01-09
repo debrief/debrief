@@ -125,13 +125,13 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
     private int weight;
 
     /** A list of markers (optional) for the domain axis. */
-    private List domainMarkers;
+    private List<Marker> domainMarkers;
 
     /** A list of markers (optional) for the range axis. */
-    private List rangeMarkers;
+    private List<Marker> rangeMarkers;
 
     /** A list of annotations (optional) for the plot. */
-    private List annotations;
+    private List<Annotation> annotations;
 
     /**
      * Constructs an XYPlot with the specified axes (other attributes take default values).
@@ -527,7 +527,7 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
     public void addDomainMarker(Marker marker) {
 
         if (this.domainMarkers == null) {
-            this.domainMarkers = new java.util.ArrayList();
+            this.domainMarkers = new java.util.ArrayList<Marker>();
         }
         this.domainMarkers.add(marker);
         notifyListeners(new PlotChangeEvent(this));
@@ -555,7 +555,7 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
     public void addRangeMarker(Marker marker) {
 
         if (this.rangeMarkers == null) {
-            this.rangeMarkers = new java.util.ArrayList();
+            this.rangeMarkers = new java.util.ArrayList<Marker>();
         }
         this.rangeMarkers.add(marker);
         notifyListeners(new PlotChangeEvent(this));
@@ -580,7 +580,7 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
     public void addAnnotation(Annotation annotation) {
 
         if (this.annotations == null) {
-            this.annotations = new java.util.ArrayList();
+            this.annotations = new java.util.ArrayList<Annotation>();
         }
         this.annotations.add(annotation);
         notifyListeners(new PlotChangeEvent(this));
@@ -721,7 +721,7 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
                                                        this.foregroundAlpha));
 
             if (this.domainMarkers != null) {
-                Iterator iterator = this.domainMarkers.iterator();
+                Iterator<Marker> iterator = this.domainMarkers.iterator();
                 while (iterator.hasNext()) {
                     Marker marker = (Marker) iterator.next();
                     renderer.drawDomainMarker(g2, this, getDomainAxis(), marker, dataArea);
@@ -729,7 +729,7 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
             }
 
             if (this.rangeMarkers != null) {
-                Iterator iterator = this.rangeMarkers.iterator();
+                Iterator<Marker> iterator = this.rangeMarkers.iterator();
                 while (iterator.hasNext()) {
                     Marker marker = (Marker) iterator.next();
                     renderer.drawRangeMarker(g2, this, getRangeAxis(), marker, dataArea);
@@ -740,7 +740,7 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
 
             // draw the annotations...
             if (this.annotations != null) {
-                Iterator iterator = this.annotations.iterator();
+                Iterator<Annotation> iterator = this.annotations.iterator();
                 while (iterator.hasNext()) {
                     Annotation annotation = (Annotation) iterator.next();
                     if (annotation instanceof XYAnnotation) {
@@ -778,14 +778,14 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
 
             renderer.initialise(g2, dataArea, this, data, info);
 
-            ValueAxis domainAxis = getDomainAxis();
-            ValueAxis rangeAxis = getRangeAxis();
+            ValueAxis domainAxis1 = getDomainAxis();
+            ValueAxis rangeAxis1 = getRangeAxis();
             int seriesCount = data.getSeriesCount();
             for (int series = 0; series < seriesCount; series++) {
                 int itemCount = data.getItemCount(series);
                 for (int item = 0; item < itemCount; item++) {
                     renderer.drawItem(g2, dataArea, info, this,
-                                      domainAxis, rangeAxis,
+                                      domainAxis1, rangeAxis1,
                                       data, series, item,
                                       crosshairInfo);
 
@@ -793,21 +793,21 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
             }
 
             // draw vertical crosshair if required...
-            domainAxis.setCrosshairValue(crosshairInfo.getCrosshairX(), false);
-            if (domainAxis.isCrosshairVisible()) {
+            domainAxis1.setCrosshairValue(crosshairInfo.getCrosshairX(), false);
+            if (domainAxis1.isCrosshairVisible()) {
                 drawVerticalLine(g2, dataArea,
-                                 domainAxis.getCrosshairValue(),
-                                 domainAxis.getCrosshairStroke(),
-                                 domainAxis.getCrosshairPaint());
+                                 domainAxis1.getCrosshairValue(),
+                                 domainAxis1.getCrosshairStroke(),
+                                 domainAxis1.getCrosshairPaint());
             }
 
             // draw horizontal crosshair if required...
-            rangeAxis.setCrosshairValue(crosshairInfo.getCrosshairY(), false);
-            if (rangeAxis.isCrosshairVisible()) {
+            rangeAxis1.setCrosshairValue(crosshairInfo.getCrosshairY(), false);
+            if (rangeAxis1.isCrosshairVisible()) {
                 drawHorizontalLine(g2, dataArea,
-                                   rangeAxis.getCrosshairValue(),
-                                   rangeAxis.getCrosshairStroke(),
-                                   rangeAxis.getCrosshairPaint());
+                                   rangeAxis1.getCrosshairValue(),
+                                   rangeAxis1.getCrosshairStroke(),
+                                   rangeAxis1.getCrosshairPaint());
             }
 
         }
@@ -892,16 +892,16 @@ public class XYPlot extends Plot implements HorizontalValuePlot,
     public void zoom(double percent) {
 
         if (percent > 0) {
-            ValueAxis domainAxis = getDomainAxis();
-            double range = domainAxis.getMaximumAxisValue() - domainAxis.getMinimumAxisValue();
+            ValueAxis domainAxis1 = getDomainAxis();
+            double range = domainAxis1.getMaximumAxisValue() - domainAxis1.getMinimumAxisValue();
             double scaledRange = range * percent;
-            domainAxis.setAnchoredRange(scaledRange);
+            domainAxis1.setAnchoredRange(scaledRange);
 
-            ValueAxis rangeAxis = getRangeAxis();
-            range = rangeAxis.getMaximumAxisValue()
-                - rangeAxis.getMinimumAxisValue();
+            ValueAxis rangeAxis1 = getRangeAxis();
+            range = rangeAxis1.getMaximumAxisValue()
+                - rangeAxis1.getMinimumAxisValue();
             scaledRange = range * percent;
-            rangeAxis.setAnchoredRange(scaledRange);
+            rangeAxis1.setAnchoredRange(scaledRange);
         }
         else {
             this.getRangeAxis().setAutoRange(true);

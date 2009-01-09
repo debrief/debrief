@@ -78,7 +78,11 @@ public class SwingToggleButton extends JCheckBox implements ActionListener
   // member variables
   /////////////////////////////////////////////////////////
 
-  protected Tool _theTool;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected Tool _theTool;
 
 
   /////////////////////////////////////////////////////////

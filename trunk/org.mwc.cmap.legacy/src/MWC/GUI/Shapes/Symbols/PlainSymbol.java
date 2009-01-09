@@ -77,12 +77,13 @@ package MWC.GUI.Shapes.Symbols;
 
 
 
-import java.awt.*;
-import java.util.Collection;
+import java.awt.Color;
+import java.awt.geom.Point2D;
+import java.util.Vector;
 
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import MWC.GUI.Shapes.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GenericData.WorldLocation;
 
 /** base class for our symbols
  *  the class implements the Serializable interface so that it can be copied.
@@ -208,9 +209,9 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
    *
    * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
    */
-  public Collection getCoordinates()
+  public Vector<Vector<Point2D>> getCoordinates()
   {
-    Collection res = null;
+  	Vector<Vector<Point2D>> res = null;
     return res;
   }
 

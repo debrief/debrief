@@ -9,9 +9,12 @@ class QuestionDialogLauncher extends Panel
   implements DialogClient,
   ActionListener
 {
-  private Applet applet;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Applet applet;
   private QuestionDialog questionDialog;
-  private Image image = null;
   private Checkbox modal = new Checkbox("modal");
 
   private Button questionDialogButton;

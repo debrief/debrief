@@ -9,10 +9,8 @@
 
 package org.j3d.geom.particle;
 
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-
 import javax.media.j3d.BoundingBox;
+import javax.vecmath.Point3d;
 
 /**
  * The BoundingBoxMovementFunction simply clamps the position of a particle

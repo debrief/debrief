@@ -208,7 +208,7 @@ public class DatasetUtilities {
             double maximum = Double.NEGATIVE_INFINITY;
             int seriesCount = categoryData.getSeriesCount();
             for (int series = 0; series < seriesCount; series++) {
-                Iterator iterator = categoryData.getCategories().iterator();
+                Iterator<Object> iterator = categoryData.getCategories().iterator();
                 while (iterator.hasNext()) {
                     Object category = iterator.next();
                     Number lvalue = null;
@@ -459,7 +459,7 @@ public class DatasetUtilities {
             double minimum = Double.POSITIVE_INFINITY;
             int seriesCount = categoryData.getSeriesCount();
             for (int series = 0; series < seriesCount; series++) {
-                Iterator iterator = categoryData.getCategories().iterator();
+                Iterator<Object> iterator = categoryData.getCategories().iterator();
                 while (iterator.hasNext()) {
                     Object category = iterator.next();
                     Number value = null;
@@ -559,7 +559,7 @@ public class DatasetUtilities {
             double maximum = Double.NEGATIVE_INFINITY;
             int seriesCount = categoryData.getSeriesCount();
             for (int series = 0; series < seriesCount; series++) {
-                Iterator iterator = categoryData.getCategories().iterator();
+                Iterator<Object> iterator = categoryData.getCategories().iterator();
                 while (iterator.hasNext()) {
                     Object category = iterator.next();
                     Number value = null;
@@ -655,8 +655,8 @@ public class DatasetUtilities {
     public static PieDataset createPieDataset(CategoryDataset data, int series) {
 
         DefaultPieDataset result = new DefaultPieDataset();
-        Collection categories = data.getCategories();
-        Iterator iterator = categories.iterator();
+        Collection<Object> categories = data.getCategories();
+        Iterator<Object> iterator = categories.iterator();
         while (iterator.hasNext()) {
             Object current = iterator.next();
             result.setValue(current, data.getValue(series, current));
@@ -675,12 +675,12 @@ public class DatasetUtilities {
     public static double getPieDatasetTotal(PieDataset data) {
 
         // get a list of categories...
-        List categories = data.getCategories();
+        List<Object> categories = data.getCategories();
 
         // compute the total value of the data series skipping over the
         // negative values
         double totalValue = 0;
-        Iterator iterator = categories.iterator();
+        Iterator<Object> iterator = categories.iterator();
         while (iterator.hasNext()) {
             Object current = iterator.next();
             if (current != null) {
@@ -714,7 +714,7 @@ public class DatasetUtilities {
             double minimum = 0.0;
             double maximum = 0.0;
 
-            Iterator iterator = data.getCategories().iterator();
+            Iterator<Object> iterator = data.getCategories().iterator();
             while (iterator.hasNext()) {
 
                 Object category = iterator.next();
@@ -762,7 +762,7 @@ public class DatasetUtilities {
 
             double minimum = 0.0;
 
-            Iterator iterator = data.getCategories().iterator();
+            Iterator<Object> iterator = data.getCategories().iterator();
             while (iterator.hasNext()) {
 
                 Object category = iterator.next();
@@ -806,7 +806,7 @@ public class DatasetUtilities {
 
             double maximum = 0.0;
 
-            Iterator iterator = data.getCategories().iterator();
+            Iterator<Object> iterator = data.getCategories().iterator();
             while (iterator.hasNext()) {
 
                 Object category = iterator.next();

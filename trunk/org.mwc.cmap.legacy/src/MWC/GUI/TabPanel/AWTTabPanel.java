@@ -41,6 +41,11 @@ public class AWTTabPanel extends BaseTabbedPanel implements java.io.Serializable
 	MWC.GUI.CoreTabPanel
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs a TabPanel with tabs on top, rounded
      */
 	public AWTTabPanel()
@@ -71,7 +76,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements java.io.Serializable
 	public AWTTabPanel(int tabsPostion, int tabsStyle)
 	{
 		super(tabsPostion, tabsStyle);
-		vPanels = new Vector();
+		vPanels = new Vector<Component>();
 		String sOS = System.getProperty("os.name");
 		if (sOS.equals("Windows 95"))
 			bOsHack = true;
@@ -564,7 +569,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements java.io.Serializable
 	 */
 	public synchronized void removeAllTabPanels()
 	{
-		vPanels = new Vector();
+		vPanels = new Vector<Component>();
 		curIndex = -1;
 		removeAllTabs();
 	}
@@ -657,7 +662,12 @@ public class AWTTabPanel extends BaseTabbedPanel implements java.io.Serializable
 	 */
     class PropertyChange implements java.beans.PropertyChangeListener, java.io.Serializable
     {
-        public void propertyChange(PropertyChangeEvent e)
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+				public void propertyChange(PropertyChangeEvent e)
         {
 	        showTabPanel(((Integer)e.getNewValue()).intValue());
         }
@@ -680,7 +690,7 @@ public class AWTTabPanel extends BaseTabbedPanel implements java.io.Serializable
     private PropertyChange myPropertyChangeHandler = new PropertyChange();
     private VetoableChangeSupport vetos = new VetoableChangeSupport(this);
     private PropertyChangeSupport changes = new PropertyChangeSupport(this);
-	Vector vPanels;
+	Vector<Component> vPanels;
 
 	String[] labels = null;
 

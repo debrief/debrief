@@ -244,7 +244,7 @@ public class DDFFieldDefinition implements DDFConstants {
         buf.append("      _data_type_code = " + _data_type_code + "\n");
 
         if (paoSubfieldDefns != null) {
-            for (Iterator it = paoSubfieldDefns.iterator(); it.hasNext();) {
+            for (Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); it.hasNext();) {
                 buf.append((DDFSubfieldDefinition) it.next());
             }
         }
@@ -256,7 +256,8 @@ public class DDFFieldDefinition implements DDFConstants {
      * Based on the list contained in the string, build a set of
      * subfield definitions.
      */
-    protected boolean buildSubfieldDefns(String pszSublist) {
+    @SuppressWarnings("unchecked")
+		protected boolean buildSubfieldDefns(String pszSublist) {
 
         if (pszSublist.charAt(0) == '*') {
             bRepeatingSubfields = true;
@@ -377,22 +378,23 @@ public class DDFFieldDefinition implements DDFConstants {
      * applies a subfield format string to each subfield object. It in
      * turn does final parsing of the subfield formats.
      */
-    protected boolean applyFormats(String _formatControls) {
+    @SuppressWarnings("unchecked")
+		protected boolean applyFormats(String _formatControls1) {
         String pszFormatList;
         Vector papszFormatItems;
 
         /* -------------------------------------------------------------------- */
         /* Verify that the format string is contained within brackets. */
         /* -------------------------------------------------------------------- */
-        if (_formatControls.length() < 2 || !_formatControls.startsWith("(")
-                || !_formatControls.endsWith(")")) {
+        if (_formatControls1.length() < 2 || !_formatControls1.startsWith("(")
+                || !_formatControls1.endsWith(")")) {
 
             Debug.error("DDFFieldDefinition: Format controls for " + pszTag
-                    + " field missing brackets {" + _formatControls
-                    + "} : length = " + _formatControls.length()
-                    + ", starts with {" + _formatControls.charAt(0)
+                    + " field missing brackets {" + _formatControls1
+                    + "} : length = " + _formatControls1.length()
+                    + ", starts with {" + _formatControls1.charAt(0)
                     + "}, ends with {"
-                    + _formatControls.charAt(_formatControls.length() - 1)
+                    + _formatControls1.charAt(_formatControls1.length() - 1)
                     + "}");
 
             return false;
@@ -402,10 +404,10 @@ public class DDFFieldDefinition implements DDFConstants {
         /* Duplicate the string, and strip off the brackets. */
         /* -------------------------------------------------------------------- */
 
-        pszFormatList = expandFormat(_formatControls);
+        pszFormatList = expandFormat(_formatControls1);
 
         if (Debug.debugging("iso8211")) {
-            Debug.output("DDFFieldDefinition.applyFormats{" + _formatControls
+            Debug.output("DDFFieldDefinition.applyFormats{" + _formatControls1
                     + "} expanded to {" + pszFormatList + "} ");
         }
 
@@ -491,7 +493,7 @@ public class DDFFieldDefinition implements DDFConstants {
      */
     public DDFSubfieldDefinition findSubfieldDefn(String pszMnemonic) {
         if (paoSubfieldDefns != null) {
-            for (Iterator it = paoSubfieldDefns.iterator(); pszMnemonic != null
+            for (Iterator<DDFSubfieldDefinition> it = paoSubfieldDefns.iterator(); pszMnemonic != null
                     && it.hasNext();) {
                 DDFSubfieldDefinition ddfsd = (DDFSubfieldDefinition) it.next();
                 if (pszMnemonic.equalsIgnoreCase(ddfsd.getName())) {

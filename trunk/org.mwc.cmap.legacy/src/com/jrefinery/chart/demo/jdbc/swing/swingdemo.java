@@ -38,6 +38,7 @@
 
 package com.jrefinery.chart.demo.jdbc.swing;
 
+import com.jrefinery.chart.AbstractTitle;
 import com.jrefinery.chart.JFreeChart;
 import com.jrefinery.chart.ChartFactory;
 import com.jrefinery.chart.ChartPanel;
@@ -76,7 +77,12 @@ import javax.swing.BorderFactory;
  */
 public class swingdemo extends JFrame {
 
-    /** Is this running standalone */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Is this running standalone */
     public boolean isStandalone = false;
 
     /** Available parameters to plot */
@@ -107,7 +113,7 @@ public class swingdemo extends JFrame {
     final static char alphaStart = 'b';
 
     /** Currently selected list of parameters to plot */
-    Vector chartParameters = new Vector();
+    Vector<String> chartParameters = new Vector<String>();
 
     /**  Process management - The currently running update thread */
     protected Thread workingThread;
@@ -194,7 +200,7 @@ public class swingdemo extends JFrame {
         chart = ChartFactory.createTimeSeriesChart("Voyage : Not Specified",
             null, "Records Per Day", null, true);
         Legend legend = chart.getLegend();
-        legend.setAnchor(legend.EAST);
+        legend.setAnchor(Legend.EAST);
 
         chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
         ChartPanel chartPanel = new ChartPanel(chart);
@@ -294,7 +300,7 @@ public class swingdemo extends JFrame {
             try {
                 chartData.executeQuery(query);
                 chart.getPlot().setDataset(chartData);
-                ArrayList titles = new ArrayList();
+                ArrayList<AbstractTitle> titles = new ArrayList<AbstractTitle>();
                 TextTitle subtitle = new TextTitle("Voyage " + voyage, new Font("SansSerif", Font.BOLD, 12));
                 titles.add(subtitle);
                 chart.setTitles(titles);

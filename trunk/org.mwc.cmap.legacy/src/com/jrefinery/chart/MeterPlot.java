@@ -120,7 +120,7 @@ public class MeterPlot extends Plot {
     public static final float DEFAULT_CIRCLE_SIZE = 10f;
 
     /** The default background color. */
-    public static final Paint DEFAULT_BACKGROUND_PAINT = Color.lightGray;
+    public static final Paint DEFAULT_BACKGROUND_PAINT1 = Color.lightGray;
 
     /** The default label font. */
     public static final Font DEFAULT_LABEL_FONT = new Font("SansSerif", Font.BOLD, 10);
@@ -544,7 +544,8 @@ public class MeterPlot extends Plot {
      *
      * @deprecated use getLegendItems().
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
         return null;
     }
 
@@ -726,7 +727,7 @@ public class MeterPlot extends Plot {
             case MeterDataset.FULL_DATA:
                 minValue = data.getMinimumValue();
                 maxValue = data.getMaximumValue();
-                paint = DEFAULT_BACKGROUND_PAINT;
+                paint = DEFAULT_BACKGROUND_PAINT1;
                 break;
 
             default:

@@ -9,10 +9,10 @@ package MWC.Utilities.ReaderWriter.XML.Features;
  * @version 1.0
  */
 
-import org.xml.sax.*;
-import org.w3c.dom.*;
-import MWC.Utilities.ReaderWriter.XML.*;
-import MWC.Utilities.ReaderWriter.XML.Util.*;
+import org.w3c.dom.Element;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 
 
@@ -21,10 +21,10 @@ abstract public class VPFFeatureHandler extends MWCXMLReader
 
   private static final String _myType = "vpf_feature";
 
-  private java.awt.Color _theColor;
-  private String _theType;
-  private String _theDescription;
-  private boolean _isVisible;
+  java.awt.Color _theColor;
+  String _theType;
+  String _theDescription;
+  boolean _isVisible;
 
 
   public VPFFeatureHandler()

@@ -93,7 +93,7 @@ public class TestENC2
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
-				Iterator it = poRecord.iterator();
+				Iterator<DDFField> it = poRecord.iterator();
 				while (it.hasNext())
 				{
 					DDFField field = (DDFField) it.next();

@@ -115,8 +115,8 @@ public class Hour extends TimePeriod {
 
         Calendar calendar = Calendar.getInstance(zone);
         calendar.setTime(time);
-        int hour = calendar.get(Calendar.HOUR_OF_DAY);
-        this.hour = hour;
+        int hour1 = calendar.get(Calendar.HOUR_OF_DAY);
+        this.hour = hour1;
         this.day = new Day(time, zone);
 
     }
@@ -234,9 +234,9 @@ public class Hour extends TimePeriod {
 
         int year = this.day.getYear();
         int month = this.day.getMonth() - 1;
-        int day = this.day.getDayOfMonth();
+        int day1 = this.day.getDayOfMonth();
 
-        calendar.set(year, month, day, hour, 0, 0);
+        calendar.set(year, month, day1, hour, 0, 0);
         calendar.set(Calendar.MILLISECOND, 0);
 
         return calendar.getTime().getTime();
@@ -254,9 +254,9 @@ public class Hour extends TimePeriod {
 
         int year = this.day.getYear();
         int month = this.day.getMonth() - 1;
-        int day = this.day.getDayOfMonth();
+        int day1 = this.day.getDayOfMonth();
 
-        calendar.set(year, month, day, hour, 59, 59);
+        calendar.set(year, month, day1, hour, 59, 59);
         calendar.set(Calendar.MILLISECOND, 999);
 
         return calendar.getTime().getTime();

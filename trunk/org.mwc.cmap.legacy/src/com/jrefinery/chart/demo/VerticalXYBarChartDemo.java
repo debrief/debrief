@@ -57,6 +57,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class VerticalXYBarChartDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs the demo application.
      *
      * @param title  the frame title.

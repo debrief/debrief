@@ -26,11 +26,11 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
   private static final String MY_TYPE = "grid";
 	private static final String NAME = "Name";
 
-  private java.awt.Color _theColor;
-  private boolean _isVisible;
-  private double _delta;
-  private boolean _plotLabels;
-  private String _myUnits = null;
+  java.awt.Color _theColor;
+  boolean _isVisible;
+  double _delta;
+  boolean _plotLabels;
+  String _myUnits = null;
 	protected String _myName = null;
 
   public GridHandler()

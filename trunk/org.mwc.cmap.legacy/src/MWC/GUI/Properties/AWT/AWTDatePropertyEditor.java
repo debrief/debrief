@@ -60,13 +60,12 @@ package MWC.GUI.Properties.AWT;
 // Initial revision
 //
 
-import java.beans.*;
-import MWC.GUI.*;
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
-import MWC.GUI.Properties.*;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextField;
+
+import MWC.GUI.Properties.DatePropertyEditor;
 
 public class AWTDatePropertyEditor extends
            DatePropertyEditor

@@ -11,28 +11,29 @@
 package MWC.GUI.Tools.Swing;
 
 
-import javax.swing.*;
-import java.awt.Color;
 import java.awt.Component;
-import java.awt.Container;
-import java.awt.Dimension;
-import java.awt.Frame;
-import java.awt.Graphics;
 import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Rectangle;
-import java.awt.event.*;
-import java.util.*;
-
-import java.beans.PropertyChangeListener;
+import java.awt.event.ContainerEvent;
+import java.awt.event.ContainerListener;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyVetoException;
+import java.beans.PropertyChangeListener;
+import java.util.Hashtable;
 
-import javax.swing.event.*;
-import javax.swing.border.*;
-import javax.swing.plaf.*;
-import javax.swing.plaf.basic.*;
-import javax.swing.plaf.metal.*;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JToolBar;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.border.CompoundBorder;
+import javax.swing.event.MouseInputListener;
+import javax.swing.plaf.ComponentUI;
+import javax.swing.plaf.UIResource;
+import javax.swing.plaf.basic.BasicBorders;
+import javax.swing.plaf.metal.MetalBorders;
+import javax.swing.plaf.metal.MetalButtonUI;
 
 /**
  * A Metal Look and Feel implementation of ToolBarUI.  This implementation
@@ -53,12 +54,12 @@ public class MyMetalToolBarUI extends MyBasicToolBarUI
   protected ContainerListener contListener;
   protected PropertyChangeListener rolloverListener;
 
-  private Hashtable borderTable = new Hashtable();
-  private Hashtable marginTable = new Hashtable();
+  private Hashtable<JButton, Border> borderTable = new Hashtable<JButton, Border>();
+  private Hashtable<JButton, Insets> marginTable = new Hashtable<JButton, Insets>();
 
-  private boolean rolloverBorders = false;
+  boolean rolloverBorders = false;
 
-  private static String IS_ROLLOVER = "JToolBar.isRollover";
+  static String IS_ROLLOVER = "JToolBar.isRollover";
 
   private final static Insets insets0 = new Insets( 0, 0, 0, 0 );
 

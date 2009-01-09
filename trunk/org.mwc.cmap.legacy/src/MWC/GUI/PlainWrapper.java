@@ -363,7 +363,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
         _theColor = null;
     }
 
-    public int compareTo(Object arg0)
+    public int compareTo(Plottable arg0)
     {
         final int res;
         Plottable other = (Plottable) arg0;

@@ -7,14 +7,10 @@ package MWC.GUI.TabPanel;
  *
  */
 
-import java.io.Serializable;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
-import java.beans.VetoableChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.util.Vector;
 
 
 
@@ -35,6 +31,10 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
 {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/**
      * Constructs a VetoableChangeSupport object.
      * @param sourceBean the bean to be given as the source for any events
      */
@@ -54,20 +54,20 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
      */
     public synchronized void addVetoableChangeListener(String propertyName, VetoableChangeListener listener)
     {
-    	java.util.Vector listenerList;
+    	java.util.Vector<VetoableChangeListener> listenerList;
 
     	if(listenerTable == null)
     	{
-    		listenerTable = new java.util.Hashtable();
+    		listenerTable = new java.util.Hashtable<String, Vector<VetoableChangeListener>>();
     	}
 
     	if(listenerTable.containsKey(propertyName))
     	{
-    		listenerList = (java.util.Vector)listenerTable.get(propertyName);
+    		listenerList = listenerTable.get(propertyName);
     	}
     	else
     	{
-    		listenerList = new java.util.Vector();
+    		listenerList = new java.util.Vector<VetoableChangeListener>();
     	}
 
     	listenerList.addElement(listener);
@@ -83,13 +83,13 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
      */
     public synchronized void removeVetoableChangeListener(String propertyName, VetoableChangeListener listener)
     {
-    	java.util.Vector listenerList;
+    	java.util.Vector<VetoableChangeListener> listenerList;
 
 		if (listenerTable == null || !listenerTable.containsKey(propertyName))
 		{
 	    	return;
 		}
-		listenerList = (java.util.Vector)listenerTable.get(propertyName);
+		listenerList = listenerTable.get(propertyName);
 		listenerList.removeElement(listener);
     }
 
@@ -108,7 +108,8 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
      * @exception PropertyVetoException
      * if the specified property value is unacceptable
      */
-    public void fireVetoableChange(String propertyName, Object oldValue, Object newValue) throws PropertyVetoException
+    @SuppressWarnings("unchecked")
+		public void fireVetoableChange(String propertyName, Object oldValue, Object newValue) throws PropertyVetoException
     {
 		if (oldValue != null && oldValue.equals(newValue))
 		{
@@ -117,7 +118,7 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
 
 		super.fireVetoableChange(propertyName, oldValue, newValue);
 
-		java.util.Hashtable templistenerTable = null;
+		java.util.Hashtable<String, Vector<VetoableChangeListener>> templistenerTable = null;
 
 		synchronized (this)
 		{
@@ -125,12 +126,12 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
 			{
 				return;
 			}
-		  	templistenerTable = (java.util.Hashtable) listenerTable.clone();
+		  	templistenerTable = (java.util.Hashtable<String, Vector<VetoableChangeListener>>) listenerTable.clone();
 		}
 
-		java.util.Vector listenerList;
+		java.util.Vector<VetoableChangeListener> listenerList;
 
-		listenerList = (java.util.Vector)templistenerTable.get(propertyName);
+		listenerList = templistenerTable.get(propertyName);
 
 	    PropertyChangeEvent evt = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
 
@@ -138,7 +139,7 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
 		{
 		    for (int i = 0; i < listenerList.size(); i++)
 		    {
-		        VetoableChangeListener target = (VetoableChangeListener)listenerList.elementAt(i);
+		        VetoableChangeListener target = listenerList.elementAt(i);
 		        target.vetoableChange(evt);
 		    }
 		}
@@ -150,7 +151,7 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
 		    {
 				try
 				{
-		            VetoableChangeListener target = (VetoableChangeListener)listenerList.elementAt(i);
+		            VetoableChangeListener target = listenerList.elementAt(i);
 		            target.vetoableChange(evt);
 				}
 				catch (PropertyVetoException ex)
@@ -177,7 +178,6 @@ public class VetoableChangeSupport extends java.beans.VetoableChangeSupport impl
      * @see #addVetoableChangeListener
      * @see #removeVetoableChangeListener
      */
-    protected java.util.Hashtable listenerTable;
+    protected java.util.Hashtable<String, Vector<VetoableChangeListener>> listenerTable;
     private Object source;
-    private int vetoableChangeSupportSerializedDataVersion = 1;
 }

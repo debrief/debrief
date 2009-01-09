@@ -31,8 +31,6 @@ ENHANCEMENTS, OR MODIFICATIONS.
 */
 package MWC.GUI.ptplot;
 
-import java.applet.Applet;
-import java.awt.*;
 
 //////////////////////////////////////////////////////////////////////////
 //// PlotLiveApplet
@@ -45,7 +43,12 @@ import java.awt.*;
  */
 public class PlotLiveApplet extends PlotApplet {
 
-    /** Return a string describing this applet.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Return a string describing this applet.
      *  @return A description of the applet.
      */
     public String getAppletInfo() {

@@ -12,11 +12,6 @@ package org.j3d.util.device;
 // Standard imports
 import java.io.InvalidClassException;
 
-import javax.media.j3d.AudioDevice;
-import javax.media.j3d.InputDevice;
-
-import com.sun.j3d.loaders.Loader;
-
 // Application specific imports
 // none
 
@@ -82,7 +77,7 @@ class DynamicClassLoader
 
     try
     {
-      Class new_class = Class.forName(name);
+      Class<?> new_class = Class.forName(name);
       ret_val = new_class.newInstance();
     }
     catch(ClassNotFoundException cnfe)
@@ -130,7 +125,7 @@ class DynamicClassLoader
 
     try
     {
-      Class base_class = Class.forName(base);
+      Class<?> base_class = Class.forName(base);
       ret_val = loadCheckedClass(name, base_class);
     }
     catch(LinkageError le)
@@ -155,7 +150,7 @@ class DynamicClassLoader
    * @throws InvalidClassException The class could not be instantiated either
    *   due to internal errors or no default constructor
    */
-  public static Object loadCheckedClass(String name, Class base)
+  public static Object loadCheckedClass(String name, Class<?> base)
     throws ClassNotFoundException, InvalidClassException
   {
     if((name == null) || (name.trim().length() == 0))
@@ -169,7 +164,7 @@ class DynamicClassLoader
 
     try
     {
-      Class new_class = Class.forName(name);
+      Class<?> new_class = Class.forName(name);
 
       if(check_ok = backgroundChecks(new_class, base))
         ret_val = new_class.newInstance();
@@ -195,7 +190,7 @@ class DynamicClassLoader
    * @param source The class to be checked against
    * @return true if the the class is or implements the base class.
    */
-  private static boolean backgroundChecks(Class current, Class source)
+  private static boolean backgroundChecks(Class<?> current, Class<?> source)
   {
     boolean ret_val = false;
 
@@ -205,7 +200,7 @@ class DynamicClassLoader
     // the base class (if it has one) for a match.
     if(!ret_val)
     {
-      Class base = current.getSuperclass();
+      Class<?> base = current.getSuperclass();
       if(base != null)
        ret_val = backgroundChecks(base, source);
     }

@@ -83,7 +83,7 @@ public class SwingWorldAccelerationPropertyEditor extends
   /**
    * the formatting object used to write to screen
    */
-  protected DecimalFormat _formatter = new DecimalFormat("0.######");
+  protected DecimalFormat _formatter1 = new DecimalFormat("0.######");
 
   /**
    * property change support for objects which want to listen to us changing
@@ -152,7 +152,7 @@ public class SwingWorldAccelerationPropertyEditor extends
    */
   protected double getAcceleration() throws java.text.ParseException
   {
-    double val = _formatter.parse(_theAcceleration.getText()).doubleValue();
+    double val = _formatter1.parse(_theAcceleration.getText()).doubleValue();
     return val;
   }
 
@@ -171,7 +171,7 @@ public class SwingWorldAccelerationPropertyEditor extends
   {
     if (_theHolder != null)
     {
-      _theAcceleration.setText(_formatter.format(val));
+      _theAcceleration.setText(_formatter1.format(val));
     }
   }
 

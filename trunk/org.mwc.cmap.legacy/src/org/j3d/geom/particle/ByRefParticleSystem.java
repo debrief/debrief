@@ -64,7 +64,7 @@ public abstract class ByRefParticleSystem extends ParticleSystem
     public ByRefParticleSystem( int systemType,
                                 ParticleInitializer particleInitializer,
                                 int particleCount,
-                                Map environment )
+                                Map<String, Object> environment )
     {
         super( systemType, environment );
 
@@ -135,7 +135,7 @@ public abstract class ByRefParticleSystem extends ParticleSystem
      */
     public void updateData( Geometry geometry )
     {
-        GeometryArray geometryArray = (GeometryArray) geometry;
+        GeometryArray geometryArray1 = (GeometryArray) geometry;
 
         for( int n = particleCount-1; n >= 0; n-- )
         {
@@ -144,27 +144,27 @@ public abstract class ByRefParticleSystem extends ParticleSystem
            running |= updateParticle( n, particle );
         }
 
-        geometryArray.setCoordRefDouble( positionRefArray );
-        geometryArray.setColorRefFloat( colorRefArray );
-        geometryArray.setNormalRefFloat( normalRefArray );
-        geometryArray.setTexCoordRefFloat( 0, textureCoordRefArray );
+        geometryArray1.setCoordRefDouble( positionRefArray );
+        geometryArray1.setColorRefFloat( colorRefArray );
+        geometryArray1.setNormalRefFloat( normalRefArray );
+        geometryArray1.setTexCoordRefFloat( 0, textureCoordRefArray );
     }
 
     /**
      * Set up the arrays used internally.
      *
-     * @param particleCount The number of particles in use
+     * @param particleCount1 The number of particles in use
      */
-    synchronized protected void initializeArrays( int particleCount )
+    synchronized protected void initializeArrays( int particleCount1 )
     {
         if ( positionRefArray == null )
         {
             int count = getVertexCount();
 
-            int pos = particleCount * count * ByRefParticle.NUM_COORDS;
-            int col = particleCount * count * ByRefParticle.NUM_COLORS;
-            int norm = particleCount * count * ByRefParticle.NUM_NORMALS;
-            int tex = particleCount * count * ByRefParticle.NUM_TEXTURE_COORDS;
+            int pos = particleCount1 * count * ByRefParticle.NUM_COORDS;
+            int col = particleCount1 * count * ByRefParticle.NUM_COLORS;
+            int norm = particleCount1 * count * ByRefParticle.NUM_NORMALS;
+            int tex = particleCount1 * count * ByRefParticle.NUM_TEXTURE_COORDS;
 
             positionRefArray = new double[ pos ];
             colorRefArray = new float [ col ];

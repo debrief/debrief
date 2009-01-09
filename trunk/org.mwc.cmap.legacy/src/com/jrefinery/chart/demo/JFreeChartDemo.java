@@ -112,7 +112,12 @@ import com.jrefinery.ui.about.AboutFrame;
  */
 public class JFreeChartDemo extends JFrame implements ActionListener, WindowListener {
 
-    /** Exit action command. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Exit action command. */
     public static final String EXIT_COMMAND = "EXIT";
 
     /** About action command. */
@@ -122,7 +127,7 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
     private static final JFreeChartDemoBase DEMO = new JFreeChartDemoBase();
 
     /** An array of chart commands. */
-    private static final String[][] CHART_COMMANDS = DEMO.CHART_COMMANDS;
+    private static final String[][] CHART_COMMANDS = JFreeChartDemoBase.CHART_COMMANDS;
 
     /** Localised resources. */
     private ResourceBundle resources;
@@ -138,9 +143,6 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
 
     /** A frame for displaying information about the application. */
     private AboutFrame aboutFrame;
-
-    /** A tabbed pane for displaying sample charts; */
-    private JTabbedPane tabbedPane;
 
     /**
      * Constructs a demonstration application for the JFreeChart Class Library.
@@ -178,7 +180,8 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
      *
      * @param event  the event.
      */
-    public void actionPerformed(ActionEvent event) {
+    @SuppressWarnings("deprecation")
+		public void actionPerformed(ActionEvent event) {
 
         String command = event.getActionCommand();
         if (command.equals(EXIT_COMMAND)) {
@@ -260,10 +263,10 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
     /**
      * Displays information about the application.
      */
-    private void about() {
+    @SuppressWarnings("deprecation")
+		private void about() {
 
         String title = this.resources.getString("about.title");
-        String versionLabel = this.resources.getString("about.version.label");
         if (aboutFrame == null) {
             aboutFrame = new AboutFrame(title, JFreeChart.INFO);
             aboutFrame.pack();
@@ -351,11 +354,11 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
     /**
      * Creates a menubar.
      *
-     * @param resources  localised resources.
+     * @param resources1  localised resources.
      *
      * @return the menu bar.
      */
-    private JMenuBar createMenuBar(ResourceBundle resources) {
+    private JMenuBar createMenuBar(ResourceBundle resources1) {
 
         // create the menus
         JMenuBar menuBar = new JMenuBar();
@@ -364,26 +367,26 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
         Character mnemonic;
 
         // first the file menu
-        label = resources.getString("menu.file");
-        mnemonic = (Character) resources.getObject("menu.file.mnemonic");
+        label = resources1.getString("menu.file");
+        mnemonic = (Character) resources1.getObject("menu.file.mnemonic");
         JMenu fileMenu = new JMenu(label, true);
         fileMenu.setMnemonic(mnemonic.charValue());
 
-        label = resources.getString("menu.file.exit");
-        mnemonic = (Character) resources.getObject("menu.file.exit.mnemonic");
+        label = resources1.getString("menu.file.exit");
+        mnemonic = (Character) resources1.getObject("menu.file.exit.mnemonic");
         JMenuItem exitItem = new JMenuItem(label, mnemonic.charValue());
         exitItem.setActionCommand(EXIT_COMMAND);
         exitItem.addActionListener(this);
         fileMenu.add(exitItem);
 
         // then the help menu
-        label = resources.getString("menu.help");
-        mnemonic = (Character) resources.getObject("menu.help.mnemonic");
+        label = resources1.getString("menu.help");
+        mnemonic = (Character) resources1.getObject("menu.help.mnemonic");
         JMenu helpMenu = new JMenu(label);
         helpMenu.setMnemonic(mnemonic.charValue());
 
-        label = resources.getString("menu.help.about");
-        mnemonic = (Character) resources.getObject("menu.help.about.mnemonic");
+        label = resources1.getString("menu.help.about");
+        mnemonic = (Character) resources1.getObject("menu.help.about.mnemonic");
         JMenuItem aboutItem = new JMenuItem(label, mnemonic.charValue());
         aboutItem.setActionCommand(ABOUT_COMMAND);
         aboutItem.addActionListener(this);
@@ -400,23 +403,23 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
     /**
      * Creates a tabbed pane containing descriptions of the demo charts.
      *
-     * @param resources  localised resources.
+     * @param resources1  localised resources.
      *
      * @return a tabbed pane.
      */
-    private JTabbedPane createTabbedPane(ResourceBundle resources) {
+    private JTabbedPane createTabbedPane(ResourceBundle resources1) {
 
         Font font = new Font("Dialog", Font.PLAIN, 12);
         JTabbedPane tabs = new JTabbedPane();
 
         int tab = 1;
-        Vector titles = new Vector(0);
+        Vector<String> titles = new Vector<String>(0);
         String[] tabTitles;
         String title = null;
 
         while (tab > 0) {
             try {
-                title = resources.getString("tabs." + tab);
+                title = resources1.getString("tabs." + tab);
                 if (title != null) {
                     titles.add(title);
                 }
@@ -454,14 +457,14 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
         }
 
         String description;
-        String buttonText = resources.getString("charts.display");
+        String buttonText = resources1.getString("charts.display");
         JButton b1;
 
         // Load the CHARTS ...
         String usage = null;
         for (int i = 0; i <= CHART_COMMANDS.length - 1; ++i) {
             try {
-                usage = resources.getString(CHART_COMMANDS[i][2] + ".usage");
+                usage = resources1.getString(CHART_COMMANDS[i][2] + ".usage");
             }
             catch (Exception ex) {
                 usage = null;
@@ -470,10 +473,10 @@ public class JFreeChartDemo extends JFrame implements ActionListener, WindowList
             if ((usage == null) || usage.equalsIgnoreCase("All")
                                 || usage.equalsIgnoreCase("Swing")) {
 
-                title = resources.getString(CHART_COMMANDS[i][2] + ".title");
-                description = resources.getString(CHART_COMMANDS[i][2] + ".description");
+                title = resources1.getString(CHART_COMMANDS[i][2] + ".title");
+                description = resources1.getString(CHART_COMMANDS[i][2] + ".description");
                 try {
-                    tab = Integer.parseInt(resources.getString(CHART_COMMANDS[i][2] + ".tab"));
+                    tab = Integer.parseInt(resources1.getString(CHART_COMMANDS[i][2] + ".tab"));
                     --tab;
                 }
                 catch (Exception ex) {

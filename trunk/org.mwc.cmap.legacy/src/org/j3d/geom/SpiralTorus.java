@@ -42,13 +42,11 @@ public class SpiralTorus
 
     private Shape3D storus;
     private float[] qverts;
-    private int[] points;
-    private float x, y, z, theta, t, previousx, previousz,
+    private float theta, t,
         calct, rlower, rupper, num, mag, x1, x2, x3, x4, y1, y2, y3, y4,
-        z1, z2, z3, z4, xn, yn, zn, secr, yval, r;
+        z1, z2, z3, z4, xn, yn, zn, r;
     private int half, numcirc, upcount = 1, nspirals;
     private int vertCount = 0;
-    private int spiralVertCount = 0, pointCount, spiralPointCount = 0;
     private int normalcount = 0;
     private Vector3f[] normals;
 
@@ -184,8 +182,6 @@ public class SpiralTorus
             System.exit(0);
         }
         qverts = new float[nspirals*2*(half*(6*(2*(numcirc))))];
-        points = new int[nspirals*2*half*6];
-
         float inarc = ((float) (2*Math.PI*(iir+or))/nspirals);
         // 6.2831855
         // This number is a brutal hack that should be removed once this algorithm is corrected.
@@ -198,11 +194,7 @@ public class SpiralTorus
         float sinc = sigma/numcirc;
         float sadder = -sigma;
 
-        float xadder = 0;
-        float zadder = 0;
         int spiralVertCount = 0;
-        pointCount = 0;
-
         for (int sp=0; sp < nspirals; sp++)
         {
             if (sp == 0)

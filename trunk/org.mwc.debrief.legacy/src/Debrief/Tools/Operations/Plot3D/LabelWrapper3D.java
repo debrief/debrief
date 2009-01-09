@@ -8,27 +8,33 @@
  */
 package Debrief.Tools.Operations.Plot3D;
 
-import MWC.GUI.Java3d.Tactical.Label3D;
-import MWC.GUI.Java3d.WorldPlottingOptions;
-import MWC.GUI.Java3d.World;
-import MWC.GUI.Java3d.ScaleTransform;
-import MWC.GUI.StepperListener;
+import java.awt.geom.Point2D;
+import java.beans.PropertyChangeEvent;
+import java.util.Vector;
+
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.Group;
+import javax.media.j3d.LineArray;
+import javax.media.j3d.LineAttributes;
+import javax.media.j3d.Node;
+import javax.media.j3d.Shape3D;
+import javax.vecmath.Color3f;
+
+import Debrief.Wrappers.LabelWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.PlainWrapper;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.TimePeriod;
+import MWC.GUI.StepperListener;
+import MWC.GUI.Java3d.ScaleTransform;
+import MWC.GUI.Java3d.World;
+import MWC.GUI.Java3d.WorldPlottingOptions;
+import MWC.GUI.Java3d.Tactical.Label3D;
 import MWC.GenericData.HiResDate;
-import Debrief.Wrappers.LabelWrapper;
-import Debrief.GUI.Tote.StepControl;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldLocation;
 
-import java.beans.PropertyChangeEvent;
-import java.util.Collection;
-
-import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.geometry.Primitive;
-
-import javax.vecmath.Color3f;
-import javax.media.j3d.*;
+import com.sun.j3d.utils.geometry.Sphere;
 
 public final class LabelWrapper3D extends Label3D implements StepperListener
 {
@@ -281,7 +287,7 @@ public final class LabelWrapper3D extends Label3D implements StepperListener
   protected final Node createFormattedSymbol()
   {
     // can we get this symbol as a vector?
-    Collection rawLines =_myLabel.getShape().getCoordinates();
+  	Vector<Vector<Point2D>> rawLines =_myLabel.getShape().getCoordinates();
     if(rawLines != null)
     {
       // just make it into a shape
@@ -321,7 +327,7 @@ public final class LabelWrapper3D extends Label3D implements StepperListener
    *
    * @return the shape
    */
-  private Node create2dSymbol(Collection rawLines)
+  private Node create2dSymbol(Vector<Vector<Point2D>> rawLines)
   {
 
     // get the graphic object itself

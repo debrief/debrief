@@ -247,16 +247,16 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
      *
      * @param g2  The graphics device.
      * @param dataArea  The data area.
-     * @param plot  The plot.
+     * @param plot1  The plot.
      * @param axis  The axis.
      * @param data  The data.
      * @param info  An object for returning information about the structure of the chart.
      *
      */
-    public void initialise(Graphics2D g2, Rectangle2D dataArea, CategoryPlot plot,
+    public void initialise(Graphics2D g2, Rectangle2D dataArea, CategoryPlot plot1,
                            ValueAxis axis, CategoryDataset data, ChartRenderingInfo info) {
 
-        this.plot = plot;
+        this.plot = plot1;
         setInfo(info);
 
         // the renderer can use different colors for the categories if there is one series and
@@ -310,21 +310,21 @@ public abstract class AbstractCategoryItemRenderer extends AbstractRenderer
      * For most charts, the axisDataArea and the dataClipArea are the same.
      *
      * @param g2  The graphics device.
-     * @param plot  The plot.
+     * @param plot1  The plot.
      * @param axisDataArea  The area inside the axes.
      * @param dataClipArea  The data clip area.
      */
-    public void drawPlotBackground(Graphics2D g2, CategoryPlot plot,
+    public void drawPlotBackground(Graphics2D g2, CategoryPlot plot1,
                                    Rectangle2D axisDataArea, Shape dataClipArea) {
 
-        if (plot.getBackgroundPaint() != null) {
-            g2.setPaint(plot.getBackgroundPaint());
+        if (plot1.getBackgroundPaint() != null) {
+            g2.setPaint(plot1.getBackgroundPaint());
             g2.fill(dataClipArea);
         }
 
-        if ((plot.getOutlineStroke() != null) && (plot.getOutlinePaint() != null)) {
-            g2.setStroke(plot.getOutlineStroke());
-            g2.setPaint(plot.getOutlinePaint());
+        if ((plot1.getOutlineStroke() != null) && (plot1.getOutlinePaint() != null)) {
+            g2.setStroke(plot1.getOutlineStroke());
+            g2.setPaint(plot1.getOutlinePaint());
             g2.draw(dataClipArea);
         }
 

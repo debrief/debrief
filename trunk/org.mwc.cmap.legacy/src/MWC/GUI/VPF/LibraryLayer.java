@@ -102,10 +102,10 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
     {
 
       // create the tree of coverages
-      CoverageAttributeTable _myCat = _myLST.getCAT(name);
+      CoverageAttributeTable _myCat1 = _myLST.getCAT(name);
 
       // did we get a cat?
-      if(_myCat == null)
+      if(_myCat1 == null)
       {
         // oh, well, let's find the first non-reference library
         String[] libs = _myLST.getLibraryNames();
@@ -118,7 +118,7 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
           }
           else
           {
-            _myCat = _myLST.getCAT(thisName);
+            _myCat1 = _myLST.getCAT(thisName);
             break;
           }
         }
@@ -130,13 +130,13 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
       {
 
         // get the list of coverages in this library
-        String[] coverages = _myCat.getCoverageNames();
+        String[] coverages = _myCat1.getCoverageNames();
 
         // step through the coverages
         for(int i=0;i<coverages.length;i++)
         {
           String thisCov = (String)coverages[i];
-          CoverageLayer cl = new CoverageLayer(_myLST, _myWarehouse, thisCov, _myCat);
+          CoverageLayer cl = new CoverageLayer(_myLST, _myWarehouse, thisCov, _myCat1);
           this.add(cl);
         }
       }

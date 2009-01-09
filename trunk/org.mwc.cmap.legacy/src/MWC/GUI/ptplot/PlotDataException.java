@@ -37,7 +37,11 @@ package MWC.GUI.ptplot;
  * @version $Id: PlotDataException.java,v 1.2 2004/05/25 15:35:50 Ian.Mayo Exp $
  */
 class PlotDataException extends Throwable {
-    public PlotDataException() { super(); }
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		public PlotDataException() { super(); }
     public PlotDataException(String s) { super(s); }
 
 }

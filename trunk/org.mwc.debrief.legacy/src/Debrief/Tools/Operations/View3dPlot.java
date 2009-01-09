@@ -452,7 +452,7 @@ public final class View3dPlot extends PlainTool // implements Layers.DataListene
       return;
 
     // now check for the children of the base layer
-    Enumeration iter = thisLayer.elements();
+    Enumeration<Editable> iter = thisLayer.elements();
     while (iter.hasMoreElements())
     {
       Plottable thisP = (Plottable) iter.nextElement();
@@ -471,7 +471,7 @@ public final class View3dPlot extends PlainTool // implements Layers.DataListene
   }
 
 
-  private void doDataExtended(final Layers theData,
+  void doDataExtended(final Layers theData,
                               final WorldHolder theHolder)
   {
     // so, first pass down through our set of layers, and check that everything in there
@@ -600,7 +600,7 @@ public final class View3dPlot extends PlainTool // implements Layers.DataListene
     }
     else
     {
-      Enumeration iter = thisLayer.elements();
+      Enumeration<Editable> iter = thisLayer.elements();
       while (iter.hasMoreElements())
       {
         Plottable pl = (Plottable) iter.nextElement();

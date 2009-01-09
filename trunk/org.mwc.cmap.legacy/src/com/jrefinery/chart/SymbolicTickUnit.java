@@ -50,7 +50,7 @@ import java.util.List;
 public class SymbolicTickUnit extends NumberTickUnit {
 
     /** The list of symbolic value to display instead of the numeric values */
-    private List symbolicValue;
+    private List<String> symbolicValue;
 
     /**
      * Creates a new symbolic tick unit.

@@ -273,7 +273,8 @@ public class HorizontalBarRenderer3D extends HorizontalBarRenderer {
      * @param categoryIndex  the category number (zero-based index).
      * @param previousCategory  the previous category.
      */
-    public void drawCategoryItem(Graphics2D g2, Rectangle2D dataArea,
+    @SuppressWarnings("deprecation")
+		public void drawCategoryItem(Graphics2D g2, Rectangle2D dataArea,
                                  CategoryPlot plot,
                                  ValueAxis axis,
                                  CategoryDataset data, int series,
@@ -377,29 +378,29 @@ public class HorizontalBarRenderer3D extends HorizontalBarRenderer {
             clip.subtract(new Area(bar));
             GeneralPath bar3dRight = null;
             GeneralPath bar3dTop = null;
-            double effect3d = 0.00;
+            double effect3d1 = 0.00;
             HorizontalAxis hAxis = (HorizontalAxis) plot.getRangeAxis();
             if (rectWidth != 0 && hAxis instanceof HorizontalNumberAxis3D) {
-                effect3d = ((HorizontalNumberAxis3D) hAxis).getEffect3d();
+                effect3d1 = ((HorizontalNumberAxis3D) hAxis).getEffect3d();
                 bar3dRight = new GeneralPath();
 
                 bar3dRight.moveTo((float) (rectX + rectWidth), (float) rectY);
                 bar3dRight.lineTo((float) (rectX + rectWidth),
                                   (float) (rectY + rectHeight));
-                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d),
-                                  (float) (rectY + rectHeight - effect3d));
-                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d),
-                                  (float) (rectY - effect3d));
+                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d1),
+                                  (float) (rectY + rectHeight - effect3d1));
+                bar3dRight.lineTo((float) (rectX + rectWidth + effect3d1),
+                                  (float) (rectY - effect3d1));
                 g2.fill(bar3dRight);
                 clip.subtract(new Area(bar3dRight));
 
                 bar3dTop = new GeneralPath();
 
                 bar3dTop.moveTo((float) rectX, (float) rectY);
-                bar3dTop.lineTo((float) (rectX + effect3d),
-                                (float) (rectY - effect3d));
-                bar3dTop.lineTo((float) (rectX + rectWidth + effect3d),
-                                (float) (rectY - effect3d));
+                bar3dTop.lineTo((float) (rectX + effect3d1),
+                                (float) (rectY - effect3d1));
+                bar3dTop.lineTo((float) (rectX + rectWidth + effect3d1),
+                                (float) (rectY - effect3d1));
                 bar3dTop.lineTo((float) (rectX + rectWidth), (float) (rectY));
                 g2.fill(bar3dTop);
                 clip.subtract(new Area(bar3dTop));

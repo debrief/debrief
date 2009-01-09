@@ -26,6 +26,11 @@ package MWC.GUI.ETOPO;
 public class UnsupportedTypeException extends RuntimeException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Create a blank exception with no message
      */
     public UnsupportedTypeException() {

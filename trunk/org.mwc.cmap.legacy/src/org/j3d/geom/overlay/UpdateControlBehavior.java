@@ -123,7 +123,8 @@ public class UpdateControlBehavior extends Behavior
      *
      * @param conditions The list of conditions satisfied
      */
-    public void processStimulus(Enumeration conditions)
+    @SuppressWarnings("unchecked")
+		public void processStimulus(Enumeration conditions)
     {
         if(updating)
             entity.update();

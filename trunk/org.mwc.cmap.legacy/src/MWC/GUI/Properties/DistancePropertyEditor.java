@@ -41,14 +41,10 @@ package MWC.GUI.Properties;
 
 
 
-import java.beans.*;
-import MWC.GUI.*;
-import MWC.GenericData.WorldDistance;
+import java.awt.Component;
+import java.beans.PropertyEditorSupport;
 
-import java.util.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
+import MWC.GenericData.WorldDistance;
 
 /** abstract class providing core functionality necessary for editing a distance
  * value where units are provided (the return value is in minutes)

@@ -55,8 +55,6 @@
 
 package MWC.GUI.Properties;
 
-import MWC.GenericData.HiResDate;
-
 import java.beans.PropertyEditorSupport;
 
 public class TimeStepPropertyEditor extends PropertyEditorSupport

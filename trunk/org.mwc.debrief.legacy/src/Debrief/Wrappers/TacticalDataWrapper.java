@@ -18,9 +18,10 @@ import java.util.Iterator;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 import MWC.GenericData.*;
 
-abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implements MWC.GUI.Layer, java.lang.Comparable,
+abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implements MWC.GUI.Layer,
   SnailDrawTacticalContact.HostedList
 {
 
@@ -311,7 +312,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   // other member functions
   /////////////////////////////////////////
 
-  public final int compareTo(final Object o)
+  public final int compareTo(final Plottable o)
   {
     int res = 0;
     if (o instanceof TacticalDataWrapper)

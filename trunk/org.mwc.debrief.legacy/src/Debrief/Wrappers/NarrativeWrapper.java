@@ -84,12 +84,20 @@
 
 package Debrief.Wrappers;
 
+import java.beans.BeanDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.Vector;
+
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-import MWC.TacticalData.*;
-
-import java.beans.*;
-import java.util.*;
+import MWC.TacticalData.IRollingNarrativeProvider;
+import MWC.TacticalData.NarrativeEntry;
 
 public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		MWC.GUI.Layer, IRollingNarrativeProvider
@@ -109,7 +117,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * where we store our narrative data
 	 */
-	private final java.util.TreeSet _myEntries;
+	private final java.util.TreeSet<Editable> _myEntries;
 
 	/**
 	 * our editor
@@ -148,7 +156,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	public NarrativeWrapper(final String title,
 			final Debrief.GUI.Tote.StepControl theStepper)
 	{
-		_myEntries = new java.util.TreeSet();
+		_myEntries = new java.util.TreeSet<Editable>();
 		_myName = title;
 		_myStepper = theStepper;
 	}
@@ -211,7 +219,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	// member methods to meet Layer responsibilities
 	// //////////////////////////////////////
 
-	public final java.util.Enumeration elements()
+	public final java.util.Enumeration<Editable> elements()
 	{
 		return new IteratorWrapper(_myEntries.iterator());
 	}
@@ -229,10 +237,10 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 			// and the narrative listeners, if we have one
 			if(_myListeners != null)
 			{
-			    for (Iterator iter = _myListeners.iterator(); iter
+			    for (Iterator<INarrativeListener> iter = _myListeners.iterator(); iter
                         .hasNext();)
                 {
-                    INarrativeListener thisL = (INarrativeListener) iter.next();
+                    INarrativeListener thisL = iter.next();
                     thisL.entryRemoved((NarrativeEntry) editable);
                 }
 			}
@@ -271,7 +279,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		return getName() + " (" + _myEntries.size() + " items)";
 	}
 
-	public final java.util.AbstractCollection getData()
+	public final java.util.AbstractCollection<Editable> getData()
 	{
 		return _myEntries;
 	}
@@ -332,7 +340,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 				NarrativeEntry toTest = new NarrativeEntry("", dtg, " ");
 
 				// and retrieve all items before this one
-				SortedSet before = _myEntries.headSet(toTest);
+				SortedSet<Editable> before = _myEntries.headSet(toTest);
 
 				// did we find any?
 				if (before != null)
@@ -343,6 +351,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		return res;
 	}
 
+	@SuppressWarnings("deprecation")
 	public static NarrativeWrapper createDummyData(String title, int len)
 	{
 		NarrativeWrapper res = new NarrativeWrapper(title, null);
@@ -371,11 +380,11 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	// internally
 	// outside as an Enumeration
 	// /////////////////////////////////////////////////////////////////
-	public static final class IteratorWrapper implements java.util.Enumeration
+	protected static final class IteratorWrapper implements java.util.Enumeration<Editable>
 	{
-		private final java.util.Iterator _val;
+		private final java.util.Iterator<Editable> _val;
 
-		public IteratorWrapper(final java.util.Iterator iterator)
+		public IteratorWrapper(final java.util.Iterator<Editable> iterator)
 		{
 			_val = iterator;
 		}
@@ -386,7 +395,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 
 		}
 
-		public final Object nextElement()
+		public final Editable nextElement()
 		{
 			return _val.next();
 		}
@@ -449,7 +458,7 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class c = NarrativeWrapper.class;
+			final Class<NarrativeWrapper> c = NarrativeWrapper.class;
 
 			final MethodDescriptor[] mds = { method(c, "exportShape", null, "Export Shape") };
 
@@ -484,14 +493,14 @@ public final class NarrativeWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		NarrativeEntry[] res = new NarrativeEntry[]{};
 		// ok, cn
-		Vector theNarrs = new Vector(10, 10);
-		Iterator iter = getData().iterator();
+		Vector<NarrativeEntry> theNarrs = new Vector<NarrativeEntry>(10, 10);
+		Iterator<Editable> iter = getData().iterator();
 		while (iter.hasNext())
 		{
 			NarrativeEntry ne = (NarrativeEntry) iter.next();
 			theNarrs.add(ne);
 		}
-		res = (NarrativeEntry[]) theNarrs.toArray(res);
+		res = theNarrs.toArray(res);
 
 		return res;
 	}

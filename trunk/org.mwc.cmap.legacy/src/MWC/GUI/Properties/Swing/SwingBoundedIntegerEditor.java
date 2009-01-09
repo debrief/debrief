@@ -139,7 +139,7 @@ public class SwingBoundedIntegerEditor extends
   ////////////////////////////////////////////////////////////
 
 
-  private boolean _hasBeenUpdated = false;
+  boolean _hasBeenUpdated = false;
 
   /** build the editor
    */
@@ -148,7 +148,12 @@ public class SwingBoundedIntegerEditor extends
     // create the panel
     _theHolder = new JPanel()
     {
-      public void paint(Graphics g) {
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void paint(Graphics g) {
         // we'e got a workaround for JDK1.3 here. It's a JDC Bug when a
         // JSlider is inserted into a JDesktop component.
         if(!_hasBeenUpdated)

@@ -125,11 +125,11 @@ public class ImportManager
   /**
    * static copy of manager
    */
-  private static ImportManager theManager = null;
+  static ImportManager theManager = null;
   /**
    * the list of import operators
    */
-  private java.util.Vector _theImporters;
+  java.util.Vector<PlainImporter> _theImporters;
 
   ////////////////////////////////////////
   // constructor
@@ -137,7 +137,7 @@ public class ImportManager
   public ImportManager()
   {
     // create the array of import handlers, by
-    _theImporters = new Vector(0, 1);
+    _theImporters = new Vector<PlainImporter>(0, 1);
 
   }
 
@@ -226,7 +226,7 @@ public class ImportManager
     {
       try
       {
-        Thread.currentThread().sleep(200);
+        Thread.sleep(200);
       }
       catch (java.lang.InterruptedException e)
       {
@@ -270,7 +270,7 @@ public class ImportManager
         {
           try
           {
-            Thread.currentThread().sleep(200);
+            Thread.sleep(200);
           }
           catch (java.lang.InterruptedException e)
           {
@@ -314,7 +314,7 @@ public class ImportManager
       }
 
       // look through types of import handler
-      Enumeration enumer = theManager._theImporters.elements();
+      Enumeration<PlainImporter> enumer = theManager._theImporters.elements();
 
       while (enumer.hasMoreElements())
       {
@@ -339,7 +339,7 @@ public class ImportManager
   }
 
 
-  private static void importThisOne(PlainImporter theImporter, String fName, Layers theData)
+  static void importThisOne(PlainImporter theImporter, String fName, Layers theData)
   {
     try
     {

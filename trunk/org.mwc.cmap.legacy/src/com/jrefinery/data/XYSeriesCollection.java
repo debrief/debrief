@@ -50,14 +50,14 @@ import java.util.List;
 public class XYSeriesCollection extends AbstractSeriesDataset implements XYDataset {
 
     /** The series that are included in the collection. */
-    private List data;
+    private List<XYSeries> data;
 
     /**
      * Constructs an empty dataset.
      */
     public XYSeriesCollection() {
 
-        this.data = new java.util.ArrayList();
+        this.data = new java.util.ArrayList<XYSeries>();
 
     }
 
@@ -68,7 +68,7 @@ public class XYSeriesCollection extends AbstractSeriesDataset implements XYDatas
      */
     public XYSeriesCollection(XYSeries series) {
 
-        this.data = new java.util.ArrayList();
+        this.data = new java.util.ArrayList<XYSeries>();
         if (series != null) {
             data.add(series);
             series.addChangeListener(this);

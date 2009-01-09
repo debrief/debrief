@@ -520,7 +520,7 @@ public class HorizontalNumberAxis extends NumberAxis implements HorizontalAxis, 
         float maxY = (float) plotArea.getMaxY();
         g2.setFont(getTickLabelFont());
 
-        Iterator iterator = ticks.iterator();
+        Iterator<Tick> iterator = ticks.iterator();
         while (iterator.hasNext()) {
             Tick tick = (Tick) iterator.next();
             float xx = (float) translateValueToJava2D(tick.getNumericalValue(), plotArea);
@@ -557,12 +557,12 @@ public class HorizontalNumberAxis extends NumberAxis implements HorizontalAxis, 
      * Returns the height required to draw the axis in the specified draw area.
      *
      * @param g2  the graphics device.
-     * @param plot  the plot that the axis belongs to.
+     * @param plot1  the plot that the axis belongs to.
      * @param drawArea  the area within which the plot should be drawn.
      *
      * @return the height required to draw the axis in the specified draw area.
      */
-    public double reserveHeight(Graphics2D g2, Plot plot, Rectangle2D drawArea) {
+    public double reserveHeight(Graphics2D g2, Plot plot1, Rectangle2D drawArea) {
 
         if (!visible) {
             return 0.0;
@@ -598,13 +598,13 @@ public class HorizontalNumberAxis extends NumberAxis implements HorizontalAxis, 
      * Returns area in which the axis will be displayed.
      *
      * @param g2  the graphics device.
-     * @param plot  a reference to the plot.
+     * @param plot1  a reference to the plot.
      * @param drawArea  the area within which the plot and axes should be drawn.
      * @param reservedWidth  the space already reserved for the vertical axis.
      *
      * @return area in which the axis will be displayed.
      */
-    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot,
+    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot1,
                                        Rectangle2D drawArea, double reservedWidth) {
 
         if (!visible) {
@@ -730,7 +730,7 @@ public class HorizontalNumberAxis extends NumberAxis implements HorizontalAxis, 
         FontRenderContext frc = g2.getFontRenderContext();
         double maxHeight = 0.0;
         if (vertical) {
-            Iterator iterator = this.ticks.iterator();
+            Iterator<Tick> iterator = this.ticks.iterator();
             while (iterator.hasNext()) {
                 Tick tick = (Tick) iterator.next();
                 Rectangle2D labelBounds = font.getStringBounds(tick.getText(), frc);
@@ -752,12 +752,12 @@ public class HorizontalNumberAxis extends NumberAxis implements HorizontalAxis, 
      * For this axis, the requirement is that the plot implements the HorizontalValuePlot
      * interface.
      *
-     * @param plot  the plot.
+     * @param plot1  the plot.
      *
      * @return <code>true</code> if the plot is compatible with the axis.
      */
-    protected boolean isCompatiblePlot(Plot plot) {
-        if (plot instanceof HorizontalValuePlot) {
+    protected boolean isCompatiblePlot(Plot plot1) {
+        if (plot1 instanceof HorizontalValuePlot) {
             return true;
         }
         else {

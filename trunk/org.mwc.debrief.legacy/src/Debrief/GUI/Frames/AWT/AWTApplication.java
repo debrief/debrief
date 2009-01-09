@@ -113,11 +113,11 @@ public final class AWTApplication extends Application {
 
   /** the 'stack' of sessions we are maintaining
    */
-  private java.awt.CardLayout theCards;
+  java.awt.CardLayout theCards;
 
   /** the Centre portion of the frame, carrying the sessions
    */
-  private java.awt.Panel theMainBit;
+  java.awt.Panel theMainBit;
 
   /** remember the old cursor, for when we switch to another one
    */
@@ -133,7 +133,8 @@ public final class AWTApplication extends Application {
   ////////////////////////////////////////////////////////////
 
   /** create the AWT Toolbar, set it in the parent application*/
-  public AWTApplication(){
+  @SuppressWarnings("deprecation")
+	public AWTApplication(){
     // create the parent first
     super();
 
@@ -389,7 +390,7 @@ public final class AWTApplication extends Application {
   }
 
 
-  private void doTest(){
+  void doTest(){
     theCards.next(theMainBit);
 
     MWC.GUI.Dialogs.DialogFactory.showMessage("title", "msg");

@@ -286,12 +286,12 @@ public class DefaultIntervalCategoryDataset extends AbstractSeriesDataset
      *
      * @return a list of the categories in the dataset.
      */
-    public List getCategories() {
+    public List<Object> getCategories() {
 
         // the CategoryDataset interface expects a list of categories, but
         // we've stored them in an array...
         if (categories == null) {
-            return new ArrayList();
+            return new ArrayList<Object>();
         }
         else {
             return Collections.unmodifiableList(Arrays.asList(categories));

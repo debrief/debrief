@@ -76,10 +76,11 @@ public class BasicTimeSeries extends Series implements Serializable {
     private String range;
 
     /** The type of period for the data. */
-    private Class timePeriodClass;
+    private Class<?> timePeriodClass;
 
     /** The list of data pairs in the series. */
-    private List data;
+    @SuppressWarnings("unchecked")
+		private List data;
 
     /** The maximum number of items for the series. */
     private int maximumItemCount;
@@ -110,7 +111,7 @@ public class BasicTimeSeries extends Series implements Serializable {
      * @param name  the series name.
      * @param timePeriodClass  the type of time period.
      */
-    public BasicTimeSeries(String name, Class timePeriodClass) {
+    public BasicTimeSeries(String name, Class<?> timePeriodClass) {
 
         this(name,
              DEFAULT_DOMAIN_DESCRIPTION,
@@ -131,13 +132,13 @@ public class BasicTimeSeries extends Series implements Serializable {
      * @param range  the range description.
      * @param timePeriodClass  the type of time period.
      */
-    public BasicTimeSeries(String name, String domain, String range, Class timePeriodClass) {
+    public BasicTimeSeries(String name, String domain, String range, Class<?> timePeriodClass) {
 
         super(name);
         this.domain = domain;
         this.range = range;
         this.timePeriodClass = timePeriodClass;
-        data = new java.util.ArrayList();
+        data = new java.util.ArrayList<TimeSeriesDataPair>();
         this.maximumItemCount = Integer.MAX_VALUE;
         this.historyCount = 0;
 
@@ -256,7 +257,7 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @return the time period class for this series (null if the series is empty).
      */
-    public Class getTimePeriodClass() {
+    public Class<?> getTimePeriodClass() {
 
         return this.timePeriodClass;
 
@@ -283,7 +284,8 @@ public class BasicTimeSeries extends Series implements Serializable {
      * @return the data pair matching the specified period (or null if there is no match).
      *
      */
-    public TimeSeriesDataPair getDataPair(TimePeriod period) {
+    @SuppressWarnings("unchecked")
+		public TimeSeriesDataPair getDataPair(TimePeriod period) {
 
         // check arguments...
         if (period == null) {
@@ -332,9 +334,9 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @return a collection of all the time periods.
      */
-    public Collection getTimePeriods() {
+    public Collection<TimePeriod> getTimePeriods() {
 
-        Collection result = new java.util.ArrayList();
+        Collection<TimePeriod> result = new java.util.ArrayList<TimePeriod>();
 
         for (int i = 0; i < this.getItemCount(); i++) {
             result.add(getTimePeriod(i));
@@ -352,9 +354,9 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @return the series minus 'this'.
      */
-    public Collection getTimePeriodsUniqueToOtherSeries(BasicTimeSeries series) {
+    public Collection<TimePeriod> getTimePeriodsUniqueToOtherSeries(BasicTimeSeries series) {
 
-        Collection result = new java.util.ArrayList();
+        Collection<TimePeriod> result = new java.util.ArrayList<TimePeriod>();
 
         for (int i = 0; i < series.getItemCount(); i++) {
             TimePeriod period = series.getTimePeriod(i);
@@ -376,7 +378,8 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @return the index of the specified time period.
      */
-    public int getIndex(TimePeriod period) {
+    @SuppressWarnings("unchecked")
+		public int getIndex(TimePeriod period) {
 
         if (period != null) {
             // fetch the value...
@@ -427,7 +430,8 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @throws SeriesException if there is a problem adding the data.
      */
-    public void add(TimeSeriesDataPair pair) throws SeriesException {
+    @SuppressWarnings({ "unchecked", "unchecked" })
+		public void add(TimeSeriesDataPair pair) throws SeriesException {
 
         // check arguments...
         if (pair == null) {
@@ -507,7 +511,8 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @throws SeriesException if there is a problem adding the data.
      */
-    public void update(TimePeriod period, Number value) throws SeriesException {
+    @SuppressWarnings("unchecked")
+		public void update(TimePeriod period, Number value) throws SeriesException {
 
         TimeSeriesDataPair temp = new TimeSeriesDataPair(period, value);
         int index = Collections.binarySearch(data, temp);
@@ -575,7 +580,8 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @return A copy of the overwritten data pair (or null).
      */
-    public TimeSeriesDataPair addOrUpdate(TimePeriod period, Number value) {
+    @SuppressWarnings("unchecked")
+		public TimeSeriesDataPair addOrUpdate(TimePeriod period, Number value) {
 
         TimeSeriesDataPair overwritten = null;
 
@@ -651,7 +657,8 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @return a series containing a copy of this times series from start until end.
      */
-    public BasicTimeSeries createCopy(int start, int end) {
+    @SuppressWarnings("unchecked")
+		public BasicTimeSeries createCopy(int start, int end) {
 
         BasicTimeSeries copy = (BasicTimeSeries) super.clone();
 

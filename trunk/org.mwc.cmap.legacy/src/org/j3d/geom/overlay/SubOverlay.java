@@ -10,13 +10,21 @@
 package org.j3d.geom.overlay;
 
 // Standard imports
-import java.awt.geom.*;
-import java.awt.*;
-
-import javax.media.j3d.*;
-
-import java.awt.image.Raster;
+import java.awt.Dimension;
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ImageComponent2D;
+import javax.media.j3d.Material;
+import javax.media.j3d.PolygonAttributes;
+import javax.media.j3d.QuadArray;
+import javax.media.j3d.RenderingAttributes;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Texture;
+import javax.media.j3d.Texture2D;
+import javax.media.j3d.TextureAttributes;
+import javax.media.j3d.TransparencyAttributes;
 
 // Application specific imports
 // none
@@ -276,25 +284,25 @@ class SubOverlay
      *
      * @param appearance The appearance to use for the shape
      * @param texture The texture used for the buffer
-     * @param space The coordinates of the shape to create
+     * @param space1 The coordinates of the shape to create
      * @return A shape3D object representing the given information
      */
-    private Shape3D buildShape(Appearance appearance, Rectangle space)
+    private Shape3D buildShape(Appearance appearance, Rectangle space1)
     {
         int format = QuadArray.COORDINATES | QuadArray.TEXTURE_COORDINATE_2;
         QuadArray geom = new QuadArray(4, format);
 
         float[] vertices = {
-            space.x + space.width, space.y,                 0,
-            space.x + space.width, space.y + space.height,  0,
-            space.x,               space.y + space.height,  0,
-            space.x,               space.y,                 0
+            space1.x + space1.width, space1.y,                 0,
+            space1.x + space1.width, space1.y + space1.height,  0,
+            space1.x,               space1.y + space1.height,  0,
+            space1.x,               space1.y,                 0
         };
 
         geom.setCoordinates(0, vertices);
 
-        float w_ratio = space.width / texture.getWidth();
-        float h_ratio = space.height / texture.getHeight();
+        float w_ratio = space1.width / texture.getWidth();
+        float h_ratio = space1.height / texture.getHeight();
 
         float[] textureCoordinates = {
             w_ratio, 0,
@@ -305,10 +313,10 @@ class SubOverlay
 
         geom.setTextureCoordinates(0, 0, textureCoordinates);
 
-        Shape3D shape = new Shape3D();
-        shape.setGeometry(geom);
-        shape.setAppearance(appearance);
+        Shape3D shape1 = new Shape3D();
+        shape1.setGeometry(geom);
+        shape1.setAppearance(appearance);
 
-        return shape;
+        return shape1;
     }
 }

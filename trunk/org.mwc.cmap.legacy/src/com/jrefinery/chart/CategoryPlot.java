@@ -106,7 +106,7 @@ public abstract class CategoryPlot extends Plot implements CategoryPlotConstants
     protected CategoryItemRenderer renderer;
 
     /** A list of markers (optional) for the range axis. */
-    protected List rangeMarkers;
+    protected List<Marker> rangeMarkers;
 
     /** The gap before the first item in the plot. */
     protected double introGapPercent;
@@ -313,9 +313,10 @@ public abstract class CategoryPlot extends Plot implements CategoryPlotConstants
      *
      * @deprecated use getLegendItems().
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
 
-        List result = new java.util.ArrayList();
+        List<String> result = new java.util.ArrayList<String>();
 
         SeriesDataset data = getCategoryDataset();
         if (data != null) {
@@ -678,14 +679,14 @@ public abstract class CategoryPlot extends Plot implements CategoryPlotConstants
      */
     public void zoom(double percent) {
 
-        ValueAxis rangeAxis = this.getRangeAxis();
+        ValueAxis rangeAxis11 = this.getRangeAxis();
         if (percent > 0.0) {
-            double range = rangeAxis.getMaximumAxisValue() - rangeAxis.getMinimumAxisValue();
+            double range = rangeAxis11.getMaximumAxisValue() - rangeAxis11.getMinimumAxisValue();
             double scaledRange = range * percent;
-            rangeAxis.setAnchoredRange(scaledRange);
+            rangeAxis11.setAnchoredRange(scaledRange);
         }
         else {
-            rangeAxis.setAutoRange(true);
+            rangeAxis11.setAutoRange(true);
         }
 
     }
@@ -894,7 +895,7 @@ public abstract class CategoryPlot extends Plot implements CategoryPlotConstants
     public void addRangeMarker(Marker marker) {
 
         if (this.rangeMarkers == null) {
-            this.rangeMarkers = new java.util.ArrayList();
+            this.rangeMarkers = new java.util.ArrayList<Marker>();
         }
         this.rangeMarkers.add(marker);
         notifyListeners(new PlotChangeEvent(this));

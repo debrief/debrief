@@ -35,7 +35,7 @@ import org.j3d.loaders.ac3d.parser.handlers.ConsoleOutputHandler;
 public abstract class TokenHandler {
     
     /** The definition of the arguements list for the handler impls. */
-    private static Class[] TOKEN_ARGS_LIST;
+    private static Class<?>[] TOKEN_ARGS_LIST;
     
     /** Specifies whether or not to spew debug data. */
     private boolean shouldDebug;

@@ -5,17 +5,24 @@
 
 package MWC.GUI.TabPanel;
 
-import java.awt.*;
-import java.applet.Applet;
-import java.util.Vector;
-import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
-import java.beans.VetoableChangeListener;
-import java.awt.event.MouseEvent;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.LayoutManager;
+import java.awt.Panel;
+import java.awt.Polygon;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.lang.IllegalArgumentException;
-//import symantec.itools.awt.util.ColorUtils;
+import java.awt.event.MouseEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.util.Vector;
 
 //	05/07/97	LAB	Updated to support Java 1.1
 //	06/05/97	LAB	Made all private variables used in the innerclasses, protected.
@@ -103,9 +110,9 @@ public abstract class BaseTabbedPanel extends Panel
      */
 	public BaseTabbedPanel(int tabsPostion, int tabsStyle)
 	{
-		vLabels = new Vector();
-		vEnabled = new Vector();
-		vPolys = new Vector();
+		vLabels = new Vector<String>();
+		vEnabled = new Vector<Boolean>();
+		vPolys = new Vector<Polygon>();
 		btpInsets = new Insets(0,0,0,0);
 
 		setTabsInfo(tabsPostion, tabsStyle);
@@ -633,9 +640,9 @@ public abstract class BaseTabbedPanel extends Panel
 	 */
 	public void removeAllTabs()
 	{
-		vLabels = new Vector();
-		vEnabled = new Vector();
-		vPolys = new Vector();
+		vLabels = new Vector<String>();
+		vEnabled = new Vector<Boolean>();
+		vPolys = new Vector<Polygon>();
 		curIndex = -1;
 		firstVisibleTab = 0;
 		lastWidth = -1;
@@ -1345,6 +1352,11 @@ public abstract class BaseTabbedPanel extends Panel
 	 */
 	class Mouse extends java.awt.event.MouseAdapter implements java.io.Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public void mousePressed(MouseEvent e)
 		{
 			int sizeR = vPolys.size();
@@ -1374,6 +1386,11 @@ public abstract class BaseTabbedPanel extends Panel
 	 */
 	class Action implements java.awt.event.ActionListener, java.io.Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		public void actionPerformed(ActionEvent e)
 		{
 			if (e.getSource() == dbLeft)
@@ -1431,7 +1448,7 @@ public abstract class BaseTabbedPanel extends Panel
 	/**
 	 * A Vector of Polygons, one for each tab.
 	 */
-	protected Vector vPolys;
+	protected Vector<Polygon> vPolys;
 	/**
 	 * The zero-relative index of the first visible tab.
 	 */
@@ -1451,7 +1468,7 @@ public abstract class BaseTabbedPanel extends Panel
 	/**
 	 * A Vector of tab label Strings.
 	 */
-	protected Vector vLabels;
+	protected Vector<String> vLabels;
     /**
      * Color used in drawing of the border.
      */
@@ -1483,7 +1500,7 @@ public abstract class BaseTabbedPanel extends Panel
 	private int TF_BOTTOM = -9;
 	private int TF_BTN_HEIGHT = 20;
 
-	private Vector vEnabled;
+	private Vector<Boolean> vEnabled;
 
 	private Font fReg;
 	private Font fSel;

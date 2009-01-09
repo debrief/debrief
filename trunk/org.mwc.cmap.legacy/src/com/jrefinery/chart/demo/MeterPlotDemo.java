@@ -65,7 +65,8 @@ public class MeterPlotDemo {
      * @param value  the value.
      * @param type  the type.
      */
-    void displayMeterChart(double value, int type) {
+    @SuppressWarnings("deprecation")
+		void displayMeterChart(double value, int type) {
 
         JFreeChart chart = null;
 

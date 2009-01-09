@@ -238,7 +238,7 @@ public class RectangleShape extends PlainShape implements Editable, Serializable
 	 * get the shape as a series of WorldLocation points. Joined up, these form a
 	 * representation of the shape
 	 */
-	public Collection getDataPoints()
+	public Collection<WorldLocation> getDataPoints()
 	{
 		Vector<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 

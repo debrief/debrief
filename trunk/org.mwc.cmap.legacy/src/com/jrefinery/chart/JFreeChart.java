@@ -74,6 +74,7 @@ package com.jrefinery.chart;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Arrays;
@@ -129,7 +130,7 @@ public class JFreeChart implements JFreeChartConstants,
     public static final ProjectInfo INFO = new JFreeChartInfo();
 
     /** The chart title(s). */
-    private List titles;
+    private ArrayList<AbstractTitle> titles;
 
     /** The chart legend. */
     private Legend legend;
@@ -192,7 +193,7 @@ public class JFreeChart implements JFreeChartConstants,
         // the chart listens for changes in the plot...
         plot.addChangeListener(this);
 
-        titles = new java.util.ArrayList();
+        titles = new java.util.ArrayList<AbstractTitle>();
 
         // create a legend, if requested...
         if (createLegend) {
@@ -220,17 +221,17 @@ public class JFreeChart implements JFreeChartConstants,
      *
      * @return  a reference to the list of titles.
      */
-    public List getTitles() {
+    public List<AbstractTitle> getTitles() {
         return this.titles;
     }
 
     /**
      * Sets the title list for the chart (completely replaces any existing titles).
      *
-     * @param titles  the new list of titles.
+     * @param newTitles  the new list of titles.
      */
-    public void setTitles(List titles) {
-        this.titles = titles;
+    public void setTitles(ArrayList<AbstractTitle> newTitles) {
+        this.titles = newTitles;
         fireChartChanged();
     }
 
@@ -537,7 +538,7 @@ public class JFreeChart implements JFreeChartConstants,
         // draw the titles...
         nonTitleArea.setRect(chartArea);
 
-        Iterator iterator = titles.iterator();
+        Iterator<AbstractTitle> iterator = titles.iterator();
         while (iterator.hasNext()) {
             AbstractTitle currentTitle = (AbstractTitle) iterator.next();
             switch (currentTitle.getPosition()) {

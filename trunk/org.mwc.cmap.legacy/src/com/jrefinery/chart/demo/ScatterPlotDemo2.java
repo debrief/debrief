@@ -55,6 +55,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class ScatterPlotDemo2 extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * A demonstration application showing a scatter plot.
      *
      * @param title  the frame title.

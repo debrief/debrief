@@ -167,14 +167,14 @@ public class MoveDirection extends PlainTool {
   ////////////////////////////////////////////////////////////////////
   // store action information
   protected class MoveDirectionAction implements Action{
-    private PlainChart _theChart;  
+    private PlainChart _theChart1;  
     private WorldArea _oldArea;
 		private WorldArea _newArea;
     
     public MoveDirectionAction(PlainChart theChart,
 															 WorldArea oldArea,
 															 WorldArea newArea){
-      _theChart = theChart;
+      _theChart1 = theChart;
       _oldArea = oldArea;
 			_newArea = newArea;
     }
@@ -195,19 +195,19 @@ public class MoveDirection extends PlainTool {
     public void undo()      
     {
       // set the data area for the chart to the old area
-      _theChart.getCanvas().getProjection().setDataArea(_oldArea);
+      _theChart1.getCanvas().getProjection().setDataArea(_oldArea);
 
-			_theChart.update();
+			_theChart1.update();
 			
     }
     
 		public void execute()
 		{
 			// update the data area
-   		_theChart.getCanvas().getProjection().setDataArea(_newArea);
+   		_theChart1.getCanvas().getProjection().setDataArea(_newArea);
       
       // and trigger a redraw
-      _theChart.update();
+      _theChart1.update();
     }
   }
   

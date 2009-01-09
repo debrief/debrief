@@ -101,9 +101,9 @@ public class Performance2 {
      */
     public void getPrimitiveLoop(int count) {
 
-        double d;
+        double d =0;
         for (int i = 0; i < count; i++) {
-            d = getPrimitive();
+            d = d+ getPrimitive();
         }
 
     }
@@ -115,9 +115,9 @@ public class Performance2 {
      */
     public void getPrimitiveAsObjectLoop(int count) {
 
-        double d;
+        double d =0;
         for (int i = 0; i < count; i++) {
-            d = getPrimitiveAsObject().doubleValue();
+            d = d+ getPrimitiveAsObject().doubleValue();
         }
 
     }
@@ -129,9 +129,9 @@ public class Performance2 {
      */
     public void getObjectAsPrimitiveLoop(int count) {
 
-        double d;
+        double d=0;
         for (int i = 0; i < count; i++) {
-            d = getObjectAsPrimitive();
+            d = d+getObjectAsPrimitive();
         }
 
     }
@@ -143,9 +143,9 @@ public class Performance2 {
      */
     public void getObjectLoop(int count) {
 
-        double d;
+        double d=0;
         for (int i = 0; i < count; i++) {
-            d = getObject().doubleValue();
+            d = d+getObject().doubleValue();
         }
 
     }

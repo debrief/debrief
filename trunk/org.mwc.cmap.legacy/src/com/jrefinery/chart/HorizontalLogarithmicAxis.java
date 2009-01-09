@@ -380,42 +380,6 @@ public class HorizontalLogarithmicAxis extends HorizontalNumberAxis  {
     }
 
     /**
-     * Returns the smallest (closest to negative infinity) double value that is
-     * not less than the argument, is equal to a mathematical integer and
-     * satisfying the condition that log base 10 of the value is an integer
-     * (i.e., the value returned will be a power of 10: 1, 10, 100, 1000, etc.).
-     *
-     * @param upper a double value above which a ceiling will be calcualted.
-     *
-     * @return 10<sup>N</sup> with N ... { 1 .. MAX_LONG }.
-     */
-    private double computeLogCeil(double upper) {
-
-        double logCeil;
-        if (upper > 10.0) {     //parameter value is > 10
-          // The Math.log() function is based on e not 10.
-          logCeil = Math.log(upper) / LOG10_VALUE;
-          logCeil = Math.ceil(logCeil);
-          logCeil = Math.pow(10, logCeil);
-        }
-        else {
-          if (upper < -10.0) {     //parameter value is < -10
-                   //calculate log using positive value:
-            logCeil = Math.log(-upper) / LOG10_VALUE;
-                     //calculate ceil using negative value:
-            logCeil = Math.ceil(-logCeil);
-                     //calculate power using positive value; then negate
-            logCeil = -Math.pow(10, -logCeil);
-          }
-          else {
-                 //parameter value is -10 > val < 10
-            logCeil = Math.ceil(upper);       //use as-is
-          }
-        }
-        return logCeil;
-    }
-
-    /**
      * Returns the largest (closest to positive infinity) double value that is
      * not greater than the argument, is equal to a mathematical integer and
      * satisfying the condition that log base 10 of the value is an integer

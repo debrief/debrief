@@ -48,11 +48,6 @@ public class S57Database
 	private String _comment = "";
 
 	/**
-	 * the name of this chart
-	 */
-	private String _dataSourceName;
-
-	/**
 	 * the vector that's currently being built up.
 	 */
 	private VectorRecord _pendingVectorRecord;
@@ -150,7 +145,7 @@ public class S57Database
 				/* ------------------------------------------------------------ */
 				/* Loop over each field in this particular record. */
 				/* ------------------------------------------------------------ */
-				Iterator iter = poRecord.iterator();
+				Iterator<DDFField> iter = poRecord.iterator();
 				while (iter.hasNext())
 				{
 					DDFField nextField = (DDFField) iter.next();
@@ -352,7 +347,7 @@ public class S57Database
 		
 		boolean found = false;
 		
-		for (Iterator iter = _closers.iterator(); iter.hasNext();)
+		for (Iterator<StoreFeature> iter = _closers.iterator(); iter.hasNext();)
 		{
 			StoreFeature storer = (StoreFeature) iter.next();
 			if(storer.canDo(feature._objl))
@@ -398,7 +393,7 @@ public class S57Database
 //		}
 //	}
 
-	private void storeLine(FeatureRecord feature, LineFeature cl)
+	void storeLine(FeatureRecord feature, LineFeature cl)
 	{
 		// right, I presume this is a line-based feature
 		// assert (feature._prim == 2);
@@ -428,7 +423,7 @@ public class S57Database
 //		String myType = "Soundings";
 //	}
 
-	private void storePoints(FeatureRecord feature, PointFeature myType)
+	void storePoints(FeatureRecord feature, PointFeature myType)
 	{
 		// right, I presume this is a line-based feature
 	//	assert (feature._prim == 1);
@@ -470,16 +465,16 @@ public class S57Database
 		if (host.coords != null)
 			tgt.addAll(host.coords);
 
-		Vector pointers = host._pointers;
+		Vector<VectorRecord.VectorPointer> pointers = host._pointers;
 		if (pointers != null)
 		{
-			for (Iterator iter = pointers.iterator(); iter.hasNext();)
+			for (Iterator<VectorRecord.VectorPointer> iter = pointers.iterator(); iter.hasNext();)
 			{
 				VectorRecord.VectorPointer nextP = (VectorRecord.VectorPointer) iter.next();
 
 				// get the vector
-				HashMap<Integer, VectorRecord> nextList = vectorListFor(nextP._rcnm);
-				VectorRecord nextV = nextList.get(nextP._rcid);
+				HashMap<Integer, VectorRecord> nextList = vectorListFor(nextP._rcnm1);
+				VectorRecord nextV = nextList.get(nextP._rcid1);
 
 				if (nextV != host)
 				{
@@ -552,7 +547,7 @@ public class S57Database
 	private void loadDSPM(DDFField field)
 	{
 		Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			Integer factor2d = (Integer) res.get("COMF");
@@ -567,11 +562,11 @@ public class S57Database
 	private void loadDSSI(DDFField field)
 	{
 		System.out.println("==== loading dssi");
-		Vector fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		Vector<HashMap<String, Object>> fields = loadFields(field);
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
-			Iterator iter = res.keySet().iterator();
+			Iterator<String> iter = res.keySet().iterator();
 			System.out.println("stats loaded");
 			while (iter.hasNext())
 			{
@@ -584,83 +579,12 @@ public class S57Database
 	private void loadDSID(DDFField field)
 	{
 		System.out.println("==== loading dsid");
-		Vector fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		Vector<HashMap<String, Object>> fields = loadFields(field);
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
-			_dataSourceName = (String) res.get("DSNM");
 			_comment += res.get("COMT");
 		}
-	}
-
-	private int[][] loadRepeatedPositions(DDFField field)
-	{
-
-		DDFFieldDefinition poFieldDefn = field.getFieldDefn();
-
-		byte[] pachFieldData = field.getData();
-		int nBytesRemaining = field.getDataSize();
-		final int subfieldCount = poFieldDefn.getSubfieldCount();
-		final int repeatCount = field.getRepeatCount();
-
-		int[][] positions = new int[repeatCount][3];
-
-		/* -------------------------------------------------------- */
-		/* Loop over the repeat count for this fields */
-		/* subfields. The repeat count will almost */
-		/* always be one. */
-		/* -------------------------------------------------------- */
-		for (int iRepeat = 0; iRepeat < repeatCount; iRepeat++)
-		{
-			/* -------------------------------------------------------- */
-			/* Loop over all the subfields of this field, advancing */
-			/* the data pointer as we consume data. */
-			/* -------------------------------------------------------- */
-			for (int iSF = 0; iSF < subfieldCount; iSF++)
-			{
-
-				DDFSubfieldDefinition poSFDefn = poFieldDefn.getSubfieldDefn(iSF);
-				int nBytesConsumed = loadRepeatedPositionFields(iRepeat, positions, poSFDefn,
-						pachFieldData, nBytesRemaining);
-				nBytesRemaining -= nBytesConsumed;
-				byte[] tempData = new byte[pachFieldData.length - nBytesConsumed];
-				System.arraycopy(pachFieldData, nBytesConsumed, tempData, 0, tempData.length);
-				pachFieldData = tempData;
-			}
-		}
-
-		return positions;
-	}
-
-	private int loadRepeatedPositionFields(int counter, int[][] positions,
-			DDFSubfieldDefinition poSFDefn, byte[] pachFieldData, int nBytesRemaining)
-	{
-
-		MutableInt nBytesConsumed = new MutableInt();
-
-		DDFDataType ddfdt = poSFDefn.getType();
-
-		String fieldName = poSFDefn.getName();
-
-		int col = 0;
-		if (fieldName.equals("XCOO"))
-			col = 0;
-		if (fieldName.equals("YCOO"))
-			col = 1;
-		if (fieldName.equals("VE3D"))
-			col = 2;
-
-		if (ddfdt == DDFDataType.DDFInt)
-		{
-			positions[counter][col] = poSFDefn.extractIntData(pachFieldData, nBytesRemaining,
-					nBytesConsumed);
-		}
-		else
-		{
-			System.err.println("WRONG DATA TYPE ENCOUNTERED FOR POSITIONS");
-		}
-
-		return nBytesConsumed.value;
 	}
 
 	private Vector<HashMap<String, Object>> loadFields(DDFField field)
@@ -917,7 +841,7 @@ public class S57Database
 
 		Vector<HashMap<String, Object>> res = loadFields(field);
 
-		for (Iterator iterator = res.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = res.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> nextFSPT = (HashMap<String, Object>) iterator.next();
 			String name = (String) nextFSPT.get("NAME");
@@ -937,7 +861,7 @@ public class S57Database
 
 		Vector<HashMap<String, Object>> res = loadFields(field);
 
-		for (Iterator iterator = res.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = res.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> nextFSPT = (HashMap<String, Object>) iterator.next();
 			String lnam = (String) nextFSPT.get("LNAM");
@@ -954,7 +878,7 @@ public class S57Database
 	private void loadATTF(DDFField field)
 	{
 		Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			int attl = getInt(res.get("ATTL"));
@@ -970,7 +894,7 @@ public class S57Database
 	private void loadFOID(DDFField field)
 	{
 		Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			int fidn = getInt(res.get("FIDN"));
@@ -986,7 +910,7 @@ public class S57Database
 	private void loadFRID(DDFField field)
 	{
 		Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			int rcnm = getInt(res.get("RCNM"));
@@ -1008,7 +932,7 @@ public class S57Database
 	private void loadATTV(DDFField field)
 	{
 		Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			int attl = getInt(res.get("ATTL"));
@@ -1024,7 +948,7 @@ public class S57Database
 	private void loadVRPT(DDFField field)
 	{
 		Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			String name = (String) res.get("NAME");
@@ -1042,7 +966,7 @@ public class S57Database
 	private void loadSG3D(DDFField field)
 	{
 		final Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			final HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			final int x = getInt(res.get("XCOO"));
@@ -1056,7 +980,7 @@ public class S57Database
 	private void loadSG2D(final DDFField field)
 	{
 		final Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			final HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			final int x = getInt(res.get("XCOO"));
@@ -1070,14 +994,11 @@ public class S57Database
 	private void loadVRID(DDFField field)
 	{
 		Vector<HashMap<String, Object>> fields = loadFields(field);
-		for (Iterator iterator = fields.iterator(); iterator.hasNext();)
+		for (Iterator<HashMap<String, Object>> iterator = fields.iterator(); iterator.hasNext();)
 		{
 			HashMap<String, Object> res = (HashMap<String, Object>) iterator.next();
 			int rcnm = getInt(res.get("RCNM"));
 			int rcid = getInt(res.get("RCID"));
-			int rver = getInt(res.get("RVER"));
-			int ruin = getInt(res.get("RUIN"));
-
 			if (_pendingVectorRecord != null)
 				System.err.println("PENDING VECTOR NOT CLOSED!!!!");
 
@@ -1089,24 +1010,18 @@ public class S57Database
 	{
 		private int _rcnm;
 
-		private int _rcid;
+		int _rcid;
 
-		private Vector<WorldLocation> coords;
+		Vector<WorldLocation> coords;
 
-		private Vector<VectorPointer> _pointers = new Vector<VectorPointer>();
+		Vector<VectorPointer> _pointers = new Vector<VectorPointer>();
 
 		private Vector<VectorAttribute> _attributes = new Vector<VectorAttribute>();
 
 		public class VectorAttribute
 		{
-			final private int _attl;
-
-			final private String _atvl;
-
 			public VectorAttribute(int attl, String atvl)
 			{
-				_attl = attl;
-				_atvl = atvl;
 			}
 		}
 
@@ -1120,9 +1035,9 @@ public class S57Database
 
 			final int _mask;
 
-			final int _rcnm;
+			final int _rcnm1;
 
-			final int _rcid;
+			final int _rcid1;
 
 			public VectorPointer(String name, int usage, int topi, int mask)
 			{
@@ -1130,8 +1045,8 @@ public class S57Database
 				int rcid = name.charAt(1) + name.charAt(2) * 256 + name.charAt(3) * 256 * 256
 						+ name.charAt(4) * 256 * 256 * 256;
 
-				_rcnm = rcnm;
-				_rcid = rcid;
+				_rcnm1 = rcnm;
+				_rcid1 = rcid;
 				_name = name;
 				_usage = usage;
 				_topi = topi;
@@ -1179,23 +1094,13 @@ public class S57Database
 
 	private static class FeatureRecord
 	{
-		private final int _rcnm;
+		final int _rcid;
 
-		private final int _rcid;
-
-		private final int _prim;
-
-		private final int _grup;
-
-		private final int _objl;
-
-		private int _fids;
-
-		private int _fidn;
+		final int _objl;
 
 		private Vector<FeatureAttribute> _attributes = new Vector<FeatureAttribute>(0, 1);
 
-		private Vector<FeatureToSpatialPointer> _spatialPointers = new Vector<FeatureToSpatialPointer>(
+		Vector<FeatureToSpatialPointer> _spatialPointers = new Vector<FeatureToSpatialPointer>(
 				0, 1);
 
 		private Vector<FeatureToFeaturePointer> _featurePointers = new Vector<FeatureToFeaturePointer>(
@@ -1203,30 +1108,16 @@ public class S57Database
 
 		public static class FeatureAttribute
 		{
-			final private int _attl;
-
-			final private String _atvl;
-
 			public FeatureAttribute(int attl, String atvl)
 			{
-				_attl = attl;
-				_atvl = atvl;
 			}
 		}
 
 		public static class FeatureToSpatialPointer
 		{
-			final private String _name;
+			int _rcnm;
 
-			final private int _ornt;
-
-			final private int _usage;
-
-			final private int _mask;
-
-			private int _rcnm;
-
-			final private int _rcid;
+			final int _rcid;
 
 			public FeatureToSpatialPointer(String name, int ornt, int usage, int mask)
 			{
@@ -1245,48 +1136,19 @@ public class S57Database
 
 				if (_rcid > 40000)
 					System.err.println("too much!!");
-
-				_name = name;
-				_ornt = ornt;
-				_usage = usage;
-				_mask = mask;
 			}
 		}
 
 		public static class FeatureToFeaturePointer
 		{
-			final private int _rind;
-
-			final private String _comt;
-
-			private int _rcnm;
-
-			private int _rcid;
-
-			private int _agen;
-
-			private int _fidn;
-
-			private int _fids;
-
 			public FeatureToFeaturePointer(String lnam, int rind, String comt)
 			{
-
-				char[] str = lnam.toCharArray();
-				_agen = str[0] + (str[1] * 256);
-				_fidn = str[2] + (str[3] * 256) + (str[4] * 65536) + (str[5] * 16777216);
-				_fids = str[6] + (str[7] * 256);
-				_rind = rind;
-				_comt = comt;
 			}
 		}
 
 		public FeatureRecord(int rcnm, int rcid, int prim, int grup, int objl)
 		{
-			_rcnm = rcnm;
 			_rcid = rcid;
-			_prim = prim;
-			_grup = grup;
 			_objl = objl;
 		}
 
@@ -1308,8 +1170,6 @@ public class S57Database
 
 		public void setFeatureID(int fidn, int fids)
 		{
-			_fidn = fidn;
-			_fids = fids;
 		}
 
 	}

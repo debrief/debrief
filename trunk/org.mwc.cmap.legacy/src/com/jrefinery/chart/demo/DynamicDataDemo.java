@@ -61,7 +61,12 @@ import com.jrefinery.ui.RefineryUtilities;
  */
 public class DynamicDataDemo extends ApplicationFrame implements ActionListener {
 
-    /** The time series data. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The time series data. */
     private BasicTimeSeries series;
 
     /** The most recent value added. */

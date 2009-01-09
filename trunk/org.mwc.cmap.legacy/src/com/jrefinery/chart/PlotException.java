@@ -47,6 +47,11 @@ package com.jrefinery.chart;
 public class PlotException extends Exception {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs a new plot exception.
      *
      * @param message  a message describing the exception.

@@ -51,7 +51,11 @@ import javax.swing.JScrollPane;
  */
 public class DescriptionPanel extends JPanel {
 
-    /** The preferred size for the panel. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** The preferred size for the panel. */
     public static final Dimension PREFERRED_SIZE = new Dimension(150, 50);
 
     /**

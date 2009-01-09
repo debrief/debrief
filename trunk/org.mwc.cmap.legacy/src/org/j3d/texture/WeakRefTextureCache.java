@@ -13,12 +13,8 @@
 package org.j3d.texture;
 
 // Standard imports
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.ImageProducer;
-import java.lang.ref.WeakReference;
-import java.net.URL;
 import java.io.IOException;
+import java.net.URL;
 import java.util.HashMap;
 
 import javax.media.j3d.ImageComponent;
@@ -27,9 +23,6 @@ import javax.media.j3d.ImageComponent3D;
 import javax.media.j3d.Texture;
 import javax.media.j3d.Texture2D;
 import javax.media.j3d.Texture3D;
-
-// Application specific imports
-import org.j3d.util.ImageUtils;
 
 /**
  * A cache for texture instance management where the objects stay according
@@ -41,16 +34,16 @@ import org.j3d.util.ImageUtils;
  */
 class WeakRefTextureCache extends AbstractTextureCache
 {
-    private HashMap textureMap;
-    private HashMap componentMap;
+    private HashMap<String, Texture> textureMap;
+    private HashMap<String, ImageComponent> componentMap;
 
     /**
      * Construct a new instance of the empty cache.
      */
     WeakRefTextureCache()
     {
-        textureMap = new HashMap();
-        componentMap = new HashMap();
+        textureMap = new HashMap<String, Texture>();
+        componentMap = new HashMap<String, ImageComponent>();
     }
 
     /**
@@ -245,14 +238,11 @@ class WeakRefTextureCache extends AbstractTextureCache
      * @param name The name of the texture to get (the map key)
      * @return The Texture instance, if still valid, else null
      */
-    private Texture getTexture(String name)
+
+		private Texture getTexture(String name)
     {
-        WeakReference ref = (WeakReference)textureMap.get(name);
+        Texture  ret_val = textureMap.get(name);
 
-        if(ref == null)
-            return null;
-
-        Texture ret_val = (Texture)ref.get();
         if(ret_val == null)
             textureMap.remove(name);
 
@@ -268,12 +258,7 @@ class WeakRefTextureCache extends AbstractTextureCache
      */
     private ImageComponent getImageComponent(String name)
     {
-        WeakReference ref = (WeakReference)componentMap.get(name);
-
-        if(ref == null)
-            return null;
-
-        ImageComponent ret_val = (ImageComponent)ref.get();
+        ImageComponent ret_val =componentMap.get(name);
         if(ret_val == null)
             componentMap.remove(name);
 

@@ -39,11 +39,10 @@
 
 package com.jrefinery.chart.demo;
 
-import com.jrefinery.chart.JFreeChart;
 import com.jrefinery.chart.ChartFactory;
 import com.jrefinery.chart.ChartPanel;
+import com.jrefinery.chart.JFreeChart;
 import com.jrefinery.chart.XYPlot;
-import com.jrefinery.chart.AreaXYItemRenderer;
 import com.jrefinery.data.XYSeries;
 import com.jrefinery.data.XYSeriesCollection;
 import com.jrefinery.ui.ApplicationFrame;
@@ -57,6 +56,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class AreaXYChartDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new demo.
      *
      * @param title  the frame title.
@@ -96,7 +100,6 @@ public class AreaXYChartDemo extends ApplicationFrame {
         XYPlot plot = chart.getXYPlot();
         plot.setForegroundAlpha(0.5f);
 
-        AreaXYItemRenderer renderer = (AreaXYItemRenderer) plot.getRenderer();
         ChartPanel chartPanel = new ChartPanel(chart);
         chartPanel.setPreferredSize(new java.awt.Dimension(500, 270));
         setContentPane(chartPanel);

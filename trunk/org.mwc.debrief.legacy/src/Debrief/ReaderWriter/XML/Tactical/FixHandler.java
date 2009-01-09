@@ -21,13 +21,13 @@ import org.xml.sax.Attributes;
 abstract public class FixHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private MWC.TacticalData.Fix _theFix;
-  private Debrief.Wrappers.FixWrapper _theFixWrapper;
+  MWC.TacticalData.Fix _theFix;
+  Debrief.Wrappers.FixWrapper _theFixWrapper;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static private final MWC.GUI.Properties.LocationPropertyEditor lp
+  static final MWC.GUI.Properties.LocationPropertyEditor lp
     = new MWC.GUI.Properties.LocationPropertyEditor();
 
   public FixHandler()

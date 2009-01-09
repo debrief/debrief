@@ -49,7 +49,11 @@ import javax.swing.JScrollPane;
  */
 public class ChartFrame extends JFrame {
 
-    /** The chart panel. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** The chart panel. */
     private ChartPanel chartPanel;
 
     /**

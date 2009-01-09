@@ -118,9 +118,9 @@ public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
     // ignore
   }
 
-  public Enumeration elements()
+  public Enumeration<Editable> elements()
   {
-    return new Vector(0, 1).elements();
+    return new Vector<Editable>(0, 1).elements();
   }
 
   public Editable.EditorType getInfo()

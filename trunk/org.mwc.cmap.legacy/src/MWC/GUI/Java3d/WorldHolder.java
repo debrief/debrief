@@ -58,7 +58,7 @@ abstract public class WorldHolder extends JPanel implements ToolParent,
 	/**
 	 * the manager which moves us through the selected views
 	 */
-	private ViewpointManager _viewpointManager = null;
+	ViewpointManager _viewpointManager = null;
 
 	/**
 	 * the toolbar which lets us cycle through the views
@@ -553,7 +553,7 @@ abstract public class WorldHolder extends JPanel implements ToolParent,
 		//
 	}
 
-	public Map getPropertiesLike(String pattern)
+	public Map<String, String> getPropertiesLike(String pattern)
 	{
 		return null;
 	}

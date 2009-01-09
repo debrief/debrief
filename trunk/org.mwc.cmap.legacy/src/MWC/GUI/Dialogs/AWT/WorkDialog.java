@@ -1,12 +1,16 @@
 package MWC.GUI.Dialogs.AWT;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Frame;
+import java.awt.Panel;
 
 public class WorkDialog extends GJTDialog { 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private ButtonPanel buttonPanel;
-	private Panel       workPanel;
-
 	public WorkDialog(Frame        frame,
 					  DialogClient client,
 	                  String       title) {
@@ -35,8 +39,6 @@ public class WorkDialog extends GJTDialog {
 					  Orientation  buttonOrientation,
 					  boolean      modal) {
 		super(frame, title, client, modal);
-		this.workPanel = workPanel;
-		
 		setLayout(new BorderLayout(0,2));
 
 		if(workPanel != null)
@@ -49,7 +51,6 @@ public class WorkDialog extends GJTDialog {
 		if(workPanel != null)
 			remove(workPanel);
 
-		this.workPanel = workPanel;
 		add(workPanel, "Center");
 
 		if(isShowing()) 

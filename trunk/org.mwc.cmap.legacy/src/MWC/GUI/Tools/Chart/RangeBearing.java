@@ -62,16 +62,24 @@ package MWC.GUI.Tools.Chart;
 // Initial revision
 //
 
-import MWC.GUI.Tools.*;
-import java.awt.*;
-import java.text.*;
-import MWC.Algorithms.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
+import java.awt.Point;
+
+import MWC.GUI.PlainChart;
+import MWC.GUI.Rubberband;
+import MWC.GUI.StatusBar;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainDragTool;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class RangeBearing extends PlainDragTool implements java.io.Serializable
 {
-  //////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	//////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////
   WorldLocation _startLocation;

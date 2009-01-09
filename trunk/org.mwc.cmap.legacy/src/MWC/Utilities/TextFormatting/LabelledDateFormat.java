@@ -15,11 +15,6 @@ public class LabelledDateFormat
     
     java.util.Date theTime = new java.util.Date(theVal);
     String res;
-    int day;
-    int hrs;
-    int mins;
-    int secs;
-
     DateFormat df = new SimpleDateFormat("dd'd HH'h mm'm ss's");
     df.setTimeZone(TimeZone.getTimeZone("GMT"));
     res = df.format(theTime);

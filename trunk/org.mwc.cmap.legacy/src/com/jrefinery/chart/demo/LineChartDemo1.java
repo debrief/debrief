@@ -63,6 +63,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class LineChartDemo1 extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new demo.
      *
      * @param title  the frame title.

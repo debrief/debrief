@@ -1,6 +1,66 @@
 package MWC.GUI.Dialogs.Swing;
 
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.WindowAdapter;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
+import java.text.ParsePosition;
+import java.text.SimpleDateFormat;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Vector;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.ListCellRenderer;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
 import javax.swing.border.CompoundBorder;
 import javax.swing.border.EmptyBorder;
 import javax.swing.border.LineBorder;
@@ -9,16 +69,6 @@ import javax.swing.plaf.basic.BasicComboBoxRenderer;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicComboPopup;
 import javax.swing.plaf.basic.ComboPopup;
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
-import java.io.*;
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Vector;
 
 /**
  * A wrapper for JFileChooser with accessories for directory history and file preview. (E)nhancedFilechooser.
@@ -29,18 +79,20 @@ import java.util.Vector;
 public class EFileChooser extends JFileChooser
 {
 
-  private static Vector comboModel;
-  private static FileOutputStream fos;
-  private static ObjectOutputStream oos;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	static Vector<String> comboModel;
   private static FileInputStream fis;
   private static ObjectInputStream ois;
   private static String dirFile;
 
-  private TextPreviewer previewer;
+  TextPreviewer previewer;
   private PreviewAndHistoryPanel previewAndHistoryPanel;
-  private FindAccessory findPanel;
-  private MyComboBox combo;
-  private PreviewAndHistoryPanel.ComboItemListener comboItemListener;
+  FindAccessory findPanel;
+  MyComboBox combo;
+  PreviewAndHistoryPanel.ComboItemListener comboItemListener;
 
   // --- Helper classes:
 
@@ -49,7 +101,12 @@ public class EFileChooser extends JFileChooser
   private final class PreviewAndHistoryPanel extends JPanel
   {
 
-    PreviewAndHistoryPanel()
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		PreviewAndHistoryPanel()
     {
       setPreferredSize(new Dimension(250, 250));
       setBorder(BorderFactory.createEtchedBorder());
@@ -98,7 +155,7 @@ public class EFileChooser extends JFileChooser
      * We use an ItemListener imstead of an ActionListener because an action event is also generated if the DEL or
      * SHIFT+DEL button is pressed in order to delete an item resp. all items.
      */
-    private final class ComboItemListener implements ItemListener
+    protected final class ComboItemListener implements ItemListener
     {
       String dir;
 
@@ -110,7 +167,7 @@ public class EFileChooser extends JFileChooser
         }
       }
 
-      private void selectNewDirectory()
+      void selectNewDirectory()
       {
         dir = (String) combo.getSelectedItem();
         EFileChooser.this.setCurrentDirectory(new File(dir));
@@ -136,7 +193,12 @@ public class EFileChooser extends JFileChooser
     class ComboBoxRendererWithTooltips extends BasicComboBoxRenderer
     {
 
-      public Component getListCellRendererComponent(JList list,
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public Component getListCellRendererComponent(JList list,
                                                     Object value,
                                                     int index,
                                                     boolean isSelected,
@@ -175,7 +237,11 @@ public class EFileChooser extends JFileChooser
 
   class TextPreviewer extends JComponent
   {
-    private JTextArea textArea = new JTextArea();
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		private JTextArea textArea = new JTextArea();
     private JScrollPane scroller = new JScrollPane(textArea);
     private char[] buff = new char[500];
     private Color bg;
@@ -252,7 +318,8 @@ public class EFileChooser extends JFileChooser
 
   // CONSTRUCTORS //
 
-  public EFileChooser(String applicationName)
+  @SuppressWarnings("unchecked")
+	public EFileChooser(String applicationName)
   {
     // look for existing directory history from last session
     dirFile = System.getProperty("user.home")
@@ -364,7 +431,7 @@ public class EFileChooser extends JFileChooser
 
   }
 
-  private void insertDirectory(File file)
+  void insertDirectory(File file)
   {
     if (file == null)
     {
@@ -401,7 +468,7 @@ public class EFileChooser extends JFileChooser
     {
       public void windowClosing(java.awt.event.WindowEvent A)
       {
-        fileChooser.saveDirectoryEntries();
+        EFileChooser.saveDirectoryEntries();
         frame.setVisible(false);
         frame.dispose();
         System.exit(0);
@@ -438,7 +505,7 @@ public class EFileChooser extends JFileChooser
     {
       public void actionPerformed(ActionEvent e)
       {
-        fileChooser.saveDirectoryEntries();
+        EFileChooser.saveDirectoryEntries();
         frame.setVisible(false);
         frame.dispose();
         System.exit(0);
@@ -464,7 +531,12 @@ public class EFileChooser extends JFileChooser
   class MyComboBox extends JComboBox
   {
 
-    public MyComboBox(Vector items)
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public MyComboBox(Vector<String> items)
     {
       super(items);
       setUI(new MyComboBoxUI());
@@ -477,7 +549,7 @@ public class EFileChooser extends JFileChooser
   class MyComboBoxUI extends BasicComboBoxUI
   {
 
-    private MyComboBoxUI()
+    MyComboBoxUI()
     {
       super();
     }
@@ -493,7 +565,11 @@ public class EFileChooser extends JFileChooser
     class MyComboPopup extends BasicComboPopup
     {
 
-      protected JList list_;
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			protected JList list_;
       protected JComboBox comboBox_;
       protected boolean hasEntered_;
 
@@ -554,8 +630,6 @@ public class EFileChooser extends JFileChooser
 
         public void mousePressed(MouseEvent e)
         {
-          Rectangle r;
-
           boolean isLeft = SwingUtilities.isLeftMouseButton(e);
 
           // @@IM - ignore it, if it is the right mouse button!
@@ -643,6 +717,11 @@ class FindAccessory extends JPanel
   implements Runnable, PropertyChangeListener, ActionListener, FindProgressCallback
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * Label for this accessory.
    */
   static public final String ACCESSORY_NAME = " Find ";
@@ -996,7 +1075,7 @@ class FindAccessory extends JPanel
       }
       updateProgress();
       if (killFind) return;
-      Thread.currentThread().sleep(0);
+      Thread.sleep(0);
 
       if (files[i].isDirectory()) runFind(files[i], filters);
       if ((maxMatches > 0) && (matches >= maxMatches))
@@ -1030,11 +1109,11 @@ class FindAccessory extends JPanel
    * @param filter  FindFilter reporting progress
    * @param file    file being searched
    * @param current current "location" of search
-   * @param total   expected maximum value of current
+   * @param total1   expected maximum value of current
    * @return true to continue search, false to abort
    */
   public boolean reportProgress(FindFilter filter, File file,
-                                long current, long total)
+                                long current, long total1)
   {
     return !killFind;
   }
@@ -1118,6 +1197,11 @@ class FindAccessory extends JPanel
   {
 
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
      * Construct a search control action currently implements FindAccesory.ACTION_START and FindAccessory.ACTION_STOP.
      *
      * @param text command
@@ -1145,7 +1229,11 @@ class FindAccessory extends JPanel
    */
   class FindFolder extends JPanel
   {
-    protected JLabel searchDirectory = null;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected JLabel searchDirectory = null;
 
 
     FindFolder()
@@ -1182,7 +1270,11 @@ class FindAccessory extends JPanel
    */
   class FindControls extends JPanel
   {
-    protected JLabel searchDirectory = null;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected JLabel searchDirectory = null;
     protected JLabel progress = null;
 
 
@@ -1214,13 +1306,13 @@ class FindAccessory extends JPanel
     /**
      * Display search progress as a text field "no. of matches / total searched".
      *
-     * @param matches number of items found
-     * @param total   number of items investigated
+     * @param matches1 number of items found
+     * @param total1   number of items investigated
      */
-    public void showProgress(int matches, int total)
+    public void showProgress(int matches1, int total1)
     {
       if (progress == null) return;
-      progress.setText(String.valueOf(matches) + "/" + String.valueOf(total));
+      progress.setText(String.valueOf(matches1) + "/" + String.valueOf(total1));
     }
 
   }
@@ -1234,7 +1326,11 @@ class FindAccessory extends JPanel
    */
   class FindTabs extends JTabbedPane
   {
-    protected String TAB_NAME = "Name";
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected String TAB_NAME = "Name";
     protected String TAB_DATE = "Date";
     protected String TAB_CONTENT = "Content";
     protected String TAB_RESULTS = "Found";
@@ -1310,7 +1406,7 @@ class FindAccessory extends JPanel
       resultsScroller.setPreferredSize(dim);
 
       // Return an array of FindFilters
-      Vector filters = new Vector();
+      Vector<FindFilter> filters = new Vector<FindFilter>();
       for (int i = 0; i < getTabCount(); i++)
       {
         try
@@ -1339,7 +1435,11 @@ class FindAccessory extends JPanel
    */
   class FindResults extends JPanel
   {
-    protected DefaultListModel model = null;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected DefaultListModel model = null;
     protected JList fileList = null;
 
 
@@ -1410,7 +1510,12 @@ class FindAccessory extends JPanel
     class FindResultsCellRenderer extends JLabel implements ListCellRenderer
     {
 
-      FindResultsCellRenderer()
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			FindResultsCellRenderer()
       {
         setOpaque(true);
       }
@@ -1502,7 +1607,11 @@ interface FindFilterFactory
  */
 class FindByDate extends JPanel implements FindFilterFactory
 {
-  public static String THE_BIG_BANG = "The Big Bang";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	public static String THE_BIG_BANG = "The Big Bang";
   public static String THE_BIG_CRUNCH = "The Big Crunch";
   public static String YESTERDAY = "Yesterday";
   public static String TODAY = "Today";
@@ -1708,7 +1817,11 @@ class FindByDate extends JPanel implements FindFilterFactory
  */
 class FindByName extends JPanel implements FindFilterFactory
 {
-  protected String NAME_CONTAINS = "contains";
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected String NAME_CONTAINS = "contains";
   protected String NAME_IS = "is";
   protected String NAME_STARTS_WITH = "starts with";
   protected String NAME_ENDS_WITH = "ends with";
@@ -1872,6 +1985,11 @@ class FindByContent extends JPanel implements FindFilterFactory
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * Find for the first occurrence of the text in this field.
    */
   protected JTextField contentField = null;
@@ -2001,7 +2119,12 @@ class FindByContent extends JPanel implements FindFilterFactory
      */
     class LocatedException extends IOException
     {
-      public LocatedException(String msg)
+      /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public LocatedException(String msg)
       {
         super(msg);
       }
@@ -2019,7 +2142,7 @@ class FindByContent extends JPanel implements FindFilterFactory
     class LocatorStream extends OutputStream
     {
       protected byte[] locate = null;
-      protected Vector matchMakers = new Vector();
+      protected Vector<MatchStream> matchMakers = new Vector<MatchStream>();
       protected long mark = 0;
 
       LocatorStream(byte[] b)
@@ -2074,7 +2197,12 @@ class FindByContent extends JPanel implements FindFilterFactory
        */
       class MatchMadeException extends IOException
       {
-        public MatchMadeException(String msg)
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public MatchMadeException(String msg)
         {
           super(msg);
         }
@@ -2092,14 +2220,14 @@ class FindByContent extends JPanel implements FindFilterFactory
        */
       class MatchStream extends OutputStream
       {
-        protected long mark = -1;
+        protected long mark1 = -1;
         protected int pos = 0;
         protected byte[] match = null;
         protected boolean matchMade = false;
 
         MatchStream(byte[] b, long m)
         {
-          mark = m;
+          mark1 = m;
           match = b;
         }
 
@@ -2122,13 +2250,13 @@ class FindByContent extends JPanel implements FindFilterFactory
           if (pos >= match.length)
           {
             matchMade = true;
-            throw new MatchMadeException(mark);
+            throw new MatchMadeException(mark1);
           }
         }
 
         public long getMark()
         {
-          return mark;
+          return mark1;
         }
       }
     }

@@ -641,7 +641,7 @@ public final class SwingApplication extends Application
     setTitleName(theSession.getName());
   }
 
-  private void refreshWindowMenu()
+  void refreshWindowMenu()
   {
     // refresh the list of files contained on this menu
 
@@ -730,7 +730,7 @@ public final class SwingApplication extends Application
 
   }
 
-  private void selectNextWindow()
+  void selectNextWindow()
   {
     final JInternalFrame[] frames = theDesktop.getAllFrames();
 
@@ -740,7 +740,7 @@ public final class SwingApplication extends Application
 
       final Session currSess = this.getCurrentSession();
 
-      final TreeMap sList = new TreeMap();
+      final TreeMap<String, JInternalFrame> sList = new TreeMap<String, JInternalFrame>();
 
       // collate a list of frames, in alphabetical order
       for (int i = 0; i < frames.length; i++)
@@ -756,7 +756,7 @@ public final class SwingApplication extends Application
       boolean set_new_frame = false;
 
       // pass through the list to see if it's this one
-      final Iterator theFrames = sList.keySet().iterator();
+      final Iterator<String> theFrames = sList.keySet().iterator();
       while (theFrames.hasNext())
       {
         final String thisFrame = (String) theFrames.next();
@@ -798,7 +798,7 @@ public final class SwingApplication extends Application
   /**
    * cascade the current set of windows taken from article at: http://www.javaworld.com/javaworld/jw-05-2001/jw-0525-mdi_p.html
    */
-  private void cascadeWindows()
+  void cascadeWindows()
   {
     int x = 0;
     int y = 0;
@@ -817,7 +817,7 @@ public final class SwingApplication extends Application
   /**
    * cascade the current set of windows taken from article at: http://www.javaworld.com/javaworld/jw-05-2001/jw-0525-mdi_p.html
    */
-  private void tileWindows()
+  void tileWindows()
   {
     final java.awt.Component[] allFrames = theDesktop.getAllFrames();
 
@@ -886,7 +886,7 @@ public final class SwingApplication extends Application
     return new SwingSession(this, getClipboard(), super.getNewSessionName());
   }
 
-  private void helpAbout()
+  void helpAbout()
   {
     // show the help text
     String msg = getName() + ", from the Maritime Warfare Centre";

@@ -233,7 +233,7 @@ abstract public class PlainShape implements Serializable, DraggableItem  {
   /** get the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
    *
    */
-  abstract public java.util.Collection getDataPoints();
+  abstract public java.util.Collection<WorldLocation> getDataPoints();
 
 
 

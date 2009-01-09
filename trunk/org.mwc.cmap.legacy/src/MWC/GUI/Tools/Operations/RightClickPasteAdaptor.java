@@ -134,7 +134,11 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
 
   public class PasteItem extends javax.swing.JMenuItem implements Action, ActionListener, ClipboardOwner
   {
-    Plottable _data;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		Plottable _data;
     Clipboard _myClipboard;
     Layer _theDestination;
     CanvasType _theCanvas;
@@ -266,7 +270,12 @@ public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreat
   public class PasteLayer extends PasteItem
   {
 
-    public PasteLayer(Layer data,
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public PasteLayer(Layer data,
                       Clipboard clipboard,
                       Layer theDestination,
                       CanvasType theCanvas,

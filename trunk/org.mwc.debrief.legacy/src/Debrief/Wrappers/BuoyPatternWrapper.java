@@ -285,7 +285,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 			dest.setColor(getColor());
 
 			// start off with the buoys
-			final Enumeration iter = _myBuoys.elements();
+			final Enumeration<Editable> iter = _myBuoys.elements();
 			while (iter.hasMoreElements())
 			{
 				final Plottable pl = (Plottable) iter.nextElement();
@@ -679,14 +679,14 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	// //////////////////////////////////////////////////
 
 	private void setChildren(final String methodName, final Object[] args,
-			final Class[] parameters)
+			final Class<?>[] parameters)
 	{
 		try
 		{
 			final java.lang.reflect.Method setter = LabelWrapper.class.getMethod(methodName,
 					parameters);
 
-			final Enumeration iter = _myBuoys.elements();
+			final Enumeration<Editable> iter = _myBuoys.elements();
 			while (iter.hasMoreElements())
 			{
 				final Object nextO = iter.nextElement();
@@ -844,10 +844,10 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	 *          end DTG
 	 * @return series of fixes
 	 */
-	public Collection getItemsBetween(final HiResDate start, final HiResDate end)
+	public Collection<Editable> getItemsBetween(final HiResDate start, final HiResDate end)
 	{
-		final java.util.Vector<LabelWrapper> res = new Vector<LabelWrapper>(0, 1);
-		final Enumeration iter = _myBuoys.elements();
+		final java.util.Vector<Editable> res = new Vector<Editable>(0, 1);
+		final Enumeration<Editable> iter = _myBuoys.elements();
 		while (iter.hasMoreElements())
 		{
 			final LabelWrapper nextW = (LabelWrapper) iter.nextElement();
@@ -867,7 +867,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	public void filterListTo(final HiResDate start, final HiResDate end)
 	{
 		//
-		final Iterator buoyWrappers = _myBuoys.iterator();
+		final Iterator<Editable> buoyWrappers = _myBuoys.iterator();
 		while (buoyWrappers.hasNext())
 		{
 			final LabelWrapper fw = (LabelWrapper) buoyWrappers.next();
@@ -937,7 +937,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 		// so, step through the array, and calculate the area
 		WorldArea res = null;
 
-		final Enumeration iter = _myBuoys.elements();
+		final Enumeration<Editable> iter = _myBuoys.elements();
 		while (iter.hasMoreElements())
 		{
 			final Plottable thisOne = (Plottable) iter.nextElement();
@@ -1042,7 +1042,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @return the points in this track
 	 */
-	public java.util.Enumeration elements()
+	public java.util.Enumeration<Editable> elements()
 	{
 		return _myBuoys.elements();
 	}
@@ -1050,7 +1050,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * get the list of buoys themselves
 	 */
-	public Vector getBuoys()
+	public Vector<Editable> getBuoys()
 	{
 		return _myBuoys;
 	}
@@ -1261,7 +1261,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class c = ShapeWrapper.class;
+			final Class<ShapeWrapper> c = ShapeWrapper.class;
 			final MethodDescriptor[] mds = { method(c, "exportThis", null, "Export Shape") };
 			return mds;
 		}

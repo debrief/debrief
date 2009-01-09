@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.debrief.legacy
-Bundle-Version: 1.0.60
+Bundle-Version: 1.0.62
 Bundle-ClassPath: debrief_legacy.jar,
  libs/jcommon-0.7.1.jar
 Bundle-Vendor: MWC

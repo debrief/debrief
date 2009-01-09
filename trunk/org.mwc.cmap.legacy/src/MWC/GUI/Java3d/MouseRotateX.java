@@ -178,14 +178,12 @@ public class MouseRotateX extends MouseBehavior {
   /** event handler
 	 * @param criteria the event in progress
 	 */
+	@SuppressWarnings("unchecked")
 	public void processStimulus(Enumeration criteria) {
 		WakeupCriterion wakeup;
 		AWTEvent[] event;
 		int id;
 		int  dx;
-		int dy;
-
-
 		while (criteria.hasMoreElements()) {
 			wakeup = (WakeupCriterion) criteria.nextElement();
 			if (wakeup instanceof WakeupOnAWTEvent) {
@@ -205,9 +203,6 @@ public class MouseRotateX extends MouseBehavior {
 							y = ((MouseEvent)event[i]).getY();
 
 							dx = x - x_last;
-							dy = y - y_last;
-								
-							
 							if (!reset){
 								
 								// a rotation about x it is then

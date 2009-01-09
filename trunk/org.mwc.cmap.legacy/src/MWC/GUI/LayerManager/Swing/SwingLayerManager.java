@@ -216,7 +216,7 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
    */
   protected javax.swing.JScrollPane _myPane;
 
-  protected Hashtable<?,?> _myNodes = new Hashtable();
+  protected Hashtable<?,?> _myNodes = new Hashtable<String,String>();
 
   /**
    * the name we give to the root layer
@@ -564,7 +564,7 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
    * @param pl        the plottable which has been changed
    * @param isVisible whether it is now visible or not
    */
-  private void changeVisOfThisElement(Plottable pl, boolean isVisible, Layer parentLayer)
+  void changeVisOfThisElement(Plottable pl, boolean isVisible, Layer parentLayer)
   {
     pl.setVisible(isVisible);
 
@@ -792,7 +792,7 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
                                                   boolean expanded,
                                                   boolean leaf,
                                                   int row,
-                                                  boolean hasFocus)
+                                                  boolean hasFocus1)
     {
       if (node instanceof DefaultMutableTreeNode)
       {
@@ -801,7 +801,7 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
         if (data instanceof MWC.GUI.Plottable)
         {
           final Plottable pl = (Plottable) tn.getUserObject();
-          super.getTreeCellRendererComponent(tree, node, sel, expanded, leaf, row, hasFocus);
+          super.getTreeCellRendererComponent(tree, node, sel, expanded, leaf, row, hasFocus1);
 
           checkBox.setSelected(pl.getVisible());
         }
@@ -837,12 +837,12 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
     /**
      * Configures the editor.  Passed onto the <code>realEditor</code>.
      */
-    public Component getTreeCellEditorComponent(JTree tree, Object value,
+    public Component getTreeCellEditorComponent(JTree tree1, Object value,
                                                 boolean isSelected,
                                                 boolean expanded,
                                                 boolean leaf, int row)
     {
-      return super.getTreeCellEditorComponent(tree, value, isSelected, expanded, leaf, row);
+      return super.getTreeCellEditorComponent(tree1, value, isSelected, expanded, leaf, row);
     }
 
     protected boolean canEditImmediately(EventObject e)
@@ -947,13 +947,13 @@ public class SwingLayerManager extends SwingCustomEditor implements Layers.DataL
 		private static final long serialVersionUID = 1L;
 
 		public Component getTreeCellRendererComponent(JTree tree, Object value,
-                                                  boolean selected, boolean expanded,
+                                                  boolean selected1, boolean expanded,
                                                   boolean leaf, int row,
-                                                  boolean hasFocus)
+                                                  boolean hasFocus1)
     {
       Component c = super.getTreeCellRendererComponent(tree,
-                                                       value, selected, expanded,
-                                                       leaf, row, hasFocus);
+                                                       value, selected1, expanded,
+                                                       leaf, row, hasFocus1);
       setIcon(null);
       return c;
     }

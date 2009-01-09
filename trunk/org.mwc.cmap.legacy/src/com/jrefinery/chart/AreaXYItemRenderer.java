@@ -97,9 +97,6 @@ public class AreaXYItemRenderer extends AbstractXYItemRenderer implements XYItem
     /** A flag that controls whether or not the outline is shown. */
     private boolean showOutline;
 
-    /** The value of zero in Java2D coordinates. */
-    private double zeroToJava2D;
-
     /** A working line (to save creating thousands of instances). */
     private Line2D line;
 
@@ -224,7 +221,7 @@ public class AreaXYItemRenderer extends AbstractXYItemRenderer implements XYItem
 
         super.initialise(g2, dataArea, plot, data, info);
         ValueAxis rangeAxis = plot.getRangeAxis();
-        this.zeroToJava2D = rangeAxis.translateValueToJava2D(0.0, dataArea);
+        rangeAxis.translateValueToJava2D(0.0, dataArea);
 
     }
 

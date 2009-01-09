@@ -199,8 +199,8 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
   private final JButton _autoGenerate;
   private final JButton _autoGenerateTracks;
 
-  private ImageIcon _crossIcon;
-  private ImageIcon _copyIcon;
+  ImageIcon _crossIcon;
+  ImageIcon _copyIcon;
 
   private final int _fontSize = 10;
 
@@ -212,7 +212,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
    * the set of labels we are showing.  We remember these so that we can update them after each step - just in case the
    * units have changed
    */
-  private Vector _theLabels = new Vector();
+  private Vector<UnitLabel> _theLabels = new Vector<UnitLabel>();
 
 
   public SwingTote(final SwingPropertiesPanel theTabPanel,
@@ -369,20 +369,20 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
                                          trimLabels);
     _theTote.add(lh);
 
-    Enumeration iter = _theSecondary.elements();
-    while (iter.hasMoreElements())
+    Enumeration<WatchableList> iter2 = _theSecondary.elements();
+    while (iter2.hasMoreElements())
     {
-      final WatchableList w = (WatchableList) iter.nextElement();
+      final WatchableList w = (WatchableList) iter2.nextElement();
       final JLabel jl = new sizeableJLabel(w.getName(), false, trimLabels);
       _theTote.add(jl);
     }
     _theTote.add(new sizeableJLabel("  "));
 
     // and now the data for each row
-    iter = _theCalculationTypes.elements();
+    Enumeration<Class<?>> iter = _theCalculationTypes.elements();
     while (iter.hasMoreElements())
     {
-      final Class cl = (Class) iter.nextElement();
+      final Class<?> cl = (Class<?>) iter.nextElement();
       try
       {
         final toteCalculation tc = (toteCalculation) cl.newInstance();
@@ -398,7 +398,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
         _theTote.add(cp);
 
         // secondaries
-        final Enumeration secs = _theSecondary.elements();
+        final Enumeration<WatchableList> secs = _theSecondary.elements();
         while (secs.hasMoreElements())
         {
           final WatchableList wl = (WatchableList) secs.nextElement();
@@ -428,7 +428,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
     // put on the list of remove and copy buttons
     _theTote.add(new sizeableJLabel("  "));
     _theTote.add(new sizeableJLabel("  "));
-    final Enumeration secs2 = _theSecondary.elements();
+    final Enumeration<WatchableList> secs2 = _theSecondary.elements();
     while (secs2.hasMoreElements())
     {
       final WatchableList l = (WatchableList) secs2.nextElement();
@@ -607,19 +607,19 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
 		 */
 		private static final long serialVersionUID = 1L;
 		final WatchableList _thisL;
-    final WatchableList _thePrimary;
-    final Vector _theCalculationTypes;
+    final WatchableList _thePrimary1;
+    final Vector<Class<?>> _theCalculationTypes1;
 
     public copyMe(final WatchableList theList,
                   final WatchableList thePrimary,
-                  final Vector theCalculationTypes)
+                  final Vector<Class<?>> theCalculationTypes)
     {
       super("copy details to clipboard");
       super.setName("Copy Details");
       _thisL = theList;
       setIcon(_copyIcon);
-      _thePrimary = thePrimary;
-      _theCalculationTypes = theCalculationTypes;
+      _thePrimary1 = thePrimary;
+      _theCalculationTypes1 = theCalculationTypes;
       this.addActionListener(this);
     }
 
@@ -631,7 +631,7 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       String res = "";
 
       // get the nearest watchable
-      Watchable list[] = _thePrimary.getNearestTo(theCurrentTime);
+      Watchable list[] = _thePrimary1.getNearestTo(theCurrentTime);
 
       Watchable priW = null;
       if (list.length > 0)
@@ -643,13 +643,13 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
         secW = list[0];
 
       // step through the calculations, getting the titles
-      final Enumeration enumT = _theCalculationTypes.elements();
+      final Enumeration<Class<?>> enumT = _theCalculationTypes1.elements();
       while (enumT.hasMoreElements())
       {
         try
         {
 
-          final Class cl = (Class) enumT.nextElement();
+          final Class<?> cl = (Class<?>) enumT.nextElement();
           final toteCalculation ts = (toteCalculation) cl.newInstance();
           res += ts.getTitle() + ", ";
         }
@@ -664,12 +664,12 @@ public final class SwingTote extends Debrief.GUI.Tote.AnalysisTote
       res += System.getProperties().getProperty("line.separator");
 
       // step through the calculations, getting the results
-      final Enumeration enum1 = _theCalculationTypes.elements();
+      final Enumeration<Class<?>> enum1 = _theCalculationTypes1.elements();
       while (enum1.hasMoreElements())
       {
         try
         {
-          final Class cl = (Class) enum1.nextElement();
+          final Class<?> cl = (Class<?>) enum1.nextElement();
           final toteCalculation ts = (toteCalculation) cl.newInstance();
           final String thisV = ts.update(priW, secW, theCurrentTime);
 

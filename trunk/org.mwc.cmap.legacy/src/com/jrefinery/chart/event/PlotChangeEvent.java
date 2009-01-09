@@ -48,7 +48,11 @@ import com.jrefinery.chart.Plot;
  */
 public class PlotChangeEvent extends ChartChangeEvent {
 
-    /** The plot that generated the event. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** The plot that generated the event. */
     private Plot plot;
 
     /**

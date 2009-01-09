@@ -144,7 +144,7 @@ abstract public class Session implements Serializable, Observer
   /**
    * the list of views currently placed on this data
    */
-  transient private java.util.Vector _theViews;
+  transient private java.util.Vector<PlainView> _theViews;
 
   /**
    * our undo buffer
@@ -214,7 +214,7 @@ abstract public class Session implements Serializable, Observer
    */
   private void initData()
   {
-    _theViews = new java.util.Vector(0, 1);
+    _theViews = new java.util.Vector<PlainView>(0, 1);
     _theBuffer = new UndoBuffer();
 
     if (_theClipboard == null)

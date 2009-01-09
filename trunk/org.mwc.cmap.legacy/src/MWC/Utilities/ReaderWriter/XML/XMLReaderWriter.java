@@ -38,13 +38,15 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
     return false;
   }
 
-  protected void handleOurselves(String name, AttributeList atts)
+  @SuppressWarnings("deprecation")
+	protected void handleOurselves(String name, AttributeList atts)
   {
     // stuff it
   }
 
 
-  private void doImport(org.xml.sax.InputSource is,
+  @SuppressWarnings("deprecation")
+	private void doImport(org.xml.sax.InputSource is,
                         XMLHandler theHandler)
   {
 

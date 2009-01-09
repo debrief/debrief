@@ -84,16 +84,22 @@ package MWC.GUI.Properties.AWT;
 // Initial revision
 //
 
-import MWC.GUI.TabPanel.*;
-import MWC.GUI.Properties.*;
-import MWC.GUI.*;
-import MWC.GUI.Undo.*;
-import java.awt.*;
-import java.beans.*;
+import java.awt.Panel;
+
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.TabPanel.AWTTabPanel;
+import MWC.GUI.Undo.UndoBuffer;
 
 public class AWTPropertiesPanel extends AWTTabPanel implements PropertiesPanel
 {
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
   PlainChart _myChart;

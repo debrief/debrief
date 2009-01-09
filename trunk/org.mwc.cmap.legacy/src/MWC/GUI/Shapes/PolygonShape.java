@@ -176,7 +176,7 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
       int[] yP = new int[_polygon.size()];
 
       // ok, step through the area
-      Iterator points = _polygon.getPoints().iterator();
+      Iterator<WorldLocation> points = _polygon.getPoints().iterator();
 
       int counter = 0;
 
@@ -223,7 +223,7 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
    * get the shape as a series of WorldLocation points.
    * Joined up, these form a representation of the shape
    */
-  public Collection getDataPoints()
+  public Collection<WorldLocation> getDataPoints()
   {
     return this._polygon.getPoints();
   }
@@ -249,7 +249,7 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
       _theArea = null;
 
       // ok, step through the area
-      Iterator points = _polygon.getPoints().iterator();
+      Iterator<WorldLocation> points = _polygon.getPoints().iterator();
       while (points.hasNext())
       {
         WorldLocation next = (WorldLocation) points.next();
@@ -287,7 +287,7 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
     if (_polygon.size() > 0)
     {
       // ok, step through the area
-      Iterator points = _polygon.getPoints().iterator();
+      Iterator<WorldLocation> points = _polygon.getPoints().iterator();
       while (points.hasNext())
       {
         WorldLocation next = (WorldLocation) points.next();
@@ -411,8 +411,8 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
 	public void shift(WorldVector vector)
 	{
 		// ok, cycle through the points, moving each one
-		Collection pts = _polygon.getPoints();
-		Iterator iter = pts.iterator();
+		Collection<WorldLocation> pts = _polygon.getPoints();
+		Iterator<WorldLocation> iter = pts.iterator();
 		while(iter.hasNext())
 		{
 			WorldLocation pt = (WorldLocation) iter.next();
@@ -484,7 +484,7 @@ public class PolygonShape extends PlainShape implements Serializable, Editable, 
 			ComponentConstruct currentNearest, Layer parentLayer)
 	{
 		// ok - pass through our corners
-		Iterator myPts = _polygon.getPoints().iterator();
+		Iterator<WorldLocation> myPts = _polygon.getPoints().iterator();
 		while(myPts.hasNext())
 		{
 			WorldLocation thisLoc = (WorldLocation) myPts.next();

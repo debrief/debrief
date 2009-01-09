@@ -13,19 +13,27 @@
 package org.j3d.ui.navigation;
 
 // Standard imports
-import javax.media.j3d.*;
-
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
-import java.util.Vector;
 
+import javax.media.j3d.Behavior;
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.Node;
+import javax.media.j3d.PickRay;
+import javax.media.j3d.PickSegment;
+import javax.media.j3d.SceneGraphPath;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.media.j3d.View;
+import javax.media.j3d.WakeupCondition;
+import javax.media.j3d.WakeupOnElapsedFrames;
 import javax.vecmath.Point2d;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
-import javax.vecmath.AxisAngle4d;
-import javax.vecmath.Matrix3d;
 
-// Application specific imports
 import org.j3d.geom.IntersectionUtils;
 
 /**
@@ -168,20 +176,17 @@ public class NavigationHandler
     /** Intersection utilities used for terrain following */
     private IntersectionUtils collideIntersect;
 
-    /** The view that we are moving about. */
-    private View view;
-
     /** The transform group above the view that is being moved each frame */
-    private TransformGroup viewTg;
+    TransformGroup viewTg;
 
     /** The transform that belongs to the view transform group */
-    private Transform3D viewTx;
+    Transform3D viewTx;
 
     /** An observer for navigation state change information */
     private NavigationStateListener navigationListener;
 
     /** An observer for collision information */
-    private CollisionListener collisionListener;
+    CollisionListener collisionListener;
 
     /**
      * The current navigation state either set from us or externally as
@@ -235,7 +240,7 @@ public class NavigationHandler
     private Vector3d collisionVector;
 
     /** An observer for information about updates for this transition */
-    private FrameUpdateListener updateListener;
+    FrameUpdateListener updateListener;
 
     /** The height of the avatar above the terrain */
     private float avatarHeight;
@@ -276,25 +281,25 @@ public class NavigationHandler
     // rather than create and destroy each time.
 
     /** The translation amount set by the last change in drag value */
-    private Vector3d dragTranslationAmt;
+    Vector3d dragTranslationAmt;
 
     /** A working value for the current frame's translation of the eye */
-    private Vector3d oneFrameTranslation;
+    Vector3d oneFrameTranslation;
 
     /** A working value for the current frame's rotation of the eye */
-    private Transform3D oneFrameRotation;
+    Transform3D oneFrameRotation;
 
     /** The current translation total from the start of the movement */
-    private Vector3d viewTranslation;
+    Vector3d viewTranslation;
 
     /** The current viewpoint location in world coordinates */
     private Transform3D worldEyeTransform;
 
     /** The amount to move the view in mouse coords up/down */
-    private double mouseRotationY;
+    double mouseRotationY;
 
     /** The amount to move the view in mouse coords left/right */
-    private double mouseRotationX;
+    double mouseRotationX;
 
     /** The position where the mouse started it's last press */
     private Point2d startMousePos;
@@ -309,19 +314,16 @@ public class NavigationHandler
     private Point2d mouseDifference;
 
     /** Flag to indicate that we should be doing collisions this time */
-    private boolean allowCollisions;
+    boolean allowCollisions;
 
     /** Flag to indicate that we should do terrain following this time */
-    private boolean allowTerrainFollowing;
-
-    /** Used to correct the rotations */
-    private double angle;
+    boolean allowTerrainFollowing;
 
     /** behavior that drives our updates to the screen */
     private FrameTimerBehavior frameTimer;
 
     /** Calculations for frame duration timing */
-    private long startFrameDurationCalc;
+    long startFrameDurationCalc;
 
     /**
      * Inner class that replaces the old timer based event processing.
@@ -348,7 +350,8 @@ public class NavigationHandler
             wakeupOn(FPSCriterion);
         }
 
-        public void processStimulus( Enumeration criteria )
+        @SuppressWarnings("unchecked")
+				public void processStimulus( Enumeration criteria )
         {
             frameDuration = System.currentTimeMillis() - startFrameDurationCalc;
             double motionDelay = 0.000005 * frameDuration;
@@ -516,7 +519,6 @@ public class NavigationHandler
             throw new IllegalArgumentException("View or TG is null when " +
                                                "the other isn't");
 
-        this.view = view;
         this.viewTg = tg;
 
         if(tg == null)
@@ -825,7 +827,7 @@ public class NavigationHandler
      * @return true if the terrain following has successfully been applied
      *   false means a collision.
      */
-    private boolean checkTerrainFollowing()
+    boolean checkTerrainFollowing()
     {
         boolean ret_val = true;
 
@@ -855,7 +857,7 @@ public class NavigationHandler
 
             Shape3D i_shape = (Shape3D)ground[i].getObject();
 
-            Enumeration geom_list = i_shape.getAllGeometries();
+            Enumeration<?> geom_list = i_shape.getAllGeometries();
 
             while(geom_list.hasMoreElements())
             {
@@ -934,7 +936,7 @@ public class NavigationHandler
      *    this frame
      * @return true if the no collisions detected, false means a collision.
      */
-    private boolean checkCollisions()
+    boolean checkCollisions()
     {
         boolean ret_val = true;
 
@@ -978,7 +980,7 @@ public class NavigationHandler
 
             Shape3D i_shape = (Shape3D)closest[i].getObject();
 
-            Enumeration geom_list = i_shape.getAllGeometries();
+            Enumeration<?> geom_list = i_shape.getAllGeometries();
 
             while(geom_list.hasMoreElements() && !real_collision)
             {
@@ -1051,7 +1053,7 @@ public class NavigationHandler
 
             Shape3D i_shape = (Shape3D)ground[i].getObject();
 
-            Enumeration geom_list = i_shape.getAllGeometries();
+            Enumeration<?> geom_list = i_shape.getAllGeometries();
 
             while(geom_list.hasMoreElements())
             {

@@ -13,16 +13,16 @@
 package MWC.GUI.Java3d.j3d;
 
 // Standard imports
-import  javax.swing.*;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
-import java.awt.GridLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
 
 
 /**
@@ -54,7 +54,12 @@ public class ViewpointToolbar extends JPanel
 //    private static final String UP_BUTTON = "images/navigation/ButtonHome.gif";
 
 
-    /** An observer for viewpoint state change information */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** An observer for viewpoint state change information */
     protected ViewpointSelectionListener viewpointListener;
 
     /** Combo box holding the list of viewpoint data */
@@ -246,8 +251,6 @@ public class ViewpointToolbar extends JPanel
      */
     public void actionPerformed(ActionEvent evt)
     {
-        Object src = evt.getSource();
-        int index = viewpoints.getSelectedIndex();
 
         // Use the index setting here. This will cause the item event to be
         // created and sent so we always use that to send out the values

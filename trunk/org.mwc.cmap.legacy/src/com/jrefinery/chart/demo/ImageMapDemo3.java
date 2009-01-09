@@ -87,7 +87,7 @@ public class ImageMapDemo3 {
         //  Create a sample dataset
         SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yyyy");
         XYSeries dataSeries = new XYSeries("Curve data");
-        ArrayList toolTips = new ArrayList();
+        ArrayList<String> toolTips = new ArrayList<String>();
         dataSeries.add(sdf.parse("01-Jul-2002").getTime(), 5.22);
         toolTips.add("1D - 5.22");
         dataSeries.add(sdf.parse("02-Jul-2002").getTime(), 5.18);

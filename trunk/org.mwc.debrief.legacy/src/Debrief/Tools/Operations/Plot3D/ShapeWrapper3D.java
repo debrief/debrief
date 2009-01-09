@@ -8,25 +8,29 @@
  */
 package Debrief.Tools.Operations.Plot3D;
 
-import MWC.GUI.Java3d.Tactical.Label3D;
-import MWC.GUI.Java3d.WorldPlottingOptions;
-import MWC.GUI.Java3d.World;
-import MWC.GUI.Java3d.ScaleTransform;
-import MWC.GUI.StepperListener;
-import MWC.GUI.CanvasType;
-import MWC.GUI.PlainWrapper;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.TimePeriod;
-import MWC.GenericData.HiResDate;
-import Debrief.Wrappers.ShapeWrapper;
-import Debrief.GUI.Tote.StepControl;
-
 import java.beans.PropertyChangeEvent;
 
-import com.sun.j3d.utils.geometry.Primitive;
-
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.Group;
+import javax.media.j3d.LineAttributes;
+import javax.media.j3d.Node;
+import javax.media.j3d.Shape3D;
 import javax.vecmath.Color3f;
-import javax.media.j3d.*;
+
+import Debrief.Wrappers.ShapeWrapper;
+import MWC.GUI.CanvasType;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.StepperListener;
+import MWC.GUI.Java3d.ScaleTransform;
+import MWC.GUI.Java3d.World;
+import MWC.GUI.Java3d.WorldPlottingOptions;
+import MWC.GUI.Java3d.Tactical.Label3D;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldLocation;
+
+import com.sun.j3d.utils.geometry.Primitive;
 
 public final class ShapeWrapper3D extends Label3D implements StepperListener
 {

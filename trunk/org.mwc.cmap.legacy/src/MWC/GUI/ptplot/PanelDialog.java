@@ -54,7 +54,12 @@ what values were set by the user.
 */
 public class PanelDialog extends JDialog {
 
-    /** Construct a dialog with the specified owner, title, and panel.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Construct a dialog with the specified owner, title, and panel.
      *  An "OK" and a "Cancel" button are added to the dialog.
      *  The dialog is placed relative to the owner.
      *  @param owner The object that, per the user, appears to be
@@ -161,11 +166,11 @@ public class PanelDialog extends JDialog {
     ////                         private variables                 ////
 
     // The label of the button pushed to dismiss the dialog.
-    private String _buttonPressed = "";
+    String _buttonPressed = "";
 
     // Button labels.
     private String[] _buttons = {"OK", "Cancel"};
 
     // The pane with the buttons.
-    private JOptionPane _optionPane;
+    JOptionPane _optionPane;
 }

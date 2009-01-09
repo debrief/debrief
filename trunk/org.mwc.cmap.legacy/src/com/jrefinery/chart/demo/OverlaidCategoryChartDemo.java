@@ -64,7 +64,12 @@ import com.jrefinery.ui.RefineryUtilities;
  */
 public class OverlaidCategoryChartDemo extends ApplicationFrame {
 
-    /** The categories. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The categories. */
     private static final String[] CATEGORIES = { "1", "3", "5", "10", "20" };
 
     /** The bar colors. */
@@ -108,7 +113,8 @@ public class OverlaidCategoryChartDemo extends ApplicationFrame {
      *
      * @param title  the frame title.
      */
-    public OverlaidCategoryChartDemo(String title) {
+    @SuppressWarnings("deprecation")
+		public OverlaidCategoryChartDemo(String title) {
 
         super(title);
         DefaultIntervalCategoryDataset barData = null;

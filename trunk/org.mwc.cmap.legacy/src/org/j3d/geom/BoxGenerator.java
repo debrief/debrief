@@ -374,7 +374,6 @@ public class BoxGenerator extends GeometryGenerator
                                                 data.stripCounts.length,
                                                 index_size);
 
-        int[] stripCounts = data.stripCounts;
         float[] coords = data.coordinates;
         data.numStrips = index_size;
 
@@ -440,12 +439,6 @@ public class BoxGenerator extends GeometryGenerator
 
         int[] stripCounts = data.stripCounts;
         data.numStrips = index_size;
-
-        // each face consists of two triangles, both declared anti-clockwise.
-        // Unfortunately the default arrangements don't generate the right
-        // triangle strip so we just shuffle them about. The fourth vertex does
-        // not need to be touched.
-        float tmp_x, tmp_y, tmp_z;
 
         for(int i = 6; --i >= 0; )
             stripCounts[i] = 4;

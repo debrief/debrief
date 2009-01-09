@@ -40,7 +40,7 @@ public class ReaderMonitor extends BufferedReader
   private int _length;
   private float _counter;
   private int _progress;
-  private ProgressMonitor _pm;
+  ProgressMonitor _pm;
   private JFrame _tmpFrame;
   private Thread _myThread;
 

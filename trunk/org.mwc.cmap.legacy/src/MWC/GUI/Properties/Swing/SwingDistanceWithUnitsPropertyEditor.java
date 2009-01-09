@@ -56,7 +56,7 @@ public class SwingDistanceWithUnitsPropertyEditor extends
   /** the formatting object used to write to screen
    *
    */
-  protected DecimalFormat _formatter = new DecimalFormat("0.######");
+  protected DecimalFormat _formatter1 = new DecimalFormat("0.######");
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -104,7 +104,7 @@ public class SwingDistanceWithUnitsPropertyEditor extends
    */
   protected double getDistance() throws ParseException
   {
-    double val = _formatter.parse(_theDistance.getText()).doubleValue();
+    double val = _formatter1.parse(_theDistance.getText()).doubleValue();
     return val;
   }
 
@@ -121,7 +121,7 @@ public class SwingDistanceWithUnitsPropertyEditor extends
   {
     if(_theHolder != null)
     {
-     _theDistance.setText(_formatter.format(val));
+     _theDistance.setText(_formatter1.format(val));
     }
   }
 

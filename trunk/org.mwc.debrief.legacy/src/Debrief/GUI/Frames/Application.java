@@ -227,7 +227,7 @@ import MWC.Utilities.Errors.Trace;
 
 public abstract class Application implements ToolParent, ActionListener,
 		FileDropSupport.FileDropListener
-{
+{ 
 
 	// ///////////////////////////////////////////////////////////
 	// member variables
@@ -241,11 +241,11 @@ public abstract class Application implements ToolParent, ActionListener,
 	/**
 	 * store a list of tools we use
 	 */
-	private final Vector _theTools;
+	private final Vector<MenuItemInfo> _theTools;
 
-	private final Vector _theMenus;
+	private final Vector<MenuItemInfo> _theMenus;
 
-	private final java.util.Vector _theSessions;
+	private final java.util.Vector<Session> _theSessions;
 
 	private Toolbar _theToolbar;
 
@@ -283,9 +283,9 @@ public abstract class Application implements ToolParent, ActionListener,
 
 	public Application()
 	{
-		_theSessions = new Vector(0, 1);
-		_theTools = new Vector(0, 1);
-		_theMenus = new Vector(0, 1);
+		_theSessions = new Vector<Session>(0, 1);
+		_theTools = new Vector<MenuItemInfo>(0, 1);
+		_theMenus = new Vector<MenuItemInfo>(0, 1);
 		_sessionCounter = 0;
 
 		// create unique name for clipboard
@@ -445,7 +445,7 @@ public abstract class Application implements ToolParent, ActionListener,
 	/**
 	 * show the contents page from help
 	 */
-	protected final void helpContents()
+	public final void helpContents()
 	{
 		try
 		{
@@ -479,10 +479,10 @@ public abstract class Application implements ToolParent, ActionListener,
 	protected final Session getSessionNamed(final String theName)
 	{
 		Session res = null;
-		final Enumeration iter = _theSessions.elements();
+		final Enumeration<Session> iter = _theSessions.elements();
 		while (iter.hasMoreElements())
 		{
-			final Session thisSess = (Session) iter.nextElement();
+			final Session thisSess = iter.nextElement();
 			if (thisSess.getName().equals(theName))
 			{
 				res = thisSess;
@@ -514,11 +514,11 @@ public abstract class Application implements ToolParent, ActionListener,
 		addTools();
 
 		// now add the tools to the toolbar
-		final Enumeration iter = _theTools.elements();
+		final Enumeration<MenuItemInfo> iter = _theTools.elements();
 
 		while (iter.hasMoreElements())
 		{
-			final MenuItemInfo thisItem = (MenuItemInfo) iter.nextElement();
+			final MenuItemInfo thisItem = iter.nextElement();
 
 			_theToolbar.addTool(thisItem.getTool(), thisItem.getShortCut(), thisItem
 					.getMnemonic());
@@ -531,11 +531,11 @@ public abstract class Application implements ToolParent, ActionListener,
 	 */
 	private void setupMenu()
 	{
-		final Enumeration iter = _theMenus.elements();
+		final Enumeration<MenuItemInfo> iter = _theMenus.elements();
 
 		while (iter.hasMoreElements())
 		{
-			final MenuItemInfo thisItem = (MenuItemInfo) iter.nextElement();
+			final MenuItemInfo thisItem = iter.nextElement();
 			// see if it is a menu item or a separator
 			if (thisItem.getMenuItemName() == null)
 			{
@@ -645,7 +645,7 @@ public abstract class Application implements ToolParent, ActionListener,
 				// now show another session, if we have one
 				if (_theSessions.size() > 0)
 				{
-					showSession((Session) _theSessions.elementAt(_theSessions.size() - 1));
+					showSession(_theSessions.elementAt(_theSessions.size() - 1));
 				}
 				else
 				{
@@ -810,7 +810,7 @@ public abstract class Application implements ToolParent, ActionListener,
 	/**
 	 * helper method which gets called after we've read in a data file
 	 */
-	private void configureNarratives()
+	void configureNarratives()
 	{
 		// the narratives need to know where the time stepper is, so inform them if
 		// we have any
@@ -891,9 +891,9 @@ public abstract class Application implements ToolParent, ActionListener,
 	/**
 	 * get the values of any properties like this pattern
 	 */
-	public static java.util.Map getPropertiesLikeThis(final String pattern)
+	public static java.util.Map<String, String> getPropertiesLikeThis(final String pattern)
 	{
-		Map res = null;
+		Map<String, String> res = null;
 		if (_substituteParent != null)
 		{
 			res = _substituteParent.getPropertiesLike(pattern);
@@ -910,9 +910,9 @@ public abstract class Application implements ToolParent, ActionListener,
 	/**
 	 * get the values of any properties like this pattern
 	 */
-	public final java.util.Map getPropertiesLike(final String pattern)
+	public final java.util.Map<String, String> getPropertiesLike(final String pattern)
 	{
-		final Map res;
+		final Map<String, String> res;
 		if(_substituteParent != null)
 			res = _substituteParent.getPropertiesLike(pattern);
 		else
@@ -970,12 +970,12 @@ public abstract class Application implements ToolParent, ActionListener,
 	 * @param files
 	 *          autofilled
 	 */
-	public final void FilesReceived(final java.util.Vector files)
+	public final void FilesReceived(final java.util.Vector<File> files)
 	{
 		setCursor(Cursor.WAIT_CURSOR);
 		try
 		{
-			final Enumeration iter = files.elements();
+			final Enumeration<File> iter = files.elements();
 			while (iter.hasMoreElements())
 			{
 				final java.io.File file = (java.io.File) iter.nextElement();

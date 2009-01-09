@@ -1,11 +1,11 @@
 package MWC.GUI.Java3d.Tactical;
 
-import MWC.GUI.BaseLayer;
-
-import javax.media.j3d.Switch;
-import javax.media.j3d.Group;
-import javax.media.j3d.BranchGroup;
 import java.beans.PropertyChangeEvent;
+
+import javax.media.j3d.Group;
+import javax.media.j3d.Switch;
+
+import MWC.GUI.BaseLayer;
 
 /**
  * Created by IntelliJ IDEA.

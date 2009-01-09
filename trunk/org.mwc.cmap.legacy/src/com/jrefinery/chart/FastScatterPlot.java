@@ -29,13 +29,13 @@ public class FastScatterPlot extends Plot {
     private ValueAxis rangeAxis;
 
     /** A list of markers (optional) for the domain axis. */
-    private List domainMarkers;
+//		private List<Marker> domainMarkers;
 
     /** A list of markers (optional) for the range axis. */
-    private List rangeMarkers;
+//		private List<Marker> rangeMarkers;
 
     /** A list of annotations (optional) for the plot. */
-    private List annotations;
+		private List<Annotation> annotations;
 
     /**
      * Creates a new fast scatter plot.
@@ -155,27 +155,27 @@ public class FastScatterPlot extends Plot {
         g2.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
                                                    this.foregroundAlpha));
 
-        if (this.domainMarkers != null) {
-            Iterator iterator = this.domainMarkers.iterator();
-            while (iterator.hasNext()) {
-                Marker marker = (Marker) iterator.next();
-                //renderer.drawDomainMarker(g2, this, getDomainAxis(), marker, dataArea);
-            }
-        }
+//        if (this.domainMarkers != null) {
+//            Iterator<Marker> iterator = this.domainMarkers.iterator();
+//            while (iterator.hasNext()) {
+//                Marker marker = (Marker) iterator.next();
+//                //renderer.drawDomainMarker(g2, this, getDomainAxis(), marker, dataArea);
+//            }
+//        }
 
-        if (this.rangeMarkers != null) {
-            Iterator iterator = this.rangeMarkers.iterator();
-            while (iterator.hasNext()) {
-                Marker marker = (Marker) iterator.next();
-                //renderer.drawRangeMarker(g2, this, getRangeAxis(), marker, dataArea);
-            }
-        }
+//        if (this.rangeMarkers != null) {
+//            Iterator<Marker> iterator = this.rangeMarkers.iterator();
+//            while (iterator.hasNext()) {
+//                Marker marker = (Marker) iterator.next();
+//                //renderer.drawRangeMarker(g2, this, getRangeAxis(), marker, dataArea);
+//            }
+//        }
 
         render(g2, dataArea, info, null);
 
         // draw the annotations...
         if (this.annotations != null) {
-            Iterator iterator = this.annotations.iterator();
+            Iterator<Annotation> iterator = this.annotations.iterator();
             while (iterator.hasNext()) {
                 Annotation annotation = (Annotation) iterator.next();
                 if (annotation instanceof XYAnnotation) {
@@ -209,13 +209,13 @@ public class FastScatterPlot extends Plot {
         g2.setPaint(Color.red);
         if (this.data != null) {
 
-            ValueAxis domainAxis = getDomainAxis();
-            ValueAxis rangeAxis = getRangeAxis();
+            ValueAxis domainAxis1 = getDomainAxis();
+            ValueAxis rangeAxis1 = getRangeAxis();
             for (int i = 0; i < data[0].length; i++) {
                 float x = data[0][i];
                 float y = data[1][i];
-                int transX = (int) domainAxis.translateValueToJava2D(x, dataArea);
-                int transY = (int) rangeAxis.translateValueToJava2D(y, dataArea);
+                int transX = (int) domainAxis1.translateValueToJava2D(x, dataArea);
+                int transY = (int) rangeAxis1.translateValueToJava2D(y, dataArea);
                 g2.drawRect(transX, transY, 1, 1);
             }
 

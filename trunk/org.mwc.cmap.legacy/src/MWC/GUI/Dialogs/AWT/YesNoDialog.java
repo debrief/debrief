@@ -4,10 +4,13 @@ import java.awt.*;
 import java.awt.event.*;
 
 public class YesNoDialog extends WorkDialog {
-	private Button      yesButton;
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	Button      yesButton;
 	private Button      noButton;
-	private boolean     answer      = false;
-	private ButtonPanel buttonPanel = new ButtonPanel();
+	boolean     answer      = false;
 	private YesNoPanel  yesNoPanel;
 
 	public YesNoDialog(Frame  frame, DialogClient client, 
@@ -64,6 +67,10 @@ public class YesNoDialog extends WorkDialog {
 	}
 }
 class YesNoPanel extends Postcard {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	private Label label;
 	public YesNoPanel(String question) {
 		this(null, question);

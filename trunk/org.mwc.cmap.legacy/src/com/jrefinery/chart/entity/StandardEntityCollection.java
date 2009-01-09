@@ -50,13 +50,13 @@ import java.util.Iterator;
 public class StandardEntityCollection implements EntityCollection {
 
     /** Storage for the entities. */
-    private Collection entities;
+    private Collection<ChartEntity> entities;
 
     /**
      * Constructs a new entity collection (initially empty).
      */
     public StandardEntityCollection() {
-        entities = new java.util.ArrayList();
+        entities = new java.util.ArrayList<ChartEntity>();
     }
 
     /**
@@ -87,7 +87,7 @@ public class StandardEntityCollection implements EntityCollection {
 
         ChartEntity result = null;
 
-        Iterator iterator = entities.iterator();
+        Iterator<ChartEntity> iterator = entities.iterator();
         while (iterator.hasNext()) {
             ChartEntity entity = (ChartEntity) iterator.next();
             if (entity.getArea().contains(x, y)) {
@@ -103,7 +103,8 @@ public class StandardEntityCollection implements EntityCollection {
      *
      * @return an iterator.
      */
-    public Iterator iterator() {
+    @SuppressWarnings("unchecked")
+		public Iterator iterator() {
         return entities.iterator();
     }
 

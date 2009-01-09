@@ -9,10 +9,17 @@ package MWC.Utilities.ReaderWriter.XML;
  * @version 1.0
  */
 
-import MWC.GUI.Layer;
-import MWC.GUI.S57.S57Layer;
-import MWC.Utilities.ReaderWriter.XML.Features.*;
 import org.xml.sax.Attributes;
+
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.Utilities.ReaderWriter.XML.Features.CoastlineHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.Grid4WHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.GridHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.LocalGridHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.ScaleHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.VPFCoastlineHandler;
+import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
 public class LayerHandler extends MWCXMLReader
 {
@@ -21,7 +28,7 @@ public class LayerHandler extends MWCXMLReader
 
 	protected MWC.GUI.BaseLayer _myLayer;
 
-	protected static java.util.Hashtable<Class, LayerHandler.exporter> _myExporters;
+	protected static java.util.Hashtable<Class<?>, LayerHandler.exporter> _myExporters;
 
 	/**
 	 * use the default layer name
@@ -140,7 +147,7 @@ public class LayerHandler extends MWCXMLReader
 		super.handleOurselves(name, attributes);
 	}
 
-	protected void addThis(MWC.GUI.Plottable plottable)
+	public void addThis(MWC.GUI.Plottable plottable)
 	{
 		_myLayer.add(plottable);
 	}
@@ -149,7 +156,7 @@ public class LayerHandler extends MWCXMLReader
 	{
 		// check that there is more than one element in this layer
 		int counter = 0;
-		java.util.Enumeration enumer = _myLayer.elements();
+		java.util.Enumeration<Editable> enumer = _myLayer.elements();
 		while (enumer.hasMoreElements())
 		{
 			Object val = enumer.nextElement();
@@ -188,7 +195,7 @@ public class LayerHandler extends MWCXMLReader
 	{
 		if (_myExporters == null)
 		{
-			_myExporters = new java.util.Hashtable<Class, LayerHandler.exporter>();
+			_myExporters = new java.util.Hashtable<Class<?>, LayerHandler.exporter>();
 			_myExporters.put(MWC.GUI.Chart.Painters.CoastPainter.class, new CoastlineHandler()
 			{
 				public void addPlottable(MWC.GUI.Plottable plottable)
@@ -285,7 +292,7 @@ public class LayerHandler extends MWCXMLReader
 		eLayer.setAttribute("LineThickness", writeThis(layer.getLineThickness()));
 
 		// step through the components of the layer
-		java.util.Enumeration enumer = layer.elements();
+		java.util.Enumeration<Editable> enumer = layer.elements();
 		while (enumer.hasMoreElements())
 		{
 			MWC.GUI.Plottable nextPlottable = (MWC.GUI.Plottable) enumer.nextElement();

@@ -264,7 +264,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	/**
 	 * the symbol for this label
 	 */
-	private final MWC.GUI.Shapes.PlainShape _theShape;
+	final MWC.GUI.Shapes.PlainShape _theShape;
 
 	/**
 	 * the start dtg for this label (although) this will frequently be null, for
@@ -768,7 +768,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		}
 
 		// see if we are visible between the period
-		final Collection list = getItemsBetween(start, end);
+		final Collection<Editable> list = getItemsBetween(start, end);
 
 		this.setVisible(false);
 
@@ -785,10 +785,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 	}
 
-	public final java.util.Collection getItemsBetween(final HiResDate start,
+	public final java.util.Collection<Editable> getItemsBetween(final HiResDate start,
 			final HiResDate end)
 	{
-		java.util.Vector<ShapeWrapper> res = null;
+		java.util.Vector<Editable> res = null;
 
 		final HiResDate myStart = getStartDTG();
 		final HiResDate myEnd = getEndDTG();
@@ -797,7 +797,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		if (myStart == null)
 		{
 			// no, so just return ourselves anyway
-			res = new Vector<ShapeWrapper>(0, 1);
+			res = new Vector<Editable>(0, 1);
 			res.add(this);
 			return res;
 		}
@@ -811,7 +811,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			// see if our time period overlaps
 			if ((myStart.lessThan(end)) && (myEnd.greaterThan(start)))
 			{
-				res = new Vector<ShapeWrapper>(0, 1);
+				res = new Vector<Editable>(0, 1);
 				res.addElement(this);
 			}
 
@@ -827,7 +827,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			if (myStart == null)
 			{
 				// no start time, just return ourselves anyway.
-				res = new Vector<ShapeWrapper>(0, 1);
+				res = new Vector<Editable>(0, 1);
 				res.addElement(this);
 			} else
 			{
@@ -835,7 +835,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				if ((myStart.greaterThanOrEqualTo(start))
 						&& (myStart.lessThanOrEqualTo(end)))
 				{
-					res = new Vector<ShapeWrapper>(0, 1);
+					res = new Vector<Editable>(0, 1);
 					res.addElement(this);
 				} else
 				{
@@ -930,7 +930,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		public final MethodDescriptor[] getMethodDescriptors()
 		{
 			// just add the reset color field first
-			final Class c = ShapeWrapper.class;
+			final Class<?> c = ShapeWrapper.class;
 			final MethodDescriptor[] mds =
 			{ method(c, "exportThis", null, "Export Shape") };
 			return mds;

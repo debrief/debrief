@@ -57,6 +57,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class CandlestickDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * A demonstration application showing a candlestick chart.
      *
      * @param title  the frame title.

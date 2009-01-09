@@ -3,7 +3,11 @@ package MWC.GUI.Dialogs.AWT;
 import java.awt.*;
 
 public class ImageCanvas extends Component {
-    private Image image;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		private Image image;
 
 	public ImageCanvas() {
 	}

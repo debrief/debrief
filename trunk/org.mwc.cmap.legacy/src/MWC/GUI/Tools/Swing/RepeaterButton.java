@@ -25,7 +25,12 @@ import java.awt.*;
 
 public class RepeaterButton extends JButton
 {
-  private Timer timer;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private Timer timer;
 
   /** The default initial delay. */
   public static final int DEFAULT_INITIAL_DELAY = 200;
@@ -40,6 +45,11 @@ public class RepeaterButton extends JButton
     })
     {
       /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			/**
        * Notify all listeners that have registered interest for
        * notification on this event type.  The event instance
        * is lazily created using the parameters passed into

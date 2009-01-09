@@ -7,14 +7,10 @@ package MWC.GUI.TabPanel;
  *
  */
 
-import java.io.Serializable;
-import java.io.ObjectOutputStream;
-import java.io.ObjectInputStream;
-import java.io.IOException;
-import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
-import java.beans.VetoableChangeListener;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Hashtable;
+import java.util.Vector;
 
 
 
@@ -34,6 +30,10 @@ import java.beans.PropertyChangeEvent;
 public class PropertyChangeSupport extends java.beans.PropertyChangeSupport implements java.io.Serializable
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/**
      * Constructs a PropertyChangeSupport object.
      * @param sourceBean the bean to be given as the source for any events
      */
@@ -52,20 +52,20 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport impl
      */
     public synchronized void addPropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
-    	java.util.Vector listenerList;
+    	java.util.Vector<PropertyChangeListener> listenerList;
 
     	if(listenerTable == null)
     	{
-    		listenerTable = new java.util.Hashtable();
+    		listenerTable = new java.util.Hashtable<String, Vector<PropertyChangeListener>>();
     	}
 
     	if(listenerTable.containsKey(propertyName))
     	{
-    		listenerList = (java.util.Vector)listenerTable.get(propertyName);
+    		listenerList = listenerTable.get(propertyName);
     	}
     	else
     	{
-    		listenerList = new java.util.Vector();
+    		listenerList = new java.util.Vector<PropertyChangeListener>();
     	}
 
     	listenerList.addElement(listener);
@@ -81,13 +81,13 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport impl
      */
     public synchronized void removePropertyChangeListener(String propertyName, PropertyChangeListener listener)
     {
-    	java.util.Vector listenerList;
+    	java.util.Vector<PropertyChangeListener> listenerList;
 
 		if (listenerTable == null || !listenerTable.containsKey(propertyName))
 		{
 	    	return;
 		}
-		listenerList = (java.util.Vector)listenerTable.get(propertyName);
+		listenerList = listenerTable.get(propertyName);
 		listenerList.removeElement(listener);
     }
 
@@ -101,7 +101,8 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport impl
      * @param oldValue the old value of the property
      * @param newValue the new value of the property
      */
-    public void firePropertyChange(String propertyName, Object oldValue, Object newValue)
+    @SuppressWarnings("unchecked")
+		public void firePropertyChange(String propertyName, Object oldValue, Object newValue)
     {
     	if (oldValue != null && oldValue.equals(newValue))
     	{
@@ -110,7 +111,7 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport impl
 
 		super.firePropertyChange(propertyName, oldValue, newValue);
 
-		java.util.Hashtable templistenerTable = null;
+		java.util.Hashtable<String, Vector<PropertyChangeListener>> templistenerTable = null;
 
 		synchronized (this)
 		{
@@ -118,18 +119,18 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport impl
 			{
 				return;
 			}
-		  	templistenerTable = (java.util.Hashtable) listenerTable.clone();
+		  	templistenerTable = (Hashtable<String, Vector<PropertyChangeListener>>) listenerTable.clone();
 		}
 
-		java.util.Vector listenerList;
+		java.util.Vector<PropertyChangeListener> listenerList;
 
-		listenerList = (java.util.Vector)templistenerTable.get(propertyName);
+		listenerList = templistenerTable.get(propertyName);
 
 	    PropertyChangeEvent evt = new PropertyChangeEvent(source, propertyName, oldValue, newValue);
 
 		for (int i = 0; i < listenerList.size(); i++)
 		{
-			PropertyChangeListener target = (PropertyChangeListener)listenerList.elementAt(i);
+			PropertyChangeListener target = listenerList.elementAt(i);
 		    target.propertyChange(evt);
 		}
     }
@@ -148,9 +149,8 @@ public class PropertyChangeSupport extends java.beans.PropertyChangeSupport impl
      * @see #addPropertyChangeListener
      * @see #removePropertyChangeListener
      */
-    protected java.util.Hashtable listenerTable;
+    protected java.util.Hashtable<String, Vector<PropertyChangeListener>> listenerTable;
     private Object source;
-    private int propertyChangeSupportSerializedDataVersion = 1;
 }
 
 

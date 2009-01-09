@@ -5,7 +5,15 @@ import java.awt.event.*;
 
 public class CloseableFrame extends Frame
 {
-  public CloseableFrame(String theStr){
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+
+
+	public CloseableFrame(String theStr){
     super(theStr);
     enableEvents(AWTEvent.WINDOW_EVENT_MASK);
     this.setBackground(Color.lightGray);

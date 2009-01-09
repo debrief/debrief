@@ -74,7 +74,7 @@ public class HorizontalMarkerAxisBand {
     private Font font;
 
     /** Storage for the markers. */
-    private List markers;
+    private List<Marker> markers;
 
     /**
      * Constructs a new axis band.
@@ -96,7 +96,7 @@ public class HorizontalMarkerAxisBand {
         this.bottomOuterGap = bottomOuterGap;
         this.bottomInnerGap = bottomInnerGap;
         this.font = font;
-        this.markers = new java.util.ArrayList();
+        this.markers = new java.util.ArrayList<Marker>();
     }
 
     /**
@@ -133,19 +133,19 @@ public class HorizontalMarkerAxisBand {
      *
      * @param g2  the graphics device.
      * @param bounds  the rectangle.
-     * @param font  the font.
+     * @param font1  the font.
      * @param text  the text.
      */
-    private void drawStringInRect(Graphics2D g2, Rectangle2D bounds, Font font,
+    private void drawStringInRect(Graphics2D g2, Rectangle2D bounds, Font font1,
                                   String text) {
 
-        g2.setFont(font);
-        Rectangle2D r = font.getStringBounds(text, g2.getFontRenderContext());
+        g2.setFont(font1);
+        Rectangle2D r = font1.getStringBounds(text, g2.getFontRenderContext());
         double x = bounds.getX();
         if (r.getWidth() < bounds.getWidth()) {
             x = x + (bounds.getWidth() - r.getWidth()) / 2;
         }
-        LineMetrics metrics = font.getLineMetrics(text, g2.getFontRenderContext());
+        LineMetrics metrics = font1.getLineMetrics(text, g2.getFontRenderContext());
         g2.drawString(text,
                       (float) x,
                       (float) (bounds.getMaxY() - this.bottomInnerGap - metrics.getDescent()));
@@ -164,7 +164,7 @@ public class HorizontalMarkerAxisBand {
                      double x, double y) {
 
         double h = getHeight(g2);
-        Iterator iterator = this.markers.iterator();
+        Iterator<Marker> iterator = this.markers.iterator();
         while (iterator.hasNext()) {
             IntervalMarker marker = (IntervalMarker) iterator.next();
             double start =  Math.max(marker.getStartValue(), axis.getRange().getLowerBound());

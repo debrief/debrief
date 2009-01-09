@@ -9,14 +9,13 @@
 
 package org.j3d.geom.particle;
 
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.PickBounds;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 
-import javax.media.j3d.Node;
-import javax.media.j3d.BranchGroup;
-
-import com.sun.j3d.utils.picking.*;
-import javax.media.j3d.PickBounds;
+import com.sun.j3d.utils.picking.PickResult;
+import com.sun.j3d.utils.picking.PickTool;
 
 /**
  * PickingCollisionMovementFunction uses Java 3D picking utilities

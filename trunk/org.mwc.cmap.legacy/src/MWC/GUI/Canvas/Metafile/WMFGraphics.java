@@ -631,9 +631,10 @@ public class WMFGraphics
 		return fontescapement;
 	}
 
-	public FontMetrics getFontMetrics(Font font)
+	@SuppressWarnings("deprecation")
+	public FontMetrics getFontMetrics(Font font1)
 	{
-		return Toolkit.getDefaultToolkit().getFontMetrics(font);
+		return Toolkit.getDefaultToolkit().getFontMetrics(font1);
 	}
 
 	public int getPenStyle()
@@ -969,7 +970,8 @@ public class WMFGraphics
   public void removePainter(MWC.GUI.CanvasType.PaintListener listener) {
   }
 
-  public java.util.Enumeration getPainters() {
+  @SuppressWarnings("unchecked")
+	public java.util.Enumeration getPainters() {
     return null;
   }
 

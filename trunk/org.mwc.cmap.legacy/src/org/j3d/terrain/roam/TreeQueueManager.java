@@ -56,16 +56,16 @@ import java.util.TreeSet;
  */
 class TreeQueueManager implements QueueManager
 {
-    private TreeSet triQueue;
-    private TreeSet diamondQueue;
+    private TreeSet<TreeNode> triQueue;
+    private TreeSet<TreeNode> diamondQueue;
 
     /**
      * Creates new QueueManager.
      */
     public TreeQueueManager()
     {
-        triQueue = new TreeSet(new TriangleComparator());
-        diamondQueue = new TreeSet(new DiamondComparator());
+        triQueue = new TreeSet<TreeNode>(new TriangleComparator());
+        diamondQueue = new TreeSet<TreeNode>(new DiamondComparator());
     }
 
     public void addTriangle(Object node)
@@ -73,7 +73,7 @@ class TreeQueueManager implements QueueManager
         if(!(node instanceof TreeNode))
             throw new RuntimeException("Not a TreeNode");
 
-        triQueue.add(node);
+        triQueue.add((TreeNode)node);
     }
 
     public void removeTriangle(Object node)
@@ -89,7 +89,7 @@ class TreeQueueManager implements QueueManager
         if(!(node instanceof TreeNode))
             throw new RuntimeException("Not a TreeNode");
 
-        diamondQueue.add(node);
+        diamondQueue.add((TreeNode)node);
     }
 
     public void removeDiamond(Object node)

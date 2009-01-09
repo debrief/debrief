@@ -9,10 +9,9 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-
-import java.util.*;
 
 abstract public class WorldAreaHandler extends MWCXMLReader {
 
@@ -20,8 +19,8 @@ abstract public class WorldAreaHandler extends MWCXMLReader {
   static final private String TOP_LEFT = "TopLeft";
   static final private String BOTTOM_RIGHT = "BottomRight";
 
-  private WorldLocation _topLeft;
-  private WorldLocation _bottomRight;
+  WorldLocation _topLeft;
+  WorldLocation _bottomRight;
 
   public WorldAreaHandler() {
     super("_myType");

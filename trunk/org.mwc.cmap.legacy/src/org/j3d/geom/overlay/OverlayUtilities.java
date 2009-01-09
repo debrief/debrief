@@ -15,13 +15,11 @@ import java.awt.Dimension;
 import java.awt.Rectangle;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
-import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import java.awt.image.DataBuffer;
 import java.awt.image.ColorModel;
 import java.awt.image.ComponentColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.WritableRaster;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -128,11 +126,11 @@ public class OverlayUtilities
      * @param max The maximum required size
      * @return A collection of the rectangles needed to construct the total size
      */
-    public static List subdivide(Dimension dimension, int threshhold, int max)
+    public static List<Rectangle> subdivide(Dimension dimension, int threshhold, int max)
     {
-        List cols = components(dimension.width, threshhold, max);
-        List rows = components(dimension.height, threshhold, max);
-        List parts = new ArrayList();
+        List<Integer> cols = components(dimension.width, threshhold, max);
+        List<Integer> rows = components(dimension.height, threshhold, max);
+        List<Rectangle> parts = new ArrayList<Rectangle>();
 
         int i = 0, j = 0;
         int x = 0, y = 0;
@@ -165,9 +163,9 @@ public class OverlayUtilities
      * @param max The maximum required size
      * @return A list, in order of the component values
      */
-    public static List components(int value, int threshhold, int max)
+    public static List<Integer> components(int value, int threshhold, int max)
     {
-        List components = new ArrayList();
+        List<Integer> components = new ArrayList<Integer>();
         while (value > 0)
         {
             int p = Math.min(optimalPower(value, threshhold, max), value);

@@ -19,17 +19,17 @@ import MWC.GUI.Layers;
 public class ETOPOHandler extends MWCXMLReader
 {
 
-  private java.awt.Color _theColor;
-  private boolean _isVisible;
+  java.awt.Color _theColor;
+  boolean _isVisible;
   private Layers _theLayers;
-  private Integer _scaleLocation;
-  private boolean _showLand;
-  private int _lineThickness = 1;
+  Integer _scaleLocation;
+  boolean _showLand;
+  int _lineThickness = 1;
 
 
   /** class which contains list of textual representations of scale locations
    */
-  static private MWC.GUI.Chart.Painters.ETOPOPainter.KeyLocationPropertyEditor lp
+  static MWC.GUI.Chart.Painters.ETOPOPainter.KeyLocationPropertyEditor lp
           = new MWC.GUI.Chart.Painters.ETOPOPainter.KeyLocationPropertyEditor();
 
 

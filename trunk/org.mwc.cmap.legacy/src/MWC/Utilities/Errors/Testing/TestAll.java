@@ -1,8 +1,8 @@
 package MWC.Utilities.Errors.Testing;
-import java.util.*;
-import junit.framework.*;
-import java.io.*;
-import java.lang.reflect.*;
+import junit.framework.Test;
+import junit.framework.TestCase;
+import junit.framework.TestResult;
+import junit.framework.TestSuite;
 /**
  * Test suite for the entire Java implementation. Runs
  * all Java test cases in the source tree that extend TestCase and are of a specified type.
@@ -14,25 +14,6 @@ import java.lang.reflect.*;
  * </ul>
  */
 public class TestAll extends TestCase {
-    /**
-     * Given a test to ignore (normally TestdSecure.class) this method iterates over all java files
-     * in the <code>currentDirectory</code> (recursively). It takes each java file and passes it to
-     * <code>addToSuiteIfTestCase ()</code>. The result is the <code>suite</code> parameter fully
-     * populated with tests.
-     */
-
-    private static int addAllTests(final TestSuite suite, final Iterator classIterator)
-    throws java.io.IOException {
-        int testClassCount = 0;
-        while (classIterator.hasNext ()) {
-            Class testCaseClass = (Class)classIterator.next ();
-            suite.addTest (new TestSuite (testCaseClass));
-       //     System.out.println ("Loaded test case: " + testCaseClass.getName ());
-            testClassCount++;
-        }
-        return testClassCount;
-    }
-
     public static Test suite()
     throws Throwable {
         try {
@@ -66,7 +47,6 @@ public class TestAll extends TestCase {
 
 
   public static void main(String[] args) {
-    TestAll ts = new TestAll("test by hand");
     System.setProperty("test_type", "UNIT");
 //    System.setProperty("class_root", "c:\\temp\\d2001\\d2002\\mwc\\gui\\java3d");
     System.setProperty("class_root", "d:\\dev\\debrief\\source\\build\\debrief");

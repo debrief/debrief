@@ -39,7 +39,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	/**
 	 * a list of helper classes - that allow more items to be dropped onto us.
 	 */
-	private static Vector _myDropHelpers;
+	private static Vector<XMLFileDropHandler> _myDropHelpers;
 
 	/**
 	 * constructor - something that tells us about the current selection
@@ -60,7 +60,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	{
 		if (_myDropHelpers == null)
 		{
-			_myDropHelpers = new Vector(1, 1);
+			_myDropHelpers = new Vector<XMLFileDropHandler>(1, 1);
 		}
 		_myDropHelpers.add(handler);
 	}
@@ -142,7 +142,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			{
 				TreeItem ti = (TreeItem) event.item;
 				EditableWrapper ew = (EditableWrapper) ti.getData();
-				for (Iterator iter = _myDropHelpers.iterator(); iter.hasNext();)
+				for (Iterator<XMLFileDropHandler> iter = _myDropHelpers.iterator(); iter.hasNext();)
 				{
 					XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
 
@@ -221,6 +221,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 		/**
 		 * the types of object we can drop onto
 		 */
+		@SuppressWarnings("unchecked")
 		private final Class[] targets;
 
 		/**
@@ -231,6 +232,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 		 * @param targetTypes
 		 *          the types of thing we drop onto
 		 */
+		@SuppressWarnings("unchecked")
 		public XMLFileDropHandler(String[] elementTypes, Class[] targetTypes)
 		{
 			_elements = elementTypes;
@@ -252,6 +254,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 			return res;
 		}
 
+		@SuppressWarnings("unchecked")
 		public boolean canBeDroppedOn(Editable targetElement)
 		{
 			boolean res = false;
@@ -279,6 +282,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 				Layers parent);
 	}
 
+	@SuppressWarnings("unchecked")
 	public void drop(DropTargetEvent event)
 	{
 		// hmm, what type of data are we receiving, is it a file?
@@ -339,7 +343,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 						// do we have any loaders?
 						if (_myDropHelpers != null)
 						{
-							for (Iterator iter = _myDropHelpers.iterator(); iter.hasNext();)
+							for (Iterator<XMLFileDropHandler> iter = _myDropHelpers.iterator(); iter.hasNext();)
 							{
 								XMLFileDropHandler handler = (XMLFileDropHandler) iter.next();
 

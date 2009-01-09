@@ -14,18 +14,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.font.TextLayout;
 import java.awt.font.TextAttribute;
-import java.text.AttributedString;
 import java.text.AttributedCharacterIterator;
-import java.util.Enumeration;
+import java.text.AttributedString;
 
-import javax.media.j3d.Behavior;
-import javax.media.j3d.BoundingSphere;
 import javax.media.j3d.Canvas3D;
-import javax.media.j3d.WakeupOnActivation;
-import javax.media.j3d.WakeupOnBehaviorPost;
-import javax.media.j3d.WakeupOnElapsedTime;
 
 // Application specific imports
 // none
@@ -241,16 +234,16 @@ public class LabelOverlay extends OverlayBase
         visibleLength = (length < 0) ? 0 : length;
     }
 
-    private AttributedString createAttributedString(String text,
-                                                    Font font,
-                                                    Color color)
+    private AttributedString createAttributedString(String text1,
+                                                    Font font1,
+                                                    Color color1)
     {
         AttributedString attributedString = null;
-        if(text.length() > 0)
+        if(text1.length() > 0)
         {
-            attributedString = new AttributedString(text);
-            attributedString.addAttribute(TextAttribute.FONT, font);
-            attributedString.addAttribute(TextAttribute.FOREGROUND, color);
+            attributedString = new AttributedString(text1);
+            attributedString.addAttribute(TextAttribute.FONT, font1);
+            attributedString.addAttribute(TextAttribute.FOREGROUND, color1);
         }
 
         return attributedString;

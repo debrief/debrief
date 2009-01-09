@@ -45,11 +45,10 @@ package MWC.GUI.Properties.AWT;
 // Initial revision
 //
 
-import java.beans.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Checkbox;
+import java.awt.Panel;
+import java.beans.PropertyEditorSupport;
 
 public class AWTBooleanPropertyEditor extends 
            PropertyEditorSupport 

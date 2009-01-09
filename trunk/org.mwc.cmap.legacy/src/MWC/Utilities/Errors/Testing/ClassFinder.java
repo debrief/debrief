@@ -11,7 +11,7 @@ import java.io.*;
  * class names.
  */
 public class ClassFinder {
-    final private Vector classNameList = new Vector ();
+    final private Vector<Object> classNameList = new Vector<Object> ();
 
     public ClassFinder(final File classPathRoot) throws IOException {
         findAndStoreTestClasses (classPathRoot);
@@ -48,7 +48,7 @@ public class ClassFinder {
         }
     }
 
-    public Iterator getClasses () {
+    public Iterator<?> getClasses () {
         return classNameList.iterator ();
     }
 }

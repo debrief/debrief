@@ -10,6 +10,7 @@ package Debrief.ReaderWriter.XML.Tactical;
  */
 
 import Debrief.Wrappers.SensorContactWrapper;
+import MWC.GUI.Editable;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
@@ -17,8 +18,7 @@ import org.xml.sax.Attributes;
 
 abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  // our "working" track
-  private Debrief.Wrappers.SensorWrapper _mySensor;
+  Debrief.Wrappers.SensorWrapper _mySensor;
 
   public SensorHandler()
   {
@@ -84,7 +84,7 @@ abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
   }
 
-  private void addThisContact(MWC.GUI.Plottable val)
+  void addThisContact(MWC.GUI.Plottable val)
   {
     // store in our list
     _mySensor.add(val);
@@ -125,7 +125,7 @@ abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     ColourHandler.exportColour(sensor.getColor(), trk, doc);
 
     // now the points
-    java.util.Enumeration iter = sensor.elements();
+    java.util.Enumeration<Editable> iter = sensor.elements();
     while (iter.hasMoreElements())
     {
       MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();

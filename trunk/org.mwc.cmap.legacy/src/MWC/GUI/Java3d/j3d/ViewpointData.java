@@ -15,7 +15,6 @@ package MWC.GUI.Java3d.j3d;
 
 // Standard imports
 import javax.media.j3d.TransformGroup;
-import javax.media.j3d.View;
 
 /**
  * A class to represent viewpoint information so that we can put it on screen,

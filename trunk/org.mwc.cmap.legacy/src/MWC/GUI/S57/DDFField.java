@@ -45,7 +45,7 @@ public class DDFField {
 
     protected DDFFieldDefinition poDefn;
     protected byte[] pachData;
-    protected Hashtable subfields;
+    protected Hashtable<String, Object> subfields;
     protected int dataPosition;
     protected int dataLength;
     protected int headerOffset;
@@ -74,7 +74,7 @@ public class DDFField {
     public void initialize(DDFFieldDefinition poDefnIn, byte[] pachDataIn) {
         pachData = pachDataIn;
         poDefn = poDefnIn;
-        subfields = new Hashtable();
+        subfields = new Hashtable<String, Object>();
     }
 
     /**
@@ -151,7 +151,8 @@ public class DDFField {
      * 
      * @return String containing info.
      */
-    public String toString() {
+    @SuppressWarnings("unchecked")
+		public String toString() {
         StringBuffer buf = new StringBuffer("  DDFField:\n");
         buf.append("\tTag = " + poDefn.getName() + "\n");
         buf.append("\tDescription = " + poDefn.getDescription() + "\n");
@@ -211,11 +212,13 @@ public class DDFField {
         } else {
             buf.append("      Subfields:\n");
 
-            for (Enumeration enumeration = subfields.keys(); enumeration.hasMoreElements();) {
+            for (Enumeration<String> enumeration = subfields.keys(); enumeration.hasMoreElements();) {
                 Object obj = subfields.get(enumeration.nextElement());
 
                 if (obj instanceof List) {
-                    for (Iterator it = ((List) obj).iterator(); it.hasNext();) {
+                	List<DDFSubfield> theList = (List<DDFSubfield>) obj;
+                    for (Iterator<DDFSubfield> it = theList.iterator(); it.hasNext();) 
+                    {
                         DDFSubfield ddfs = (DDFSubfield) it.next();
                         buf.append("        " + ddfs.toString() + "\n");
                     }
@@ -233,7 +236,8 @@ public class DDFField {
      * subfield wasn't repeated, it will provide a list containing one
      * object. Will return null if the subfield doesn't exist.
      */
-    public List getSubfields(String subfieldName) {
+    @SuppressWarnings("unchecked")
+		public List<Object> getSubfields(String subfieldName) {
         Object obj = subfields.get(subfieldName);
         if (obj instanceof List) {
             return (List) obj;
@@ -251,7 +255,8 @@ public class DDFField {
      * first one off the list for a repeating subfield. Will return
      * null if the subfield doesn't exist.
      */
-    public DDFSubfield getSubfield(String subfieldName) {
+    @SuppressWarnings("unchecked")
+		public DDFSubfield getSubfield(String subfieldName) {
         Object obj = subfields.get(subfieldName);
         if (obj instanceof List) {
             List l = (List) obj;
@@ -370,7 +375,8 @@ public class DDFField {
 
     }
 
-    protected void addSubfield(DDFSubfield ddfs) {
+    @SuppressWarnings("unchecked")
+		protected void addSubfield(DDFSubfield ddfs) {
         if (Debug.debugging("iso8211")) {
             Debug.output("DDFField(" + getFieldDefn().getName()
                     + ").addSubfield(" + ddfs + ")");

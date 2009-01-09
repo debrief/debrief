@@ -446,7 +446,7 @@ public class VerticalNumberAxis extends NumberAxis implements VerticalAxis {
         double xx = dataArea.getX();
         g2.setFont(tickLabelFont);
 
-        Iterator iterator = ticks.iterator();
+        Iterator<Tick> iterator = ticks.iterator();
         while (iterator.hasNext()) {
             Tick tick = (Tick) iterator.next();
             float yy = (float) translateValueToJava2D(tick.getNumericalValue(), dataArea);
@@ -477,11 +477,11 @@ public class VerticalNumberAxis extends NumberAxis implements VerticalAxis {
      * Returns the width required to draw the axis in the specified draw area.
      *
      * @param g2  the graphics device.
-     * @param plot  a reference to the plot;
+     * @param plot1  a reference to the plot;
      * @param drawArea  the area within which the plot should be drawn.
      * @return  width required to draw the axis.
      */
-    public double reserveWidth(Graphics2D g2, Plot plot, Rectangle2D drawArea) {
+    public double reserveWidth(Graphics2D g2, Plot plot1, Rectangle2D drawArea) {
 
         if (!visible) {
             return 0.0;
@@ -519,12 +519,12 @@ public class VerticalNumberAxis extends NumberAxis implements VerticalAxis {
      * Returns area in which the axis will be displayed.
      *
      * @param g2  the graphics device.
-     * @param plot  a reference to the plot.
+     * @param plot1  a reference to the plot.
      * @param drawArea  the area in which the plot and axes should be drawn.
      * @param reservedHeight  the height reserved for the horizontal axis.
      * @return  area in which the axis will be displayed.
      */
-    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot,
+    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot1,
                                        Rectangle2D drawArea, double reservedHeight) {
 
         if (!visible) {
@@ -649,13 +649,13 @@ public class VerticalNumberAxis extends NumberAxis implements VerticalAxis {
      * This class (VerticalNumberAxis) requires that the plot implements the
      * VerticalValuePlot interface.
      *
-     * @param plot      The plot.
+     * @param plot1      The plot.
      * @return <code>true</code> if the specified plot is compatible with the
      *      axis.
      */
-    protected boolean isCompatiblePlot(Plot plot) {
+    protected boolean isCompatiblePlot(Plot plot1) {
 
-        if (plot instanceof VerticalValuePlot) {
+        if (plot1 instanceof VerticalValuePlot) {
             return true;
         }
         else {

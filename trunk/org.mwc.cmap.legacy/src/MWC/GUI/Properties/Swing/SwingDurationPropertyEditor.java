@@ -37,14 +37,19 @@ package MWC.GUI.Properties.Swing;
 //
 
 
-import java.beans.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.text.DecimalFormat;
+
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
 import MWC.GenericData.Duration;
-
-
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.text.*;
 
 public class SwingDurationPropertyEditor extends
           MWC.GUI.Properties.DurationPropertyEditor implements FocusListener, ActionListener
@@ -73,7 +78,7 @@ public class SwingDurationPropertyEditor extends
   /** the formatting object used to write to screen
    *
    */
-  protected DecimalFormat _formatter = new DecimalFormat("0.######");
+  protected DecimalFormat _formatter1 = new DecimalFormat("0.######");
 
   /** property change support for objects which want to listen to us changing
    *
@@ -135,7 +140,7 @@ public class SwingDurationPropertyEditor extends
    */
   protected double getDuration() throws java.text.ParseException
   {
-    double val = _formatter.parse(_theDuration.getText()).doubleValue();
+    double val = _formatter1.parse(_theDuration.getText()).doubleValue();
     return val;
   }
 
@@ -152,7 +157,7 @@ public class SwingDurationPropertyEditor extends
   {
     if(_theHolder != null)
     {
-     _theDuration.setText(_formatter.format(val));
+     _theDuration.setText(_formatter1.format(val));
     }
   }
 

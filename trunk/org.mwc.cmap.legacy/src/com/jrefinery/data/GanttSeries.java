@@ -56,10 +56,10 @@ import java.util.List;
 public class GanttSeries extends Series {
 
     /** A list of tasks. */
-    private List tasks;
+    private List<Object> tasks;
 
     /** A list of time allocations corresponding to the above tasks. */
-    private List times;
+    private List<TimeAllocation> times;
 
     /**
      * Constructs a new series with the specified name.
@@ -68,8 +68,8 @@ public class GanttSeries extends Series {
      */
     public GanttSeries(String name) {
         super(name);
-        tasks = new java.util.ArrayList();
-        times = new java.util.ArrayList();
+        tasks = new java.util.ArrayList<Object>();
+        times = new java.util.ArrayList<TimeAllocation>();
     }
 
     /**
@@ -77,7 +77,7 @@ public class GanttSeries extends Series {
      *
      * @return the tasks.
      */
-    public List getTasks() {
+    public List<Object> getTasks() {
         return this.tasks;
     }
 

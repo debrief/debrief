@@ -46,6 +46,11 @@ package com.jrefinery.data;
 public class SeriesException extends RuntimeException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Constructs a new series exception.
      *
      * @param message  a message describing the exception.

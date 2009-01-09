@@ -20,14 +20,18 @@ import java.util.Vector;
 public class Coastline implements Plottable, Serializable
 {
 
-  protected Vector _data;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	protected Vector<CoastSegment> _data;
   protected WorldArea _myArea;
 
   public Coastline(InputStream str)
   {
     CoastSegment cs = null;
     String thisLine = null;
-    _data = new Vector(0, 1);
+    _data = new Vector<CoastSegment>(0, 1);
     int count = 0;
 
     try
@@ -98,7 +102,7 @@ public class Coastline implements Plottable, Serializable
 
   protected void resetArea()
   {
-    Enumeration enumer = _data.elements();
+    Enumeration<CoastSegment> enumer = _data.elements();
     WorldArea res = null;
     while (enumer.hasMoreElements())
     {
@@ -117,12 +121,11 @@ public class Coastline implements Plottable, Serializable
 
   public WorldArea getBounds()
   {
-    WorldArea res;
-
     if (_myArea == null)
       resetArea();
-    else
-      res = _myArea;
+		else
+		{
+		}
 
     return _myArea;
 
@@ -175,7 +178,7 @@ public class Coastline implements Plottable, Serializable
     }*/
 
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		return this.getName().compareTo(other.getName());

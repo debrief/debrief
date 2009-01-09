@@ -96,6 +96,7 @@ package Debrief.Tools.Tote;
 // Initial revision
 //
 
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 
 import java.util.Collection;
@@ -153,7 +154,7 @@ public interface WatchableList
    * If an items has an "alive" period which overlaps this period then it will
    * be returned.  If the item has no time set, then return it as being valid
    */
-  public java.util.Collection getItemsBetween(HiResDate start, HiResDate end);
+  public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end);
 
   /** find out the total area covered by this list
    */
@@ -205,7 +206,7 @@ public interface WatchableList
       TestCase.assertTrue("item wasn't filtered", noDates.getVisible());
 
       // test get items between
-      Collection coll = noDates.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
+      Collection<Editable> coll = noDates.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
       TestCase.assertTrue("all items were returned", coll.size() == 1);
 
       // test get nearest to

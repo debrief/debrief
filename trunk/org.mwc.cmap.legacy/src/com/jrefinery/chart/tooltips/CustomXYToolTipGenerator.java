@@ -51,7 +51,7 @@ import com.jrefinery.data.XYDataset;
 public class CustomXYToolTipGenerator implements XYToolTipGenerator {
 
     /** Storage for the tooltip lists. */
-    private List toolTipSeries = new ArrayList();
+    private List<List<String>> toolTipSeries = new ArrayList<List<String>>();
 
     /**
      * Default constructor.
@@ -65,7 +65,7 @@ public class CustomXYToolTipGenerator implements XYToolTipGenerator {
      *
      * @param toolTips  the list of tool tips.
      */
-    public void addToolTipSeries(List toolTips) {
+    public void addToolTipSeries(List<String> toolTips) {
         this.toolTipSeries.add(toolTips);
     }
 
@@ -81,7 +81,7 @@ public class CustomXYToolTipGenerator implements XYToolTipGenerator {
     public String generateToolTip(XYDataset data, int series, int item) {
 
         String toolTip = "";
-        List toolTips = (List) this.toolTipSeries.get(series);
+        List<String> toolTips = this.toolTipSeries.get(series);
         toolTip = (String) toolTips.get(item);
         return toolTip;
 

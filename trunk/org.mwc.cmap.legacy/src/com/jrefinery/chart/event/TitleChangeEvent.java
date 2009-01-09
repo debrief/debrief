@@ -49,7 +49,11 @@ import com.jrefinery.chart.AbstractTitle;
  */
 public class TitleChangeEvent extends ChartChangeEvent {
 
-    /** The chart title that generated the event. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** The chart title that generated the event. */
     private AbstractTitle title;
 
     /**

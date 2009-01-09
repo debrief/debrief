@@ -108,13 +108,13 @@ abstract public class ColourHandler extends MWCXMLReader
     checkColours();
 
     // step through the colours, to see if we find one which matches
-    java.util.Enumeration enumer = _myColours.keys();
+    java.util.Enumeration<String> enumer = _myColours.keys();
     while (enumer.hasMoreElements())
     {
-      String thisK = (String) enumer.nextElement();
+      String thisK = enumer.nextElement();
       if (thisK.equals(val))
       {
-        _res = (java.awt.Color) _myColours.get(val);
+        _res = _myColours.get(val);
         break;
       }
     }
@@ -151,12 +151,12 @@ abstract public class ColourHandler extends MWCXMLReader
     checkColours();
 
     // see if this is one of our export values
-    java.util.Enumeration enumer = _myColours.keys();
+    java.util.Enumeration<String> enumer = _myColours.keys();
     String ourKey = null;
     while (enumer.hasMoreElements())
     {
       Object thisKey = enumer.nextElement();
-      java.awt.Color thisCol = (java.awt.Color) _myColours.get(thisKey);
+      java.awt.Color thisCol = _myColours.get(thisKey);
       if (thisCol.equals(color))
       {
         // found it!

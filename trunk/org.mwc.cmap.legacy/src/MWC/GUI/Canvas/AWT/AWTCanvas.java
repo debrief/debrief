@@ -109,20 +109,20 @@
 
 package MWC.GUI.Canvas.AWT;
 
-import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.Projections.FlatProjection;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
+import java.awt.Image;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.ImageObserver;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * AWT implementation of a canvas
@@ -136,6 +136,11 @@ final public class AWTCanvas extends java.awt.Canvas
   ////////////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the projection in use
    */
   PlainProjection _theProjection;
@@ -149,7 +154,7 @@ final public class AWTCanvas extends java.awt.Canvas
   /**
    * the list of registered painters for this canvas
    */
-  Vector _thePainters;
+  Vector<PaintListener> _thePainters;
 
   /**
    * the dimensions of the canvas - we keep our own
@@ -177,7 +182,7 @@ final public class AWTCanvas extends java.awt.Canvas
     setBackgroundColor(java.awt.Color.black);
 
     // initialisation
-    _thePainters = new Vector(0, 1);
+    _thePainters = new Vector<PaintListener>(0, 1);
 
     // create our projection
     _theProjection = new FlatProjection();
@@ -247,7 +252,7 @@ final public class AWTCanvas extends java.awt.Canvas
   {
     // get the data area for the current painters
     WorldArea theArea = null;
-    Enumeration enumer = _thePainters.elements();
+    Enumeration<PaintListener> enumer = _thePainters.elements();
     while (enumer.hasMoreElements())
     {
       CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer.nextElement();
@@ -305,7 +310,7 @@ final public class AWTCanvas extends java.awt.Canvas
       _dblBuff = null;
 
       // inform the listeners that we have resized
-      Enumeration enumer = _thePainters.elements();
+      Enumeration<PaintListener> enumer = _thePainters.elements();
       while (enumer.hasMoreElements())
       {
         CanvasType.PaintListener thisPainter =
@@ -574,7 +579,7 @@ final public class AWTCanvas extends java.awt.Canvas
     _thePainters.removeElement(listener);
   }
 
-  public Enumeration getPainters()
+  public Enumeration<PaintListener> getPainters()
   {
     return _thePainters.elements();
   }
@@ -644,7 +649,7 @@ final public class AWTCanvas extends java.awt.Canvas
     // g1.setColor(java.awt.Color.red);
 
     // go through our painters
-    Enumeration enumer = _thePainters.elements();
+    Enumeration<PaintListener> enumer = _thePainters.elements();
     while (enumer.hasMoreElements())
     {
       CanvasType.PaintListener thisPainter =

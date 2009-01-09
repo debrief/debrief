@@ -50,10 +50,9 @@
 //
 package MWC.GUI.Tools.AWT;
 
-import java.awt.*;
-import java.io.*;
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
+import java.awt.MenuItem;
+
+import MWC.GUI.Tool;
 
 
 /** extension of normal AWT menu to create a menu item containing
@@ -61,7 +60,11 @@ import MWC.GUI.*;
  */
 public class AWTMenuItem extends MenuItem implements java.awt.event.ActionListener
 {
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
   /** the Debrief tool we are calling

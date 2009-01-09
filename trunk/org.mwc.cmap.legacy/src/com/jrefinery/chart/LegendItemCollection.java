@@ -50,13 +50,13 @@ import java.util.Iterator;
 public class LegendItemCollection {
 
     /** Storage for the legend items. */
-    private List items;
+    private List<LegendItem> items;
 
     /**
      * Constructs a new legend item collection, initially empty.
      */
     public LegendItemCollection() {
-        this.items = new java.util.ArrayList();
+        this.items = new java.util.ArrayList<LegendItem>();
     }
 
     /**
@@ -102,7 +102,7 @@ public class LegendItemCollection {
      *
      * @return an iterator.
      */
-    public Iterator iterator() {
+    public Iterator<LegendItem> iterator() {
         return items.iterator();
     }
 

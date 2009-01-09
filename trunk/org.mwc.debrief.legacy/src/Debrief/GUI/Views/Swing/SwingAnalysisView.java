@@ -250,7 +250,7 @@ public class SwingAnalysisView extends AnalysisView
   /**
    * the chart providing an overview of the data.
    */
-  private SwingChart _overviewChart;
+  SwingChart _overviewChart;
 
 
 

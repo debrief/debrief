@@ -86,6 +86,7 @@ import javax.swing.table.TableCellRenderer;
 
 import Debrief.Wrappers.*;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.TacticalData.NarrativeEntry;
 
@@ -115,22 +116,22 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
   /**
    * the date format to use
    */
-  private java.text.SimpleDateFormat df = null;
+  java.text.SimpleDateFormat df = null;
 
   /**
    * the table object containing our data
    */
-  private JTable _myTable = null;
+  JTable _myTable = null;
 
   /**
    * whether we are listening to the step control
    */
-  private boolean _listenToStep = true;
+  boolean _listenToStep = true;
 
   /**
    * whether we want to see just the first line
    */
-  private boolean _onlyFirstLine = false;
+  boolean _onlyFirstLine = false;
 
   /**
    * the step control we are listening to
@@ -141,27 +142,27 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
    * semaphore we use to indicate whether we are already trying to reformat the
    * table columns
    */
-  private boolean _changing = false;
+  boolean _changing = false;
 
   /**
    * fixed width font we use to provide correctly width'd columns
    */
-  private static Font _myFont = null;
+  static Font _myFont = null;
 
   /**
    * the width of a text character using this component
    */
-  private static int _charWid = 0;
+  static int _charWid = 0;
 
   /**
    * the list of renderers we use for dtgs
    */
-  private static java.util.Vector _theDTGRenderers = new java.util.Vector(10, 10);
+  static java.util.Vector<MyDateComponent> _theDTGRenderers = new java.util.Vector<MyDateComponent>(10, 10);
 
   /**
    * the list of renderers we use for entries
    */
-  private static java.util.Vector _theEntryRenderers = new java.util.Vector(10, 10);
+  static java.util.Vector<MyEntryComponent> _theEntryRenderers = new java.util.Vector<MyEntryComponent>(10, 10);
 
 
 
@@ -207,10 +208,10 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
 
     // we also want to reset our lists of renderers if we are re-creating this form
     _theDTGRenderers = null;
-    _theDTGRenderers = new Vector(10, 10);
+    _theDTGRenderers = new Vector<MyDateComponent>(10, 10);
 
     _theEntryRenderers = null;
-    _theEntryRenderers = new Vector(10, 10);
+    _theEntryRenderers = new Vector<MyEntryComponent>(10, 10);
 
     setLayout(new BorderLayout());
     add(getForm(), "Center");
@@ -414,28 +415,28 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
   private void fillTable()
   {
     // get the data model
-    final javax.swing.table.DefaultTableModel dm = (javax.swing.table.DefaultTableModel) _myTable.getModel();
+    final javax.swing.table.DefaultTableModel dm1 = (javax.swing.table.DefaultTableModel) _myTable.getModel();
 
     // find out how many rows there are
-    final int rowCount = dm.getRowCount();
+    final int rowCount = dm1.getRowCount();
 
     // delete the rows
     for (int i = 0; i < rowCount; i++)
     {
-      dm.removeRow(0);
+      dm1.removeRow(0);
     }
 
     // keep track of the longest track name
     int len = 0;
 
     // and fill them in
-    final Enumeration iter = _myData.elements();
+    final Enumeration<Editable> iter = _myData.elements();
     while (iter.hasMoreElements())
     {
       final NarrativeEntry ne = (NarrativeEntry) iter.nextElement();
       len = Math.max(len, ne.getTrackName().length());
       final Object[] newR = {ne.getDTG(), ne.getTrackName(), ne};
-      dm.addRow(newR);
+      dm1.addRow(newR);
     }
 
 
@@ -451,7 +452,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
    *
    * @param time the new time
    */
-  private void newTime(final HiResDate time)
+  void newTime(final HiResDate time)
   {
     // check if we are following the stepper
     if (!this._listenToStep)
@@ -503,7 +504,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
    *
    * @param dtg the time to step to
    */
-  private void moveToEntry(final HiResDate dtg)
+  void moveToEntry(final HiResDate dtg)
   {
     // set the time in the stepper to this time
     if (_theStepper != null)
@@ -526,7 +527,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
    *
    * @param format the new selection from the Combo box
    */
-  private void newDateFormat(final String format)
+  void newDateFormat(final String format)
   {
     df = new java.text.SimpleDateFormat(format);
 
@@ -541,7 +542,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
   /**
    * the user has double-clicked on our table, process the selection
    */
-  private void itemSelected()
+  void itemSelected()
   {
   }
 
@@ -549,7 +550,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
    * the column widths have changed, ensure that we can see all of each paragraph
    * if the user has elected to do so.
    */
-  private void doResize()
+  void doResize()
   {
 
     final javax.swing.table.TableColumn entries = _myTable.getColumn("Entry");
@@ -682,7 +683,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
       try
       {
         // now try to get the renderer
-        theRenderer = (MyEntryComponent) _theEntryRenderers.elementAt(row);
+        theRenderer = _theEntryRenderers.elementAt(row);
       }
       finally
       {
@@ -803,7 +804,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
       try
       {
         // now try to get the renderer
-        theRenderer = (MyDateComponent) _theDTGRenderers.elementAt(row);
+        theRenderer = _theDTGRenderers.elementAt(row);
       }
       finally
       {

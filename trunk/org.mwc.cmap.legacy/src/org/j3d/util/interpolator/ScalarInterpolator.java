@@ -10,7 +10,6 @@
 package org.j3d.util.interpolator;
 
 // Standard imports
-import javax.vecmath.Point3f;
 
 // Application specific imports
 // none
@@ -80,8 +79,6 @@ public class ScalarInterpolator extends Interpolator
 
         if(loc < 0)
           loc = 0;
-
-        float[] new_val;
 
         if(loc >= currentSize)
         {

@@ -1,7 +1,5 @@
 package MWC.GUI.Properties;
 
-import MWC.GUI.StatusBar;
-
 import java.beans.PropertyEditorSupport;
 
 /**

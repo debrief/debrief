@@ -9,19 +9,12 @@
 
 package org.j3d.geom.particle;
 
-import java.util.List;
-import java.util.ArrayList;
 import java.util.Map;
 
-import javax.media.j3d.Texture;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Appearance;
-import javax.media.j3d.PointAttributes;
-
+import javax.media.j3d.GeometryArray;
 import javax.media.j3d.PointArray;
-
-import javax.vecmath.Point3d;
+import javax.media.j3d.PointAttributes;
 
 /**
  * PointArrayByRefParticleSystem creates a BYREF PointArray
@@ -35,7 +28,7 @@ public class PointArrayByRefParticleSystem extends ByRefParticleSystem
 {
    public static final int POINT_ARRAY_BYREF_PARTICLE_SYSTEM = 0;
 
-   public PointArrayByRefParticleSystem( int particleCount, ParticleInitializer particleInitializer, Map environment )
+   public PointArrayByRefParticleSystem( int particleCount, ParticleInitializer particleInitializer, Map<String, Object> environment )
    {
        super( POINT_ARRAY_BYREF_PARTICLE_SYSTEM, particleInitializer, particleCount, environment );
    }

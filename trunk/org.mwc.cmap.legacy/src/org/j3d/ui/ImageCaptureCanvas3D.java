@@ -50,13 +50,18 @@ import javax.vecmath.Point3f;
 public class ImageCaptureCanvas3D extends Canvas3D
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Flag to indicate that the canvas should notify of an image. Faster than
      * making a call to observers.size() each frame.
      */
     private transient boolean captureImage;
 
     /** The list of registered observers */
-    private transient LinkedList observers;
+    private transient LinkedList<CapturedImageObserver> observers;
 
     /**
      * Create a new canvas given the graphics configuration that runs as an
@@ -70,7 +75,7 @@ public class ImageCaptureCanvas3D extends Canvas3D
 
         captureImage = false;
 
-        observers = new LinkedList();
+        observers = new LinkedList<CapturedImageObserver>();
     }
 
     /**
@@ -86,7 +91,7 @@ public class ImageCaptureCanvas3D extends Canvas3D
 
         captureImage = false;
 
-        observers = new LinkedList();
+        observers = new LinkedList<CapturedImageObserver>();
     }
 
     /**
@@ -166,7 +171,7 @@ public class ImageCaptureCanvas3D extends Canvas3D
      */
     private void notifyObservers(BufferedImage img)
     {
-        Iterator itr = observers.iterator();
+        Iterator<CapturedImageObserver> itr = observers.iterator();
         CapturedImageObserver obs;
 
         while(itr.hasNext())

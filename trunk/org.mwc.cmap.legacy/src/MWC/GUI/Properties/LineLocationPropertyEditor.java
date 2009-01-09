@@ -34,8 +34,7 @@ package MWC.GUI.Properties;
 //
 
 
-import java.beans.*;
-import java.awt.*;
+import java.beans.PropertyEditorSupport;
 
 public class LineLocationPropertyEditor extends PropertyEditorSupport
 {

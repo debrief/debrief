@@ -216,7 +216,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	 */
 	transient protected ChartDoubleClickListener _theChartDblClickListener;
 
-	transient protected Stack _theDblClickListeners;
+	transient protected Stack<ChartDoubleClickListener> _theDblClickListeners;
 
 	/**
 	 * classes which is listening out for left and right (res) single clicks on
@@ -229,7 +229,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	/**
 	 * classes which want to listen out for any cursor movements
 	 */
-	transient protected Vector _movementListeners;
+	transient protected Vector<ChartCursorMovedListener> _movementListeners;
 
 	/**
 	 * let people listen out for reformatting changes
@@ -338,8 +338,8 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 
 	protected void produceListeners()
 	{
-		_movementListeners = new Vector(0, 1);
-		_theDblClickListeners = new Stack();
+		_movementListeners = new Vector<ChartCursorMovedListener>(0, 1);
+		_theDblClickListeners = new Stack<ChartDoubleClickListener>();
 	}
 
 	abstract public void rescale();
@@ -802,7 +802,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 			{
 				if (_movementListeners != null)
 				{
-					Enumeration enumer = _movementListeners.elements();
+					Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
 					while (enumer.hasMoreElements())
 					{
 						ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();
@@ -840,7 +840,7 @@ abstract public class PlainChart implements Pane, CanvasType.PaintListener, Seri
 	{
 		if (_movementListeners != null)
 		{
-			Enumeration enumer = _movementListeners.elements();
+			Enumeration<ChartCursorMovedListener> enumer = _movementListeners.elements();
 			while (enumer.hasMoreElements())
 			{
 				ChartCursorMovedListener cl = (ChartCursorMovedListener) enumer.nextElement();

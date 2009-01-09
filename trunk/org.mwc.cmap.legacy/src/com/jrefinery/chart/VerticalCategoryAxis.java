@@ -201,7 +201,7 @@ public class VerticalCategoryAxis extends CategoryAxis implements VerticalAxis {
             g2.setFont(tickLabelFont);
             g2.setPaint(tickLabelPaint);
             this.refreshTicks(g2, drawArea, dataArea);
-            Iterator iterator = ticks.iterator();
+            Iterator<Tick> iterator = ticks.iterator();
             while (iterator.hasNext()) {
                 Tick tick = (Tick) iterator.next();
                 g2.drawString(tick.getText(), tick.getX(), tick.getY());
@@ -217,7 +217,8 @@ public class VerticalCategoryAxis extends CategoryAxis implements VerticalAxis {
      * @param drawArea  the area where the plot and axes will be drawn.
      * @param plotArea  the area inside the axes.
      */
-    public void refreshTicks(Graphics2D g2, Rectangle2D drawArea, Rectangle2D plotArea) {
+    @SuppressWarnings("unchecked")
+		public void refreshTicks(Graphics2D g2, Rectangle2D drawArea, Rectangle2D plotArea) {
 
         this.ticks.clear();
         CategoryPlot categoryPlot = (CategoryPlot) plot;
@@ -230,15 +231,15 @@ public class VerticalCategoryAxis extends CategoryAxis implements VerticalAxis {
             Iterator iterator = data.getCategories().iterator();
             while (iterator.hasNext()) {
                 Object category = iterator.next();
-                String label = category.toString();
-                Rectangle2D labelBounds = font.getStringBounds(label, frc);
-                LineMetrics metrics = font.getLineMetrics(label, frc);
+                String label1 = category.toString();
+                Rectangle2D labelBounds = font.getStringBounds(label1, frc);
+                LineMetrics metrics = font.getLineMetrics(label1, frc);
 
                 float xx = (float) (plotArea.getX() - tickLabelInsets.right
                                                     - labelBounds.getWidth());
                 float yy = (float) (categoryPlot.getCategoryCoordinate(categoryIndex, plotArea)
                                     - metrics.getStrikethroughOffset() + 0.5f);
-                Tick tick = new Tick(category, label, xx, yy);
+                Tick tick = new Tick(category, label1, xx, yy);
                 ticks.add(tick);
                 categoryIndex = categoryIndex + 1;
             }
@@ -253,11 +254,11 @@ public class VerticalCategoryAxis extends CategoryAxis implements VerticalAxis {
      *
      * @param g2  the graphics device (used to obtain font information).
      * @param drawArea  the area within which the axis should be drawn.
-     * @param plot  the plot that the axis belongs to.
+     * @param plot1  the plot that the axis belongs to.
      *
      * @return the estimated height required for the axis.
      */
-    public double reserveWidth(Graphics2D g2, Plot plot, Rectangle2D drawArea) {
+    public double reserveWidth(Graphics2D g2, Plot plot1, Rectangle2D drawArea) {
 
         if (!visible) {
             return 0.0;
@@ -291,13 +292,13 @@ public class VerticalCategoryAxis extends CategoryAxis implements VerticalAxis {
      * Returns the area required to draw the axis in the specified draw area.
      *
      * @param g2  the graphics device.
-     * @param plot  the plot that the axis belongs to.
+     * @param plot1  the plot that the axis belongs to.
      * @param drawArea  the area within which the plot should be drawn.
      * @param reservedHeight  the height reserved by the horizontal axis.
      *
      * @return  the area to reserve for the axis.
      */
-    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot,
+    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot1,
                                        Rectangle2D drawArea, double reservedHeight) {
 
         if (!visible) {
@@ -336,13 +337,13 @@ public class VerticalCategoryAxis extends CategoryAxis implements VerticalAxis {
      * Returns true if the specified plot is compatible with the axis, and
      * false otherwise.
      *
-     * @param plot  the plot.
+     * @param plot1  the plot.
      *
      * @return A boolean indicating whether or not the axis considers the plot is compatible.
      */
-    protected boolean isCompatiblePlot(Plot plot) {
+    protected boolean isCompatiblePlot(Plot plot1) {
 
-        if (plot instanceof HorizontalCategoryPlot) {
+        if (plot1 instanceof HorizontalCategoryPlot) {
             return true;
         }
         else {

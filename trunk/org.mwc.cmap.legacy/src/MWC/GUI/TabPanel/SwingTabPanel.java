@@ -1,12 +1,16 @@
 package MWC.GUI.TabPanel;
 
-import javax.swing.*;
-import java.awt.*;
+import javax.swing.JTabbedPane;
 
 public class SwingTabPanel extends JTabbedPane implements MWC.GUI.CoreTabPanel
 {
 
-  public SwingTabPanel()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public SwingTabPanel()
   {
     // shrink the font a little
     setFont(getFont().deriveFont(10f));

@@ -67,6 +67,11 @@ import java.beans.*;
 public class AWTStatusBar extends Panel implements StatusBar
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * MWC.GUI.AWT.AWTStatusBar.StatusBarSupport
    */
   /////////////////////////////////////////////////////////////

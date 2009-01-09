@@ -118,7 +118,12 @@ public class Histogram extends PlotBox {
     ///////////////////////////////////////////////////////////////////
     ////                         public methods                    ////
 
-    /** Add a legend (displayed at the upper right) for the specified
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Add a legend (displayed at the upper right) for the specified
      *  data set with the specified string.  Short strings generally
      *  fit better than long strings.
      *  @param dataset The dataset index.
@@ -146,7 +151,7 @@ public class Histogram extends PlotBox {
         Integer binobj = new Integer(bin);
 
         // Add to the appropriate bin
-        Hashtable bins = (Hashtable)_histogram.elementAt(dataset);
+        Hashtable<Integer, Integer> bins = _histogram.elementAt(dataset);
         int count;
         if (bins.containsKey(binobj)) {
             // increase the count
@@ -165,7 +170,7 @@ public class Histogram extends PlotBox {
         if (xtop > _xTop) _xTop = xtop;
         if ((double)count > _yTop) _yTop = (double)count;
         _yBottom = 0.0;
-        Vector pts = (Vector)_points.elementAt(dataset);
+        Vector<Double> pts = _points.elementAt(dataset);
         pts.addElement(new Double(value));
 
         // Draw the point on the screen only if the plot is showing.
@@ -197,10 +202,9 @@ public class Histogram extends PlotBox {
     public synchronized void clear(boolean format) {
         super.clear(format);
         _currentdataset = -1;
-        _points = new Vector();
-        _histogram = new Vector();
+        _points = new Vector<Vector<Double>>();
+        _histogram = new Vector<Hashtable<Integer, Integer>>();
         _painted = false;
-        _filename = null;
         _showing = false;
 
         if (format) {
@@ -284,8 +288,8 @@ public class Histogram extends PlotBox {
                     + " give a negative number for the data set index.");
         }
         while (dataset >= _points.size()) {
-            _points.addElement(new Vector());
-            _histogram.addElement(new Hashtable());
+            _points.addElement(new Vector<Double>());
+            _histogram.addElement(new Hashtable<Integer, Integer>());
         }
     }
 
@@ -358,11 +362,11 @@ public class Histogram extends PlotBox {
         // Plot the histograms in reverse order so that the first colors
         // appear on top.
         for (int dataset = _points.size() - 1; dataset >= 0 ; dataset--) {
-            Hashtable data = (Hashtable)_histogram.elementAt(dataset);
-            Enumeration keys = data.keys();
+            Hashtable<Integer,Integer> data = _histogram.elementAt(dataset);
+            Enumeration<Integer> keys = data.keys();
             while (keys.hasMoreElements()) {
-                Integer bin = (Integer)keys.nextElement();
-                Integer count = (Integer)data.get(bin);
+                Integer bin = keys.nextElement();
+                Integer count = data.get(bin);
                 _drawPlotPoint(graphics, dataset,
                         bin.intValue(), count.intValue());
             }
@@ -505,7 +509,7 @@ public class Histogram extends PlotBox {
                 output.println("<dataset>");
             }
             // Write the data
-            Vector pts = (Vector)_points.elementAt(dataset);
+            Vector<Double> pts = _points.elementAt(dataset);
             for (int pointnum = 0; pointnum < pts.size(); pointnum++) {
                 Double pt = (Double)pts.elementAt(pointnum);
                 output.println("<p y=\"" + pt.doubleValue() + "\"/");
@@ -521,10 +525,10 @@ public class Histogram extends PlotBox {
     protected int _currentdataset = -1;
 
     /** @serial A vector of datasets. */
-    protected Vector _points = new Vector();
+    protected Vector<Vector<Double>> _points = new Vector<Vector<Double>>();
 
     /** @serial A vector of histogram data. */
-    protected Vector _histogram = new Vector();
+    protected Vector<Hashtable<Integer, Integer>> _histogram = new Vector<Hashtable<Integer, Integer>>();
 
     /** @serial  Indicate that painting is complete. */
     protected boolean _painted = false;
@@ -595,9 +599,6 @@ public class Histogram extends PlotBox {
 
     /** @serial The offset between bins. */
     private double _binOffset = 0.5;
-
-    /** @serial Last filename seen in command-line arguments. */
-    private String _filename = null;
 
     /** @serial  Set by _drawPlot(), and reset by clear(). */
     private boolean _showing = false;

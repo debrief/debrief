@@ -33,14 +33,18 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class TAFrigateSym extends PlainSymbol {
 
-  public void getMetafile()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void getMetafile()
   {
   }
 
@@ -66,7 +70,6 @@ public class TAFrigateSym extends PlainSymbol {
 
     int wid = (int)(4 * getScaleVal());
     int wid_2 = (int)(wid/2d);
-    int wid_3 = (int)(wid/3d);
     int wid_4 = (int)(wid/4d);
 
     // start with the cross-over bits

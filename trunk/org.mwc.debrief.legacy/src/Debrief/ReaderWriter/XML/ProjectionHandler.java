@@ -18,11 +18,11 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 final class ProjectionHandler extends  MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 
-  private MWC.GenericData.WorldLocation _tl;
-  private MWC.GenericData.WorldLocation _br;
-  private String _type;
-  private double _border;
-  private boolean _relative;
+  MWC.GenericData.WorldLocation _tl;
+  MWC.GenericData.WorldLocation _br;
+  String _type;
+  double _border;
+  boolean _relative;
   private final Debrief.GUI.Frames.Session _session;
   private Debrief.GUI.Tote.AnalysisTote _theTote = null;
 

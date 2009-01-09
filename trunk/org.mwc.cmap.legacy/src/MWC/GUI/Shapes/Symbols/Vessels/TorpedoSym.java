@@ -10,7 +10,12 @@ package MWC.GUI.Shapes.Symbols.Vessels;
 
 public class TorpedoSym extends MissileSym
 {
-  // hey, we don't need to do anything, really
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	// hey, we don't need to do anything, really
   public String getType()
   {
     return "Torpedo";

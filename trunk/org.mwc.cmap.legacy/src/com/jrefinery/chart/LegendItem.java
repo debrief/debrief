@@ -54,23 +54,8 @@ public class LegendItem {
     /** The label. */
     private String label;
 
-    /** The description. */
-    private String description;
-
-    /** The shape. */
-    private Shape shape;
-
     /** The paint. */
     private Paint paint;
-
-    /** The outline paint. */
-    private Paint outlinePaint;
-
-    /** The stroke. */
-    private Stroke stroke;
-
-    /** The outline stroke. */
-    private Stroke outlineStroke;
 
     /**
      * Creates a new legend item.
@@ -90,12 +75,7 @@ public class LegendItem {
                       Stroke stroke, Stroke outlineStroke) {
 
         this.label = label;
-        this.description = description;
-        this.shape = shape;
         this.paint = paint;
-        this.outlinePaint = outlinePaint;
-        this.stroke = stroke;
-        this.outlineStroke = outlineStroke;
 
     }
 

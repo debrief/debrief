@@ -10,7 +10,6 @@
 package org.j3d.util.interpolator;
 
 // Standard imports
-import javax.vecmath.Point3f;
 
 // Application specific imports
 // none

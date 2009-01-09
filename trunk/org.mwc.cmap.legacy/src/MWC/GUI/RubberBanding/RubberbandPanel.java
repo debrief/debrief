@@ -1,9 +1,9 @@
 package MWC.GUI.RubberBanding;
 
-import java.awt.*;
-import java.awt.event.*;
-import MWC.GUI.*;
-import java.io.*;
+import java.awt.Container;
+import java.awt.event.MouseEvent;
+
+import MWC.GUI.Rubberband;
 
 
 abstract public class RubberbandPanel extends Container {

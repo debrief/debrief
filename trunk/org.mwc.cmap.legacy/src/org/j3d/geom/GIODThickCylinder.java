@@ -29,9 +29,7 @@ public class GIODThickCylinder extends Object
 {
     private Shape3D scylinder;
     private float[] qverts;
-    private float[] qtex;
-    private float x, y, z, thetao, thetai, to, ti, num,
-        numcirc, xn, yn, zn, mag;
+    private float x, z, thetao, thetai, to, ti, numcirc, xn, yn, zn, mag;
     private int vertCount = 0;
     private int normalcount = 0;
     private Vector3f[] normals;
@@ -46,8 +44,6 @@ public class GIODThickCylinder extends Object
         float ypos, float zpos, Appearance cylinderAppearance)
     {
         qverts = new float[48*n];
-        qtex = new float[48*n];
-
         to = ((float) (2*Math.PI*(wo/2))/n);
         thetao = to/(wo/2);
 

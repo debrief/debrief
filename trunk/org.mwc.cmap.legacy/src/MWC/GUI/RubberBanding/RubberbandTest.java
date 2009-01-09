@@ -8,7 +8,11 @@ import java.awt.event.ItemListener;
 
 class RubberbandTestPanel extends RubberbandPanel
 {
-  ColorChoice colorChoice = new ColorChoice();
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	ColorChoice colorChoice = new ColorChoice();
   Choice rbChoice = new Choice();
   Rubberband linerb = new RubberbandLine(),
   ellipserb = new RubberbandEllipse(),
@@ -90,7 +94,12 @@ class RubberbandTestPanel extends RubberbandPanel
 
 class ColorChoice extends Choice
 {
-  private String colorNames[] = {
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	private String colorNames[] = {
     "black", "blue", "cyan", "darkGray",
     "gray", "green", "lightgray", "magenta",
     "orange", "pink", "red", "white",

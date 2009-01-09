@@ -44,21 +44,17 @@
 package org.j3d.terrain.roam;
 
 // Standard imports
-import java.util.LinkedList;
-
 import javax.media.j3d.Appearance;
-import javax.media.j3d.Geometry;
-import javax.media.j3d.TriangleArray;
 import javax.media.j3d.BoundingBox;
-import javax.media.j3d.Shape3D;
+import javax.media.j3d.Geometry;
 import javax.media.j3d.GeometryUpdater;
-
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.TriangleArray;
 import javax.vecmath.Point3d;
 import javax.vecmath.Tuple3f;
 
-// Application specific imports
-import org.j3d.terrain.ViewFrustum;
 import org.j3d.terrain.TerrainData;
+import org.j3d.terrain.ViewFrustum;
 
 /**
  * A patch represents a single piece of terrain geometry that can be
@@ -92,10 +88,6 @@ class Patch implements GeometryUpdater
     /** The J3D geometry for this patch */
     private Shape3D shape3D;
 
-    private int xOrig;
-    private int yOrig;
-
-    private TerrainData terrainData;
     private Patch westPatchNeighbour;
     private Patch southPatchNeighbour;
     private VertexData vertexData;
@@ -134,10 +126,7 @@ class Patch implements GeometryUpdater
         int height = yOrig + patchSize;
         int width = xOrig + patchSize;
 
-        this.xOrig = xOrig;
-        this.yOrig = yOrig;
         this.PATCH_SIZE = patchSize;
-        this.terrainData = terrainData;
         this.westPatchNeighbour = westPatchNeighbour;
         this.southPatchNeighbour = southPatchNeighbour;
 
@@ -242,11 +231,11 @@ class Patch implements GeometryUpdater
     /**
      * Update the J3D geometry array for data now.
      *
-     * @param geom The geometry object to update
+     * @param geom1 The geometry object to update
      */
-    public void updateData(Geometry geom)
+    public void updateData(Geometry geom1)
     {
-        createGeometry((TriangleArray)geom);
+        createGeometry((TriangleArray)geom1);
     }
 
     //----------------------------------------------------------
@@ -340,9 +329,9 @@ class Patch implements GeometryUpdater
      * Create the geometry needed for this patch. Just sets how many vertices
      * are to be used based on the triangles of the two halves of the tree.
      *
-     * @param geom The geometry array to work with
+     * @param geom1 The geometry array to work with
      */
-    private void createGeometry(TriangleArray geom)
+    private void createGeometry(TriangleArray geom1)
     {
         vertexData.reset();
 
@@ -352,6 +341,6 @@ class Patch implements GeometryUpdater
         if(SETree.visible != ViewFrustum.OUT)
             SETree.getTriangles(vertexData);
 
-        geom.setValidVertexCount(vertexData.getVertexCount());
+        geom1.setValidVertexCount(vertexData.getVertexCount());
     }
 }

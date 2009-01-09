@@ -22,7 +22,11 @@ import java.util.EventObject;
  * @version (RCS: $Revision: 1.1.1.1 $)
  */
 public class SpinEvent extends EventObject {
-    private String command;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		private String command;
     private JComponent component;
 
 

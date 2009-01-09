@@ -69,8 +69,8 @@ public class WMF
 
 {
 	int maxobjectsize;
-	Vector wmf;
-	Vector handles;
+	Vector<Integer> wmf;
+	Vector<Boolean> handles;
 
   private String[][] fontnames =
   {
@@ -91,7 +91,6 @@ public class WMF
   public static final int BS_NULL = 1;
   public static final int BS_HATCHED = 2;
   public static final int BS_PATTERN = 3;
-  private static final int BS_DIBPATTERN = 5;
   public static final int HS_HORIZONTAL = 0;
   public static final int HS_VERTICAL = 1;
   public static final int HS_FDIAGONAL = 2;
@@ -195,8 +194,8 @@ public class WMF
 	public WMF()
 	{
 		maxobjectsize=0;
-		wmf = new Vector(1000, 1000);
-		handles = new Vector();
+		wmf = new Vector<Integer>(1000, 1000);
+		handles = new Vector<Boolean>();
 	}
 
   protected int addHandle()
@@ -309,6 +308,7 @@ public class WMF
 															translateFontName(font.getName()));
   }
 
+	@SuppressWarnings("deprecation")
 	public int createFontIndirect(int height, int width,
 																int escapement, int orientation,
 																int weight, boolean isItalic,
@@ -428,7 +428,8 @@ public class WMF
 
 
 
-  public void extTextOut(int i, int i_54_,
+  @SuppressWarnings("deprecation")
+	public void extTextOut(int i, int i_54_,
 												 int i_55_, Rectangle rectangle,
 												 String string, int[] is)
   {
@@ -810,7 +811,8 @@ public class WMF
     writeBitmap(is, i_110_, i_111_);
   }
 
-  public void textOut(int i, int i_113_, String string)
+  @SuppressWarnings("deprecation")
+	public void textOut(int i, int i_113_, String string)
   {
     metaRecord(1313, 3 + (string.length() + 1) / 2);
     writeWord(string.length());

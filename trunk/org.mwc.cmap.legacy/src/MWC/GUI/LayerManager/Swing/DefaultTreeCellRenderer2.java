@@ -10,16 +10,20 @@
 
 package MWC.GUI.LayerManager.Swing;
 
-import javax.swing.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
+import java.awt.Rectangle;
+
+import javax.swing.Icon;
+import javax.swing.JLabel;
+import javax.swing.JTree;
+import javax.swing.UIManager;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.FontUIResource;
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.*;
-import java.io.*;
-import java.util.*;
-
-import javax.swing.tree.*;
+import javax.swing.tree.DefaultTreeCellRenderer;
 
 /**
  * Displays an entry in a tree.
@@ -57,7 +61,11 @@ import javax.swing.tree.*;
  */
 public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
 {
-    /** Is the value currently selected. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** Is the value currently selected. */
     protected boolean selected;
     /** True if has focus. */
     protected boolean hasFocus;
@@ -290,11 +298,11 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
 						  boolean sel,
 						  boolean expanded,
 						  boolean leaf, int row,
-						  boolean hasFocus) {
+						  boolean hasFocus1) {
 	String         stringValue = tree.convertValueToText(value, sel,
-					  expanded, leaf, row, hasFocus);
+					  expanded, leaf, row, hasFocus1);
 
-	this.hasFocus = hasFocus;
+	this.hasFocus = hasFocus1;
 	setText(stringValue);
 	if(sel)
 	    setForeground(getTextSelectionColor());
@@ -343,8 +351,6 @@ public class DefaultTreeCellRenderer2 extends DefaultTreeCellRenderer
 	}
 	int imageOffset = -1;
 	if(bColor != null) {
-	    Icon currentI = getIcon();
-
 	    imageOffset = getLabelStart();
 	    g.setColor(bColor);
 	    if(getComponentOrientation().isLeftToRight()) {

@@ -16,8 +16,8 @@ import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
 abstract public class LineHandler extends ShapeHandler implements LayerHandler.exporter
 {
 
-  private MWC.GenericData.WorldLocation _start;
-  private MWC.GenericData.WorldLocation _end;
+  MWC.GenericData.WorldLocation _start;
+  MWC.GenericData.WorldLocation _end;
 
   public LineHandler()
   {

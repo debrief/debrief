@@ -11,11 +11,16 @@
 
 package org.j3d.loaders.stl;
 
-import java.net.URL;
-import java.net.URLConnection;
 import java.awt.Component;
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.InterruptedIOException;
+import java.io.StreamTokenizer;
+import java.net.URL;
+import java.util.ArrayList;
+
 import javax.swing.ProgressMonitorInputStream;
 
 /**
@@ -216,9 +221,8 @@ class STLASCIIParser extends STLParser
     {
         int numOfObjects = 0;
         int numOfFacets = 0;
-        final ArrayList facetsPerObject = new ArrayList( 10 );
-        final ArrayList names = new ArrayList( 10 );
-        boolean isAscii = true;
+        final ArrayList<Integer> facetsPerObject = new ArrayList<Integer>( 10 );
+        final ArrayList<String> names = new ArrayList<String>( 10 );
         String line = reader.readLine( );
 
         // check if ASCII format

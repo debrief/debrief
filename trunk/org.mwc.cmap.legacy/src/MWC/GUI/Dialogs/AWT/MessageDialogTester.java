@@ -7,7 +7,12 @@ import java.awt.event.ActionListener;
 
 public class MessageDialogTester extends Applet
 {
-  public void init()
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public void init()
   {
     setLayout(new BorderLayout());
     add(new MessageDialogLauncher(this), "Center");
@@ -18,10 +23,13 @@ class MessageDialogLauncher extends Panel
   implements DialogClient,
   ActionListener
 {
-  private Applet applet;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Applet applet;
   private Button messageDialogButton;
   private MessageDialog messageDialog;
-  private Image image = null;
   private Checkbox modal = new Checkbox("modal");
 
   public MessageDialogLauncher(Applet applet)

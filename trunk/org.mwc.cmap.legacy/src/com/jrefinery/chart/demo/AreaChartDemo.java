@@ -60,11 +60,17 @@ import com.jrefinery.ui.RefineryUtilities;
 public class AreaChartDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new demo application.
      *
      * @param title  the frame title.
      */
-    public AreaChartDemo(String title) {
+    @SuppressWarnings("deprecation")
+		public AreaChartDemo(String title) {
 
         super(title);
 

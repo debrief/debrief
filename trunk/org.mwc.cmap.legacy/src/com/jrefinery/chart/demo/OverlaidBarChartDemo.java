@@ -61,6 +61,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class OverlaidBarChartDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Default constructor.
      *
      * @param  title the frame title.

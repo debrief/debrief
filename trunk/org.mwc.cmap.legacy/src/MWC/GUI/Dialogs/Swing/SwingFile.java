@@ -140,7 +140,7 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 		}
 
     // have a go at storing the new entries
-    _myChooser.saveDirectoryEntries();
+    EFileChooser.saveDirectoryEntries();
 
 		return res;
   }
@@ -178,7 +178,7 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 		}
 
     // have a go at storing the new entries
-    _myChooser.saveDirectoryEntries();
+    EFileChooser.saveDirectoryEntries();
 
 		return res;
   }

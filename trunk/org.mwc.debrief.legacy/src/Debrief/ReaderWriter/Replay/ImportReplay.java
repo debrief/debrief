@@ -272,9 +272,9 @@ public class ImportReplay extends PlainImporterBase
 	private static final java.text.DateFormat dateFormat = new java.text.SimpleDateFormat(
 			"yyMMdd HHmmss.SSS");
 
-	private static Vector _theImporters;
+	private static Vector<PlainLineImporter> _theImporters;
 
-	static private Vector colors; // list of Replay colours
+	static private Vector<doublet> colors; // list of Replay colours
 
 	static public final String NARRATIVE_LAYER = "Narratives";
 
@@ -313,7 +313,7 @@ public class ImportReplay extends PlainImporterBase
 		// create a list of colours
 		if (colors == null)
 		{
-			colors = new Vector(0, 1);
+			colors = new Vector<doublet>(0, 1);
 			colors.addElement(new doublet("@", Color.white));
 			colors.addElement(new doublet("A", Color.blue));
 			colors.addElement(new doublet("B", Color.green));
@@ -350,7 +350,7 @@ public class ImportReplay extends PlainImporterBase
 		if (_theImporters == null)
 		{
 			// create the array of import handlers, by
-			_theImporters = new Vector(0, 1);
+			_theImporters = new Vector<PlainLineImporter>(0, 1);
 
 			// adding handler we (currently) know of
 			_theImporters.addElement(new ImportCircle());
@@ -512,7 +512,7 @@ public class ImportReplay extends PlainImporterBase
 					{
 						// so, we've found a track - see if it holds this sensor
 						TrackWrapper tw = (TrackWrapper) val;
-						Enumeration iter = tw.getSensors();
+						Enumeration<SensorWrapper> iter = tw.getSensors();
 
 						// step through this track' sensors
 						if (iter != null)
@@ -520,7 +520,7 @@ public class ImportReplay extends PlainImporterBase
 							while (iter.hasMoreElements())
 							{
 								//
-								SensorWrapper sensorw = (SensorWrapper) iter.nextElement();
+								SensorWrapper sensorw = iter.nextElement();
 
 								// is this our sensor?
 								if (sensorw.getName().equals(sensorName))
@@ -613,7 +613,7 @@ public class ImportReplay extends PlainImporterBase
 					{
 						// so, we've found a track - see if it holds this solution
 						TrackWrapper tw = (TrackWrapper) val;
-						Enumeration iter = tw.getSolutions();
+						Enumeration<TMAWrapper> iter = tw.getSolutions();
 
 						// step through this track's solutions
 						if (iter != null)
@@ -621,7 +621,7 @@ public class ImportReplay extends PlainImporterBase
 							while (iter.hasMoreElements())
 							{
 								//
-								TMAWrapper sensorw = (TMAWrapper) iter.nextElement();
+								TMAWrapper sensorw = iter.nextElement();
 
 								// is this our sensor?
 								if (sensorw.getName().equals(solutionName))
@@ -831,7 +831,7 @@ public class ImportReplay extends PlainImporterBase
 		if (theLine.charAt(0) == ';')
 		{
 			// look through types of import handler
-			Enumeration iter = _theImporters.elements();
+			Enumeration<PlainLineImporter> iter = _theImporters.elements();
 
 			// get the type for this comment
 			StringTokenizer st = new StringTokenizer(theLine);
@@ -840,7 +840,7 @@ public class ImportReplay extends PlainImporterBase
 			// cycle through my types
 			while (iter.hasMoreElements())
 			{
-				PlainLineImporter thisImporter = (PlainLineImporter) iter.nextElement();
+				PlainLineImporter thisImporter = iter.nextElement();
 
 				// get the handler correct type?
 				String thisType = thisImporter.getYourType();
@@ -883,7 +883,7 @@ public class ImportReplay extends PlainImporterBase
 
 			Layer tw = (Layer) item;
 			// ha-ha! export the points one at a time
-			java.util.Enumeration iter = tw.elements();
+			java.util.Enumeration<Editable> iter = tw.elements();
 			while (iter.hasMoreElements())
 			{
 				Plottable pt = (Plottable) iter.nextElement();
@@ -896,12 +896,12 @@ public class ImportReplay extends PlainImporterBase
 			// check we have some importers
 			if (_theImporters != null)
 			{
-				Enumeration iter = _theImporters.elements();
+				Enumeration<PlainLineImporter> iter = _theImporters.elements();
 
 				// step though our importers, to see if any will 'do the deal;
 				while (iter.hasMoreElements())
 				{
-					PlainLineImporter thisImporter = (PlainLineImporter) iter.nextElement();
+					PlainLineImporter thisImporter = iter.nextElement();
 
 					if (thisImporter.canExportThis(item))
 					{
@@ -992,10 +992,10 @@ public class ImportReplay extends PlainImporterBase
 		initialiseColours();
 
 		// step through our list of colours
-		java.util.Enumeration iter = colors.elements();
+		java.util.Enumeration<doublet> iter = colors.elements();
 		while (iter.hasMoreElements())
 		{
-			doublet db = (doublet) iter.nextElement();
+			doublet db = iter.nextElement();
 			if (db.label.equals(colorVal))
 			{
 				res = db.color;
@@ -1015,10 +1015,10 @@ public class ImportReplay extends PlainImporterBase
 		String res = null;
 
 		// step through our list of colours
-		java.util.Enumeration iter = colors.elements();
+		java.util.Enumeration<doublet> iter = colors.elements();
 		while (iter.hasMoreElements())
 		{
-			doublet db = (doublet) iter.nextElement();
+			doublet db = iter.nextElement();
 			if (db.color.equals(theCol))
 			{
 				res = db.label;

@@ -88,6 +88,7 @@ import Debrief.Tools.Tote.Calculations.*;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 
 import javax.swing.*;
@@ -114,7 +115,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
   /**
    * the tracks we should cover
    */
-  private java.util.Vector _theTracks = null;
+  private java.util.Vector<WatchableList> _theTracks = null;
 
   /**
    * the primary track for the relative parameters
@@ -132,14 +133,14 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
   /**
    * the list of calculations we know how to perform
    */
-  private final java.util.Vector _theOperations;
+  private final java.util.Vector<plainCalc> _theOperations;
 
   ///////////////////////////////////////////////////
   // constructor
   //////////////////////////////////////////////////
   public CopyTimeDataToClipboard()
   {
-    _theOperations = new java.util.Vector(0, 1);
+    _theOperations = new java.util.Vector<plainCalc>(0, 1);
 
     _theOperations.addElement(new timeCalc());
     _theOperations.addElement(new tidyTimeCalc());
@@ -169,7 +170,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     _end_time = finishDTG;
   }
 
-  public final void setTracks(java.util.Vector selectedTracks)
+  public final void setTracks(java.util.Vector<WatchableList> selectedTracks)
   {
     _theTracks = selectedTracks;
   }
@@ -213,7 +214,8 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     return res;
   }
 
-  public final MWC.GUI.Tools.Action getData()
+  @SuppressWarnings("unchecked")
+	public final MWC.GUI.Tools.Action getData()
   {
     // retrieve the necessary input data
     _thePrimary = getPrimary();
@@ -230,11 +232,11 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
       // produce the header line
       str.append("Track" + tab);
 
-      java.util.Enumeration it = _theOperations.elements();
+      java.util.Enumeration<plainCalc> it = _theOperations.elements();
       while (it.hasMoreElements())
       {
 
-        toteCalculation cl = (toteCalculation) it.nextElement();
+        toteCalculation cl = it.nextElement();
         str.append(cl.getTitle() + "(" + cl.getUnits() + ")" + tab);
       }
 
@@ -250,13 +252,13 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
       // now produce the rows of data themselves
 
       // sort the data to the correct time period
-      java.util.Enumeration er = _theTracks.elements();
+      java.util.Enumeration<WatchableList> er = _theTracks.elements();
       while (er.hasMoreElements())
       {
-        WatchableList tw = (WatchableList) er.nextElement();
-        Collection ss = tw.getItemsBetween(_start_time, _end_time);
+        WatchableList tw = er.nextElement();
+        Collection<Editable> ss = tw.getItemsBetween(_start_time, _end_time);
 
-        Iterator ss_it = ss.iterator();
+        Iterator<Editable> ss_it = ss.iterator();
         while (ss_it.hasNext())
         {
           // put in the boat name
@@ -273,10 +275,10 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
           if (list.length > 0)
             primary = list[0];
 
-          java.util.Enumeration ops = _theOperations.elements();
+          java.util.Enumeration<plainCalc> ops = _theOperations.elements();
           while (ops.hasMoreElements())
           {
-            toteCalculation cv = (toteCalculation) ops.nextElement();
+            toteCalculation cv = ops.nextElement();
             str.append(cv.update(primary, fw, fw.getTime()) + tab);
           }
 

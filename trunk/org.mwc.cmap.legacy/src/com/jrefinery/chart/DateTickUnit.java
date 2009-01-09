@@ -179,13 +179,13 @@ public class DateTickUnit extends TickUnit {
      * Returns a field code (that can be used with the Calendar class) for a given 'unit' code.
      * The 'unit' is one of:  YEAR, MONTH, DAY, HOUR, MINUTE, SECOND and MILLISECOND.
      *
-     * @param unit  the unit.
+     * @param unit1  the unit.
      *
      * @return the field code.
      */
-    private int getCalendarField(int unit) {
+    private int getCalendarField(int unit1) {
 
-        switch (unit) {
+        switch (unit1) {
             case (YEAR) : return Calendar.YEAR;
             case (MONTH) : return Calendar.MONTH;
             case (DAY) : return Calendar.DATE;

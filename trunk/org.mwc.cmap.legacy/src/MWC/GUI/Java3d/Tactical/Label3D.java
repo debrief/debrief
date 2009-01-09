@@ -24,6 +24,7 @@ import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Vector;
 
 abstract public class Label3D extends BranchGroup implements java.beans.PropertyChangeListener, WorldMember
 {
@@ -423,17 +424,17 @@ abstract public class Label3D extends BranchGroup implements java.beans.Property
    * @param thePoints the collection of lists of points we're going to plot
    * @return
    */
-  protected static LineArray getUnscaledGeometry(Collection thePoints)
+  protected static LineArray getUnscaledGeometry(Vector<Vector<Point2D>> thePoints)
   {
 
     // how many points are in the shape?
     int len = 0;
 
     // work through the lists
-    Iterator it = thePoints.iterator();
+    Iterator<Vector<Point2D>> it = thePoints.iterator();
     while (it.hasNext())
     {
-      Collection thisLine = (Collection) it.next();
+      Collection<Point2D> thisLine = it.next();
       // increment by this number of lines (-1, since we count the number of lines
       // and not the number of vertices)
       len += thisLine.size() - 1;
@@ -450,15 +451,15 @@ abstract public class Label3D extends BranchGroup implements java.beans.Property
     if (thePoints != null)
     {
       // get the list of lines
-      Iterator iter = thePoints.iterator();
+      Iterator<Vector<Point2D>> iter = thePoints.iterator();
       while (iter.hasNext())
       {
         // remember the last point, so we can join them up
         Point2D lastP = null;
 
         // get this list
-        Collection thisPath = (Collection) iter.next();
-        Iterator iter2 = thisPath.iterator();
+        Collection<Point2D> thisPath =  iter.next();
+        Iterator<Point2D> iter2 = thisPath.iterator();
         while (iter2.hasNext())
         {
           // get this location
@@ -492,7 +493,7 @@ abstract public class Label3D extends BranchGroup implements java.beans.Property
   {
 
     // now get the series of data points from the shape
-    Collection dataPoints = theShape.getDataPoints();
+    Collection<WorldLocation> dataPoints = theShape.getDataPoints();
 
     if (dataPoints == null)
     {
@@ -522,7 +523,7 @@ abstract public class Label3D extends BranchGroup implements java.beans.Property
     // did we find any?
     if (dataPoints != null)
     {
-      Iterator iter = dataPoints.iterator();
+      Iterator<WorldLocation> iter = dataPoints.iterator();
       while (iter.hasNext())
       {
         // get this location

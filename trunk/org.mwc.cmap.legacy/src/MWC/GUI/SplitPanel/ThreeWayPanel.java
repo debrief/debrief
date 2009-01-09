@@ -52,7 +52,11 @@ import java.awt.*;
 public class ThreeWayPanel extends SplitPanel
 {
 
-  Panel _right;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	Panel _right;
   Panel _topLeft;
   Panel _bottomLeft;
 

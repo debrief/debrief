@@ -13,6 +13,7 @@ import Debrief.ReaderWriter.XML.DebriefXMLReaderWriter;
 import Debrief.Wrappers.TMAContactWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Shapes.EllipseShape;
@@ -37,28 +38,28 @@ abstract public class TMAContactHandler extends MWC.Utilities.ReaderWriter.XML.M
   private static final String MY_NAME = "tma_solution";
 
 
-  private Debrief.Wrappers.TMAContactWrapper _thisSolution = null;
+  Debrief.Wrappers.TMAContactWrapper _thisSolution = null;
 
   /**
    * class which contains list of textual representations of label locations
    */
-  static private final MWC.GUI.Properties.LocationPropertyEditor lp
+  static final MWC.GUI.Properties.LocationPropertyEditor lp
     = new MWC.GUI.Properties.LocationPropertyEditor();
 
 
   /**
    * the parameters to build up
    */
-  private double _theBearing = 0d;
-  private WorldDistance _theRange = null;
-  private WorldLocation _theOrigin = null;
-  private double _course = 0d;
-  private double _speed = 0d;
-  private double _depth = 0d;
+  double _theBearing = 0d;
+  WorldDistance _theRange = null;
+  WorldLocation _theOrigin = null;
+  double _course = 0d;
+  double _speed = 0d;
+  double _depth = 0d;
 
-  private double _orientationDegs = 0d;
-  private WorldDistance _maxima = null;
-  private WorldDistance _minima = null;
+  double _orientationDegs = 0d;
+  WorldDistance _maxima = null;
+  WorldDistance _minima = null;
 
 
   public TMAContactHandler()
@@ -431,7 +432,7 @@ abstract public class TMAContactHandler extends MWC.Utilities.ReaderWriter.XML.M
         assertNotNull("found tomato track");
 
         TrackWrapper tw = (TrackWrapper) layer;
-        Enumeration solutions = tw.getSolutions();
+        Enumeration<TMAWrapper> solutions = tw.getSolutions();
         assertNotNull("found solutions", solutions);
 
         // find our solution track
@@ -440,7 +441,7 @@ abstract public class TMAContactHandler extends MWC.Utilities.ReaderWriter.XML.M
           TMAWrapper wrapper = (TMAWrapper) solutions.nextElement();
           assertEquals("found our solution", "TRACK_060", wrapper.getName());
 
-          Enumeration contacts = wrapper.elements();
+          Enumeration<Editable> contacts = wrapper.elements();
           while (contacts.hasMoreElements())
           {
             TMAContactWrapper contactWrapper = (TMAContactWrapper) contacts.nextElement();

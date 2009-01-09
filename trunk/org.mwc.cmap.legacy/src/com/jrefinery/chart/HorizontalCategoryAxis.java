@@ -268,7 +268,7 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
             g2.setFont(tickLabelFont);
             g2.setPaint(tickLabelPaint);
             this.refreshTicks(g2, drawArea, plotArea);
-            Iterator iterator = ticks.iterator();
+            Iterator<Tick> iterator = ticks.iterator();
             while (iterator.hasNext()) {
                 Object obj = iterator.next();
                 if (obj instanceof Tick) {
@@ -300,7 +300,8 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
      * @param plotArea  the area where the plot and axes will be drawn.
      * @param dataArea  the area inside the axes.
      */
-    public void refreshTicks(Graphics2D g2, Rectangle2D plotArea, Rectangle2D dataArea) {
+    @SuppressWarnings("unchecked")
+		public void refreshTicks(Graphics2D g2, Rectangle2D plotArea, Rectangle2D dataArea) {
 
         this.tickHeight = 1;
         this.ticks.clear();
@@ -326,15 +327,15 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
                     continue;
                 }
 
-                String label = category.toString();
-                Rectangle2D labelBounds = font.getStringBounds(label, frc);
-                LineMetrics metrics = font.getLineMetrics(label, frc);
+                String label1 = category.toString();
+                Rectangle2D labelBounds = font.getStringBounds(label1, frc);
+                LineMetrics metrics = font.getLineMetrics(label1, frc);
                 float catX = (float) categoryPlot.getCategoryCoordinate(categoryIndex, dataArea);
                 if (this.verticalCategoryLabels) {
                     xx = (float) (catX + labelBounds.getHeight() / 2 - metrics.getDescent());
                     yy = (float) (dataArea.getMaxY() + tickLabelInsets.top
                                                      + labelBounds.getWidth());
-                    ticks.add(new Tick(category, label, xx, yy));
+                    ticks.add(new Tick(category, label1, xx, yy));
                     if (this.skipCategoryLabelsToFit) {
                         categorySkip = (int) ((labelBounds.getHeight() - maxWidth / 2)
                                              / maxWidth) + 1;
@@ -346,12 +347,12 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
                         yy = (float) (dataArea.getMaxY() + tickLabelInsets.top
                                                          + metrics.getHeight()
                                                          - metrics.getDescent());
-                        ticks.add(new Tick(category, label, xx, yy));
+                        ticks.add(new Tick(category, label1, xx, yy));
                         categorySkip = (int) ((labelBounds.getWidth() - maxWidth / 2)
                                              / maxWidth) + 1;
                     }
                     else {
-                        String[] labels = breakLine(label, (int) maxWidth, frc);
+                        String[] labels = breakLine(label1, (int) maxWidth, frc);
                         Tick[] ts = new Tick[labels.length];
                         for (int i = 0; i < labels.length; i++) {
                             labelBounds = font.getStringBounds(labels[i], frc);
@@ -376,7 +377,7 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
                     yy = (float) (dataArea.getMaxY() + tickLabelInsets.top
                                                      + metrics.getHeight()
                                                      - metrics.getDescent());
-                    ticks.add(new Tick(category, label, xx, yy));
+                    ticks.add(new Tick(category, label1, xx, yy));
                 }
                 categoryIndex = categoryIndex + 1;
             }
@@ -391,12 +392,12 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
      * Supports the HorizontalAxis interface.
      *
      * @param g2  the graphics device (used to obtain font information).
-     * @param plot  the plot that the axis belongs to.
+     * @param plot1  the plot that the axis belongs to.
      * @param drawArea  the area within which the axis should be drawn.
      *
      * @return the estimated height required for the axis.
      */
-    public double reserveHeight(Graphics2D g2, Plot plot, Rectangle2D drawArea) {
+    public double reserveHeight(Graphics2D g2, Plot plot1, Rectangle2D drawArea) {
 
         if (!visible) {
             return 0.0;
@@ -425,13 +426,13 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
      * Returns the area required to draw the axis in the specified draw area.
      *
      * @param g2  the graphics device.
-     * @param plot  the plot that the axis belongs to.
+     * @param plot1  the plot that the axis belongs to.
      * @param drawArea  the area within which the plot should be drawn.
      * @param reservedWidth  the width reserved by the vertical axis.
      *
      * @return the area required to draw the axis in the specified draw area.
      */
-    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot,
+    public Rectangle2D reserveAxisArea(Graphics2D g2, Plot plot1,
                                        Rectangle2D drawArea, double reservedWidth) {
 
         if (!visible) {
@@ -477,7 +478,7 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
         FontRenderContext frc = g2.getFontRenderContext();
         double maxHeight = 0.0;
         if (vertical) {
-            Iterator iterator = this.ticks.iterator();
+            Iterator<Tick> iterator = this.ticks.iterator();
             while (iterator.hasNext()) {
                 Tick tick = (Tick) iterator.next();
                 Rectangle2D labelBounds = font.getStringBounds(tick.getText(), frc);
@@ -509,7 +510,7 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
         Font font = getTickLabelFont();
         FontRenderContext frc = g2.getFontRenderContext();
 
-        Iterator iterator = this.ticks.iterator();
+        Iterator<Tick> iterator = this.ticks.iterator();
         while (iterator.hasNext()) {
             Object obj = iterator.next();
             if (obj instanceof Tick) {
@@ -537,13 +538,13 @@ public class HorizontalCategoryAxis extends CategoryAxis implements HorizontalAx
     /**
      * Returns true if the specified plot is compatible with the axis.
      *
-     * @param plot The plot.
+     * @param plot1 The plot.
      *
      * @return <code>true</code> if the specified plot is compatible with the axis.
      */
-    protected boolean isCompatiblePlot(Plot plot) {
+    protected boolean isCompatiblePlot(Plot plot1) {
 
-        if (plot instanceof VerticalCategoryPlot) {
+        if (plot1 instanceof VerticalCategoryPlot) {
             return true;
         }
         else {

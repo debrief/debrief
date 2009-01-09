@@ -198,6 +198,10 @@ public class PlotBox extends javax.swing.JPanel
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * any formatters which have been defined
    */
   //@@ IM Made protected from private
@@ -271,8 +275,8 @@ public class PlotBox extends javax.swing.JPanel
   {
     if (_xticks == null)
     {
-      _xticks = new Vector();
-      _xticklabels = new Vector();
+      _xticks = new Vector<Double>();
+      _xticklabels = new Vector<String>();
     }
     _xticks.addElement(new Double(position));
     _xticklabels.addElement(label);
@@ -292,8 +296,8 @@ public class PlotBox extends javax.swing.JPanel
   {
     if (_yticks == null)
     {
-      _yticks = new Vector();
-      _yticklabels = new Vector();
+      _yticks = new Vector<Double>();
+      _yticklabels = new Vector<String>();
     }
     _yticks.addElement(new Double(position));
     _yticklabels.addElement(label);
@@ -334,8 +338,8 @@ public class PlotBox extends javax.swing.JPanel
       _xlabel = null;
       _ylabel = null;
       _title = null;
-      _legendStrings = new Vector();
-      _legendDatasets = new Vector();
+      _legendStrings = new Vector<String>();
+      _legendDatasets = new Vector<Integer>();
       _xticks = null;
       _xticklabels = null;
       _yticks = null;
@@ -571,7 +575,8 @@ public class PlotBox extends javax.swing.JPanel
    *
    * @return The X ticks.
    */
-  public Vector[] getXTicks()
+  @SuppressWarnings("unchecked")
+	public Vector[] getXTicks()
   {
     if (_xticks == null) return null;
     Vector[] result = new Vector[2];
@@ -632,7 +637,8 @@ public class PlotBox extends javax.swing.JPanel
    *
    * @return The Y ticks.
    */
-  public Vector[] getYTicks()
+  @SuppressWarnings("unchecked")
+	public Vector[] getYTicks()
   {
     if (_yticks == null) return null;
     Vector[] result = new Vector[2];
@@ -1423,7 +1429,7 @@ public class PlotBox extends javax.swing.JPanel
     int ind = 0;
     if (_yticks == null)
     {
-      Vector ygrid = null;
+      Vector<Double> ygrid = null;
       if (_ylog)
       {
         ygrid = _gridInit(yStart, yStep, true, null);
@@ -1471,7 +1477,7 @@ public class PlotBox extends javax.swing.JPanel
     else
     {
       // explicitly specified ticks
-      Enumeration nl = _yticklabels.elements();
+      Enumeration<String> nl = _yticklabels.elements();
       while (nl.hasMoreElements())
       {
         String label = (String) nl.nextElement();
@@ -1516,7 +1522,7 @@ public class PlotBox extends javax.swing.JPanel
     if (_yticks == null)
     {
       // auto-ticks
-      Vector ygrid = null;
+      Vector<Double> ygrid = null;
       double yTmpStart = yStart;
       if (_ylog)
       {
@@ -1559,7 +1565,7 @@ public class PlotBox extends javax.swing.JPanel
       if (_ylog)
       {
         // Draw in grid lines that don't have labels.
-        Vector unlabeledgrid = _gridInit(yStart, yStep, false, ygrid);
+        Vector<Double> unlabeledgrid = _gridInit(yStart, yStep, false, ygrid);
         if (unlabeledgrid.size() > 0)
         {
           // If the step is greater than 1, clamp it to 1 so that
@@ -1610,8 +1616,8 @@ public class PlotBox extends javax.swing.JPanel
     else
     {
       // ticks have been explicitly specified
-      Enumeration nt = _yticks.elements();
-      Enumeration nl = _yticklabels.elements();
+      Enumeration<Double> nt = _yticks.elements();
+      Enumeration<String> nl = _yticklabels.elements();
 
       while (nl.hasMoreElements())
       {
@@ -1694,15 +1700,13 @@ public class PlotBox extends javax.swing.JPanel
       {
         // create the tick list
         Rectangle2D draw = new Rectangle(_ulx, 0, _lrx - _ulx, ySPos);
-        double[] xr = getXRange();
-        double[] yr = getYRange();
         Rectangle2D data = new Rectangle2D.Double(_xMin, 0, _xMax - _xMin, 10);
         Graphics2D g2 = (Graphics2D) graphics;
         _xDateAxis.refreshTicks(g2, draw, data);
 
         // now step through, plotting the ticks
-        Vector ticks = _xDateAxis.ticks;
-        Enumeration enumer = ticks.elements();
+        Vector<Tick> ticks = _xDateAxis.ticks;
+        Enumeration<Tick> enumer = ticks.elements();
         while (enumer.hasMoreElements())
         {
           int ht = graphics.getFontMetrics().getHeight();
@@ -1774,7 +1778,7 @@ public class PlotBox extends javax.swing.JPanel
         // NOTE: Following disables first tick.  Not a good idea?
         // if (xStart == _xMin) xStart += xStep;
 
-        Vector xgrid = null;
+        Vector<Double> xgrid = null;
         double xTmpStart = xStart;
         if (_xlog)
         {
@@ -1839,7 +1843,7 @@ public class PlotBox extends javax.swing.JPanel
           // Recalculate the start using the new step.
           xTmpStart = tmpStep * Math.ceil(_xtickMin / tmpStep);
 
-          Vector unlabeledgrid = _gridInit(xTmpStart, tmpStep,
+          Vector<Double> unlabeledgrid = _gridInit(xTmpStart, tmpStep,
                                            false, xgrid);
           if (unlabeledgrid.size() > 0)
           {
@@ -1891,8 +1895,8 @@ public class PlotBox extends javax.swing.JPanel
   {
     int xCoord1;
     // ticks have been explicitly specified
-    Enumeration nt = _xticks.elements();
-    Enumeration nl = _xticklabels.elements();
+    Enumeration<Double> nt = _xticks.elements();
+    Enumeration<String> nl = _xticklabels.elements();
     // Code contributed by Jun Wu (jwu@inin.com.au)
     double preLength = 0.0;
     while (nl.hasMoreElements())
@@ -2435,8 +2439,8 @@ public class PlotBox extends javax.swing.JPanel
       graphics.setFont(_labelFont);
       int spacing = _labelFontMetrics.getHeight();
 
-      Enumeration v = _legendStrings.elements();
-      Enumeration i = _legendDatasets.elements();
+      Enumeration<String> v = _legendStrings.elements();
+      Enumeration<Integer> i = _legendDatasets.elements();
       int ypos = ury + spacing;
 
       while (v.hasMoreElements())
@@ -2604,8 +2608,8 @@ public class PlotBox extends javax.swing.JPanel
   * Determine what values to use for log axes.
   * Based on initGrid() from xgraph.c by David Harrison.
   */
-  private Vector _gridInit(double low, double step, boolean labeled,
-                           Vector oldgrid)
+  private Vector<Double> _gridInit(double low, double step, boolean labeled,
+                           Vector<Double> oldgrid)
   {
 
     // How log axes work:
@@ -2624,7 +2628,7 @@ public class PlotBox extends javax.swing.JPanel
     // as ratio gets closer to 1.0, we need to add more and more
     // grid marks.
 
-    Vector grid = new Vector(10);
+    Vector<Double> grid = new Vector<Double>(10);
     //grid.addElement(new Double(0.0));
     double ratio = Math.pow(10.0, step);
     int ngrid = 1;
@@ -2728,7 +2732,7 @@ public class PlotBox extends javax.swing.JPanel
   /*
   * Round pos up to the nearest value in the grid.
   */
-  private double _gridRoundUp(Vector grid, double pos)
+  private double _gridRoundUp(Vector<Double> grid, double pos)
   {
     double x = pos - Math.floor(pos);
     int i;
@@ -2753,7 +2757,7 @@ public class PlotBox extends javax.swing.JPanel
   * calling _gridStep().
   * Based on stepGrid() from xgraph.c by David Harrison.
   */
-  private double _gridStep(Vector grid, double pos, double step,
+  private double _gridStep(Vector<Double> grid, double pos, double step,
                            boolean logflag)
   {
     if (logflag)
@@ -3027,7 +3031,6 @@ public class PlotBox extends javax.swing.JPanel
 
     Graphics graphics = getGraphics();
 
-    boolean handled = false;
     if ((_zoomin == true) && (_drawn == true))
     {
       if (_zoomxn != -1 || _zoomyn != -1)
@@ -3063,7 +3066,6 @@ public class PlotBox extends javax.swing.JPanel
             setYRange(b, a);
         }
         repaint();
-        handled = true;
       }
     }
     else if ((_zoomout == true) && (_drawn == true))
@@ -3093,12 +3095,10 @@ public class PlotBox extends javax.swing.JPanel
       //     if (newy2 < _yBottom) newy2 = _yBottom;
 
       zoom(newx2, newy2, newx1, newy1);
-      handled = true;
     }
     else if (_drawn == false)
     {
       repaint();
-      handled = true;
     }
     _drawn = false;
     _zoomin = _zoomout = false;
@@ -3305,14 +3305,14 @@ public class PlotBox extends javax.swing.JPanel
   /**
    * @serial Legend information.
    */
-  private Vector _legendStrings = new Vector(),
-  _legendDatasets = new Vector();
+  private Vector<String> _legendStrings = new Vector<String>();
+  private Vector<Integer>  _legendDatasets = new Vector<Integer>();
 
   /**
    * @serial If XTicks or YTicks are given/
    */
-  private Vector _xticks = null, _xticklabels = null,
-  _yticks = null, _yticklabels = null;
+  private Vector<Double> _xticks = null, _yticks = null ;
+  private Vector<String>_xticklabels = null,_yticklabels = null;
 
   // A button for filling the plot
   private transient Button _fillButton = null;
@@ -3431,7 +3431,7 @@ public class PlotBox extends javax.swing.JPanel
       //   buttons.
       // This problem affects Netscape 4.61 under Digital Unix and
       // 4.51 under Solaris
-      if ((event.getModifiers() & event.BUTTON1_MASK) != 0 ||
+      if ((event.getModifiers() & InputEvent.BUTTON1_MASK) != 0 ||
         event.getModifiers() == 0)
       {
         PlotBox.this._zoomStart(event.getX(), event.getY());
@@ -3440,7 +3440,7 @@ public class PlotBox extends javax.swing.JPanel
 
     public void mouseReleased(MouseEvent event)
     {
-      if ((event.getModifiers() & event.BUTTON1_MASK) != 0 ||
+      if ((event.getModifiers() & InputEvent.BUTTON1_MASK) != 0 ||
         event.getModifiers() == 0)
       {
         PlotBox.this._zoom(event.getX(), event.getY());

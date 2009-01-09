@@ -70,15 +70,20 @@ import com.jrefinery.ui.Spinner;
  */
 public class CompassDemo extends JPanel {
 
-    /** The available needle types. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The available needle types. */
     public static final String[] NEEDLE_TYPES
         = { "Pointer", "Line", "Long", "Pin", "Plum", "Pointer", "Ship", "Wind", "Arrow" };
 
     /** Dataset 1. */
-    private DefaultMeterDataset compassData = new DefaultMeterDataset();
+    DefaultMeterDataset compassData = new DefaultMeterDataset();
 
     /** Dataset 2. */
-    private DefaultMeterDataset shipData = new DefaultMeterDataset();
+    DefaultMeterDataset shipData = new DefaultMeterDataset();
 
     /** The compass plot. */
     private CompassPlot compassPlot = new CompassPlot(compassData);

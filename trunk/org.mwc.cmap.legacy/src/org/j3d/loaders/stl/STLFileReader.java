@@ -11,10 +11,12 @@
 
 package org.j3d.loaders.stl;
 
-import java.io.*;
-import java.net.URL;
-import java.net.URLConnection;
 import java.awt.Component;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.net.URL;
 
 /**
  * Class to read STL (Stereolithography) files.<p>
@@ -39,7 +41,8 @@ public class STLFileReader
      * file. The data may be in ASCII or binary format.
      * @param file <code>File</code> object of STL file to read.
      */
-    public STLFileReader( final File file ) throws InterruptedIOException,
+    @SuppressWarnings("deprecation")
+		public STLFileReader( final File file ) throws InterruptedIOException,
     IOException, FileNotFoundException
     {
         this( file.toURL( ) );
@@ -109,7 +112,8 @@ public class STLFileReader
      * @param parentComponent Parent <code>Component</code> of progress monitor.
      *      Use <code>null</code> if there is no parent.
      */
-    public STLFileReader( final File file, final Component parentComponent )
+    @SuppressWarnings("deprecation")
+		public STLFileReader( final File file, final Component parentComponent )
     throws InterruptedIOException, IOException, FileNotFoundException
     {
         this( file.toURL( ), parentComponent );

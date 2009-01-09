@@ -102,7 +102,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   /**
    * the list of features which we pass to the painter
    */
-  private Hashtable _myFeatureHash;
+  private Hashtable<String, FeaturePainter> _myFeatureHash;
 
 
 
@@ -134,7 +134,8 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   }
 
 
-  public CoverageLayer(LibrarySelectionTable LST,
+  @SuppressWarnings("unchecked")
+	public CoverageLayer(LibrarySelectionTable LST,
                        VPFGraphicWarehouse warehouse,
                        String coverageType,
                        CoverageAttributeTable cat)
@@ -194,12 +195,12 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
   /**
    * accessor to get the list of features we want to plot
    */
-  protected Hashtable getFeatureHash()
+  protected Hashtable<String, FeaturePainter> getFeatureHash()
   {
     if (_myFeatureHash == null)
     {
-      _myFeatureHash = new Hashtable();
-      Enumeration enumer = this.elements();
+      _myFeatureHash = new Hashtable<String, FeaturePainter>();
+      Enumeration<Editable> enumer = this.elements();
       while (enumer.hasMoreElements())
       {
         FeaturePainter fp = (FeaturePainter) enumer.nextElement();
@@ -230,7 +231,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
         return;
 
       // get the feature list
-      Hashtable _myFeatures = getFeatureHash();
+      Hashtable<String, FeaturePainter> _myFeatures = getFeatureHash();
 
       // put our data into the warehouse
       _myWarehouse.setCurrentFeatures(_myFeatures);
@@ -293,7 +294,7 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
      */
     FeaturePainter _myFeature;
 
-    transient private Editable.EditorType _myEditor;
+    transient private Editable.EditorType _myEditor1;
 
     /**
      * the name of this feature
@@ -328,19 +329,19 @@ public class CoverageLayer extends MWC.GUI.BaseLayer
     /**
      * accessor to get the list of features we want to plot
      */
-    protected Hashtable getFeatureHash()
+    protected Hashtable<String, FeaturePainter> getFeatureHash()
     {
-      Hashtable res = new Hashtable();
+      Hashtable<String, FeaturePainter> res = new Hashtable<String, FeaturePainter>();
       res.put(_featureType, _myFeature);
       return res;
     }
 
     public Editable.EditorType getInfo()
     {
-      if (_myEditor == null)
-        _myEditor = new FeaturePainterInfo(this);
+      if (_myEditor1 == null)
+        _myEditor1 = new FeaturePainterInfo(this);
 
-      return _myEditor;
+      return _myEditor1;
     }
 
     public java.awt.Color getColor()

@@ -43,7 +43,11 @@ class PaneLayoutDivider extends Canvas
  */
 public class SplitPanel extends BeanPanel implements MouseListener, MouseMotionListener
 {
-  PaneLayout layout = new PaneLayout();
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	PaneLayout layout = new PaneLayout();
   //PaneLayoutDivider paneLayoutDivider = new PaneLayoutDivider();
   Canvas paneLayoutDivider = new Canvas();
   Cursor cursor;

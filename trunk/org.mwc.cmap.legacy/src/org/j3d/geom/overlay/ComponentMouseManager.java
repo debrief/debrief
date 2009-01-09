@@ -11,7 +11,6 @@ package org.j3d.geom.overlay;
 
 // Standard imports
 import java.awt.Component;
-import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -219,8 +218,7 @@ public class ComponentMouseManager
      */
     private void fireMouseMoved(MouseEvent e)
     {
-        Rectangle bounds = subComponent.getBounds();
-    //e.translatePoint(-bounds.x, -bounds.y);
+        //e.translatePoint(-bounds.x, -bounds.y);
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2)
         {
@@ -238,7 +236,6 @@ public class ComponentMouseManager
      */
     private void fireMouseDragged(MouseEvent e)
     {
-        Rectangle bounds = subComponent.getBounds();
         //e.translatePoint(-bounds.x, -bounds.y);
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2)
@@ -257,7 +254,6 @@ public class ComponentMouseManager
      */
     private void fireMouseEntered(MouseEvent e)
     {
-        Rectangle bounds = subComponent.getBounds();
         //e.translatePoint(-bounds.x, -bounds.y);
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2)
@@ -276,7 +272,6 @@ public class ComponentMouseManager
      */
     private void fireMouseExited(MouseEvent e)
     {
-        Rectangle bounds = subComponent.getBounds();
         //e.translatePoint(-bounds.x, -bounds.y);
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2)
@@ -295,7 +290,6 @@ public class ComponentMouseManager
      */
     private void fireMouseClicked(MouseEvent e)
     {
-        Rectangle bounds = subComponent.getBounds();
         //e.translatePoint(-bounds.x, -bounds.y);
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2)
@@ -314,7 +308,6 @@ public class ComponentMouseManager
      */
     private void fireMousePressed(MouseEvent e)
     {
-        Rectangle bounds = subComponent.getBounds();
         //e.translatePoint(-bounds.x, -bounds.y);
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2)
@@ -333,7 +326,6 @@ public class ComponentMouseManager
      */
     private void fireMouseReleased(MouseEvent e)
     {
-        Rectangle bounds = subComponent.getBounds();
         //e.translatePoint(-bounds.x, -bounds.y);
         Object[] listeners = listenerList.getListenerList();
         for (int i = listeners.length - 2; i >= 0; i -= 2)

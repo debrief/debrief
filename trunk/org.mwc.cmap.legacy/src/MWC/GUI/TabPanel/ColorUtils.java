@@ -3,8 +3,6 @@ package MWC.GUI.TabPanel;
 
 
 import java.awt.Color;
-import java.util.Hashtable;
-import java.lang.IllegalArgumentException;
 
 // 	07/08/97	LAB	Removed checkValidPercent() function, and replaced
 //					calls to it with calls to symantec.itools.util.GeneralUtils.checkValidPercent().

@@ -34,12 +34,12 @@ public class MWCXMLReader extends DefaultHandler
 
 	private static final String FALSE = "false";
 	private static final String TRUE = "true";
-	private final Vector _myHandlers;
+	private final Vector<MWCXMLReader> _myHandlers;
 	private final String _myType;
 	private XMLReader _theParser;
 	private ContentHandler _theParent;
 
-	private final Vector _myAttributeHandlers;
+	private final Vector<HandleAttribute> _myAttributeHandlers;
 
 	// Buffer for collecting data from
 	// the "characters" SAX event.
@@ -76,8 +76,8 @@ public class MWCXMLReader extends DefaultHandler
 	public MWCXMLReader(final String myType)
 	{
 		_myType = myType;
-		_myHandlers = new Vector(0, 1);
-		_myAttributeHandlers = new Vector(0, 1);
+		_myHandlers = new Vector<MWCXMLReader>(0, 1);
+		_myAttributeHandlers = new Vector<HandleAttribute>(0, 1);
 	}
 
 	public final void reportNotHandledErrors(final boolean val)
@@ -92,7 +92,7 @@ public class MWCXMLReader extends DefaultHandler
 	{
 
 		// go through our list of handlers
-		final Enumeration enumer = _myAttributeHandlers.elements();
+		final Enumeration<HandleAttribute> enumer = _myAttributeHandlers.elements();
 		while (enumer.hasMoreElements())
 		{
 			final HandleAttribute ha = (HandleAttribute) enumer.nextElement();
@@ -198,7 +198,7 @@ public class MWCXMLReader extends DefaultHandler
 		// see if we have a handler for this object
 		if (_myHandlers != null)
 		{
-			final Enumeration enumer = _myHandlers.elements();
+			final Enumeration<MWCXMLReader> enumer = _myHandlers.elements();
 			while (enumer.hasMoreElements())
 			{
 				final MWCXMLReader hand = (MWCXMLReader) enumer.nextElement();
@@ -294,7 +294,7 @@ public class MWCXMLReader extends DefaultHandler
 		return RNdateFormat;
 	}
 
-	private static DateFormat getXMLDateFormatter()
+	static DateFormat getXMLDateFormatter()
 	{
 		if (_XMLDateFormat == null)
 		{
@@ -507,7 +507,7 @@ public class MWCXMLReader extends DefaultHandler
 	 *          the text as a normal Java string
 	 * @return the text in XML form
 	 */
-	protected static String toXML(final String val)
+	public static String toXML(final String val)
 	{
 		String res = new String();
 
@@ -542,7 +542,7 @@ public class MWCXMLReader extends DefaultHandler
 
 	}
 
-	protected static String fromXML(final String val)
+	public static String fromXML(final String val)
 	{
 		String res = new String();
 

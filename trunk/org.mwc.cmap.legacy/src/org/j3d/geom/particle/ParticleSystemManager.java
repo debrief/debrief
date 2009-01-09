@@ -9,12 +9,10 @@
 
 package org.j3d.geom.particle;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
-import javax.media.j3d.Texture;
-import javax.media.j3d.Shape3D;
 import javax.media.j3d.Behavior;
 import javax.media.j3d.WakeupCondition;
 
@@ -30,12 +28,12 @@ import javax.media.j3d.WakeupCondition;
  */
 public class ParticleSystemManager extends Behavior
 {
-   private List particleSystems = new ArrayList();
+   private List<ParticleSystem> particleSystems = new ArrayList<ParticleSystem>();
    private WakeupCondition wakeupCondition;
    private long startTime = 0;
    private long numUpdates = 0;
 
-   public ParticleSystemManager( WakeupCondition wakeupCondition, Map environment )
+   public ParticleSystemManager( WakeupCondition wakeupCondition, Map<String, Object> environment )
    {
        this.wakeupCondition = wakeupCondition;
    }
@@ -45,7 +43,8 @@ public class ParticleSystemManager extends Behavior
        wakeupOn( wakeupCondition );
    }
 
-   public void processStimulus(java.util.Enumeration criteria )
+   @SuppressWarnings("unchecked")
+	public void processStimulus(java.util.Enumeration criteria )
    {
        update();
        wakeupOn( wakeupCondition );

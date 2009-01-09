@@ -70,7 +70,12 @@ import com.jrefinery.ui.FontChooserPanel;
  */
 class LegendPropertyEditPanel extends JPanel implements ActionListener {
 
-    /** The stroke (pen) used to draw the legend outline. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The stroke (pen) used to draw the legend outline. */
     private StrokeSample outlineStroke;
 
     /** The paint (color) used to draw the legend outline. */

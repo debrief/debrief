@@ -92,7 +92,7 @@ public final class AWTStepControl extends StepControl implements java.awt.event.
   private Button _endBtn;
   private Label _timeTxt;
   private final PropertiesPanel _theEditor;
-  private Checkbox _autoBtn;
+  Checkbox _autoBtn;
 
 
 
@@ -244,7 +244,7 @@ public final class AWTStepControl extends StepControl implements java.awt.event.
 
   /** edit button has been pressed
    */
-  private void doEdit()
+  void doEdit()
   {
     // has the editor been assigned?
     if(_thePanel != null)
@@ -259,7 +259,7 @@ public final class AWTStepControl extends StepControl implements java.awt.event.
   /** set the automatic mode as indicated
    * @param go boolean whether to go auto or not
    */
-  private void doAuto(final boolean go)
+  void doAuto(final boolean go)
   {
 
     if(go)

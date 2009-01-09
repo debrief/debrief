@@ -43,14 +43,17 @@
 
 package MWC.GUI.Shapes.Symbols.Buoys;
 
-import MWC.GUI.Shapes.*;
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class BarraSym extends PlainSymbol {
 
-  /** the font we use for the D DifarSymbols */
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/** the font we use for the D DifarSymbols */
   private static java.awt.Font _myFont = new java.awt.Font("Arial",
                                                             java.awt.Font.PLAIN,
                                                             12);

@@ -8,29 +8,24 @@
  */
 package MWC.GUI.Canvas.Swing;
 
-import MWC.GUI.Layers;
-import MWC.GUI.Layer;
-import MWC.GUI.Plottables;
-import MWC.GUI.CanvasType;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.awt.geom.Rectangle2D;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ActionEvent;
-import java.util.HashMap;
-import java.util.Date;
-import java.util.Set;
-import java.util.Iterator;
-import java.text.SimpleDateFormat;
+
+import javax.swing.JFrame;
+
+import MWC.GUI.Layers;
 
 public class LayeredCanvas extends javax.swing.JComponent
 {
 
-  public HashMap myImages;
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
   public Layers myLayers;
 
   boolean first = false;
@@ -57,12 +52,6 @@ public class LayeredCanvas extends javax.swing.JComponent
     else
     {
 
-
-      Image ti = this.createImage(this.getWidth(), this.getHeight());
-      Graphics g2 = ti.getGraphics();
-      // paint the background
- //     g2.setColor(Color.black);
- //     g2.fillRect(0,0,this.getWidth()-1, this.getHeight()-1);
 
       Image i1 = paintThis( 20, 40, Color.green);
       Image i2 = paintThis( 120, 140, Color.orange);

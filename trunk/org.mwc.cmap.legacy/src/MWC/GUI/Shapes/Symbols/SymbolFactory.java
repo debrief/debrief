@@ -144,13 +144,13 @@ public class SymbolFactory
   /**
    * java.util.HashMap _theSymbols
    */
-  private java.util.HashMap _theSymbols;
+  private java.util.HashMap<String, Class<?>> _theSymbols;
 
   /**
    * the list of one character identifiers used for import/export to/from
    * Replay File Format
    */
-  private static java.util.HashMap _theVesselIds;
+  private static java.util.HashMap<String, String> _theVesselIds;
 
   //////////////////////////////////////////////////
   // constructor
@@ -182,13 +182,13 @@ public class SymbolFactory
     checkFactory();
 
     // get the class for this symbol
-    Class symClass = (Class) _theFactory._theSymbols.get(symbolType);
+    Class<?> symClass = (Class<?>) _theFactory._theSymbols.get(symbolType);
 
     // did we find it?
     if (symClass == null)
     {
       // ok, try it the long way
-      java.util.Iterator it = _theFactory._theSymbols.keySet().iterator();
+      java.util.Iterator<String> it = _theFactory._theSymbols.keySet().iterator();
       while (it.hasNext())
       {
         String thisKey = (String) it.next();
@@ -196,7 +196,7 @@ public class SymbolFactory
         {
           if (thisKey.toUpperCase().equals(symbolType.toUpperCase()))
           {
-            symClass = (Class) _theFactory._theSymbols.get(thisKey);
+            symClass = (Class<?>) _theFactory._theSymbols.get(thisKey);
             break;
           }
         }
@@ -239,12 +239,9 @@ public class SymbolFactory
     // check we have our factory
     checkFactory();
 
-    // get the class for this symbol
-    String symClass = null;
-
     // ok, try it the long way
-    java.util.Iterator it = _theVesselIds.values().iterator();
-    Iterator keyIterator = _theVesselIds.keySet().iterator();
+    java.util.Iterator<String> it = _theVesselIds.values().iterator();
+    Iterator<String> keyIterator = _theVesselIds.keySet().iterator();
     while (it.hasNext())
     {
       String thisKey = (String) it.next();
@@ -276,7 +273,7 @@ public class SymbolFactory
     if (res == null)
     {
       String typeUpper = type.toUpperCase();
-      Iterator iter = _theVesselIds.keySet().iterator();
+      Iterator<String> iter = _theVesselIds.keySet().iterator();
       while (iter.hasNext())
       {
         String thisKey = (String) iter.next();
@@ -330,12 +327,12 @@ public class SymbolFactory
     if (_theFactory == null)
     {
       _theFactory = new SymbolFactory();
-      _theFactory._theSymbols = new java.util.HashMap();
+      _theFactory._theSymbols = new java.util.HashMap<String, Class<?>>();
 
       /////////////////////////////////////////
       // first the vessels
       /////////////////////////////////////////
-      java.util.HashMap vessels = new java.util.HashMap();
+      java.util.HashMap<String, Class<?>> vessels = new java.util.HashMap<String, Class<?>>();
       vessels.put("Helicopter", MWC.GUI.Shapes.Symbols.Vessels.HelicopterSym.class);
       vessels.put("Aircraft", MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
       vessels.put("Submarine", MWC.GUI.Shapes.Symbols.Vessels.SubmergedSub.class);
@@ -357,7 +354,7 @@ public class SymbolFactory
       vessels.put("MPA", MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
 
 
-      _theVesselIds = new java.util.HashMap();
+      _theVesselIds = new java.util.HashMap<String, String>();
       _theVesselIds.put("Helicopter", "H");
       _theVesselIds.put("Aircraft", "A");
       _theVesselIds.put("Submarine", "S");
@@ -381,7 +378,7 @@ public class SymbolFactory
       /////////////////////////////////////////
       // now the buoys
       /////////////////////////////////////////
-      java.util.HashMap buoys = new java.util.HashMap();
+      java.util.HashMap<String, Class<?>> buoys = new java.util.HashMap<String, Class<?>>();
       buoys.put("Active", MWC.GUI.Shapes.Symbols.Buoys.ActiveSym.class);
       buoys.put("Difar", MWC.GUI.Shapes.Symbols.Buoys.DifarSym.class);
       buoys.put("Lofar", MWC.GUI.Shapes.Symbols.Buoys.LofarSym.class);
@@ -411,15 +408,15 @@ public class SymbolFactory
       String[] sampler = new String[]{"dummy1"};
 
       // convert the big vector to the list
-      java.util.SortedSet sortedKeys = new java.util.TreeSet(_theFactory._theSymbols.keySet());
+      java.util.SortedSet<String> sortedKeys = new java.util.TreeSet<String>(_theFactory._theSymbols.keySet());
       _theList = (String[]) sortedKeys.toArray(sampler);
 
       // now convert the vessel  vector to the list
-      sortedKeys = new java.util.TreeSet(vessels.keySet());
+      sortedKeys = new java.util.TreeSet<String>(vessels.keySet());
       _theVesselList = (String[]) sortedKeys.toArray(sampler);
 
       // now convert the buoy vector to the list
-      sortedKeys = new java.util.TreeSet(buoys.keySet());
+      sortedKeys = new java.util.TreeSet<String>(buoys.keySet());
       _theBuoyList = (String[]) sortedKeys.toArray(sampler);
 
     }

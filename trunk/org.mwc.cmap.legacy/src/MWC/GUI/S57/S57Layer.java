@@ -180,7 +180,7 @@ public class S57Layer implements Plottable, Serializable, Layer
 		return _myEditor;
 	}
 
-	public int compareTo(Object arg0)
+	public int compareTo(Plottable arg0)
 	{
 		Plottable other = (Plottable) arg0;
 		String myName = this.getName() + this.hashCode();

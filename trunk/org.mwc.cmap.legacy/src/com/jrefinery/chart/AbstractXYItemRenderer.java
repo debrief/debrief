@@ -141,13 +141,13 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer implements
      *
      * @param g2  the graphics device.
      * @param dataArea  the area inside the axes.
-     * @param plot  the plot.
+     * @param plot1  the plot.
      * @param data  the data.
      * @param info  an optional info collection object to return data back to the caller.
      */
     public void initialise(Graphics2D g2,
                            Rectangle2D dataArea,
-                           XYPlot plot,
+                           XYPlot plot1,
                            XYDataset data,
                            ChartRenderingInfo info) {
 
@@ -230,13 +230,13 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer implements
      * Draws a vertical line on the chart to represent a 'range marker'.
      *
      * @param g2  the graphics device.
-     * @param plot  the plot.
+     * @param plot1  the plot.
      * @param domainAxis  the domain axis.
      * @param marker  the marker line.
      * @param dataArea  the axis data area.
      */
     public void drawDomainMarker(Graphics2D g2,
-                                 XYPlot plot,
+                                 XYPlot plot1,
                                  ValueAxis domainAxis,
                                  Marker marker,
                                  Rectangle2D dataArea) {
@@ -261,13 +261,13 @@ public abstract class AbstractXYItemRenderer extends AbstractRenderer implements
      * Draws a horizontal line across the chart to represent a 'range marker'.
      *
      * @param g2  the graphics device.
-     * @param plot  the plot.
+     * @param plot1  the plot.
      * @param rangeAxis  the range axis.
      * @param marker  the marker line.
      * @param dataArea  the axis data area.
      */
     public void drawRangeMarker(Graphics2D g2,
-                                XYPlot plot,
+                                XYPlot plot1,
                                 ValueAxis rangeAxis,
                                 Marker marker,
                                 Rectangle2D dataArea) {

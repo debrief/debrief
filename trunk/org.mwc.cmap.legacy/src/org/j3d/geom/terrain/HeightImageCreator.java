@@ -10,14 +10,13 @@
 package org.j3d.geom.terrain;
 
 // Standard imports
-import java.awt.image.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 
 import javax.vecmath.Color4b;
 
-// Application specific imports
-import org.j3d.geom.GeometryData;
-import org.j3d.geom.InvalidArraySizeException;
-import org.j3d.geom.UnsupportedTypeException;
 import org.j3d.util.interpolator.ColorInterpolator;
 
 /**

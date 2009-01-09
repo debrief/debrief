@@ -172,13 +172,13 @@ public class DeviceManager
   private ErrorHandler error_handler;
 
   /** The list of input devices available. Null if not constructed yet. */
-  private List input_devices;
+  private List<DeviceDescriptor> input_devices;
 
   /** The list of audio devices available. Null if not constructed yet. */
-  private List audio_devices;
+  private List<DeviceDescriptor> audio_devices;
 
   /** The list of file loaders available. Null if not constructed yet. */
-  private List file_loaders;
+  private List<DeviceDescriptor> file_loaders;
 
   /**
    * Private constructor to prevent multiple instantiations of this singleton.
@@ -263,18 +263,18 @@ public class DeviceManager
    *
    * @return A list of all known input devices
    */
-  public List getAllInputDevices()
+  public List<DeviceDescriptor> getAllInputDevices()
   {
     if(input_devices == null)
     {
-      List items = listItems(INPUT_LIST);
+      List<String> items = listItems(INPUT_LIST);
 
       if(items.size() == 0)
-        input_devices = Collections.EMPTY_LIST;
+        input_devices = Collections.emptyList();
       else
       {
-        input_devices = new LinkedList();
-        Iterator itr = items.iterator();
+        input_devices = new LinkedList<DeviceDescriptor>();
+        Iterator<String> itr = items.iterator();
 
         while(itr.hasNext())
         {
@@ -344,18 +344,18 @@ public class DeviceManager
    *
    * @return A list of all known input devices
    */
-  public List getAllAudioDevices()
+  public List<DeviceDescriptor> getAllAudioDevices()
   {
     if(audio_devices == null)
     {
-      List items = listItems(AUDIO_LIST);
+    	List<String> items = listItems(AUDIO_LIST);
 
       if(items.size() == 0)
-        audio_devices = Collections.EMPTY_LIST;
+        audio_devices = Collections.emptyList();
       else
       {
-        audio_devices = new LinkedList();
-        Iterator itr = items.iterator();
+        audio_devices = new LinkedList<DeviceDescriptor>();
+        Iterator<String> itr = items.iterator();
 
         while(itr.hasNext())
         {
@@ -425,18 +425,18 @@ public class DeviceManager
    *
    * @return A list of all known file loaders
    */
-  public List getAllFileLoaders()
+  public List<DeviceDescriptor> getAllFileLoaders()
   {
     if(file_loaders == null)
     {
-      List items = listItems(LOADER_LIST);
+    	List<String> items = listItems(LOADER_LIST);
 
       if(items.size() == 0)
-        file_loaders = Collections.EMPTY_LIST;
+        file_loaders = Collections.emptyList();
       else
       {
-        file_loaders = new LinkedList();
-        Iterator itr = items.iterator();
+        file_loaders = new LinkedList<DeviceDescriptor>();
+        Iterator<String> itr = items.iterator();
 
         while(itr.hasNext())
         {
@@ -511,9 +511,9 @@ public class DeviceManager
    * @param prop The property name to work with
    * @return A list of the items in that property value
    */
-  private List listItems(String prop)
+  private List<String> listItems(String prop)
   {
-    List ret_val = new LinkedList();
+    List<String> ret_val = new LinkedList<String>();
 
     String item_list = device_props.getProperty(prop);
 

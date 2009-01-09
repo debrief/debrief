@@ -54,7 +54,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		if (_theData == null)
 		{
 			// create them
-			ArrayList theList = createStandardDateTickUnitsAsArrayList();
+			ArrayList<MWCDateTickUnitWrapper> theList = createStandardDateTickUnitsAsArrayList();
 
 			// _theDates = new TickUnits();
 
@@ -173,10 +173,10 @@ public class DateAxisEditor extends AbstractPropertyEditor
 	 * 
 	 * @return a collection of standard date tick units.
 	 */
-	public static ArrayList createStandardDateTickUnitsAsArrayList()
+	public static ArrayList<MWCDateTickUnitWrapper> createStandardDateTickUnitsAsArrayList()
 	{
 
-		ArrayList units = new ArrayList();
+		ArrayList<MWCDateTickUnitWrapper> units = new ArrayList<MWCDateTickUnitWrapper>();
 
 		units.add(MWCDateTickUnitWrapper.getAutoScale());
 		
@@ -255,6 +255,11 @@ public class DateAxisEditor extends AbstractPropertyEditor
 	public static class RNFormatter extends SimpleDateFormat
 	{
 		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
 		 * Construct a SimpleDateFormat using the given pattern in the default
 		 * locale. <b>Note:</b> Not all locales support SimpleDateFormat; for full
 		 * generality, use the factory methods in the DateFormat class.
@@ -318,11 +323,11 @@ public class DateAxisEditor extends AbstractPropertyEditor
 					 */
 					public String dateToString(Date date)
 					{
-						String res = null;
+						String res1 = null;
 						// how many secs?
 						long secs = date.getTime() / 1000;
-						res = secs + "s";
-						return res;
+						res1 = secs + "s";
+						return res1;
 					}
 				};
 

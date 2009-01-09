@@ -1,5 +1,6 @@
 package Debrief.Tools.FilterOperations;
 
+import Debrief.Tools.Tote.WatchableList;
 import MWC.GenericData.HiResDate;
 
 // Copyright MWC 1999, Debrief 3 Project
@@ -50,7 +51,7 @@ public interface FilterOperation extends MWC.GUI.Tool
 	
 	/** specify the tracks (or watchable lists) selected by the user
 	 */
-	public void setTracks(java.util.Vector selectedTracks);
+	public void setTracks(java.util.Vector<WatchableList> selectedTracks);
 
   /** the user has pressed RESET whilst this button is pressed
    *

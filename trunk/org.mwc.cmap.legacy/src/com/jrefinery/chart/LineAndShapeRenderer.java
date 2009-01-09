@@ -228,7 +228,8 @@ public class LineAndShapeRenderer extends AbstractCategoryItemRenderer {
      * @param categoryIndex  the category number (zero-based index).
      * @param previousCategory  the previous category (null when the first category is drawn).
      */
-    public void drawCategoryItem(Graphics2D g2,
+    @SuppressWarnings("deprecation")
+		public void drawCategoryItem(Graphics2D g2,
                                  Rectangle2D dataArea,
                                  CategoryPlot plot,
                                  ValueAxis axis,

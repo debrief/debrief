@@ -123,7 +123,11 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
   /////////////////////////////////////////////////
   public class CutItem extends javax.swing.JMenuItem implements Action, ActionListener, ClipboardOwner
   {
-    protected Editable _data;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected Editable _data;
     protected Clipboard _myClipboard;
     protected Layer _theParent;
     protected Transferable _oldData;
@@ -256,7 +260,12 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
   /////////////////////////////////////////////////
   public class CopyItem extends CutItem
   {
-    public CopyItem(Editable data,
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public CopyItem(Editable data,
                     Clipboard clipboard,
                     Layer theParent,
                     CanvasType theCanvas,
@@ -304,7 +313,12 @@ public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCre
   /////////////////////////////////////////////////
   public class CutLayer extends CutItem
   {
-    public CutLayer(Editable data,
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public CutLayer(Editable data,
                     Clipboard clipboard,
                     Layer theParent,
                     CanvasType theCanvas,

@@ -310,6 +310,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldVector;
 
+import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -326,7 +327,7 @@ abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop
   ///////////////////////////////////////////////
 
   private final Vector<MenuItemInfo> _theTools;
-  private PlainChart _theChart;
+  PlainChart _theChart;
   private AnalysisTote _theTote;
   private Toolbar _theToolbar;
   private PropertiesPanel _theProperties;
@@ -416,12 +417,12 @@ abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop
     addTools();
 
     // retrieve the tools for this interface
-    final Enumeration iter = getTools();
+    final Enumeration<MenuItemInfo> iter = getTools();
 
 
     while (iter.hasMoreElements())
     {
-      final MenuItemInfo thisItem = (MenuItemInfo) iter.nextElement();
+      final MenuItemInfo thisItem = iter.nextElement();
 
       addThisTool(thisItem);
     }
@@ -459,7 +460,7 @@ abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop
   /**
    * return the tools we have created
    */
-  private Enumeration getTools()
+  private Enumeration<MenuItemInfo> getTools()
   {
     return _theTools.elements();
   }
@@ -748,10 +749,10 @@ abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop
   public void close()
   {
     // we'll also try to remove all of the tools
-    final Enumeration iter = _theTools.elements();
+    final Enumeration<MenuItemInfo> iter = _theTools.elements();
     while (iter.hasMoreElements())
     {
-      final MenuItemInfo mn = (MenuItemInfo) iter.nextElement();
+      final MenuItemInfo mn = iter.nextElement();
       mn.close();
     }
 
@@ -804,7 +805,7 @@ abstract public class AnalysisView extends PlainView implements MWC.GUI.DragDrop
    *
    * @param files the list of files
    */
-  public final void FilesReceived(final java.util.Vector files)
+  public final void FilesReceived(final java.util.Vector<File> files)
   {
     // get our layers object
     //   Layers newLayers = new Layers();

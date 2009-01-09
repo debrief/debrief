@@ -40,12 +40,12 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   /**
    * the colour to decorate the key
    */
-  private Color _myColor = Color.white;
+  Color _myColor = Color.white;
 
   /**
    * where to plot the key
    */
-  private Integer _keyLocation = new Integer(KeyLocationPropertyEditor.LEFT);
+  Integer _keyLocation = new Integer(KeyLocationPropertyEditor.LEFT);
 
 
   /**
@@ -56,7 +56,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   /**
    * the resolution of data plotted onto the screen
    */
-  private int _gridRes = 2;
+  int _gridRes = 2;
 
   /**
    * do we plot the contours
@@ -79,7 +79,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   /**
    * whether to show the gridded bathy
    */
-  private boolean _showBathy = true;
+  boolean _showBathy = true;
   /**
    * whether the user wants to optimise the grid interval
    */
@@ -883,7 +883,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
    * @param contourIndex
    * @return
    */
-  private Color getContourColourFor(final int contourIndex)
+  Color getContourColourFor(final int contourIndex)
   {
     Color res;
 
@@ -1213,7 +1213,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   {
 
     // keep a sorted list of the depths
-    final TreeSet sortedDepths = new TreeSet();
+    final TreeSet<Double> sortedDepths = new TreeSet<Double>();
 
     // parse the string
     final java.util.StringTokenizer token = new StringTokenizer(contourDepths, ",", false);
@@ -1239,7 +1239,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
       int counter = 0;
 
       // and put the depths into our working array
-      for (Iterator iterator = sortedDepths.iterator(); iterator.hasNext();)
+      for (Iterator<Double> iterator = sortedDepths.iterator(); iterator.hasNext();)
       {
         final Double thisDepth = (Double) iterator.next();
         _contourDepths[counter++] = thisDepth.doubleValue();

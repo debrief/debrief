@@ -254,7 +254,7 @@ public interface Editable
     /**
      * the class of this object
      */
-    final Class _class;
+    final Class<?> _class;
 
     /**
      * the name used for the display of this type of object
@@ -662,7 +662,7 @@ public interface Editable
      *           if we can't create property
      */
     protected final PropertyDescriptor expertLongProp(final String name,
-        final String description, final Class editor)
+        final String description, final Class<?> editor)
         throws IntrospectionException
     {
       final PropertyDescriptor p = new PropertyDescriptor(name, _class);
@@ -687,7 +687,7 @@ public interface Editable
      *           if we can't create property
      */
     protected final PropertyDescriptor longProp(final String name,
-        final String description, final Class editor)
+        final String description, final Class<?> editor)
         throws IntrospectionException
     {
       final PropertyDescriptor p = new PropertyDescriptor(name, _class);
@@ -713,7 +713,7 @@ public interface Editable
      *           if we can't create property
      */
     protected final PropertyDescriptor longProp(final String name,
-        final String description, final Class editor, final String category)
+        final String description, final Class<?> editor, final String category)
         throws IntrospectionException
     {
       final PropertyDescriptor p = new CategorisedPropertyDescriptor(category,
@@ -736,8 +736,8 @@ public interface Editable
      *          name to display for this method (tooltop)
      * @return a method descriptor
      */
-    public static final MethodDescriptor method(final Class theClass,
-        final String name, final Class[] params, final String displayName)
+    public static final MethodDescriptor method(final Class<?> theClass,
+        final String name, final Class<?>[] params, final String displayName)
     {
       MethodDescriptor res = null;
       java.lang.reflect.Method m;
@@ -797,7 +797,7 @@ public interface Editable
   	 * @param _class
   	 * @throws IntrospectionException
   	 */
-		public DeprecatedPropertyDescriptor(String name, Class _class)  throws IntrospectionException
+		public DeprecatedPropertyDescriptor(String name, Class<?> _class)  throws IntrospectionException
 		{
 			super(name, _class);
 		}
@@ -823,7 +823,7 @@ public interface Editable
      * @throws IntrospectionException
      */
     public CategorisedPropertyDescriptor(final String category,
-        final String propertyName, final Class beanClass)
+        final String propertyName, final Class<?> beanClass)
         throws IntrospectionException
     {
       super(propertyName, beanClass);
@@ -892,7 +892,7 @@ public interface Editable
       // did we get one?
       if (desc != null)
       {
-        final Class editorClass = desc.getCustomizerClass();
+        final Class<?> editorClass = desc.getCustomizerClass();
         if (editorClass != null)
         {
           Object newInstance = null;

@@ -676,13 +676,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * keep a list of points waiting to be plotted
 	 * 
 	 */
-	private transient int[] _myPts;
+	transient int[] _myPts;
 
 	/**
 	 * keep track of how far we are through our array of points
 	 * 
 	 */
-	private transient int _ptCtr = 0;
+	transient int _ptCtr = 0;
 
 	/**
 	 * paint any polyline that we've built up
@@ -2599,7 +2599,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 		
       
-		private static class TestMockCanvas extends MockCanvasType
+		protected static class TestMockCanvas extends MockCanvasType
         {
             public void drawPolyline(int[] points)
             {

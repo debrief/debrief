@@ -60,12 +60,17 @@
 package MWC.GUI.Tools.Operations;
 
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import java.io.*;
-import java.util.*;
-import java.text.*;
-import MWC.GenericData.*;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /** Abstract class containing core functionality for creating files
  * in VRML format.  The file is placed in the Debrief working directory

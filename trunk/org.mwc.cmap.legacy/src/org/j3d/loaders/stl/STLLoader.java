@@ -11,14 +11,23 @@
 
 package org.j3d.loaders.stl;
 
-import java.net.URL;
-import java.io.*;
-import java.net.MalformedURLException;
 import java.awt.Component;
-import javax.media.j3d.*;
-import javax.vecmath.Color3f;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InterruptedIOException;
+import java.io.Reader;
+import java.net.MalformedURLException;
+import java.net.URL;
 
-import com.sun.j3d.loaders.*;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.TriangleArray;
+
+import com.sun.j3d.loaders.IncorrectFormatException;
+import com.sun.j3d.loaders.LoaderBase;
+import com.sun.j3d.loaders.ParsingErrorException;
+import com.sun.j3d.loaders.Scene;
+import com.sun.j3d.loaders.SceneBase;
 
 
 /**

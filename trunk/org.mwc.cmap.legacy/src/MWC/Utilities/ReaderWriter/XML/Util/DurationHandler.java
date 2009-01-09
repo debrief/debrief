@@ -17,8 +17,8 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 abstract public class DurationHandler extends MWCXMLReader
 {
 
-  private String _units;
-  private double _value;
+  String _units;
+  double _value;
 
 
   public DurationHandler(String myType)

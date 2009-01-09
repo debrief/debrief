@@ -6,6 +6,10 @@ import java.io.*;
 
 
 public class RubberbandLine extends Rubberband  implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	public RubberbandLine() {
 	}
 	public RubberbandLine(Component component) {

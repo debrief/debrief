@@ -103,15 +103,38 @@
 package MWC.GUI.Properties.AWT;
 
 
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Choice;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.Rectangle;
+import java.awt.SystemColor;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.TextEvent;
+import java.awt.event.TextListener;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
+import java.util.Enumeration;
+
 import MWC.GUI.Layer;
 import MWC.GUI.Properties.PlainPropertyEditor;
 import MWC.GUI.Properties.PropertiesPanel;
-
-import java.awt.*;
-import java.awt.event.*;
-import java.beans.PropertyDescriptor;
-import java.beans.PropertyEditor;
-import java.util.Enumeration;
 
 public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListener
 {
@@ -212,7 +235,7 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     else
     {
       // show all of the editor entities
-      Enumeration enumer = _theEditors.elements();
+      Enumeration<PropertyEditorItem> enumer = _theEditors.elements();
       while (enumer.hasMoreElements())
       {
         PropertyEditorItem pei = (PropertyEditorItem) enumer.nextElement();
@@ -429,19 +452,19 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     _info.setText(c.getName());
   }
 
-  private void apply()
+  void apply()
   {
     super.doUpdate();
     _theParent.doApply();
   }
 
-  private void close()
+  void close()
   {
     closing();
     _theParent.removeMe(getPanel());
   }
 
-  private void reset()
+  void reset()
   {
     // get all of the parameters from their parent, again
   }
@@ -496,7 +519,11 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
 
   protected class paintLabel extends Panel
   {
-    protected PropertyEditor _myEditor;
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		protected PropertyEditor _myEditor;
     protected Label _myLabel;
 
     public paintLabel(PropertyEditor pe)
@@ -504,7 +531,12 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
       _myEditor = pe;
       _myLabel = new Label("  ")
       {
-        public void paint(Graphics p1)
+        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public void paint(Graphics p1)
         {
           Rectangle area = _myLabel.getBounds();
           // we have to paint in the background first
@@ -581,11 +613,11 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
     createCorePropertyEditors();
 
     // now register the specific editors
-    _myPropertyManager.registerEditor(java.util.Date.class,
+    PropertyEditorManager.registerEditor(java.util.Date.class,
       AWTDatePropertyEditor.class);
-    _myPropertyManager.registerEditor(MWC.GenericData.WorldLocation.class,
+    PropertyEditorManager.registerEditor(MWC.GenericData.WorldLocation.class,
       AWTWorldLocationPropertyEditor.class);
-    _myPropertyManager.registerEditor(boolean.class,
+    PropertyEditorManager.registerEditor(boolean.class,
       AWTBooleanPropertyEditor.class);
 
   }
@@ -596,19 +628,19 @@ public class AWTPropertyEditor extends PlainPropertyEditor implements KeyListene
   ///////////////////////////////////////////////////
   protected class showInfo extends FocusAdapter
   {
-    protected String _info;
+    protected String _info1;
     protected Label _lbl;
 
     public showInfo(Label theLbl, String info)
     {
       _lbl = theLbl;
-      _info = info;
+      _info1 = info;
     }
 
 
     public void focusGained(FocusEvent p1)
     {
-      showInfo(_info);
+      showInfo(_info1);
     }
   }
 

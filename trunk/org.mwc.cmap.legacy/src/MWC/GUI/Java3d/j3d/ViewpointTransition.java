@@ -96,7 +96,7 @@ public class ViewpointTransition implements ActionListener
         timer = new Timer(100, this);
         timer.setInitialDelay(0);
         timer.setRepeats(true);
-        timer.setLogTimers(false);
+        Timer.setLogTimers(false);
         timer.setCoalesce(true);
         timer.stop();
     }
@@ -117,20 +117,20 @@ public class ViewpointTransition implements ActionListener
      * TranformGroup and the destination transform information starting
      * immediately.
      *
-     * @param view The view that is associated with this transform
-     * @param viewTg is the transformgroup to be transitioned that holds
+     * @param view1 The view that is associated with this transform
+     * @param viewTg1 is the transformgroup to be transitioned that holds
      *    the view.
      * @param endTx is the final state to be transitioned to
      * @param totalTime The time to be spent with this transition
      *    (in miliseconds)
      */
-    public void transitionTo(View view,
-                             TransformGroup viewTg,
+    public void transitionTo(View view1,
+                             TransformGroup viewTg1,
                              Transform3D endTx,
                              int totalTime)
     {
-        this.view = view;
-        this.viewTg = viewTg;
+        this.view = view1;
+        this.viewTg = viewTg1;
         destinationTx = new Transform3D(endTx);
         totalTimeMS = totalTime;
 
@@ -139,7 +139,7 @@ public class ViewpointTransition implements ActionListener
 
         // Set up our internal transforms that we will be doing the morphing
         // along.
-        viewTg.getTransform(currentTx);
+        viewTg1.getTransform(currentTx);
         currentTx.get(location1);
         eye1.set(location1);
         direction1.set(0,0,-1);

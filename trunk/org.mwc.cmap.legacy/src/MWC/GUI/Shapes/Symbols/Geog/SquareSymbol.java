@@ -72,14 +72,14 @@
 
 package MWC.GUI.Shapes.Symbols.Geog;
 
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import java.io.*;
-import java.util.Collection;
+import java.awt.Point;
+import java.awt.geom.Point2D;
+import java.io.Serializable;
 import java.util.Vector;
-import java.awt.*;
 
-import MWC.GUI.Shapes.Symbols.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class SquareSymbol extends PlainSymbol implements Serializable
 {
@@ -97,11 +97,6 @@ public class SquareSymbol extends PlainSymbol implements Serializable
    * the size of the symbol
    */
   protected final int wid = 4;
-
-  /**
-   * java.util.Vector _theMetafile
-   */
-  private java.util.Vector _theMetafile;
 
   /**
    * <init>
@@ -148,17 +143,17 @@ public class SquareSymbol extends PlainSymbol implements Serializable
    *
    * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
    */
-  public Collection getCoordinates() {
-    Vector res = new Vector(0,1);
+  public Vector<Vector<Point2D>> getCoordinates() {
+  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
 
-    Vector line1 = new Vector(0,1);
+    Vector<Point2D> line1 = new Vector<Point2D>(0,1);
 
-    int wid = (int)(2 * getScaleVal());
-    line1.add(new Point(-wid, -wid));
-    line1.add(new Point( wid, -wid));
-    line1.add(new Point( wid,  wid));
-    line1.add(new Point( -wid, wid));
-    line1.add(new Point(-wid, -wid));
+    int wid1 = (int)(2 * getScaleVal());
+    line1.add(new Point(-wid1, -wid1));
+    line1.add(new Point( wid1, -wid1));
+    line1.add(new Point( wid1,  wid1));
+    line1.add(new Point( -wid1, wid1));
+    line1.add(new Point(-wid1, -wid1));
 
     res.add(line1);
 

@@ -30,7 +30,11 @@ import java.io.PrintWriter;
  * errors of the data when using the BinaryFile.
  */
 public class FormatException extends Exception {
-    /** nested exception that caused this one */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/** nested exception that caused this one */
     final private Throwable rootCause;
 
     /**

@@ -57,11 +57,11 @@ package MWC.GUI.Properties.Swing;
 // Initial revision
 //
 
-import java.beans.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import javax.swing.*;
-import java.awt.event.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyEditorSupport;
+
+import javax.swing.JCheckBox;
 
 public class SwingBooleanPropertyEditor extends 
            PropertyEditorSupport 

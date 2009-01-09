@@ -186,7 +186,12 @@ public class Plot extends PlotBox {
     ///////////////////////////////////////////////////////////////////
     ////                         public methods                    ////
 
-    /** Add a legend (displayed at the upper right) for the specified
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Add a legend (displayed at the upper right) for the specified
      *  data set with the specified string.  Short strings generally
      *  fit better than long strings.
      *  @param dataset The dataset index.
@@ -294,23 +299,19 @@ public class Plot extends PlotBox {
     public synchronized void clear(boolean format) {
         super.clear(format);
         _currentdataset = -1;
-        _points = new Vector();
-        _prevx = new Vector();
-        _prevy = new Vector();
+        _points = new Vector<Vector<PlotPoint>>();
+        _prevx = new Vector<Long>();
+        _prevy = new Vector<Long>();
         _painted = false;
         _maxdataset = -1;
         _firstinset = true;
         _sawfirstdataset = false;
         _xyInvalid = false;
-        _filename = null;
-        _showing = false;
-
         if (format) {
             // Reset format controls
-            _formats = new Vector();
+            _formats = new Vector<Format>();
             _marks = 0;
             _pointsPersistence = 0;
-            _sweepsPersistence = 0;
             _bars = false;
             _barwidth = 0.5;
             _baroffset = 0.05;
@@ -326,12 +327,11 @@ public class Plot extends PlotBox {
      */
     public synchronized void clear(int dataset) {
         _checkDatasetIndex(dataset);
-        Vector points = (Vector)_points.elementAt(dataset);
+        Vector<PlotPoint> points = _points.elementAt(dataset);
         // Vector.clear() is new in JDK1.2, so we use just
         // create a new Vector here so that we can compile
         // this with JDK1.1 for use in JDK1.1 browsers
-        //points.clear();
-        points = new Vector();
+        points.clear();
         repaint();
     }
 
@@ -352,7 +352,7 @@ public class Plot extends PlotBox {
         if (isShowing()) {
             _erasePoint(getGraphics(), dataset, index);
         }
-        Vector points = (Vector)_points.elementAt(dataset);
+        Vector<PlotPoint> points = _points.elementAt(dataset);
         if (points != null) {
             // If this point is at the maximum or minimum x or y boundary,
             // then flag that boundary needs to be recalculated next time
@@ -383,7 +383,7 @@ public class Plot extends PlotBox {
             _yBottom = Double.MAX_VALUE;
             _yTop = - Double.MIN_VALUE;
             for (int dataset = 0; dataset < _points.size(); dataset++) {
-                Vector points = (Vector)_points.elementAt(dataset);
+                Vector<PlotPoint> points = _points.elementAt(dataset);
                 for (int index = 0; index < points.size(); index++) {
                     PlotPoint pt = (PlotPoint)points.elementAt(index);
                     if (pt.x < _xBottom) _xBottom = pt.x;
@@ -654,7 +654,7 @@ public class Plot extends PlotBox {
         _prevx.removeAllElements();
         _prevy.removeAllElements();
         for (int i = 0; i < numsets; i++) {
-            _points.addElement(new Vector());
+            _points.addElement(new Vector<PlotPoint>());
             _formats.addElement(new Format());
             _prevx.addElement(new Long(0));
             _prevy.addElement(new Long(0));
@@ -692,8 +692,6 @@ public class Plot extends PlotBox {
      *  effect</b>.
      */
     public void setSweepsPersistence(int persistence) {
-        //   * FIXME: No file format yet.
-        _sweepsPersistence = persistence;
     }
 
     ///////////////////////////////////////////////////////////////////
@@ -714,7 +712,7 @@ public class Plot extends PlotBox {
                     + " give a negative number for the data set index.");
         }
         while (dataset >= _points.size()) {
-            _points.addElement(new Vector());
+            _points.addElement(new Vector<PlotPoint>());
             _formats.addElement(new Format());
             _prevx.addElement(new Long(0));
             _prevy.addElement(new Long(0));
@@ -1388,7 +1386,7 @@ public class Plot extends PlotBox {
             output.println("<dataset" + options.toString() + ">");
 
             // Write the data
-            Vector pts = (Vector)_points.elementAt(dataset);
+            Vector<PlotPoint> pts = _points.elementAt(dataset);
             for (int pointnum = 0; pointnum < pts.size(); pointnum++) {
                 PlotPoint pt = (PlotPoint)pts.elementAt(pointnum);
                 if (!pt.connected) {
@@ -1463,9 +1461,9 @@ public class Plot extends PlotBox {
                 }
             }
             // Write the data
-            Vector pts = (Vector)_points.elementAt(dataset);
+            Vector<PlotPoint> pts = _points.elementAt(dataset);
             for (int pointnum = 0; pointnum < pts.size(); pointnum++) {
-                PlotPoint pt = (PlotPoint)pts.elementAt(pointnum);
+                PlotPoint pt = pts.elementAt(pointnum);
                 if (!pt.connected) output.print("move: ");
                 if (pt.errorBar) {
                     output.println(pt.x + ", " + pt.y + ", "
@@ -1484,7 +1482,7 @@ public class Plot extends PlotBox {
     protected int _currentdataset = -1;
 
     /** @serial A vector of datasets. */
-    protected Vector _points = new Vector();
+    protected Vector<Vector<PlotPoint>> _points = new Vector<Vector<PlotPoint>>();
 
     /** @serial An indicator of the marks style.  See _parseLine method for
      * interpretation.
@@ -1574,7 +1572,7 @@ public class Plot extends PlotBox {
             pt.errorBar = true;
         }
 
-        Vector pts = (Vector)_points.elementAt(dataset);
+        Vector<PlotPoint> pts = (Vector<PlotPoint>)_points.elementAt(dataset);
         // If this is the first point in the dataset, clear the connected bit.
         int size = pts.size();
         if (size == 0) {
@@ -1628,7 +1626,7 @@ public class Plot extends PlotBox {
             graphics.setColor(_foreground);
         }
 
-        Vector pts = (Vector)_points.elementAt(dataset);
+        Vector<PlotPoint> pts = _points.elementAt(dataset);
         PlotPoint pt = (PlotPoint)pts.elementAt(index);
         // Use long here because these numbers can be quite large
         // (when we are zoomed out a lot).
@@ -1699,14 +1697,14 @@ public class Plot extends PlotBox {
             graphics.setColor(_foreground);
         }
 
-        Vector pts = (Vector)_points.elementAt(dataset);
+        Vector<PlotPoint> pts = _points.elementAt(dataset);
         PlotPoint pt = (PlotPoint)pts.elementAt(index);
         long ypos = _lry - (long) ((pt.y - _yMin) * _yscale);
         long xpos = _ulx + (long) ((pt.x - _xMin) * _xscale);
 
         // Erase line to the next point, if appropriate.
         if (index < pts.size() - 1) {
-            PlotPoint nextp = (PlotPoint)pts.elementAt(index+1);
+            PlotPoint nextp = pts.elementAt(index+1);
             int nextx = _ulx + (int) ((nextp.x - _xMin) * _xscale);
             int nexty = _lry - (int) ((nextp.y - _yMin) * _yscale);
             // NOTE: I have no idea why I have to give this point backwards.
@@ -1760,9 +1758,6 @@ public class Plot extends PlotBox {
     /** @serial Number of points to persist for. */
     private int _pointsPersistence = 0;
 
-    /** @serial Number of sweeps to persist for. */
-    private int _sweepsPersistence = 0;
-
     /** @serial True if this is a bar plot. */
     protected boolean _bars = false;
 
@@ -1797,7 +1792,7 @@ public class Plot extends PlotBox {
     private int _diameter = 6;
 
     /** @serial Information about the previously plotted point. */
-    protected Vector _prevx = new Vector(), _prevy = new Vector();
+    protected Vector<Long> _prevx = new Vector<Long>(), _prevy = new Vector<Long>();
 
     // Half of the length of the error bar horizontal leg length;
     private static final int _ERRORBAR_LEG_LENGTH = 5;
@@ -1812,14 +1807,8 @@ public class Plot extends PlotBox {
      */
     private boolean _xyInvalid = false;
 
-    /** @serial Last filename seen in command-line arguments. */
-    private String _filename = null;
-
-    /** @serial Set by _drawPlot(), and reset by clear(). */
-    private boolean _showing = false;
-
     /** @serial Format information on a per data set basis. */
-    protected Vector _formats = new Vector();
+    protected Vector<Format> _formats = new Vector<Format>();
 
     ///////////////////////////////////////////////////////////////////
     ////                         inner classes                     ////

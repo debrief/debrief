@@ -25,6 +25,11 @@ import org.j3d.util.device.DeviceDescriptor;
 public class DeviceDescriptorJLabel extends JLabel
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * Construct an instance of the label based on the given device
    * description.
    *

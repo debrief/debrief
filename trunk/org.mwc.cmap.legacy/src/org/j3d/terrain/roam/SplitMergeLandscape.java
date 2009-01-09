@@ -44,19 +44,16 @@
 package org.j3d.terrain.roam;
 
 // Standard imports
-import javax.media.j3d.*;
-
 import java.util.ArrayList;
-import java.util.Iterator;
 
-import javax.vecmath.Color3f;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.Material;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-// Application specific imports
-import org.j3d.terrain.ViewFrustum;
 import org.j3d.terrain.Landscape;
 import org.j3d.terrain.TerrainData;
+import org.j3d.terrain.ViewFrustum;
 
 /**
  * ROAM implmentation of a landscape using the split-merge combination
@@ -74,7 +71,7 @@ public class SplitMergeLandscape extends Landscape
     static final int PATCH_SIZE = 64;
 
     /** The collection of all patches in this landscape */
-    private ArrayList patches = new ArrayList();
+    private ArrayList<Patch> patches = new ArrayList<Patch>();
 
     /** Queue manager for the pathces needing splits or merges each frame */
     private TreeQueueManager queueManager = new TreeQueueManager();

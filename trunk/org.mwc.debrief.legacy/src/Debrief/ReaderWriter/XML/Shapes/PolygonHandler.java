@@ -22,9 +22,9 @@ abstract public class PolygonHandler extends ShapeHandler implements LayerHandle
 
   private static final String FILLED_STR = "Filled";
   private static final String CLOSED_STR = "Closed";
-	private WorldPath _polygon;
-  private Boolean _filled = null;
-  private Boolean _closed = null;
+	WorldPath _polygon;
+  Boolean _filled = null;
+  Boolean _closed = null;
   
 
   public PolygonHandler()

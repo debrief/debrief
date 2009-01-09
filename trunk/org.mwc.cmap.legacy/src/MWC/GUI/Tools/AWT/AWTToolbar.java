@@ -70,16 +70,24 @@
 
 package MWC.GUI.Tools.AWT;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import MWC.GUI.*;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.GridLayout;
+import java.awt.Panel;
+
+import MWC.GUI.Tool;
+import MWC.GUI.Toolbar;
 
 /** implementation of toolbar using AWT controls 
  * @stereotype AWT*/
 public class AWTToolbar extends Panel implements Toolbar 
 {
-  /////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////
   // member variables
   /////////////////////////////////////////////////////////
 	

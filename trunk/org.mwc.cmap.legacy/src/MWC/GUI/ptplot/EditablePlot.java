@@ -76,7 +76,12 @@ listener using addEditListener().
 */
 public class EditablePlot extends Plot {
 
-    /** Constructor.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Constructor.
      */
     public EditablePlot() {
         super();
@@ -94,7 +99,7 @@ public class EditablePlot extends Plot {
      */
     public void addEditListener(EditListener listener) {
         if (_editListeners == null) {
-            _editListeners = new Vector();
+            _editListeners = new Vector<EditListener>();
         } else {
             if (_editListeners.contains(listener)) {
                 return;
@@ -111,7 +116,7 @@ public class EditablePlot extends Plot {
      */
     public double[][] getData(int dataset) {
         _checkDatasetIndex(dataset);
-        Vector pts = (Vector)_points.elementAt(_dataset);
+        Vector<PlotPoint> pts = _points.elementAt(_dataset);
         int size = pts.size();
         double[][] result = new double[2][size];
         for (int i = 0; i < size; i++) {
@@ -180,7 +185,7 @@ public class EditablePlot extends Plot {
     ////                         private methods                   ////
 
     // Clear the editing spec and modify the dataset.
-    private synchronized void _edit(int x, int y) {
+    synchronized void _edit(int x, int y) {
 
         if (_dataset < 0) return;
 
@@ -204,7 +209,7 @@ public class EditablePlot extends Plot {
         _editPoint(x, y);
 
         // Edit the points in the signal.
-        Vector pts = (Vector)_points.elementAt(_dataset);
+        Vector<PlotPoint> pts = _points.elementAt(_dataset);
 
         for (int i = 0; i < pts.size(); i++) {
             PlotPoint pt = (PlotPoint)pts.elementAt(i);
@@ -238,7 +243,7 @@ public class EditablePlot extends Plot {
     }
 
     // Make a record of a new edit point.
-    private synchronized void _editPoint(int x, int y) {
+    synchronized void _editPoint(int x, int y) {
 
         if (_dataset < 0) return;
 
@@ -276,7 +281,7 @@ public class EditablePlot extends Plot {
     }
 
     // Make a record of the starting x and y position of an edit.
-    private synchronized void _editStart(int x, int y) {
+    synchronized void _editStart(int x, int y) {
 
         if (_dataset < 0) return;
 
@@ -311,7 +316,7 @@ public class EditablePlot extends Plot {
         if (_editListeners == null) {
             return;
         } else {
-            Enumeration listeners = _editListeners.elements();
+            Enumeration<EditListener> listeners = _editListeners.elements();
             while (listeners.hasMoreElements()) {
                 ((EditListener)listeners.nextElement()).
                     editDataModified(this, dataset);
@@ -323,7 +328,7 @@ public class EditablePlot extends Plot {
     // form returned by getData.
     private void _setData(int dataset, double[][] data) {
         _checkDatasetIndex(dataset);
-        Vector pts = (Vector)_points.elementAt(_dataset);
+        Vector<PlotPoint> pts = _points.elementAt(_dataset);
         int size = pts.size();
         if (data[0].length < size) size = data[0].length;
         for (int i = 0; i < size; i++) {
@@ -347,11 +352,11 @@ public class EditablePlot extends Plot {
     private static final Color _editColor = Color.white;
 
     // Stack for undo.
-    private Stack _undoStack = new Stack();
-    private Stack _redoStack = new Stack();
+    private Stack<Object[]> _undoStack = new Stack<Object[]>();
+    private Stack<Object[]> _redoStack = new Stack<Object[]>();
 
     // Edit listeners.
-    private Vector _editListeners = null;
+    private Vector<EditListener> _editListeners = null;
 
     ///////////////////////////////////////////////////////////////////
     ////                         inner classes                     ////
@@ -364,12 +369,12 @@ public class EditablePlot extends Plot {
         public void mouseExited(MouseEvent event) {
         }
         public void mousePressed(MouseEvent event) {
-            if ((event.getModifiers() & event.BUTTON3_MASK)!= 0) {
+            if ((event.getModifiers() & InputEvent.BUTTON3_MASK)!= 0) {
                 EditablePlot.this._editStart(event.getX(), event.getY());
             }
         }
         public void mouseReleased(MouseEvent event) {
-            if ((event.getModifiers() & event.BUTTON3_MASK)!= 0) {
+            if ((event.getModifiers() & InputEvent.BUTTON3_MASK)!= 0) {
                 EditablePlot.this._edit(event.getX(), event.getY());
             }
         }
@@ -377,7 +382,7 @@ public class EditablePlot extends Plot {
 
     public class ModifyListener implements MouseMotionListener {
         public void mouseDragged(MouseEvent event) {
-            if ((event.getModifiers() & event.BUTTON3_MASK)!= 0) {
+            if ((event.getModifiers() & InputEvent.BUTTON3_MASK)!= 0) {
                 EditablePlot.this._editPoint(event.getX(), event.getY());
             }
         }

@@ -82,7 +82,7 @@ abstract public class MouseWheelWorldHolder extends WorldHolder
   /**********************************************************************
    * embedded class which handles the MouseWheel activity
    *********************************************************************/
-  private class MyMouseWheelListener implements MouseWheelListener {
+  protected class MyMouseWheelListener implements MouseWheelListener {
     public void mouseWheelMoved(java.awt.event.MouseWheelEvent e)
     {
 

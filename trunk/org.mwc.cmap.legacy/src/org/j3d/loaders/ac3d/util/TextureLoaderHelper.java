@@ -174,7 +174,8 @@ public class TextureLoaderHelper implements ImageObserver {
      *         attempt was unsuccessful.
      */
     
-    private static final BufferedImage loadImageWithToolkit(Object source, 
+    @SuppressWarnings("unchecked")
+		private static final BufferedImage loadImageWithToolkit(Object source, 
         TextureLoaderHelper instance) {
             
         BufferedImage rVal=null;

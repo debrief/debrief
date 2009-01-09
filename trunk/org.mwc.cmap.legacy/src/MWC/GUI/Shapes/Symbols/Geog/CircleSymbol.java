@@ -37,14 +37,13 @@
 
 package MWC.GUI.Shapes.Symbols.Geog;
 
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import java.io.*;
-import java.util.Collection;
-import java.util.Vector;
 import java.awt.geom.Point2D;
+import java.io.Serializable;
+import java.util.Vector;
 
-import MWC.GUI.Shapes.Symbols.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class CircleSymbol extends PlainSymbol implements Serializable
 {
@@ -57,11 +56,6 @@ public class CircleSymbol extends PlainSymbol implements Serializable
    * the size of the symbol
    */
   protected final int wid = 4;
-
-  /**
-   * java.util.Vector _theMetafile
-   */
-  private java.util.Vector _theMetafile;
 
   /**
    * <init>
@@ -99,11 +93,11 @@ public class CircleSymbol extends PlainSymbol implements Serializable
    *
    * @return a collection of paths.  Each path is a collection of java.awt.Point objects.
    */
-  public Collection getCoordinates() {
-    Vector res = new Vector(0,1);
+  public Vector<Vector<Point2D>> getCoordinates() {
+  	Vector<Vector<Point2D>> res = new Vector<Vector<Point2D>>(0,1);
 
     // now the circle
-    Collection circle = new Vector(0,1);
+    Vector<Point2D> circle = new Vector<Point2D>(0,1);
 
     // work our way around the circle, adding the pts
     int NUM_SEGMENTS = 30;

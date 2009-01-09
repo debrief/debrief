@@ -93,7 +93,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
   /**
    * list of values to choose from
    */
-  protected static Vector _theColors;
+  protected static Vector<NamedColor> _theColors;
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -115,9 +115,9 @@ public class ColorPropertyEditor extends PropertyEditorSupport
   /**
    * initialise the list of colours
    */
-  protected Vector createColors()
+  protected Vector<NamedColor> createColors()
   {
-    Vector theColors = new Vector();
+    Vector<NamedColor> theColors = new Vector<NamedColor>();
     theColors.addElement(new NamedColor("Red", Color.red));
     theColors.addElement(new NamedColor("Blue", Color.blue));
     theColors.addElement(new NamedColor("Green", Color.green));
@@ -161,7 +161,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
   protected NamedColor getNamedColor()
   {
     NamedColor res = null;
-    Enumeration enumer = _theColors.elements();
+    Enumeration<NamedColor> enumer = _theColors.elements();
     while (enumer.hasMoreElements())
     {
       NamedColor cl = (NamedColor) enumer.nextElement();
@@ -238,7 +238,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
    */
   public void setAsText(String p1)
   {
-    Enumeration enumer = _theColors.elements();
+    Enumeration<NamedColor> enumer = _theColors.elements();
     while (enumer.hasMoreElements())
     {
       NamedColor cl = (NamedColor) enumer.nextElement();
@@ -277,7 +277,7 @@ public class ColorPropertyEditor extends PropertyEditorSupport
     /**
      * colour of this colour
      */
-    private Color color;
+    Color color;
 
     /**
      * constructor, sets member values

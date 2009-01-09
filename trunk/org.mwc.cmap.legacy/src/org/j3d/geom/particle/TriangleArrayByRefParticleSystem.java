@@ -11,18 +11,14 @@ package org.j3d.geom.particle;
 
 import java.util.Map;
 
-import javax.media.j3d.Texture;
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Appearance;
+import javax.media.j3d.GeometryArray;
 import javax.media.j3d.PolygonAttributes;
-import javax.media.j3d.TriangleArray;
-import javax.media.j3d.TransparencyAttributes;
+import javax.media.j3d.Texture;
 import javax.media.j3d.TextureAttributes;
 import javax.media.j3d.Transform3D;
-
-import com.sun.j3d.utils.image.TextureLoader;
-
+import javax.media.j3d.TransparencyAttributes;
+import javax.media.j3d.TriangleArray;
 import javax.vecmath.Color4f;
 
 /**
@@ -69,7 +65,7 @@ public class TriangleArrayByRefParticleSystem extends ByRefParticleSystem
      */
     public TriangleArrayByRefParticleSystem( int particleCount,
                                              ParticleInitializer particleInitializer,
-                                             Map environment )
+                                             Map<String, Object> environment )
     {
         super( TRIANGLE_ARRAY_BYREF_PARTICLE_SYSTEM, particleInitializer, particleCount, environment );
     }

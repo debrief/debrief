@@ -828,7 +828,8 @@ public class PiePlot extends Plot {
      *
      * @return the categories.
      */
-    public Collection getCategories() {
+    @SuppressWarnings("unchecked")
+		public Collection getCategories() {
         return getPieDataset().getCategories();
     }
 
@@ -839,7 +840,8 @@ public class PiePlot extends Plot {
      *
      * @deprecated use getLegendItems().
      */
-    public List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public List getLegendItemLabels() {
 
         List result = new java.util.ArrayList();
 
@@ -862,7 +864,8 @@ public class PiePlot extends Plot {
      *
      * @return the legend items.
      */
-    public LegendItemCollection getLegendItems() {
+    @SuppressWarnings("unchecked")
+		public LegendItemCollection getLegendItems() {
 
         LegendItemCollection result = new LegendItemCollection();
 
@@ -876,13 +879,13 @@ public class PiePlot extends Plot {
                 String description = label;
                 Shape shape = null;
                 Paint paint = getSeriesPaint(section);
-                Paint outlinePaint = getSeriesOutlinePaint(section);
+                Paint outlinePaint1 = getSeriesOutlinePaint(section);
                 Stroke stroke = getSeriesStroke(section);
-                Stroke outlineStroke = getSeriesOutlineStroke(section);
+                Stroke outlineStroke1 = getSeriesOutlineStroke(section);
 
                 LegendItem item = new LegendItem(label, description,
-                                                 shape, paint, outlinePaint,
-                                                 stroke, outlineStroke);
+                                                 shape, paint, outlinePaint1,
+                                                 stroke, outlineStroke1);
 
                 result.add(item);
                 section++;
@@ -1019,7 +1022,8 @@ public class PiePlot extends Plot {
      * @param data  the data.
      * @param label  the label.
      */
-    private void drawPie(Graphics2D g2, Rectangle2D plotArea, ChartRenderingInfo info,
+    @SuppressWarnings("unchecked")
+		private void drawPie(Graphics2D g2, Rectangle2D plotArea, ChartRenderingInfo info,
                          PieDataset data, String label) {
 
         // adjust the plot area by the interior spacing value
@@ -1082,13 +1086,13 @@ public class PiePlot extends Plot {
                         runningTotal += value;
 
                         Paint paint = getSeriesPaint(section);
-                        Paint outlinePaint = getSeriesOutlinePaint(section);
-                        Stroke outlineStroke = getSeriesOutlineStroke(section);
+                        Paint outlinePaint1 = getSeriesOutlinePaint(section);
+                        Stroke outlineStroke11 = getSeriesOutlineStroke(section);
 
                         g2.setPaint(paint);
                         g2.fill(arc);
-                        g2.setStroke(outlineStroke);
-                        g2.setPaint(outlinePaint);
+                        g2.setStroke(outlineStroke11);
+                        g2.setPaint(outlinePaint1);
                         g2.draw(arc);
 
                         // add a tooltip for the pie section...
@@ -1143,13 +1147,14 @@ public class PiePlot extends Plot {
      * @param data  the data for the plot.
      * @param value  the value of the label.
      * @param section  the section (zero-based index).
-     * @param startAngle  the starting angle.
+     * @param startAngle11  the starting angle.
      * @param extent  the extent of the arc.
      */
-    protected void drawLabel(Graphics2D g2,
+    @SuppressWarnings("unchecked")
+		protected void drawLabel(Graphics2D g2,
                              Rectangle2D pieArea, Rectangle2D explodedPieArea,
                              PieDataset data, double value,
-                             int section, double startAngle, double extent) {
+                             int section, double startAngle11, double extent) {
 
         // handle label drawing...
         FontRenderContext frc = g2.getFontRenderContext();
@@ -1181,7 +1186,7 @@ public class PiePlot extends Plot {
         double ascent = lm.getAscent();
         Point2D labelLocation = calculateLabelLocation(labelBounds, ascent,
                                                        pieArea, explodedPieArea,
-                                                       startAngle, extent,
+                                                       startAngle11, extent,
                                                        getExplodePercent(section));
 
         g2.setPaint(this.sectionLabelPaint);
@@ -1216,22 +1221,22 @@ public class PiePlot extends Plot {
      *
      * @param unexploded  the area inside which the unexploded pie sections are drawn.
      * @param exploded  the area inside which the exploded pie sections are drawn.
-     * @param startAngle  the start angle.
+     * @param startAngle11  the start angle.
      * @param extent  the extent of the arc.
      * @param explodePercent  the amount by which the pie section is exploded.
      *
      * @return a rectangle that can be used to create a pie section.
      */
     protected Rectangle2D getArcBounds(Rectangle2D unexploded, Rectangle2D exploded,
-                                       double startAngle, double extent, double explodePercent) {
+                                       double startAngle11, double extent, double explodePercent) {
 
         if (explodePercent == 0.0) {
             return unexploded;
         }
         else {
-            Arc2D arc1 = new Arc2D.Double(unexploded, startAngle, extent / 2, Arc2D.OPEN);
+            Arc2D arc1 = new Arc2D.Double(unexploded, startAngle11, extent / 2, Arc2D.OPEN);
             Point2D point1 = arc1.getEndPoint();
-            Arc2D.Double arc2 = new Arc2D.Double(exploded, startAngle, extent / 2, Arc2D.OPEN);
+            Arc2D.Double arc2 = new Arc2D.Double(exploded, startAngle11, extent / 2, Arc2D.OPEN);
             Point2D point2 = arc2.getEndPoint();
             double deltaX = (point1.getX() - point2.getX()) * explodePercent;
             double deltaY = (point1.getY() - point2.getY()) * explodePercent;
@@ -1251,7 +1256,7 @@ public class PiePlot extends Plot {
      * @param ascent  the ascent.
      * @param unexploded  the area within which the unexploded pie sections are drawn.
      * @param exploded  the area within which the exploded pie sections are drawn.
-     * @param startAngle  the start angle for the pie section.
+     * @param startAngle1  the start angle for the pie section.
      * @param extent  the extent of the arc.
      * @param explodePercent  the amount by which the pie section is exploded.
      *
@@ -1261,13 +1266,13 @@ public class PiePlot extends Plot {
                                              double ascent,
                                              Rectangle2D unexploded,
                                              Rectangle2D exploded,
-                                             double startAngle,
+                                             double startAngle1,
                                              double extent,
                                              double explodePercent) {
 
-        Arc2D arc1 = new Arc2D.Double(unexploded, startAngle, extent / 2, Arc2D.OPEN);
+        Arc2D arc1 = new Arc2D.Double(unexploded, startAngle1, extent / 2, Arc2D.OPEN);
         Point2D point1 = arc1.getEndPoint();
-        Arc2D.Double arc2 = new Arc2D.Double(exploded, startAngle, extent / 2, Arc2D.OPEN);
+        Arc2D.Double arc2 = new Arc2D.Double(exploded, startAngle1, extent / 2, Arc2D.OPEN);
         Point2D point2 = arc2.getEndPoint();
         double deltaX = (point1.getX() - point2.getX()) * explodePercent;
         deltaX = deltaX - (point1.getX() - unexploded.getCenterX()) * sectionLabelGapPercent;

@@ -45,7 +45,7 @@ import org.j3d.util.ImageUtils;
 public abstract class AbstractTextureCache implements TextureCache
 {
     /** The list of class types we prefer back from the content handler. */
-    private static final Class[] CLASS_TYPES =
+    private static final Class<?>[] CLASS_TYPES =
     {
         ImageProducer.class,
         BufferedImage.class,
@@ -115,7 +115,8 @@ public abstract class AbstractTextureCache implements TextureCache
      * @return An ImageComponent instance with byRef true and yUp false
      * @throws IOException Some error reading the file
      */
-    protected ImageComponent2D load2DImage(String filename)
+    @SuppressWarnings("deprecation")
+		protected ImageComponent2D load2DImage(String filename)
         throws IOException
     {
         // first try to locate the image as a fully qualified filename.

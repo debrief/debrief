@@ -389,9 +389,9 @@ public class LineShape extends PlainShape implements Serializable, Editable, Has
    * get the shape as a series of WorldLocation points.
    * Joined up, these form a representation of the shape
    */
-  public Collection getDataPoints()
+  public Collection<WorldLocation> getDataPoints()
   {
-    Collection res = new Vector(0, 1);
+    Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
     res.add(_start);
     res.add(_end);
 

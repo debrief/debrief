@@ -23,13 +23,13 @@ abstract public class WheelHandler extends ShapeHandler implements LayerHandler.
 
 	private static final String INNER_RADIUS = "Inner";
 
-	private MWC.GenericData.WorldLocation _centre;
+	MWC.GenericData.WorldLocation _centre;
 
-	private double _inner; // degs
+	double _inner; // degs
 
-	private double _outer; // degs
+	double _outer; // degs
 
-	private Integer _spokeSize = null; // degs
+	Integer _spokeSize = null; // degs
 
 	public WheelHandler()
 	{

@@ -45,6 +45,11 @@ package com.jrefinery.data;
 public class TimePeriodFormatException extends IllegalArgumentException {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * Creates a new exception.
      *
      * @param message  a message describing the exception.

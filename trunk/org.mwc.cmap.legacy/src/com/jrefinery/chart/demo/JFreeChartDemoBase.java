@@ -143,7 +143,8 @@ public class JFreeChartDemoBase
    * @param i the chart index.
    * @return a chart.
    */
-  public JFreeChart getChart(int i)
+  @SuppressWarnings("unchecked")
+	public JFreeChart getChart(int i)
   {
 
     if ((i < 0) && (i >= chart.length))
@@ -194,17 +195,17 @@ public class JFreeChartDemoBase
     String range = resources.getString("bar.horizontal.range");
 
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
-    JFreeChart chart = ChartFactory.createHorizontalBarChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createHorizontalBarChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.orange));
-    CategoryPlot plot = chart.getCategoryPlot();
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.orange));
+    CategoryPlot plot = chart1.getCategoryPlot();
     NumberAxis axis = (NumberAxis) plot.getRangeAxis();
     axis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
     axis.setCrosshairVisible(false);
     axis.setInverted(true);
 
-    return chart;
+    return chart1;
 
   }
 
@@ -222,12 +223,12 @@ public class JFreeChartDemoBase
     String range = resources.getString("bar.horizontal-stacked.range");
 
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
-    JFreeChart chart = ChartFactory.createStackedHorizontalBarChart(title, domain, range,
+    JFreeChart chart1 = ChartFactory.createStackedHorizontalBarChart(title, domain, range,
       data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
+    return chart1;
 
   }
 
@@ -244,15 +245,15 @@ public class JFreeChartDemoBase
     String range = resources.getString("bar.vertical.range");
 
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
-    JFreeChart chart = ChartFactory.createVerticalBarChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createVerticalBarChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
-    CategoryPlot plot = (CategoryPlot) chart.getPlot();
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
+    CategoryPlot plot = (CategoryPlot) chart1.getPlot();
     plot.setForegroundAlpha(0.9f);
     NumberAxis verticalAxis = (NumberAxis) plot.getRangeAxis();
     verticalAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-    return chart;
+    return chart1;
   }
 
   /**
@@ -269,13 +270,13 @@ public class JFreeChartDemoBase
     String range = resources.getString("bar.vertical3D.range");
 
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
-    JFreeChart chart = ChartFactory.createVerticalBarChart3D(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createVerticalBarChart3D(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
-    CategoryPlot plot = (CategoryPlot) chart.getPlot();
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
+    CategoryPlot plot = (CategoryPlot) chart1.getPlot();
     plot.setForegroundAlpha(0.75f);
-    return chart;
+    return chart1;
 
   }
 
@@ -293,12 +294,12 @@ public class JFreeChartDemoBase
     String range = resources.getString("bar.vertical-stacked.range");
 
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
-    JFreeChart chart
+    JFreeChart chart1
       = ChartFactory.createStackedVerticalBarChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
+    return chart1;
 
   }
 
@@ -315,12 +316,12 @@ public class JFreeChartDemoBase
     String domain = resources.getString("bar.vertical-stacked3D.domain");
     String range = resources.getString("bar.vertical-stacked3D.range");
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
-    JFreeChart chart
+    JFreeChart chart1
       = ChartFactory.createStackedVerticalBarChart3D(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
+    return chart1;
 
   }
 
@@ -336,16 +337,16 @@ public class JFreeChartDemoBase
     String title = resources.getString("pie.pie1.title");
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
     PieDataset extracted = DatasetUtilities.createPieDataset(data, 0);
-    JFreeChart chart = ChartFactory.createPieChart(title, extracted, true);
+    JFreeChart chart1 = ChartFactory.createPieChart(title, extracted, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.orange));
-    PiePlot plot = (PiePlot) chart.getPlot();
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.orange));
+    PiePlot plot = (PiePlot) chart1.getPlot();
     plot.setCircular(false);
     // make section 1 explode by 100%...
     plot.setRadiusPercent(0.60);
     plot.setExplodePercent(1, 1.00);
-    return chart;
+    return chart1;
 
   }
 
@@ -362,17 +363,17 @@ public class JFreeChartDemoBase
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
     Object category = data.getCategories().get(1);
     PieDataset extracted = DatasetUtilities.createPieDataset(data, category);
-    JFreeChart chart = ChartFactory.createPieChart(title, extracted, true);
+    JFreeChart chart1 = ChartFactory.createPieChart(title, extracted, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(Color.lightGray);
-    PiePlot pie = (PiePlot) chart.getPlot();
+    chart1.setBackgroundPaint(Color.lightGray);
+    PiePlot pie = (PiePlot) chart1.getPlot();
     pie.setSectionLabelType(PiePlot.NAME_AND_PERCENT_LABELS);
     pie.setBackgroundImage(JFreeChart.INFO.getLogo());
     pie.setBackgroundPaint(Color.white);
     pie.setBackgroundAlpha(0.6f);
     pie.setForegroundAlpha(0.75f);
-    return chart;
+    return chart1;
 
   }
 
@@ -381,7 +382,8 @@ public class JFreeChartDemoBase
    *
    * @return a sample XY plot.
    */
-  public JFreeChart createXYPlot()
+  @SuppressWarnings("deprecation")
+	public JFreeChart createXYPlot()
   {
 
     // create a default chart based on some sample data...
@@ -389,11 +391,11 @@ public class JFreeChartDemoBase
     String domain = resources.getString("xyplot.sample1.domain");
     String range = resources.getString("xyplot.sample1.range");
     XYDataset data = DemoDatasetFactory.createSampleXYDataset();
-    JFreeChart chart = ChartFactory.createXYChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createXYChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.green));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.green));
+    return chart1;
 
   }
 
@@ -412,23 +414,23 @@ public class JFreeChartDemoBase
     String range = resources.getString("timeseries.sample1.range");
     String copyrightStr = resources.getString("timeseries.sample1.copyright");
     XYDataset data = DemoDatasetFactory.createTimeSeriesCollection3();
-    JFreeChart chart = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
 
     // then customise it a little...
     TextTitle title2 = new TextTitle(subtitle, new Font("SansSerif", Font.PLAIN, 12));
     title2.setSpacer(new Spacer(Spacer.RELATIVE, 0.05, 0.05, 0.05, 0.0));
-    chart.addTitle(title2);
+    chart1.addTitle(title2);
 
     TextTitle copyright = new TextTitle(copyrightStr, new Font("SansSerif", Font.PLAIN, 9));
     copyright.setPosition(TextTitle.BOTTOM);
     copyright.setHorizontalAlignment(TextTitle.RIGHT);
-    chart.addTitle(copyright);
+    chart1.addTitle(copyright);
 
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    XYPlot plot = chart.getXYPlot();
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    XYPlot plot = chart1.getXYPlot();
     HorizontalDateAxis axis = (HorizontalDateAxis) plot.getDomainAxis();
     axis.setVerticalTickLabels(true);
-    return chart;
+    return chart1;
 
   }
 
@@ -446,16 +448,16 @@ public class JFreeChartDemoBase
     String domain = resources.getString("timeseries.sample2.domain");
     String range = resources.getString("timeseries.sample2.range");
     XYDataset data = DemoDatasetFactory.createTimeSeriesCollection4();
-    JFreeChart chart = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    XYPlot plot = chart.getXYPlot();
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    XYPlot plot = chart1.getXYPlot();
     VerticalLogarithmicAxis vla = new VerticalLogarithmicAxis(range);
     plot.setRangeAxis(vla);
-    return chart;
+    return chart1;
 
   }
 
@@ -477,13 +479,13 @@ public class JFreeChartDemoBase
     mavg.setPeriod(30);
     PlotFit pf = new PlotFit(data, mavg);
     data = pf.getFit();
-    JFreeChart chart = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
 
   }
 
@@ -501,13 +503,13 @@ public class JFreeChartDemoBase
     String range = resources.getString("timeseries.highlow.range");
     String subtitleStr = resources.getString("timeseries.highlow.subtitle");
     HighLowDataset data = DemoDatasetFactory.createSampleHighLowDataset();
-    JFreeChart chart = ChartFactory.createHighLowChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createHighLowChart(title, domain, range, data, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.magenta));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.magenta));
+    return chart1;
 
   }
 
@@ -525,16 +527,16 @@ public class JFreeChartDemoBase
     String range = resources.getString("timeseries.candlestick.range");
     String subtitleStr = resources.getString("timeseries.candlestick.subtitle");
     HighLowDataset data = DemoDatasetFactory.createSampleHighLowDataset();
-    JFreeChart chart = ChartFactory.createCandlestickChart(title, domain, range, data,
+    JFreeChart chart1 = ChartFactory.createCandlestickChart(title, domain, range, data,
       false);
 
-    chart.getPlot().setSeriesPaint(new Paint[]{Color.blue});
+    chart1.getPlot().setSeriesPaint(new Paint[]{Color.blue});
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.green));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.green));
+    return chart1;
 
   }
 
@@ -552,13 +554,13 @@ public class JFreeChartDemoBase
     String range = resources.getString("timeseries.signal.range");
     String subtitleStr = resources.getString("timeseries.signal.subtitle");
     SignalsDataset data = DemoDatasetFactory.createSampleSignalDataset();
-    JFreeChart chart = ChartFactory.createSignalChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createSignalChart(title, domain, range, data, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
 
   }
 
@@ -579,13 +581,13 @@ public class JFreeChartDemoBase
     data.setValue(new Double(34.0));
     ThermometerPlot plot = new ThermometerPlot(data);
     plot.setUnits(units);
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, false);
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, false);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
 
   }
 
@@ -607,14 +609,14 @@ public class JFreeChartDemoBase
     MeterPlot plot = new MeterPlot(data);
     plot.setMeterAngle(270);
     plot.setDialType(1);
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
       plot, false);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
   }
 
   /**
@@ -635,14 +637,14 @@ public class JFreeChartDemoBase
     MeterPlot plot = new MeterPlot(data);
     plot.setMeterAngle(270);
     plot.setDialType(0);
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
       plot, false);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
   }
 
   /**
@@ -663,14 +665,14 @@ public class JFreeChartDemoBase
     MeterPlot plot = new MeterPlot(data);
     plot.setMeterAngle(270);
     plot.setDialType(2);
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
       plot, false);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
   }
 
   /**
@@ -687,14 +689,14 @@ public class JFreeChartDemoBase
     DefaultMeterDataset data = DemoDatasetFactory.createMeterDataset();
 
     Plot plot = new CompassPlot(data);
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
       plot, false);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
   }
 
   /**
@@ -710,11 +712,11 @@ public class JFreeChartDemoBase
     String domain = resources.getString("other.wind.domain");
     String range = resources.getString("other.wind.range");
     WindDataset data = DemoDatasetFactory.createWindDataset1();
-    JFreeChart chart = ChartFactory.createWindPlot(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createWindPlot(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.green));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.green));
+    return chart1;
 
   }
 
@@ -731,18 +733,18 @@ public class JFreeChartDemoBase
     String domain = resources.getString("other.scatter.domain");
     String range = resources.getString("other.scatter.range");
     XYDataset data = new SampleXYDataset2();
-    JFreeChart chart = ChartFactory.createScatterPlot(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createScatterPlot(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.green));
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.green));
 
-    XYPlot plot = chart.getXYPlot();
+    XYPlot plot = chart1.getXYPlot();
     ValueAxis domainAxis = plot.getDomainAxis();
     domainAxis.setCrosshairVisible(true);
     NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
     rangeAxis.setCrosshairVisible(true);
     rangeAxis.setAutoRangeIncludesZero(false);
-    return chart;
+    return chart1;
 
   }
 
@@ -759,17 +761,17 @@ public class JFreeChartDemoBase
     String domain = resources.getString("other.line.domain");
     String range = resources.getString("other.line.range");
     CategoryDataset data = DemoDatasetFactory.createCategoryDataset();
-    JFreeChart chart = ChartFactory.createLineChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createLineChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundImage(JFreeChart.INFO.getLogo());
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.green));
+    chart1.setBackgroundImage(JFreeChart.INFO.getLogo());
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.green));
 
-    CategoryPlot plot = (CategoryPlot) chart.getPlot();
+    CategoryPlot plot = (CategoryPlot) chart1.getPlot();
     plot.setBackgroundAlpha(0.65f);
     HorizontalCategoryAxis axis = (HorizontalCategoryAxis) plot.getDomainAxis();
     axis.setVerticalCategoryLabels(true);
-    return chart;
+    return chart1;
   }
 
   /**
@@ -785,14 +787,14 @@ public class JFreeChartDemoBase
     String domain = resources.getString("other.xybar.domain");
     String range = resources.getString("other.xybar.range");
     IntervalXYDataset data = DemoDatasetFactory.createTimeSeriesCollection1();
-    JFreeChart chart = ChartFactory.createVerticalXYBarChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createVerticalXYBarChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
 
-    XYItemRenderer renderer = chart.getXYPlot().getRenderer();
+    XYItemRenderer renderer = chart1.getXYPlot().getRenderer();
     renderer.setToolTipGenerator(new TimeSeriesToolTipGenerator());
-    return chart;
+    return chart1;
   }
 
   /**
@@ -800,7 +802,8 @@ public class JFreeChartDemoBase
    *
    * @return a chart.
    */
-  public JFreeChart createNullXYPlot()
+  @SuppressWarnings({ "deprecation", "deprecation" })
+	public JFreeChart createNullXYPlot()
   {
 
     // create a default chart based on some sample data...
@@ -808,11 +811,11 @@ public class JFreeChartDemoBase
     String domain = resources.getString("test.null.domain");
     String range = resources.getString("test.null.range");
     XYDataset data = null;
-    JFreeChart chart = ChartFactory.createXYChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createXYChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
+    return chart1;
 
   }
 
@@ -821,7 +824,8 @@ public class JFreeChartDemoBase
    *
    * @return a sample XY plot with an empty dataset.
    */
-  public JFreeChart createXYPlotZeroData()
+  @SuppressWarnings("deprecation")
+	public JFreeChart createXYPlotZeroData()
   {
 
     // create a default chart based on some sample data...
@@ -829,11 +833,11 @@ public class JFreeChartDemoBase
     String domain = resources.getString("test.zero.domain");
     String range = resources.getString("test.zero.range");
     XYDataset data = new EmptyXYDataset();
-    JFreeChart chart = ChartFactory.createXYChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createXYChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
+    return chart1;
   }
 
   /**
@@ -850,13 +854,13 @@ public class JFreeChartDemoBase
     String range = resources.getString("test.scroll.range");
     String subtitleStr = resources.getString("test.scroll.subtitle");
     XYDataset data = DemoDatasetFactory.createTimeSeriesCollection2();
-    JFreeChart chart = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createTimeSeriesChart(title, domain, range, data, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.gray));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.gray));
+    return chart1;
 
   }
 
@@ -877,11 +881,11 @@ public class JFreeChartDemoBase
 
     CategoryDataset data = DemoDatasetFactory.createSingleSeriesCategoryDataset();
 
-    JFreeChart chart = ChartFactory.createHorizontalBarChart(title, domain, range, data, true);
-    chart.addTitle(new TextTitle(subtitle1Str));
-    chart.addTitle(new TextTitle(subtitle2Str));
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
-    return chart;
+    JFreeChart chart1 = ChartFactory.createHorizontalBarChart(title, domain, range, data, true);
+    chart1.addTitle(new TextTitle(subtitle1Str));
+    chart1.addTitle(new TextTitle(subtitle2Str));
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.red));
+    return chart1;
 
   }
 
@@ -891,7 +895,8 @@ public class JFreeChartDemoBase
    *
    * @return a chart.
    */
-  public JFreeChart createDynamicXYChart()
+  @SuppressWarnings("deprecation")
+	public JFreeChart createDynamicXYChart()
   {
 
     String title = resources.getString("test.dynamic.title");
@@ -899,13 +904,13 @@ public class JFreeChartDemoBase
     String range = resources.getString("test.dynamic.range");
 
     SampleXYDataset data = new SampleXYDataset();
-    JFreeChart chart = ChartFactory.createXYChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createXYChart(title, domain, range, data, true);
     SampleXYDatasetThread update = new SampleXYDatasetThread(data);
 
     Thread thread = new Thread(update);
     thread.start();
 
-    return chart;
+    return chart1;
 
   }
 
@@ -920,9 +925,6 @@ public class JFreeChartDemoBase
     // create a default chart based on some sample data...
     String title = this.resources.getString("combined.overlaid.title");
     String subtitleStr = this.resources.getString("combined.overlaid.subtitle");
-    String domain = this.resources.getString("combined.overlaid.domain");
-    String range = this.resources.getString("combined.overlaid.range");
-
     // create high-low and moving average dataset
     HighLowDataset highLowData = DemoDatasetFactory.createSampleHighLowDataset();
     MovingAveragePlotFitAlgorithm mavg = new MovingAveragePlotFitAlgorithm();
@@ -947,15 +949,15 @@ public class JFreeChartDemoBase
     overlaidPlot.add(subplot2);
 
     // make the top level JFreeChart object
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
       overlaidPlot, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
 
-    return chart;
+    return chart1;
 
   }
 
@@ -970,7 +972,6 @@ public class JFreeChartDemoBase
     // create a default chart based on some sample data...
     String title = this.resources.getString("combined.horizontal.title");
     String subtitleStr = this.resources.getString("combined.horizontal.subtitle");
-    String[] domains = this.resources.getStringArray("combined.horizontal.domains");
     String range = this.resources.getString("combined.horizontal.range");
 
     // calculate Time Series and Moving Average Dataset
@@ -987,9 +988,7 @@ public class JFreeChartDemoBase
 
     // decompose data into its two dataset series
     XYDataset series0 = new SubSeriesDataset(data, 0);
-    XYDataset series1 = new SubSeriesDataset(data, 1);
-
-    JFreeChart chart = null;
+    JFreeChart chart1 = null;
 
     // make a common vertical axis for all the sub-plots
     NumberAxis valueAxis = new VerticalNumberAxis(range);
@@ -1018,13 +1017,13 @@ public class JFreeChartDemoBase
     multiPlot.add(subplot3, weight[2]);
 
     // now make the top level JFreeChart
-    chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, multiPlot, true);
+    chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, multiPlot, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
 
   }
 
@@ -1040,9 +1039,6 @@ public class JFreeChartDemoBase
     String title = this.resources.getString("combined.vertical.title");
     String subtitleStr = this.resources.getString("combined.vertical.subtitle");
     String domain = this.resources.getString("combined.vertical.domain");
-    String[] ranges = this.resources.getStringArray("combined.vertical.ranges");
-
-
     // calculate Time Series and Moving Average Dataset
     MovingAveragePlotFitAlgorithm mavg = new MovingAveragePlotFitAlgorithm();
     mavg.setPeriod(30);
@@ -1108,13 +1104,13 @@ public class JFreeChartDemoBase
     multiPlot.add(subplot4, weight[3]);
 
     // now make the top level JFreeChart that contains the CombinedPlot
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, multiPlot, true);
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, multiPlot, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
 
   }
 
@@ -1164,11 +1160,6 @@ public class JFreeChartDemoBase
 
     // compose datasets for each sub-plot
     CombinedDataset data0 = new CombinedDataset(new SeriesDataset[]{series0});
-    CombinedDataset data1 = new CombinedDataset(new SeriesDataset[]{series0, series1});
-    CombinedDataset data2 = new CombinedDataset(new SeriesDataset[]{series2, series3});
-
-    int n = 3;    // number of combined (vertically laidout) charts
-
     // make one vertical axis for each (vertical) chart
     NumberAxis[] valueAxis = new NumberAxis[3];
     for (int i = 0; i < valueAxis.length; i++)
@@ -1224,15 +1215,15 @@ public class JFreeChartDemoBase
     multiPlot.add(subplot3, weight[2]);
 
     // now create the master JFreeChart object
-    JFreeChart chart = new JFreeChart(title,
+    JFreeChart chart1 = new JFreeChart(title,
       new Font("SansSerif", Font.BOLD, 12),
       multiPlot, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 10));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
-    return chart;
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.blue));
+    return chart1;
 
   }
 
@@ -1302,19 +1293,19 @@ public class JFreeChartDemoBase
     plot.add(subplot3, 1);
     //combinedPlot.adjustPlots();
 
-    JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
+    JFreeChart chart1 = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT, plot, true);
 
     // then customise it a little...
     TextTitle subtitle = new TextTitle(subtitleStr, new Font("SansSerif", Font.BOLD, 12));
-    chart.addTitle(subtitle);
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.cyan));
+    chart1.addTitle(subtitle);
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 0, 1000, Color.cyan));
 
     // setup thread to update base Dataset
     SampleXYDatasetThread update = new SampleXYDatasetThread(data);
     Thread thread = new Thread(update);
     thread.start();
 
-    return chart;
+    return chart1;
 
   }
 
@@ -1332,11 +1323,11 @@ public class JFreeChartDemoBase
 
     IntervalCategoryDataset data = DemoDatasetFactory.createSampleGanttDataset();
 
-    JFreeChart chart = ChartFactory.createGanttChart(title, domain, range, data, true);
+    JFreeChart chart1 = ChartFactory.createGanttChart(title, domain, range, data, true);
 
     // then customise it a little...
-    chart.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
-    return chart;
+    chart1.setBackgroundPaint(new GradientPaint(0, 0, Color.white, 1000, 0, Color.blue));
+    return chart1;
 
   }
 

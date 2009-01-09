@@ -15,8 +15,8 @@ import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class PropertyHandler extends MWCXMLReader
 {
-  private String _name = null;
-  private String _value = null;
+  String _name = null;
+  String _value = null;
 
   public PropertyHandler()
   {

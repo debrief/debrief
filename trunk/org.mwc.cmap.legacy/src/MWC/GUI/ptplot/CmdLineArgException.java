@@ -37,6 +37,10 @@ package MWC.GUI.ptplot;
  * @version $Id: CmdLineArgException.java,v 1.2 2004/05/25 15:35:28 Ian.Mayo Exp $
  */
 public class CmdLineArgException extends Exception {
-    public CmdLineArgException() { super(); }
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		public CmdLineArgException() { super(); }
     public CmdLineArgException(String s) { super(s); }
 }

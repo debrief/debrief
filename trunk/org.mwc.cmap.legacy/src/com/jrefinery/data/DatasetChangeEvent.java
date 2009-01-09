@@ -50,6 +50,10 @@ package com.jrefinery.data;
 public class DatasetChangeEvent extends java.util.EventObject {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+		/**
      * The dataset that generated the change event.
      */
     private Dataset data;

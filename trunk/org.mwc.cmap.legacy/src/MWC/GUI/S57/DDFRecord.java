@@ -99,7 +99,7 @@ public class DDFRecord implements DDFConstants {
         buf.append("    DataSize = " + nDataSize + "\n");
 
         if (paoFields != null) {
-            for (Iterator it = paoFields.iterator(); it.hasNext();) {
+            for (Iterator<DDFField> it = paoFields.iterator(); it.hasNext();) {
                 buf.append((DDFField) it.next());
             }
         }
@@ -375,7 +375,7 @@ public class DDFRecord implements DDFConstants {
      *         valid until the next record read.
      */
     public DDFField findField(String pszName, int iFieldIndex) {
-        for (Iterator it = paoFields.iterator(); it.hasNext();) {
+        for (Iterator<DDFField> it = paoFields.iterator(); it.hasNext();) {
             DDFField ddff = (DDFField) it.next();
             if (pszName.equalsIgnoreCase(ddff.getFieldDefn().getName())) {
                 if (iFieldIndex == 0) {
@@ -408,7 +408,7 @@ public class DDFRecord implements DDFConstants {
     /**
      * Get an interator over the fields.
      */
-    public Iterator iterator() {
+    public Iterator<DDFField> iterator() {
         if (paoFields != null) {
             return paoFields.iterator();
         }
@@ -457,7 +457,7 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         MutableInt nBytesRemaining = new MutableInt();
 
-        byte[] pachData = poField.getSubfieldData(poSFDefn,
+        byte[] pachData1 = poField.getSubfieldData(poSFDefn,
                 nBytesRemaining,
                 iSubfieldIndex);
 
@@ -465,7 +465,7 @@ public class DDFRecord implements DDFConstants {
         /* Return the extracted value. */
         /* -------------------------------------------------------------------- */
 
-        return poSFDefn.extractIntData(pachData, nBytesRemaining.value, null);
+        return poSFDefn.extractIntData(pachData1, nBytesRemaining.value, null);
     }
 
     /**
@@ -510,14 +510,14 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         MutableInt nBytesRemaining = new MutableInt();
 
-        byte[] pachData = poField.getSubfieldData(poSFDefn,
+        byte[] pachData1 = poField.getSubfieldData(poSFDefn,
                 nBytesRemaining,
                 iSubfieldIndex);
 
         /* -------------------------------------------------------------------- */
         /* Return the extracted value. */
         /* -------------------------------------------------------------------- */
-        return poSFDefn.extractFloatData(pachData, nBytesRemaining.value, null);
+        return poSFDefn.extractFloatData(pachData1, nBytesRemaining.value, null);
     }
 
     /**
@@ -564,7 +564,7 @@ public class DDFRecord implements DDFConstants {
         /* -------------------------------------------------------------------- */
         MutableInt nBytesRemaining = new MutableInt();
 
-        byte[] pachData = poField.getSubfieldData(poSFDefn,
+        byte[] pachData1 = poField.getSubfieldData(poSFDefn,
                 nBytesRemaining,
                 iSubfieldIndex);
 
@@ -572,7 +572,7 @@ public class DDFRecord implements DDFConstants {
         /* Return the extracted value. */
         /* -------------------------------------------------------------------- */
 
-        return poSFDefn.extractStringData(pachData, nBytesRemaining.value, null);
+        return poSFDefn.extractStringData(pachData1, nBytesRemaining.value, null);
     }
 
 }

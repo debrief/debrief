@@ -106,13 +106,7 @@ public class CompassPlot extends Plot {
     private Ellipse2D.Double circle2;
 
     /** A working area. */
-    private Area a1, a2, a3, a4;
-
-    /** A working area. */
-    private Area needleArea;
-
-    /** A working shape. */
-    private Rectangle2D rect1;
+    private Area a1, a2;
 
     /** An array of meter datasets. */
     private MeterDataset[] datasets = new MeterDataset[1];
@@ -173,7 +167,7 @@ public class CompassPlot extends Plot {
 
         circle1 = new Ellipse2D.Double();
         circle2 = new Ellipse2D.Double();
-        rect1   = new Rectangle2D.Double();
+        new Rectangle2D.Double();
         setSeriesNeedle(0);
     }
 
@@ -643,7 +637,8 @@ public class CompassPlot extends Plot {
      *
      * @deprecated use getLegendItems().
      */
-    public java.util.List getLegendItemLabels() {
+    @SuppressWarnings("unchecked")
+		public java.util.List getLegendItemLabels() {
         return null;
     }
 

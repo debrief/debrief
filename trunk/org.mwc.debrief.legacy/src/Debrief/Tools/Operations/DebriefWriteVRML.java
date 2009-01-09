@@ -55,6 +55,7 @@ package Debrief.Tools.Operations;
 
 import java.util.*;
 
+import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
@@ -98,7 +99,7 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
     for (int i = 0; i < num; i++)
     {
       Layer l = (Layer) _theData.elementAt(i);
-      Enumeration iter = l.elements();
+      Enumeration<Editable> iter = l.elements();
       while (iter.hasMoreElements())
       {
         Object oj = iter.nextElement();
@@ -132,7 +133,7 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
     for (int i = 0; i < num; i++)
     {
       Layer l = (Layer) _theData.elementAt(i);
-      Enumeration iter = l.elements();
+      Enumeration<Editable> iter = l.elements();
       int len = 0;
       while (iter.hasMoreElements())
       {

@@ -9,11 +9,12 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
-import MWC.GenericData.HiResDate;
-import MWC.TacticalData.NarrativeEntry;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
+
+import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
@@ -29,7 +30,7 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
   private final MWC.GUI.Layers _theLayers;
 
   // our "working" Narrative
-  private Debrief.Wrappers.NarrativeWrapper _myNarrative;
+  Debrief.Wrappers.NarrativeWrapper _myNarrative;
 
   /**
    * temporarily set the step control
@@ -72,7 +73,7 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
   }
 
-  private void addThis(MWC.TacticalData.NarrativeEntry entry)
+  void addThis(MWC.TacticalData.NarrativeEntry entry)
   {
     _myNarrative.add(entry);
   }
@@ -93,7 +94,7 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     Element trk = doc.createElement(_myType);
     trk.setAttribute("Name", Narrative.getName());
     // now the entries
-    java.util.Enumeration iter = Narrative.elements();
+    java.util.Enumeration<Editable> iter = Narrative.elements();
     while (iter.hasMoreElements())
     {
       MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
@@ -119,16 +120,16 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
   static abstract public class EntryHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   {
 
-    private static final String _myType = "narrative_entry";
-    private String _entry;
-    private HiResDate _dtg;
-    private String _track;
+    private static final String _myType1 = "narrative_entry";
+    String _entry;
+    HiResDate _dtg;
+    String _track;
 		protected String _type;
 
     public EntryHandler()
     {
       // inform our parent what type of class we are
-      super(_myType);
+      super(_myType1);
 
       addAttributeHandler(new HandleAttribute("Entry")
       {
@@ -194,7 +195,7 @@ public final class NarrativeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
                                    org.w3c.dom.Document doc)
     {
 
-      Element eEntry = doc.createElement(_myType);
+      Element eEntry = doc.createElement(_myType1);
       eEntry.setAttribute("Dtg", writeThis(Entry.getDTG()));
       eEntry.setAttribute("Entry", Entry.getEntry());
       eEntry.setAttribute("Track", Entry.getTrackName());

@@ -10,8 +10,6 @@
 package org.j3d.geom;
 
 // Standard imports
-import javax.vecmath.Point3f;
-
 import junit.framework.Test;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;

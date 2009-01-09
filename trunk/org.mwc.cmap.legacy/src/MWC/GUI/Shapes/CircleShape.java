@@ -360,10 +360,10 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
   /**
    * calculate the shape as a series of WorldLocation points.  Joined up, these form a representation of the shape
    */
-  public Collection getDataPoints()
+  public Collection<WorldLocation> getDataPoints()
   {
     // get ready to store the list
-    Collection res = new Vector(0, 1);
+    Collection<WorldLocation> res = new Vector<WorldLocation>(0, 1);
 
     // convert the radius to degs
     double radDegs = MWC.Algorithms.Conversions.Yds2Degs(_theRadius);
@@ -458,8 +458,8 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
 					// ok - process the drag
 					super.addToMe(delta);
 					// ok, what's this distance from the origin?
-					WorldVector newSep = subtract(_theCentre);
-					WorldDistance dist = new WorldDistance(newSep);
+					WorldVector newSep1 = subtract(_theCentre);
+					WorldDistance dist = new WorldDistance(newSep1);
 					setRadius(dist);
 			
 		//		WorldDistance newDist = new WorldDistance(dist.getValueIn(WorldDistance.YARDS) + _theRadius, WorldDistance.YARDS);

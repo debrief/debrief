@@ -11,7 +11,12 @@ import com.jrefinery.ui.RefineryUtilities;
 
 public class FastScatterPlotDemo extends ApplicationFrame {
 
-    private static final int COUNT = 1000000;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		private static final int COUNT = 1000000;
 
     private float[][] data = new float[2][COUNT];
 

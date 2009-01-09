@@ -102,16 +102,16 @@ final class RotatorControl extends javax.swing.JPanel {
 
     }//GEN-END:initComponents
 
-  private void downBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downBtnActionPerformed
+  void downBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_downBtnActionPerformed
 // Add your handling code here:
      doRotate(-1.0, _myDirection);
   }//GEN-LAST:event_downBtnActionPerformed
 
-  private void centreBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_centreBtnActionPerformed
+  void centreBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_centreBtnActionPerformed
 // Add your handling code here:
   }//GEN-LAST:event_centreBtnActionPerformed
 
-  private void upBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upBtnActionPerformed
+  void upBtnActionPerformed (java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upBtnActionPerformed
 // Add your handling code here:
      doRotate(1.0, _myDirection);
   }//GEN-LAST:event_upBtnActionPerformed

@@ -76,7 +76,12 @@ import com.jrefinery.ui.FontChooserPanel;
  */
 public class AxisPropertyEditPanel extends JPanel implements ActionListener {
 
-    /** The axis label. */
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** The axis label. */
     private JTextField label;
 
     /** The label font. */

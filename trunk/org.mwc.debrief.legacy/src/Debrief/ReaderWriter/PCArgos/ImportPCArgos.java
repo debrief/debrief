@@ -78,7 +78,7 @@ final class ImportPCArgos extends MWC.Utilities.ReaderWriter.PlainImporterBase
    * calculate course and speed from last point, and the time of
    * next valid point).
    */
-  private Hashtable _lastPoints = null;
+  private Hashtable<String, Fix> _lastPoints = null;
 
   /** the indexed list of colours we are using
    */
@@ -271,7 +271,7 @@ final class ImportPCArgos extends MWC.Utilities.ReaderWriter.PlainImporterBase
     // insert/retrieve the points in the readLine method
     if(_lastPoints != null)
       _lastPoints.clear();
-    _lastPoints = new Hashtable();
+    _lastPoints = new Hashtable<String, Fix>();
 
     // initialise the importer
     _theImporter.setParameters(_origin, _dtg, _lastPoints, _freq);

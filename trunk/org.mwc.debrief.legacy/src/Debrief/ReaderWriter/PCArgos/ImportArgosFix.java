@@ -55,12 +55,12 @@ final class ImportArgosFix implements PlainLineImporter
 
 	private WorldLocation _origin = null;
 	private long _dtg = 0;
-	private Hashtable _lastPoints = null;
+	private Hashtable<String, Fix> _lastPoints = null;
 	private long _freq = 0;
 	
 	public final void setParameters(WorldLocation origin,
 														long DTG,
-														Hashtable lastPoints,
+														Hashtable<String, Fix> lastPoints,
 														long freq)
 	{
 		_origin = origin;

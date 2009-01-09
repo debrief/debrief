@@ -12,14 +12,15 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 import java.awt.Color;
 import java.awt.Font;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
-import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldDistanceWithUnits;
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;

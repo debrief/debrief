@@ -10,10 +10,7 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import org.xml.sax.*;
-
-import MWC.Utilities.ReaderWriter.XML.*;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldSpeed;
 
 
 abstract public class WorldSpeedHandler extends BaseDataHandler

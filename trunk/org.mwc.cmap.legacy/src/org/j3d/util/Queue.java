@@ -41,14 +41,14 @@ public class Queue
 {
 
     /** linked list queue */
-    private LinkedList m_queue;
+    private LinkedList<Object> m_queue;
 
     /**
      * Constructor. Create a simple queue.
      */
     public Queue()
     {
-        m_queue = new LinkedList();
+        m_queue = new LinkedList<Object>();
     }
 
     /**

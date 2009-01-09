@@ -428,7 +428,7 @@ public class EPSGraphics extends PtolemyGraphics {
     private Color _currentColor = Color.black;
     private Font _currentFont;
     private int _width, _height;
-    private Hashtable _linepattern = new Hashtable();
+    private Hashtable<Color, String> _linepattern = new Hashtable<Color, String>();
     private OutputStream _out;
     private StringBuffer _buffer = new StringBuffer();
     private Clipboard _clipboard;

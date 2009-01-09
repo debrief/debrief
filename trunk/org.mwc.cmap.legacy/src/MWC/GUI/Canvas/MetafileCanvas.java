@@ -530,6 +530,7 @@ public class MetafileCanvas implements CanvasType
 		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (addPainter)");
 	}
 
+	@SuppressWarnings("unchecked")
 	public java.util.Enumeration getPainters()
 	{
 		System.out.println("WARNING - PLOTTING FEATURE NOT IMPLEMENTED (getPainters)");

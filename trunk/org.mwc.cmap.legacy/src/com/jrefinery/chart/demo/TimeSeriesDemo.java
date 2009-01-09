@@ -60,6 +60,11 @@ import com.jrefinery.ui.RefineryUtilities;
 public class TimeSeriesDemo extends ApplicationFrame {
 
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/**
      * A demonstration application showing a quarterly time series containing a null value.
      *
      * @param title  the frame title.

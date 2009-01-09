@@ -508,7 +508,8 @@ public class ChartUtilities {
      *
      * @throws IOException if there are any I/O errors.
      */
-    public static void writeImageMap(PrintWriter writer, String name, ChartRenderingInfo info,
+    @SuppressWarnings("unchecked")
+		public static void writeImageMap(PrintWriter writer, String name, ChartRenderingInfo info,
                                      boolean useOverLibForToolTips) throws IOException {
 
         writer.println("<MAP NAME=\"" + name + "\">");

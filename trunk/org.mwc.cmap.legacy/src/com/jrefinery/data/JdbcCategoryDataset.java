@@ -135,8 +135,8 @@ public class JdbcCategoryDataset extends DefaultCategoryDataset implements Categ
         int numberOfColumns = 0;
         int numberOfValidColumns = 0;
         int columnTypes[] = null;
-        List categoryNames = new ArrayList();
-        Vector rows = new Vector();
+        List<String> categoryNames = new ArrayList<String>();
+        Vector<Number[]> rows = new Vector<Number[]>();
         Number[] newRow;
 
         if (connection == null) {
@@ -200,7 +200,7 @@ public class JdbcCategoryDataset extends DefaultCategoryDataset implements Categ
 
                 // Get all rows.
                 //System.out.println("Retrieving row data");
-                rows = new Vector();
+                rows = new Vector<Number[]>();
                 while (resultSet.next()) {
                     /// First column is a category name
                     categoryNames.add(resultSet.getString(1));

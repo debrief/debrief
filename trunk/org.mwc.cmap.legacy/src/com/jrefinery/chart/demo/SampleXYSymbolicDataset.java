@@ -112,12 +112,12 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
      * numbered 0, 1, ...
      *
      * @param series  the index (zero-based) of the series.
-     * @param item  the index (zero-based) of the required item.
+     * @param item1  the index (zero-based) of the required item.
      *
      * @return the x-value for the specified series and item.
      */
-    public Number getXValue(int series, int item) {
-        return xValues[series][item];
+    public Number getXValue(int series, int item1) {
+        return xValues[series][item1];
     }
 
     /**
@@ -125,12 +125,12 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
      * numbered 0, 1, ...
      *
      * @param series  the index (zero-based) of the series.
-     * @param item  the index (zero-based) of the required item.
+     * @param item1  the index (zero-based) of the required item.
      *
      * @return the y-value for the specified series and item.
      */
-    public Number getYValue(int series, int item) {
-        return yValues[series][item];
+    public Number getYValue(int series, int item1) {
+        return yValues[series][item1];
     }
 
     /**
@@ -239,12 +239,12 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
      * <CODE>series</CODE> and <CODE>item</CODE> parameters.
      *
      * @param series value of the serie.
-     * @param item value of the item.
+     * @param item1 value of the item.
      *
      * @return the symbolic value.
      */
-    public String getXSymbolicValue(int series, int item) {
-        Integer intValue = (Integer) getXValue(series, item);
+    public String getXSymbolicValue(int series, int item1) {
+        Integer intValue = (Integer) getXValue(series, item1);
         return getXSymbolicValue(intValue);
     }
 
@@ -253,11 +253,11 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
      * <CODE>series</CODE> and <CODE>item</CODE> parameters.
      *
      * @param series value of the serie.
-     * @param item value of the item.
+     * @param item1 value of the item.
      * @return the symbolic value.
      */
-    public String getYSymbolicValue(int series, int item) {
-        Integer intValue = (Integer) getYValue(series, item);
+    public String getYSymbolicValue(int series, int item1) {
+        Integer intValue = (Integer) getYValue(series, item1);
         return getYSymbolicValue(intValue);
     }
 
@@ -302,7 +302,8 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
      *
      * @return  the shared Y symbolic array.
      */
-    public static String[] combineYSymbolicDataset(YisSymbolic dataset1, YisSymbolic dataset2) {
+    @SuppressWarnings("unchecked")
+		public static String[] combineYSymbolicDataset(YisSymbolic dataset1, YisSymbolic dataset2) {
 
         SampleXYSymbolicDataset sDataset1 = (SampleXYSymbolicDataset) dataset1;
         SampleXYSymbolicDataset sDataset2 = (SampleXYSymbolicDataset) dataset2;
@@ -358,7 +359,8 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
      *
      * @return  the shared X symbolic array.
      */
-    public static String[] combineXSymbolicDataset(XisSymbolic dataset1, XisSymbolic dataset2) {
+    @SuppressWarnings("unchecked")
+		public static String[] combineXSymbolicDataset(XisSymbolic dataset1, XisSymbolic dataset2) {
         SampleXYSymbolicDataset sDataset1 = (SampleXYSymbolicDataset) dataset1;
         SampleXYSymbolicDataset sDataset2 = (SampleXYSymbolicDataset) dataset2;
         String[] sDatasetSymbolicValues1 = sDataset1.getXSymbolicValues();
@@ -406,9 +408,9 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
         Integer[][] nYValues = (Integer[][]) cloneArray(this.yValues);
         String[] nXSymbolicValues = (String[]) cloneArray(this.xSymbolicValues);
         String[] nYSymbolicValues = (String[]) cloneArray(this.ySymbolicValues);
-        String[] seriesName = (String[]) cloneArray(this.seriesName);
+        String[] seriesName1 = (String[]) cloneArray(this.seriesName);
         return new SampleXYSymbolicDataset(nDatasetName, nXValues, nYValues,
-                                           nXSymbolicValues, nYSymbolicValues, seriesName);
+                                           nXSymbolicValues, nYSymbolicValues, seriesName1);
     }
 
     /**
@@ -418,7 +420,8 @@ public class SampleXYSymbolicDataset extends AbstractSeriesDataset
      *
      * @return a clone.
      */
-    private static Object cloneArray(Object arr) {
+    @SuppressWarnings("unchecked")
+		private static Object cloneArray(Object arr) {
 
         if (arr == null) {
             return arr;

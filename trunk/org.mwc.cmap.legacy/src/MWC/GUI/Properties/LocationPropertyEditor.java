@@ -51,8 +51,7 @@ package MWC.GUI.Properties;
 // Initial revision
 //
 
-import java.beans.*;
-import java.awt.*;
+import java.beans.PropertyEditorSupport;
 
 public class LocationPropertyEditor extends PropertyEditorSupport
 {

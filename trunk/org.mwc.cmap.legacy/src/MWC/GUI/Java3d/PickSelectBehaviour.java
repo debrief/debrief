@@ -8,14 +8,14 @@
 */
 package MWC.GUI.Java3d;
 
-import com.sun.j3d.utils.picking.behaviors.PickMouseBehavior;
-import com.sun.j3d.utils.picking.behaviors.PickingCallback;
-import com.sun.j3d.utils.picking.PickTool;
-import com.sun.j3d.utils.picking.PickResult;
-import com.sun.j3d.utils.behaviors.mouse.MouseBehaviorCallback;
-import com.sun.j3d.utils.behaviors.mouse.MouseRotate;
+import javax.media.j3d.Bounds;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Canvas3D;
+import javax.media.j3d.TransformGroup;
 
-import javax.media.j3d.*;
+import com.sun.j3d.utils.picking.PickResult;
+import com.sun.j3d.utils.picking.PickTool;
+import com.sun.j3d.utils.picking.behaviors.PickMouseBehavior;
 
 
   /**
@@ -40,9 +40,6 @@ import javax.media.j3d.*;
 public class PickSelectBehaviour extends PickMouseBehavior
 {
     int pickMode = PickTool.BOUNDS;
-    private PickingCallback callback=null;
-    private TransformGroup currentTG;
-
     private SelectionListener _myListener;
 
 

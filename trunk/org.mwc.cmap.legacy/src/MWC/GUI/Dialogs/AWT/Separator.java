@@ -3,6 +3,10 @@ package MWC.GUI.Dialogs.AWT;
 import java.awt.*;
 
 class Separator extends Component {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	int   thickness= 2;
 
 	public void paint(Graphics g) {

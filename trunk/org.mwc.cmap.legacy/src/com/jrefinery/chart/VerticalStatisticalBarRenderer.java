@@ -39,12 +39,12 @@
 package com.jrefinery.chart;
 
 import java.awt.Graphics2D;
-import java.awt.Shape;
 import java.awt.Paint;
+import java.awt.Shape;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
+
 import com.jrefinery.chart.tooltips.CategoryToolTipGenerator;
-import com.jrefinery.chart.tooltips.StandardCategoryToolTipGenerator;
 import com.jrefinery.chart.urls.CategoryURLGenerator;
 import com.jrefinery.data.CategoryDataset;
 import com.jrefinery.data.StatisticalCategoryDataset;
