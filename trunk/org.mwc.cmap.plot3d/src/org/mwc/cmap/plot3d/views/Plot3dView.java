@@ -96,14 +96,14 @@ public class Plot3dView extends ViewPart
 	 */
 	private String _myTitle = "Empty";
 
-	private final class SelectionHelper implements ISelectionProvider
+	protected final class SelectionHelper implements ISelectionProvider
 	{
-		private Vector _selectionListeners;
+		private Vector<ISelectionChangedListener> _selectionListeners;
 
 		public void addSelectionChangedListener(ISelectionChangedListener listener)
 		{
 			if (_selectionListeners == null)
-				_selectionListeners = new Vector(0, 1);
+				_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
 			// see if we don't already contain it..
 			if (!_selectionListeners.contains(listener))
@@ -127,7 +127,7 @@ public class Plot3dView extends ViewPart
 		public void fireNewSelection(ISelection data)
 		{
 			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, data);
-			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners.iterator(); stepper.hasNext();)
 			{
 				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
 				if (thisL != null)
@@ -212,19 +212,19 @@ public class Plot3dView extends ViewPart
 				 */
 				private static final long serialVersionUID = 1L;
 
-				public void dataExtended(final Layers theData)
+				public void dataExtended(final Layers theData1)
 				{
 					//
 					System.out.println("extended!");
-					doDataExtended(theData, this);
+					doDataExtended(theData1, this);
 				}
 
-				public void dataModified(final Layers theData, final Layer changedLayer)
+				public void dataModified(final Layers theData1, final Layer changedLayer)
 				{
 					System.out.println("modified!");
 				}
 
-				public void dataReformatted(final Layers theData, final Layer changedLayer)
+				public void dataReformatted(final Layers theData1, final Layer changedLayer)
 				{
 					//
 					System.out.println("reformatted!");
@@ -278,14 +278,14 @@ public class Plot3dView extends ViewPart
 		/** hmm, keep track of the wrapped listeners. we need to remember the 
 		 * wrapped instance so we can implement the 'remove' action
 		 */
-		private HashMap _listeners;
+		private HashMap<StepperListener, PropertyChangeListener> _listeners;
 
 		
 		public TimeControllerWrapper(TimeProvider prov)
 		{
 			_prov = prov;
 			
-			_listeners = new HashMap();
+			_listeners = new HashMap<StepperListener, PropertyChangeListener>();
 		}
 
 		public void addStepperListener(final StepperListener listener)
@@ -554,7 +554,7 @@ public class Plot3dView extends ViewPart
 		
 	}
 
-	private void fillContextMenu(IMenuManager manager)
+	void fillContextMenu(IMenuManager manager)
 	{
 	}
 
@@ -794,7 +794,7 @@ public class Plot3dView extends ViewPart
 			return;
 
 		// now check for the children of the base layer
-		Enumeration iter = thisLayer.elements();
+		Enumeration<Editable> iter = thisLayer.elements();
 		while (iter.hasMoreElements())
 		{
 			Plottable thisP = (Plottable) iter.nextElement();
@@ -812,7 +812,7 @@ public class Plot3dView extends ViewPart
 
 	}
 
-	private void doDataExtended(final Layers theData, final WorldHolder theHolder)
+	void doDataExtended(final Layers theData, final WorldHolder theHolder)
 	{
 		// so, first pass down through our set of layers, and check that everything
 		// in there
@@ -938,7 +938,7 @@ public class Plot3dView extends ViewPart
 		}
 		else
 		{
-			Enumeration iter = thisLayer.elements();
+			Enumeration<Editable> iter = thisLayer.elements();
 			while (iter.hasMoreElements())
 			{
 				Plottable pl = (Plottable) iter.nextElement();

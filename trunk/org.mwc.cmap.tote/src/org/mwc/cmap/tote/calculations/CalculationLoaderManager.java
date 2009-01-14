@@ -19,7 +19,7 @@ import MWC.GenericData.HiResDate;
  */
 public abstract class CalculationLoaderManager
 {
-	private ArrayList _loaders;
+	private ArrayList<toteCalculation> _loaders;
 
 	// Extension point tag and attributes in plugin.xml
 	private String EXTENSION_POINT_ID;
@@ -40,11 +40,10 @@ public abstract class CalculationLoaderManager
 		getCalculations();
 	}
 
-	private Vector getCalculations()
+	private void getCalculations()
 	{
-		Vector res = new Vector(0, 1);
 
-		_loaders = new ArrayList();
+		_loaders = new ArrayList<toteCalculation>();
 		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
 				PLUGIN_ID, EXTENSION_POINT_ID);
 
@@ -73,10 +72,9 @@ public abstract class CalculationLoaderManager
 			System.out.println("* No configuration found!");
 		}
 
-		return res;
 	}
 
-	private ArrayList getToolActionDescriptors()
+	private ArrayList<toteCalculation> getToolActionDescriptors()
 	{
 		return _loaders;
 	}

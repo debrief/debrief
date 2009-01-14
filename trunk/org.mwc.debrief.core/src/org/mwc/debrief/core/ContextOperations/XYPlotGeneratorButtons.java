@@ -28,7 +28,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			Layer[] parentLayers, 
 			Editable[] subjects)
 	{
-		final Vector candidates = new Vector(0,1);
+		final Vector<Editable> candidates = new Vector<Editable>(0,1);
 		boolean duffItemFound = false;
 		
 		// right, go through the items and have a nice look at them

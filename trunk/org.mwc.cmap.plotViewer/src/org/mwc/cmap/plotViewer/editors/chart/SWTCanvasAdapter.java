@@ -97,28 +97,36 @@
 
 package org.mwc.cmap.plotViewer.editors.chart;
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.event.MouseEvent;
 import java.awt.image.ImageObserver;
-import java.beans.*;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.FontData;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.ImageData;
+import org.eclipse.swt.graphics.PaletteData;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.ColorHelper;
+import org.mwc.cmap.core.property_support.FontHelper;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.Projections.FlatProjection;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Swing implementation of a canvas.
@@ -155,7 +163,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
     /**
      * the list of registered painters for this canvas.
      */
-    protected Vector _thePainters;
+    protected Vector<PaintListener> _thePainters;
 
     /**
      * the dimensions of the canvas - we keep our own track of this in order to
@@ -176,7 +184,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
     /**
      * a list of the line-styles we know about.
      */
-    static private java.util.HashMap _myLineStyles = null;
+    static private java.util.HashMap<Integer, BasicStroke> _myLineStyles = null;
 
     /**
      * the current color
@@ -214,7 +222,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
         setBackgroundColor(DEFAULT_BACKGROUND_COLOR);
 
         // initialisation
-        _thePainters = new Vector(0, 1);
+        _thePainters = new Vector<PaintListener>(0, 1);
 
         // create our projection
         if (proj != null)
@@ -318,7 +326,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
         // get the data area for the current painters
         WorldArea theArea = null;
-        final Enumeration enumer = _thePainters.elements();
+        final Enumeration<PaintListener> enumer = _thePainters.elements();
         while (enumer.hasMoreElements())
         {
             final CanvasType.PaintListener thisP = (CanvasType.PaintListener) enumer
@@ -749,7 +757,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
     {
         if (_myLineStyles == null)
         {
-            _myLineStyles = new java.util.HashMap(5);
+            _myLineStyles = new java.util.HashMap<Integer, BasicStroke>(5);
             _myLineStyles.put(new Integer(MWC.GUI.CanvasType.SOLID),
                     new java.awt.BasicStroke(1, java.awt.BasicStroke.CAP_BUTT,
                             java.awt.BasicStroke.JOIN_MITER, 1, new float[] {
@@ -1051,7 +1059,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
         _thePainters.removeElement(listener);
     }
 
-    public final Enumeration getPainters()
+    public final Enumeration<PaintListener> getPainters()
     {
         return _thePainters.elements();
     }

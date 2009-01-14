@@ -66,7 +66,7 @@ public class DragComponent extends DragFeature
 			if (!sorted)
 			{
 				// nope, let's just run through it
-				Enumeration pts = thisLayer.elements();
+				Enumeration<Editable> pts = thisLayer.elements();
 				while (pts.hasMoreElements())
 				{
 					Plottable pt = (Plottable) pts.nextElement();
@@ -262,6 +262,7 @@ public class DragComponent extends DragFeature
 			return res;
 		}
 
+		@SuppressWarnings("deprecation")
 		final public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
 				Layers theLayers, SWTCanvas theCanvas)
 		{
@@ -341,6 +342,7 @@ public class DragComponent extends DragFeature
 
 		}
 
+		@SuppressWarnings("deprecation")
 		final public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
 		{
 			// just check we actually dragged something

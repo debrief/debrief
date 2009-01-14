@@ -37,7 +37,7 @@ public class CursorTracker /* extends StatusPanel */
 	/** the line instance we write to
 	 * 
 	 */
-	private final LineItem _myLine;
+	final LineItem _myLine;
 
 	/**
 	 * something to listen out for chart movement

@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.9">
-  
+      version="1.0.10">
+
    <description>
-      [1.0.9] Add help link
+      [1.0.10] Update to JDK1.6
+[1.0.9] Add help link
 [1.0.8] Amend online update location
 [1.0.7] Fix minor auto-generate problem
 [1.0.6] Handle tote items being removed from layer manager

@@ -112,14 +112,14 @@ public class XYPlotView extends ViewPart
 	 */
 	private AbstractDataset _dataset;
 
-	private final class SelectionHelper implements ISelectionProvider
+	protected final class SelectionHelper implements ISelectionProvider
 	{
-		private Vector _selectionListeners;
+		private Vector<ISelectionChangedListener> _selectionListeners;
 
 		public void addSelectionChangedListener(ISelectionChangedListener listener)
 		{
 			if (_selectionListeners == null)
-				_selectionListeners = new Vector(0, 1);
+				_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
 			// see if we don't already contain it..
 			if (!_selectionListeners.contains(listener))
@@ -143,7 +143,7 @@ public class XYPlotView extends ViewPart
 		public void fireNewSelection(ISelection data)
 		{
 			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, data);
-			for (Iterator stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners.iterator(); stepper.hasNext();)
 			{
 				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
 				if (thisL != null)
@@ -177,7 +177,7 @@ public class XYPlotView extends ViewPart
 	/**
 	 * the data-area of the plot
 	 */
-	private StepperXYPlot _thePlot;
+	StepperXYPlot _thePlot;
 
 	/**
 	 * the area surrounding the plot
@@ -187,7 +187,7 @@ public class XYPlotView extends ViewPart
 	/**
 	 * object to tie the plot to the step control
 	 */
-	private StepperChartPanel _chartInPanel;
+	StepperChartPanel _chartInPanel;
 
 	/**
 	 * somebody to listen to the time changes
@@ -484,7 +484,7 @@ public class XYPlotView extends ViewPart
 		}
 	}
 
-	private final void wmfToFile()
+	final void wmfToFile()
 	{
 
 		// create the metafile graphics
@@ -494,7 +494,7 @@ public class XYPlotView extends ViewPart
 		doWMF(mf);
 	}
 
-	private final void wmfToClipboard()
+	final void wmfToClipboard()
 	{
 
 		// create the metafile graphics
@@ -599,7 +599,7 @@ public class XYPlotView extends ViewPart
 		manager.add(_editMyProperties);
 	}
 
-	private void fillContextMenu(IMenuManager manager)
+	void fillContextMenu(IMenuManager manager)
 	{
 		manager.add(_fitToWindow);
 		manager.add(_exportToWMF);

@@ -124,7 +124,7 @@ public class LayerPainterManager extends PropertyChangeSupport
 	public void setCurrentPainter(String cursorName)
 	{
 		TemporalLayerPainter newCursor = null;
-		for (Iterator thisPainter = _myPainterList.iterator(); thisPainter.hasNext();)
+		for (Iterator<TemporalLayerPainter> thisPainter = _myPainterList.iterator(); thisPainter.hasNext();)
 		{
 			TemporalLayerPainter thisP = (TemporalLayerPainter) thisPainter.next();
 			if(thisP.getName().equals(cursorName))
@@ -176,7 +176,7 @@ public class LayerPainterManager extends PropertyChangeSupport
 	public void setCurrentHighlighter(String highlighterName)
 	{
 		SWTPlotHighlighter newCursor = null;
-		for (Iterator thisHighlighter = _myHighlighterList.iterator(); thisHighlighter.hasNext();)
+		for (Iterator<SWTPlotHighlighter> thisHighlighter = _myHighlighterList.iterator(); thisHighlighter.hasNext();)
 		{
 			SWTPlotHighlighter thisP = (SWTPlotHighlighter) thisHighlighter.next();
 			if(thisP.getName().equals(highlighterName))

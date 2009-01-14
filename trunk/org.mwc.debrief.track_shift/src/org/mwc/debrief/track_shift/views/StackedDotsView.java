@@ -1,33 +1,59 @@
 package org.mwc.debrief.track_shift.views;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Frame;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.*;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-
-import Debrief.Tools.Tote.*;
-import Debrief.Wrappers.*;
+import Debrief.Tools.Tote.Watchable;
+import Debrief.Tools.Tote.WatchableList;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GUI.Layers.DataListener;
-import MWC.GUI.ptplot.jfreeChart.*;
-import MWC.GUI.ptplot.jfreeChart.Utils.*;
-import MWC.GenericData.*;
+import MWC.GUI.ptplot.jfreeChart.DateAxisEditor;
+import MWC.GUI.ptplot.jfreeChart.FormattedJFreeChart;
+import MWC.GUI.ptplot.jfreeChart.Utils.ColourStandardXYItemRenderer;
+import MWC.GUI.ptplot.jfreeChart.Utils.ColouredDataItem;
+import MWC.GUI.ptplot.jfreeChart.Utils.DatedToolTipGenerator;
+import MWC.GUI.ptplot.jfreeChart.Utils.ModifiedVerticalNumberAxis;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
-import com.jrefinery.chart.*;
+import com.jrefinery.chart.ChartPanel;
+import com.jrefinery.chart.HorizontalDateAxis;
+import com.jrefinery.chart.StandardXYItemRenderer;
+import com.jrefinery.chart.XYPlot;
 import com.jrefinery.chart.tooltips.XYToolTipGenerator;
-import com.jrefinery.data.*;
+import com.jrefinery.data.BasicTimeSeries;
+import com.jrefinery.data.FixedMillisecond;
+import com.jrefinery.data.Range;
+import com.jrefinery.data.SeriesException;
+import com.jrefinery.data.TimeSeriesCollection;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view
@@ -55,12 +81,12 @@ public class StackedDotsView extends ViewPart
 	/**
 	 * the plot we're plotting to plot
 	 */
-	private XYPlot _myPlot;
+	XYPlot _myPlot;
 
 	/**
 	 * legacy helper class
 	 */
-	private StackedDotHelper _myHelper;
+	StackedDotHelper _myHelper;
 
 	/**
 	 * our track-data provider
@@ -81,7 +107,7 @@ public class StackedDotsView extends ViewPart
 	/**
 	 * flag indicating whether we should only show stacked dots for visible fixes
 	 */
-	private Action _onlyVisible;
+	Action _onlyVisible;
 
 	/**
 	 * our layers listener...
@@ -95,9 +121,9 @@ public class StackedDotsView extends ViewPart
 
 	protected TrackDataProvider _myTrackDataProvider;
 
-	private Composite _holder;
+	Composite _holder;
 
-	private FormattedJFreeChart _myChart;
+	FormattedJFreeChart _myChart;
 
 	/**
 	 * The constructor.
@@ -263,7 +289,7 @@ public class StackedDotsView extends ViewPart
 	/**
 	 * the track has been moved, update the dots
 	 */
-	private void updateStackedDots()
+	void updateStackedDots()
 	{
 
 		// get the current set of data to plot
@@ -443,7 +469,7 @@ public class StackedDotsView extends ViewPart
 	// ////////////////////////////////////////////////
 	// helper class to provide support to the stacked dots
 	// ////////////////////////////////////////////////
-	private final class StackedDotHelper
+	public final class StackedDotHelper
 	{
 		/**
 		 * the track being dragged
@@ -458,12 +484,12 @@ public class StackedDotsView extends ViewPart
 		/**
 		 * the set of points to watch on the primary track
 		 */
-		private Vector _primaryDoublets;
+		private Vector<Doublet> _primaryDoublets;
 
 		/**
 		 * the set of points to watch on the secondary track
 		 */
-		private Vector _secondaryDoublets;
+		private Vector<Doublet> _secondaryDoublets;
 
 		// ////////////////////////////////////////////////
 		// CONSTRUCTOR
@@ -519,7 +545,7 @@ public class StackedDotsView extends ViewPart
 					.getName(), FixedMillisecond.class);
 
 			// ok, run through the points on the primary track
-			Iterator iter = _primaryDoublets.iterator();
+			Iterator<Doublet> iter = _primaryDoublets.iterator();
 			while (iter.hasNext())
 			{
 				final Doublet thisD = (Doublet) iter.next();
@@ -595,7 +621,7 @@ public class StackedDotsView extends ViewPart
 		 * @param showError
 		 *          TODO
 		 */
-		private void initialise(TrackManager tracks, boolean showError)
+		void initialise(TrackManager tracks, boolean showError)
 		{
 
 			// have we been created?
@@ -707,13 +733,13 @@ public class StackedDotsView extends ViewPart
 			}
 		}
 
-		private Vector getDoublets(final TrackWrapper sensorHost,
+		private Vector<Doublet> getDoublets(final TrackWrapper sensorHost,
 				final TrackWrapper targetTrack)
 		{
 			final Vector<Doublet> res = new Vector<Doublet>(0, 1);
 
 			// ok, cycle through the sensor points on the host track
-			final Enumeration iter = sensorHost.elements();
+			final Enumeration<Editable> iter = sensorHost.elements();
 			while (iter.hasMoreElements())
 			{
 				final Plottable pw = (Plottable) iter.nextElement();
@@ -725,7 +751,7 @@ public class StackedDotsView extends ViewPart
 						final SensorWrapper sw = (SensorWrapper) pw;
 
 						// right, work through the contacts in this sensor
-						final Enumeration theContacts = sw.elements();
+						final Enumeration<Editable> theContacts = sw.elements();
 						while (theContacts.hasMoreElements())
 						{
 							final SensorContactWrapper scw = (SensorContactWrapper) theContacts
@@ -784,7 +810,7 @@ public class StackedDotsView extends ViewPart
 		// ////////////////////////////////////////////////
 		// class to store combination of sensor & target at same time stamp
 		// ////////////////////////////////////////////////
-		private final class Doublet
+		public final class Doublet
 		{
 			private final SensorContactWrapper _sensor;
 
@@ -870,12 +896,6 @@ public class StackedDotsView extends ViewPart
 			}
 		}
 
-	}
-
-	private void showMessage(String message, boolean showError)
-	{
-		if (showError)
-			MessageDialog.openInformation(getSite().getShell(), "Stacked dots", message);
 	}
 
 	public void showError(int info, String string, Throwable object)

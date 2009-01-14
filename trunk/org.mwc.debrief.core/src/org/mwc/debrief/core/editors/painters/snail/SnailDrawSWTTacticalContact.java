@@ -56,7 +56,7 @@ public abstract class SnailDrawSWTTacticalContact implements drawSWTHighLight, M
       final HiResDate start_time = new HiResDate(0, dtg.getMicros() - trail_len);
 
       // get the list of contacts
-      final java.util.Collection contacts = list.getItemsBetween(start_time, dtg);
+      final java.util.Collection<Editable> contacts = list.getItemsBetween(start_time, dtg);
 
       // get the parent track - so we can plot relative to it..
       final TrackWrapper hostTrack = (TrackWrapper) wrapper.getHost();
@@ -69,7 +69,7 @@ public abstract class SnailDrawSWTTacticalContact implements drawSWTHighLight, M
         if (len > 0)
         {
           // ok, work back from the last one
-          final java.util.Iterator cons = contacts.iterator();
+          final java.util.Iterator<Editable> cons = contacts.iterator();
           while (cons.hasNext())
           {
             // get the next contact

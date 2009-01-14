@@ -34,7 +34,7 @@ class BiSliderOutline extends BiSliderComponentBase {
         myTempTransformMatrix = new float[6];
     }
     
-    private void reloadConfig(){
+    void reloadConfig(){
         myForeground = updateColorDescriptor(myForeground, getUIModel().getBiSliderForegroundRGB());
     }
 

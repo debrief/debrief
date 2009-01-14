@@ -1,6 +1,7 @@
 package com.borlander.rac353542.bislider;
 
 import java.util.LinkedList;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.RGB;
 import org.eclipse.swt.widgets.Display;
@@ -13,7 +14,7 @@ public class DefaultBiSliderUIModel implements BiSliderUIModel {
     private static final int DEFAULT_LABEL_INSETS = 40;
     private static final int DEFAULT_NON_LABEL_INSETS = 20;
     
-    private final LinkedList myListeners = new LinkedList();
+    private final LinkedList<Listener> myListeners = new LinkedList<Listener>();
     private Listener[] myListenersArray;
     private int myArcRadius;
     private boolean myIsVertical;

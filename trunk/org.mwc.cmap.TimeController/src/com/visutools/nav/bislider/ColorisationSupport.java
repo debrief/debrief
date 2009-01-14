@@ -47,7 +47,7 @@ import java.util.Vector;
  */
 
 public class ColorisationSupport implements java.io.Serializable {
-  private  Vector  colorisationListeners  = new Vector();
+  private  Vector<ColorisationListener>  colorisationListeners  = new Vector<ColorisationListener>();
 
   static final long serialVersionUID = -1497023291489642695L;
 
@@ -99,7 +99,8 @@ public class ColorisationSupport implements java.io.Serializable {
    * @param Source_Arg      Source of the event. Should be the BiSlider
    * @param ColorArray_Arg  Array describing the color correspondances.
    */
-  private void internFireAsyncNewColors(
+  @SuppressWarnings("unchecked")
+	void internFireAsyncNewColors(
     final Object Source_Arg,
     final double[][] ColorArray_Arg) {
     Vector  v;
@@ -122,7 +123,8 @@ public class ColorisationSupport implements java.io.Serializable {
    * @param Source_Arg      Source of the event. Should be the BiSlider
    * @param ColorArray_Arg  Array describing the color correspondances.
    */
-  public void fireNewColors(Object Source_Arg, double[][] ColorArray_Arg) {
+  @SuppressWarnings("unchecked")
+	public void fireNewColors(Object Source_Arg, double[][] ColorArray_Arg) {
     // Make a copy of the listener object vector so that
     // it cannot be changed while we are firing events.
     Vector  v;

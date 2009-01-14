@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.21">
+      version="1.0.22">
 
    <description>
-      [1.0.21] Fix for supporting multiple mouse position trackers
+      [1.0.22] Update to JDK1.6
+[1.0.21] Fix for supporting multiple mouse position trackers
 [1.0.20] Allow us to not perform zoom when data border is set
 - if we don&apos;t want to
 [1.0.19] Improved performance of plotting very long tracks

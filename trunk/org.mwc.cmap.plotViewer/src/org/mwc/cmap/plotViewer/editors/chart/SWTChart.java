@@ -310,7 +310,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 	private void clearImages()
 	{
 		// tell the images to clear themselves out
-		Iterator iter = _myLayers.values().iterator();
+		Iterator<Image> iter = _myLayers.values().iterator();
 		while(iter.hasNext())
 		{
 			Object nextI = iter.next();
@@ -480,7 +480,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					paintBackground(dest);
 
 					// ok, pass through the layers, repainting any which need it
-					Enumeration numer = _theLayers.sortedElements();
+					Enumeration<Layer> numer = _theLayers.sortedElements();
 					while (numer.hasMoreElements())
 					{
 						final Layer thisLayer = (Layer) numer.nextElement();
@@ -934,7 +934,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 			Plottable res = vals.object;
 			Layer theParent = vals.parent;
 			double dist = vals.distance;
-			Vector noPoints = vals.rangeIndependent;
+			Vector<Plottable> noPoints = vals.rangeIndependent;
 
 			// see if this is in our dbl-click range
 			if (HitTester.doesHit(new java.awt.Point(scrPoint.x, scrPoint.y), loc, dist,
@@ -974,7 +974,7 @@ public abstract class SWTChart extends PlainChart implements ISelectionProvider
 					// stick in a separator
 					mmgr.add(new Separator());
 
-					for (Iterator iter = noPoints.iterator(); iter.hasNext();)
+					for (Iterator<Plottable> iter = noPoints.iterator(); iter.hasNext();)
 					{
 						final Plottable pl = (Plottable) iter.next();
 						RightClickSupport.getDropdownListFor(mmgr, new Editable[] { pl }, null, null,

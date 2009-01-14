@@ -157,7 +157,7 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	 * file.
 	 */
 
-	private void doFinish(String containerName, String fileName,
+	void doFinish(String containerName, String fileName,
 			IProgressMonitor monitor) throws CoreException
 	{
 		// create a sample file
@@ -234,8 +234,8 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	 * 
 	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
 	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection)
+	public void init(IWorkbench workbench, IStructuredSelection selection1)
 	{
-		this.selection = selection;
+		this.selection = selection1;
 	}
 }

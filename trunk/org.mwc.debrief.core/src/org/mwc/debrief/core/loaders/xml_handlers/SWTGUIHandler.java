@@ -42,11 +42,11 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
 	}
 
-	static private final java.util.Hashtable _myCreators = new java.util.Hashtable();
+	static private final java.util.Hashtable<String, StepperHandler> _myCreators = new java.util.Hashtable<String, StepperHandler>();
 
 	String _primaryTrack = null;
 
-	Vector _secondaryTracks = null;
+	Vector<String> _secondaryTracks = null;
 
 	static private StepperHandler _myStepperHandler;
 
@@ -66,7 +66,7 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 				{
 					if (_secondaryTracks == null)
 					{
-						_secondaryTracks = new Vector(0, 1);
+						_secondaryTracks = new Vector<String>(0, 1);
 					}
 					_secondaryTracks.add(trackName);
 				}
@@ -99,7 +99,6 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
 	public void elementClosed()
 	{
-		// TODO Auto-generated method stub
 		super.elementClosed();
 
 		// right - store the tracks
@@ -118,9 +117,9 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 	 * @param secondaryTracks
 	 *          list of tracks name for secondary tracks
 	 */
-	abstract public void assignTracks(String primaryTrack, Vector secondaryTracks);
+	abstract public void assignTracks(String primaryTrack, Vector<String> secondaryTracks);
 
-	private void addThisComponent(ComponentDetails details, PlotEditor thePlot)
+	void addThisComponent(ComponentDetails details, PlotEditor thePlot)
 	{
 		// sort out this component
 		String cType = details.type;

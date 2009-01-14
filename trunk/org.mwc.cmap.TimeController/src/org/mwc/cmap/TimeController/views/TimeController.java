@@ -103,7 +103,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * the automatic timer we are using
 	 */
-	private MWC.Utilities.Timer.Timer _theTimer;
+	MWC.Utilities.Timer.Timer _theTimer;
 
 	/**
 	 * the editor the user is currently working with (assigned alongside the
@@ -114,39 +114,39 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * listen out for new times
 	 */
-	final private PropertyChangeListener _temporalListener = new NewTimeListener();
+	final PropertyChangeListener _temporalListener = new NewTimeListener();
 
 	/**
 	 * the temporal dataset controlling the narrative entry currently displayed
 	 */
-	private TimeProvider _myTemporalDataset;
+	TimeProvider _myTemporalDataset;
 
 	/**
 	 * the "write" interface for the plot which tracks the narrative, where
 	 * avaialable
 	 */
-	private ControllableTime _controllableTime;
+	ControllableTime _controllableTime;
 
 	/**
 	 * the "write" interface for indicating a selected time period
 	 */
-	private ControllablePeriod _controllablePeriod;
+	ControllablePeriod _controllablePeriod;
 
 	/**
 	 * label showing the current time
 	 */
-	private Label _timeLabel;
+	Label _timeLabel;
 
 	/**
 	 * the set of layers we control through the range selector
 	 */
-	private Layers _myLayers;
+	Layers _myLayers;
 
 	/**
 	 * the parent object for the time controller. It is at this level that we
 	 * enable/disable the controls
 	 */
-	private Composite _wholePanel;
+	Composite _wholePanel;
 
 	/**
 	 * the holder for the VCR controls
@@ -157,12 +157,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * the people listening to us
 	 */
-	private Vector<ISelectionChangedListener> _selectionListeners;
+	Vector<ISelectionChangedListener> _selectionListeners;
 
 	/**
 	 * and the preferences for time control
 	 */
-	private TimeControlProperties _myStepperProperties;
+	TimeControlProperties _myStepperProperties;
 
 	/**
 	 * module to look after the limits of the slider
@@ -183,25 +183,25 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * our fancy time range selector
 	 */
-	private DTGBiSlider _dtgRangeSlider;
+	DTGBiSlider _dtgRangeSlider;
 
 	/**
 	 * whether the user wants to trim to time period after bislider change
 	 */
-	private Action _filterToSelectionAction;
+	Action _filterToSelectionAction;
 
 	/**
 	 * the slider control - remember it because we're always changing the limits,
 	 * etc
 	 */
-	private Scale _tNowSlider;
+	Scale _tNowSlider;
 
 	/**
 	 * the play button, obviously.
 	 */
-	private Button _playButton;
+	Button _playButton;
 
-	private PropertyChangeListener _myDateFormatListener = null;
+	PropertyChangeListener _myDateFormatListener = null;
 
 	/**
 	 * name of property storing slider step size, used for saving state
@@ -217,14 +217,14 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * utility class to help us plot relative plots
 	 */
-	private RelativeProjectionParent _relativeProjector;
+	RelativeProjectionParent _relativeProjector;
 
 	/**
 	 * the projection we're going to set to relative mode, as we wish
 	 */
-	private PlainProjection _targetProjection;
+	PlainProjection _targetProjection;
 
-	private TrackDataProvider.TrackDataListener _theTrackDataListener;
+	TrackDataProvider.TrackDataListener _theTrackDataListener;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -403,9 +403,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		FineTuneStepperProps fineTunerProperties = new FineTuneStepperProps(
 				_dtgRangeSlider, doMinVal);
 		EditableWrapper wrappedEditable = new EditableWrapper(fineTunerProperties);
-		StructuredSelection _propsAsSelection = new StructuredSelection(
+		StructuredSelection _propsAsSelection1 = new StructuredSelection(
 				wrappedEditable);
-		CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
+		CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection1,
 				this, this);
 	}
 
@@ -583,7 +583,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	}
 
-	private void stopPlaying()
+	void stopPlaying()
 	{
 		_theTimer.stop();
 	}
@@ -591,7 +591,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * ok, start auto-stepping forward through the serial
 	 */
-	private void startPlaying()
+	void startPlaying()
 	{
 		// hey - set a practical minimum step size, 1/4 second is a fair start
 		// point
@@ -626,7 +626,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	}
 
-	private final class NewTimeListener implements PropertyChangeListener
+	protected final class NewTimeListener implements PropertyChangeListener
 	{
 		public void propertyChange(PropertyChangeEvent event)
 		{
@@ -651,7 +651,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		}
 	}
 
-	private void processClick(Boolean large, boolean fwd)
+	void processClick(Boolean large, boolean fwd)
 	{
 
 		CorePlugin.logError(Status.INFO, "Starting step", null);
@@ -739,7 +739,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	private Integer _defaultSliderResolution;
 
-	private Action _relPlotToggle;
+	Action _relPlotToggle;
 
 	private Action _exportDataToClipboard;
 
@@ -749,7 +749,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	protected TrackDataProvider _myTrackProvider;
 
-	private void fireNewTime(HiResDate dtg)
+	void fireNewTime(HiResDate dtg)
 	{
 		if (!_firingNewTime)
 		{
@@ -1138,10 +1138,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							{
 								// cool - update the slider to our data settings
 
-								// aaah, first check that the time period isn't
-								// greater than our
-								// data period
-								TimePeriod dataPeriod = _myTemporalDataset.getPeriod();
 								HiResDate startTime, endTime;
 								startTime = _myStepperProperties.getSliderStartTime();
 								endTime = _myStepperProperties.getSliderEndTime();
@@ -1194,7 +1190,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * convenience method to make the panel enabled if we have a time controller
 	 * and a valid time
 	 */
-	private void checkTimeEnabled()
+	void checkTimeEnabled()
 	{
 		boolean enable = false;
 
@@ -1248,7 +1244,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * Passing the focus request to the viewer's control.
 	 */
-	private void editMeInProperties(PropertyChangeSupport props)
+	void editMeInProperties(PropertyChangeSupport props)
 	{
 		// do we have any data?
 		if (props != null)
@@ -1270,7 +1266,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * the data we are looking at has updated. If we're set to follow that time,
 	 * update ourselves
 	 */
-	private void timeUpdated(final HiResDate newDTG)
+	void timeUpdated(final HiResDate newDTG)
 	{
 		if (newDTG != null)
 		{
@@ -1332,7 +1328,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	}
 
-	private String getFormattedDate(HiResDate newDTG)
+	String getFormattedDate(HiResDate newDTG)
 	{
 		String newVal = "n/a";
 		// hmm, we may have heard about the new date before hearing about the
@@ -1423,9 +1419,17 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	public static class TestTimeController extends TestCase
 	{
-		private int _min, _max, _smallTick, _largeTick, _dragSize;
+		int _min;
 
-		private boolean _enabled;
+		int _max;
+
+		int _smallTick;
+
+		int _largeTick;
+
+		int _dragSize;
+
+		boolean _enabled;
 
 		public void testSliderScales()
 		{
@@ -1501,7 +1505,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	}
 
-	private class WheelMovedEvent implements Listener
+	protected class WheelMovedEvent implements Listener
 	{
 		public void handleEvent(Event event)
 		{
@@ -1599,7 +1603,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * ok - put in the stepper mode buttons - and any others we think of.
 	 */
-	private void populateDropDownList(
+	void populateDropDownList(
 			final LayerPainterManager myLayerPainterManager)
 	{
 		// clear the list
@@ -2232,7 +2236,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * ok - do the export to clipboard
 	 */
-	private void exportDataToClipboard()
+	void exportDataToClipboard()
 	{
 		if (_myTrackProvider != null)
 		{

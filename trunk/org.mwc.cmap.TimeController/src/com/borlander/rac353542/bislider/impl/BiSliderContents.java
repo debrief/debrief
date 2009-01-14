@@ -107,7 +107,7 @@ class BiSliderContents extends BiSliderComponentBase implements Disposable {
     }
 
     
-    private void reloadConfig(){
+    void reloadConfig(){
         BiSliderUIModel uiModel = getUIModel();
         myContentsDataProvider = uiModel.getContentsDataProvider();
         mySegmentForeground = updateColorDescriptor( //

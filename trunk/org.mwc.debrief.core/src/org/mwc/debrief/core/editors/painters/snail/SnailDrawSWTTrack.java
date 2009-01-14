@@ -8,6 +8,7 @@ import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
 /** class to draw a 'back-track' of points backwards from the current
@@ -40,7 +41,7 @@ final class SnailDrawSWTTrack
 
   /** our list of Vectors of points
    */
-  private final java.util.Hashtable _fixLists;
+  private final java.util.Hashtable<FixWrapper, Collection<Editable>> _fixLists;
 
   /** whether to fade out the track and symbols
    */
@@ -56,7 +57,7 @@ final class SnailDrawSWTTrack
     setTrailLength(new Long(15 * 1000 * 1000* 60 )); // 15 minutes
     setPointSize(5);
 
-    _fixLists = new java.util.Hashtable();
+    _fixLists = new java.util.Hashtable<FixWrapper, Collection<Editable>>();
   }
 
 
@@ -92,16 +93,16 @@ final class SnailDrawSWTTrack
     TrackWrapper trk = theFix.getTrackWrapper();
 
     // declare the Vector of track points we are using
-    final Collection dotPoints;
+    final Collection<Editable> dotPoints;
 
     // do we have these points already?
-    Object myList = _fixLists.get(theFix);
+    Collection<Editable> myList = _fixLists.get(theFix);
 
     // did we find it?
     if(myList != null)
     {
       // cast it back to the vector
-      dotPoints = (Collection)myList;
+      dotPoints = myList;
     }
     else
     {
@@ -176,7 +177,7 @@ final class SnailDrawSWTTrack
         // remember the last location
         Point lastLoc=null;
 
-        Iterator iter = dotPoints.iterator();
+        Iterator<Editable> iter = dotPoints.iterator();
         while(iter.hasNext())
         {
           final Color newCol;

@@ -7,9 +7,9 @@ import org.eclipse.swt.graphics.Point;
 import com.borlander.rac353542.bislider.BiSliderDataModel;
 
 class UserRangePanner implements DragSupport.DragListener, Disposable {
-    private final BiSliderImpl myBiSlider;
-    private final BiSliderPointer myMinPointer;
-    private final BiSliderPointer myMaxPointer;
+    final BiSliderImpl myBiSlider;
+    final BiSliderPointer myMinPointer;
+    final BiSliderPointer myMaxPointer;
     private final Point myCachedStartPoint = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
     private final Point myCachedLastSeenAtPoint = new Point(Integer.MIN_VALUE, Integer.MIN_VALUE);
     private DragSupport myDragSupport;
@@ -129,7 +129,7 @@ class UserRangePanner implements DragSupport.DragListener, Disposable {
         myMinPointer.setShowValueLabel(showValueLabels);
     }
     
-    private class OutsidePointersUserSelectedArea implements AreaGate {
+    protected class OutsidePointersUserSelectedArea implements AreaGate {
         public boolean isInsideArea(int x, int y) {
             CoordinateMapper mapper = myBiSlider.getCoordinateMapper();
             if (!mapper.getDrawArea().contains(x, y)){

@@ -67,7 +67,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/**
 	 * an object to look after all of the time bits
 	 */
-	protected TimeManager _timeManager;
+	public TimeManager _timeManager;
 	
 	/** and how we view the time
 	 * 
@@ -300,11 +300,11 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			}});
 	}
 	
-	private boolean checkIfImTheSameAs(Object target)
+	boolean checkIfImTheSameAs(Object target1)
 	{
 		boolean res =false;
 		// is it me?
-		if(target == this)
+		if(target1 == this)
 			res = true;
 		else
 		{
@@ -316,15 +316,15 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/** ok - let somebody else select an item on the plot.  The initial reason for making this public 
 	 * was so that when a new item is created, we can select it on the plot.  The plot then fires a 
 	 * 'selected' event, and the new item is shown in the properties window.  Cool.
-	 * @param target - the item to select
+	 * @param target1 - the item to select
 	 * @param parentLayer - the item's parent layer.  Used to decide which layers to update.
 	 */
-	public void selectPlottable(Plottable target, Layer parentLayer)
+	public void selectPlottable(Plottable target1, Layer parentLayer)
 	{
-		CorePlugin.logError(Status.INFO, "Double-click processed, opening property editor for:" + target, null);
+		CorePlugin.logError(Status.INFO, "Double-click processed, opening property editor for:" + target1, null);
 		EditableWrapper parentP = new EditableWrapper(parentLayer, null, getChart()
 				.getLayers());
-		EditableWrapper wrapped = new EditableWrapper(target, parentP, getChart()
+		EditableWrapper wrapped = new EditableWrapper(target1, parentP, getChart()
 				.getLayers());
 		ISelection selected = new StructuredSelection(wrapped);
 		fireSelectionChanged(selected);
@@ -333,7 +333,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/** place the chart in the properties window
 	 *
 	 */
-	private final void putBackdropIntoProperties()
+	final void putBackdropIntoProperties()
 	{
 		SWTCanvas can = (SWTCanvas) getChart().getCanvas();
 		EditableWrapper wrapped = new EditableWrapper(can,
@@ -450,6 +450,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		
 	}
 
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
@@ -668,6 +669,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			Display.getDefault().asyncExec(new Runnable()
 			{
 
+				@SuppressWarnings("synthetic-access")
 				public void run()
 				{
 					firePropertyChange(PROP_DIRTY);

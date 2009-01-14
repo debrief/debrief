@@ -9,7 +9,7 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     private double myTotalMaximum;
     private double myUserMinimum = Double.NEGATIVE_INFINITY;
     private double myUserMaximum = Double.POSITIVE_INFINITY;
-    private final LinkedList myListeners;
+    private final LinkedList<Listener> myListeners;
     private Listener[] myListenersArray;
     private int myCompositeUpdateCounter;
     
@@ -25,7 +25,7 @@ public class DefaultBiSliderDataModel implements BiSliderDataModel.Writable {
     }
     
     public DefaultBiSliderDataModel(double totalMin, double totalMax, double precision) {
-        myListeners = new LinkedList();
+        myListeners = new LinkedList<Listener>();
         myPrecision = precision;
         setTotalRange(totalMin, totalMax);
         setSegmentCount(DEFAULT_SEGMENTS_COUNT);

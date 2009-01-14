@@ -57,7 +57,7 @@ import javax.swing.plaf.metal.*;
 public class Test {
   // all the properties of the application (parameters)
   private static          Properties                                    BiSliderProperties              = new Properties();
-  private static          float                                         LineX                           = 0f;
+  static          float                                         LineX                           = 0f;
  
   
   public static void main(String[] Args) {   
@@ -440,7 +440,7 @@ public class Test {
           if (Title.startsWith("Metal") && Title.endsWith("Steel")) {
             MetalLookAndFeel.setCurrentTheme(new DefaultMetalTheme());
           } else if (Title.startsWith("Metal") && Title.endsWith("Ocean")) {
-            Class Class1   = Class.forName("javax.swing.plaf.metal.OceanTheme");
+            Class<?> Class1   = Class.forName("javax.swing.plaf.metal.OceanTheme");
             Object Object1 = Class1.newInstance();
             MetalLookAndFeel.setCurrentTheme((MetalTheme)Object1);
           } else if (Title.startsWith("Metal") && Title.endsWith("Aqua")) {

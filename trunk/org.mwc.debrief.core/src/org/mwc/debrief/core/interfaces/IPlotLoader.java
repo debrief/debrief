@@ -4,9 +4,10 @@
 package org.mwc.debrief.core.interfaces;
 
 import java.io.InputStream;
-import java.util.StringTokenizer;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.ui.IEditorInput;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.debrief.core.DebriefPlugin;

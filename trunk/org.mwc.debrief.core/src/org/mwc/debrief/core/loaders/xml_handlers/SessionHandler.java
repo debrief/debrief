@@ -41,7 +41,7 @@ public class SessionHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     		});
     addHandler(new SWTGUIHandler(plot)
     		{
-					public void assignTracks(String primaryTrack, Vector secondaryTracks)
+					public void assignTracks(String primaryTrack, Vector<String> secondaryTracks)
 					{
 						// see if we have our track data listener
 						if(view instanceof IAdaptable)

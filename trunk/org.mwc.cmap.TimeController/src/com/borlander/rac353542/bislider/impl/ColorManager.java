@@ -7,11 +7,11 @@ import org.eclipse.swt.widgets.Display;
 
 
 class ColorManager {
-    private final HashMap myColors;
+    private final HashMap<RGB, ColorWithCounter> myColors;
     private static ColorManager ourInstance;
     
     private ColorManager(){
-        myColors = new HashMap();
+        myColors = new HashMap<RGB, ColorWithCounter>();
     }
     
     public static ColorManager getInstance(){

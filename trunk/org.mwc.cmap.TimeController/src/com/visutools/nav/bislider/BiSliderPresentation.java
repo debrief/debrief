@@ -190,7 +190,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 
 	protected JTextField JTextFieldMax = new JTextField("");
 
-	protected Vector LastFiveEvents = null;
+	protected Vector<Point> LastFiveEvents = null;
 
 	protected JPanel JPanel1 = new JPanel();
 
@@ -1128,6 +1128,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	 * @author Christophe Jacquet, Frederic Vernier <tt>false</tt>, it will be
 	 *         painted downward
 	 */
+	@SuppressWarnings("unchecked")
 	private void paintThumb(Graphics Graphics_Arg, boolean up, Polygon Thumb_Arg,
 			Color MainColor_Arg, Color DarkColor_Arg, Color BrightColor_Arg)
 	{
@@ -1240,7 +1241,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	public void mousePressed(MouseEvent MouseEvent_Arg)
 	{
 
-		LastFiveEvents = new Vector();
+		LastFiveEvents = new Vector<Point>();
 		LastFiveEvents.add(MouseEvent_Arg.getPoint());
 
 		if (JTextFieldMin.isVisible())
@@ -1504,7 +1505,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 		if (((Point) LastFiveEvents.elementAt(0)).x != MouseEvent_Arg.getX()
 				|| ((Point) LastFiveEvents.elementAt(0)).y != MouseEvent_Arg.getY())
 		{
-			LastFiveEvents.add(0, MouseEvent_Arg.getPoint().clone());
+			LastFiveEvents.add(0,(Point) MouseEvent_Arg.getPoint().clone());
 		}
 		if (LastFiveEvents.size() > 5)
 		{
@@ -2060,7 +2061,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 		JLabel1.setBackground(Ctrl.getBackground());
 		JLabel1.setForeground(Ctrl.getForeground());
 		JSlider1.setBackground(Ctrl.getSliderBackground());
-		Hashtable Hashtable1 = new Hashtable();
+		Hashtable<Integer, JLabel> Hashtable1 = new Hashtable<Integer, JLabel>();
 
 		double MiddleVal = Ctrl.getMinimumColoredValue();
 		if (Thumb_Arg == RIGHT_POLYGON)
@@ -2218,7 +2219,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	 * @param NewValue_Arg
 	 *          Description of the Parameter
 	 */
-	private void changeMinValue(String NewValue_Arg)
+	void changeMinValue(String NewValue_Arg)
 	{
 		try
 		{
@@ -2245,7 +2246,7 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	 * @param NewValue_Arg
 	 *          Description of the Parameter
 	 */
-	private void changeMaxValue(String NewValue_Arg)
+	void changeMaxValue(String NewValue_Arg)
 	{
 		try
 		{

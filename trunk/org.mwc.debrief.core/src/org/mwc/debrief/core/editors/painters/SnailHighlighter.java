@@ -122,10 +122,10 @@ public class SnailHighlighter implements TemporalLayerPainter
 		// right, none of that fannying around painting the whole layer.
 
 		// start off by finding the non-watchables for this layer
-		final Vector nonWatches = SnailPainter.getNonWatchables(theLayer);
+		final Vector<Plottable> nonWatches = SnailPainter.getNonWatchables(theLayer);
 
 		// cool, draw them
-		final Enumeration iter = nonWatches.elements();
+		final Enumeration<Plottable> iter = nonWatches.elements();
 		while (iter.hasMoreElements())
 		{
 			final Plottable p = (Plottable) iter.nextElement();
@@ -133,12 +133,12 @@ public class SnailHighlighter implements TemporalLayerPainter
 		}
 
 		// and now the -watchables
-		final Vector watchables = SnailPainter.getWatchables(theLayer);
+		final Vector<Plottable> watchables = SnailPainter.getWatchables(theLayer);
 
 		// cool, draw them between the valid period
 
 		// got through to highlight the data
-		final Enumeration watches = watchables.elements();
+		final Enumeration<Plottable> watches = watchables.elements();
 		while (watches.hasMoreElements())
 		{
 			final WatchableList list = (WatchableList) watches.nextElement();
@@ -171,7 +171,7 @@ public class SnailHighlighter implements TemporalLayerPainter
 		dest.setColor(Color.white);
 
 		// see if our plotters can plot this type of watchable
-		final Enumeration iter = _myHighlightPlotters.elements();
+		final Enumeration<drawSWTHighLight> iter = _myHighlightPlotters.elements();
 		while (iter.hasMoreElements())
 		{
 			final drawSWTHighLight plotter = (drawSWTHighLight) iter.nextElement();

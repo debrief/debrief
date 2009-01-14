@@ -104,13 +104,32 @@ import java.awt.Dimension;
 import java.util.Enumeration;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.ControlAdapter;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.events.MouseMoveListener;
+import org.eclipse.swt.events.MouseTrackAdapter;
+import org.eclipse.swt.events.PaintEvent;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.widgets.Canvas;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Shell;
 import org.mwc.cmap.core.CorePlugin;
+
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;
 
@@ -138,7 +157,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 
 	private LocationSelectedAction _copyLocation;
 
-	private Shell _tooltip;
+	Shell _tooltip;
 
 	// ///////////////////////////////////////////////////////////
 	// constructor
@@ -348,11 +367,8 @@ public class SWTCanvas extends SWTCanvasAdapter
 	 */
 	public void paintPlot(CanvasType dest)
 	{
-		// what's the time Mr Wolf?
-		long tThen = System.currentTimeMillis();
-
 		// go through our painters
-		final Enumeration enumer = _thePainters.elements();
+		final Enumeration<PaintListener> enumer = _thePainters.elements();
 		while (enumer.hasMoreElements())
 		{
 			final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer
@@ -368,12 +384,6 @@ public class SWTCanvas extends SWTCanvasAdapter
 			// it must be ok
 			thisPainter.paintMe(dest);
 		}
-
-		// how long was it?
-		long tNow = System.currentTimeMillis();
-		long tDelta = tNow - tThen;
-		// CorePlugin.logError(Status.INFO, "Canvas update took:" + tDelta + "
-		// millis", null);
 	}
 
 	// ///////////////////////////////////////////////////////////
@@ -406,7 +416,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 			}
 
 			// inform the listeners that we have resized
-			final Enumeration enumer = _thePainters.elements();
+			final Enumeration<PaintListener> enumer = _thePainters.elements();
 			while (enumer.hasMoreElements())
 			{
 				final CanvasType.PaintListener thisPainter = (CanvasType.PaintListener) enumer

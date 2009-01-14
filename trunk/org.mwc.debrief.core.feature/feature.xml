@@ -5,7 +5,8 @@
       version="1.0.70">
 
    <description>
-      [1.0.70] Arbitrary build
+      [1.0.71] Update to JDK1.6
+[1.0.70] Arbitrary build
 [1.0.69] Let user select new target layer
 [1.0.68] Provide support for 4W grids
 [1.0.67] Switch Debrief legacy project to using OSGI manifest

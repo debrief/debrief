@@ -105,7 +105,7 @@ class Segmenter implements Disposable {
         myInterpolation.setContext(myUiModel.getMinimumRGB(), myUiModel.getMaximumRGB(), myDataModel.getTotalMinimum(), myDataModel.getTotalMaximum());
     }
     
-    private void onExternalChanges() {
+    void onExternalChanges() {
         if (isSignificantChanges()){
             updateInterpolation();
             disposeSegments();
@@ -133,7 +133,7 @@ class Segmenter implements Disposable {
             return myNextIndex < myLastIndexExclusive;
         }
         
-        public Object nextElement() {
+        public ColoredSegment nextElement() {
             return next();
         }
         

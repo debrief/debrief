@@ -14,6 +14,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.cmap.xyplot.views.XYPlotView;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2;
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2.CalculationHolder;
 import Debrief.Tools.Tote.*;
 import Debrief.Tools.Tote.Calculations.*;
 import MWC.Algorithms.Plotting.*;
@@ -31,12 +32,12 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 	/**
 	 * the operations we provide
 	 */
-	private Vector _theOperations;
+	private Vector<CalculationHolder> _theOperations;
 
 	/**
 	 * remember past selections from the drop-down list
 	 */
-	private static HashMap _pastSelections;
+	static HashMap<String, Integer> _pastSelections;
 
 	/**
 	 * constructor - just initialise ourselves
@@ -48,7 +49,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		if (_theOperations == null)
 		{
 
-			_theOperations = new Vector(0, 1);
+			_theOperations = new Vector<CalculationHolder>(0, 1);
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
 					new depthCalc(), new DepthFormatter(), false, 0));
 			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
@@ -79,10 +80,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		}
 
 		if (_pastSelections == null)
-			_pastSelections = new HashMap();
+			_pastSelections = new HashMap<String, Integer>();
 	}
 
-	private ShowTimeVariablePlot2.CalculationHolder getChoice()
+	ShowTimeVariablePlot2.CalculationHolder getChoice()
 	{
 
 		// and create the title
@@ -120,11 +121,11 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 	{
 		private String[] _titles;
 
-		private Object[] _choices;
+		Object[] _choices;
 
-		private Object _result;
+		Object _result;
 
-		private int _resultIndex;
+		int _resultIndex;
 
 		private String _message;
 
@@ -196,7 +197,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 	public void generate(IMenuManager parent, Layers theLayers, Layer[] parentLayers,
 			final Editable[] subjects)
 	{
-		final Vector candidates = new Vector(0, 1);
+		final Vector<Editable> candidates = new Vector<Editable>(0, 1);
 		boolean duffItemFound = false;
 
 		// right, go through the items and have a nice look at them
@@ -310,11 +311,11 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							page.showView(plotId, theTitle, IWorkbenchPage.VIEW_ACTIVATE);
 
 							// put our subjects into a vector
-							Vector theTracks = new Vector(0, 1);
+							Vector<WatchableList> theTracks = new Vector<WatchableList>(0, 1);
 							for (int i = 0; i < subjects.length; i++)
 							{
 								Editable thisS = subjects[i];
-								theTracks.add(thisS);
+								theTracks.add((WatchableList)thisS);
 							}
 
 							// right, now for the data

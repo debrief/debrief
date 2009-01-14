@@ -242,7 +242,7 @@ public class FineTuneValueAdjuster {
             updateLabel();
         }
 
-        private void updateLabel() {
+        void updateLabel() {
             int selectedScale = myScale.getSelection();
             double selectedValue = myConverter.scale2value(selectedScale);
             String label = myLabelProvider.getLabel(selectedValue);

@@ -78,11 +78,11 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 					{
 						// ok, go for it.
 						// sort it out as an operation
-						IUndoableOperation convertToTrack = new InterpolateTrackOperation(title,
+						IUndoableOperation convertToTrack1 = new InterpolateTrackOperation(title,
 								theLayers, (TrackWrapper) subjects[0], thisLabel, thisIntervalMillis);
 
 						// ok, stick it on the buffer
-						CorePlugin.run(convertToTrack);
+						CorePlugin.run(convertToTrack1);
 					}
 				};
 
@@ -103,7 +103,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		/**
 		 * list of new fixes we're creating
 		 */
-		private Vector _newFixes;
+		private Vector<FixWrapper> _newFixes;
 
 		/**
 		 * the track we're interpolating
@@ -137,7 +137,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			{
 				// ok, generate the point at this interval
 				if (_newFixes == null)
-					_newFixes = new Vector(0, 1);
+					_newFixes = new Vector<FixWrapper>(0, 1);
 
 				Watchable[] matches = _track.getNearestTo(new HiResDate(0, thisTime));
 				if (matches.length > 0)
@@ -157,7 +157,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			if(_newFixes != null)
 			{
 				// right, now add the fixes
-				for (Iterator iter = _newFixes.iterator(); iter.hasNext();)
+				for (Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
 				{
 					FixWrapper fix = (FixWrapper) iter.next();
 					_track.add(fix);
@@ -177,7 +177,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 				throws ExecutionException
 		{
 			// forget about the new tracks
-			for (Iterator iter = _newFixes.iterator(); iter.hasNext();)
+			for (Iterator<FixWrapper> iter = _newFixes.iterator(); iter.hasNext();)
 			{
 				FixWrapper trk = (FixWrapper) iter.next();
 				_track.removeElement(trk);

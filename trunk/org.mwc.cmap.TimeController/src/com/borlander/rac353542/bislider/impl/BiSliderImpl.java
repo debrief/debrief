@@ -24,8 +24,8 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
 	private final BiSliderDataModel.Writable myDataModel;
     private final BiSliderUIModel myUiModel;
     private final CoordinateMapper myMapper;
-    private BiSliderPointer myMinPointer;
-    private BiSliderPointer myMaxPointer;
+    BiSliderPointer myMinPointer;
+    BiSliderPointer myMaxPointer;
     private BiSliderContents myContents;
     private BiSliderOutline myOutline;
     private Rectangle myCachedClientArea;
@@ -148,7 +148,7 @@ class BiSliderImpl extends BiSlider implements Disposable, BiSliderDataModel.Lis
         return myDataModel;
     }
 
-    private void paintBiSlider(GC gc) {
+    void paintBiSlider(GC gc) {
         Rectangle drawArea = getDrawArea(gc);
         myMapper.setContext(myDataModel, drawArea, getClientArea());
         myContents.paintContents(gc);

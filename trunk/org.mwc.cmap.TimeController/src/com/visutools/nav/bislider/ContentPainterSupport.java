@@ -53,7 +53,7 @@ public class ContentPainterSupport implements java.io.Serializable {
   //---------- MODIFIERS|-------------------- Type|----------------------------------------------- Name = Init value
   protected final static  javax.swing.text.html.parser.ParserDelegator  MAXIMUM_VARIABLE_SIZE_FOR_NAME  = null;
 
-  protected               Vector                                        ContentPainterListeners         = new Vector();
+  protected               Vector<ContentPainterListener>                                        ContentPainterListeners         = new Vector<ContentPainterListener>();
 
   final static            long                                          serialVersionUID                = -1497023291489642695L;
 
@@ -135,7 +135,8 @@ public class ContentPainterSupport implements java.io.Serializable {
    * @param Rectangle_Arg          The rectangle to fill with painting
    * @param BoundingRectangle_Arg  The rectangle in which the other rectangle is
    */
-  private void internFireAsyncPaint(
+  @SuppressWarnings("unchecked")
+	void internFireAsyncPaint(
     final Object Source_Arg,
     Graphics Graphics_Arg,
     double Min_Arg,
@@ -171,7 +172,8 @@ public class ContentPainterSupport implements java.io.Serializable {
    * @param Rectangle_Arg          The rectangle to fill with painting
    * @param BoundingRectangle_Arg  The rectangle in which the other rectangle is
    */
-  public void firePaint(
+  @SuppressWarnings("unchecked")
+	public void firePaint(
     Object Source_Arg,
     Graphics Graphics_Arg,
     double Min_Arg,

@@ -4,10 +4,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.events.TypedEvent;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.widgets.Event;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
 
 import com.borlander.rac353542.bislider.BiSliderDataModel;
@@ -15,8 +13,8 @@ import com.borlander.rac353542.bislider.impl.DragSupport.DragListener;
 
 
 class BiSliderPointer extends BiSliderComponentBase implements DragListener, Disposable, AreaGate  {
-    private final boolean myMinNotMax;
-    private final PointerDrawer myDrawer;
+    final boolean myMinNotMax;
+    final PointerDrawer myDrawer;
     private final Segmenter mySegmenter;
     private DragSupport myDragSupport;
     private boolean myShowValueLabel;

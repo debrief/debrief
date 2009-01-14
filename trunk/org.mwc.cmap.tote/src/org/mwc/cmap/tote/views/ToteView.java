@@ -89,7 +89,7 @@ public class ToteView extends ViewPart
 	/**
 	 * the table showing the calcs
 	 */
-	private TableViewer _tableViewer;
+	TableViewer _tableViewer;
 
 	/**
 	 * the table content provider (containing both the calculations and the
@@ -105,7 +105,7 @@ public class ToteView extends ViewPart
 	/**
 	 * the listener we use to track time changes
 	 */
-	private PropertyChangeListener _temporalListener = null;
+	PropertyChangeListener _temporalListener = null;
 
 	/**
 	 * where we get our track data from
@@ -125,7 +125,7 @@ public class ToteView extends ViewPart
 	/**
 	 * the temporal dataset controlling the narrative entry currently displayed
 	 */
-	private TimeProvider _myTemporalDataset;
+	TimeProvider _myTemporalDataset;
 
 	/**
 	 * the "write" interface for the plot which tracks the narrative, where
@@ -143,7 +143,7 @@ public class ToteView extends ViewPart
 	 */
 	private CalculationLoaderManager _loader;
 
-	private ToteLabelProvider _labelProvider;
+	ToteLabelProvider _labelProvider;
 
 	/**
 	 * action to put watchables on the tote
@@ -158,7 +158,7 @@ public class ToteView extends ViewPart
 	/**
 	 * action to hide/reveal the units column
 	 */
-	private Action _showUnits;
+	Action _showUnits;
 
 	/**
 	 * The constructor.
@@ -593,7 +593,7 @@ public class ToteView extends ViewPart
 		
 	}
 
-	private void fillContextMenu(IMenuManager manager, final int index)
+	void fillContextMenu(IMenuManager manager, final int index)
 	{
 		// -------------------------------------------------------
 		// Toggle filter action
@@ -652,7 +652,7 @@ public class ToteView extends ViewPart
 	 * @param part
 	 * @param parentPart
 	 */
-	private void storeDetails(TrackManager part, IWorkbenchPart parentPart)
+	void storeDetails(TrackManager part, IWorkbenchPart parentPart)
 	{
 		// hmm - are we already looking at this one?
 		if (part != _trackData)
@@ -681,7 +681,7 @@ public class ToteView extends ViewPart
 	/**
 	 * 
 	 */
-	private void redoTableAfterTrackChanges()
+	void redoTableAfterTrackChanges()
 	{
 		// suspend updates
 		_tableViewer.getTable().setRedraw(false);
@@ -758,7 +758,7 @@ public class ToteView extends ViewPart
 	 * the data we are looking at has updated. If we're set to follow that time,
 	 * update ourselves
 	 */
-	private void timeUpdated(final HiResDate newDTG)
+	void timeUpdated(final HiResDate newDTG)
 	{
 		if (!_tableViewer.getTable().isDisposed())
 		{
@@ -1076,7 +1076,7 @@ public class ToteView extends ViewPart
 
 	}
 
-	private int findSelectedColumn(int x, int y, Table table)
+	int findSelectedColumn(int x, int y, Table table)
 	{
 		int index = -1;
 		TableItem[] selectedCols = table.getSelection();

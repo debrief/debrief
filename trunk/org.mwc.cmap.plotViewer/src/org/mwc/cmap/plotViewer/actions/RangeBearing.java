@@ -76,6 +76,7 @@ final public class RangeBearing extends CoreDragAction
 		 */
 		SWTCanvas _myCanvas;
 
+		@SuppressWarnings("deprecation")
 		final public void doMouseDrag(Point pt, int JITTER, Layers theLayers,
 				SWTCanvas theCanvas)
 		{
@@ -115,6 +116,7 @@ final public class RangeBearing extends CoreDragAction
 
 		}
 
+		@SuppressWarnings("deprecation")
 		final public void doMouseUp(Point point, int keyState)
 		{
 			GC gc = new GC(_myCanvas.getCanvas());

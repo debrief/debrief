@@ -12,12 +12,12 @@ import com.borlander.rac353542.bislider.*;
  * midnights in the current time zone.
  */
 public class CalendarDateSuite {
-    private static final DateFormat ourDateFormat = DateFormat.getDateInstance();
+    static final DateFormat ourDateFormat = DateFormat.getDateInstance();
 
     /** utility object used for converting between dates & millis
      * 
      */
-    private static final Calendar _myCalendar = Calendar.getInstance();
+    static final Calendar _myCalendar = Calendar.getInstance();
 
     
     public CalendarDateModel createDataModel(Date totalMin, Date totalMax, Date userMin, Date userMax) {

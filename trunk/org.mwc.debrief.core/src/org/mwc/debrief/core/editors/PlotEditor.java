@@ -72,17 +72,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	/**
 	 * helper object which loads plugin file-loaders
 	 */
-	private LoaderManager _loader;
+	LoaderManager _loader;
 
 	/**
 	 * we keep the reference to our track-type adapter
 	 */
-	private TrackDataProvider _trackDataProvider;
+	TrackDataProvider _trackDataProvider;
 
 	/**
 	 * something to look after our layer painters
 	 */
-	private LayerPainterManager _layerPainterManager;
+	LayerPainterManager _layerPainterManager;
 
 	private PlotOperations _myOperations;
 
@@ -130,6 +130,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		this.addPropertyListener(new IPropertyListener()
 		{
 
+			@SuppressWarnings("synthetic-access")
 			public void propertyChanged(Object source, int propId)
 			{
 				if (propId == PROP_INPUT)
@@ -143,6 +144,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		_myOperations = new PlotOperations()
 		{
 			// just provide with our complete set of layers
+			@SuppressWarnings("synthetic-access")
 			public Object[] getTargets()
 			{
 				// ok, return our top level layers as objects
@@ -158,6 +160,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			 * override performing the operation, since we'll do a screen update on
 			 * completion
 			 */
+			@SuppressWarnings("synthetic-access")
 			public Vector<Layer> performOperation(AnOperation operationName)
 			{
 				// make the actual change
@@ -494,6 +497,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * 
 	 * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
 	 */
+	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
@@ -534,21 +538,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				{
 					public double getHeading()
 					{
-						double res = 0.0;
+						double res1 = 0.0;
 						// do we have a primary?
 						Watchable[] thePositions = _trackDataProvider.getPrimaryTrack()
 								.getNearestTo(_timeManager.getTime());
 						if (thePositions != null)
 						{
 							// yup, get the centre point
-							res = thePositions[0].getCourse();
+							res1 = thePositions[0].getCourse();
 						}
-						return res;
+						return res1;
 					}
 
 					public WorldLocation getLocation()
 					{
-						MWC.GenericData.WorldLocation res = null;
+						MWC.GenericData.WorldLocation res1 = null;
 						// do we have a primary?
 						Watchable[] thePositions = _trackDataProvider.getPrimaryTrack()
 								.getNearestTo(_timeManager.getTime());
@@ -557,10 +561,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							if (thePositions.length > 0)
 							{
 								// yup, get the centre point
-								res = thePositions[0].getBounds().getCentre();
+								res1 = thePositions[0].getBounds().getCentre();
 							}
 						}
-						return res;
+						return res1;
 					}
 
 				};
@@ -588,9 +592,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		SWTChart res = new SWTChart(_myLayers, parent)
 		{
 
-			public SWTCanvas createCanvas(Composite parent)
+			public SWTCanvas createCanvas(Composite parent1)
 			{
-				return new CustomisedSWTCanvas(parent)
+				return new CustomisedSWTCanvas(parent1)
 				{
 
 					/**
@@ -611,9 +615,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						{
 							// get the parent track
 							FixWrapper fix = (FixWrapper) selected;
-							TrackWrapper parent = fix.getTrackWrapper();
+							TrackWrapper parent11 = fix.getTrackWrapper();
 							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
-							{ parent }, new Layer[]
+							{ parent11 }, new Layer[]
 							{ theParentLayer }, new Layer[]
 							{ theParentLayer }, getLayers(), true);
 						}

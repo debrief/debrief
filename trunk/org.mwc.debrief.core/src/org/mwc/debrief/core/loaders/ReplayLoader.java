@@ -35,7 +35,7 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	 * @param theLayers
 	 * @param is
 	 */
-	private void doTheLoad(final String thePath, final String theFileName, final Layers theLayers,
+	void doTheLoad(final String thePath, final String theFileName, final Layers theLayers,
 			final InputStream is)
 	{
 		final PlainImporterBase importer = new Debrief.ReaderWriter.Replay.ImportReplay()

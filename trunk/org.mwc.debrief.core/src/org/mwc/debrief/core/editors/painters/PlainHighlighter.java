@@ -3,14 +3,18 @@
  */
 package org.mwc.debrief.core.editors.painters;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.beans.PropertyDescriptor;
 
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Properties.BoundedInteger;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 
 /**
  * painter which plots all data, and draws a square rectangle around tactical

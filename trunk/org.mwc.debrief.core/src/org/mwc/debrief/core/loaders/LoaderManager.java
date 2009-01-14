@@ -18,7 +18,7 @@ import org.mwc.debrief.core.interfaces.IPlotLoader;
  */
 public abstract class LoaderManager
 {
-	private ArrayList _loaders;
+	private ArrayList<INamedItem> _loaders;
 	
 	// Extension point tag and attributes in plugin.xml
 	private String EXTENSION_POINT_ID;
@@ -36,13 +36,12 @@ public abstract class LoaderManager
 		getDataLoaders();
 	}
 	
-	private Vector getDataLoaders()
+	private void getDataLoaders()
 	{		
-		Vector res = new Vector(0,1);
 		
 		CorePlugin.logError(Status.INFO, "Starting to load Debrief data importers", null);
 
-		_loaders = new ArrayList();
+		_loaders = new ArrayList<INamedItem>();
 		IExtensionPoint point = Platform.getExtensionRegistry()
 				.getExtensionPoint(PLUGIN_ID, EXTENSION_POINT_ID);
 
@@ -69,11 +68,10 @@ public abstract class LoaderManager
 
 		CorePlugin.logError(Status.INFO, "Finished loading Debrief importers", null);
 		
-		return res;
 	}
 	
 	
-	private ArrayList getToolActionDescriptors()
+	private ArrayList<INamedItem> getToolActionDescriptors()
 	{
 		return _loaders;
 	}
@@ -112,9 +110,9 @@ public abstract class LoaderManager
 
 	public IPlotLoader[] findLoadersFor(String fileName)
 	{
-		Vector list = new Vector(0,1);
+		Vector<IPlotLoader> list = new Vector<IPlotLoader>(0,1);
 		
-		for (Iterator iter = _loaders.iterator(); iter.hasNext();)
+		for (Iterator<INamedItem> iter = _loaders.iterator(); iter.hasNext();)
 		{
 			IPlotLoader element = (IPlotLoader) iter.next();
 

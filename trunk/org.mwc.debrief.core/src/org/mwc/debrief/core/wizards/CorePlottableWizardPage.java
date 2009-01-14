@@ -30,7 +30,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 
 	protected Plottable _plottable;
 
-	private java.util.List _myEditors;
+	private java.util.List<Control> _myEditors;
 
 	// the controls containing the user data
 
@@ -175,7 +175,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 			PropertyDescriptor[] descriptors)
 	{
 		// build up the list of editors
-		_myEditors = new Vector(0, 1);
+		_myEditors = new Vector<Control>(0, 1);
 
 		Label label;
 		// right, walk through the properties
@@ -259,7 +259,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	 * @return
 	 */
 	final protected static PropertyDescriptor longProp(String name,
-			String description, Object subject, Class editorClass)
+			String description, Object subject, Class<?> editorClass)
 	{
 		PropertyDescriptor res = null;
 		res = prop(name, description, subject);
@@ -287,10 +287,10 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	/**
 	 * Ensures that all fields are set.
 	 */
-	final private void enabledChanged()
+	final void enabledChanged()
 	{
 		// cycle through our controls, enabling/disabling them as necessary
-		for (Iterator iter = _myEditors.iterator(); iter.hasNext();)
+		for (Iterator<Control> iter = _myEditors.iterator(); iter.hasNext();)
 		{
 			Control thisC = (Control) iter.next();
 			thisC.setEnabled(_enabledBtn.getSelection());
@@ -300,12 +300,12 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	/**
 	 * Ensures that all fields are set.
 	 */
-	final private void dialogChanged()
+	final void dialogChanged()
 	{
 		if(_enabledBtn.getSelection())
 		{
 			// right, controls are enabled, check we've got something in all of them
-			for (Iterator iterator = _myEditors.iterator(); iterator.hasNext();)
+			for (Iterator<Control> iterator = _myEditors.iterator(); iterator.hasNext();)
 			{
 				Control thisC = (Control) iterator.next();
 				if(thisC instanceof Combo)

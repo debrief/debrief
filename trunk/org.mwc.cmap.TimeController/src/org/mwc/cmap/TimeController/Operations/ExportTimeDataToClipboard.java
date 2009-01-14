@@ -15,7 +15,7 @@ public class ExportTimeDataToClipboard
 	 * @param theSecs the secondary tracks
 	 */
 	public static void export(final TimePeriod period, 
-			final WatchableList thePrimary, final Vector theSecs)
+			final WatchableList thePrimary, final Vector<WatchableList> theSecs)
 	{
 	
 		// ok, now get the primary & secondary tracks

@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.xyplot.feature"
       label="org.mwc.cmap.xyplot.feature"
-      version="1.0.10">
+      version="1.0.11">
 
    <description>
-      [1.0.10] Catch intermittent error on load of new plot
+      [1.0.11] Update to JDK1.6
+[1.0.10] Catch intermittent error on load of new plot
 [1.0.9] Amend online update location
 [1.0.8] Ensure write-WMF finishes, improve error reporting
 [1.0.7] Improve clipping for wrapped bearing points

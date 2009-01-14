@@ -52,7 +52,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 				if(layer.size() > 0)
 				{
 					// hey, looking good, why not loop through them?
-					Enumeration items = layer.elements();
+					Enumeration<Editable> items = layer.elements();
 					while(items.hasMoreElements())
 					{
 						Plottable thisP = (Plottable) items.nextElement();
@@ -86,11 +86,11 @@ public class GenerateTrack implements RightClickContextItemGenerator
 				{
 					// ok, go for it.
 					// sort it out as an operation
-					IUndoableOperation convertToTrack = new ConvertTrack(title, theLayers, 
+					IUndoableOperation convertToTrack1 = new ConvertTrack(title, theLayers, 
 							subjects);
 
 					// ok, stick it on the buffer
-					runIt(convertToTrack);
+					runIt(convertToTrack1);
 				}				
 			};
 			
@@ -118,7 +118,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 		private Layers _layers;
 		private Editable[] _subjects;
 		
-		private Vector _newTracks;
+		private Vector<TrackWrapper> _newTracks;
 
 		public ConvertTrack(String title, Layers layers, Editable[] subjects)
 		{
@@ -136,7 +136,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 				if(thisE instanceof BaseLayer)
 				{
 					BaseLayer layer = (BaseLayer) thisE;
-					Enumeration numer = layer.elements();
+					Enumeration<Editable> numer = layer.elements();
 					while (numer.hasMoreElements())
 					{
 						Plottable pl = (Plottable) numer.nextElement();
@@ -153,7 +153,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 								
 								// and remember it, for the undo operation
 								if(_newTracks == null)
-									_newTracks = new Vector(0,1);
+									_newTracks = new Vector<TrackWrapper>(0,1);
 								
 								_newTracks.add(tw);
 							}
@@ -173,7 +173,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException
 		{
 			// forget about the new tracks
-			for (Iterator iter = _newTracks.iterator(); iter.hasNext();)
+			for (Iterator<TrackWrapper> iter = _newTracks.iterator(); iter.hasNext();)
 			{
 				TrackWrapper trk = (TrackWrapper) iter.next();
 				_layers.removeThisLayer(trk);
@@ -193,7 +193,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 	 * @param thisP
 	 * @return
 	 */
-	private static boolean isSuitableAsTrackPoint(Plottable thisP)
+	static boolean isSuitableAsTrackPoint(Plottable thisP)
 	{
 		boolean res = false;
 		
@@ -225,7 +225,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 		Color trackColor = null;
 		
 		// ok, step through the points
-		Enumeration numer = layer.elements();
+		Enumeration<Editable> numer = layer.elements();
 		
 		// remember the last line viewed, since we want to add both of it's points
 		ShapeWrapper lastLine = null;
