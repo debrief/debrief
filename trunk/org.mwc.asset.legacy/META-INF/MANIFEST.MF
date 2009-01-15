@@ -3,7 +3,6 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.asset.legacy
 Bundle-Version: 1.0.1
-Bundle-Localization: plugin
 Require-Bundle: org.mwc.cmap.legacy
 Export-Package: ASSET,
  ASSET.GUI,

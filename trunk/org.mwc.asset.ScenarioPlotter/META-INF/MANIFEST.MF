@@ -4,7 +4,6 @@ Bundle-Name: ScenarioPlotter Plug-in
 Bundle-SymbolicName: org.mwc.asset.ScenarioPlotter; singleton:=true
 Bundle-Version: 1.0.1
 Bundle-Activator: org.mwc.asset.scenarioplotter.Activator
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.jface.text,

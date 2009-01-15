@@ -6,7 +6,6 @@ Bundle-Version: 1.0.10
 Bundle-ClassPath: XYPlot.jar
 Bundle-Activator: org.mwc.cmap.xyplot.XYPlotPlugin
 Bundle-Vendor: MWC
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.legacy,

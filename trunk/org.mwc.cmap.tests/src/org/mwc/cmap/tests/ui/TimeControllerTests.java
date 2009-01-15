@@ -121,7 +121,8 @@ public class TimeControllerTests extends TestCase
   /**
    * Wait until all background tasks are complete
    */
-  public void waitForJobs() {
+  @SuppressWarnings("deprecation")
+	public void waitForJobs() {
      while (Platform.getJobManager().currentJob() != null)
         delay(1000);
   }	

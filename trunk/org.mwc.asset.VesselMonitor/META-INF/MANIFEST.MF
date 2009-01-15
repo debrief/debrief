@@ -11,5 +11,4 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.legacy,
  org.mwc.asset.legacy
 Eclipse-LazyStart: true
-Bundle-ClassPath: .,
- images/
+Bundle-ClassPath: VesselMonitor.jar

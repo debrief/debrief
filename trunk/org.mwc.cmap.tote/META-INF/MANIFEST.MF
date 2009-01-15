@@ -6,7 +6,6 @@ Bundle-Version: 1.0.10
 Bundle-ClassPath: tote.jar
 Bundle-Activator: org.mwc.cmap.tote.TotePlugin
 Bundle-Vendor: MWC
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,

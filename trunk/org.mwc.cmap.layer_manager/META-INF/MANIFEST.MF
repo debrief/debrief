@@ -6,7 +6,6 @@ Bundle-Version: 1.0.14
 Bundle-ClassPath: layer_manager.jar
 Bundle-Activator: org.mwc.cmap.layer_manager.Layer_managerPlugin
 Bundle-Vendor: MWC
-Bundle-Localization: plugin
 Require-Bundle: org.mwc.cmap.xyplot,
  org.eclipse.ui,
  org.eclipse.core.runtime,

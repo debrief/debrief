@@ -4,7 +4,6 @@ Bundle-Name: ScenarioController Plug-in
 Bundle-SymbolicName: org.mwc.asset.ScenarioController; singleton:=true
 Bundle-Version: 1.0.2
 Bundle-Activator: org.mwc.asset.scenariocontroller.ScenarioControllerPlugin
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.eclipse.core.resources,

@@ -4,7 +4,6 @@ Bundle-Name: SensorMonitor Plug-in
 Bundle-SymbolicName: org.mwc.asset.SensorMonitor; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.asset.sensormonitor.Activator
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.asset.core,

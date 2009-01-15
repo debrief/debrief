@@ -4,14 +4,11 @@ Bundle-Name: CMap Legacy Algorithms Plug-in
 Bundle-SymbolicName: org.mwc.cmap.legacy
 Bundle-Version: 1.0.43
 Bundle-ClassPath: cmap_legacy.jar,
- libs/xercesImpl.jar,
- libs/xmlParserAPIs.jar,
  libs/jcommon-0.7.1.jar,
  libs/openmap.jar,
  libs/jmf.jar,
  libs/vrml97.jar
 Bundle-Vendor: MWC
-Bundle-Localization: plugin
 Export-Package: 
  .,
  MWC.Algorithms;uses:="junit.framework,MWC.GenericData,MWC.GUI",

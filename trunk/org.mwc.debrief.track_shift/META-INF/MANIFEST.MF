@@ -5,7 +5,6 @@ Bundle-SymbolicName: org.mwc.debrief.track_shift; singleton:=true
 Bundle-Version: 1.0.6
 Bundle-Activator: org.mwc.debrief.track_shift.TrackShiftActivator
 Bundle-Vendor: MWC
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.legacy,

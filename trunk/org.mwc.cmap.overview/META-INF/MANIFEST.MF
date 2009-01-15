@@ -4,7 +4,6 @@ Bundle-Name: Overview Plug-in
 Bundle-SymbolicName: org.mwc.cmap.overview; singleton:=true
 Bundle-Version: 1.0.6
 Bundle-Activator: org.mwc.cmap.overview.Activator
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
