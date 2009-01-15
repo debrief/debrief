@@ -165,7 +165,7 @@ public class KTableActionHandler {
 			KTableModel model = m_table.getModel();
 			if (model == null)
 				return new Point[] {};
-			Vector cells = new Vector(model.getColumnCount() * model.getRowCount());
+			Vector<Point> cells = new Vector<Point>(model.getColumnCount() * model.getRowCount());
 			for (int row = 0; row < model.getRowCount(); row++) {
 				for (int col = 0; col < model.getColumnCount(); col++) {
 					Point valid = model.belongsToCell(col, row);
@@ -243,7 +243,7 @@ public class KTableActionHandler {
 		}
 
 		protected void selectAll(KTableModel model) {
-			Vector sel = new Vector();
+			Vector<Point> sel = new Vector<Point>();
 			for (int row = model.getFixedHeaderRowCount(); row < model.getRowCount(); row++)
 				for (int col = model.getFixedHeaderColumnCount(); col < model.getColumnCount(); col++) {
 					Point cell = model.belongsToCell(col, row);
@@ -294,7 +294,7 @@ public class KTableActionHandler {
 			try {
 				m_table.setRedraw(false);
 				m_table.setSelection(new Point[] {}, false);
-				Vector sel = new Vector();
+				Vector<Point> sel = new Vector<Point>();
 
 				String[][] cellTexts = parseCellTexts(text);
 				for (int row = 0; row < cellTexts.length; row++)
@@ -507,6 +507,7 @@ public class KTableActionHandler {
 		return text.toString();
 	}
 
+	@SuppressWarnings("unchecked")
 	protected Point sortSelectedCells(Point[] selection) {
 		Arrays.sort(selection, new Comparator() {
 

@@ -39,6 +39,7 @@ public class KTableCellEditorText extends KTableCellEditor {
 	protected Text m_Text;
 
 	private KeyAdapter keyListener = new KeyAdapter() {
+		@SuppressWarnings("synthetic-access")
 		public void keyPressed(KeyEvent e) {
 			try {
 				onKeyPressed(e);
@@ -49,6 +50,7 @@ public class KTableCellEditorText extends KTableCellEditor {
 	};
 
 	private TraverseListener travListener = new TraverseListener() {
+		@SuppressWarnings("synthetic-access")
 		public void keyTraversed(TraverseEvent e) {
 			onTraverse(e);
 		}

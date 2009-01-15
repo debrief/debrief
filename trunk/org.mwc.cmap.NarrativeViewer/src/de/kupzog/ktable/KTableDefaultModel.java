@@ -25,8 +25,8 @@ import org.eclipse.swt.graphics.Point;
  */
 public abstract class KTableDefaultModel implements KTableModel {
 
-	protected Hashtable m_ColWidths = new Hashtable();
-	private Hashtable m_RowHeights = new Hashtable();
+	protected Hashtable<Integer, Integer> m_ColWidths = new Hashtable<Integer, Integer>();
+	private Hashtable<Integer, Integer> m_RowHeights = new Hashtable<Integer, Integer>();
 
 	// ///////////////////////////////////////////////////////
 	// HANDLE HEIGHT AND WIDTH OF CELLS

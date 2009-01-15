@@ -37,13 +37,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 {
 	public static final String VIEW_ID = "com.borlander.ianmayo.nviewer.app.view";
 
-	private NarrativeViewer myViewer;
+	NarrativeViewer myViewer;
 
 	/**
 	 * helper application to help track creation/activation of new plots
 	 */
 	private PartMonitor _myPartMonitor;
-	private IRollingNarrativeProvider _myRollingNarrative;
+	IRollingNarrativeProvider _myRollingNarrative;
 
 	protected INarrativeListener _myRollingNarrListener;
 
@@ -51,7 +51,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 	 * whether to clip text to the visible size
 	 * 
 	 */
-	private Action _clipText;
+	Action _clipText;
 
 	/**
 	 * whether to follow the controllable time

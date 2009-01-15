@@ -24,12 +24,13 @@ import de.kupzog.ktable.SWTX;
 
 public class NarrativeViewer extends KTable {
 
-	private final NarrativeViewerModel myModel;
+	final NarrativeViewerModel myModel;
 	private NarrativeViewerActions myActions;
     public NarrativeViewer(Composite parent, IPreferenceStore preferenceStore) {
 		super(parent, SWTX.FILL_WITH_LASTCOL | SWT.V_SCROLL | SWT.FULL_SELECTION);
 
 		myModel = new NarrativeViewerModel(preferenceStore, new ColumnSizeCalculator() {
+			@SuppressWarnings("synthetic-access")
 			public int getColumnWidth(int col) {
 				return getColumnRight(col) - getColumnLeft(col);
 			}
@@ -95,7 +96,7 @@ public class NarrativeViewer extends KTable {
 		}
 	}
 
-	private void onColumnsResized(boolean force) {
+	void onColumnsResized(boolean force) {
 		GC gc = new GC(this);
 		myModel.onColumnsResized(gc, force);
 		gc.dispose();
@@ -142,7 +143,7 @@ public class NarrativeViewer extends KTable {
         LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
         
         // step through them
-        for (Iterator entryIterator = visEntries.iterator(); entryIterator.hasNext();)
+        for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator.hasNext();)
 				{        	
 					NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
 					

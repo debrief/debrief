@@ -52,7 +52,7 @@ public class NarrativeViewerActions extends ActionGroup {
 		});
 	}
 	
-	private void updateActions(){
+	void updateActions(){
 		myFilterSource.refresh();
 		myFilterType.refresh();
 		myShowSourceColumn.refresh();

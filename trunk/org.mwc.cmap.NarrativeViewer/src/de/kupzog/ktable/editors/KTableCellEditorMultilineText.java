@@ -27,6 +27,7 @@ public class KTableCellEditorMultilineText extends KTableCellEditor {
 	private Text m_Text;
 
 	private KeyAdapter keyListener = new KeyAdapter() {
+		@SuppressWarnings("synthetic-access")
 		public void keyPressed(KeyEvent e) {
 			try {
 				onKeyPressed(e);
@@ -37,6 +38,7 @@ public class KTableCellEditorMultilineText extends KTableCellEditor {
 	};
 
 	private TraverseListener travListener = new TraverseListener() {
+		@SuppressWarnings("synthetic-access")
 		public void keyTraversed(TraverseEvent e) {
 			onTraverse(e);
 		}

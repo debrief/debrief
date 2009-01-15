@@ -22,7 +22,7 @@ import org.eclipse.swt.graphics.Point;
  * 
  * @author Lorenz Maierhofer <lorenz.maierhofer@logicmindguide.com>
  */
-public abstract class KTableSortComparator implements Comparator {
+public abstract class KTableSortComparator implements Comparator<Object> {
 
 	public static final int SORT_NONE = -1;
 	public static final int SORT_UP = 1;

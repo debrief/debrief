@@ -33,11 +33,11 @@ public abstract class KTableSortedModel extends KTableDefaultModel {
 	private int m_SortColumn = -1;
 	private KTableSortComparator m_currentSortComparator = null;
 
-	private Vector rowMapping;
+	private Vector<Integer> rowMapping;
 
 	public void resetRowMapping() {
 		int numberOfElems = getRowCount() - getFixedHeaderRowCount();
-		rowMapping = new Vector(numberOfElems);
+		rowMapping = new Vector<Integer>(numberOfElems);
 	}
 
 	/*
@@ -46,7 +46,7 @@ public abstract class KTableSortedModel extends KTableDefaultModel {
 	public void initialize() {
 		super.initialize();
 		int numberOfElems = getRowCount() - getFixedHeaderRowCount();
-		rowMapping = new Vector(numberOfElems);
+		rowMapping = new Vector<Integer>(numberOfElems);
 
 		// SORT_NONE is default, so direclty map the rows 1:1
 		int fixedRowCount = getFixedHeaderRowCount() + getFixedSelectableRowCount();
@@ -81,6 +81,7 @@ public abstract class KTableSortedModel extends KTableDefaultModel {
 	 * @param comparator
 	 *            The KTableSortComparator that knows how to sort the rows!
 	 */
+	@SuppressWarnings("unchecked")
 	public void sort(KTableSortComparator comparator) {
 		Collections.sort(rowMapping, comparator);
 

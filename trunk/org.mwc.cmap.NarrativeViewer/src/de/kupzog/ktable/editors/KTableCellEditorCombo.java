@@ -38,6 +38,7 @@ public class KTableCellEditorCombo extends KTableCellEditor {
 	private Cursor m_ArrowCursor = new Cursor(Display.getDefault(), SWT.CURSOR_ARROW);
 
 	private KeyAdapter keyListener = new KeyAdapter() {
+		@SuppressWarnings("synthetic-access")
 		public void keyPressed(KeyEvent e) {
 			try {
 				onKeyPressed(e);

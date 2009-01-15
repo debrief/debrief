@@ -1,6 +1,5 @@
 package org.mwc.cmap.NarrativeViewer.filter.ui;
 
-import java.util.SortedSet;
 import java.util.TreeSet;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -81,19 +80,19 @@ public class FilterDialog extends Dialog
     @Override
     protected Control createDialogArea(Composite parent)
     {
-        Composite dialogArea = (Composite) super.createDialogArea(parent);
-        dialogArea.setLayout(new GridLayout(3, false));
+        Composite dialogArea1 = (Composite) super.createDialogArea(parent);
+        dialogArea1.setLayout(new GridLayout(3, false));
         
-        Label lab1 = new Label(dialogArea, SWT.NONE);
+        Label lab1 = new Label(dialogArea1, SWT.NONE);
         lab1.setText("Available items:");
-        lab1 = new Label(dialogArea, SWT.NONE);
+        lab1 = new Label(dialogArea1, SWT.NONE);
         lab1.setText(" ");
-        lab1 = new Label(dialogArea, SWT.NONE);
+        lab1 = new Label(dialogArea1, SWT.NONE);
         lab1.setText("Show entries matching:");
 
-        myItemsToSelectList = createItemsList(dialogArea, myItemsToSelect);
+        myItemsToSelectList = createItemsList(dialogArea1, myItemsToSelect);
 
-        Composite moveButtonsBar = new Composite(dialogArea, SWT.NONE);
+        Composite moveButtonsBar = new Composite(dialogArea1, SWT.NONE);
         moveButtonsBar.setLayoutData(new GridData(SWT.CENTER, SWT.CENTER,
                 false, false));
         moveButtonsBar.setLayout(new GridLayout(1, true));
@@ -131,7 +130,7 @@ public class FilterDialog extends Dialog
             }
         });
 
-        mySelectedItemsList = createItemsList(dialogArea, mySelectedItems);
+        mySelectedItemsList = createItemsList(dialogArea1, mySelectedItems);
         
         // add double-click jumping for the lists
         myItemsToSelectList.addMouseListener(new MouseAdapter(){
@@ -151,16 +150,16 @@ public class FilterDialog extends Dialog
             }
         });
         
-        return dialogArea;
+        return dialogArea1;
     }
 
-    private void addOne()
+    void addOne()
     {
         moveOne(myItemsToSelect, mySelectedItems, myItemsToSelectList,
                 mySelectedItemsList);
     }
 
-    private void removeOne()
+    void removeOne()
     {
         moveOne(mySelectedItems, myItemsToSelect, mySelectedItemsList,
                 myItemsToSelectList);
@@ -191,13 +190,13 @@ public class FilterDialog extends Dialog
         listForm.remove(listForm.getSelectionIndex());
     }
 
-    private void addAll()
+    void addAll()
     {
         moveAll(myItemsToSelect, mySelectedItems, myItemsToSelectList,
                 mySelectedItemsList);
     }
 
-    private void removeAll()
+    void removeAll()
     {
         moveAll(mySelectedItems, myItemsToSelect, mySelectedItemsList,
                 myItemsToSelectList);

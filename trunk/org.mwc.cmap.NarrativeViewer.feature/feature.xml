@@ -2,11 +2,12 @@
 <feature
       id="org.mwc.cmap.NarrativeViewer.feature"
       label="org.mwc.cmap.NarrativeViewer.feature"
-      version="1.0.9"
+      version="1.0.10"
       provider-name="MWC">
 
    <description>
-      [1.0.9] Make sure tall (multi-line) entry is fully visible
+      [1.0.10] Update to JDK1.6
+[1.0.9] Make sure tall (multi-line) entry is fully visible
 [1.0.8] Refactor narrative provider
 [1.0.7] Let time get updated asyncronously
 [1.0.6] Only select entry that&apos;s visible

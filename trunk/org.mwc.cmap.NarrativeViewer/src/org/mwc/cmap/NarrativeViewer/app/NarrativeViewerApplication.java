@@ -7,6 +7,7 @@ import org.eclipse.ui.PlatformUI;
 /**
  * This class controls all aspects of the application's execution
  */
+@SuppressWarnings("deprecation")
 public class NarrativeViewerApplication implements IPlatformRunnable {
 
 	public Object run(Object args) throws Exception {

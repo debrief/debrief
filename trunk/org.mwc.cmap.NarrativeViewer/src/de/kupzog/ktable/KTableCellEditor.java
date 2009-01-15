@@ -31,7 +31,7 @@ public abstract class KTableCellEditor {
 	protected Rectangle m_Rect;
 	protected int m_Row;
 	protected int m_Col;
-	private Control m_Control;
+	Control m_Control;
 
 	protected String m_toolTip;
 

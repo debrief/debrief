@@ -155,7 +155,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         return myColumnEntry.setWrapping(shouldWrap);
     }
 
-    private void updateFilters()
+    void updateFilters()
     {
         myVisibleRows.clear();
         if (!hasInput())
@@ -171,7 +171,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         }
     }
 
-    private void updateColumnsVisibility()
+    void updateColumnsVisibility()
     {
         myVisibleColumns.clear();
         for (AbstractColumn next : myAllColumns)
@@ -492,7 +492,7 @@ public class NarrativeViewerModel extends KTableDefaultModel
         }
     }
 
-    private static TimeFormatter DEFAULT_TIME = new TimeFormatter()
+    static TimeFormatter DEFAULT_TIME = new TimeFormatter()
     {
         public String format(HiResDate time)
         {

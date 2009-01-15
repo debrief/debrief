@@ -109,7 +109,7 @@ public class KTable extends Canvas {
 	protected int m_LeftColumn;
 
 	// Selection
-	protected HashMap m_Selection;
+	protected HashMap<Object, Object> m_Selection;
 	protected int m_FocusRow;
 	protected int m_FocusCol;
 	protected int m_MainFocusRow;
@@ -141,9 +141,9 @@ public class KTable extends Canvas {
 
 	// diverse
 	protected Display m_Display;
-	protected ArrayList cellSelectionListeners;
-	protected ArrayList cellDoubleClickListeners;
-	protected ArrayList cellResizeListeners;
+	protected ArrayList<KTableCellSelectionListener> cellSelectionListeners;
+	protected ArrayList<KTableCellDoubleClickListener> cellDoubleClickListeners;
+	protected ArrayList<KTableCellResizeListener> cellResizeListeners;
 	protected Cursor m_defaultCursor;
 	protected Point m_defaultCursorSize;
 	protected Cursor m_defaultRowResizeCursor;
@@ -198,7 +198,7 @@ public class KTable extends Canvas {
 
 		// inits
 		m_Display = Display.getCurrent();
-		m_Selection = new HashMap();
+		m_Selection = new HashMap<Object, Object>();
 		m_CellEditor = null;
 
 		m_TopRow = 0;
@@ -222,9 +222,9 @@ public class KTable extends Canvas {
 		m_LineX = 0;
 		m_LineY = 0;
 
-		cellSelectionListeners = new ArrayList(10);
-		cellDoubleClickListeners = new ArrayList(10);
-		cellResizeListeners = new ArrayList(10);
+		cellSelectionListeners = new ArrayList<KTableCellSelectionListener>(10);
+		cellDoubleClickListeners = new ArrayList<KTableCellDoubleClickListener>(10);
+		cellResizeListeners = new ArrayList<KTableCellResizeListener>(10);
 
 		// Listener creation
 		createListeners();
@@ -1550,6 +1550,7 @@ public class KTable extends Canvas {
 	 * Focusses the given Cell. Assumes that the given cell is in the viewable
 	 * area. Does all neccessary redraws.
 	 */
+	@SuppressWarnings("unchecked")
 	protected void focusCell(int col, int row, int stateMask) {
 		// assure it is a valid cell:
 		Point orig = new Point(col, row);
@@ -1698,7 +1699,7 @@ public class KTable extends Canvas {
 						max.y = row;
 					}
 
-					HashMap oldSelection = new HashMap(m_Selection);
+					HashMap<Object, Object> oldSelection = new HashMap<Object, Object>(m_Selection);
 					if (containsCell) {
 						clearSelectionWithoutRedraw();
 
@@ -2254,8 +2255,8 @@ public class KTable extends Canvas {
 
 		final Listener labelListener = new Listener() {
 			public void handleEvent(Event event) {
-				Label label = (Label) event.widget;
-				Shell shell = label.getShell();
+				Label label1 = (Label) event.widget;
+				Shell shell = label1.getShell();
 				// forward mouse events directly to the underlying KTable
 				switch (event.type) {
 				case SWT.MouseDown:

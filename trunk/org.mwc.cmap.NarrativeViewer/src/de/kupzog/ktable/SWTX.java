@@ -117,7 +117,7 @@ public class SWTX {
 
 	//
 	private static GC m_LastGCFromExtend;
-	private static Map m_StringExtentCache = new HashMap();
+	private static Map<String, Point> m_StringExtentCache = new HashMap<String, Point>();
 
 	public static synchronized Point getCachedStringExtent(GC gc, String text) {
 		if (m_LastGCFromExtend != gc) {
