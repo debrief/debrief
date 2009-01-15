@@ -152,7 +152,6 @@ import junit.framework.Assert;
 public class Plottables implements Plottable, Serializable, PlottablesType
 {
 
-
 	static final long serialVersionUID = 4094060714021604632L;
 
 	/**
@@ -199,24 +198,22 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			int res;
 
 			// just do our special check for items that should get plotted first
-			if(p1 instanceof PlotMeFirst)
+			if (p1 == p2)
+				res = 0;
+			else if (p1 instanceof PlotMeFirst)
 			{
 				res = -1;
-			}
-			else if (p2 instanceof PlotMeFirst)
+			} else if (p2 instanceof PlotMeFirst)
 			{
 				res = 1;
-			}
-			else 
-				if (p1 instanceof Comparable)
+			} else if (p1 instanceof Comparable)
 			{
 				// yup, let them go for it
 				Comparable<Editable> c1 = (Comparable<Editable>) p1;
 				res = c1.compareTo(p2);
-			}
-			else
+			} else
 				res = p1.getName().compareTo(p2.getName());
-			
+
 			return res;
 		}
 	}
@@ -278,8 +275,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 					// it has an area, see if it is in view
 					if (wp.overlaps(wa))
 						thisP.paint(dest);
-				}
-				else
+				} else
 				{
 					// it doesn't have an area, so plot it anyway
 					thisP.paint(dest);
@@ -326,8 +322,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 					WorldArea thisA = thisOne.getBounds();
 					if (thisA != null)
 						res = new WorldArea(thisA);
-				}
-				else
+				} else
 				{
 					WorldArea thisA = thisOne.getBounds();
 					if (thisA != null)
@@ -418,7 +413,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		_thePlottables.add(thePlottable);
 
 		// hmm, if it's got bounds, let's clear the world area - that's
-		// if we've got a world area...  It may have already been cleared...
+		// if we've got a world area... It may have already been cleared...
 		if (_myArea != null)
 		{
 			if (thePlottable instanceof Plottable)
@@ -442,7 +437,13 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 */
 	public void removeElement(Editable p)
 	{
-		_thePlottables.remove(p);
+		// double check we've got it.
+		boolean worked = _thePlottables.remove(p);
+
+		if (!worked)
+		{
+			System.err.println("Failed trying to remove " + p + " from " + this);
+		}
 
 		// don't recalculate the area just yet, defer it until
 		// we have removed all of the elements we intend to
@@ -542,7 +543,8 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		return _thePlottables;
 	}
 
-	public static final class IteratorWrapper implements java.util.Enumeration<Editable>
+	public static final class IteratorWrapper implements
+			java.util.Enumeration<Editable>
 	{
 		private final Iterator<Editable> _val;
 
@@ -563,15 +565,18 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 		}
 	}
 
-	/** marker interface to indicate that this plottable should get plotted before the others.
+	/**
+	 * marker interface to indicate that this plottable should get plotted before
+	 * the others.
 	 * 
 	 * @author ian
-	 *
+	 * 
 	 */
-	public static interface PlotMeFirst {
+	public static interface PlotMeFirst
+	{
 	}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	static public class Grid4WTest extends junit.framework.TestCase
@@ -592,7 +597,7 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			Assert.assertEquals("non-empty list", pl.size(), 1);
 			pl.removeElement(cp);
 			Assert.assertEquals("list", pl.size(), 0);
-			
+
 			ScalePainter sp = new ScalePainter();
 			pl.add(sp);
 			Assert.assertEquals("non-empty list", pl.size(), 1);
@@ -605,8 +610,6 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 			Assert.assertEquals("list", pl.size(), 0);
 		}
 
+	}
 
-	}	
-	
-	
 }
