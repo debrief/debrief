@@ -56,7 +56,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 	OverviewSWTChart _myOverviewChart;
 
-	private IControllableViewport _targetViewport;
+	IControllableViewport _targetViewport;
 
 	private org.eclipse.jface.action.Action _fitToWindow;
 
@@ -81,6 +81,11 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 		
 		// hey, first create the chart
 		_myOverviewChart = new OverviewSWTChart(parent){
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
 			IControllableViewport getParentViewport()
 			{
@@ -596,7 +601,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 					paintBackground(dest);
 
 					// ok, pass through the layers, repainting any which need it
-					Enumeration numer = _theLayers.sortedElements();
+					Enumeration<Layer> numer = _theLayers.sortedElements();
 					while (numer.hasMoreElements())
 					{
 						final Layer thisLayer = (Layer) numer.nextElement();
@@ -717,7 +722,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	/**
 	 * do a fit-to-window of the target viewport
 	 */
-	private void fitTargetToWindow()
+	protected void fitTargetToWindow()
 	{
 		_targetViewport.rescale();
 		_targetViewport.update();
@@ -753,7 +758,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	/**
 	 * 
 	 */
-	private void stopListeningToViewport()
+	void stopListeningToViewport()
 	{
 		_targetViewport.getProjection().removeListener(this);
 	}
@@ -761,7 +766,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	/**
 	 * 
 	 */
-	private void startListeningToViewport()
+	void startListeningToViewport()
 	{
 		_targetViewport.getProjection().addListener(this);
 	}
