@@ -174,18 +174,31 @@ package Debrief.GUI.Tote.Painters;
 // Initial revision
 //
 
-import Debrief.GUI.Tote.*;
-import Debrief.Tools.Tote.*;
-import Debrief.Wrappers.*;
-import Debrief.GUI.Tote.Painters.Highlighters.*;
-import MWC.GUI.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.beans.PropertyDescriptor;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+
+import Debrief.GUI.Tote.AnalysisTote;
+import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
+import Debrief.Tools.Tote.Watchable;
+import Debrief.Tools.Tote.WatchableList;
+import MWC.Algorithms.PlainProjection;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.StepperListener;
 import MWC.GUI.Canvas.MetafileCanvas;
-import MWC.Algorithms.*;
-import MWC.GenericData.*;
 import MWC.GUI.Properties.BoundedInteger;
-import java.util.*;
-import java.awt.*;
-import java.beans.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 
 
 /** Class to provide "normal" highlighting, triggered by the stepper control.
@@ -624,46 +637,6 @@ public class TotePainter implements StepperListener,
   {
 
   }
-
-/** draw a highlight around this contact
- * @param proj the screen projection we are using
- * @param dest the canvas to plot onto
- * @param contact the contact to highlight
- */
-  protected final void highlightContact(final PlainProjection proj,
-																	final Graphics dest,
-																	final ContactWrapper contact)
-	{
-		// set the highlight colour
-		dest.setColor(Color.white);
-
-		final WorldLocation start = contact.getStart();
-		final WorldLocation end = contact.getEnd();
-
-		// convert to screen coordinates
-		final Point tl = new Point(proj.toScreen(start));
-		final Point br = new Point(proj.toScreen(end));
-		// get the width
-		final int x = tl.x - _mySize;
-		final int y = tl.y - _mySize;
-		final int wid = (br.x - tl.x) + _mySize * 2;
-		final int ht = (br.y - tl.y) + _mySize * 2;
-
-		// represent this area as a rectangle
-		final java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
-
-		// keep track of the area covered
-		if(_areaCovered == null)
-			_areaCovered = thisR;
-		else
-			_areaCovered.add(thisR);
-
-		// plot the rectangle
-		dest.drawLine(tl.x+1, tl.y+1, br.x+1, br.y+1);
-
-	}
-
-
 
 /** whether we have an editor
  * @return yes, of course

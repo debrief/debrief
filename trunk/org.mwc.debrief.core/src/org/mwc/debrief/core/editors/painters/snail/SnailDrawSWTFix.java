@@ -233,41 +233,6 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
 		return res;
 	}
 
-  protected static final void highlightContact(final MWC.Algorithms.PlainProjection proj,
-																	final Graphics dest,
-																	final ContactWrapper contact,
-																	final int mySize,
-																	Rectangle areaCovered)
-	{
-		// set the highlight colour
-		dest.setColor(Color.white);
-
-		final WorldLocation start = contact.getStart();
-		final WorldLocation end = contact.getEnd();
-
-		// convert to screen coordinates
-		final Point tl = new Point(proj.toScreen(start));
-		final Point br = new Point(proj.toScreen(end));
-		// get the width
-		final int x = tl.x - mySize;
-		final int y = tl.y - mySize;
-		final int wid = (br.x - tl.x) + mySize * 2;
-		final int ht = (br.y - tl.y) + mySize * 2;
-
-		// represent this area as a rectangle
-		final java.awt.Rectangle thisR = new Rectangle(x, y, wid, ht);
-
-		// keep track of the area covered
-		if(areaCovered == null)
-			areaCovered = thisR;
-		else
-			areaCovered.add(thisR);
-
-		// plot the rectangle
-		dest.drawLine(tl.x+1, tl.y+1, br.x+1, br.y+1);
-
-	}
-
   public final String getName()
   {
     return _myName;
