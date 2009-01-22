@@ -1,17 +1,31 @@
 package org.mwc.cmap.core.operations;
 
 import java.io.*;
+import java.util.Enumeration;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
+import org.eclipse.core.commands.operations.IOperationHistory;
 import org.eclipse.core.runtime.*;
-import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.*;
 import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
+import MWC.TacticalData.Track;
 
 public class RightClickCutCopyAdaptor
 {
@@ -78,8 +92,7 @@ public class RightClickCutCopyAdaptor
 
 					super.javaToNative(buffer, transferData);
 
-				}
-				catch (IOException e)
+				} catch (IOException e)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Problem converting object to clipboard format: " + object, e);
@@ -110,14 +123,12 @@ public class RightClickCutCopyAdaptor
 					ObjectInputStream readIn = new ObjectInputStream(in);
 					myData = (Editable[]) readIn.readObject();
 					readIn.close();
-				}
-				catch (IOException ex)
+				} catch (IOException ex)
 				{
 					CorePlugin.logError(Status.ERROR,
 							"Problem converting object to clipboard format", null);
 					return null;
-				}
-				catch (ClassNotFoundException e)
+				} catch (ClassNotFoundException e)
 				{
 					e.printStackTrace();
 				}
@@ -129,12 +140,14 @@ public class RightClickCutCopyAdaptor
 
 		protected String[] getTypeNames()
 		{
-			return new String[] { MYTYPENAME };
+			return new String[]
+			{ MYTYPENAME };
 		}
 
 		protected int[] getTypeIds()
 		{
-			return new int[] { MYTYPEID };
+			return new int[]
+			{ MYTYPEID };
 		}
 	}
 
@@ -149,8 +162,9 @@ public class RightClickCutCopyAdaptor
 	// /////////////////////////////////
 	// member functions
 	// ////////////////////////////////
-	static public void getDropdownListFor(IMenuManager manager, Editable[] editables,
-			Layer[] updateLayers, Layer[] parentLayers, Layers theLayers, Clipboard _clipboard)
+	static public void getDropdownListFor(IMenuManager manager,
+			Editable[] editables, Layer[] updateLayers, Layer[] parentLayers,
+			Layers theLayers, Clipboard _clipboard)
 	{
 		// do we have any editables?
 		if (editables.length == 0)
@@ -166,8 +180,7 @@ public class RightClickCutCopyAdaptor
 		if (data instanceof MWC.GUI.Layers)
 		{
 			// do nothing, we can't copy the layers itself
-		}
-		else
+		} else
 		{
 
 			// is this a layer
@@ -186,7 +199,8 @@ public class RightClickCutCopyAdaptor
 			// else
 			{
 				// first the cut action
-				cutter = new CutItem(editables, _clipboard, parentLayers, theLayers, updateLayers);
+				cutter = new CutItem(editables, _clipboard, parentLayers, theLayers,
+						updateLayers);
 
 				// now the copy action
 				copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
@@ -225,7 +239,7 @@ public class RightClickCutCopyAdaptor
 		protected Layer[] _theParent;
 
 		protected Layers _theLayers;
-		
+
 		protected Object _oldContents;
 
 		protected Layer[] _updateLayer;
@@ -242,9 +256,10 @@ public class RightClickCutCopyAdaptor
 
 			// formatting
 			super.setText("Cut " + toString());
-			
-			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
-			
+
+			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+					.getImageDescriptor(ISharedImages.IMG_TOOL_CUT));
+
 		}
 
 		// remember what used to be on the clipboard
@@ -252,21 +267,23 @@ public class RightClickCutCopyAdaptor
 		{
 			// copy in the new data
 			EditableTransfer transfer = EditableTransfer.getInstance();
-			_oldContents =  _myClipboard.getContents(transfer);
+			_oldContents = _myClipboard.getContents(transfer);
 		}
-		
 
 		// restore the previous contents of the clipboard
 		protected void restorePreviousContents()
 		{
-			// copy in the new data
-			EditableTransfer transfer = EditableTransfer.getInstance();
-			_myClipboard.setContents(new Object[] { _oldContents }, new Transfer[] { transfer });					
-			
+			// just check that there were some previous contents
+			if (_oldContents != null)
+			{
+				// copy in the new data
+				EditableTransfer transfer = EditableTransfer.getInstance();
+				_myClipboard.setContents(new Object[]{ _oldContents }, new Transfer[]{ transfer });
+			}
 			// and forget what we're holding
 			_oldContents = null;
 		}
-		
+
 		/**
 		 * 
 		 */
@@ -281,7 +298,6 @@ public class RightClickCutCopyAdaptor
 					return Status.OK_STATUS;
 				}
 
-			
 				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 						throws ExecutionException
 				{
@@ -310,10 +326,9 @@ public class RightClickCutCopyAdaptor
 
 							// so, we know we've got to remove items from multiple layers
 							multipleLayersModified = true;
-						}
-						else
+						} else
 						{
-							// remove the new data from it's parent
+							// replace the data it's parent
 							parentLayer.add(thisE);
 
 							// let's see if we're editing multiple layers
@@ -330,20 +345,22 @@ public class RightClickCutCopyAdaptor
 						}
 
 					}
-					
+
 					// and fire an update
 					if (multipleLayersModified)
 						_theLayers.fireExtended();
 					else
 						_theLayers.fireExtended(null, lastLayerModified);
-					
+
 					// and restore the previous contents
 					restorePreviousContents();
 
 					return Status.OK_STATUS;
 				}
-				
-				/** the cut operation is common for execute and redo operations - so factor it out to here...
+
+				/**
+				 * the cut operation is common for execute and redo operations - so
+				 * factor it out to here...
 				 * 
 				 */
 				private void doCut()
@@ -353,10 +370,12 @@ public class RightClickCutCopyAdaptor
 
 					// remember the previous contents
 					rememberPreviousContents();
-					
+
 					// copy in the new data
 					EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(new Object[] { _data }, new Transfer[] { transfer });
+					_myClipboard.setContents(new Object[]
+					{ _data }, new Transfer[]
+					{ transfer });
 
 					for (int i = 0; i < _data.length; i++)
 					{
@@ -371,8 +390,7 @@ public class RightClickCutCopyAdaptor
 
 							// so, we know we've got to remove items from multiple layers
 							multipleLayersModified = true;
-						}
-						else
+						} else
 						{
 							// remove the new data from it's parent
 							parentLayer.removeElement(thisE);
@@ -396,7 +414,7 @@ public class RightClickCutCopyAdaptor
 					else
 						_theLayers.fireExtended(null, lastLayerModified);
 				}
-				
+
 			};
 			// put in the global context, for some reason
 			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
@@ -426,9 +444,9 @@ public class RightClickCutCopyAdaptor
 			super(data, clipboard, theParent, theLayers, updateLayer);
 
 			super.setText(toString());
-			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages().getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
-			
-			
+			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
+					.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
+
 		}
 
 		public String toString()
@@ -441,7 +459,6 @@ public class RightClickCutCopyAdaptor
 			return res;
 		}
 
-		
 		public void run()
 		{
 			AbstractOperation myOperation = new AbstractOperation(getText())
@@ -449,11 +466,11 @@ public class RightClickCutCopyAdaptor
 				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 						throws ExecutionException
 				{
-					
+
 					// we stick a pointer to the ACTUAL item on the clipboard - we
 					// clone this item when we do a PASTE, so that multiple paste
 					// operations can be performed
-					
+
 					doCopy();
 
 					return Status.OK_STATUS;
@@ -462,13 +479,11 @@ public class RightClickCutCopyAdaptor
 				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 						throws ExecutionException
 				{
-					
+
 					doCopy();
 
 					return Status.OK_STATUS;
 				}
-
-
 
 				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
 						throws ExecutionException
@@ -478,34 +493,38 @@ public class RightClickCutCopyAdaptor
 
 					return Status.OK_STATUS;
 				}
-				
-				/** the Copy bit is common to execute and redo methods - so factor it out to here...
+
+				/**
+				 * the Copy bit is common to execute and redo methods - so factor it out
+				 * to here...
 				 * 
 				 */
 				private void doCopy()
 				{
 					// remember the old contents
 					rememberPreviousContents();
-					
+
 					// we stick a pointer to the ACTUAL item on the clipboard - we
 					// clone this item when we do a PASTE, so that multiple paste
 					// operations can be performed
-					
+
 					// copy in the new data
 					EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(new Object[] { _data }, new Transfer[] { transfer });
-				}				
+					_myClipboard.setContents(new Object[]
+					{ _data }, new Transfer[]
+					{ transfer });
+				}
 			};
 			// put in the global context, for some reason
 			myOperation.addContext(CorePlugin.CMAP_CONTEXT);
-			CorePlugin.run(myOperation);			
+			CorePlugin.run(myOperation);
 		}
 
 		public void execute()
 		{
 
 			// store the old data
-//			storeOld();
+			// storeOld();
 
 			// we stick a pointer to the ACTUAL item on the clipboard - we
 			// clone this item when we do a PASTE, so that multiple paste
@@ -513,8 +532,300 @@ public class RightClickCutCopyAdaptor
 
 			// copy in the new data
 			EditableTransfer transfer = EditableTransfer.getInstance();
-			_myClipboard.setContents(new Object[] { _data }, new Transfer[] { transfer });
+			_myClipboard.setContents(new Object[]
+			{ _data }, new Transfer[]
+			{ transfer });
 		}
 	}
 
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testCutPaste extends junit.framework.TestCase
+	{
+		
+
+		private void doUndo()
+		{
+			IOperationHistory history = CorePlugin.getHistory();
+			try
+			{
+				history.undo(CorePlugin.CMAP_CONTEXT, null, null);
+			} catch (ExecutionException e)
+			{
+				e.printStackTrace();
+				assertTrue("threw assertion", e == null);
+			}
+		}
+
+		private boolean isPositionThere(final TrackWrapper tw, final FixWrapper fw2)
+		{
+			boolean itemFound;
+			Enumeration<Editable> enumer = tw.getPositions();
+			itemFound = false;
+			while (enumer.hasMoreElements())
+			{
+				Editable ee = enumer.nextElement();
+				if (ee.equals(fw2))
+				{
+					itemFound = true;
+					continue;
+				}
+			}
+			return itemFound;
+		}
+
+		private boolean isSensorThere(final TrackWrapper tw, final SensorContactWrapper scwa1)
+		{
+			boolean itemFound;
+			Enumeration<SensorWrapper> enumer = tw.getSensors();
+			itemFound = false;
+			while (enumer.hasMoreElements())
+			{
+				SensorWrapper ee = enumer.nextElement();
+				Enumeration<Editable> contacts = ee.elements();
+				while(contacts.hasMoreElements())
+				{
+					Editable thisC = contacts.nextElement();
+					if (thisC.equals(scwa1))
+					{
+						itemFound = true;
+						continue;
+					}
+				}
+			}
+			return itemFound;
+		}
+		private boolean isContactThere(final TrackWrapper tw, final TMAContactWrapper scwa1)
+		{
+			boolean itemFound;
+			Enumeration<TMAWrapper> enumer = tw.getSolutions();
+			itemFound = false;
+			while (enumer.hasMoreElements())
+			{
+				TMAWrapper ee = enumer.nextElement();
+				Enumeration<Editable> contacts = ee.elements();
+				while(contacts.hasMoreElements())
+				{
+					Editable thisC = contacts.nextElement();
+					if (thisC.equals(scwa1))
+					{
+						itemFound = true;
+						continue;
+					}
+				}
+			}
+			return itemFound;
+		}		
+		
+		
+		public void testCut()
+		{
+			// create the data
+			final TrackWrapper tw = new TrackWrapper();
+
+			tw.setTrack(new Track());
+
+			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
+			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),
+					loc_1.add(new WorldVector(33, new WorldDistance(100,
+							WorldDistance.METRES), null)), 10, 110));
+			fw1.setLabel("fw1");
+			final FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(200, 20000),
+					loc_1.add(new WorldVector(33, new WorldDistance(200,
+							WorldDistance.METRES), null)), 20, 120));
+			fw2.setLabel("fw2");
+			final FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(300, 30000),
+					loc_1.add(new WorldVector(33, new WorldDistance(300,
+							WorldDistance.METRES), null)), 30, 130));
+			fw3.setLabel("fw3");
+			final FixWrapper fw4 = new FixWrapper(new Fix(new HiResDate(400, 40000),
+					loc_1.add(new WorldVector(33, new WorldDistance(400,
+							WorldDistance.METRES), null)), 40, 140));
+			fw4.setLabel("fw4");
+			final FixWrapper fw5 = new FixWrapper(new Fix(new HiResDate(500, 50000),
+					loc_1.add(new WorldVector(33, new WorldDistance(500,
+							WorldDistance.METRES), null)), 50, 150));
+			fw5.setLabel("fw5");
+			tw.addFix(fw1);
+			tw.addFix(fw2);
+			tw.addFix(fw3);
+			tw.addFix(fw4);
+			tw.addFix(fw5);
+			// also give it some sensor data
+			SensorWrapper swa = new SensorWrapper("title one");
+			SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+					new HiResDate(150, 0), null, 0, null, null, null, 0, null);
+			SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
+					new HiResDate(180, 0), null, 0, null, null, null, 0, null);
+			SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
+					new HiResDate(250, 0), null, 0, null, null, null, 0, null);
+			swa.add(scwa1);
+			swa.add(scwa2);
+			swa.add(scwa3);
+			tw.add(swa);
+			SensorWrapper sw = new SensorWrapper("title two");
+			SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
+					new HiResDate(260, 0),null, 0, null, null, null, 0, null);
+			SensorContactWrapper scw2 = new SensorContactWrapper("eee",
+					new HiResDate(280, 0), null, 0, null, null, null, 0, null);
+			SensorContactWrapper scw3 = new SensorContactWrapper("fff",
+					new HiResDate(350, 0), null, 0, null, null, null, 0, null);
+			sw.add(scw1);
+			sw.add(scw2);
+			sw.add(scw3);
+			tw.add(sw);
+
+			TMAWrapper mwa = new TMAWrapper("bb");
+			TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
+					new HiResDate(130), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb",
+					new HiResDate(190), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb",
+					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
+			mwa.add(tcwa1);
+			mwa.add(tcwa2);
+			mwa.add(tcwa3);
+			tw.add(mwa);
+			TMAWrapper mw = new TMAWrapper("cc");
+			TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb",
+					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb",
+					new HiResDate(330), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb",
+					new HiResDate(390), null, 0, 0, 0, null, null, null, null);
+			mw.add(tcw1);
+			mw.add(tcw2);
+			mw.add(tcw3);
+			tw.add(mw);
+
+			// now fiddle with it
+			Layers updateLayers = new Layers();
+			updateLayers.addThisLayer(tw);
+			final Clipboard clipboard = new Clipboard(Display.getDefault());
+			Layer[] parentLayer = new Layer[]{ tw };
+			CutItem ci = new CutItem(new Editable[]{ fw2 }, clipboard, parentLayer, updateLayers, parentLayer);
+			// check our item's in there
+			assertTrue("item there before op", isPositionThere(tw, fw2));
+			assertTrue("item there before op", isPositionThere(tw, fw3));
+
+			// now do the cut
+			ci.run();
+			assertFalse("item gone after op", isPositionThere(tw, fw2));
+			assertTrue("item there after op", isPositionThere(tw, fw3));
+
+			doUndo();
+			assertTrue("item back again after op", isPositionThere(tw, fw2));
+			
+			// now let's try two items
+			parentLayer = new Layer[]{ tw, tw };
+			CutItem c2 = new CutItem(new Editable[]{ fw2,fw4 }, clipboard, parentLayer, updateLayers, parentLayer);
+			assertTrue("item there before op", isPositionThere(tw, fw2));
+			assertTrue("item there before op", isPositionThere(tw, fw3));
+			assertTrue("item there before op", isPositionThere(tw, fw4));
+			// now do the cut
+			c2.run();
+			assertFalse("item gone after op", isPositionThere(tw, fw2));
+			assertTrue("item there after op", isPositionThere(tw, fw3));
+			assertFalse("item gone after op", isPositionThere(tw, fw4));
+			
+			doUndo();
+			assertTrue("item back again after op", isPositionThere(tw, fw2));
+			assertTrue("item still there after op", isPositionThere(tw, fw3));
+			assertTrue("item back again after op", isPositionThere(tw, fw4));
+			
+			// right, now let's try to delete a sensor item
+			parentLayer = new Layer[]{swa};
+			CutItem c3 = new CutItem(new Editable[]{ scwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
+			assertTrue("item there before op", isSensorThere(tw, scwa1));
+			assertTrue("item there before op", isSensorThere(tw, scwa2));
+			assertTrue("item there before op", isSensorThere(tw, scwa3));
+			c3.run();
+			assertFalse("item not there after op", isSensorThere(tw, scwa1));
+			assertTrue("item there after op", isSensorThere(tw, scwa2));
+			assertTrue("item there after op", isSensorThere(tw, scwa3));
+			doUndo();
+			assertTrue("item back again after op", isSensorThere(tw, scwa1));
+			assertTrue("item back again after op", isSensorThere(tw, scwa2));
+			assertTrue("item back again after op", isSensorThere(tw, scwa3));
+			// now let's try two items
+			parentLayer = new Layer[]{swa ,swa};
+			c3 = new CutItem(new Editable[]{ scwa1, scwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
+			assertTrue("item there before op", isSensorThere(tw, scwa1));
+			assertTrue("item there before op", isSensorThere(tw, scwa2));
+			assertTrue("item there before op", isSensorThere(tw, scwa3));
+			c3.run();
+			assertFalse("item not there after op", isSensorThere(tw, scwa1));
+			assertFalse("item not there after op", isSensorThere(tw, scwa2));
+			assertTrue("item there after op", isSensorThere(tw, scwa3));
+			doUndo();
+			assertTrue("item back again after op", isSensorThere(tw, scwa1));
+			assertTrue("item back again after op", isSensorThere(tw, scwa2));
+			assertTrue("item back again after op", isSensorThere(tw, scwa3));
+			// now let's try two items in different layers
+			parentLayer = new Layer[]{swa ,sw};
+			c3 = new CutItem(new Editable[]{ scwa1, scw2 }, clipboard, parentLayer, updateLayers, parentLayer);
+			assertTrue("item there before op", isSensorThere(tw, scwa1));
+			assertTrue("item there before op", isSensorThere(tw, scw2));
+			assertTrue("item there before op", isSensorThere(tw, scwa3));
+			c3.run();
+			assertFalse("item not there after op", isSensorThere(tw, scwa1));
+			assertFalse("item not there after op", isSensorThere(tw, scw2));
+			assertTrue("item there after op", isSensorThere(tw, scwa3));
+			doUndo();
+			assertTrue("item back again after op", isSensorThere(tw, scwa1));
+			assertTrue("item back again after op", isSensorThere(tw, scw2));
+			assertTrue("item back again after op", isSensorThere(tw, scwa3));
+			
+			////////////////////////////
+			// now for TMA!
+
+			// right, now let's try to delete a sensor item
+			parentLayer = new Layer[]{mwa};
+			c3 = new CutItem(new Editable[]{ tcwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
+			assertTrue("item there before op", isContactThere(tw, tcwa1));
+			assertTrue("item there before op", isContactThere(tw, tcwa2));
+			assertTrue("item there before op", isContactThere(tw, tcwa3));
+			c3.run();
+			assertFalse("item not there after op", isContactThere(tw, tcwa1));
+			assertTrue("item there after op", isContactThere(tw, tcwa2));
+			assertTrue("item there after op", isContactThere(tw, tcwa3));
+			doUndo();
+			assertTrue("item back again after op", isContactThere(tw, tcwa1));
+			assertTrue("item back again after op", isContactThere(tw, tcwa2));
+			assertTrue("item back again after op", isContactThere(tw, tcwa3));
+			// now let's try two items
+			parentLayer = new Layer[]{mwa ,mwa};
+			c3 = new CutItem(new Editable[]{ tcwa1, tcwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
+			assertTrue("item there before op", isContactThere(tw, tcwa1));
+			assertTrue("item there before op", isContactThere(tw, tcwa2));
+			assertTrue("item there before op", isContactThere(tw, tcwa3));
+			c3.run();
+			assertFalse("item not there after op", isContactThere(tw, tcwa1));
+			assertFalse("item not there after op", isContactThere(tw, tcwa2));
+			assertTrue("item there after op", isContactThere(tw, tcwa3));
+			doUndo();
+			assertTrue("item back again after op", isContactThere(tw, tcwa1));
+			assertTrue("item back again after op", isContactThere(tw, tcwa2));
+			assertTrue("item back again after op", isContactThere(tw, tcwa3));
+			// now let's try two items in different layers
+			parentLayer = new Layer[]{mwa ,mw};
+			c3 = new CutItem(new Editable[]{ tcwa1, tcw2 }, clipboard, parentLayer, updateLayers, parentLayer);
+			assertTrue("item there before op", isContactThere(tw, tcwa1));
+			assertTrue("item there before op", isContactThere(tw, tcw2));
+			assertTrue("item there before op", isContactThere(tw, tcwa3));
+			c3.run();
+			assertFalse("item not there after op", isContactThere(tw, tcwa1));
+			assertFalse("item not there after op", isContactThere(tw, tcw2));
+			assertTrue("item there after op", isContactThere(tw, tcwa3));
+			doUndo();
+			assertTrue("item back again after op", isContactThere(tw, tcwa1));
+			assertTrue("item back again after op", isContactThere(tw, tcw2));
+			assertTrue("item back again after op", isContactThere(tw, tcwa3));
+						
+			
+
+		}
+
+	}
 }

@@ -63,8 +63,17 @@ public class RightClickSupport
 
 	/**
 	 * @param manager
+	 *          where we add our items to
+	 * @param editables
+	 *          the selected items
+	 * @param topLevelLayers
+	 *          the top-level layers that contain our elements (it's these that
+	 *          get updated)
+	 * @param parentLayers
+	 *          the immediate parents of our items
+	 * @param theLayers
+	 *          the overall layers object
 	 * @param hideClipboardOperations
-	 * @param pw
 	 */
 	static public void getDropdownListFor(IMenuManager manager,
 			Editable[] editables, Layer[] topLevelLayers, Layer[] parentLayers,
@@ -136,7 +145,7 @@ public class RightClickSupport
 		{
 			// hey, also see if we're going to do a cut/paste
 			RightClickCutCopyAdaptor.getDropdownListFor(manager, editables,
-					topLevelLayers, topLevelLayers, theLayers, theClipboard);
+					topLevelLayers, parentLayers, theLayers, theClipboard);
 
 			// what about paste?
 			Editable selectedItem = null;
@@ -145,7 +154,7 @@ public class RightClickSupport
 				selectedItem = editables[0];
 			}
 			RightClickPasteAdaptor.getDropdownListFor(manager, selectedItem,
-					topLevelLayers, topLevelLayers, theLayers, theClipboard);
+					topLevelLayers, parentLayers, theLayers, theClipboard);
 
 			manager.add(new Separator());
 		}
@@ -167,8 +176,7 @@ public class RightClickSupport
 	protected static MethodDescriptor[] getCommonMethodsFor(Editable[] editables)
 	{
 		MethodDescriptor[] res = null;
-		MethodDescriptor[] demo = new MethodDescriptor[]
-		{};
+		MethodDescriptor[] demo = new MethodDescriptor[] {};
 
 		// right, get the first set of properties
 		if (editables.length > 0)
@@ -176,24 +184,28 @@ public class RightClickSupport
 			Editable first = editables[0];
 			res = first.getInfo().getMethodDescriptors();
 
-			// right, are there any more?
-			if (editables.length > 1)
+			// only continue if there are any methods to compare against
+			if (res != null)
 			{
-				// pass through the others, finding the common ground
-				for (int cnt = 1; cnt < editables.length; cnt++)
+				// right, are there any more?
+				if (editables.length > 1)
 				{
-					Editable thisE = editables[cnt];
-
-					// get its props
-					EditorType thisEditor = thisE.getInfo();
-
-					// do we have an editor?
-					if (thisEditor != null)
+					// pass through the others, finding the common ground
+					for (int cnt = 1; cnt < editables.length; cnt++)
 					{
-						MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
+						Editable thisE = editables[cnt];
 
-						// find the common ones
-						res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
+						// get its props
+						EditorType thisEditor = thisE.getInfo();
+
+						// do we have an editor?
+						if (thisEditor != null)
+						{
+							MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
+
+							// find the common ones
+							res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
+						}
 					}
 				}
 			}
@@ -207,32 +219,35 @@ public class RightClickSupport
 			Editable[] editables)
 	{
 		PropertyDescriptor[] res = null;
-		PropertyDescriptor[] demo = new PropertyDescriptor[]
-		{};
+		PropertyDescriptor[] demo = new PropertyDescriptor[] {};
 		// right, get the first set of properties
 		if (editables.length > 0)
 		{
 			Editable first = editables[0];
 			res = first.getInfo().getPropertyDescriptors();
 
-			// right, are there any more?
-			if (editables.length > 1)
+			// only continue if there are any property descriptors
+			if (res != null)
 			{
-				// pass through the others, finding the common ground
-				for (int cnt = 1; cnt < editables.length; cnt++)
+				// right, are there any more?
+				if (editables.length > 1)
 				{
-					Editable thisE = editables[cnt];
-
-					// get its props
-					EditorType thisEditor = thisE.getInfo();
-
-					// do we have an editor?
-					if (thisEditor != null)
+					// pass through the others, finding the common ground
+					for (int cnt = 1; cnt < editables.length; cnt++)
 					{
-						PropertyDescriptor[] newSet = thisEditor.getPropertyDescriptors();
+						Editable thisE = editables[cnt];
 
-						// find the common ones
-						res = (PropertyDescriptor[]) getIntersectionFor(res, newSet, demo);
+						// get its props
+						EditorType thisEditor = thisE.getInfo();
+
+						// do we have an editor?
+						if (thisEditor != null)
+						{
+							PropertyDescriptor[] newSet = thisEditor.getPropertyDescriptors();
+
+							// find the common ones
+							res = (PropertyDescriptor[]) getIntersectionFor(res, newSet, demo);
+						}
 					}
 				}
 			}
@@ -250,8 +265,8 @@ public class RightClickSupport
 	 *          second array
 	 * @return the common elements
 	 */
-	protected static MethodDescriptor[] getIntersectionFor(MethodDescriptor[] a, MethodDescriptor[] b,
-			MethodDescriptor[] demo)
+	protected static MethodDescriptor[] getIntersectionFor(MethodDescriptor[] a,
+			MethodDescriptor[] b, MethodDescriptor[] demo)
 	{
 		Vector<MethodDescriptor> res = new Vector<MethodDescriptor>();
 
@@ -268,8 +283,8 @@ public class RightClickSupport
 			}
 		}
 		return res.toArray(demo);
-	}	
-	
+	}
+
 	/**
 	 * have a look at the two arrays, and find the common elements (brute force)
 	 * 
@@ -279,8 +294,8 @@ public class RightClickSupport
 	 *          second array
 	 * @return the common elements
 	 */
-	protected static PropertyDescriptor[] getIntersectionFor(PropertyDescriptor[] a, PropertyDescriptor[] b,
-			PropertyDescriptor[] demo)
+	protected static PropertyDescriptor[] getIntersectionFor(
+			PropertyDescriptor[] a, PropertyDescriptor[] b, PropertyDescriptor[] demo)
 	{
 		Vector<PropertyDescriptor> res = new Vector<PropertyDescriptor>();
 
@@ -289,7 +304,7 @@ public class RightClickSupport
 			PropertyDescriptor thisP = a[cnta];
 			for (int cntb = 0; cntb < b.length; cntb++)
 			{
-				Object thatP = b[cntb];
+				PropertyDescriptor thatP = b[cntb];
 				if (thisP.equals(thatP))
 				{
 					res.add(thisP);
@@ -490,11 +505,11 @@ public class RightClickSupport
 		if (subMenu == null)
 		{
 			String nameStr;
-			if(editables.length > 1)
+			if (editables.length > 1)
 				nameStr = MULTIPLE_ITEMS_STR;
 			else
 				nameStr = editables[0].getName();
-				
+
 			subMenu = new MenuManager(nameStr);
 			manager.add(subMenu);
 		}
@@ -609,11 +624,11 @@ public class RightClickSupport
 			if (subMenu == null)
 			{
 				String nameStr;
-				if(editables.length > 1)
+				if (editables.length > 1)
 					nameStr = MULTIPLE_ITEMS_STR;
 				else
 					nameStr = editables[0].getName();
-					
+
 				subMenu = new MenuManager(nameStr);
 				manager.add(subMenu);
 			}
@@ -690,8 +705,7 @@ public class RightClickSupport
 				Editable thisSubject = _subjects[cnt];
 				try
 				{
-					_setter.invoke(thisSubject, new Object[]
-					{ _newValue });
+					_setter.invoke(thisSubject, new Object[] { _newValue });
 				} catch (InvocationTargetException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Setter call failed:"
@@ -725,8 +739,7 @@ public class RightClickSupport
 				Editable thisSubject = _subjects[cnt];
 				try
 				{
-					_setter.invoke(thisSubject, new Object[]
-					{ _newValue });
+					_setter.invoke(thisSubject, new Object[] { _newValue });
 				} catch (Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
@@ -750,8 +763,7 @@ public class RightClickSupport
 				Editable thisSubject = _subjects[cnt];
 				try
 				{
-					_setter.invoke(thisSubject, new Object[]
-					{ _oldValue });
+					_setter.invoke(thisSubject, new Object[] { _oldValue });
 				} catch (Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
@@ -788,25 +800,23 @@ public class RightClickSupport
 		{
 			try
 			{
-				PropertyDescriptor[] demo = new PropertyDescriptor[]
-				{};
-				PropertyDescriptor[] pa = new PropertyDescriptor[]
-				{ new PropertyDescriptor("Color", FixWrapper.class),
+				PropertyDescriptor[] demo = new PropertyDescriptor[] {};
+				PropertyDescriptor[] pa = new PropertyDescriptor[] {
+						new PropertyDescriptor("Color", FixWrapper.class),
 						new PropertyDescriptor("Font", FixWrapper.class),
 						new PropertyDescriptor("Label", FixWrapper.class),
 						new PropertyDescriptor("LabelShowing", FixWrapper.class),
 						new PropertyDescriptor("Visible", FixWrapper.class) };
-				PropertyDescriptor[] pb = new PropertyDescriptor[]
-				{ new PropertyDescriptor("Color", FixWrapper.class),
+				PropertyDescriptor[] pb = new PropertyDescriptor[] {
+						new PropertyDescriptor("Color", FixWrapper.class),
 						new PropertyDescriptor("Font", FixWrapper.class),
 						new PropertyDescriptor("Label", FixWrapper.class),
 						new PropertyDescriptor("LabelShowing", FixWrapper.class),
 						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
-				PropertyDescriptor[] pc = new PropertyDescriptor[]
-				{ new PropertyDescriptor("LabelShowing", FixWrapper.class),
+				PropertyDescriptor[] pc = new PropertyDescriptor[] {
+						new PropertyDescriptor("LabelShowing", FixWrapper.class),
 						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
-				PropertyDescriptor[] pd = new PropertyDescriptor[]
-				{};
+				PropertyDescriptor[] pd = new PropertyDescriptor[] {};
 
 				PropertyDescriptor[] res = (PropertyDescriptor[]) getIntersectionFor(
 						pa, pb, demo);
@@ -835,16 +845,11 @@ public class RightClickSupport
 			Editable itemTwo = new FixWrapper(new Fix(new HiResDate(122334),
 					new WorldLocation(1, 2, 5), 13, 12));
 			Editable itemThree = new SensorWrapper("alpha");
-			Editable[] lst = new Editable[]
-			{ itemOne, itemTwo };
-			Editable[] lst2 = new Editable[]
-			{ itemOne, itemThree };
-			Editable[] lst3 = new Editable[]
-			{ itemThree, itemOne, itemThree };
-			Editable[] lst4 = new Editable[]
-			{ itemThree, itemThree };
-			Editable[] lst5 = new Editable[]
-			{ itemOne };
+			Editable[] lst = new Editable[] { itemOne, itemTwo };
+			Editable[] lst2 = new Editable[] { itemOne, itemThree };
+			Editable[] lst3 = new Editable[] { itemThree, itemOne, itemThree };
+			Editable[] lst4 = new Editable[] { itemThree, itemThree };
+			Editable[] lst5 = new Editable[] { itemOne };
 			assertEquals("no data", 2, lst.length);
 			PropertyDescriptor[] props = RightClickSupport
 					.getCommonPropertiesFor(lst);

@@ -653,9 +653,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		if (!done)
+		{
 			MWC.GUI.Dialogs.DialogFactory.showMessage("Add point",
 					"Sorry it is not possible to add:" + point.getName() + " to "
 							+ this.getName());
+		}
 	}
 
 	/**
@@ -2679,35 +2681,79 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			HiResDate startH = new HiResDate(150, 0);
 			HiResDate endH = new HiResDate(450, 0);
 			tw.filterListTo(startH , endH );
-			int ctr = 0;
-			Enumeration<Editable> iter = tw._thePositions.elements();
-			while(iter.hasMoreElements())
-			{
-				Plottable thisE = (Plottable) iter.nextElement();
-				if(thisE.getVisible())
-					ctr++;
-			}
+			int ctr = countVisibleFixes(tw);
+			int sCtr = countVisibleSensorWrappers(tw);
+			int tCtr = countVisibleSolutionWrappers(tw);
 			assertEquals("contains correct number of entries", 3, ctr);
+			assertEquals("contains correct number of sensor entries", 6, sCtr);
+			assertEquals("contains correct number of sensor entries", 5, tCtr);
 
 			tw = getDummyTrack();			 			
 			startH = new HiResDate(350, 0);
 			endH = new HiResDate(550, 0);
 			tw.filterListTo(startH , endH );
-			ctr = 0;
-			iter = tw._thePositions.elements();
-			while(iter.hasMoreElements())
-			{
-				Plottable thisE = (Plottable) iter.nextElement();
-				if(thisE.getVisible())
-					ctr++;
-			}
+			ctr = countVisibleFixes(tw);
+			sCtr = countVisibleSensorWrappers(tw);
+			tCtr = countVisibleSolutionWrappers(tw);
 			assertEquals("contains correct number of entries", 2, ctr);
-
+			assertEquals("contains correct number of sensor entries", 1, sCtr);
+			assertEquals("contains correct number of sensor entries", 1, tCtr);
+			
 			tw = getDummyTrack();			 			
 			startH = new HiResDate(0, 0);
 			endH = new HiResDate(450, 0);
 			tw.filterListTo(startH , endH );
-			ctr = 0;
+			ctr = countVisibleFixes(tw);
+			sCtr = countVisibleSensorWrappers(tw);
+			tCtr = countVisibleSolutionWrappers(tw);
+			assertEquals("contains correct number of entries", 4, ctr);
+			assertEquals("contains correct number of sensor entries", 6, sCtr);
+			assertEquals("contains correct number of sensor entries", 6, tCtr);
+		}
+
+		@SuppressWarnings("synthetic-access")
+		private int countVisibleSensorWrappers(TrackWrapper tw)
+		{
+			Iterator<SensorWrapper> iter2 = tw._mySensors.iterator();			
+			int sCtr = 0;
+			while(iter2.hasNext())
+			{
+				SensorWrapper sw = iter2.next();
+				Enumeration<Editable> enumS = sw.elements();
+				while(enumS.hasMoreElements())
+				{
+					Plottable pl = (Plottable) enumS.nextElement();
+					if(pl.getVisible())
+						sCtr++;
+				}
+			}
+			return sCtr;
+		}
+
+		@SuppressWarnings("synthetic-access")
+		private int countVisibleSolutionWrappers(TrackWrapper tw)
+		{
+			Iterator<TMAWrapper> iter2 = tw._mySolutions.iterator();			
+			int sCtr = 0;
+			while(iter2.hasNext())
+			{
+				TMAWrapper sw = iter2.next();
+				Enumeration<Editable> enumS = sw.elements();
+				while(enumS.hasMoreElements())
+				{
+					Plottable pl = (Plottable) enumS.nextElement();
+					if(pl.getVisible())
+						sCtr++;
+				}
+			}
+			return sCtr;
+		}
+		
+		@SuppressWarnings("synthetic-access")
+		private int countVisibleFixes(TrackWrapper tw)
+		{
+			int ctr = 0;
+			Enumeration<Editable> iter;
 			iter = tw._thePositions.elements();
 			while(iter.hasMoreElements())
 			{
@@ -2715,9 +2761,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				if(thisE.getVisible())
 					ctr++;
 			}
-			assertEquals("contains correct number of entries", 4, ctr);
-			
-			
+			return ctr;
 		}
 
 		private TrackWrapper getDummyTrack()
@@ -2752,6 +2796,41 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		  tw.addFix(fw3);
 			tw.addFix(fw4);
 			tw.addFix(fw5);
+			// also give it some sensor data
+			SensorWrapper swa = new SensorWrapper("title one");
+			SensorContactWrapper  scwa1 = new SensorContactWrapper("aaa", new HiResDate(150,0),null,0,null,null,null,0,null);
+			SensorContactWrapper  scwa2 = new SensorContactWrapper("bbb", new HiResDate(180,0),null,0,null,null,null,0,null);
+			SensorContactWrapper  scwa3 = new SensorContactWrapper("ccc", new HiResDate(250,0),null,0,null,null,null,0,null);
+			swa.add(scwa1);
+			swa.add(scwa2);
+			swa.add(scwa3);
+			tw.add(swa);
+			SensorWrapper sw = new SensorWrapper("title two");
+			SensorContactWrapper  scw1 = new SensorContactWrapper("ddd", new HiResDate(260,0),null,0,null,null,null,0,null);
+			SensorContactWrapper  scw2 = new SensorContactWrapper("eee", new HiResDate(280,0),null,0,null,null,null,0,null);
+			SensorContactWrapper  scw3 = new SensorContactWrapper("fff", new HiResDate(350,0),null,0,null,null,null,0,null);
+			sw.add(scw1);
+			sw.add(scw2);
+			sw.add(scw3);
+			tw.add(sw);
+
+			TMAWrapper mwa = new TMAWrapper("bb");
+			TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb", new HiResDate(130),null, 0,0,0, null, null, null, null);
+			TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb", new HiResDate(190),null, 0,0,0, null, null, null, null);
+			TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb", new HiResDate(230),null, 0,0,0, null, null, null, null);
+			mwa.add(tcwa1);
+			mwa.add(tcwa2);
+			mwa.add(tcwa3);
+			tw.add(mwa);
+			TMAWrapper mw = new TMAWrapper("cc");
+			TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb", new HiResDate(230),null, 0,0,0, null, null, null, null);
+			TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb", new HiResDate(330),null, 0,0,0, null, null, null, null);
+			TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb", new HiResDate(390),null, 0,0,0, null, null, null, null);
+			mw.add(tcw1);
+			mw.add(tcw2);
+			mw.add(tcw3);
+			tw.add(mw);
+			
 			return tw;
 		}
 
