@@ -1060,7 +1060,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
 
                   // calculate the location of the end of the bearing
                   _tmpLocation.addToMe(new WorldVector(Conversions.Degs2Rads(scw.getBearing()),
-                                                       Conversions.Yds2Degs(scw.getRange()), 0.0));
+                                                       scw.getRange().getValueIn(WorldDistance.DEGS), 0.0));
 
                   // take a copy of the screen coordinates of the end
                   _tmpPointB.setLocation(_theChart.getCanvas().getProjection().toScreen(_tmpLocation));

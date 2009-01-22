@@ -173,7 +173,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * Range to target (in Degrees)
 	 */
-	private double _range;
+	private WorldDistance _range;
 
 	/**
 	 * Bearing to target (in Radians)
@@ -249,13 +249,13 @@ public final class SensorContactWrapper extends
 	 * @param sensorName
 	 */
 	public SensorContactWrapper(final String trackName, final HiResDate dtg,
-			final double rangeYds, final double bearingDegs, final WorldLocation origin,
+			final WorldDistance range, final double bearingDegs, final WorldLocation origin,
 			final java.awt.Color color, final String label, final int style, String sensorName)
 	{
 		this();
 		_trackName = trackName;
 		_DTG = dtg;
-		_range = MWC.Algorithms.Conversions.Yds2Degs(rangeYds);
+		_range = range;
 		_bearing = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
 
 		// store the origin, and update the far end if required
@@ -281,6 +281,11 @@ public final class SensorContactWrapper extends
 		_origin = val;
 	}
 
+	public WorldLocation getOrigin()
+	{
+		return _origin;
+	}
+		
 	/**
 	 * return the coordinates for the start of the line
 	 */
@@ -317,7 +322,7 @@ public final class SensorContactWrapper extends
 		if (_origin != null)
 		{
 			// also do the far end
-			res = _origin.add(new WorldVector(_bearing, _range, 0d));
+			res = _origin.add(new WorldVector(_bearing, _range.getValueIn(WorldDistance.DEGS), 0d));
 		}
 
 		return res;
@@ -350,6 +355,8 @@ public final class SensorContactWrapper extends
 	{
 		_DTG = val;
 	}
+
+	
 
 	public final void setColor(final Color val)
 	{
@@ -561,18 +568,19 @@ public final class SensorContactWrapper extends
 	/**
 	 * get the range (in yards)
 	 */
-	public final double getRange()
+	public final WorldDistance getRange()
 	{
-		return MWC.Algorithms.Conversions.Degs2Yds(_range);
+		return _range;
 	}
 
 	/**
 	 * set the range (in yards)
 	 */
-	public final void setRange(final double yards)
+	public final void setRange(WorldDistance dist)
 	{
-		_range = MWC.Algorithms.Conversions.Yds2Degs(yards);
+		_range = dist;
 	}
+	
 
 	/**
 	 * it this Label item currently visible?
@@ -866,7 +874,36 @@ public final class SensorContactWrapper extends
 						longProp("LineStyle", "style to use to plot the line",
 								MWC.GUI.Properties.LineStylePropertyEditor.class) };
 
-				return res;
+
+				// see if we need to add rng/brg or origin data
+				SensorContactWrapper tc = (SensorContactWrapper) getData();
+				final PropertyDescriptor[] res1; 
+				if(tc.getOrigin() == null)
+				{
+					// has origin
+					final PropertyDescriptor[] res2 = 
+					{
+							prop("Range", "range to centre of solution", SPATIAL),
+							prop("Bearing", "bearing to centre of solution", SPATIAL)
+					};
+					res1 = res2;					
+				}
+				else
+				{
+					// rng, brg data
+					final PropertyDescriptor[] res2 = 
+					{
+							prop("Origin", "centre of solution", SPATIAL)
+					};
+					res1 = res2;
+				}
+				
+				PropertyDescriptor[] res3 = new PropertyDescriptor[res.length + res1.length];
+				System.arraycopy(res, 0, res3, 0, res.length);
+				System.arraycopy(res1, 0, res3, res.length, res1.length);
+								
+				return res3;				
+				
 			}
 			catch (IntrospectionException e)
 			{
@@ -910,7 +947,7 @@ public final class SensorContactWrapper extends
 			// setup our object to be tested
 			final WorldLocation origin = new WorldLocation(2, 2, 0);
 			final SensorContactWrapper ed = new SensorContactWrapper("blank track",
-					new HiResDate(new java.util.Date().getTime()), 3000, 55, origin,
+					new HiResDate(new java.util.Date().getTime()), new WorldDistance(3000, WorldDistance.YARDS), 55, origin,
 					java.awt.Color.red, "my label", 1, "theSensorName");
 
 			// check the editable parameters

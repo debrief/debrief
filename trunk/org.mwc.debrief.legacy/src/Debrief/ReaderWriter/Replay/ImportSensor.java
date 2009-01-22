@@ -81,6 +81,7 @@ package Debrief.ReaderWriter.Replay;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;
@@ -203,7 +204,7 @@ final class ImportSensor implements PlainLineImporter {
 
     // create the contact object
     SensorContactWrapper data =
-        new SensorContactWrapper(theTrack, theDtg, rng, brg, origin, theColor, theText, theStyle, sensorName);
+        new SensorContactWrapper(theTrack, theDtg, new WorldDistance(rng, WorldDistance.YARDS), brg, origin, theColor, theText, theStyle, sensorName);
 
     return data;
   }

@@ -101,7 +101,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 
 public final class TMAContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		 MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
+		MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
 		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////
@@ -226,8 +226,7 @@ public final class TMAContactWrapper extends
 		{
 			// yes, store it
 			_theEllipse = theEllipse;
-		}
-		else
+		} else
 		{
 			// no, create it afresh
 			_theEllipse = new EllipseShape(emptyLocation, 0d, 0d, 0d);
@@ -244,8 +243,9 @@ public final class TMAContactWrapper extends
 		_parentTrackName = trackName;
 		_DTG = DTG;
 		_targetDepth = depthMetres;
-		_targetPosVector = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(bearingDegs),
-				MWC.Algorithms.Conversions.Yds2Degs(rangeYds), 0);
+		_targetPosVector = new WorldVector(MWC.Algorithms.Conversions
+				.Degs2Rads(bearingDegs), MWC.Algorithms.Conversions.Yds2Degs(rangeYds),
+				0);
 
 		// now the course/speed
 		_targetCourseDegs = courseDegs;
@@ -277,10 +277,11 @@ public final class TMAContactWrapper extends
 	public TMAContactWrapper(final String sensorName, final String trackName,
 			final HiResDate DTG, final double rangeYds, final double bearingDegs,
 			final double courseDegs, final double speedKts, final double depthMetres,
-			final Color color, final String label, EllipseShape theEllipse, String theSymbol)
+			final Color color, final String label, EllipseShape theEllipse,
+			String theSymbol)
 	{
-		this(sensorName, trackName, DTG, null, rangeYds, bearingDegs, courseDegs, speedKts,
-				depthMetres, color, label, theEllipse, theSymbol);
+		this(sensorName, trackName, DTG, null, rangeYds, bearingDegs, courseDegs,
+				speedKts, depthMetres, color, label, theEllipse, theSymbol);
 	}
 
 	/**
@@ -295,12 +296,13 @@ public final class TMAContactWrapper extends
 	 * @param depthMetres
 	 */
 	public TMAContactWrapper(final String sensorName, final String trackName,
-			final HiResDate DTG, final WorldLocation location, final double courseDegs,
-			final double speedKts, final double depthMetres, final Color color,
-			final String label, EllipseShape theEllipse, final String theSymbol)
+			final HiResDate DTG, final WorldLocation location,
+			final double courseDegs, final double speedKts, final double depthMetres,
+			final Color color, final String label, EllipseShape theEllipse,
+			final String theSymbol)
 	{
-		this(sensorName, trackName, DTG, location, 0d, 0d, courseDegs, speedKts, depthMetres,
-				color, label, theEllipse, theSymbol);
+		this(sensorName, trackName, DTG, location, 0d, 0d, courseDegs, speedKts,
+				depthMetres, color, label, theEllipse, theSymbol);
 	}
 
 	// ///////////////////////////////////////////
@@ -309,7 +311,8 @@ public final class TMAContactWrapper extends
 	/**
 	 * return the coordinates for the centre of the ellipse
 	 */
-	public final WorldLocation getCentre(final Debrief.Tools.Tote.WatchableList parent)
+	public final WorldLocation getCentre(
+			final Debrief.Tools.Tote.WatchableList parent)
 	{
 		// declare the reuslts object, and add our offset to it
 		WorldLocation origin = null;
@@ -346,7 +349,8 @@ public final class TMAContactWrapper extends
 	/**
 	 * return the coordinates of the sensor end of the bearing line
 	 */
-	public final WorldLocation getSensorEnd(final Debrief.Tools.Tote.WatchableList parent)
+	public final WorldLocation getSensorEnd(
+			final Debrief.Tools.Tote.WatchableList parent)
 	{
 		WorldLocation res = null;
 
@@ -425,8 +429,7 @@ public final class TMAContactWrapper extends
 				// found and we can't
 				// delete it.
 				res = 0;
-			}
-			else
+			} else
 			{
 				// same times, make the newer item appear later. This is to overcome the
 				// problem we experience where only the first contact at a particular
@@ -471,15 +474,16 @@ public final class TMAContactWrapper extends
 		// do we know who our parents are?
 		if (track == null)
 		{
-			MWC.Utilities.Errors.Trace.trace("failed to find track for solution data");
+			MWC.Utilities.Errors.Trace
+					.trace("failed to find track for solution data");
 			return;
 		}
 
 		// do we need an origin
 		final WorldLocation centre = getCentre(track);
 
-		TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(track.getStartDTG(), track
-				.getEndDTG());
+		TimePeriod parentPeriod = new TimePeriod.BaseTimePeriod(
+				track.getStartDTG(), track.getEndDTG());
 		if (!parentPeriod.contains(this.getTime()))
 		{
 			// nope, we're outside the parent track period - we can't plot ourselves
@@ -882,28 +886,31 @@ public final class TMAContactWrapper extends
 
 	public final String getMultiLineName()
 	{
-		int dataAvailable = (int) _theEllipse.getMaxima().getValueIn(WorldDistance.YARDS)
+		int dataAvailable = (int) _theEllipse.getMaxima().getValueIn(
+				WorldDistance.YARDS)
 				+ (int) _theEllipse.getMinima().getValueIn(WorldDistance.YARDS);
 
 		String maxMinStr = "n/a";
 
 		if (dataAvailable > 0)
 		{
-			String maxStr = "" + (int) _theEllipse.getMaxima().getValueIn(WorldDistance.YARDS)
+			String maxStr = ""
+					+ (int) _theEllipse.getMaxima().getValueIn(WorldDistance.YARDS)
 					+ "yds";
-			String minStr = "" + (int) _theEllipse.getMinima().getValueIn(WorldDistance.YARDS)
+			String minStr = ""
+					+ (int) _theEllipse.getMinima().getValueIn(WorldDistance.YARDS)
 					+ "yds";
 			maxMinStr = "Max:" + maxStr + " Min:" + minStr;
-		}
-		else
+		} else
 		{
 			maxMinStr = "Ellipse not set";
 		}
 
-		String res = "<u>TMA Solution: " + DebriefFormatDateTime.toStringHiRes(_DTG)
+		String res = "<u>TMA Solution: "
+				+ DebriefFormatDateTime.toStringHiRes(_DTG)
 				+ "</u>\n"
-				+ GeneralFormat.formatStatus(_targetCourseDegs, _targetSpeedKts, _targetDepth)
-				+ "\n" + maxMinStr + "\n" + getLabel();
+				+ GeneralFormat.formatStatus(_targetCourseDegs, _targetSpeedKts,
+						_targetDepth) + "\n" + maxMinStr + "\n" + getLabel();
 		return res;
 
 	}
@@ -959,6 +966,36 @@ public final class TMAContactWrapper extends
 		return _targetCourseDegs;
 	}
 
+	public WorldLocation getOrigin()
+	{
+		return _originalLocation;
+	}
+	
+	public void setOrigin(WorldLocation loc)
+	{
+		_originalLocation = loc;
+	}
+	
+	public WorldDistance getRange()
+	{
+		return new WorldDistance(_targetPosVector.getRange(), WorldDistance.DEGS);
+	}
+	
+	public void setRange(WorldDistance val)
+	{
+		_targetPosVector.setValues(_targetPosVector.getBearing(), val.getValueIn(WorldDistance.DEGS), _targetPosVector.getDepth());
+	}
+	
+	public double getBearing()
+	{
+		return _targetPosVector.getBearing();
+	}
+	
+	public void setBearing(double val)
+	{
+		_targetPosVector.setValues(val, _targetPosVector.getRange(), _targetPosVector.getDepth());
+	}
+	
 	/**
 	 * get the current speed of the watchable (kts)
 	 * 
@@ -966,17 +1003,63 @@ public final class TMAContactWrapper extends
 	 */
 	public final double getSpeed()
 	{
-		return getTargetSpeed();
+		return _targetSpeedKts;
+	}
+
+	public WorldDistance getMaxima()
+	{
+		return _theEllipse.getMaxima();
+	}
+	
+	public void setMaxima(WorldDistance val)
+	{
+		_theEllipse.setMaxima(val);
+	}
+	
+	public WorldDistance getMinima()
+	{
+		return _theEllipse.getMinima();
+	}
+	
+	public void setMinima(WorldDistance val)
+	{
+		_theEllipse.setMinima(val);
+	}
+	
+	public double getOrientation()
+	{
+		return _theEllipse.getOrientation();
+	}
+	
+	public void setOrientation(double val)
+	{
+		_theEllipse.setOrientation(val);
+	}
+	
+
+
+	/**
+	 * @param courseDegs the _targetCourseDegs to set
+	 */
+	public void setTargetCourse(double courseDegs)
+	{
+		_targetCourseDegs = courseDegs;
 	}
 
 	/**
-	 * get the current speed of the watchable (kts)
-	 * 
-	 * @return speed in knots
+	 * @return the _targetSpeedKts
 	 */
-	public final double getTargetSpeed()
+	public WorldSpeed getTargetSpeed()
 	{
-		return _targetSpeedKts;
+		return new WorldSpeed(_targetSpeedKts, WorldSpeed.Kts);
+	}
+
+	/**
+	 * @param speedKts the _targetSpeedKts to set
+	 */
+	public void setTargetSpeed(WorldSpeed speedKts)
+	{
+		_targetSpeedKts = speedKts.getValueIn(WorldSpeed.Kts);
 	}
 
 	/**
@@ -989,6 +1072,11 @@ public final class TMAContactWrapper extends
 		return _targetDepth;
 	}
 
+	public final void setDepth(double val)
+	{
+		_targetDepth = val;
+	}
+	
 	/**
 	 * find out the time of this watchable
 	 */
@@ -1087,26 +1175,62 @@ public final class TMAContactWrapper extends
 		{
 			try
 			{
-				final PropertyDescriptor[] res = {
+				PropertyDescriptor[] res = {
 						prop("Label", "the label for this data item"),
 						prop("Visible", "whether this solution is visible"),
-						prop("LabelVisible", "whether the label for this solution is visible"),
+						prop("LabelVisible",
+								"whether the label for this solution is visible"),
 						prop(
 								"LineVisible",
 								"whether the bearing line (from ownship track to solution centre) for this solution is visible"),
-						prop("EllipseVisible", "whether the ellipse for this solution is visible"),
-						prop("SymbolVisible", "whether the ellipse for this solution is visible"),
+						prop("EllipseVisible",
+								"whether the ellipse for this solution is visible"),
+						prop("SymbolVisible",
+								"whether the ellipse for this solution is visible"),
 						prop("VectorVisible",
 								"whether the target vector for this solution is visible"),
 						prop("Color", "the color for this solution"),
 						longProp("Symbol", "the symbol to use for this solution",
 								SymbolFactoryPropertyEditor.class),
 						longProp("LabelLocation", "the label location",
-								MWC.GUI.Properties.LocationPropertyEditor.class), };
+								MWC.GUI.Properties.LocationPropertyEditor.class),
+						prop("Maxima", "the maxima for the ellipse", SPATIAL),
+						prop("Minima", "the minima for the ellipse", SPATIAL),
+						prop("Orientation", "the minima for the ellipse", SPATIAL),
+						prop("TargetCourse", "the course of the solution", SPATIAL),
+						prop("TargetSpeed", "the speed of the solution", SPATIAL),
+						prop("Depth", "the depth of the solution", SPATIAL)
+						};
 
-				return res;
-			}
-			catch (IntrospectionException e)
+				// see if we need to add rng/brg or origin data
+				TMAContactWrapper tc = (TMAContactWrapper) getData();
+				final PropertyDescriptor[] res1; 
+				if(tc.getOrigin() == null)
+				{
+					// has origin
+					final PropertyDescriptor[] res2 = 
+					{
+							prop("Range", "range to centre of solution", SPATIAL),
+							prop("Bearing", "bearing to centre of solution", SPATIAL)
+					};
+					res1 = res2;					
+				}
+				else
+				{
+					// rng, brg data
+					final PropertyDescriptor[] res2 = 
+					{
+							prop("Origin", "centre of solution", SPATIAL)
+					};
+					res1 = res2;
+				}
+				
+				PropertyDescriptor[] res3 = new PropertyDescriptor[res.length + res1.length];
+				System.arraycopy(res, 0, res3, 0, res.length);
+				System.arraycopy(res1, 0, res3, res.length, res1.length);
+								
+				return res3;
+			} catch (IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1121,7 +1245,8 @@ public final class TMAContactWrapper extends
 		{
 			// just add the reset color field first
 			final Class<TMAContactWrapper> c = TMAContactWrapper.class;
-			final MethodDescriptor[] mds = { method(c, "resetColor", null, "Reset Color"), };
+			final MethodDescriptor[] mds = { method(c, "resetColor", null,
+					"Reset Color"), };
 			return mds;
 		}
 
@@ -1151,26 +1276,29 @@ public final class TMAContactWrapper extends
 			EllipseShape theEllipse = new EllipseShape(origin, 45, 10, 5);
 			theEllipse.setName("test ellipse");
 			final TMAContactWrapper ed_abs = new TMAContactWrapper("blank sensor",
-					"blank track", theDTG, origin, 5d, 6d, 1d, Color.pink, "my label", theEllipse,
-					"some symbol");
+					"blank track", theDTG, origin, 5d, 6d, 1d, Color.pink, "my label",
+					theEllipse, "some symbol");
 
 			assertEquals("correct sensor name", ed_abs._trackName, "blank sensor");
 			assertEquals("correct track name", ed_abs._parentTrackName, "blank track");
 			assertEquals("correct DTG", ed_abs._DTG, theDTG);
 			assertEquals("correct origin", ed_abs._theEllipse.getCentre(), origin);
 			assertEquals("right course", ed_abs._targetCourseDegs, 5d, 0.001);
-			assertEquals("right course", ed_abs.getCourse(), MWC.Algorithms.Conversions
-					.Degs2Rads(5d), 0.001);
+			assertEquals("right course", ed_abs.getCourse(),
+					MWC.Algorithms.Conversions.Degs2Rads(5d), 0.001);
 			assertEquals("right speed", ed_abs._targetSpeedKts, 6d, 0.001);
 			assertEquals("right speed", ed_abs.getSpeed(), 6d, 0.001);
 			assertEquals("right depth", ed_abs._targetDepth, 1d, 0.001);
 			assertEquals("right depth", ed_abs.getDepth(), 1d, 0.001);
-			assertEquals("correct colour", ed_abs._labelledEllipse.getColor(), Color.pink);
+			assertEquals("correct colour", ed_abs._labelledEllipse.getColor(),
+					Color.pink);
 			assertEquals("correct colour", ed_abs.getColor(), Color.pink);
-			assertEquals("correct label", ed_abs._labelledEllipse.getLabel(), "my label");
+			assertEquals("correct label", ed_abs._labelledEllipse.getLabel(),
+					"my label");
 			assertEquals("correct label", ed_abs.getLabel(), "my label");
 			assertEquals("correct ellipse", ed_abs._theEllipse, theEllipse);
-			assertEquals("correct ellipse", ed_abs._labelledEllipse.getShape(), theEllipse);
+			assertEquals("correct ellipse", ed_abs._labelledEllipse.getShape(),
+					theEllipse);
 			assertEquals("correct symbol", ed_abs._theSymbol, "some symbol");
 
 			// setup our object to be tested using an relative location
@@ -1186,18 +1314,21 @@ public final class TMAContactWrapper extends
 					.Degs2Yds(ed_rel._targetPosVector.getRange()), 3000, 0.001);
 			assertEquals("correct bearing", ed_rel._targetCourseDegs, 5d, 0.001);
 			assertEquals("right course", ed_rel._targetCourseDegs, 5d, 0.001);
-			assertEquals("right course", ed_rel.getCourse(), MWC.Algorithms.Conversions
-					.Degs2Rads(5d), 0.001);
+			assertEquals("right course", ed_rel.getCourse(),
+					MWC.Algorithms.Conversions.Degs2Rads(5d), 0.001);
 			assertEquals("right speed", ed_rel._targetSpeedKts, 6d, 0.001);
 			assertEquals("right speed", ed_rel.getSpeed(), 6d, 0.001);
 			assertEquals("right depth", ed_rel._targetDepth, 1d, 0.001);
 			assertEquals("right depth", ed_rel.getDepth(), 1d, 0.001);
-			assertEquals("correct colour", ed_rel._labelledEllipse.getColor(), Color.pink);
+			assertEquals("correct colour", ed_rel._labelledEllipse.getColor(),
+					Color.pink);
 			assertEquals("correct colour", ed_rel.getColor(), Color.pink);
-			assertEquals("correct label", ed_rel._labelledEllipse.getLabel(), "my label");
+			assertEquals("correct label", ed_rel._labelledEllipse.getLabel(),
+					"my label");
 			assertEquals("correct label", ed_rel.getLabel(), "my label");
 			assertEquals("correct ellipse", ed_rel._theEllipse, theEllipse);
-			assertEquals("correct ellipse", ed_rel._labelledEllipse.getShape(), theEllipse);
+			assertEquals("correct ellipse", ed_rel._labelledEllipse.getShape(),
+					theEllipse);
 			assertEquals("correct symbol", ed_rel._theSymbol, "some symbol");
 
 		}
@@ -1207,12 +1338,13 @@ public final class TMAContactWrapper extends
 			HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
 
 			// setup our object to be tested using an absolute location
-			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor", "blank track",
-					theDTG, 3000, 55, 5d, 6d, 1d, Color.red, "my label", null, "some symbol");
+			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
+					"blank track", theDTG, 3000, 55, 5d, 6d, 1d, Color.red, "my label",
+					null, "some symbol");
 
 			final TMAWrapper wrap = new TMAWrapper("tma");
 			ed.setTMATrack(wrap);
-			
+
 			// check the editable parameters
 			MWC.GUI.Editable.editableTesterSupport.testParams(ed, this);
 		}
@@ -1224,8 +1356,9 @@ public final class TMAContactWrapper extends
 			EllipseShape es = new EllipseShape(null, 0, MWC.Algorithms.Conversions
 					.Yds2Degs(100), MWC.Algorithms.Conversions.Yds2Degs(50));
 			HiResDate theDTG = new HiResDate(new java.util.Date().getTime());
-			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor", "blank track",
-					theDTG, origin, 5d, 6d, 1d, Color.red, "my label", es, "some symbol");
+			final TMAContactWrapper ed = new TMAContactWrapper("blank sensor",
+					"blank track", theDTG, origin, 5d, 6d, 1d, Color.red, "my label", es,
+					"some symbol");
 
 			/**
 			 * test the distance calcs

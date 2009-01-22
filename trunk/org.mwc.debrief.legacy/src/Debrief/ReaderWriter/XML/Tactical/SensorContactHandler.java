@@ -12,6 +12,7 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.*;
 
 
@@ -56,7 +57,7 @@ abstract public class SensorContactHandler extends MWC.Utilities.ReaderWriter.XM
       {
         try
         {
-          _theContact.setRange(readThisDouble(value));
+          _theContact.setRange(new WorldDistance(readThisDouble(value), WorldDistance.YARDS));
         }
         catch (java.text.ParseException pe)
         {
@@ -199,7 +200,7 @@ abstract public class SensorContactHandler extends MWC.Utilities.ReaderWriter.XM
 
     eFix.setAttribute("Visible", writeThis(contact.getVisible()));
     eFix.setAttribute("Bearing", writeThis(contact.getBearing()));
-    eFix.setAttribute("Range", writeThis(contact.getRange()));
+    eFix.setAttribute("Range", writeThis(contact.getRange().getValueIn(WorldDistance.YARDS)));
     eFix.setAttribute("LabelShowing", writeThis(contact.getLabelVisible()));
     eFix.setAttribute("Label", toXML(contact.getLabel()));
 
