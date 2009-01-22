@@ -184,17 +184,18 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 			}
 		};
-		
+
 		// do we have some time preferences?
-		if(_timePreferences != null)
+		if (_timePreferences != null)
 		{
 			HiResDate startDTG = _timePreferences.getSliderStartTime();
 			HiResDate endDTG = _timePreferences.getSliderEndTime();
 			// and were there any times in it?
-			if((startDTG != null)&& (endDTG != null))
+			if ((startDTG != null) && (endDTG != null))
 			{
 				// yup, store the time data.
-				_myOperations.setPeriod(new TimePeriod.BaseTimePeriod(startDTG, endDTG));
+				_myOperations
+						.setPeriod(new TimePeriod.BaseTimePeriod(startDTG, endDTG));
 			}
 		}
 	}
@@ -232,11 +233,13 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				IFile iff = ife.getFile();
 				iff.refreshLocal(IResource.DEPTH_ONE, null);
 				is = iff.getContents();
-			} else if (persist instanceof IFileEditorInput)
+			}
+			else if (persist instanceof IFileEditorInput)
 			{
 				IFileEditorInput iff = (IFileEditorInput) persist;
 				is = iff.getFile().getContents();
-			} else if (input instanceof FileStoreEditorInput)
+			}
+			else if (input instanceof FileStoreEditorInput)
 			{
 				FileStoreEditorInput _input = (FileStoreEditorInput) input;
 				URI _uri = _input.getURI();
@@ -253,14 +256,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						null);
 			}
 
-		} catch (ResourceException e)
+		}
+		catch (ResourceException e)
 		{
 			CorePlugin.logError(Status.ERROR,
 					"Resource out of sync, REFRESH the workspace", e);
 			MessageDialog.openError(Display.getDefault().getActiveShell(),
 					"File out of sync",
 					"Please right-click on your navigator project and press Refresh");
-		} catch (CoreException e)
+		}
+		catch (CoreException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -277,7 +282,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			FileInputStream ifs = new FileInputStream(filePath);
 			loadThisStream(ifs, filePath);
-		} catch (FileNotFoundException e)
+		}
+		catch (FileNotFoundException e)
 		{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -303,7 +309,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					// rely on it calling us back (loadingComplete)
 					thisLoader.loadFile(this, is, fileName);
 				}
-			} catch (RuntimeException e)
+			}
+			catch (RuntimeException e)
 			{
 				e.printStackTrace();
 			}
@@ -354,7 +361,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				TrackWrapper thisT = (TrackWrapper) thisLayer;
 				res = extend(res, thisT.getStartDTG());
 				res = extend(res, thisT.getEndDTG());
-			} else if (thisLayer instanceof BaseLayer)
+			}
+			else if (thisLayer instanceof BaseLayer)
 			{
 				Enumeration<Editable> elements = thisLayer.elements();
 				while (elements.hasMoreElements())
@@ -382,7 +390,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			if (period == null)
 			{
 				period = new TimePeriod.BaseTimePeriod(date, date);
-			} else
+			}
+			else
 				period.extend(date);
 		}
 
@@ -463,14 +472,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		if (_updatingPlot)
 		{
 			// skip the update - we're already at it
-		} else
+		}
+		else
 		{
 			_updatingPlot = true;
 
 			try
 			{
 				// note, we've learn't to use the default display instead of the
-				// current one, we were get a null returned since this thread may not have a display
+				// current one, we were get a null returned since this thread may not
+				// have a display
 				Display myDis = Display.getDefault();
 				if (myDis != null)
 				{
@@ -484,7 +495,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					});
 				}
 
-			} finally
+			}
+			finally
 			{
 				_updatingPlot = false;
 			}
@@ -505,19 +517,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		if (adapter == TrackManager.class)
 		{
 			res = _trackDataProvider;
-		} else if (adapter == TrackDataProvider.class)
+		}
+		else if (adapter == TrackDataProvider.class)
 		{
 			res = _trackDataProvider;
-		} else if (adapter == PlainProjection.class)
+		}
+		else if (adapter == PlainProjection.class)
 		{
 			res = super.getChart().getCanvas().getProjection();
-		} else if (adapter == LayerPainterManager.class)
+		}
+		else if (adapter == LayerPainterManager.class)
 		{
 			res = _layerPainterManager;
-		} else if (adapter == ControllablePeriod.class)
+		}
+		else if (adapter == ControllablePeriod.class)
 		{
 			res = _myOperations;
-		} else if (adapter == IRollingNarrativeProvider.class)
+		}
+		else if (adapter == IRollingNarrativeProvider.class)
 		{
 			// so, do we have any narrative data?
 			Layer narr = _myLayers.findLayer(ImportReplay.NARRATIVE_LAYER);
@@ -530,7 +547,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 				res = wrapper;
 			}
-		} else if (adapter == RelativeProjectionParent.class)
+		}
+		else if (adapter == RelativeProjectionParent.class)
 		{
 			if (_myRelativeWrapper == null)
 			{
@@ -616,10 +634,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							// get the parent track
 							FixWrapper fix = (FixWrapper) selected;
 							TrackWrapper parent11 = fix.getTrackWrapper();
-							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
-							{ parent11 }, new Layer[]
-							{ theParentLayer }, new Layer[]
-							{ theParentLayer }, getLayers(), true);
+							RightClickSupport.getDropdownListFor(menuManager,
+									new Editable[] { parent11 }, new Layer[] { theParentLayer },
+									new Layer[] { theParentLayer }, getLayers(), true);
 						}
 					}
 				};
@@ -690,7 +707,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							}
 						}
 					}
-				} catch (Exception e)
+				}
+				catch (Exception e)
 				{
 					CorePlugin
 							.logError(Status.ERROR, "Whilst repainting:" + thisLayer, e);
@@ -707,56 +725,89 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	public void doSave(IProgressMonitor monitor)
 	{
 
-		OutputStream os = null;
 		try
 		{
 			IEditorInput input = getEditorInput();
 			String ext = null;
 
+			// do we have an input
 			if (input.exists())
 			{
-				// is this the correct type of file?
+				// get the file suffix
 				if (input instanceof IFileEditorInput)
 				{
 					IFile file = null;
 					file = ((IFileEditorInput) getEditorInput()).getFile();
 					IPath path = file.getFullPath();
 					ext = path.getFileExtension();
-					os = new FileOutputStream(file.getLocation().toFile(), false);
-				} else if (input instanceof FileStoreEditorInput)
+				}
+				else if (input instanceof FileStoreEditorInput)
 				{
 					FileStoreEditorInput fi = (FileStoreEditorInput) input;
 					URI uri = fi.getURI();
 					Path path = new Path(uri.getPath());
 					ext = path.getFileExtension();
-					IFileStore ifs = EFS.getLocalFileSystem().getStore(path);
-					os = ifs.openOutputStream(EFS.NONE, new NullProgressMonitor());
 				}
+				
+				// right, have a look at it.
 				if (ext == null || ext.equalsIgnoreCase("rep"))
 				{
 					// not, we have to do a save-as
 					doSaveAs();
-				} else
-					doSaveTo(os, monitor);
+				}
+				else
+				{
+					// ok, we'll do a save back to the current file
+					OutputStream os = null;
+
+					// sort out where we're saving to
+					if (input instanceof IFileEditorInput)
+					{
+						IFile file = null;
+						file = ((IFileEditorInput) getEditorInput()).getFile();
+						os = new FileOutputStream(file.getLocation().toFile(), false);
+					}
+					else if (input instanceof FileStoreEditorInput)
+					{
+						FileStoreEditorInput fi = (FileStoreEditorInput) input;
+						URI uri = fi.getURI();
+						Path path = new Path(uri.getPath());
+						IFileStore ifs = EFS.getLocalFileSystem().getStore(path);
+						os = ifs.openOutputStream(EFS.NONE, new NullProgressMonitor());
+					}
+
+					try
+					{
+						doSaveTo(os, monitor);
+					}
+					catch (Exception e)
+					{
+
+					}
+					finally
+					{
+						try
+						{
+							os.close();
+						}
+						catch (IOException e)
+						{
+							CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
+						}
+					}
+				}
 			}
-		} catch (CoreException e)
+		}
+		catch (CoreException e)
 		{
 			CorePlugin
 					.logError(Status.ERROR, "Failed whilst saving external file", e);
-		} catch (FileNotFoundException e)
+		}
+		 catch (FileNotFoundException e)
 		{
 			CorePlugin.logError(Status.ERROR, "Failed to find local file to save to",
 					e);
-		} finally
-		{
-			try
-			{
-				os.close();
-			} catch (IOException e)
-			{
-				CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
-			}
-		}
+		 }
 	}
 
 	/**
@@ -800,7 +851,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			// ok, lastly indicate that the save worked (if it did!)
 			_plotIsDirty = !itWorked;
 			firePropertyChange(PROP_DIRTY);
-		} else
+		}
+		else
 		{
 			DebriefPlugin.logError(Status.ERROR,
 					"Unable to identify source file for plot", null);
@@ -837,16 +889,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		if (path == null)
 		{
 			return;
-		} else
+		}
+		else
 		{
 			IFile file = ResourcesPlugin.getWorkspace().getRoot().getFile(path);
 			if (!file.exists())
 				try
 				{
 					System.out.println("creating:" + file.getName());
-					file.create(new ByteArrayInputStream(new byte[]
-					{}), false, null);
-				} catch (CoreException e)
+					file.create(new ByteArrayInputStream(new byte[] {}), false, null);
+				}
+				catch (CoreException e)
 				{
 					DebriefPlugin.logError(IStatus.ERROR,
 							"Failed trying to create new file for save-as", e);
@@ -863,18 +916,21 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				// also make this new file our input
 				IFileEditorInput newInput = new FileEditorInput(file);
 				setInputWithNotify(newInput);
-			} catch (FileNotFoundException e)
+			}
+			catch (FileNotFoundException e)
 			{
 				CorePlugin
 						.logError(Status.ERROR, "Failed whilst performing Save As", e);
-			} finally
+			}
+			finally
 			{
 				// and close it
 				try
 				{
 					if (os != null)
 						os.close();
-				} catch (IOException e)
+				}
+				catch (IOException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Whilst performaing save-as", e);
 				}
