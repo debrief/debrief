@@ -294,8 +294,13 @@ public final class SensorWrapper extends TacticalDataWrapper
    */
   public final double rangeFrom(final WorldLocation other)
   {
-  	// and convert back to degrees
-  	return nearestContact.rangeFrom(other);
+  	double res = INVALID_RANGE;
+  	
+  	// if we have a nearest contact, see how far away it is.
+  	if(nearestContact != null)
+  		res = nearestContact.rangeFrom(other);
+  		
+  	return res;
   }  
 
   ///////////////////////////////////////////////////////////////////
