@@ -15,7 +15,8 @@ public class StatusPanel // implements MouseMoveListener
 	 */
 	protected LineItem _label;
 
-	/** the identifier for this type of tracker
+	/**
+	 * the identifier for this type of tracker
 	 * 
 	 */
 	private String _myId;
@@ -48,8 +49,8 @@ public class StatusPanel // implements MouseMoveListener
 		_myId = id;
 
 		// remember the users
-		if(!_lineUsers.containsKey(id))
-		  _lineUsers.put(id, new Integer(0));
+		if (!_lineUsers.containsKey(id))
+			_lineUsers.put(id, new Integer(0));
 
 		// ok, get a new status line
 		_label = getStatusLine(editor, id, template, tooltip, prefId);
@@ -71,7 +72,8 @@ public class StatusPanel // implements MouseMoveListener
 					if (!_label.isDisposed())
 					{
 						_label.setText(msg);
-					} else
+					}
+					else
 					{
 						// don't worry. the label isn't available when no editor is selected
 					}
@@ -82,25 +84,27 @@ public class StatusPanel // implements MouseMoveListener
 
 	public void close()
 	{
-		int curr = _lineUsers.get(_myId);
-		curr--;
-    _lineUsers.put(_myId, curr);
-		
-		// is there any left?
-		if(curr == 0)
+		if (_lineUsers.containsKey(_myId))
 		{
-		  // nope, ditch them
-		  _lineUsers.remove(_myId);
+			int curr = _lineUsers.get(_myId);
+			curr--;
+			_lineUsers.put(_myId, curr);
+
+			// is there any left?
+			if (curr == 0)
+			{
+				// nope, ditch them
+				_lineUsers.remove(_myId);
+			}
 		}
-		
 	}
 
 	private LineItem getStatusLine(EditorPart editor, String id, String template,
 			String tooltip, String prefId)
 	{
-    LineItem thisLabel = null;
+		LineItem thisLabel = null;
 
-    // right, is anybody holding onto the last line item? If nobody is,
+		// right, is anybody holding onto the last line item? If nobody is,
 		// Eclipse will ditch it, and we have to create a new one.
 		int curr = _lineUsers.get(_myId);
 		if (curr == 0)

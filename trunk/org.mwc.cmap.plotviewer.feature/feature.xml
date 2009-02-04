@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.22">
+      version="1.0.23">
 
    <description>
-      [1.0.22] Update to JDK1.6
+      [1.0.23] Prevent null-pointer exception when closing
+[1.0.22] Update to JDK1.6
 [1.0.21] Fix for supporting multiple mouse position trackers
 [1.0.20] Allow us to not perform zoom when data border is set
 - if we don&apos;t want to
