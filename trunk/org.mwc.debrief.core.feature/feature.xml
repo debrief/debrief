@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.70">
+      version="1.0.72">
 
    <description>
-      [1.0.71] Update to JDK1.6
+      [1.0.72] More robust file-save
+[1.0.71] Update to JDK1.6
 [1.0.70] Arbitrary build
 [1.0.69] Let user select new target layer
 [1.0.68] Provide support for 4W grids

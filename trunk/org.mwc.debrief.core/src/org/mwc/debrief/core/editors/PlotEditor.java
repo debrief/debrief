@@ -3,33 +3,63 @@
  */
 package org.mwc.debrief.core.editors;
 
-import java.beans.*;
-import java.io.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.URI;
-import java.util.*;
+import java.util.Date;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.core.filesystem.EFS;
+import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.internal.resources.ResourceException;
-import org.eclipse.core.resources.*;
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IConfigurationElement;
+import org.eclipse.core.runtime.IPath;
+import org.eclipse.core.runtime.IProduct;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.NullProgressMonitor;
+import org.eclipse.core.runtime.Path;
+import org.eclipse.core.runtime.Platform;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.IMessageProvider;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorSite;
+import org.eclipse.ui.IFileEditorInput;
+import org.eclipse.ui.IPersistableElement;
+import org.eclipse.ui.IPropertyListener;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
-import org.mwc.cmap.core.DataTypes.TrackData.*;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
 import org.mwc.cmap.core.property_support.RightClickSupport;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
@@ -40,12 +70,22 @@ import org.osgi.framework.Bundle;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
 import Debrief.ReaderWriter.Replay.ImportReplay;
-import Debrief.Tools.Tote.*;
-import Debrief.Wrappers.*;
+import Debrief.Tools.Tote.Watchable;
+import Debrief.Tools.Tote.WatchableList;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.IRollingNarrativeProvider;
 
 /**
@@ -724,90 +764,160 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	public void doSave(IProgressMonitor monitor)
 	{
+		IEditorInput input = getEditorInput();
+		String ext = null;
 
-		try
+		// do we have an input
+		if (input.exists())
 		{
-			IEditorInput input = getEditorInput();
-			String ext = null;
-
-			// do we have an input
-			if (input.exists())
+			// get the file suffix
+			if (input instanceof IFileEditorInput)
 			{
-				// get the file suffix
-				if (input instanceof IFileEditorInput)
-				{
-					IFile file = null;
-					file = ((IFileEditorInput) getEditorInput()).getFile();
-					IPath path = file.getFullPath();
-					ext = path.getFileExtension();
-				}
-				else if (input instanceof FileStoreEditorInput)
-				{
-					FileStoreEditorInput fi = (FileStoreEditorInput) input;
-					URI uri = fi.getURI();
-					Path path = new Path(uri.getPath());
-					ext = path.getFileExtension();
-				}
-				
-				// right, have a look at it.
-				if (ext == null || ext.equalsIgnoreCase("rep"))
-				{
-					// not, we have to do a save-as
-					doSaveAs();
-				}
-				else
-				{
-					// ok, we'll do a save back to the current file
-					OutputStream os = null;
+				IFile file = null;
+				file = ((IFileEditorInput) getEditorInput()).getFile();
+				IPath path = file.getFullPath();
+				ext = path.getFileExtension();
+			}
+			else if (input instanceof FileStoreEditorInput)
+			{
+				FileStoreEditorInput fi = (FileStoreEditorInput) input;
+				URI uri = fi.getURI();
+				Path path = new Path(uri.getPath());
+				ext = path.getFileExtension();
+			}
 
-					// sort out where we're saving to
-					if (input instanceof IFileEditorInput)
-					{
-						IFile file = null;
-						file = ((IFileEditorInput) getEditorInput()).getFile();
-						os = new FileOutputStream(file.getLocation().toFile(), false);
-					}
-					else if (input instanceof FileStoreEditorInput)
-					{
-						FileStoreEditorInput fi = (FileStoreEditorInput) input;
-						URI uri = fi.getURI();
-						Path path = new Path(uri.getPath());
-						IFileStore ifs = EFS.getLocalFileSystem().getStore(path);
-						os = ifs.openOutputStream(EFS.NONE, new NullProgressMonitor());
-					}
+			// right, have a look at it.
+			if (ext == null || ext.equalsIgnoreCase("rep"))
+			{
+				// not, we have to do a save-as
+				doSaveAs();
+			}
+			else
+			{
 
+				OutputStream tmpOS = null;
+
+				try
+				{
+					// NEW STRATEGY. Save to tmp first, then overwrite existing on
+					// success.
+
+					// 1. create the temp file
+					File tmpFile = File.createTempFile("DebNG_tmp", ".xml");
+					tmpFile.createNewFile();
+					tmpFile.deleteOnExit();
+
+					// 1a. record the name of the tmp file in the log
+					String filePath = tmpFile.getAbsolutePath();
+					CorePlugin.logError(Status.INFO, "Created temp save file at:"
+							+ filePath, null);
+
+					// 2. open the file as a stream
+					tmpOS = new FileOutputStream(tmpFile);
+
+					// 3. save to this stream
+					doSaveTo(tmpOS, monitor);
+
+					tmpOS.close();
+					tmpOS = null;
+
+					// 4. overwrite the existing file with the saved file
+					// - note we will only reach this point if the save succeeded.
+					if (tmpOS == null)
+					{
+						// sort out where we're saving to
+						if (input instanceof IFileEditorInput)
+						{
+							IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+
+							// get the current path (since we're going to be moving the temp
+							// one to it
+							IPath thePath = file.getLocation();
+
+							// create a backup path
+							IPath bakPath = file.getFullPath().addFileExtension("bak");
+
+							// delete any existing backup file
+							File existingBackupFile = new File(file.getLocation()
+									.addFileExtension("bak").toOSString());
+							if (existingBackupFile.exists())
+							{
+								CorePlugin.logError(Status.INFO,
+										"Existing back file still there, having to delete"
+												+ existingBackupFile.getAbsolutePath(), null);
+								existingBackupFile.delete();
+							}
+
+							// throw in a refresh - since we've done the save outside Eclipse
+							file.getParent().refreshLocal(2, monitor);
+
+							// now rename the existing file as the backup
+							file.move(bakPath, true, monitor);
+
+							// and rename the temp file as the working file
+							tmpFile.renameTo(thePath.toFile().getAbsoluteFile());
+						}
+						else if (input instanceof FileStoreEditorInput)
+						{
+							// get the data-file
+							FileStoreEditorInput fi = (FileStoreEditorInput) input;
+							URI _uri = fi.getURI();
+							Path _p = new Path(_uri.getPath());
+							
+							// create pointers to the existing file, and the backup file
+							IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
+							IFileStore backupFile = EFS.getLocalFileSystem().getStore(
+									_p.addFileExtension("bak"));
+
+							// delete any existing backup file
+							IFileInfo backupStatus = backupFile.fetchInfo();
+							if (backupStatus.exists())
+							{
+								CorePlugin.logError(Status.INFO,
+										"Existing back file still there, having to delete"
+												+ backupFile.toURI().getRawPath(), null);
+								backupFile.delete(EFS.NONE, monitor);
+							}
+
+							// now rename the existing file as the backup
+							existingFile.move(backupFile, EFS.OVERWRITE, monitor);
+
+							// and rename the temp file as the working file
+							tmpFile.renameTo(existingFile.toLocalFile(EFS.NONE, monitor));
+
+						}
+					}
+				}
+				catch (CoreException e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"Failed whilst saving external file", e);
+				}
+				catch (FileNotFoundException e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"Failed to find local file to save to", e);
+				}
+				catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR,
+							"Failed to find local file to save to", e);
+
+				}
+				finally
+				{
 					try
 					{
-						doSaveTo(os, monitor);
+						if (tmpOS != null)
+							tmpOS.close();
 					}
-					catch (Exception e)
+					catch (IOException e)
 					{
-
-					}
-					finally
-					{
-						try
-						{
-							os.close();
-						}
-						catch (IOException e)
-						{
-							CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
-						}
+						CorePlugin.logError(Status.ERROR, "Whilst performing save", e);
 					}
 				}
 			}
 		}
-		catch (CoreException e)
-		{
-			CorePlugin
-					.logError(Status.ERROR, "Failed whilst saving external file", e);
-		}
-		 catch (FileNotFoundException e)
-		{
-			CorePlugin.logError(Status.ERROR, "Failed to find local file to save to",
-					e);
-		 }
 	}
 
 	/**
@@ -820,8 +930,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	private void doSaveTo(OutputStream os, IProgressMonitor monitor)
 	{
-		boolean itWorked = false;
-
 		if (os != null)
 		{
 
@@ -830,26 +938,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			String version = "" + new Date(bund.getLastModified());
 
 			// ok, now write to the file
-			// ByteArrayOutputStream bos = new ByteArrayOutputStream(os);
 			DebriefEclipseXMLReaderWriter.exportThis(this, os, version);
 
-			itWorked = true;
-
-			// now convert to String
-			// byte[] output = bos.toByteArray();
-			// InputStream is = new ByteArrayInputStream(output);
-			//
-			// try {
-			// destination.setContents(is, true, false, monitor);
-			//
-			// itWorked = true;
-			// } catch (CoreException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-
 			// ok, lastly indicate that the save worked (if it did!)
-			_plotIsDirty = !itWorked;
+			_plotIsDirty = false;
 			firePropertyChange(PROP_DIRTY);
 		}
 		else
