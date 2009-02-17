@@ -36,7 +36,7 @@
    <feature url="features/org.mwc.cmap.plotviewer.feature_1.0.23.jar" id="org.mwc.cmap.plotviewer.feature" version="1.0.23">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.72.jar" id="org.mwc.debrief.feature" version="1.0.72">
+   <feature url="features/org.mwc.debrief.feature_1.0.73.jar" id="org.mwc.debrief.feature" version="1.0.73">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

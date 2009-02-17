@@ -848,14 +848,24 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 								existingBackupFile.delete();
 							}
 
-							// throw in a refresh - since we've done the save outside Eclipse
-							file.getParent().refreshLocal(2, monitor);
-
 							// now rename the existing file as the backup
 							file.move(bakPath, true, monitor);
 
-							// and rename the temp file as the working file
+							// move the temp file to be our real working file
 							tmpFile.renameTo(thePath.toFile().getAbsoluteFile());
+							
+							// finally, delete the backup file
+							if (existingBackupFile.exists())
+							{
+								CorePlugin.logError(Status.INFO,
+										"Save operation completed successfully, deleting backup file"
+												+ existingBackupFile.getAbsolutePath(), null);
+								existingBackupFile.delete();
+							}
+							
+							// throw in a refresh - since we've done the save outside Eclipse
+							file.getParent().refreshLocal(IResource.DEPTH_INFINITE, monitor);													
+							
 						}
 						else if (input instanceof FileStoreEditorInput)
 						{
@@ -884,7 +894,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 							// and rename the temp file as the working file
 							tmpFile.renameTo(existingFile.toLocalFile(EFS.NONE, monitor));
-
+							
+							if (backupStatus.exists())
+							{
+								CorePlugin.logError(Status.INFO,
+										"Save operation successful, deleting backup file"
+												+ backupFile.toURI().getRawPath(), null);
+								backupFile.delete(EFS.NONE, monitor);
+							}
+							
 						}
 					}
 				}
@@ -901,7 +919,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				catch (Exception e)
 				{
 					CorePlugin.logError(Status.ERROR,
-							"Failed to find local file to save to", e);
+							"Unknown file-save error occurred", e);
 
 				}
 				finally
