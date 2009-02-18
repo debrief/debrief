@@ -2,11 +2,13 @@
 <feature
       id="org.mwc.cmap.feature"
       label="org.mwc.cmap.feature"
-      version="1.0.70"
+      version="1.0.71"
       provider-name="MWC">
 
    <description>
-      [1.0.70] Handle xy-plot problem where we don&apos;t have time-stepper assigned
+      [1.0.71] Fix cutting layers
+[1.0.70] Handle xy-plot problem where we don&apos;t have time-stepper
+assigned
 [1.0.69] Ditch generics
 [1.0.68] Arbitrary build
 [1.0.67] Allow right-click edit of multiple items

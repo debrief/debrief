@@ -754,7 +754,7 @@ public class LayerManagerView extends ViewPart
 				// yes, store it
 				parentLayers[i] = (Layer) wrapper.getParent().getEditable();
 			else
-				// nope - store a null
+				// nope - store a null (to indicate it's a top-level layer)
 				parentLayers[i] = null;
 
 			updateLayers[i] = wrapper.getTopLevelLayer();
