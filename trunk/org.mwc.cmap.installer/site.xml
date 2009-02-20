@@ -30,13 +30,13 @@
    <feature url="features/org.mwc.cmap.xyplot.feature_1.0.11.jar" id="org.mwc.cmap.xyplot.feature" version="1.0.11">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.debrief.feature_1.0.73.jar" id="org.mwc.debrief.feature" version="1.0.73">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.debrief.help.feature_1.0.21.jar" id="org.mwc.debrief.help.feature" version="1.0.21">
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.debrief.track_shift.feature_1.0.6.jar" id="org.mwc.debrief.track_shift.feature" version="1.0.6">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.debrief.feature_1.0.74.jar" id="org.mwc.debrief.feature" version="1.0.74">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

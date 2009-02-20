@@ -2,10 +2,12 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.73">
+      version="1.0.74">
 
    <description>
-      [1.0.73] More robust file-save across network shares (including extra directory refresh)
+      [1.0.74] Handle TMA &amp; Sensor tracks with identical names
+[1.0.73] More robust file-save across network shares (including
+extra directory refresh)
 [1.0.72] More robust file-save
 [1.0.71] Update to JDK1.6
 [1.0.70] Arbitrary build

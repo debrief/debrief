@@ -317,9 +317,19 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
     int res = 0;
     if (o instanceof TacticalDataWrapper)
     {
-      // compare the names
-      final TacticalDataWrapper sw = (TacticalDataWrapper) o;
-      res = sw.getName().compareTo(this.getName());
+    	// check they're both of the same class (one might be sensor whilst the other's tma)
+    	if(o.getClass().toString().equals(this.getClass().toString()))
+    	{
+        // compare the names
+        final TacticalDataWrapper sw = (TacticalDataWrapper) o;
+        res = sw.getName().compareTo(this.getName());
+    	}
+    	else
+    	{
+    		// they're different types, point that out.
+    		res = -1;
+    	}
+    	
     }
     else
     {
