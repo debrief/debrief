@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.74">
+      version="1.0.75">
 
    <description>
-      [1.0.74] Handle TMA &amp; Sensor tracks with identical names
+      [1.0.75] Ditch old track representation
+[1.0.74] Handle TMA &amp; Sensor tracks with identical names
 [1.0.73] More robust file-save across network shares (including
 extra directory refresh)
 [1.0.72] More robust file-save

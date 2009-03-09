@@ -190,23 +190,16 @@ final class ImportPCArgos extends MWC.Utilities.ReaderWriter.PlainImporterBase
           // put the new fix into the list
           _lastPoints.put(trkName, rf.theFix);
 
-
           // wrap it
-          PlainWrapper thisWrapper = WrapManager.wrapThis(rf.theFix);
-
-
-
+          PlainWrapper thisWrapper = new FixWrapper(rf.theFix);
 
           // is there a layer for this track?
           TrackWrapper trkWrapper  = (TrackWrapper)getLayerFor( rf.theTrackName );
 
           if(trkWrapper == null){
-            // this track hasn't been created yet, so create it
-            Track thisTrack = new Track();
-            thisTrack.setVesselName(rf.theTrackName);
-
             // now create the wrapper
-            trkWrapper = (TrackWrapper) Debrief.Wrappers.WrapManager.wrapThis(thisTrack);
+            trkWrapper = new TrackWrapper();
+            trkWrapper.setName(rf.theTrackName);
 
             // get a new colour for the track counter
             Color thisCol = (Color)colors.elementAt(track_counter);
@@ -219,9 +212,6 @@ final class ImportPCArgos extends MWC.Utilities.ReaderWriter.PlainImporterBase
 
             // set the track colour
             trkWrapper.setColor(thisCol);
-
-            // store the track details
-            trkWrapper.setTrack(thisTrack);
 
             // and the store the whole track
             addLayer(trkWrapper);

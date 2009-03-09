@@ -25,7 +25,6 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
-import MWC.TacticalData.Track;
 
 public class RightClickCutCopyAdaptor
 {
@@ -306,7 +305,7 @@ public class RightClickCutCopyAdaptor
 						Layer parentLayer = _theParent[i];
 
 						// is the parent the data object itself?
-						if (parentLayer == thisE)
+						if (parentLayer == null)
 						{
 							// no, it must be the top layers object
 							_theLayers.addThisLayer((Layer) thisE);
@@ -611,8 +610,6 @@ public class RightClickCutCopyAdaptor
 		{
 			// create the data
 			final TrackWrapper tw = new TrackWrapper();
-
-			tw.setTrack(new Track());
 
 			final WorldLocation loc_1 = new WorldLocation(0, 0, 0);
 			final FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(100, 10000),

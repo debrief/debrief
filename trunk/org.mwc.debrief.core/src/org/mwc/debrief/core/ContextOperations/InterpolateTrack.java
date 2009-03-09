@@ -210,8 +210,6 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		{
 			Layers theLayers = new Layers();
 			TrackWrapper track = new TrackWrapper();
-			Track trk = new Track();
-			track.setTrack(trk);
 			track.setName("Trk");
 			theLayers.addThisLayer(track);
 			

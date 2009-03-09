@@ -31,8 +31,6 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 	// our "working" track
 	 Debrief.Wrappers.TrackWrapper _myTrack;
 
-	 MWC.TacticalData.Track _theTrack;
-
 	/**
 	 * class which contains list of textual representations of label locations
 	 */
@@ -162,14 +160,10 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 	// this is one of ours, so get on with it!
 	protected final void handleOurselves(String name, Attributes attributes)
 	{
-		// create the track data item
-		_theTrack = new MWC.TacticalData.Track();
-
 		// create the wrapper
 		_myTrack = new Debrief.Wrappers.TrackWrapper();
 
 		// marry them together
-		_myTrack.setTrack(_theTrack);
 
 		super.handleOurselves(name, attributes);
 

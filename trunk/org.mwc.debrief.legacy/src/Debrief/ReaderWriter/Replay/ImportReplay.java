@@ -441,7 +441,7 @@ public class ImportReplay extends PlainImporterBase
 				Color thisColor = replayColorFor(rf.theSymbology);
 
 				// create the wrapper for this annotation
-				PlainWrapper thisWrapper = WrapManager.wrapThis(rf.theFix);
+				PlainWrapper thisWrapper = new FixWrapper(rf.theFix);
 
 				// keep track of the wrapper for this track
 				TrackWrapper trkWrapper = null;
@@ -452,12 +452,8 @@ public class ImportReplay extends PlainImporterBase
 				// have we found the layer?
 				if (trkWrapper == null)
 				{
-					// this track hasn't been created yet, so create it
-					Track thisTrack = new Track();
-					thisTrack.setVesselName(theTrack);
-
 					// now create the wrapper
-					trkWrapper = (TrackWrapper) Debrief.Wrappers.WrapManager.wrapThis(thisTrack);
+					trkWrapper = new TrackWrapper();
 
 					// get the colour for this track
 					trkWrapper.setColor(thisColor);
@@ -467,7 +463,7 @@ public class ImportReplay extends PlainImporterBase
 					trkWrapper.setSymbolType(theSymType);
 
 					// store the track-specific data
-					trkWrapper.setTrack(thisTrack);
+					trkWrapper.setName(theTrack);
 
 					// add our new layer to the Layers object
 					addLayer(trkWrapper);

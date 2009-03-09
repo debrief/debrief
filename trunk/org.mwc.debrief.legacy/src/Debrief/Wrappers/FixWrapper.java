@@ -945,7 +945,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     {
       final Fix fx = new Fix(new HiResDate(12, 0), new WorldLocation(2d,2d,2d), 2d, 2d);
       final TrackWrapper tw = new TrackWrapper();
-      tw.setTrack(new Track());
       tw.setName("here ew arw");
       FixWrapper ed = new FixWrapper(fx);
       ed.setTrackWrapper(tw);

@@ -90,7 +90,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Properties.ColorPropertyEditor;
-import MWC.TacticalData.Track;
 import MWC.TacticalData.Fix;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.HiResDate;
@@ -1003,8 +1002,7 @@ public final class ReformatFixes implements FilterOperation
       System.out.println("test 2");
       Debrief.Wrappers.TrackWrapper tw = new Debrief.Wrappers.TrackWrapper();
       tw.setColor(java.awt.Color.red);
-      tw.setTrack(new MWC.TacticalData.Track(null));
-      tw.getTrack().setName("scrap track");
+      tw.setName("scrap track");
 
       Editable.EditorType et = tw.getInfo();
       // check we got it
@@ -1044,9 +1042,6 @@ public final class ReformatFixes implements FilterOperation
 
       // ok, start with a track
       Debrief.Wrappers.TrackWrapper tw = new Debrief.Wrappers.TrackWrapper();
-      MWC.TacticalData.Track trk = new MWC.TacticalData.Track();
-      trk.setName("track 1");
-      tw.setTrack(trk);
       tw.setColor(java.awt.Color.red);
       res.add(tw);
 
@@ -1055,9 +1050,6 @@ public final class ReformatFixes implements FilterOperation
 
       // and another...
       Debrief.Wrappers.TrackWrapper tw2 = new Debrief.Wrappers.TrackWrapper();
-      MWC.TacticalData.Track trk2 = new MWC.TacticalData.Track();
-      trk2.setName("track 2");
-      tw2.setTrack(trk2);
       tw2.setColor(java.awt.Color.red);
       tw2.setTrackColor(java.awt.Color.green);
       res.add(tw2);
@@ -1121,9 +1113,6 @@ public final class ReformatFixes implements FilterOperation
 
       TrackWrapper tw = new TrackWrapper();
       tw.setColor(java.awt.Color.blue);
-      Track trk = new Track();
-      trk.setName("first track");
-      tw.setTrack(trk);
       FixWrapper fw1 = new FixWrapper(new Fix(new HiResDate(5,0), loc, 0d, 0d));
       FixWrapper fw2 = new FixWrapper(new Fix(new HiResDate(7,0), loc, 0d, 0d));
       FixWrapper fw3 = new FixWrapper(new Fix(new HiResDate(9,0), loc, 0d, 0d));

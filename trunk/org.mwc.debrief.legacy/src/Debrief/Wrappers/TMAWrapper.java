@@ -561,7 +561,6 @@ public final class TMAWrapper  extends TacticalDataWrapper
       ///////////////////////////////////////////////////////////
       // test the position related stuff
       final TrackWrapper track = new TrackWrapper();
-      track.setTrack(new MWC.TacticalData.Track());
 
       // and add the fixes
       cal.set(2001, 10, 4, 4, 4, 0);

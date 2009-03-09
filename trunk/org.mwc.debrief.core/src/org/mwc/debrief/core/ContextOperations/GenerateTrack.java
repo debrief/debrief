@@ -218,8 +218,6 @@ public class GenerateTrack implements RightClickContextItemGenerator
 	public static TrackWrapper generateTrackFor(BaseLayer layer)
 	{
 		TrackWrapper res = new TrackWrapper();
-		Track trk = new Track();
-		res.setTrack(trk);
 		res.setName("T_" + layer.getName());
 		
 		Color trackColor = null;

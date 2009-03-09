@@ -120,25 +120,23 @@
 
 package Debrief.ReaderWriter.Replay;
 
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.WrapManager;
-import MWC.Algorithms.Conversions;
-import MWC.GUI.PlainWrapper;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.HiResDate;
-import MWC.TacticalData.Fix;
-import MWC.TacticalData.Track;
-import MWC.Utilities.ReaderWriter.PlainLineImporter;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-
-import java.awt.*;
+import java.awt.Color;
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.StringTokenizer;
 import java.util.TimeZone;
+
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.Algorithms.Conversions;
+import MWC.GUI.PlainWrapper;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
+import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * import a fix from a line of text (in Replay format)
@@ -291,7 +289,7 @@ public final class ImportFix implements PlainLineImporter
     line = "" + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toStringHiRes(fix.getTime());
 
     // the track name may contain spaces - wrap in quotes if we have to
-    line = exportTrackName(theFix.getTrackWrapper().getTrack().getName(), line);
+    line = exportTrackName(theFix.getTrackWrapper().getName(), line);
 
     line += " " + ImportReplay.replaySymbolFor(theFix.getColor());
     line += " " + MWC.Utilities.TextFormatting.DebriefFormatLocation.toString(fix.getLocation());
@@ -502,10 +500,9 @@ public final class ImportFix implements PlainLineImporter
       Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
 
       // create the wrapper for this annotation
-      PlainWrapper thisWrapper = WrapManager.wrapThis(res.theFix);
+      PlainWrapper thisWrapper = new FixWrapper(res.theFix);
 
       TrackWrapper parentTrack = new TrackWrapper();
-      parentTrack.setTrack(new Track());
       parentTrack.setName(theTrack);
 
       // get the colour for this track
@@ -702,10 +699,9 @@ public final class ImportFix implements PlainLineImporter
       Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
 
       // create the wrapper for this annotation
-      PlainWrapper thisWrapper = WrapManager.wrapThis(res.theFix);
+      PlainWrapper thisWrapper = new FixWrapper(res.theFix);
 
       TrackWrapper parentTrack = new TrackWrapper();
-      parentTrack.setTrack(new Track());
       parentTrack.setName(theTrack);
 
       // get the colour for this track
