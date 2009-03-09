@@ -10,7 +10,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
-import MWC.TacticalData.Track;
 
 /**
  * embedded class which manages the primary & secondary tracks
@@ -360,13 +359,10 @@ public class TrackManager implements TrackDataProvider // ,
 		public void testLists()
 		{
 			TrackWrapper ta = new TrackWrapper();
-			ta.setTrack(new Track());
 			ta.setName("ta");
 			TrackWrapper tb = new TrackWrapper();
-			tb.setTrack(new Track());
 			tb.setName("tb");
 			TrackWrapper tc = new TrackWrapper();
-			tc.setTrack(new Track());
 			tc.setName("tc");
 			Layers theLayers = new Layers();
 			theLayers.addThisLayer(ta);

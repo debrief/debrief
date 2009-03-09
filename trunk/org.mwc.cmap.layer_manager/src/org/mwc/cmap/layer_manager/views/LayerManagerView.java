@@ -21,6 +21,7 @@ import org.mwc.cmap.layer_manager.Layer_managerPlugin;
 import org.mwc.cmap.layer_manager.views.support.*;
 
 import Debrief.Tools.Tote.*;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
 import MWC.GenericData.HiResDate;
 
@@ -253,7 +254,8 @@ public class LayerManagerView extends ViewPart
 				Comparable<Object> w1 = (Comparable<Object>) p1;
 				Comparable<Object> w2 = (Comparable<Object>) p2;
 				res = w1.compareTo(w2);
-			} else
+			}
+			else
 			{
 				// ha. if they're watchables, sort them in time order
 				if ((p1.getEditable() instanceof Watchable)
@@ -271,13 +273,15 @@ public class LayerManagerView extends ViewPart
 					else
 						res = p1.getEditable().getName().compareTo(
 								p2.getEditable().getName());
-				} else if ((p1.getEditable() instanceof Comparable)
+				}
+				else if ((p1.getEditable() instanceof Comparable)
 						&& (p2.getEditable() instanceof Comparable))
 				{
 					String name1 = p1.getEditable().toString();
 					String name2 = p2.getEditable().toString();
 					res = name1.compareTo(name2);
-				} else
+				}
+				else
 				{
 					String p1Name = p1.getEditable().getName();
 					String p2Name = p2.getEditable().getName();
@@ -374,7 +378,8 @@ public class LayerManagerView extends ViewPart
 					Editable pl = pw.getEditable();
 					if (pl != null)
 						res += pw.getEditable().hashCode();
-				} else
+				}
+				else
 					res = element.hashCode();
 
 				return res;
@@ -469,7 +474,8 @@ public class LayerManagerView extends ViewPart
 		if (adapter == ISelectionProvider.class)
 		{
 			res = _treeViewer;
-		} else
+		}
+		else
 		{
 			res = super.getAdapter(adapter);
 		}
@@ -590,7 +596,7 @@ public class LayerManagerView extends ViewPart
 			Editable pl = pw.getEditable();
 
 			// hey, first see if it's even a candidate
-			if (pl instanceof WatchableList)
+			if (pl instanceof TrackWrapper)
 				// do we have a track data listener?
 				if (_theTrackDataListener != null)
 				{
@@ -617,7 +623,7 @@ public class LayerManagerView extends ViewPart
 		{
 			EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
 			Editable pl = pw.getEditable();
-			if (pl instanceof WatchableList)
+			if (pl instanceof TrackWrapper)
 			{
 				// hey, it's a maybe.
 				res = true;
@@ -630,7 +636,8 @@ public class LayerManagerView extends ViewPart
 									Status.INFO,
 									"PROBLEM: Layer manager does not hold track data listener.  Maintaner to track this occurrence",
 									null);
-				} else
+				}
+				else
 				{
 					WatchableList[] secs = _theTrackDataListener.getSecondaryTracks();
 					if (secs != null)
@@ -1181,7 +1188,8 @@ public class LayerManagerView extends ViewPart
 		if (_alreadyDeferring)
 		{
 			// hey - already processing - add this layer to the pending ones
-		} else
+		}
+		else
 		{
 			_alreadyDeferring = true;
 
@@ -1220,7 +1228,8 @@ public class LayerManagerView extends ViewPart
 					addItemAndChildrenToList(newList, thisItem);
 				}
 
-			} else
+			}
+			else
 			{
 				// hey, all of the layers need updating.
 				// better get on with it.
@@ -1237,12 +1246,14 @@ public class LayerManagerView extends ViewPart
 
 			// and do the update
 			Object[] itemsToUpdate = newList.toArray();
-			_treeViewer.update(itemsToUpdate, new String[]
-			{ VISIBILITY_COLUMN_NAME });
-		} catch (Exception e)
+			_treeViewer
+					.update(itemsToUpdate, new String[] { VISIBILITY_COLUMN_NAME });
+		}
+		catch (Exception e)
 		{
 
-		} finally
+		}
+		finally
 		{
 			_alreadyDeferring = false;
 			_pendingLayers.clear();
@@ -1318,7 +1329,8 @@ public class LayerManagerView extends ViewPart
 			{
 				// yup. just store it
 				parentLayer = thisParentLayer;
-			} else
+			}
+			else
 			{
 				// nope, we've had at least one of these before
 				if (parentLayer != thisParentLayer)
@@ -1337,7 +1349,8 @@ public class LayerManagerView extends ViewPart
 			{
 				// ok - update all layers
 				triggerChartUpdate(null, myLayers);
-			} else
+			}
+			else
 			{
 				// ok - just update the one layer
 				triggerChartUpdate(parentLayer, myLayers);
