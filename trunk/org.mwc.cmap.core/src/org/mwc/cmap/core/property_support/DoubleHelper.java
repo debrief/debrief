@@ -12,7 +12,7 @@ public class DoubleHelper extends EditorHelper
 
 	public DoubleHelper()
 	{
-		super(Boolean.class);
+		super(Double.class);
 	}
 
 	@SuppressWarnings("unchecked")
