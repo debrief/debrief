@@ -1,0 +1,94 @@
+/* Created by XMetaL style generator. ©2004 Blast Radius. All rights reserved.*/
+
+@sq-plus-minus;
+@sq-structure-view-icons;
+/*
+@sq-start-only-tags;
+*/
+
+* {
+	white-space: nowrap;
+	text-align: left;
+	margin-left: 20px;
+	margin-top: 0px;
+	margin-bottom: 0px;
+	font-family: "MS Shell Dlg";
+	font-style: normal;
+	font-size: 8pt;
+	font-weight: normal;
+}
+
+/* top-level elements */
+$DOCUMENT>* {
+	margin-left: 0px;
+}
+
+
+/* Schema namespaces */
+@namespace xsd	url(http://www.w3.org/2001/XMLSchema);
+
+
+/* The following puts the element name beside each non-terminal node icon. */
+
+contentProvider:before {
+	content: 'contentProvider';
+	font-family: 'MS Shell Dlg';
+	font-size: 9pt;
+	font-style: normal;
+	font-weight: normal;
+	color: #191970;
+}
+
+extensionContent:before {
+	content: 'extensionContent';
+	font-family: 'MS Shell Dlg';
+	font-size: 9pt;
+	font-style: normal;
+	font-weight: normal;
+	color: #191970;
+}
+
+group:before {
+	content: 'group';
+	font-family: 'MS Shell Dlg';
+	font-size: 9pt;
+	font-style: normal;
+	font-weight: normal;
+	color: #191970;
+}
+
+html:before {
+	content: 'html';
+	font-family: 'MS Shell Dlg';
+	font-size: 9pt;
+	font-style: normal;
+	font-weight: normal;
+	color: #191970;
+}
+
+introContent:before {
+	content: 'introContent';
+	font-family: 'MS Shell Dlg';
+	font-size: 9pt;
+	font-style: normal;
+	font-weight: normal;
+	color: #191970;
+}
+
+link:before {
+	content: 'link';
+	font-family: 'MS Shell Dlg';
+	font-size: 9pt;
+	font-style: normal;
+	font-weight: normal;
+	color: #191970;
+}
+
+page:before {
+	content: 'page';
+	font-family: 'MS Shell Dlg';
+	font-size: 9pt;
+	font-style: normal;
+	font-weight: normal;
+	color: #191970;
+}

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Scenario Controller"
+            icon="icons/gears_run.png"
+            category="org.mwc.asset.core.simulation.category"
+            class="org.mwc.asset.scenariocontroller.views.ScenarioController"
+            id="org.mwc.asset.ScenarioController">
+      </view>
+   </extension>
+
+</plugin>

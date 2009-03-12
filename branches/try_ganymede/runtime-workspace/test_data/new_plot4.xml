@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plot Created="Fri Jun 15 14:27:22 BST 2007" Name="Debrief Plot">
+  <details Text="Saved with Debrief version dated Fri Jun 15 14:19:48 BST 2007"/>
+  <session>
+    <layers>
+      <layer LineThickness="0" Name="Chart Features" Visible="true">
+        <scale AutoMode="true" DisplayUnits="kyd" Location="BottomLeft" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
+          <colour Value="DARK_GREY"/>
+        </scale>
+      </layer>
+    </layers>
+    <projection Border="1.100" Relative="false" Type="Flat">
+      <tl>
+        <shortLocation Depth="0.000" Lat="137.5088902" Long="-124.2880088"/>
+      </tl>
+      <br>
+        <shortLocation Depth="0.000" Lat="-35.7990958" Long="121.6035088"/>
+      </br>
+    </projection>
+    <gui>
+      <tote/>
+      <component Type="Stepper">
+        <property Name="VectorStretch" Value="1.000"/>
+        <property Name="SmallStep" Value="1.0 minutes"/>
+        <property Name="LinkPositions" Value="true"/>
+        <property Name="Arcs" Value="180"/>
+        <property Name="FadePoints" Value="true"/>
+        <property Name="NumRings" Value="3"/>
+        <property Name="PointSize" Value="5"/>
+        <property Name="PlotTrackName" Value="false"/>
+        <property Name="LargeStep" Value="10.0 minutes"/>
+        <property Name="AutoStepInterval" Value="1.0 seconds"/>
+        <property Name="SpokeSeparation" Value="45"/>
+        <property Name="Radius" Value="3000.000"/>
+        <property Name="TrailLength" Value="15.0 minutes"/>
+        <property Name="Cursor" Value="Normal"/>
+        <property Name="Highlighter" Value="Default Highlight"/>
+        <property Name="DateFormat" Value="ddHHmm"/>
+      </component>
+      <Background>
+        <colour Value="BLACK"/>
+      </Background>
+    </gui>
+  </session>
+</plot>

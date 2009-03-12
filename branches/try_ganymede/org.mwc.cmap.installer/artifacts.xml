@@ -1,0 +1,316 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<?artifactRepository class='org.eclipse.equinox.internal.p2.artifact.repository.simple.SimpleArtifactRepository' version='1.0.0'?>
+<repository name='file:/C:/dev/cmap2/org.mwc.cmap.installer/ - artifacts' type='org.eclipse.equinox.p2.artifact.repository.simpleRepository' version='1.0.0'>
+  <properties size='2'>
+    <property name='p2.compressed' value='false'/>
+    <property name='p2.timestamp' value='1215701235234'/>
+  </properties>
+  <mappings size='3'>
+    <rule filter='(&amp; (classifier=osgi.bundle))' output='${repoUrl}/plugins/${id}_${version}.jar'/>
+    <rule filter='(&amp; (classifier=binary))' output='${repoUrl}/binary/${id}_${version}'/>
+    <rule filter='(&amp; (classifier=org.eclipse.update.feature))' output='${repoUrl}/features/${id}_${version}.jar'/>
+  </mappings>
+  <artifacts size='45'>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.plotViewer' version='1.0.21'>
+      <properties size='3'>
+        <property name='artifact.size' value='150517'/>
+        <property name='download.size' value='150517'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.core' version='1.0.52'>
+      <properties size='3'>
+        <property name='artifact.size' value='1009235'/>
+        <property name='download.size' value='1009235'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.core' version='1.0.57'>
+      <properties size='3'>
+        <property name='artifact.size' value='460903'/>
+        <property name='download.size' value='460903'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.feature' version='1.0.64'>
+      <properties size='2'>
+        <property name='artifact.size' value='12080'/>
+        <property name='download.size' value='12080'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.tote.feature' version='1.0.9'>
+      <properties size='2'>
+        <property name='artifact.size' value='10473'/>
+        <property name='download.size' value='10473'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.TimeController' version='1.0.23'>
+      <properties size='3'>
+        <property name='artifact.size' value='293053'/>
+        <property name='download.size' value='293053'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.core' version='1.0.57'>
+      <properties size='3'>
+        <property name='artifact.size' value='460858'/>
+        <property name='download.size' value='460858'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.plotviewer.feature' version='1.0.21'>
+      <properties size='2'>
+        <property name='artifact.size' value='10805'/>
+        <property name='download.size' value='10805'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.plotViewer' version='1.0.21'>
+      <properties size='3'>
+        <property name='artifact.size' value='150516'/>
+        <property name='download.size' value='150516'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.plot3d' version='1.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='313811'/>
+        <property name='download.size' value='313811'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.NarrativeViewer.feature' version='1.0.9'>
+      <properties size='2'>
+        <property name='artifact.size' value='10542'/>
+        <property name='download.size' value='10542'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.TimeController' version='1.0.23'>
+      <properties size='3'>
+        <property name='artifact.size' value='293060'/>
+        <property name='download.size' value='293060'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.xyplot' version='1.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='29962'/>
+        <property name='download.size' value='29962'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.legacy' version='1.0.57'>
+      <properties size='3'>
+        <property name='artifact.size' value='752656'/>
+        <property name='download.size' value='752656'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.layer_manager.feature' version='1.0.13'>
+      <properties size='2'>
+        <property name='artifact.size' value='10619'/>
+        <property name='download.size' value='10619'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.debrief.help.feature' version='1.0.21'>
+      <properties size='2'>
+        <property name='artifact.size' value='10746'/>
+        <property name='download.size' value='10746'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.xyplot.feature' version='1.0.10'>
+      <properties size='2'>
+        <property name='artifact.size' value='10566'/>
+        <property name='download.size' value='10566'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.layer_manager' version='1.0.13'>
+      <properties size='3'>
+        <property name='artifact.size' value='49782'/>
+        <property name='download.size' value='49782'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.layer_manager' version='1.0.13'>
+      <properties size='3'>
+        <property name='artifact.size' value='49793'/>
+        <property name='download.size' value='49793'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.tote' version='1.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='29231'/>
+        <property name='download.size' value='29231'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.help' version='1.0.21'>
+      <properties size='3'>
+        <property name='artifact.size' value='4397371'/>
+        <property name='download.size' value='4397371'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.legacy' version='1.0.39'>
+      <properties size='3'>
+        <property name='artifact.size' value='5683662'/>
+        <property name='download.size' value='5683662'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.legacy' version='1.0.39'>
+      <properties size='3'>
+        <property name='artifact.size' value='5683909'/>
+        <property name='download.size' value='5683909'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.plot3d.feature' version='1.0.9'>
+      <properties size='2'>
+        <property name='artifact.size' value='10463'/>
+        <property name='download.size' value='10463'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.core' version='1.0.52'>
+      <properties size='3'>
+        <property name='artifact.size' value='1009137'/>
+        <property name='download.size' value='1009137'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.TimeController.feature' version='1.0.23'>
+      <properties size='2'>
+        <property name='artifact.size' value='10938'/>
+        <property name='download.size' value='10938'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.layer_manager' version='1.0.13'>
+      <properties size='3'>
+        <property name='artifact.size' value='49781'/>
+        <property name='download.size' value='49781'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.debrief.track_shift.feature' version='1.0.5'>
+      <properties size='2'>
+        <property name='artifact.size' value='10447'/>
+        <property name='download.size' value='10447'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.TimeController' version='1.0.23'>
+      <properties size='3'>
+        <property name='artifact.size' value='292995'/>
+        <property name='download.size' value='292995'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.core' version='1.0.52'>
+      <properties size='3'>
+        <property name='artifact.size' value='1009115'/>
+        <property name='download.size' value='1009115'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.help' version='1.0.21'>
+      <properties size='3'>
+        <property name='artifact.size' value='90670'/>
+        <property name='download.size' value='90670'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.static_resources.feature' version='1.0.3'>
+      <properties size='2'>
+        <property name='artifact.size' value='10321'/>
+        <property name='download.size' value='10321'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.xyplot' version='1.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='29959'/>
+        <property name='download.size' value='29959'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.xyplot' version='1.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='29946'/>
+        <property name='download.size' value='29946'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.core' version='1.0.58'>
+      <properties size='3'>
+        <property name='artifact.size' value='460889'/>
+        <property name='download.size' value='460889'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.overview.feature' version='1.0.5'>
+      <properties size='2'>
+        <property name='artifact.size' value='10447'/>
+        <property name='download.size' value='10447'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.overview' version='1.0.5'>
+      <properties size='3'>
+        <property name='artifact.size' value='20535'/>
+        <property name='download.size' value='20535'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.legacy' version='1.0.39'>
+      <properties size='3'>
+        <property name='artifact.size' value='5683720'/>
+        <property name='download.size' value='5683720'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.NarrativeViewer' version='1.0.9'>
+      <properties size='3'>
+        <property name='artifact.size' value='229871'/>
+        <property name='download.size' value='229871'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.debrief.feature' version='1.0.66'>
+      <properties size='2'>
+        <property name='artifact.size' value='11830'/>
+        <property name='download.size' value='11830'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.legacy' version='1.0.57'>
+      <properties size='3'>
+        <property name='artifact.size' value='752760'/>
+        <property name='download.size' value='752760'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='org.eclipse.update.feature' id='org.mwc.cmap.feature' version='1.0.65'>
+      <properties size='2'>
+        <property name='artifact.size' value='12120'/>
+        <property name='download.size' value='12120'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.legacy' version='1.0.57'>
+      <properties size='3'>
+        <property name='artifact.size' value='752624'/>
+        <property name='download.size' value='752624'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.debrief.track_shift' version='1.0.5'>
+      <properties size='3'>
+        <property name='artifact.size' value='113353'/>
+        <property name='download.size' value='113353'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+    <artifact classifier='osgi.bundle' id='org.mwc.cmap.static_resources' version='1.0.0'>
+      <properties size='3'>
+        <property name='artifact.size' value='468328'/>
+        <property name='download.size' value='468328'/>
+        <property name='download.contentType' value='application/zip'/>
+      </properties>
+    </artifact>
+  </artifacts>
+</repository>

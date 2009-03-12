@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8"?>
+<introContent xmlns:n="org.eclipse.ui.intro" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="org.eclipse.ui.intro IntroContent.xsd">
+	<!-- 
+ROOT - NORMAL
+-->
+	<page alt-style="css/root_swt.properties" style="css/root.css" id="root" style-id="page">
+		<title style-id="intro-header">Welcome to Debrief NG, from the Maritime Warfare Centre</title>
+		<group id="links-background">
+			<group id="page-links">
+				<anchor id="beginAnchor"/>
+				<link label="Overview" url="http://org.eclipse.ui.intro/showPage?id=overview" id="overview" style-id="left">
+					<img id="overview_img" style-id="content-img" src="css/graphics/icons/etool/overview72.gif" alt="Overview">
+                    </img>
+					<text>Find out what Debrief is all about</text>
+				</link>
+				<link label="Tutorials" url="http://org.eclipse.ui.intro/showPage?id=tutorials" id="tutorials" style-id="left">
+					<img id="tutorials_img" style-id="content-img" src="css/graphics/icons/etool/tutorials72.gif" alt="Tutorials">
+                    </img>
+					<text>Let us guide you through getting started with Debrief</text>
+				</link>
+				<link label="Samples" url="http://org.eclipse.ui.intro/showPage?id=samples" id="samples" style-id="right">
+					<img id="samples_img" style-id="content-img" src="css/graphics/icons/etool/samples72.gif" alt="Samples">
+                    </img>
+					<text>Explore using Debrief through some sample plots</text>
+				</link>
+				<link label="What&apos;s New" url="http://org.eclipse.ui.intro/showPage?id=news" id="news" style-id="right">
+					<img id="whatsnew_img" style-id="content-img" src="css/graphics/icons/etool/whatsnew72.gif" alt="What&apos;s New">
+                    </img>
+					<text>Find out what is new in this release</text>
+				</link>
+				<anchor id="endAnchor"/>
+			</group>
+		</group>
+		<group id="action-links">
+			<link url="http://org.eclipse.ui.intro/switchToLaunchBar" label="Get started" id="workbench">
+				<img id="workbench_img" style-id="content-img" src="css/graphics/icons/etool/wb48.gif" alt="Go to Debrief">
+                </img>
+				<text>Start using Debrief</text>
+			</link>
+		</group>
+	</page>
+	<!-- 
+ROOT - STANDBY
+-->
+	<page alt-style="css/standby_swt.properties" style="css/standby_root.css" id="standby" style-id="page">
+		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<group id="links-background">
+			<group id="page-links">
+				<anchor id="beginAnchor"/>
+				<link label="Overview" url="http://org.eclipse.ui.intro/showPage?id=overview&amp;standby=false" id="overview" style-id="left">
+					<text>Find out what Eclipse is all about</text>
+				</link>
+				<link label="Tutorials" url="http://org.eclipse.ui.intro/showPage?id=tutorials&amp;standby=false" id="tutorials" style-id="left">
+					<text>Let us guide you through Eclipse end-to-end tutorials</text>
+				</link>
+				<link label="Samples" url="http://org.eclipse.ui.intro/showPage?id=samples&amp;standby=false" id="samples" style-id="right">
+					<text>Explore Eclipse development through code samples</text>
+				</link>
+				<link label="What&apos;s New" url="http://org.eclipse.ui.intro/showPage?id=news&amp;standby=false" id="news" style-id="right">
+					<text>Find out what is new in this release</text>
+				</link>
+				<anchor id="endAnchor"/>
+			</group>
+		</group>
+	</page>
+	<!--
+OVERVIEW
+-->
+	<page style="css/overview/overview.css" alt-style="css/overview/swt.properties" id="overview" style-id="page">
+		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<group id="curve-image" filteredFrom="swt"/>
+		<group id="navigation-links" filteredFrom="swt">
+			<group id="page-links">
+				<link label="Overview" url="http://org.eclipse.ui.intro/showPage?id=overview" id="overview" style-id="left">
+					<text>Find out what Debrief is all about</text>
+				</link>
+				<link label="Tutorials" url="http://org.eclipse.ui.intro/showPage?id=tutorials" id="tutorials" style-id="left">
+					<text>Let us guide you through Debrief end-to-end tutorials</text>
+				</link>
+				<link label="Samples" url="http://org.eclipse.ui.intro/showPage?id=samples" id="samples" style-id="right">
+					<text>Explore using Debrief through some sample plots</text>
+				</link>
+				<link label="What&apos;s New" url="http://org.eclipse.ui.intro/showPage?id=news" id="news" style-id="right">
+					<text>Find out what is new in this release</text>
+				</link>
+				<anchor id="navigationEnd"/>
+			</group>
+			<group id="action-links">
+				<link url="http://org.eclipse.ui.intro/switchToLaunchBar" label="Workbench" id="workbench">
+					<text>Go to the workbench</text>
+				</link>
+			</group>
+		</group>
+		<!-- -->
+		<group id="page-content">
+			<group id="content-header" label="OVERVIEW" filteredFrom="swt">
+            </group>
+			<text style-id="page-title" id="page-title" filteredFrom="html">OVERVIEW</text>
+			<text style-id="page-description" id="page-description">Debrief is a software application used for analysing maritime vessel tracks in 2 and 3 dimensions.  You are now looking at Debrief NG, a fresh, modular version of Debrief generated to increase the capability of maritime tactical analysts.</text>
+			<text style-id="page-description" id="first-steps">If you want to get your hands dirty with Debrief open the [Tutorials] tab, and load some data.  If you want to learn more about Debrief look into one of the other tabs.</text>
+			<group id="overview-links">
+				<anchor id="beginAnchor"/>
+				<link label="History of Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/reference/history.html&amp;embedTarget=page-content" id="history">
+					<text>Where Debrief came from</text>
+				</link>
+				<link label="Getting data into Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/import_range_data.html&amp;embedTarget=page-content" id="data">
+					<text>Find out how to get your data into Debrief</text>
+				</link>
+				<link label="Getting support for Debrief" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content" id="support">
+					<text>What to do if you have any problems with Debrief</text>
+				</link>
+			</group>
+		</group>
+	</page>
+	<!-- 
+TUTORIALS
+-->
+	<page style="css/tutorials/tutorials.css" alt-style="css/tutorials/swt.properties" id="tutorials" style-id="page">
+		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<group id="curve-image" filteredFrom="swt"/>
+		<include path="overview/navigation-links"/>
+		<group id="page-content">
+			<group id="content-header" label="TUTORIALS" filteredFrom="swt">
+            </group>
+			<text style-id="page-title" id="page-title" filteredFrom="html">TUTORIALS</text>
+			<text style-id="page-description" id="page-description">Learn how to be productive using Debrief by completing tutorials that will guide you along the way.</text>
+			<group id="overview-links" label="Getting started">
+				<link label="Getting started with Debrief NG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial" id="cheat_started">
+					<text>Configure Debrief NG and load your first data </text>
+				</link>
+			</group>
+			<group id="overview-links" label="Introductory tasks">
+				<text>Before you start generating and viewing plots in Debrief you have to generate a Project </text>
+				<text>A Project is a place where Debrief can find your working files (and links to existing work directories).</text>
+				<link label="Generating a project" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.generate_project" id="generate_project">
+					<text>Learn how to generate a folder to store you work (together with links to existing work)</text>
+				</link>
+				<link label="Getting your data into Debrief" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.existing_data" id="existing_data">
+					<text>Learn how to inform Debrief where your information existing plots (and data-files) are stored</text>
+				</link>
+				<link label="Creating a new plot" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.create_plot" id="create_new_plot">
+					<text>Learn how to create a blank plot, ready to import exercise data</text>
+				</link>
+				<link label="Opening an existing plot" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.open_plot" id="open_existing_plot">
+					<text>Learn how to load an existing plot into Debrief</text>
+				</link>
+			</group>
+			<group id="overview-links" label="Solving Problems">
+				<link label="Viewing the error log" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/fault_diagnosis.html" id="view_log">
+					<text>Learn how to find and open the Debrief error log</text>
+				</link>
+				<link label="Reporting a bug" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content" id="report_bug">
+					<text>Learn how to report Debrief-relatedproblems</text>
+				</link>
+			</group>  
+		</group>   
+	</page>
+	<!-- 
+SAMPLES
+-->
+	<page style="css/samples/samples.css" alt-style="css/samples/swt.properties" id="samples" style-id="page">
+		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<group id="curve-image" filteredFrom="swt"/>
+		<include path="overview/navigation-links"/>
+		<group id="page-content">
+			<group id="content-header" label="SAMPLES" filteredFrom="swt">
+            </group>
+			<text style-id="page-title" id="page-title" filteredFrom="html">SAMPLES</text>
+			<text style-id="page-description" id="page-description">Get to know your way around Debrief by viewing some sample Debrief plots</text>
+		</group>
+	</page>
+	<!-- 
+WHAT's NEW
+-->
+	<page style="css/whatsnew/whatsnew.css" alt-style="css/whatsnew/swt.properties" id="news" style-id="page">
+		<title style-id="intro-header">Welcome to Debrief NG</title>
+		<group id="curve-image" filteredFrom="swt"/>
+		<include path="overview/navigation-links"/>
+		<group id="page-content">
+			<group id="content-header" label="WHAT'S NEW" filteredFrom="swt">
+            </group>
+			<text style-id="page-title" id="page-title" filteredFrom="html">WHAT'S NEW</text>
+			<group id="noteworthy-links" label="New and Noteworthy">
+				<link label="New features" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.eclipse.platform.doc.user/whatsNew/platform_whatsnew.html" id="platform-noteworthy" style-id="noteworthy-link">
+					<text>Find out about the new features in this release</text>
+				</link>
+					<link label="Change log" url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help//html/history/statcvs/short/index.html" id="platform-noteworthy" style-id="noteworthy-link">
+					<text>Read the nitty-gritty of what files have changed, and why</text>
+				</link>
+			</group>
+			<group id="news-links" label="General">
+				<anchor id="linksBeginAnchor"/>
+				<link label="New Updates" url="http://org.eclipse.ui.intro/runAction?pluginId=org.eclipse.platform&amp;class=org.eclipse.platform.internal.LaunchUpdateIntroAction" id="updates">
+					<text>Get the latest Debrief updates online</text>
+				</link>
+				<link label="Debrief community" url="http://www.debrief.info" id="eclipse">
+					<text>Join the community, read articles and news at www.debrief.info (requires Internet connection)</text>
+				</link>
+			</group>
+		</group>
+	</page>
+</introContent>

@@ -1,0 +1,20 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ScenarioPlotter Plug-in
+Bundle-SymbolicName: org.mwc.asset.ScenarioPlotter; singleton:=true
+Bundle-Version: 1.0.1
+Bundle-Activator: org.mwc.asset.scenarioplotter.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.jface.text,
+ org.eclipse.ui.editors,
+ org.eclipse.ui.workbench.texteditor,
+ org.mwc.asset.core,
+ org.mwc.cmap.core,
+ org.mwc.cmap.legacy,
+ org.mwc.cmap.plotViewer,
+ org.mwc.asset.legacy,
+ org.eclipse.core.resources,
+ org.eclipse.ui.ide,
+ org.mwc.asset.ScenarioController
+Eclipse-LazyStart: true

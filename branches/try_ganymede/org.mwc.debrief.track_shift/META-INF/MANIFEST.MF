@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Stacked Dots
+Bundle-SymbolicName: org.mwc.debrief.track_shift; singleton:=true
+Bundle-Version: 1.0.6
+Bundle-Activator: org.mwc.debrief.track_shift.TrackShiftActivator
+Bundle-Vendor: MWC
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.mwc.cmap.legacy,
+ org.mwc.debrief.legacy,
+ org.mwc.cmap.core,
+ org.mwc.cmap.plotViewer,
+ org.mwc.cmap.xyplot
+Eclipse-LazyStart: true

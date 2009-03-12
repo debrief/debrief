@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v3.0 NT (http://www.xmlspy.com) by Ian Mayo (PM) -->
+<layers>
+	<layer Name="Chart Features" Visible="true" LineThickness="0"/>
+	<track Name="TOMATO" Visible="true" PositionsLinked="true" PositionsVisible="true" NameVisible="true" NameAtStart="true" LineThickness="2" NameLocation="Right" Symbol="Unknown">
+		<colour Value="BLUE"/>
+		<font Family="Sans Serif" Size="12" Bold="false" Italic="false"/>
+		<tma Name="TRACK_060" Visible="true" TrackName="TOMATO" LineThickness="3">
+			<colour Value="WHITE"/>
+			<tma_solution Dtg="951212 050700.000" Visible="true" Symbol="Submarine" Label="Trial label" LabelShowing="true" LineShowing="true" EllipseShowing="true" SymbolShowing="true" LabelLocation="Right" Course="50.000" Speed="12.400" Depth="100.000" Orientation="45.000" Maxima="4000.000" Minima="2000.000">
+				<colour Value="GOLD"/>
+				<centre>
+					<shortLocation Lat="22.1884944" Long="-21.7024944" Depth="0.000"/>
+				</centre>
+			</tma_solution>
+		</tma>
+		<fix Course="0.300" Speed="3.500" Dtg="951212 050300.000" Visible="true" Label="120503" LabelShowing="false" SymbolShowing="false" LabelLocation="Left">
+			<font Family="Sans Serif" Size="12" Bold="false" Italic="false"/>
+			<centre>
+				<shortLocation Lat="21.8942194" Long="-21.5937750" Depth="0.000"/>
+			</centre>
+		</fix>
+		<fix Course="359.600" Speed="3.500" Dtg="951212 050400.000" Visible="true" Label="0504" LabelShowing="false" SymbolShowing="false" LabelLocation="Left">
+			<font Family="Sans Serif" Size="12" Bold="false" Italic="false"/>
+			<centre>
+				<shortLocation Lat="21.8954694" Long="-21.5937639" Depth="0.000"/>
+			</centre>
+		</fix>
+	</track>
+</layers>

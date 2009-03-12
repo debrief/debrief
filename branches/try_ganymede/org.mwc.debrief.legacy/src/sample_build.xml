@@ -1,0 +1,1054 @@
+<?xml version="1.0" standalone="no"?>
+<!-- =====================================================================
+
+       Build file for the NC3 Technical Architecture
+
+The Technical Architecture build system is based on the Apache Ant,
+which is a Java building tool.
+
+Ant uses a  file written in XML (this file) as its building instructions.
+
+The only thing that you have to make sure, is the "JAVA_HOME" environment
+property should be set to match the JVM you want to use.
+
+
+First, make sure your current working directory is where this very
+file is located. Then type
+
+  ./build.sh (unix)
+  .\build.bat (win32)
+
+
+This will build a HTML and PDF version of the technical architecture. For
+other taegets use the command
+
+To know more about the available targets take a look at this file, which is
+pretty self-explanatory or type
+
+ [unix]  ./build.sh  -projecthelp
+ [win32] .\build.bat -projecthelp
+
+and concentrate on the target descriptions that start with a star '*': these
+are the one you should call, the others are internal targets that are called
+by the main ones.
+
+
+For additional help, type
+
+
+ [unix]  ./build.sh  -help
+ [win32] .\build.bat -help
+  
+-->
+
+<!DOCTYPE project [
+
+<!ENTITY % tools-info SYSTEM "VERSION">
+%tools-info;
+
+<!ENTITY % src-info SYSTEM "src/VERSION">
+%src-info;
+
+]>
+
+
+<project name="NC3TA" default="all" basedir=".">
+
+  <!-- =================================================================== -->
+  <!-- Project specific parameters                                         -->
+  <!-- =================================================================== -->
+
+
+  <property name="name" value="nc3ta"/>
+
+  <!-- Version of the NC3TA tools  -->
+  <property name="tool-version" value="&tools-version;"/>
+  
+  <!-- Release date of the NC3TA tools -->
+  <property name="tool-date" value="&tools-release-date;"/>
+
+  <!-- Version of the NC3TA XML sources -->
+  <property name="src-version" value="&src-version;"/>
+
+  <property name="build.compiler" value="classic"/>
+  <property name="debug" value="off"/>
+
+
+
+  <!-- =================================================================== -->
+  <!-- Defines paths/names of prerequisite jar files we compile against    -->
+  <!-- =================================================================== -->
+  <!-- We keep checked-in known-good .jars here -->
+
+
+  <!-- Relative locations of source directories  -->
+  <property name="src.dir" value="${basedir}/src"/>
+  <property name="src.v1" value="${src.dir}/volume1"/>
+  <property name="src.v2" value="${src.dir}/volume2"/>
+  <property name="src.v3" value="${src.dir}/volume3"/>
+  <property name="src.v4" value="${src.dir}/volume4"/>
+  <property name="src.v5" value="${src.dir}/volume5"/>
+  <property name="src.rationale" value="${src.dir}/rationale"/>
+  <property name="src.acronyms" value="${src.dir}/acronyms"/>
+
+  <!-- Build and distribution output areas -->
+  <property name="build.dir" value="${basedir}/build"/>
+  <property name="build.v1" value="${build.dir}/volume1"/>
+  <property name="build.v2" value="${build.dir}/volume2"/>
+  <property name="build.v3" value="${build.dir}/volume3"/>
+  <property name="build.v4" value="${build.dir}/volume4"/>
+  <property name="build.v5" value="${build.dir}/volume5"/>
+  <property name="build.rationale" value="${build.dir}/rationale"/>
+  <property name="build.acronyms" value="${build.dir}/acronyms"/>
+  <property name="build.fo" value="${build.dir}/pdf"/>
+  <property name="dist.dir" value="${basedir}/dist"/>
+
+  <!-- XSLT stylesheets locations -->
+  <property name="xsl-styles.dir" value="${basedir}/xsl"/>
+  <property name="xsl-html.dir" value="${basedir}/xsl/html"/>
+  <property name="xsl-fo.dir" value="${basedir}/xsl/fo"/>
+
+  <!-- NC3TA XSLT stylesheets used in the building process -->
+  <property name="xsl-acro" value="acronyms.xsl"/>
+  <property name="xsl-master" value="master.xsl"/>
+  <property name="xsl-onepage" value="onepage.xsl"/>
+  <property name="xsl-merge3" value="merge3.xsl"/>
+  <property name="xsl-chunk" value="multipage.xsl"/>
+  <property name="xsl-fo" value="fota.xsl"/>
+
+  <!-- =================================================================== -->
+  <!-- External application specific parameter                             -->
+  <!-- =================================================================== -->
+
+  <!-- Location of external java application  -->  
+  <property name="saxon.dir" value="${basedir}/lib/saxon"/>
+  <property name="xerces.dir" value="${basedir}/lib"/>
+  <property name="fop.dir" value="${basedir}/lib"/>
+  <property name="batik.dir" value="${basedir}/lib"/>
+
+  <!-- Java jars used in the building process --> 
+  <property name="jar-saxon" value="saxon-6.5.1.jar"/>
+  <property name="jar-xerces" value="xerces-1.4.4.jar"/>
+  <property name="jar-xersample" value="xercesSamples-1.4.4.jar"/>
+  <property name="jar-batik" value="batik-all.jar"/>
+  <property name="jar-catalog" value="resolver.jar"/>
+
+  <!-- XSLT extension functions jar -->
+  <property name="jar-saxon-ext" value="saxon65.jar"/>
+
+  <!-- DocBook XSLT Stylesheets locations -->
+  <property name="docbook-xsl.dir" value="${basedir}/xsl/docbook-xsl"/> 
+
+  <!-- XSLT Processor -->
+  <property name="saxon.class" value="com.icl.saxon.StyleSheet"/>
+
+
+
+  <!-- additional Saxon options -->
+  <property name="saxon.opts" 
+            value="-x org.apache.xerces.parsers.SAXParser 
+                   -y org.apache.xerces.parsers.SAXParser"/>
+<!--
+                   -r com.sun.resolver.tools.CatalogResolver"/>
+-->
+
+  <!-- Rasterizer Task -->
+  <taskdef name="rasterize"
+           classname="org.apache.tools.ant.taskdefs.optional.RasterizerTask"
+           classpath="${basedir}/lib/RasterizerTask.jar"/>
+
+
+  <!-- FOP Task -->
+<!--
+  <taskdef name="fop"
+           classname="org.apache.fop.tools.anttasks.Fop"
+           classpath="${basedir}/lib/fop.jar"/>
+-->
+
+
+  <!-- =================================================================== -->
+  <!-- Build Classpaths for Saxon, Xerces and Fop                          -->
+  <!-- =================================================================== -->
+
+  <path id="saxon.classpath">
+    <fileset dir="${saxon.dir}">
+      <include name="${jar-saxon}"/>
+    </fileset>
+    <fileset dir="${docbook-xsl.dir}/extensions/">
+      <include name="${jar-saxon-ext}"/>
+    </fileset>
+    <fileset dir="${xerces.dir}">
+      <include name="**/x*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="xerces.classpath">
+    <fileset dir="${xerces.dir}">
+      <include name="**/x*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="fop.classpath">
+    <fileset dir="${fop.dir}">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+  
+
+
+  <!-- =================================================================== -->
+  <!-- Creates output build directories and doc prerequistes               -->
+  <!-- =================================================================== -->
+
+  <target name="prepare">
+    <echo  message="NC3TA Build system - version ${tool-version}. Released on ${tool-date}"/>
+    
+
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${build.v1}"/>
+    <mkdir dir="${build.v2}"/>
+    <mkdir dir="${build.v3}"/>
+    <mkdir dir="${build.v4}"/>
+    <mkdir dir="${build.v5}"/>
+    <mkdir dir="${build.rationale}"/>
+    <mkdir dir="${build.acronyms}"/>
+    <mkdir dir="${build.fo}"/>
+    <copy todir="${build.dir}/style" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/style"/>
+    </copy>
+    <copy todir="${build.dir}/images" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/images"/>
+    </copy>
+    <copy todir="${build.dir}/figures"
+          preservelastmodified="yes"
+          file="${basedir}/src/figures/no-fig-yet.jpg"/>
+  </target>
+
+
+  <!-- =================================================================== -->
+  <!-- Default target and global HTML and PDF targets                      -->
+  <!-- =================================================================== -->
+
+  <target name="all" description="* Create all volumes for the web"
+          depends="prepare, html, pdf"/>
+
+
+  <!-- =================================================================== -->
+  <!-- Main HTML and PDF targets                                               -->
+  <!-- =================================================================== -->
+
+  <target name="html" description="* Create all HTML files destined for the web"
+          depends="prepare, master, acronyms, 
+                   vol1.html, vol2.html, vol3.html, vol4.html, vol5.html, 
+                   rationale.html"/>
+
+  <target name="pdf" description="* Create a PDF version of TA"
+          depends="prepare, 
+                   vol1.pdf, vol2.pdf, vol3.pdf, vol4.pdf,
+                   vol5.pdf, rationale.pdf"/> 
+
+
+  <target name="print" depends="pdf"/> <!-- Keep for historic reasons -->
+
+  <!-- =================================================================== -->
+  <!-- Various targets to the NC3TA master documents                       -->
+  <!-- =================================================================== -->
+
+  <target name="master-check" depends="prepare">
+    <uptodate property="master.notrequired" 
+              targetfile="${build.dir}/index.html">
+       <srcfiles dir="${src.dir}" includes="master.xml, html-common.xsl"/>
+       <srcfiles dir="${xsl-styles.dir}/html" includes="master.xsl"/>
+     </uptodate>
+  </target>
+
+  <target name="master" description="* Create the N3TA master documents" 
+          depends="master-check" unless="master.notrequired">
+    <echo message="Creating the NC3TA master documents"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.dir}">
+      <arg line="${saxon.opts} ${src.dir}/master.xml ${xsl-html.dir}/master.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <move file="${build.dir}/frame-master.html" 
+          tofile="${build.dir}/index.html"/>
+  </target>
+
+  <target name="valid-master">
+     <java classname="sax.SAXCount">
+       <arg line="-v ${src.dir}/master.xml"/>
+       <classpath refid="xerces.classpath"/>
+     </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to build the acronyms documents                     -->
+  <!-- =================================================================== -->
+
+  <target name="acronyms-check" depends="prepare">
+    <uptodate property="acronyms.notrequired"
+              targetfile="${build.acronyms}/index.html">
+      <srcfiles dir="${src.acronyms}" includes="acronyms.xml"/>
+      <srcfiles dir="${src.acronyms}/letter" includes="*.xml"/>
+      <srcfiles dir="${xsl-html.dir}" includes="acronyms.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="acronyms" 
+          description="* Create the acronyms as chunked HTML pages"
+          depends="prepare, acronyms-check" unless="acronyms.notrequired">
+    <echo message="Create the acronyms as chunked HTML pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.acronyms}">
+      <arg line="${saxon.opts} ${src.acronyms}/acronyms.xml 
+         ${xsl-html.dir}/acronyms.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Layout templates                                                    -->
+  <!-- =================================================================== -->
+
+  <target name="layout-fo-check" depends="prepare">
+    <uptodate property="layout-fo.notrequired"
+              targetfile="${xsl-fo.dir}/nc3ta-layout.xsl">
+      <srcfiles dir="${xsl-fo.dir}" includes="nc3ta-layout.xml"/>
+      <srcfiles dir="${docbook-xsl.dir}/template" includes="templates.xsl"/>
+    </uptodate>
+  </target>
+
+
+  <target name="layout-fo" depends="layout-fo-check"
+          unless="layout-fo.notrequired">
+    <echo message="Creating Layout for fo documents"/>
+      <java classname="${saxon.class}" fork="yes" dir="${xsl-fo.dir}">
+      <arg line="${saxon.opts} -o nc3ta-layout.xsl ${xsl-fo.dir}/nc3ta-layout.xml 
+           ${docbook-xsl.dir}/template/titlepage.xsl"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to build Volume 1                                   -->
+  <!-- =================================================================== -->
+
+  <target name="vol1" description="* Create volume 1 (HTML and PDF)" 
+          depends="vol1.html, vol1.pdf"/>
+
+  <target name="vol1.html.check" depends="prepare">
+    <uptodate property="v1.html.notrequired" 
+              targetfile="${build.v1}/index.html">
+      <srcfiles dir="${src.v1}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-html.dir}" 
+                includes="multipage.xsl, html-common.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="valid1" description="* Validate volume 1">
+     <java classname="sax.SAXCount">
+       <arg line="-v ${src.v1}/vol1.xml"/>
+       <classpath refid="xerces.classpath"/>
+     </java>
+  </target>
+
+  <target name="vol1.html" description="* Create HTML pages of volume 1" 
+          depends="vol1.svg70, vol1.html.check" unless="v1.html.notrequired">
+    <echo message="Create volume 1 as chunked HTML pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.v1}">
+      <arg line="${saxon.opts} ${src.v1}/vol1.xml ${xsl-html.dir}/multipage.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <move file="${build.v1}/frame-master.html" 
+          tofile="${build.v1}/index.html"/>
+  </target>
+
+
+  <target name="vol1.svg.required">
+    <uptodate property="vol1-svg.notRequired">
+      <srcfiles dir="${src.dir}/figures/volume1/" includes="**/*.svg"/>
+      <mapper type="glob" from="*.svg" 
+              to="${build.dir}/figures/volume1/*.jpg"/>
+    </uptodate>
+  </target>
+
+  <target name="vol1.svg70" depends="vol1.svg.required"
+          unless="vol1-svg.notRequired">
+    <echo message="Create volume 1 figures for HTML (70 dpi)"/>
+    <rasterize result="image/jpeg"
+        quality="0.9" dpi="70"
+        destdir="${build.dir}/figures/volume1/">
+       <fileset dir="${src.dir}/figures/volume1/">
+         <include name="**/*.svg"/>
+       </fileset>
+    </rasterize>
+  </target>
+
+
+  <target name="vol1.pdf.check" depends="prepare">
+    <uptodate property="v1pdf.notrequired" 
+              targetfile="${build.fo}/NC3TA-Vol1-v3.pdf">
+      <srcfiles dir="${src.v1}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-fo.dir}" 
+                includes="fota.xsl, nc3ta-layout.xsl"/>
+    </uptodate>
+  </target>
+
+
+  <target name="vol1.pdf"
+          description="* Create volume 1 as a PDF file"
+          depends="layout-fo, vol1.svg70, vol1.pdf.check"
+          unless="v1pdf.notrequired">
+    <echo message="Create volume 1 print version"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.fo}">
+      <arg line="${saxon.opts} -o vol1.fo ${src.v1}/vol1.xml ${xsl-fo.dir}/${xsl-fo}
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <echo message="Transforming vol1.fo to PDF"/>
+    <java classname="org.apache.fop.apps.Fop" fork="yes"
+          dir="${build.fo}">
+      <arg line=" vol1.fo NC3TA-Vol1-v3.pdf"/>
+      <classpath refid="fop.classpath"/>
+    </java>
+    <delete file="${build.fo}/vol1.fo"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to build Volume 2                                   -->
+  <!-- =================================================================== -->
+
+
+  <target name="vol2" description="* Create volume 2 (HTML and PDF)" 
+          depends="vol2.html, vol2.pdf"/>
+
+
+  <target name="vol2.html.check" depends="prepare">
+    <uptodate property="v2.html.notrequired" 
+              targetfile="${build.v2}/index.html">
+      <srcfiles dir="${src.v2}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-html.dir}" 
+                includes="multipage.xsl, html-common.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="valid2" description="* Validate volume 2">
+     <java classname="sax.SAXCount">
+       <arg line="-v ${src.v2}/vol2.xml"/>
+       <classpath refid="xerces.classpath"/>
+     </java>
+  </target>
+
+  <target name="vol2.html" description="* Create HTML pages of volume 2" 
+          depends="vol2.svg70, vol2.html.check" unless="v2.html.notrequired">
+    <echo message="Create volume 2 as chunked HTML pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.v2}">
+      <arg line="${saxon.opts} ${src.v2}/vol2.xml ${xsl-html.dir}/multipage.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <move file="${build.v2}/frame-master.html" 
+          tofile="${build.v2}/index.html"/>
+  </target>
+
+
+  <target name="vol2.svg.required">
+    <uptodate property="vol2-svg.notRequired">
+      <srcfiles dir="${src.dir}/figures/volume2/" includes="**/*.svg"/>
+      <mapper type="glob" from="*.svg" 
+              to="${build.dir}/figures/volume2/*.jpg"/>
+    </uptodate>
+  </target>
+
+  <target name="vol2.svg70" depends="prepare, vol2.svg.required"
+          unless="vol2-svg.notRequired">
+    <echo message="Create volume 2 figures for HTML (70 dpi)"/>
+    <rasterize result="image/jpeg"
+        quality="0.9" dpi="70"
+        destdir="${build.dir}/figures/volume2/">
+       <fileset dir="${src.dir}/figures/volume2/">
+         <include name="**/*.svg"/>
+       </fileset>
+    </rasterize>
+  </target>
+
+  <target name="vol2.pdf.check" depends="prepare">
+    <uptodate property="v2pdf.notrequired" 
+              targetfile="${build.fo}/NC3TA-Vol2-v3.pdf">
+      <srcfiles dir="${src.v2}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-fo.dir}" 
+                includes="fota.xsl, nc3ta-layout.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="vol2.pdf" 
+          description="* Create volume 2 as a PDF file"
+          depends="layout-fo, vol2.svg70, vol2.pdf.check" 
+          unless="v2pdf.notrequired">
+    <echo message="Create volume 2 print version"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.fo}">
+      <arg line="${saxon.opts} -o vol2.fo ${src.v2}/vol2.xml ${xsl-fo.dir}/${xsl-fo}
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <echo message="Transforming vol2.fo to PDF"/>
+    <java classname="org.apache.fop.apps.Fop" fork="yes"
+          dir="${build.fo}">
+      <arg line=" vol2.fo NC3TA-Vol2-v3.pdf"/>
+      <classpath refid="fop.classpath"/>
+    </java>
+    <delete file="${build.fo}/vol2.fo"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to build Volume 3                                   -->
+  <!-- =================================================================== -->
+
+
+  <target name="vol3" description="* Create volume 3 (HTML and PDF)" 
+          depends="vol3.html, vol3.pdf"/>
+
+
+
+  <target name="vol3raw.html.check">
+    <uptodate property="v3raw.notrequired" targetfile="${src.v3}/vol3.xml">
+      <srcfiles dir="${src.v3}" includes="mostly3.xml, 
+                                          v3appendixA.xml, figures.ent"/>
+      <srcfiles dir="${src.dir}/standards" includes="ta-standards.xml"/>
+      <srcfiles dir="${xsl-styles.dir}" includes="merge3.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="vol3.html.check" depends="prepare">
+    <uptodate property="v3.html.notrequired" 
+              targetfile="${build.v3}/index.html">
+      <srcfiles dir="${src.v3}" includes="vol3.xml"/>
+      <srcfiles dir="${xsl-html.dir}" 
+                includes="multipage.xsl, html-common.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="valid3" description="* Validate volume 3">
+     <java classname="sax.SAXCount">
+       <arg line="-v ${src.v3}/mostly3.xml"/>
+       <classpath refid="xerces.classpath"/>
+     </java>
+  </target>
+
+  <target name="vol3.raw" 
+          description="* Merge the standard database with volume 3"
+          depends="vol3raw.html.check" unless="v3raw.notrequired">
+    <echo message="Merge the standard database with volume 3"/>
+    <java classname="${saxon.class}" fork="yes" dir="${src.v3}">
+      <arg line="${saxon.opts} -o ${src.v3}/vol3.xml
+         ${src.v3}/mostly3.xml ${xsl-styles.dir}/merge3.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>     
+  </target>
+
+  <target name="vol3.html" description="* Create HTML pages of volume 3" 
+          depends="vol3.raw, vol3.svg70, vol3.html.check"
+          unless="v3.html.notrequired">
+    <echo message="Create volume 3 as chunked HTML pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.v3}">
+      <arg line="${saxon.opts} ${src.v3}/vol3.xml ${xsl-html.dir}/multipage.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <copy file="${build.v3}/frame-master.html" 
+          tofile="${build.v3}/index.html"/>
+  </target>
+
+  <target name="vol3.svg.required">
+    <uptodate property="vol3-svg.notRequired">
+      <srcfiles dir="${src.dir}/figures/volume3/" includes="**/*.svg"/>
+      <mapper type="glob" from="*.svg" 
+              to="${build.dir}/figures/volume3/*.jpg"/>
+    </uptodate>
+  </target>
+
+  <target name="vol3.svg70" depends="prepare, vol3.svg.required"
+          unless="vol3-svg.notRequired">
+    <echo message="Create volume 3 figures for HTML (70 dpi)"/>
+    <rasterize result="image/jpeg"
+        quality="0.9" dpi="70"
+        destdir="${build.dir}/figures/volume3/">
+       <fileset dir="${src.dir}/figures/volume3/">
+         <include name="**/*.svg"/>
+       </fileset>
+    </rasterize>
+  </target>
+
+  <target name="vol3.pdf.check" depends="prepare">
+    <uptodate property="v3pdf.notrequired" 
+              targetfile="${build.fo}/NC3TA-Vol3-v3.pdf">
+      <srcfiles dir="${src.v3}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-fo.dir}" 
+                includes="fota.xsl, nc3ta-layout.xsl"/>
+    </uptodate>
+  </target>
+
+
+  <target name="vol3.pdf" 
+          description="* Create volume 3 as a PDF file"
+          depends="layout-fo, vol3.raw, vol3.svg70, vol3.pdf.check"
+          unless="v3pdf.notrequired">
+    <echo message="Create volume 3 print version"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.fo}">
+      <arg line="${saxon.opts} -o vol3.fo ${src.v3}/vol3.xml ${xsl-fo.dir}/${xsl-fo}
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <echo message="Generating PDF version of volume 3"/>
+    <java classname="org.apache.fop.apps.Fop" fork="yes"
+          dir="${build.fo}" maxmemory="200M">
+      <arg line=" vol3.fo NC3TA-Vol3-v3.pdf"/>
+      <classpath refid="fop.classpath"/>
+    </java>
+    <delete file="${build.fo}/vol3.fo"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to build Volume 4                                   -->
+  <!-- =================================================================== -->
+
+
+  <target name="vol4" description="* Create volume 4 (HTML and PDF)" 
+          depends="vol4.html, vol4.pdf"/>
+
+
+  <target name="vol4.html.check" depends="prepare">
+    <uptodate property="v4.html.notreqired" 
+              targetfile="${build.v4}/index.html">
+      <srcfiles dir="${src.v4}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-html.dir}"
+                includes="multipage.xsl,html-common.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="valid4" description="* Validate volume 4">
+     <java classname="sax.SAXCount">
+       <arg line="-v ${src.v4}/vol4.xml"/>
+       <classpath refid="xerces.classpath"/>
+     </java>
+  </target>
+
+  <target name="vol4.html" description="* Create HTML pages of volume 4" 
+          depends="vol4.svg70, vol4.html.check" unless="v4.html.notreqired">
+    <echo message="Create volume 4 as chunked HTML pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.v4}">
+      <arg line="${saxon.opts} ${src.v4}/vol4.xml ${xsl-html.dir}/multipage.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <move file="${build.v4}/frame-master.html"
+          tofile="${build.v4}/index.html"/>
+  </target>
+
+
+  <target name="vol4.svg.required">
+    <uptodate property="vol4-svg.notRequired">
+      <srcfiles dir="${src.dir}/figures/volume4/" includes="**/*.svg"/>
+      <mapper type="glob" from="*.svg" 
+              to="${build.dir}/figures/volume4/*.jpg"/>
+    </uptodate>
+  </target>
+
+  <target name="vol4.svg70" depends="prepare, vol4.svg.required"
+          unless="vol4-svg.notRequired">
+    <echo message="Create volume 4 figures for HTML (70 dpi)"/>
+    <rasterize result="image/jpeg"
+        quality="0.9" dpi="70"
+        destdir="${build.dir}/figures/volume4/">
+       <fileset dir="${src.dir}/figures/volume4/">
+         <include name="**/*.svg"/>
+       </fileset>
+    </rasterize>
+  </target>
+
+  <target name="vol4.pdf.check" depends="prepare">
+    <uptodate property="v4pdf.notrequired" 
+              targetfile="${build.fo}/NC3TA-Vol4-v3.pdf">
+      <srcfiles dir="${src.v4}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-fo.dir}" 
+                includes="fota.xsl, nc3ta-layout.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="vol4.pdf" 
+          description="* Create volume 4 as a PDF file"
+          depends="layout-fo, vol4.svg70, vol4.pdf.check"
+          unless="v4pdf.notrequired">
+    <echo message="Create volume 4 print version"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.fo}">
+      <arg line="${saxon.opts} -o vol4.fo ${src.v4}/vol4.xml ${xsl-fo.dir}/${xsl-fo}
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <echo message="Generating PDF version of volume 4"/>
+    <java classname="org.apache.fop.apps.Fop" fork="yes"
+          dir="${build.fo}">
+      <arg line=" vol4.fo NC3TA-Vol4-v3.pdf"/>
+      <classpath refid="fop.classpath"/>
+    </java>
+    <delete file="${build.fo}/vol4.fo"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to build Volume 5                                   -->
+  <!-- =================================================================== -->
+
+
+  <target name="vol5" description="* Create volume 5 (HTML and PDF)" 
+          depends="vol5.html, vol5.pdf"/>
+
+
+  <target name="vol5.html.check" depends="prepare">
+    <uptodate property="v5.html.notreqired" 
+              targetfile="${build.v5}/index.html">
+      <srcfiles dir="${src.v5}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-html.dir}"
+                includes="multipage.xsl, html-common.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="valid5" description="* Validate volume 5">
+     <java classname="sax.SAXCount">
+       <arg line="-v ${src.v5}/vol5.xml"/>
+       <classpath refid="xerces.classpath"/>
+     </java>
+  </target>
+
+  <target name="vol5.html" description="* Create HTML pages of volume 5" 
+          depends="vol5.svg70, vol5.html.check" unless="v5.html.notreqired">
+    <echo message="Create volume 5 as chunked HTML pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.v5}">
+      <arg line="${saxon.opts} ${src.v5}/vol5.xml
+         ${xsl-html.dir}/multipage.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <move file="${build.v5}/frame-master.html"
+          tofile="${build.v5}/index.html"/>
+  </target>
+
+  <target name="vol5.svg.required">
+    <uptodate property="vol5-svg.notRequired">
+      <srcfiles dir="${src.dir}/figures/volume5/" includes="**/*.svg"/>
+      <mapper type="glob" from="*.svg" 
+              to="${build.dir}/figures/volume5/*.jpg"/>
+    </uptodate>
+  </target>
+
+  <target name="vol5.svg70" depends="prepare, vol5.svg.required"
+          unless="vol5-svg.notRequired">
+    <echo message="Create volume 5 figures for HTML (70 dpi)"/>
+    <rasterize result="image/jpeg"
+        quality="0.9" dpi="70"
+        destdir="${build.dir}/figures/volume5/">
+       <fileset dir="${src.dir}/figures/volume5/">
+         <include name="**/*.svg"/>
+       </fileset>
+    </rasterize>
+  </target>
+
+  <target name="vol5.pdf.check" depends="prepare">
+    <uptodate property="v5pdf.notrequired" 
+              targetfile="${build.fo}/NC3TA-Vol5-v3.pdf">
+      <srcfiles dir="${src.v5}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-fo.dir}" 
+                includes="fota.xsl, nc3ta-layout.xsl"/>
+    </uptodate>
+  </target>
+
+
+  <target name="vol5.pdf" 
+          description="* Create volume 5 as a PDF file"
+          depends="layout-fo, vol5.svg70, vol5.pdf.check"
+          unless="v5pdf.notrequired">
+    <echo message="Create volume 5 print version"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.fo}">
+      <arg line="${saxon.opts} -o vol5.fo ${src.v5}/vol5.xml
+         ${xsl-fo.dir}/${xsl-fo} "/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <echo message="Generating PDF version of volume 5"/>
+    <java classname="org.apache.fop.apps.Fop" fork="yes"
+          dir="${build.fo}">
+      <arg line=" vol5.fo NC3TA-Vol5-v3.pdf"/>
+      <classpath refid="fop.classpath"/>
+    </java>
+    <delete file="${build.fo}/vol5.fo"/>
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to build the rationale document                     -->
+  <!-- =================================================================== -->
+
+
+  <target name="rationale" description="* Create rationale doc (HTML and PDF)" 
+          depends="rationale.html, rationale.pdf"/>
+
+
+  <target name="rationale.html.check" depends="prepare">
+    <uptodate property="rationale.html.notreqired" 
+              targetfile="${build.rationale}/index.html">
+      <srcfiles dir="${src.rationale}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-html.dir}"
+                includes="multipage.xsl,html-common.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="valid-rationale" description="* Validate Radionale Document">
+     <java classname="sax.SAXCount">
+       <arg line="-v ${src.rationale}/rationale.xml"/>
+       <classpath refid="xerces.classpath"/>
+     </java>
+  </target>
+
+  <target name="rationale.html" description="* Create HTML pages of rationale doc" 
+          depends="rationale.svg70, rationale.html.check"
+          unless="rationale.html.notreqired">
+    <echo message="Create rationale document as chunked HTML pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.rationale}">
+      <arg line="${saxon.opts} ${src.rationale}/rationale.xml
+         ${xsl-html.dir}/multipage.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <move file="${build.rationale}/frame-master.html"
+          tofile="${build.rationale}/index.html"/>
+  </target>
+
+
+  <target name="rationale.svg.required">
+    <uptodate property="rationale-svg.notRequired">
+      <srcfiles dir="${src.dir}/figures/rationale/" includes="**/*.svg"/>
+      <mapper type="glob" from="*.svg" 
+              to="${build.dir}/figures/rationale/*.jpg"/>
+  </uptodate>
+  </target>
+
+  <target name="rationale.svg70" depends="prepare, rationale.svg.required" 
+          unless="rationale-svg.notRequired">
+    <echo message="Create rationale figures for HTML (70 dpi)"/>
+
+    <rasterize result="image/jpeg"
+        quality="0.9" dpi="70"
+        destdir="${build.dir}/figures/rationale/">
+      <fileset dir="${src.dir}/figures/rationale">
+        <include name="**/*.svg"/> 
+       </fileset>
+    </rasterize>
+  </target>
+
+
+  <target name="rationale.pdf.check" depends="prepare">
+    <uptodate property="rationale.pdf.notrequired" 
+              targetfile="${build.fo}/NCSP-Rationale-v1.pdf">
+      <srcfiles dir="${src.rationale}" includes="**/*.xml, figures.ent"/>
+      <srcfiles dir="${xsl-fo.dir}" 
+                includes="fota.xsl, nc3ta-layout.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="rationale.pdf" 
+          description="* Create the rationale document as a PDF file"
+          depends="layout-fo, rationale.svg70, rationale.pdf.check"
+          unless="rationale.pdf.notrequired">
+    <echo message="Create rationale document print version"/>
+    <java classname="${saxon.class}" fork="yes" dir="${build.fo}">
+      <arg line="${saxon.opts} -o rationale.fo ${src.rationale}/rationale.xml
+         ${xsl-fo.dir}/${xsl-fo} saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>
+    <echo message="Generating PDF version of rationale document"/>
+    <java classname="org.apache.fop.apps.Fop" fork="yes"
+          dir="${build.fo}" maxmemory="200M">
+      <arg line=" rationale.fo NCSP-Rationale-v1.pdf"/>
+      <classpath refid="fop.classpath"/>
+    </java>
+    <delete file="${build.fo}/rationale.fo"/>
+  </target>
+
+
+
+  <!-- =================================================================== -->
+  <!-- Create documentation                                                -->
+  <!-- =================================================================== -->
+
+  <target name="doc_check">
+    <uptodate property="doc.notrequired"
+              targetfile="${basedir}/docs/manual.html">
+      <srcfiles dir="${basedir}/xdocs" includes="manual.xml"/>
+      <srcfiles dir="${xsl-html.dir}" includes="doc.xsl"/>
+    </uptodate>
+  </target>
+
+  <target name="doc" description="* Create documentation pages"
+          depends="doc_check,prepare" unless="doc.notrequired">
+    <echo message="Create documentation pages"/>
+    <java classname="${saxon.class}" fork="yes" dir="${basedir}/docs">
+      <arg line="-o ${basedir}/docs/manual.html 
+        ${basedir}/xdocs/manual.xml ${xsl-html.dir}/doc.xsl
+         saxon.extensions=1"/>
+      <classpath refid="saxon.classpath"/>
+    </java>     
+  </target>
+
+  <!-- =================================================================== -->
+  <!-- Make Distributions (source, tool, web, pdf-only)                             -->
+  <!-- =================================================================== -->
+
+
+  <!-- Create the source distribution -->
+
+  <target name="source" description="* Create a new source distribution">
+    <zip zipfile="${basedir}/${name}-src-${src-version}.zip">
+      <zipfileset dir="${src.dir}" includes="**/*"
+                  excludes="**/*~,**/*/*.rtf,**/*/*.doc, **/*/*.ced,
+                            **/*/*.fo,**/*/*.pdf, **/vol3.xml,
+                            figures/obsolete, figures/obsolete/*"/>
+    </zip>
+  </target>
+
+  <!-- Create the web distribution -->
+
+  <target name="web" description="* Create the website containing the TA"
+          depends="all">
+    <zip zipfile="${basedir}/${name}-web-${src-version}.zip">
+      <zipfileset dir="${build.dir}" prefix="${name}-${src-version}"
+                  excludes="pdf/*.fo"/>
+    </zip>
+  </target>
+
+  <!-- Create the tools distribution -->
+
+  <target name="tool" description="* Create a new tool distribution"
+          depends="doc">
+    <mkdir dir=""/>
+    <mkdir dir="${dist.dir}/src"/>
+
+    <copy todir="${dist.dir}/bin" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/bin"/>
+    </copy>
+
+    <mkdir dir="${dist.dir}/docs"/>
+    <copy todir="${dist.dir}/docs" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/docs"
+               excludes="**/*/*.ced"/>
+    </copy>
+    <mkdir dir="${dist.dir}/xdocs"/>
+    <copy todir="${dist.dir}/xdocs" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/xdocs"/>
+    </copy>
+
+    <copy todir="${dist.dir}/extra"
+          preservelastmodified="yes">
+      <fileset dir="${basedir}/extra"
+               excludes="Sha*.*"/>
+    </copy> 
+    <copy todir="${dist.dir}/images" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/images"/>
+    </copy>
+    <copy todir="${dist.dir}/lib" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/lib"/>
+    </copy>
+    <copy todir="${dist.dir}/style" 
+      preservelastmodified="yes">
+      <fileset dir="${basedir}/style"/>
+    </copy>
+
+    <copy todir="${dist.dir}/xsl"
+          preservelastmodified="yes">
+      <fileset dir="${basedir}/xsl">
+        <exclude name="**/docbook-xsl/doc*/**"/>
+        <exclude name="**/docbook-xsl/htmlhelp/**"/>
+        <exclude name="**/docbook-xsl/javahelp/**"/>
+        <exclude name="**/docbook-xsl/params/**"/>
+        <exclude name="**/docbook-xsl/xhtml/**"/>
+        <exclude name="**/docbook-xsl/extensions/doc/**"/>
+        <exclude name="**/docbook-xsl/extensions/xalan*/**"/>
+        <exclude name="**/docbook-xsl/extensions/saxon5/**"/>
+        <exclude name="**/docbook-xsl/extensions/saxon64*/**"/>
+      </fileset>
+    </copy>
+<!--
+    <tstamp>
+       <format property="RELEASE_DATE" 
+               pattern="MMM d, yyyy - kk:mm:ss, z"/>
+    </tstamp>
+    <echo message="NC3TA tools distribution ver. ${tool-version}, 
+                   released on ${RELEASE_DATE}" 
+          file="${basedir}/VERSION"/>
+-->
+    <copy todir="${dist.dir}" preservelastmodified="yes">
+      <fileset dir="${basedir}" 
+               includes="README,build.*,INSTALL,TODO,VERSION,WhatsNew"/>
+<!--
+               includes="README,build*,catalog*,INSTALL,mkrtf*,VERSION"/>
+-->
+    </copy>
+
+    <zip zipfile="${basedir}/${name}-tools-${tool-version}.zip">
+      <zipfileset dir="${dist.dir}" includes="**/*"
+                  prefix="${name}-tools-${tool-version}"/>
+    </zip>
+  </target>
+
+
+  <target name="pdf-only" description="* Create a zip containing only PDF files"
+          depends="pdf">
+    <zip zipfile="${basedir}/${name}-${src-version}.pdf.zip">
+      <zipfileset dir="${build.dir}/pdf" includes="*.pdf"/>
+    </zip>
+  </target>
+
+
+  <target name="zip" description="* Create source, tool, web and pdf archives"
+          depends="source,tool,web,pdf-only"/>
+
+  <!-- =================================================================== -->
+  <!-- Various targets to clean                                            -->
+  <!-- =================================================================== -->
+
+  <target name="clean-build" description="* Clean the build directories">
+    <delete dir="${build.dir}"/>    
+    <delete file="${src.v3}/vol3.xml"/>
+    <delete file="${basedir}/doc/manual.html"/>
+   </target>
+
+  <target name="clean-dist" 
+          description="* Clean the distribution build directories">
+    <delete dir="${dist.dir}"/>    
+  </target>
+    
+  <target name="clean" description="* Clean all"
+          depends="clean-build, clean-dist"/>
+
+
+  <!-- =================================================================== -->
+  <!-- Internal usage only (use PC style CR/LF)                            -->
+  <!-- =================================================================== -->
+  
+  <target name="fixCRLFsource">
+    <fixcrlf srcdir="${src.dir}" eol="crlf"
+             excludes="**/*.jpg, **/*.gif, 
+             dtd/docbkx412/**, dtd/docbkx42CR1/**"/>
+  </target>
+
+  <target name="fixCRLFtools">
+    <fixcrlf srcdir="" eol="crlf"
+             excludes="**/*.jpg, **/*.gif, **/*.jar, **/*.sh"/>
+  </target>  
+
+</project>
