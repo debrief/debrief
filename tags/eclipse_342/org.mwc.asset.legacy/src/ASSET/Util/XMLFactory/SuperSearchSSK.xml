@@ -1,0 +1,35 @@
+<!-- edited with XML Spy v3.0.7 NT (http://www.xmlspy.com) by bingo (PM) -->
+<SSK Name="SSK">
+	<Category Environment="SUBSURFACE" Force="RED" Type="SUBMARINE"/>
+	<SensorFit>
+		<BroadbandSensor Aperture="120.000"/>
+		<OpticSensor MinDepth="20.000"/>
+	</SensorFit>
+	<Status Course="134.293" Speed="4.000" Fuel="23.911" Time="010209 160745.000">
+		<Location>
+			<shortLocation Lat="0.9966287" Long="1.0380197" Depth="60.000"/>
+		</Location>
+	</Status>
+	<DemandedStatus Course="134.293" Speed="4.000" Depth="60.000"/>
+	<Chain>
+		<Evade Name="Evade" FleeDepth="60.000" FleeSpeed="4.000" FleePeriod="500000">
+			<TargetType>
+				<Type Name="BLUE"/>
+			</TargetType>
+		</Evade>
+		<SSKRecharge Name="Snort" MinLevel="20.000" SafeLevel="80.000" SnortSpeed="4.000">
+			<TargetType/>
+		</SSKRecharge>
+		<Wander Name="WanderAround" Range="100000" Speed="6" Depth="20">
+			<Location>
+				<shortLocation Lat="1.1" Long="0.9"/>
+			</Location>
+		</Wander>
+	</Chain>
+	<RadiatedCharacteristics>
+		<Optic BaseNoiseLevel="100.000"/>
+		<Broadband BaseNoiseLevel="134.780"/>
+	</RadiatedCharacteristics>
+	<MovementCharacteristics Name="default" AccelerationRate="0.500" DepthChangeRate="1.000" FuelUsageRate="0.001" MaxDepth="0.000" MaxSpeed="15.000" TurningCircle="500.000"/>
+	<SSKMovement ChargeRate="0.070"/>
+</SSK>

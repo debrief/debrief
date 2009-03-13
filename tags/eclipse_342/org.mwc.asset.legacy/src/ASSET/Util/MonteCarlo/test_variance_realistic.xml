@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
+<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///d:/dev/Asset/src/schemas/ASSET.xsd" OutputDirectory="c:/temp/asset_test_output/test_variance1" RandomSeed="5">
+  <ScenarioGenerator>
+    <MultiScenarioGenerator NameTemplate="output" Number="2">
+      <VarianceList>
+        <Variance name="do ita1" id="//*[@Name='alpha']/Status/Speed">
+          <Attribute name="Value">
+            <Range min="80" max="160" step="20"/>
+          </Attribute>
+        </Variance>
+        <Variance name="do ita2" id="//*[@Name='alpha']/Status">
+          <Attribute name="Course">
+            <Choice>
+              <Value value="180"/>
+              <Value value="090"/>
+              <Value value="135"/>
+            </Choice>
+          </Attribute>
+        </Variance>
+      </VarianceList>
+    </MultiScenarioGenerator>
+    <MultiParticipantGenerator>
+      <ParticipantVariance name="bravo" number="9">
+        <Variance name="do it1" id="Status/Speed">
+          <Attribute name="Value">
+            <Range min="1" max="6" step="1.5"/>
+          </Attribute>
+        </Variance>
+        <Variance name="do it2" id="Status">
+          <Attribute name="Course">
+            <Range min="1" max="360" step="2"/>
+          </Attribute>
+        </Variance>
+        <ParticipantLocation>
+          <WorldArea>
+            <TopLeft>
+              <shortLocation Lat="12.4" Long="11.4"/>
+            </TopLeft>
+            <BottomRight>
+              <shortLocation Lat="12.7" Long="11.7"/>
+            </BottomRight>
+          </WorldArea>
+        </ParticipantLocation>
+      </ParticipantVariance>
+    </MultiParticipantGenerator>
+  </ScenarioGenerator>
+  <ObserverList>
+    <TimeObserver Name="run for couple of hours" Active="true">
+      <Duration Units="hours" Value="4"/>
+    </TimeObserver>
+    <TrackPlotObserver Name="get a track plot" Active="true" show_positions="false">
+      <GridDelta Units="nm" Value="5"/>
+    </TrackPlotObserver>
+    <DebriefReplayObserver Name="do a debrief track" Active="true" record_decisions="false" record_detections="false" record_positions="true"/>
+    <CSVTrackObserver Name="get at the information" Active="true"/>
+  </ObserverList>
+</ScenarioController>

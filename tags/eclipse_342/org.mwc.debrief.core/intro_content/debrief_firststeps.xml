@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<introContent>
+	<extensionContent id="orgmwcdebriefcore-introExtension"
+		style="css/intro.css" name="Sample Extension" path="firststeps/@">
+		<group style-id="content-group"
+			id="orgmwcdebriefcore-introLink-group">
+			<link style-id="content-link" label="A Debrief walkthrough"
+				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial"
+				id="debrief-tutorial">
+				<text>
+					Let Debrief itself lead you through your first session
+				</text>
+			</link>
+			<link label="First steps for Debrief"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/intro.html#intro_welcome"
+				style-id="content-link">
+				<text>Welcome to Debrief, it's background and it's history</text>
+			</link>
+		</group>
+	</extensionContent>
+</introContent>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?eclipse version="3.2"?>
+<plugin>
+   <extension-point id="RealTimeProvider" name="Provider" schema="schema/org.mwc.debrief.data_feed.exsd"/>
+
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Data Feed"
+            icon="icons/client_network.png"
+            category="org.mwc.debrief.core.DebriefCategory"
+            class="org.mwc.debrief.data_feed.views.DataFeed"
+            id="org.mwc.debrief.data_feed.views.Data Feed">
+      </view>
+   </extension>
+   
+   <extension
+         point="org.mwc.debrief.data_feed.RealTimeProvider">
+      <provider
+            class="org.mwc.debrief.data_feed.views.DummyDataProvider"
+            name="DummyProvider"/>
+   </extension>    
+</plugin>

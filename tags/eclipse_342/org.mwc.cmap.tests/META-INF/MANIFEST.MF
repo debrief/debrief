@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: CMAP Tests Plug-in
+Bundle-SymbolicName: org.mwc.cmap.tests
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.cmap.tests.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.junit,
+ org.mwc.cmap.legacy,
+ org.mwc.cmap.TimeController
