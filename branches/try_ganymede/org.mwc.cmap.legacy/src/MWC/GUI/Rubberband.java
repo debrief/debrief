@@ -52,6 +52,10 @@ import java.io.*;
 
 abstract public class Rubberband implements MouseListener, MouseMotionListener, Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	protected Point anchorPt    = new Point(0,0); 
 	protected Point stretchedPt = new Point(0,0);
 	protected Point lastPt      = new Point(0,0); 

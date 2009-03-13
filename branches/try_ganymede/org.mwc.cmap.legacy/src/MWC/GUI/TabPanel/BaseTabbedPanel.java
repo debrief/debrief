@@ -65,6 +65,11 @@ import java.util.Vector;
 public abstract class BaseTabbedPanel extends Panel
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
      * Position constant indicating tabs are to be put at the top of this panel.
      */
 	public static final int TOP = 0;

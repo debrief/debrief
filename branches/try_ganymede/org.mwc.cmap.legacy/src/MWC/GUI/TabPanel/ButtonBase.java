@@ -67,6 +67,10 @@ import java.lang.IllegalArgumentException;
 public abstract class ButtonBase extends Canvas
 {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
      * Constructs a default ButtonBase. The defaults are no notifyWhilePressed,
      * no offset, and a bevel height of 2.
      */

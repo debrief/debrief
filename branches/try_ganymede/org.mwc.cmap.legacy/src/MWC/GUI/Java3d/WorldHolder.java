@@ -36,6 +36,11 @@ abstract public class WorldHolder extends JPanel implements ToolParent,
   ///////////////////////////
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * the world we manage
 	 */
 	protected World _myWorld;

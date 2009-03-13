@@ -742,7 +742,12 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
   // next time API changes are allowed.
 
   private static abstract class KeyAction extends AbstractAction {
-    public boolean isEnabled() {
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	public boolean isEnabled() {
       return true;
     }
   };

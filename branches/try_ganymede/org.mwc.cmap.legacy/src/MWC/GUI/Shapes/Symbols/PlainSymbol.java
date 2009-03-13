@@ -94,7 +94,12 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
   // member variables
   ////////////////////////////////////////////////////////////
 
-  /** relates to the scaling of the symbol (small/medium/large)*/
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+/** relates to the scaling of the symbol (small/medium/large)*/
   private double _theScaleVal;
 
   /** the colour to draw this symbol

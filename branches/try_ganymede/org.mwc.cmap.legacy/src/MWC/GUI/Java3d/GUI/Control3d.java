@@ -497,7 +497,12 @@ public class Control3d extends JPanel implements WatchableTransformGroup.Transfo
   ///////////////////////////
   abstract private static class SteppingEditor extends JPanel
   {
-    ///////////////////////////
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	///////////////////////////
     // member variables
     ///////////////////////////
     /** the label which shows the data

@@ -770,6 +770,10 @@ public class ScalePainter implements Plottable, Serializable
   abstract private static class UnitsConverter implements Serializable
   {
     /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
      * the label we use for our inits
      */
     private String _myUnits;

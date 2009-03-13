@@ -7,7 +7,11 @@ import MWC.GUI.Rubberband;
 
 
 abstract public class RubberbandPanel extends Container {
-    private Rubberband rubberband;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	private Rubberband rubberband;
 
 	abstract public void rubberbandEnded(Rubberband rb);
 

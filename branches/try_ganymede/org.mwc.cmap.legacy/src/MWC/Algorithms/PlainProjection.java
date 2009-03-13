@@ -26,6 +26,11 @@ abstract public class PlainProjection implements Serializable,
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+/**
    * event name for zoom
    */
   public static final String ZOOM_EVENT = "Zoom";
