@@ -22,7 +22,12 @@ abstract public class MouseWheelWorldHolder extends WorldHolder
   // constructor
   ///////////////////////////
 
-  /** constructor - just pass it all back to parent
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+/** constructor - just pass it all back to parent
    * @param liteVersion 
    *
    */

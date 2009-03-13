@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: CMap Legacy Algorithms Plug-in
-Bundle-SymbolicName: org.mwc.cmap.legacy
-Bundle-Version: 1.0.44
+Bundle-SymbolicName: org.mwc.cmap.legacy;singleton:=true
+Bundle-Version: 1.0.45
 Bundle-ClassPath: cmap_legacy.jar,
  libs/jcommon-0.7.1.jar,
  libs/openmap.jar,
