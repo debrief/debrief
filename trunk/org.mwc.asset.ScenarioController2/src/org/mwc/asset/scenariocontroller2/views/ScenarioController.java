@@ -20,9 +20,11 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
@@ -41,12 +43,8 @@ import org.xml.sax.SAXException;
 public class ScenarioController extends ViewPart {
 	private Action action1;
 	private Action action2;
-	private TabFolder _myTabs;
-	private TabItem _singleScenTab;
-	private TabItem _multiScenTab;
 	private DropTarget target;
-	private Label _singleScenarioName;
-	private Label _singleControllerName;
+	private UISkeleton _myUI;
 
 	/**
 	 * The constructor.
@@ -59,20 +57,11 @@ public class ScenarioController extends ViewPart {
 	 * it.
 	 */
 	public void createPartControl(Composite parent) {
-		// create the two tabs
-		_myTabs = new TabFolder(parent, SWT.None);
-		createMultipleTabs();
-		selectTab(true);
+		// create our UI
+		 _myUI = new UISkeleton(parent, SWT.FILL);
 
-
-		// populate the common scenario block
-		populateSingleScenario(_myTabs, _singleScenTab);
-		
-		// populate the single scenario tab
-		populateSingleScenario(_myTabs, _singleScenTab);
-				
 		// let us accept dropped files
-		configureFileDropSupport(_myTabs);
+		configureFileDropSupport(_myUI);
 		
 		// fille in the menu bar(s)
 		makeActions();
@@ -137,12 +126,12 @@ public class ScenarioController extends ViewPart {
 			if(firstNode != null)
 			{
 				if(firstNode.equals("Scenario"))
-				{
-					_singleScenarioName.setText(thisName);
+				{					
+					_myUI.getScenarioVal().setText(thisName);
 				}
 				else if(firstNode.equals("ScenarioController"))
 				{
-					_singleControllerName.setText(thisName);
+					_myUI.getControlVal().setText(thisName);
 				}
 			}
 		}
@@ -177,18 +166,11 @@ public class ScenarioController extends ViewPart {
 		return res;
 	}
 	
-	private void createMultipleTabs() {
-		_singleScenTab = new TabItem(_myTabs, SWT.NONE);
-		_singleScenTab.setText("Single Scenario");
-		_multiScenTab = new TabItem(_myTabs, SWT.NONE);
-		_multiScenTab.setText("Multi Scenario");
-	}
-
 	private void selectTab(boolean isSingle) {
 		if (isSingle)
-			_myTabs.setSelection(_singleScenTab);
+			_myUI.getScenarioTabs().setSelection(0);
 		else
-			_myTabs.setSelection(_multiScenTab);
+			_myUI.getScenarioTabs().setSelection(1);
 
 	}
 
@@ -236,72 +218,6 @@ public class ScenarioController extends ViewPart {
 				"Scenario controller", message);
 	}
 
-	private void populateSingleScenario(TabFolder tabs, TabItem myTab) {
-		Composite sC = new Composite(tabs, SWT.None);
-		myTab.setControl(sC);
-		sC.setLayout(new FormLayout());
-	
-		// first the labels
-		Label scenLbl = new Label(sC, SWT.RIGHT);
-		scenLbl.setText("Scenario:");
-		FormData fd = new FormData();
-		fd.top = new FormAttachment(0, 10);
-		fd.left = new FormAttachment(0, 5);
-		fd.right = new FormAttachment(40, 0);
-		scenLbl.setLayoutData(fd);
-	
-		Label contLbl = new Label(sC, SWT.RIGHT);
-		contLbl.setText("Controller:");
-		fd = new FormData();
-		fd.top = new FormAttachment(scenLbl, 10);
-		fd.left = new FormAttachment(0, 5);
-		fd.right = new FormAttachment(40, 0);
-		contLbl.setLayoutData(fd);
-	
-		// now the text boxes
-		_singleScenarioName = new Label(sC, SWT.BORDER | SWT.SINGLE);
-		_singleScenarioName.setText("[pending]          ");
-		fd = new FormData();
-		fd.top = new FormAttachment(scenLbl, 0, SWT.TOP);
-		fd.left = new FormAttachment(scenLbl, 10);
-		_singleScenarioName.setLayoutData(fd);
-	
-		_singleControllerName = new Label(sC, SWT.BORDER | SWT.SINGLE);
-		_singleControllerName.setText("[pending]          ");
-		fd = new FormData();
-		fd.top = new FormAttachment(contLbl, 0, SWT.TOP);
-		fd.left = new FormAttachment(contLbl, 10);
-		_singleControllerName.setLayoutData(fd);
-	
-		// now the file selector buttons
-		Button scenBtn = new Button(sC, SWT.NONE);
-		scenBtn.setText("...");
-		fd = new FormData();
-		fd.top = new FormAttachment(_singleScenarioName, 0, SWT.TOP);
-		fd.left = new FormAttachment(_singleScenarioName, 10);
-		scenBtn.setLayoutData(fd);
-	
-		Button contBtn = new Button(sC, SWT.NONE);
-		contBtn.setText("...");
-		fd = new FormData();
-		fd.top = new FormAttachment(_singleControllerName, 0, SWT.TOP);
-		fd.left = new FormAttachment(_singleControllerName, 10);
-		contBtn.setLayoutData(fd);
-	
-		// and the load button
-		Button loadBtn = new Button(sC, SWT.RIGHT);
-		loadBtn.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
-				showMessage("loading data");
-			}
-		});
-		loadBtn.setText("Load");
-		loadBtn.setEnabled(false);
-		fd = new FormData();
-		fd.top = new FormAttachment(contLbl, 10);
-		fd.left = new FormAttachment(_singleControllerName, 5);
-		loadBtn.setLayoutData(fd);
-	}
 
 	/**
 	 * Passing the focus request to the viewer's control.
