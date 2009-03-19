@@ -13,7 +13,8 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer,
  org.mwc.debrief.core,
  org.mwc.asset.sample_data,
- org.mwc.cmap.legacy
+ org.mwc.cmap.legacy,
+ org.eclipse.draw2d;bundle-version="3.4.2"
 Eclipse-LazyStart: true
 Export-Package: org.mwc.asset.core,
  org.mwc.asset.core.property_support

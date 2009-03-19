@@ -1,0 +1,10 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: ScenarioController2 Plug-in
+Bundle-SymbolicName: org.mwc.asset.ScenarioController2; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.asset.scenariocontroller2.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
