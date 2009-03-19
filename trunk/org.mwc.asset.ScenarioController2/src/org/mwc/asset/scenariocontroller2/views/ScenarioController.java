@@ -1,5 +1,11 @@
 package org.mwc.asset.scenariocontroller2.views;
 
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -28,6 +34,9 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.xml.sax.SAXException;
 
 public class ScenarioController extends ViewPart {
 	private Action action1;
@@ -36,6 +45,8 @@ public class ScenarioController extends ViewPart {
 	private TabItem _singleScenTab;
 	private TabItem _multiScenTab;
 	private DropTarget target;
+	private Label _singleScenarioName;
+	private Label _singleControllerName;
 
 	/**
 	 * The constructor.
@@ -53,13 +64,15 @@ public class ScenarioController extends ViewPart {
 		createMultipleTabs();
 		selectTab(true);
 
-		// populate the single scenario tab
+
+		// populate the common scenario block
 		populateSingleScenario(_myTabs, _singleScenTab);
 		
-		
+		// populate the single scenario tab
+		populateSingleScenario(_myTabs, _singleScenTab);
+				
 		// let us accept dropped files
 		configureFileDropSupport(_myTabs);
-
 		
 		// fille in the menu bar(s)
 		makeActions();
@@ -117,10 +130,53 @@ public class ScenarioController extends ViewPart {
 		for(int i=0;i<fileNames.length;i++)
 		{
 			String thisName = fileNames[i];
-			System.out.println(thisName);
+			
+			// ok, examine this file
+			String firstNode = getFirstNodeName(thisName);
+			
+			if(firstNode != null)
+			{
+				if(firstNode.equals("Scenario"))
+				{
+					_singleScenarioName.setText(thisName);
+				}
+				else if(firstNode.equals("ScenarioController"))
+				{
+					_singleControllerName.setText(thisName);
+				}
+			}
 		}
 	}
 
+	private String getFirstNodeName(String filename)
+	{
+		String res = null;
+		Document thisD = loadFileIntoDom(filename);
+		
+		Node thisN = thisD.getFirstChild();
+		return res;
+	}
+	
+	private Document loadFileIntoDom(String filename)
+	{
+		Document res = null;
+
+		DocumentBuilder db;
+		try {
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			db = dbf.newDocumentBuilder();
+			res = db.parse(filename);
+		} catch (ParserConfigurationException e) {
+			e.printStackTrace();
+		} catch (SAXException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+		return res;
+	}
+	
 	private void createMultipleTabs() {
 		_singleScenTab = new TabItem(_myTabs, SWT.NONE);
 		_singleScenTab.setText("Single Scenario");
@@ -203,33 +259,33 @@ public class ScenarioController extends ViewPart {
 		contLbl.setLayoutData(fd);
 	
 		// now the text boxes
-		Label scenVal = new Label(sC, SWT.BORDER | SWT.SINGLE);
-		scenVal.setText("[pending]          ");
+		_singleScenarioName = new Label(sC, SWT.BORDER | SWT.SINGLE);
+		_singleScenarioName.setText("[pending]          ");
 		fd = new FormData();
 		fd.top = new FormAttachment(scenLbl, 0, SWT.TOP);
 		fd.left = new FormAttachment(scenLbl, 10);
-		scenVal.setLayoutData(fd);
+		_singleScenarioName.setLayoutData(fd);
 	
-		Label contVal = new Label(sC, SWT.BORDER | SWT.SINGLE);
-		contVal.setText("[pending]          ");
+		_singleControllerName = new Label(sC, SWT.BORDER | SWT.SINGLE);
+		_singleControllerName.setText("[pending]          ");
 		fd = new FormData();
 		fd.top = new FormAttachment(contLbl, 0, SWT.TOP);
 		fd.left = new FormAttachment(contLbl, 10);
-		contVal.setLayoutData(fd);
+		_singleControllerName.setLayoutData(fd);
 	
 		// now the file selector buttons
 		Button scenBtn = new Button(sC, SWT.NONE);
 		scenBtn.setText("...");
 		fd = new FormData();
-		fd.top = new FormAttachment(scenVal, 0, SWT.TOP);
-		fd.left = new FormAttachment(scenVal, 10);
+		fd.top = new FormAttachment(_singleScenarioName, 0, SWT.TOP);
+		fd.left = new FormAttachment(_singleScenarioName, 10);
 		scenBtn.setLayoutData(fd);
 	
 		Button contBtn = new Button(sC, SWT.NONE);
 		contBtn.setText("...");
 		fd = new FormData();
-		fd.top = new FormAttachment(contVal, 0, SWT.TOP);
-		fd.left = new FormAttachment(contVal, 10);
+		fd.top = new FormAttachment(_singleControllerName, 0, SWT.TOP);
+		fd.left = new FormAttachment(_singleControllerName, 10);
 		contBtn.setLayoutData(fd);
 	
 		// and the load button
@@ -243,7 +299,7 @@ public class ScenarioController extends ViewPart {
 		loadBtn.setEnabled(false);
 		fd = new FormData();
 		fd.top = new FormAttachment(contLbl, 10);
-		fd.left = new FormAttachment(contVal, 5);
+		fd.left = new FormAttachment(_singleControllerName, 5);
 		loadBtn.setLayoutData(fd);
 	}
 
