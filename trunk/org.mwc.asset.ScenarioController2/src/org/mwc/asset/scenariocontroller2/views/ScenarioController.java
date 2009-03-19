@@ -56,8 +56,12 @@ public class ScenarioController extends ViewPart {
 		// populate the single scenario tab
 		populateSingleScenario(_myTabs, _singleScenTab);
 		
+		
+		// let us accept dropped files
 		configureFileDropSupport(_myTabs);
 
+		
+		// fille in the menu bar(s)
 		makeActions();
 		contributeToActionBars();
 	}
