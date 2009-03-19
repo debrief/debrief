@@ -6,11 +6,21 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.layout.FormAttachment;
 import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.TabFolder;
@@ -27,6 +37,7 @@ public class ScenarioController extends ViewPart {
 	private TabFolder _myTabs;
 	private TabItem _singleScenTab;
 	private TabItem _multiScenTab;
+	private DropTarget target;
 
 	/**
 	 * The constructor.
@@ -45,74 +56,66 @@ public class ScenarioController extends ViewPart {
 
 		// populate the single scenario tab
 		populateSingleScenario(_myTabs, _singleScenTab);
+		
+		configureFileDropSupport(_myTabs);
 
 		makeActions();
 		contributeToActionBars();
 	}
 
-	private void populateSingleScenario(TabFolder tabs, TabItem myTab) {
-		Composite sC = new Composite(tabs, SWT.None);
-		myTab.setControl(sC);
-		sC.setLayout(new FormLayout());
+	/**
+	 * sort out the file-drop target
+	 */
+	private void configureFileDropSupport(Control _pusher) {
+		int dropOperation = DND.DROP_COPY;
+		Transfer[] dropTypes = { FileTransfer.getInstance() };
 
-		// first the labels
-		Label scenLbl = new Label(sC, SWT.RIGHT);
-		scenLbl.setText("Scenario:");
-		FormData fd = new FormData();
-		fd.top = new FormAttachment(0, 10);
-		fd.left = new FormAttachment(0, 5);
-		fd.bottom = new FormAttachment(10, 0);
-		fd.right = new FormAttachment(40, 0);
-		scenLbl.setLayoutData(fd);
+		target = new DropTarget(_pusher, dropOperation);
+		target.setTransfer(dropTypes);
+		target.addDropListener(new DropTargetListener() {
+			public void dragEnter(DropTargetEvent event) {
+				if (FileTransfer.getInstance().isSupportedType(
+						event.currentDataType)) {
+					if (event.detail != DND.DROP_COPY) {
+						event.detail = DND.DROP_COPY;
+					}
+				}
+			}
 
-		Label contLbl = new Label(sC, SWT.RIGHT);
-		contLbl.setText("Controller:");
-		fd = new FormData();
-		fd.top = new FormAttachment(scenLbl, 10);
-		fd.left = new FormAttachment(0, 5);
-		fd.bottom = new FormAttachment(20, 0);
-		fd.right = new FormAttachment(40, 0);
-		contLbl.setLayoutData(fd);
+			public void dragLeave(DropTargetEvent event) {
+			}
 
-		// now the text boxes
-		Label scenVal = new Label(sC, SWT.BORDER | SWT.SINGLE);
-		scenVal.setText("[pending]          ");		
-		fd = new FormData();
-		fd.top = new FormAttachment(scenLbl, 0, SWT.TOP);
-		fd.left = new FormAttachment(scenLbl, 10);
-		scenVal.setLayoutData(fd);
+			public void dragOperationChanged(DropTargetEvent event) {
+			}
 
-		Label contVal = new Label(sC, SWT.BORDER | SWT.SINGLE);
-		contVal.setText("[pending]          ");
-		fd = new FormData();
-		fd.top = new FormAttachment(contLbl, 0, SWT.TOP);
-		fd.left = new FormAttachment(contLbl, 10);
-		contVal.setLayoutData(fd);
+			public void dragOver(DropTargetEvent event) {
+			}
 
-		// now the file selector buttons
-		Button scenBtn = new Button(sC, SWT.NONE);
-		scenBtn.setText("...");
-		fd = new FormData();
-		fd.top = new FormAttachment(scenVal, 0, SWT.TOP);
-		fd.left = new FormAttachment(scenVal, 10);
-		scenBtn.setLayoutData(fd);
+			public void dropAccept(DropTargetEvent event) {
+			}
 
-		Button contBtn = new Button(sC, SWT.NONE);
-		contBtn.setText("...");
-		fd = new FormData();
-		fd.top = new FormAttachment(contVal, 0, SWT.TOP);
-		fd.left = new FormAttachment(contVal, 10);
-		contBtn.setLayoutData(fd);
-		
-		// and the load button
-		Button loadBtn = new Button(sC, SWT.RIGHT);
-		loadBtn.setText("Load");
-		fd = new FormData();
-		fd.top = new FormAttachment(contLbl, 10);
-//		fd.left = new FormAttachment(0, 5);
-//		fd.bottom = new FormAttachment(30, 0);
-		fd.right = new FormAttachment(40, 0);
-		loadBtn.setLayoutData(fd);
+			public void drop(DropTargetEvent event) {
+				String[] fileNames = null;
+				if (FileTransfer.getInstance().isSupportedType(
+						event.currentDataType)) {
+					fileNames = (String[]) event.data;
+				}
+				if (fileNames != null) {
+					filesDropped(fileNames);
+				}
+			}
+
+		});
+
+	}
+
+	protected void filesDropped(String[] fileNames) {
+		// ok, loop through the files
+		for(int i=0;i<fileNames.length;i++)
+		{
+			String thisName = fileNames[i];
+			System.out.println(thisName);
+		}
 	}
 
 	private void createMultipleTabs() {
@@ -172,6 +175,73 @@ public class ScenarioController extends ViewPart {
 	private void showMessage(String message) {
 		MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
 				"Scenario controller", message);
+	}
+
+	private void populateSingleScenario(TabFolder tabs, TabItem myTab) {
+		Composite sC = new Composite(tabs, SWT.None);
+		myTab.setControl(sC);
+		sC.setLayout(new FormLayout());
+	
+		// first the labels
+		Label scenLbl = new Label(sC, SWT.RIGHT);
+		scenLbl.setText("Scenario:");
+		FormData fd = new FormData();
+		fd.top = new FormAttachment(0, 10);
+		fd.left = new FormAttachment(0, 5);
+		fd.right = new FormAttachment(40, 0);
+		scenLbl.setLayoutData(fd);
+	
+		Label contLbl = new Label(sC, SWT.RIGHT);
+		contLbl.setText("Controller:");
+		fd = new FormData();
+		fd.top = new FormAttachment(scenLbl, 10);
+		fd.left = new FormAttachment(0, 5);
+		fd.right = new FormAttachment(40, 0);
+		contLbl.setLayoutData(fd);
+	
+		// now the text boxes
+		Label scenVal = new Label(sC, SWT.BORDER | SWT.SINGLE);
+		scenVal.setText("[pending]          ");
+		fd = new FormData();
+		fd.top = new FormAttachment(scenLbl, 0, SWT.TOP);
+		fd.left = new FormAttachment(scenLbl, 10);
+		scenVal.setLayoutData(fd);
+	
+		Label contVal = new Label(sC, SWT.BORDER | SWT.SINGLE);
+		contVal.setText("[pending]          ");
+		fd = new FormData();
+		fd.top = new FormAttachment(contLbl, 0, SWT.TOP);
+		fd.left = new FormAttachment(contLbl, 10);
+		contVal.setLayoutData(fd);
+	
+		// now the file selector buttons
+		Button scenBtn = new Button(sC, SWT.NONE);
+		scenBtn.setText("...");
+		fd = new FormData();
+		fd.top = new FormAttachment(scenVal, 0, SWT.TOP);
+		fd.left = new FormAttachment(scenVal, 10);
+		scenBtn.setLayoutData(fd);
+	
+		Button contBtn = new Button(sC, SWT.NONE);
+		contBtn.setText("...");
+		fd = new FormData();
+		fd.top = new FormAttachment(contVal, 0, SWT.TOP);
+		fd.left = new FormAttachment(contVal, 10);
+		contBtn.setLayoutData(fd);
+	
+		// and the load button
+		Button loadBtn = new Button(sC, SWT.RIGHT);
+		loadBtn.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				showMessage("loading data");
+			}
+		});
+		loadBtn.setText("Load");
+		loadBtn.setEnabled(false);
+		fd = new FormData();
+		fd.top = new FormAttachment(contLbl, 10);
+		fd.left = new FormAttachment(contVal, 5);
+		loadBtn.setLayoutData(fd);
 	}
 
 	/**
