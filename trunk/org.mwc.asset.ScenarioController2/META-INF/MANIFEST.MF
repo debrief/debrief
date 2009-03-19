@@ -5,6 +5,10 @@ Bundle-SymbolicName: org.mwc.asset.ScenarioController2; singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.asset.scenariocontroller2.Activator
 Require-Bundle: org.eclipse.ui,
- org.eclipse.core.runtime
+ org.eclipse.core.runtime,
+ org.mwc.asset.legacy;bundle-version="1.0.1",
+ org.mwc.asset.core;bundle-version="1.0.0",
+ org.mwc.debrief.legacy;bundle-version="1.0.64",
+ org.mwc.cmap.legacy;bundle-version="1.0.45"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
