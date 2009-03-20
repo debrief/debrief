@@ -4,12 +4,10 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
@@ -29,9 +27,6 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
-import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -42,15 +37,15 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.core.ASSETPlugin;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
 
+import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
+import MWC.GUI.Layers;
 
-public class ScenarioController extends ViewPart implements ISelectionProvider
+public class ScenarioController extends ViewPart implements ISelectionProvider 
 {
 
 	private static final String DUMMY_CONTROL_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
@@ -73,6 +68,11 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			0, 1);
 
 	Vector<ISelectionChangedListener> _selectionListeners;
+	
+	/** wrap the scenario so it can be shown in the layer manager
+	 * 
+	 */
+	private ScenarioWrapper _scenarioWrapper;
 
 	/**
 	 * The constructor.
@@ -80,6 +80,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	public ScenarioController()
 	{
 		_myScenario = new CoreScenario();
+		_scenarioWrapper = new ScenarioWrapper(this);
 	}
 
 	/**
@@ -101,6 +102,27 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		// declare fact that we can provide selections
 		getSite().setSelectionProvider(this);
 	}
+	
+	@SuppressWarnings("unchecked")
+	public Object getAdapter(Class adapter)
+	{
+		Object res = null;
+
+		if (adapter == Layers.class)
+		{
+			res = _scenarioWrapper;
+		}
+		else if(adapter == ScenarioType.class)
+		{
+			res = _myScenario;
+		}
+
+		if (res == null)
+		{
+			res = super.getAdapter(adapter);
+		}
+		return res;
+	}	
 
 	private void initialiseDummyData()
 	{
@@ -286,6 +308,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	 */
 	private void fireScenarioChanged()
 	{
+		_scenarioWrapper.fireNewScenario();
 	}
 
 	/**
@@ -325,7 +348,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		}
 		catch (Exception sxe)
 		{
-			Exception x = sxe;
+//			Exception x = sxe;
 			return null;
 			// x.printStackTrace();
 			//return "Not Valid XML File";
@@ -333,14 +356,6 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 	}
 
-	private void selectTab(boolean isSingle)
-	{
-		if (isSingle)
-			_myUI.getScenarioTabs().setSelection(0);
-		else
-			_myUI.getScenarioTabs().setSelection(1);
-
-	}
 
 	private void contributeToActionBars()
 	{
