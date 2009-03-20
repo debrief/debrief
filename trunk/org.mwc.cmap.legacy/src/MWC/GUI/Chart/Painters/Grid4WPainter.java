@@ -1068,7 +1068,6 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		_plotLines = plotLines;
 	}
 
-	@Override
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 			LocationConstruct currentNearest, Layer parentLayer)
 	{
@@ -1082,7 +1081,6 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 
 	}
 
-	@Override
 	public void shift(WorldVector vector)
 	{
 		_origin.addToMe(vector);
