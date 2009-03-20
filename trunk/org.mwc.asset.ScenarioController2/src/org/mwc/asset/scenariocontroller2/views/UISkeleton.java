@@ -36,7 +36,6 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	private Composite filenameHolder;
 	private Label scenarioLbl;
 	private Label controlLabel;
-	private Button loadBtn;
 	private TabItem multipleTab;
 	private TabItem singleTab;
 	private TabFolder scenarioTabs;
@@ -92,12 +91,11 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 				filenameHolderLayout.numColumns=3;
 				filenameHolderLayout.makeColumnsEqualWidth = true;
 				FormData filenameHolderLData = new FormData();
-				filenameHolderLData.width = 195;
-				filenameHolderLData.height = 69;
+				filenameHolderLData.width = 214;
+				filenameHolderLData.height = 47;
 				filenameHolderLData.left =  new FormAttachment(16, 1000, 0);
 				filenameHolderLData.right =  new FormAttachment(1000, 1000, 0);
 				filenameHolderLData.top =  new FormAttachment(21, 1000, 0);
-				filenameHolderLData.bottom =  new FormAttachment(444, 1000, 0);
 				filenameHolder.setLayoutData(filenameHolderLData);
 				filenameHolder.setLayout(filenameHolderLayout);				
 				{
@@ -134,16 +132,6 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 					controlVal.setLayoutData(label2LData);
 					controlVal.setText("[pending]");
 				}
-				{
-					loadBtn = new Button(filenameHolder, SWT.PUSH | SWT.CENTER);
-					GridData loadBtnLData = new GridData();
-					loadBtnLData.horizontalSpan = 3;
-					loadBtnLData.verticalAlignment = GridData.END;
-					loadBtnLData.horizontalAlignment = GridData.END;
-					loadBtn.setLayoutData(loadBtnLData);
-					loadBtn.setText("Load");
-					loadBtn.setEnabled(false);
-				}
 			}
 			{
 				scenarioTabs = new TabFolder(this, SWT.NONE);
@@ -156,11 +144,12 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 					multipleTab.setText("Multiple Scenarios");
 				}
 				FormData scenarioTabsLData = new FormData();
-				scenarioTabsLData.width = 187;
+				scenarioTabsLData.width = 204;
 				scenarioTabsLData.left =  new FormAttachment(10, 1000, 0);
 				scenarioTabsLData.right =  new FormAttachment(990, 1000, 0);
-				scenarioTabsLData.top =  new FormAttachment(filenameHolder);
 				scenarioTabsLData.bottom =  new FormAttachment(1000, 1000, 0);
+				scenarioTabsLData.height = 79;
+				scenarioTabsLData.top =  new FormAttachment(0, 1000, 56);
 				scenarioTabs.setLayoutData(scenarioTabsLData);
 				scenarioTabs.setSelection(0);
 			}
@@ -176,10 +165,6 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	
 	public Label getControlVal() {
 		return controlVal;
-	}
-	
-	public Button getLoadBtn() {
-		return loadBtn;
 	}
 	
 	public Composite getControl() {
