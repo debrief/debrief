@@ -2,6 +2,7 @@ package org.mwc.asset.scenariocontroller2.views;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Vector;
@@ -15,7 +16,6 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.operation.IRunnableWithProgress;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -44,19 +44,26 @@ import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
+import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
+import ASSET.Util.XML.Control.StandaloneObserverListHandler;
+import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import MWC.GUI.Layers;
 
-public class ScenarioController extends ViewPart implements ISelectionProvider 
+public class ScenarioController extends ViewPart implements ISelectionProvider
 {
 
 	private static final String DUMMY_CONTROL_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
 	private static final String DUMMY_SCENARIO_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_scenario.xml";
+
+	private String _scenarioFileName = null;
+	private String _controlFileName = null;
+
 	/**
 	 * ui bits
 	 * 
 	 */
-	private Action action1;
-	private Action action2;
+	private Action _actionLoadTestData;
+	private Action _actionReloadDatafiles;
 	private DropTarget target;
 	private UISkeleton _myUI;
 
@@ -69,11 +76,13 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			0, 1);
 
 	Vector<ISelectionChangedListener> _selectionListeners;
-	
-	/** wrap the scenario so it can be shown in the layer manager
+
+	/**
+	 * wrap the scenario so it can be shown in the layer manager
 	 * 
 	 */
 	private ScenarioWrapper _scenarioWrapper;
+	private Vector<ScenarioObserver> _theObservers;
 
 	/**
 	 * The constructor.
@@ -103,7 +112,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		// declare fact that we can provide selections
 		getSite().setSelectionProvider(this);
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter)
 	{
@@ -112,8 +121,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		if (adapter == Layers.class)
 		{
 			res = _scenarioWrapper;
-		}
-		else if(adapter == ScenarioType.class)
+		} else if (adapter == ScenarioType.class)
 		{
 			res = _myScenario;
 		}
@@ -123,7 +131,17 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			res = super.getAdapter(adapter);
 		}
 		return res;
-	}	
+	}
+
+	public Vector<ScenarioObserver> getObservers()
+	{
+		return _theObservers;
+	}
+
+	public ScenarioType getScenario()
+	{
+		return _myScenario;
+	}
 
 	private void initialiseDummyData()
 	{
@@ -202,39 +220,48 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			{
 				if (firstNode.equals("Scenario"))
 				{
+					// remember it
+					_scenarioFileName = thisName;
+
 					// set the filename
-					_myUI.getScenarioVal().setText(thisName);
+					_myUI.getScenarioVal().setText(new File(thisName).getName());
 
 					IWorkbench wb = PlatformUI.getWorkbench();
-				   IProgressService ps = wb.getProgressService();
-				   try
+					IProgressService ps = wb.getProgressService();
+					try
 					{
-						ps.busyCursorWhile(new IRunnableWithProgress() {
-						    public void run(IProgressMonitor pm) {
-									scenarioAssigned(thisName);
-						    }
-						 });
-					}
-					catch (Exception e)
+						ps.busyCursorWhile(new IRunnableWithProgress()
+						{
+							public void run(IProgressMonitor pm)
+							{
+								scenarioAssigned(thisName);
+							}
+						});
+					} catch (Exception e)
 					{
 						e.printStackTrace();
 					}
-					
-				}
-				else if (firstNode.equals("ScenarioController"))
+
+				} else if (firstNode.equals("ScenarioController"))
 				{
-					_myUI.getControlVal().setText(thisName);
+					// remember it
+					_controlFileName = thisName;
+
+					// show it
+					_myUI.getControlVal().setText(new File(thisName).getName());
+
 					IWorkbench wb = PlatformUI.getWorkbench();
-				   IProgressService ps = wb.getProgressService();
-				   try
+					IProgressService ps = wb.getProgressService();
+					try
 					{
-						ps.busyCursorWhile(new IRunnableWithProgress() {
-						    public void run(IProgressMonitor pm) {
-									controllerAssigned(thisName);
-						    }
-						 });
-					}
-					catch (Exception e)
+						ps.busyCursorWhile(new IRunnableWithProgress()
+						{
+							public void run(IProgressMonitor pm)
+							{
+								controllerAssigned(thisName);
+							}
+						});
+					} catch (Exception e)
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -249,6 +276,10 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		// now load the data
 		try
 		{
+			// ditch any existing participants
+			_myScenario.emptyParticipants();
+
+			// now load the new ones
 			String scenarioStr = thisName;
 			File theFile = new File(scenarioStr);
 			// final SampleDataPlugin thePlugin = SampleDataPlugin.getDefault();
@@ -257,13 +288,11 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			ASSETReaderWriter.importThis(_myScenario, scenarioStr, theStream);
 
 			fireScenarioChanged();
-		}
-		catch (IOException e)
+		} catch (IOException e)
 		{
 			e.printStackTrace();
 			ASSETPlugin.logError(Status.ERROR, "Failed to load sample data", e);
-		}
-		catch (NullPointerException e)
+		} catch (NullPointerException e)
 		{
 			e.printStackTrace();
 			ASSETPlugin.logError(Status.ERROR, "The sample-data plugin isn't loaded",
@@ -276,38 +305,65 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	{
 		try
 		{
-			Vector<ScenarioObserver> theObservers = ASSETReaderWriter
-					.importThisObserverList(controlFile, new java.io.FileInputStream(
-							controlFile));
-	
-			// add these observers to our scenario
-			for (int i = 0; i < theObservers.size(); i++)
+			// hmm, check what type of control file it is
+			String controlType = getFirstNodeName(controlFile);
+
+			if (controlType == StandaloneObserverListHandler.type)
 			{
-				// get the next observer
-				ScenarioObserver observer = (ScenarioObserver) theObservers
-						.elementAt(i);
-	
-				// setup the observer
-				observer.setup(_myScenario);
-	
-				// and add it to our list
-				_myObservers.add(observer);
-				
-				// check if it's multi scenario..
-				boolean isMulti = CommandLine.checkIfGenerationRequired(controlFile);
-				int tgtIndex = 0;
-				if(isMulti)
-					tgtIndex = 1;
-				_myUI.getScenarioTabs().setSelection(tgtIndex);
-					
-				
-				// and tell everybody
-				fireControllerChanged();
+				_theObservers = ASSETReaderWriter.importThisObserverList(controlFile,
+						new java.io.FileInputStream(controlFile));
+			} else if (controlType == ScenarioControllerHandler.type)
+			{
+				ResultsContainer results = ASSETReaderWriter.importThisControlFile(
+						controlFile, new java.io.FileInputStream(controlFile));
+
+				_theObservers = results.observerList;
 			}
-		}
-		catch (Exception e)
+
+			if (_theObservers != null)
+			{
+				loadThisObserverList(controlFile, _theObservers);
+			}
+
+			// check if it's multi scenario..
+			boolean isMulti = CommandLine.checkIfGenerationRequired(controlFile);
+			final int tgtIndex = (isMulti) ? 1 : 0;
+
+			// ui update, put it in an async operation
+			// updating the text items has to be done in the UI thread. make it
+			// so
+			Display.getDefault().asyncExec(new Runnable()
+			{
+				public void run()
+				{
+					_myUI.getScenarioTabs().setSelection(tgtIndex);
+
+					// and tell everybody
+					fireControllerChanged();
+				}
+			});
+
+		} catch (Exception e)
 		{
 			e.printStackTrace();
+		}
+	}
+
+	private void loadThisObserverList(String controlFile,
+			Vector<ScenarioObserver> theObservers) throws FileNotFoundException
+	{
+		// add these observers to our scenario
+		for (int i = 0; i < theObservers.size(); i++)
+		{
+			// get the next observer
+			ScenarioObserver observer = (ScenarioObserver) theObservers.elementAt(i);
+
+			// setup the observer
+			observer.setup(_myScenario);
+
+			// and add it to our list
+			_myObservers.add(observer);
+
 		}
 	}
 
@@ -326,8 +382,9 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	 */
 	private void fireControllerChanged()
 	{
+		_scenarioWrapper.fireNewController();
 	}
-	
+
 	private String getFirstNodeName(String SourceXMLFilePath)
 	{
 		/* Check whether file is XML or not */
@@ -340,31 +397,21 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			Document document = builder.parse(SourceXMLFilePath);
 
 			NodeList nl = document.getElementsByTagName("*");
-			System.out.println("First Node : " + nl.item(0).getNodeName());
 			return nl.item(0).getNodeName();
-
-			// for (int i=0; i<nl.getLength(); i++)
-			// {
-			// n = nl.item(i);
-			// System.out.println(n.getNodeName() + " " );
-			// }
-		}
-		catch (IOException ioe)
+		} catch (IOException ioe)
 		{
 			// ioe.printStackTrace();
 			return null;
 			// return "Not Valid XML File";
-		}
-		catch (Exception sxe)
+		} catch (Exception sxe)
 		{
-//			Exception x = sxe;
+			// Exception x = sxe;
 			return null;
 			// x.printStackTrace();
-			//return "Not Valid XML File";
+			// return "Not Valid XML File";
 		}
 
 	}
-
 
 	private void contributeToActionBars()
 	{
@@ -375,43 +422,48 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-		manager.add(action1);
+		manager.add(_actionLoadTestData);
 		manager.add(new Separator());
-		manager.add(action2);
+		manager.add(_actionReloadDatafiles);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(action1);
-		manager.add(action2);
+		manager.add(_actionLoadTestData);
+		manager.add(_actionReloadDatafiles);
 	}
 
 	private void makeActions()
 	{
-		action1 = new Action()
+		_actionLoadTestData = new Action()
 		{
 			public void run()
 			{
 				initialiseDummyData();
 			}
 		};
-		action1.setText("Load dummy");
+		_actionLoadTestData.setText("Load dummy");
 
-		action2 = new Action()
+		_actionReloadDatafiles = new Action()
 		{
 			public void run()
 			{
-				showMessage("Action 2 executed");
+				reloadDataFiles();
 			}
 		};
-		action2.setText("Action 2");
-		action2.setToolTipText("Action 2 tooltip");
+		_actionReloadDatafiles.setText("Action 2");
+		_actionReloadDatafiles.setToolTipText("Action 2 tooltip");
 	}
 
-	private void showMessage(String message)
+	protected void reloadDataFiles()
 	{
-		MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
-				"Scenario controller", message);
+		// ok, force the data-files to be reloaded
+		if (_scenarioFileName != null)
+			filesDropped(new String[]
+			{ _scenarioFileName });
+		if (_controlFileName != null)
+			filesDropped(new String[]
+			{ _controlFileName });
 	}
 
 	/**

@@ -866,6 +866,20 @@ public class CoreScenario implements ScenarioType
     this.fireParticipantChanged(index, true);
   }
 
+  
+  /** clear out the participants
+   * 
+   */
+	public void emptyParticipants()
+	{
+		// get their indices
+		Integer[] parts = getListOfParticipants();
+		for (int i = 0; i < parts.length; i++)
+		{
+			removeParticipant(parts[i]);
+		}
+	}
+  
   /**
    * handle inserting a monte carlo participant
    *
@@ -935,9 +949,14 @@ public class CoreScenario implements ScenarioType
     else if (participant_type.equals("SSK"))
       newS = new ASSET.Models.Vessels.SSK(id);
 
+    
+    
     // check it worked
     if (newS != null)
     {
+      // give it a default name
+    	newS.setName(participant_type + "_" + id);
+    	
       // add it
       addParticipant(id, newS);
     }

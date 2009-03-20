@@ -1,6 +1,7 @@
 package ASSET.GUI.Workbench.Plotters;
 
-import java.util.*;
+import java.util.Enumeration;
+import java.util.HashMap;
 
 import ASSET.ScenarioType;
 import ASSET.Models.Vessels.SSN;
@@ -75,14 +76,33 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
    */
   public void setScenario(final ASSET.ScenarioType scenario)
   {
+  	// and update our name
+  	this.setName(scenario.getName());
+  	
     // do we cancel listening to old scenario?
     if (_myScenario != null)
     {
       _myScenario.removeParticipantsChangedListener(this);
+      
+      // also stop listening to the scenario's children
+      // loop through to catch any existing participants
+      Integer[] inds = _myScenario.getListOfParticipants();
+      for(int i=0;i<inds.length;i++)
+      {
+      	participantRemoved(inds[i]);
+      }
     }
 
     _myScenario = scenario;
     _myScenario.addParticipantsChangedListener(this);
+    
+    // loop through to catch any existing participants
+    Integer[] inds = _myScenario.getListOfParticipants();
+    for(int i=0;i<inds.length;i++)
+    {
+    	newParticipant(inds[i]);
+    }
+    
   }
 
   /**
@@ -115,15 +135,29 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
   public void participantRemoved(final int index)
   {
     final java.util.Enumeration<Editable> enumer = super.elements();
+    
+    // rememer the id
+    ScenarioParticipantWrapper theListener = null;
+    
+    // find the wrapper for this participant
     while (enumer.hasMoreElements())
     {
       final ScenarioParticipantWrapper pl = (ScenarioParticipantWrapper) enumer.nextElement();
       if (pl.getId() == index)
       {
-        super.removeElement(pl);
-        pl.stopListen();
+      	theListener = pl;
+      	break;
       }
     }
+
+    // did we find it?
+    if(theListener != null)
+    {
+    	// yup, delete it.
+    	theListener.stopListen();
+    	super.removeElement(theListener);
+    }
+    
   }
 
   /**
@@ -278,6 +312,38 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
       layer.setStepTime(new Duration(12, Duration.SECONDS));
       layer.setScenarioStepTime(new Duration(12, Duration.SECONDS));
       return layer;
+    }
+    
+    public void testSetScenario()
+    {
+    	ScenarioType scen1 = new CoreScenario();
+    	scen1.setName("test scenario");
+    	scen1.createNewParticipant(ASSET.Participants.Category.Type.SUBMARINE);
+    	scen1.createNewParticipant(ASSET.Participants.Category.Type.FRIGATE);
+    	
+    	super.assertEquals("Wrong number of participants", 2, scen1.getListOfParticipants().length);
+    	
+    	// check it doesn't have any listeners
+    	
+    	// sort out the listeners
+    	ScenarioLayer sl = new ScenarioLayer();
+    	sl.setScenario(scen1);
+    	
+    	// check the listeners are assigned
+    	super.assertEquals("Wrong number of part listeners", 2, sl.getData().size());
+
+    	// and try another
+    	ScenarioType scen2 = new CoreScenario();
+    	scen2.setName("test scenario 2");
+    	scen2.createNewParticipant(ASSET.Participants.Category.Type.SUBMARINE);
+    	scen2.createNewParticipant(ASSET.Participants.Category.Type.FRIGATE);
+    	scen2.createNewParticipant(ASSET.Participants.Category.Type.FRIGATE);
+    	
+    	sl.setScenario(scen2);
+    	
+    	// check there are no listeners to the old sceanrio
+    	super.assertEquals("Wrong number of part listeners", 3, sl.getData().size());
+    	
     }
   }
 

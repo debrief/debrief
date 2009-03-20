@@ -1,102 +1,95 @@
 package org.mwc.asset.scenariocontroller2.views;
 
-import ASSET.ScenarioType;
+import java.util.Iterator;
+import java.util.Vector;
+
+import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
+import ASSET.Scenario.Observers.ScenarioObserver;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layers;
 
+/** view of a complete simulation (scenario and controls)
+ * 
+ * @author Administrator
+ *
+ */
 public class ScenarioWrapper extends Layers
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 
-	private class ScenWrapper extends BaseLayer
+	private ScenarioController _theCont;
+	private ContWrapper _theController;
+	private ScenarioLayer _scenLayer;
+
+	public ScenarioWrapper(ScenarioController scenarioController)
 	{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public ScenWrapper()
-		{
-			this.setName("Pending");
-		}
-
-		public void init()
-		{
-			// ok, fresh start
-			this.removeAllElements();
-			
-			ScenarioType theScen = (ScenarioType) _theCont
-					.getAdapter(ScenarioType.class);
-			if (theScen.getName() != null)
-			{
-				this.setName(theScen.getName());
-
-				BaseLayer theParts = new BaseLayer();
-				theParts.setName("Participants");
-				this.add(theParts);
-				BaseLayer theEnv = new BaseLayer();
-				theEnv.setName("Environment");
-				this.add(theEnv);
-			}
-		}
+		_theCont = scenarioController;
+		_theController = new ContWrapper();
+		_scenLayer = new ScenarioLayer();
+		this.addThisLayer(_scenLayer);
+		this.addThisLayer(_theController);
 	}
 
+	public void fireNewScenario()
+	{
+		_scenLayer.setScenario(_theCont.getScenario());
+
+		this.fireExtended();
+	}
+
+	public void fireNewController()
+	{
+		_theController.setScenario(_theCont.getObservers());
+		this.fireExtended();
+	}
+
+	/** layout-manager compliant wrapper around a scenario control file
+	 * 
+	 * @author Administrator
+	 *
+	 */
 	private class ContWrapper extends BaseLayer
 	{
 		/**
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
+		private BaseLayer _layerObs;
+		private BaseLayer _layerGenny;
 
 		public ContWrapper()
 		{
-			this.setName("Pending");
-			BaseLayer theParts = new BaseLayer();
-			theParts.setName("Generator");
-			this.add(theParts);
-			BaseLayer theEnv = new BaseLayer();
-			theEnv.setName("Observers");
-			this.add(theEnv);
+			this.setName("Generator Pending");
 		}
-		
-		protected void loadObservers()
+
+		public void setScenario(Vector<ScenarioObserver> observers)
 		{
-			// check we have a controller
-			ScenarioController controller = (ScenarioController) _theCont.getAdapter(ScenarioController.class);
-			if(controller != null)
+			// clear out
+			this.removeAllElements();
+
+			this.setName("Generator");
+
+			// and add our layers
+			_layerGenny = new BaseLayer();
+			_layerGenny.setName("Generator");
+			this.add(_layerGenny);
+			_layerObs = new BaseLayer();
+			_layerObs.setName("Observers");
+			this.add(_layerObs);
+
+			// ok, now load the observers themselves
+			Iterator<ScenarioObserver> iter = observers.iterator();
+			while (iter.hasNext())
 			{
-				// get the observers
-		//		controller.			
+				ScenarioObserver thisS = iter.next();
+				_layerObs.add(thisS);
 			}
+
 		}
-		
-		public void init()
-		{
-			
-		}
-	}
 
-	private ScenarioController _theCont;
-	private ScenWrapper _theScenario;
-	private ContWrapper _theController;
-
-	public ScenarioWrapper(ScenarioController scenarioController)
-	{
-		_theCont = scenarioController;		
-		_theScenario = new ScenWrapper();
-		_theController = new ContWrapper();
-		this.addThisLayer(_theScenario);
-		this.addThisLayer(_theController);
 	}
-	
-	public void fireNewScenario()
-	{
-		_theScenario.init();
-		this.fireExtended();
-	}
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
 
 }
