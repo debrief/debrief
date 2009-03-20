@@ -4,18 +4,24 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -25,21 +31,26 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
+import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.core.ASSETPlugin;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
 
-public class ScenarioController extends ViewPart
+public class ScenarioController extends ViewPart implements ISelectionProvider
 {
 
 	private static final String DUMMY_CONTROL_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
@@ -58,7 +69,10 @@ public class ScenarioController extends ViewPart
 	 * 
 	 */
 	private CoreScenario _myScenario;
-	private Vector<ScenarioObserver> _myObservers = new Vector<ScenarioObserver>(0,1);
+	private Vector<ScenarioObserver> _myObservers = new Vector<ScenarioObserver>(
+			0, 1);
+
+	Vector<ISelectionChangedListener> _selectionListeners;
 
 	/**
 	 * The constructor.
@@ -77,30 +91,21 @@ public class ScenarioController extends ViewPart
 		// create our UI
 		_myUI = new UISkeleton(parent, SWT.FILL);
 
-		// listen to the load button
-		_myUI.getLoadBtn().addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				loadTheScenario(_myUI.getScenarioVal().getText());
-				loadController(_myUI.getControlVal().getText());
-			}
-
-		});
-
 		// let us accept dropped files
 		configureFileDropSupport(_myUI);
 
 		// fille in the menu bar(s)
 		makeActions();
 		contributeToActionBars();
+
+		// declare fact that we can provide selections
+		getSite().setSelectionProvider(this);
 	}
 
 	private void initialiseDummyData()
 	{
 		_myUI.getScenarioVal().setText(DUMMY_SCENARIO_FILE);
 		_myUI.getControlVal().setText(DUMMY_CONTROL_FILE);
-		_myUI.getLoadBtn().setEnabled(true);
 	}
 
 	/**
@@ -165,61 +170,167 @@ public class ScenarioController extends ViewPart
 		// ok, loop through the files
 		for (int i = 0; i < fileNames.length; i++)
 		{
-			String thisName = fileNames[i];
+			final String thisName = fileNames[i];
 
 			// ok, examine this file
 			String firstNode = getFirstNodeName(thisName);
 
 			if (firstNode != null)
 			{
-				boolean scenarioFound = false;
 				if (firstNode.equals("Scenario"))
 				{
+					// set the filename
 					_myUI.getScenarioVal().setText(thisName);
-					scenarioFound = true;
-				} else if (firstNode.equals("ScenarioController"))
+
+					IWorkbench wb = PlatformUI.getWorkbench();
+				   IProgressService ps = wb.getProgressService();
+				   try
+					{
+						ps.busyCursorWhile(new IRunnableWithProgress() {
+						    public void run(IProgressMonitor pm) {
+									scenarioAssigned(thisName);
+						    }
+						 });
+					}
+					catch (Exception e)
+					{
+						e.printStackTrace();
+					}
+					
+				}
+				else if (firstNode.equals("ScenarioController"))
 				{
 					_myUI.getControlVal().setText(thisName);
+					IWorkbench wb = PlatformUI.getWorkbench();
+				   IProgressService ps = wb.getProgressService();
+				   try
+					{
+						ps.busyCursorWhile(new IRunnableWithProgress() {
+						    public void run(IProgressMonitor pm) {
+									controllerAssigned(thisName);
+						    }
+						 });
+					}
+					catch (Exception e)
+					{
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
-				
-				// decide whether to enable the Load button
-				if(scenarioFound)
-					_myUI.getLoadBtn().setEnabled(true);
 			}
 		}
 	}
 
-	private String getFirstNodeName(String filename)
+	private void scenarioAssigned(String thisName)
 	{
-		String res = null;
-		Document thisD = loadFileIntoDom(filename);
-
-		Node thisN = thisD.getFirstChild();
-		return res;
-	}
-
-	private Document loadFileIntoDom(String filename)
-	{
-		Document res = null;
-
-		DocumentBuilder db;
+		// now load the data
 		try
 		{
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			db = dbf.newDocumentBuilder();
-			res = db.parse(filename);
-		} catch (ParserConfigurationException e)
+			String scenarioStr = thisName;
+			File theFile = new File(scenarioStr);
+			// final SampleDataPlugin thePlugin = SampleDataPlugin.getDefault();
+			InputStream theStream = new FileInputStream(theFile);//
+			// thePlugin.getResource(thePath);
+			ASSETReaderWriter.importThis(_myScenario, scenarioStr, theStream);
+
+			fireScenarioChanged();
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
-		} catch (SAXException e)
+			ASSETPlugin.logError(Status.ERROR, "Failed to load sample data", e);
+		}
+		catch (NullPointerException e)
 		{
 			e.printStackTrace();
-		} catch (IOException e)
+			ASSETPlugin.logError(Status.ERROR, "The sample-data plugin isn't loaded",
+					e);
+		}
+
+	}
+
+	private void controllerAssigned(String controlFile)
+	{
+		try
+		{
+			Vector<ScenarioObserver> theObservers = ASSETReaderWriter
+					.importThisObserverList(controlFile, new java.io.FileInputStream(
+							controlFile));
+	
+			// add these observers to our scenario
+			for (int i = 0; i < theObservers.size(); i++)
+			{
+				// get the next observer
+				ScenarioObserver observer = (ScenarioObserver) theObservers
+						.elementAt(i);
+	
+				// setup the observer
+				observer.setup(_myScenario);
+	
+				// and add it to our list
+				_myObservers.add(observer);
+				
+				// and tell everybody
+				fireControllerChanged();
+			}
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+	}
 
-		return res;
+	/**
+	 * a scenario has been loaded, tell our listeners
+	 * 
+	 */
+	private void fireScenarioChanged()
+	{
+	}
+
+	/**
+	 * a scenario controller has been loaded, tell our listeners
+	 * 
+	 */
+	private void fireControllerChanged()
+	{
+	}
+	
+	private String getFirstNodeName(String SourceXMLFilePath)
+	{
+		/* Check whether file is XML or not */
+		DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+		factory.setValidating(false);
+		factory.setNamespaceAware(true);
+		try
+		{
+			DocumentBuilder builder = factory.newDocumentBuilder();
+			Document document = builder.parse(SourceXMLFilePath);
+
+			NodeList nl = document.getElementsByTagName("*");
+			System.out.println("First Node : " + nl.item(0).getNodeName());
+			return nl.item(0).getNodeName();
+
+			// for (int i=0; i<nl.getLength(); i++)
+			// {
+			// n = nl.item(i);
+			// System.out.println(n.getNodeName() + " " );
+			// }
+		}
+		catch (IOException ioe)
+		{
+			// ioe.printStackTrace();
+			return null;
+			// return "Not Valid XML File";
+		}
+		catch (Exception sxe)
+		{
+			Exception x = sxe;
+			return null;
+			// x.printStackTrace();
+			//return "Not Valid XML File";
+		}
+
 	}
 
 	private void selectTab(boolean isSingle)
@@ -287,54 +398,29 @@ public class ScenarioController extends ViewPart
 		// viewer.getControl().setFocus();
 	}
 
-	protected void loadTheScenario(String theScenario)
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
 	{
-		try
-		{
-			String scenarioStr = theScenario;
-			File theFile = new File(scenarioStr);
-			// final SampleDataPlugin thePlugin = SampleDataPlugin.getDefault();
-			InputStream theStream = new FileInputStream(theFile);//
-			// thePlugin.getResource(thePath);
-			ASSETReaderWriter.importThis(_myScenario, scenarioStr, theStream);
-		} catch (IOException e)
-		{
-			e.printStackTrace();
-			ASSETPlugin.logError(Status.ERROR, "Failed to load sample data", e);
-		} catch (NullPointerException e)
-		{
-			e.printStackTrace();
-			ASSETPlugin.logError(Status.ERROR, "The sample-data plugin isn't loaded",
-					e);
-		}
+		if (_selectionListeners == null)
+			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
 
-		// next, go for the observers
+		// see if we don't already contain it..
+		if (!_selectionListeners.contains(listener))
+			_selectionListeners.add(listener);
 	}
 
-	public void loadController(String controlFile)
+	public ISelection getSelection()
 	{
-			try
-			{
-				Vector<ScenarioObserver> theObservers = ASSETReaderWriter.importThisObserverList(controlFile, new java.io.FileInputStream(controlFile));
+		return null;
+	}
 
-				// add these observers to our scenario
-				for (int i = 0; i < theObservers.size(); i++)
-				{
-					// get the next observer
-					ScenarioObserver observer = (ScenarioObserver) theObservers
-							.elementAt(i);
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionListeners.remove(listener);
+	}
 
-					// setup the observer
-					observer.setup(_myScenario);
-
-					// and add it to our list
-					_myObservers.add(observer);
-				}
-			}
-			catch(Exception e)
-			{
-				e.printStackTrace();
-			}
+	public void setSelection(ISelection selection)
+	{
+		// ignore...
 	}
 
 }
