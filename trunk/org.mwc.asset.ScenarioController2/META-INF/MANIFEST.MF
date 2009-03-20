@@ -9,6 +9,8 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.asset.legacy;bundle-version="1.0.1",
  org.mwc.asset.core;bundle-version="1.0.0",
  org.mwc.debrief.legacy;bundle-version="1.0.64",
- org.mwc.cmap.legacy;bundle-version="1.0.45"
+ org.mwc.cmap.legacy;bundle-version="1.0.45",
+ org.mwc.cmap.core;bundle-version="1.0.65",
+ org.eclipse.ui.views;bundle-version="3.3.1"
 Bundle-ActivationPolicy: lazy
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6

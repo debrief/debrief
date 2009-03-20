@@ -837,7 +837,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 							checkTimeEnabled();
 
 							// hmm, do we want to store this part?
-							_currentEditor = (IEditorPart) parentPart;
+							if (parentPart instanceof IEditorPart)
+							{
+								_currentEditor = (IEditorPart) parentPart;
+							}
 						}
 
 					}
@@ -1603,8 +1606,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	/**
 	 * ok - put in the stepper mode buttons - and any others we think of.
 	 */
-	void populateDropDownList(
-			final LayerPainterManager myLayerPainterManager)
+	void populateDropDownList(final LayerPainterManager myLayerPainterManager)
 	{
 		// clear the list
 		final IMenuManager menuManager = getViewSite().getActionBars()

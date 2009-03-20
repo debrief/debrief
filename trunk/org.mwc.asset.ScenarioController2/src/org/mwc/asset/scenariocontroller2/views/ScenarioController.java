@@ -36,18 +36,25 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.core.ASSETPlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.Scenario.CoreScenario;
+import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
 import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 
 public class ScenarioController extends ViewPart implements ISelectionProvider
 {
@@ -74,6 +81,12 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	private CoreScenario _myScenario;
 	private Vector<ScenarioObserver> _myObservers = new Vector<ScenarioObserver>(
 			0, 1);
+	
+	/** watchable parts
+	 * 
+	 */
+	private TimeManager _myTimeProvider;
+	
 
 	Vector<ISelectionChangedListener> _selectionListeners;
 
@@ -91,6 +104,30 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	{
 		_myScenario = new CoreScenario();
 		_scenarioWrapper = new ScenarioWrapper(this);
+		
+		_myTimeProvider = new TimeManager();
+		
+		// listen to the scenario
+		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener(){
+			public void restart()
+			{
+				scenarioRestarted();
+			}
+			public void step(long newTime)
+			{
+				scenarioStepped(newTime);
+			}});
+		
+	}
+
+	protected void scenarioRestarted()
+	{
+		_myTimeProvider.setTime(this,	null,true);
+	}
+
+	protected void scenarioStepped(long newTime)
+	{
+		_myTimeProvider.setTime(this,	new HiResDate(newTime),true);
 	}
 
 	/**
@@ -124,6 +161,15 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		} else if (adapter == ScenarioType.class)
 		{
 			res = _myScenario;
+		} else if(adapter == TimeProvider.class)
+		{
+			res = _myTimeProvider;
+		}else if(adapter == TimeControlPreferences.class)
+		{
+			res = new TimeControlProperties();
+		}else if(adapter == TimeManager.LiveScenario.class)
+		{
+			return new TimeManager.LiveScenario(){};
 		}
 
 		if (res == null)
@@ -374,6 +420,14 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	private void fireScenarioChanged()
 	{
 		_scenarioWrapper.fireNewScenario();
+		
+		// ok, change the time aswell
+		long time = _myScenario.getTime();
+		if(time != -1) 
+		{
+			_myTimeProvider.setTime(this, new HiResDate(time), true);
+		}
+		
 	}
 
 	/**
@@ -439,7 +493,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		{
 			public void run()
 			{
-				initialiseDummyData();
+				_myScenario.step();
 			}
 		};
 		_actionLoadTestData.setText("Load dummy");
