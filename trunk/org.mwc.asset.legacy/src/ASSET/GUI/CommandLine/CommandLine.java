@@ -596,6 +596,12 @@ public class CommandLine
       System.err.println("    asset scenario_file control_file");
     }
   }
+  
+  public static boolean checkIfGenerationRequired(String controlFileName) throws FileNotFoundException
+  {
+  	File controlFile = new File(controlFileName);
+  	return checkIfGenerationRequired(controlFile);
+  }
 
   private static boolean checkIfGenerationRequired(File controlFile) throws FileNotFoundException
   {

@@ -40,6 +40,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
 import ASSET.ScenarioType;
+import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
@@ -291,6 +292,14 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	
 				// and add it to our list
 				_myObservers.add(observer);
+				
+				// check if it's multi scenario..
+				boolean isMulti = CommandLine.checkIfGenerationRequired(controlFile);
+				int tgtIndex = 0;
+				if(isMulti)
+					tgtIndex = 1;
+				_myUI.getScenarioTabs().setSelection(tgtIndex);
+					
 				
 				// and tell everybody
 				fireControllerChanged();

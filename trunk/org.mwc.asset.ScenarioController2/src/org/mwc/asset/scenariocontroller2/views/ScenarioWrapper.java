@@ -21,6 +21,9 @@ public class ScenarioWrapper extends Layers
 
 		public void init()
 		{
+			// ok, fresh start
+			this.removeAllElements();
+			
 			ScenarioType theScen = (ScenarioType) _theCont
 					.getAdapter(ScenarioType.class);
 			if (theScen.getName() != null)
@@ -46,13 +49,29 @@ public class ScenarioWrapper extends Layers
 
 		public ContWrapper()
 		{
-			this.setName("Scenario Controller");
+			this.setName("Pending");
 			BaseLayer theParts = new BaseLayer();
 			theParts.setName("Generator");
 			this.add(theParts);
 			BaseLayer theEnv = new BaseLayer();
 			theEnv.setName("Observers");
 			this.add(theEnv);
+		}
+		
+		protected void loadObservers()
+		{
+			// check we have a controller
+			ScenarioController controller = (ScenarioController) _theCont.getAdapter(ScenarioController.class);
+			if(controller != null)
+			{
+				// get the observers
+		//		controller.			
+			}
+		}
+		
+		public void init()
+		{
+			
 		}
 	}
 
