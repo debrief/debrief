@@ -67,8 +67,10 @@ import org.mwc.cmap.TimeController.properties.FineTuneStepperProps;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
@@ -126,6 +128,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * avaialable
 	 */
 	ControllableTime _controllableTime;
+
+	/**
+	 * an object that gets stepped, not one that we can slide backwards & forwards
+	 * through
+	 * 
+	 */
+	SteppableTime _steppableTime;
 
 	/**
 	 * the "write" interface for indicating a selected time period
@@ -225,6 +234,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	PlainProjection _targetProjection;
 
 	TrackDataProvider.TrackDataListener _theTrackDataListener;
+
+	/**
+	 * keep track of the list of play buttons, since on occasion we may want to
+	 * hide some of them
+	 * 
+	 */
+	private HashMap<String, Button> _buttonList;
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -493,6 +509,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
 		eFwd.setToolTipText("Move to end of dataset");
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
+
+		_buttonList = new HashMap<String, Button>();
+		_buttonList.put("eBwd", eBwd);
+		_buttonList.put("lBwd", lBwd);
+		_buttonList.put("sBwd", sBwd);
+		_buttonList.put("play", _playButton);
+		_buttonList.put("sFwd", _forwardButton);
+		_buttonList.put("lFwd", lFwd);
+		_buttonList.put("eFwd", eFwd);
 	}
 
 	boolean _alreadyProcessingChange = false;
@@ -585,7 +610,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	void stopPlaying()
 	{
-		_theTimer.stop();
+		if (_steppableTime != null)
+		{
+			_steppableTime.stop(this, true);
+		} else
+			_theTimer.stop();
 	}
 
 	/**
@@ -593,15 +622,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	void startPlaying()
 	{
-		// hey - set a practical minimum step size, 1/4 second is a fair start
-		// point
-		final long delayToUse = Math.max(_myStepperProperties.getAutoInterval()
-				.getMillis(), 250);
+		// just check we haven't got a simulation running
+		if (_steppableTime != null)
+		{
+			_steppableTime.run(this, true);
+		} else
+		{
 
-		// ok - make sure the time has the right time
-		_theTimer.setDelay(delayToUse);
+			// hey - set a practical minimum step size, 1/4 second is a fair start
+			// point
+			final long delayToUse = Math.max(_myStepperProperties.getAutoInterval()
+					.getMillis(), 250);
 
-		_theTimer.start();
+			// ok - make sure the time has the right time
+			_theTimer.setDelay(delayToUse);
+
+			_theTimer.start();
+		}
 	}
 
 	public void onTime(ActionEvent event)
@@ -662,68 +699,73 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		HiResDate tNow = _myTemporalDataset.getTime();
 		if (tNow != null)
 		{
-			// yup, time is there. work with it baby
-			long micros = tNow.getMicros();
-
-			// right, special case for when user wants to go straight to the end
-			// - in
-			// which
-			// case there is a zero in the scale
-			if (large == null)
+			// just check if we've got a simulation running, in which case we just
+			// fire a step
+			if (_steppableTime != null)
+				_steppableTime.step(this, true);
+			else
 			{
-				// right, fwd or bwd
-				if (fwd)
-					micros = _myTemporalDataset.getPeriod().getEndDTG().getMicros();
-				else
-					micros = _myTemporalDataset.getPeriod().getStartDTG().getMicros();
-			} else
-			{
-				long size;
 
-				// normal processing..
-				if (large.booleanValue())
+				// yup, time is there. work with it baby
+				long micros = tNow.getMicros();
+
+				// right, special case for when user wants to go straight to the end
+				// - in
+				// which
+				// case there is a zero in the scale
+				if (large == null)
 				{
-					// do large step
-					size = (long) _myStepperProperties.getLargeStep().getValueIn(
-							Duration.MICROSECONDS);
+					// right, fwd or bwd
+					if (fwd)
+						micros = _myTemporalDataset.getPeriod().getEndDTG().getMicros();
+					else
+						micros = _myTemporalDataset.getPeriod().getStartDTG().getMicros();
 				} else
 				{
-					// and the small size step
-					size = (long) _myStepperProperties.getSmallStep().getValueIn(
-							Duration.MICROSECONDS);
+					long size;
+
+					// normal processing..
+					if (large.booleanValue())
+					{
+						// do large step
+						size = (long) _myStepperProperties.getLargeStep().getValueIn(
+								Duration.MICROSECONDS);
+					} else
+					{
+						// and the small size step
+						size = (long) _myStepperProperties.getSmallStep().getValueIn(
+								Duration.MICROSECONDS);
+					}
+
+					// right, either move forwards or backwards.
+					if (fwd)
+						micros += size;
+					else
+						micros -= size;
 				}
 
-				// right, either move forwards or backwards.
-				if (fwd)
-					micros += size;
-				else
-					micros -= size;
-			}
+				HiResDate newDTG = new HiResDate(0, micros);
 
-			HiResDate newDTG = new HiResDate(0, micros);
+				// find the extent of the current dataset
 
-			// find the extent of the current dataset
+				/*
+				 * RIGHT, until JAN 2007 this next line had been commented out -
+				 * replaced by the line immediately after it. We've switched back to
+				 * this implementation. This implementation lets the time-slider select
+				 * a time for which there aren't any points visible. This makes sense
+				 * because in it's successor implementation when the DTG slipped outside
+				 * the visible time period, the event was rejected, and the time-
+				 * controller buttons appeared to break. It remains responsive this
+				 * way...
+				 */
+				TimePeriod timeP = _myTemporalDataset.getPeriod();
 
-			/*
-			 * RIGHT, until JAN 2007 this next line had been commented out - replaced
-			 * by the line immediately after it. We've switched back to this
-			 * implementation. This implementation lets the time-slider select a time
-			 * for which there aren't any points visible. This makes sense because in
-			 * it's successor implementation when the DTG slipped outside the visible
-			 * time period, the event was rejected, and the time- controller buttons
-			 * appeared to break. It remains responsive this way...
-			 */
-			TimePeriod timeP = _myTemporalDataset.getPeriod();
-
-			// TimePeriod timeP = new
-			// TimePeriod.BaseTimePeriod(_myStepperProperties
-			// .getSliderStartTime(), _myStepperProperties.getSliderEndTime());
-
-			// do we represent a valid time?
-			if (timeP.contains(newDTG))
-			{
-				// yes, fire the new DTG
-				fireNewTime(newDTG);
+				// do we represent a valid time?
+				if (timeP.contains(newDTG))
+				{
+					// yes, fire the new DTG
+					fireNewTime(newDTG);
+				}
 			}
 		}
 
@@ -772,6 +814,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
+
+		_myPartMonitor.addPartListener(TimeManager.LiveScenario.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (_myTemporalDataset != part)
+						{
+							// ok, we can't control this in the normal way, do some control
+							// hiding
+							reformatUI(false);
+						}
+					}
+				});
 
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
@@ -865,6 +922,32 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 						// and sort out whether we should be active or not.
 						checkTimeEnabled();
+					}
+				});
+
+		_myPartMonitor.addPartListener(SteppableTime.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (_steppableTime != part)
+						{
+							_steppableTime = (SteppableTime) part;
+						}
+					}
+
+				});
+		_myPartMonitor.addPartListener(SteppableTime.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (_steppableTime != part)
+						{
+							_steppableTime = null;
+						}
 					}
 				});
 
@@ -981,6 +1064,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						ControllablePeriod ct = (ControllablePeriod) part;
 						_controllablePeriod = ct;
 						checkTimeEnabled();
+
+						// ok, we've got all the normal controls, make the ui do it's stuff
+						reformatUI(true);
+
 					}
 
 				});
@@ -1162,6 +1249,27 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	}
 
 	/**
+	 * we may be listening to an object that cannot be rewound, that does not
+	 * support backward stepping. If so, let us reformat ourselves accordingly
+	 * 
+	 * @param canRewind
+	 *          whether this time-dataset can rewind
+	 */
+	protected void reformatUI(boolean canRewind)
+	{
+		_tNowSlider.setVisible(canRewind);
+		_dtgRangeSlider.getControl().setVisible(canRewind);
+
+		// and now the play buttons
+		_buttonList.get("eBwd").setVisible(canRewind);
+		_buttonList.get("lBwd").setVisible(canRewind);
+		_buttonList.get("sBwd").setVisible(canRewind);
+		_buttonList.get("lFwd").setVisible(canRewind);
+		_buttonList.get("eFwd").setVisible(canRewind);
+
+	}
+
+	/**
 	 * remember the new relative projection provider
 	 * 
 	 * @param relProjector
@@ -1197,10 +1305,21 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	{
 		boolean enable = false;
 
-		if (_myTemporalDataset != null)
+		if (_steppableTime != null)
 		{
-			if ((_controllableTime != null) && (_myTemporalDataset.getTime() != null))
-				enable = true;
+			// this is our 'fancy' situation - just enable it
+			enable = true;
+		}
+		else
+		{
+			// normal, Debrief-style situation, check we've got
+			// what we're after
+			if (_myTemporalDataset != null)
+			{
+				if ((_controllableTime != null)
+						&& (_myTemporalDataset.getTime() != null))
+					enable = true;
+			}
 		}
 
 		final boolean finalEnabled = enable;

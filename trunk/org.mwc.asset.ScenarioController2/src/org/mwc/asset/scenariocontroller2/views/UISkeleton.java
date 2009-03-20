@@ -9,13 +9,15 @@ import org.eclipse.swt.layout.FormData;
 import org.eclipse.swt.layout.FormLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.layout.RowData;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.TabFolder;
 import org.eclipse.swt.widgets.TabItem;
-
+import org.eclipse.swt.widgets.Table;
 
 /**
 * This code was edited or generated using CloudGarden's Jigloo
@@ -33,6 +35,9 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	private Composite filenameHolder;
 	private Label scenarioLbl;
 	private Label controlLabel;
+	private Label singleStatLabel;
+	private Composite composite1;
+	private Label singleStatVal;
 	private TabItem multipleTab;
 	private TabItem singleTab;
 	private TabFolder scenarioTabs;
@@ -135,6 +140,25 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 				{
 					singleTab = new TabItem(scenarioTabs, SWT.NONE);
 					singleTab.setText("Single Scenario");
+					{
+						composite1 = new Composite(scenarioTabs, SWT.NONE);
+						RowLayout composite1Layout = new RowLayout(org.eclipse.swt.SWT.HORIZONTAL);
+						composite1.setLayout(composite1Layout);
+						singleTab.setControl(composite1);
+						{
+							singleStatLabel = new Label(composite1, SWT.NONE);
+							singleStatLabel.setText("Status:");
+							singleStatLabel.setAlignment(SWT.RIGHT);
+						}
+						{
+							singleStatVal = new Label(composite1, SWT.NONE);
+							RowData singleStatValLData = new RowData();
+							singleStatValLData.width = 152;
+							singleStatValLData.height = 13;
+							singleStatVal.setLayoutData(singleStatValLData);
+							singleStatVal.setText("[pending]");
+						}
+					}
 				}
 				{
 					multipleTab = new TabItem(scenarioTabs, SWT.NONE);
@@ -170,6 +194,10 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	
 	public TabFolder getScenarioTabs() {
 		return scenarioTabs;
+	}
+	
+	public Label getSingleScenarioStatus() {
+		return singleStatVal;
 	}
 
 }

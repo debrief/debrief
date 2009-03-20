@@ -36,6 +36,8 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.core.ASSETPlugin;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
+import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
@@ -55,6 +57,7 @@ import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class ScenarioController extends ViewPart implements ISelectionProvider
 {
@@ -96,6 +99,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	 */
 	private ScenarioWrapper _scenarioWrapper;
 	private Vector<ScenarioObserver> _theObservers;
+	private SteppableTime _steppableTime;
 
 	/**
 	 * The constructor.
@@ -117,6 +121,30 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			{
 				scenarioStepped(newTime);
 			}});
+
+		/** and support for the time controller moving us forward
+		 * 
+		 */
+		_steppableTime = new SteppableTime(){
+			public void run(Object origin, boolean fireUpdate)
+			{
+				_myScenario.start();
+			}
+			public void step(Object origin, boolean fireUpdate)
+			{
+				_myScenario.step();
+			}
+			@Override
+			public void stop(Object origin, boolean fireUpdate)
+			{
+				_myScenario.pause();
+			}
+			@Override
+			public void restart(Object origin, boolean fireUpdate)
+			{
+				_myScenario.restart();
+			}};
+
 		
 	}
 
@@ -127,7 +155,11 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 	protected void scenarioStepped(long newTime)
 	{
+		// update anybody listening to the time
 		_myTimeProvider.setTime(this,	new HiResDate(newTime),true);
+		
+		// and update the displayed time
+		setScenarioStatus(_myScenario, FormatRNDateTime.toString(newTime));		
 	}
 
 	/**
@@ -170,6 +202,9 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		}else if(adapter == TimeManager.LiveScenario.class)
 		{
 			return new TimeManager.LiveScenario(){};
+		}else if(adapter == SteppableTime.class)
+		{
+			return _steppableTime;
 		}
 
 		if (res == null)
@@ -428,7 +463,33 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			_myTimeProvider.setTime(this, new HiResDate(time), true);
 		}
 		
+		// and show the loaded status in the ui
+		setScenarioStatus(_myScenario, "Loaded");
 	}
+	
+	/** update the status in the UI
+	 * 
+	 * @param scen the scenario we're updating
+	 * @param text the text to display
+	 */
+	private void setScenarioStatus(final ScenarioType scen, final String text)
+	{
+		// ui update, put it in an async operation
+		// updating the text items has to be done in the UI thread. make it
+		// so
+		Display.getDefault().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				if(scen == _myScenario)
+				{
+				_myUI.getSingleScenarioStatus().setText(text);
+				}
+			}
+		});
+		
+	}
+	
 
 	/**
 	 * a scenario controller has been loaded, tell our listeners
