@@ -934,6 +934,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						if (_steppableTime != part)
 						{
 							_steppableTime = (SteppableTime) part;
+							
+							// enable the ui, if we have to.
+							checkTimeEnabled();
 						}
 					}
 
@@ -947,6 +950,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						if (_steppableTime != part)
 						{
 							_steppableTime = null;
+							// disable the ui, if we have to.
+							checkTimeEnabled();
 						}
 					}
 				});

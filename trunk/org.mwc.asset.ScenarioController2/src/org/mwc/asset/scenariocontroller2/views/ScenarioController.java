@@ -36,13 +36,11 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.core.ASSETPlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -62,8 +60,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 public class ScenarioController extends ViewPart implements ISelectionProvider
 {
 
-	private static final String DUMMY_CONTROL_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
-	private static final String DUMMY_SCENARIO_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_scenario.xml";
+//	private static final String DUMMY_CONTROL_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
+//	private static final String DUMMY_SCENARIO_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_scenario.xml";
 
 	private String _scenarioFileName = null;
 	private String _controlFileName = null;
@@ -222,12 +220,6 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	public ScenarioType getScenario()
 	{
 		return _myScenario;
-	}
-
-	private void initialiseDummyData()
-	{
-		_myUI.getScenarioVal().setText(DUMMY_SCENARIO_FILE);
-		_myUI.getControlVal().setText(DUMMY_CONTROL_FILE);
 	}
 
 	/**
@@ -557,7 +549,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				_myScenario.step();
 			}
 		};
-		_actionLoadTestData.setText("Load dummy");
+		_actionLoadTestData.setText("Step");
 
 		_actionReloadDatafiles = new Action()
 		{
@@ -566,8 +558,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				reloadDataFiles();
 			}
 		};
-		_actionReloadDatafiles.setText("Action 2");
-		_actionReloadDatafiles.setToolTipText("Action 2 tooltip");
+		_actionReloadDatafiles.setText("Reload");
+		_actionReloadDatafiles.setToolTipText("Reload data files");
 	}
 
 	protected void reloadDataFiles()
