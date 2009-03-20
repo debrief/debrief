@@ -18,7 +18,7 @@ import java.util.Vector;
 
 abstract public class StandaloneObserverListHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-  private final static String type = "StandaloneObserverList";
+  public final static String type = "StandaloneObserverList";
 
   private Vector<ScenarioObserver> _myList;
 

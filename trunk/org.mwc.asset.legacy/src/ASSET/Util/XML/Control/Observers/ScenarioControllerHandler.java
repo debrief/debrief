@@ -21,7 +21,7 @@ import java.util.Vector;
 abstract public class ScenarioControllerHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-	private final static String type = "ScenarioController";
+	public final static String type = "ScenarioController";
 
 	Vector<ScenarioObserver> _myObserverList;
 
