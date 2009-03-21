@@ -60,6 +60,7 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		// and our view shortcuts
 		layout.addShowViewShortcut(CorePlugin.LAYER_MANAGER);
 		layout.addShowViewShortcut(CorePlugin.NARRATIVES);
+		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		layout.addShowViewShortcut(ASSETPlugin.SCENARIO_CONTROLLER2);
 		layout.addShowViewShortcut(ASSETPlugin.VESSEL_MONITOR);

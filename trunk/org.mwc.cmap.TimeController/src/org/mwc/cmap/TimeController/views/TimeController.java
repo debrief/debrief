@@ -26,6 +26,7 @@ import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -37,7 +38,6 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -100,6 +100,12 @@ import MWC.Utilities.Timer.TimerListener;
 public class TimeController extends ViewPart implements ISelectionProvider,
 		TimerListener, RelativeProjectionParent
 {
+	private static final String DUFF_TIME_TEXT = "--------------------------";
+
+	private static final String PAUSE_TEXT = "Pause automatically moving forward";
+
+	private static final String PLAY_TEXT = "Start automatically moving forward";
+
 	private PartMonitor _myPartMonitor;
 
 	/**
@@ -337,7 +343,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		GridData labelGrid = new GridData(GridData.FILL_HORIZONTAL);
 		_timeLabel.setLayoutData(labelGrid);
 		_timeLabel.setAlignment(SWT.CENTER);
-		_timeLabel.setText("--------------------------");
+		_timeLabel.setText(DUFF_TIME_TEXT);
 		// _timeLabel.setFont(new Font(Display.getDefault(), "OCR A Extended",
 		// 16,
 		// SWT.NONE));
@@ -362,10 +368,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					HiResDate newDTG = _slideManager.fromSliderUnits(index,
 							_dtgRangeSlider.getStepSize());
 					fireNewTime(newDTG);
-				} catch (Exception ex)
+				}
+				catch (Exception ex)
 				{
 					System.err.println("Tripped in step forward:" + ex);
-				} finally
+				}
+				finally
 				{
 					_alreadyProcessingChange = false;
 				}
@@ -431,12 +439,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	private void createVCRbuttons()
 	{
 		// first create the button holder
-		_btnPanel = new Composite(_wholePanel, SWT.NONE);
-		GridData btnGrid = new GridData(GridData.FILL_HORIZONTAL);
-		_btnPanel.setLayoutData(btnGrid);
-		FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
-		btnFiller.marginHeight = 0;
-		_btnPanel.setLayout(btnFiller);
+		_btnPanel = new Composite(_wholePanel, SWT.BORDER);
+		_btnPanel.setLayout(new GridLayout(7, true));
+
+		// FillLayout btnFiller = new FillLayout(SWT.HORIZONTAL);
+		// btnFiller.marginHeight = 0;
+		// _btnPanel.setLayout(btnFiller);
 
 		Button eBwd = new Button(_btnPanel, SWT.NONE);
 		eBwd.addSelectionListener(new TimeButtonSelectionListener(false, null));
@@ -461,6 +469,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 		_playButton = new Button(_btnPanel, SWT.TOGGLE | SWT.NONE);
 		_playButton.setImage(TimeControllerPlugin.getImage("icons/media_play.png"));
+		_playButton.setToolTipText(PLAY_TEXT);
 		// _playButton.setImage(TimeControllerPlugin.getImage("icons/control_play_blue.png"));
 		_playButton.addSelectionListener(new SelectionAdapter()
 		{
@@ -472,18 +481,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				{
 					thisD = TimeControllerPlugin
 							.getImageDescriptor("icons/media_pause.png");
-					// thisD =
-					// TimeControllerPlugin.getImageDescriptor("icons/control_pause_blue.png");
 					startPlaying();
-					_playButton.setToolTipText("Pause play");
-				} else
+					_playButton.setToolTipText(PAUSE_TEXT);
+				}
+				else
 				{
 					thisD = TimeControllerPlugin
 							.getImageDescriptor("icons/media_play.png");
-					// thisD =
-					// TimeControllerPlugin.getImageDescriptor("icons/control_play_blue.png");
 					stopPlaying();
-					_playButton.setToolTipText("auto-step");
+					_playButton.setToolTipText(PLAY_TEXT);
 				}
 				_playButton.setImage(thisD.createImage());
 			}
@@ -509,6 +515,18 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		eFwd.setImage(TimeControllerPlugin.getImage("icons/media_end.png"));
 		eFwd.setToolTipText("Move to end of dataset");
 		eFwd.addSelectionListener(new TimeButtonSelectionListener(true, null));
+
+		GridDataFactory btnGd = GridDataFactory.fillDefaults().grab(true, false);
+		btnGd.applyTo(eBwd);
+		btnGd.applyTo(lBwd);
+		btnGd.applyTo(sBwd);
+		btnGd.applyTo(_playButton);
+		btnGd.applyTo(_forwardButton);
+		btnGd.applyTo(lFwd);
+		btnGd.applyTo(eFwd);
+
+		// and apply it to the whole panel
+		btnGd.applyTo(_btnPanel);
 
 		_buttonList = new HashMap<String, Button>();
 		_buttonList.put("eBwd", eBwd);
@@ -583,10 +601,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						if (currentDTG.greaterThan(period.getEndDTG()))
 						{
 							trimmedDTG = period.getEndDTG();
-						} else if (currentDTG.lessThan(period.getStartDTG()))
+						}
+						else if (currentDTG.lessThan(period.getStartDTG()))
 						{
 							trimmedDTG = period.getStartDTG();
-						} else
+						}
+						else
 						{
 							if (!_alreadyProcessingChange)
 								if (!_tNowSlider.isDisposed())
@@ -613,7 +633,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		if (_steppableTime != null)
 		{
 			_steppableTime.stop(this, true);
-		} else
+		}
+		else
 			_theTimer.stop();
 	}
 
@@ -626,7 +647,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		if (_steppableTime != null)
 		{
 			_steppableTime.run(this, true);
-		} else
+		}
+		else
 		{
 
 			// hey - set a practical minimum step size, 1/4 second is a fair start
@@ -653,7 +675,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		{
 			// pass the step operation on to our parent
 			processClick(Boolean.FALSE, true);
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Error on auto-time stepping", e);
 		}
@@ -675,7 +698,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				// ok, use the new time
 				HiResDate newDTG = (HiResDate) event.getNewValue();
 				timeUpdated(newDTG);
-			} else if (event.getPropertyName().equals(
+			}
+			else if (event.getPropertyName().equals(
 					TimeProvider.PERIOD_CHANGED_PROPERTY_NAME))
 			{
 				TimePeriod newPeriod = (TimePeriod) event.getNewValue();
@@ -702,7 +726,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			// just check if we've got a simulation running, in which case we just
 			// fire a step
 			if (_steppableTime != null)
-				_steppableTime.step(this, true);
+				// see if the user has pressed 'back to start', in which case we will
+				// rewind
+				if ((large == null) && (fwd == false))
+					_steppableTime.restart(this, true);
+				else
+					_steppableTime.step(this, true);
 			else
 			{
 
@@ -720,7 +749,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						micros = _myTemporalDataset.getPeriod().getEndDTG().getMicros();
 					else
 						micros = _myTemporalDataset.getPeriod().getStartDTG().getMicros();
-				} else
+				}
+				else
 				{
 					long size;
 
@@ -730,7 +760,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// do large step
 						size = (long) _myStepperProperties.getLargeStep().getValueIn(
 								Duration.MICROSECONDS);
-					} else
+					}
+					else
 					{
 						// and the small size step
 						size = (long) _myStepperProperties.getSmallStep().getValueIn(
@@ -799,7 +830,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			try
 			{
 				_controllableTime.setTime(this, dtg, true);
-			} finally
+			}
+			finally
 			{
 				_firingNewTime = false;
 			}
@@ -934,7 +966,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						if (_steppableTime != part)
 						{
 							_steppableTime = (SteppableTime) part;
-							
+
 							// enable the ui, if we have to.
 							checkTimeEnabled();
 						}
@@ -1206,7 +1238,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 											// repaint so we get fresh
 											// labels
 											_dtgRangeSlider.update();
-										} else if (evt.getPropertyName().equals(
+										}
+										else if (evt.getPropertyName().equals(
 												TimeControlProperties.STEP_INTERVAL_ID))
 										{
 											// hey, if we're stepping, we'd
@@ -1266,12 +1299,34 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_dtgRangeSlider.getControl().setVisible(canRewind);
 
 		// and now the play buttons
-		_buttonList.get("eBwd").setVisible(canRewind);
 		_buttonList.get("lBwd").setVisible(canRewind);
 		_buttonList.get("sBwd").setVisible(canRewind);
 		_buttonList.get("lFwd").setVisible(canRewind);
 		_buttonList.get("eFwd").setVisible(canRewind);
 
+		GridData gd1 = (GridData) _buttonList.get("lBwd").getLayoutData();
+		GridData gd2 = (GridData) _buttonList.get("sBwd").getLayoutData();
+		GridData gd3 = (GridData) _buttonList.get("lFwd").getLayoutData();
+		GridData gd4 = (GridData) _buttonList.get("eFwd").getLayoutData();
+		gd1.exclude = !canRewind;
+		gd2.exclude = !canRewind;
+		gd3.exclude = !canRewind;
+		gd4.exclude = !canRewind;
+
+		// also reduce the number of columns if we have to
+		GridLayout gl = (GridLayout) _btnPanel.getLayout();
+		if (canRewind)
+		{
+			gl.numColumns = 7;
+		}
+		else
+		{
+			gl.numColumns = 3;
+		}
+
+		// tell the parent that some buttons have changed, and that it probably
+		// wants to do a re-layout
+		_btnPanel.pack(true);
 	}
 
 	/**
@@ -1383,7 +1438,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			CorePlugin.editThisInProperties(_selectionListeners, _propsAsSelection,
 					this, this);
 			_propsAsSelection = null;
-		} else
+		}
+		else
 		{
 			System.out.println("we haven't got any properties yet");
 		}
@@ -1448,9 +1504,20 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				Display.getDefault().syncExec(nextEvent);
 
 			}
-		} else
+		}
+		else
 		{
 			System.out.println("null DTG received by time controller");
+			// updating the text items has to be done in the UI thread. make it
+			// so
+			Display.getDefault().asyncExec(new Runnable()
+			{
+				public void run()
+				{
+
+					_timeLabel.setText(DUFF_TIME_TEXT);
+				}
+			});
 		}
 
 	}
@@ -1468,7 +1535,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			try
 			{
 				newVal = toStringHiRes(newDTG, dateFormat);
-			} catch (IllegalArgumentException e)
+			}
+			catch (IllegalArgumentException e)
 			{
 				System.err.println("Invalid date format in preferences");
 			}
@@ -1524,7 +1592,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			// yes
 			res.append(".");
 			res.append(microsFormat.format(micros % 1000000));
-		} else
+		}
+		else
 		{
 			// do we have millis?
 			if (micros % 1000000 > 0)
@@ -1535,7 +1604,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 				res.append(".");
 				res.append(millisFormat.format(millis));
-			} else
+			}
+			else
 			{
 				// just use the normal output
 			}
@@ -1651,7 +1721,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 				// and request the zoom
 				doZoom(zoomFactor);
-			} else
+			}
+			else
 			{
 				// right, we're not zooming, we must be time-stepping
 				int count = event.count;
@@ -2198,7 +2269,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				}
 
 			}
-		} catch (CoreException e)
+		}
+		catch (CoreException e)
 		{
 			e.printStackTrace();
 		}
@@ -2227,7 +2299,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			try
 			{
 				processClick(_large, _fwd);
-			} catch (RuntimeException e1)
+			}
+			catch (RuntimeException e1)
 			{
 				CorePlugin
 						.logError(Status.ERROR, "Failed when trying to time step", e1);
@@ -2372,11 +2445,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			{
 				CorePlugin.showMessage("Export data",
 						"Please select a primary track for the current plot");
-			} else if ((theSecList == null) || (theSecList.length == 0))
+			}
+			else if ((theSecList == null) || (theSecList.length == 0))
 			{
 				CorePlugin.showMessage("Export data",
 						"Please select one or more secondary tracks for the current plot");
-			} else
+			}
+			else
 			{
 				Vector<WatchableList> theSecs = new Vector<WatchableList>(0, 1);
 				for (int i = 0; i < theSecList.length; i++)

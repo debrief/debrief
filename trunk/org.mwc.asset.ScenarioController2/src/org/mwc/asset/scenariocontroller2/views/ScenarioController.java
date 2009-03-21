@@ -47,6 +47,7 @@ import org.w3c.dom.NodeList;
 import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.Scenario.CoreScenario;
+import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
@@ -60,8 +61,10 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 public class ScenarioController extends ViewPart implements ISelectionProvider
 {
 
-//	private static final String DUMMY_CONTROL_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
-//	private static final String DUMMY_SCENARIO_FILE = "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_scenario.xml";
+	// private static final String DUMMY_CONTROL_FILE =
+	// "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
+	// private static final String DUMMY_SCENARIO_FILE =
+	// "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_scenario.xml";
 
 	private String _scenarioFileName = null;
 	private String _controlFileName = null;
@@ -82,12 +85,12 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	private CoreScenario _myScenario;
 	private Vector<ScenarioObserver> _myObservers = new Vector<ScenarioObserver>(
 			0, 1);
-	
-	/** watchable parts
+
+	/**
+	 * watchable parts
 	 * 
 	 */
 	private TimeManager _myTimeProvider;
-	
 
 	Vector<ISelectionChangedListener> _selectionListeners;
 
@@ -106,58 +109,95 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	{
 		_myScenario = new CoreScenario();
 		_scenarioWrapper = new ScenarioWrapper(this);
-		
+
 		_myTimeProvider = new TimeManager();
-		
+
 		// listen to the scenario
-		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener(){
+		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
+		{
 			public void restart()
 			{
 				scenarioRestarted();
 			}
+
 			public void step(long newTime)
 			{
 				scenarioStepped(newTime);
-			}});
+			}
+		});
 
-		/** and support for the time controller moving us forward
+		_myScenario.addScenarioRunningListener(new ScenarioRunningListener()
+		{
+			public void finished(long elapsedTime, String reason)
+			{
+				setScenarioStatus(_myScenario, "Stopped:" + reason);
+			}
+
+			public void newScenarioStepTime(int val)
+			{
+			}
+
+			public void newStepTime(int val)
+			{
+			}
+
+			public void paused()
+			{
+			}
+
+			public void started()
+			{
+			}
+
+			public void restart()
+			{
+			}
+		});
+
+		/**
+		 * and support for the time controller moving us forward
 		 * 
 		 */
-		_steppableTime = new SteppableTime(){
+		_steppableTime = new SteppableTime()
+		{
 			public void run(Object origin, boolean fireUpdate)
 			{
 				_myScenario.start();
 			}
+
 			public void step(Object origin, boolean fireUpdate)
 			{
 				_myScenario.step();
 			}
+
 			@Override
 			public void stop(Object origin, boolean fireUpdate)
 			{
 				_myScenario.pause();
 			}
+
 			@Override
 			public void restart(Object origin, boolean fireUpdate)
 			{
 				_myScenario.restart();
-			}};
+			}
+		};
 
-		
 	}
 
 	protected void scenarioRestarted()
 	{
-		_myTimeProvider.setTime(this,	null,true);
+		setScenarioStatus(_myScenario, "Restarted");
+		_myTimeProvider.setTime(this, new HiResDate(_myScenario.getTime()), true);
 	}
 
 	protected void scenarioStepped(long newTime)
 	{
 		// update anybody listening to the time
-		_myTimeProvider.setTime(this,	new HiResDate(newTime),true);
-		
+		_myTimeProvider.setTime(this, new HiResDate(newTime), true);
+
 		// and update the displayed time
-		setScenarioStatus(_myScenario, FormatRNDateTime.toString(newTime));		
+		setScenarioStatus(_myScenario, FormatRNDateTime.toString(newTime));
 	}
 
 	/**
@@ -188,19 +228,26 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		if (adapter == Layers.class)
 		{
 			res = _scenarioWrapper;
-		} else if (adapter == ScenarioType.class)
+		}
+		else if (adapter == ScenarioType.class)
 		{
 			res = _myScenario;
-		} else if(adapter == TimeProvider.class)
+		}
+		else if (adapter == TimeProvider.class)
 		{
 			res = _myTimeProvider;
-		}else if(adapter == TimeControlPreferences.class)
+		}
+		else if (adapter == TimeControlPreferences.class)
 		{
 			res = new TimeControlProperties();
-		}else if(adapter == TimeManager.LiveScenario.class)
+		}
+		else if (adapter == TimeManager.LiveScenario.class)
 		{
-			return new TimeManager.LiveScenario(){};
-		}else if(adapter == SteppableTime.class)
+			return new TimeManager.LiveScenario()
+			{
+			};
+		}
+		else if (adapter == SteppableTime.class)
 		{
 			return _steppableTime;
 		}
@@ -310,12 +357,14 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 								scenarioAssigned(thisName);
 							}
 						});
-					} catch (Exception e)
+					}
+					catch (Exception e)
 					{
 						e.printStackTrace();
 					}
 
-				} else if (firstNode.equals("ScenarioController"))
+				}
+				else if (firstNode.equals("ScenarioController"))
 				{
 					// remember it
 					_controlFileName = thisName;
@@ -334,7 +383,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 								controllerAssigned(thisName);
 							}
 						});
-					} catch (Exception e)
+					}
+					catch (Exception e)
 					{
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -361,11 +411,13 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			ASSETReaderWriter.importThis(_myScenario, scenarioStr, theStream);
 
 			fireScenarioChanged();
-		} catch (IOException e)
+		}
+		catch (IOException e)
 		{
 			e.printStackTrace();
 			ASSETPlugin.logError(Status.ERROR, "Failed to load sample data", e);
-		} catch (NullPointerException e)
+		}
+		catch (NullPointerException e)
 		{
 			e.printStackTrace();
 			ASSETPlugin.logError(Status.ERROR, "The sample-data plugin isn't loaded",
@@ -385,7 +437,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			{
 				_theObservers = ASSETReaderWriter.importThisObserverList(controlFile,
 						new java.io.FileInputStream(controlFile));
-			} else if (controlType == ScenarioControllerHandler.type)
+			}
+			else if (controlType == ScenarioControllerHandler.type)
 			{
 				ResultsContainer results = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
@@ -416,7 +469,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				}
 			});
 
-		} catch (Exception e)
+		}
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -447,22 +501,25 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	private void fireScenarioChanged()
 	{
 		_scenarioWrapper.fireNewScenario();
-		
+
 		// ok, change the time aswell
 		long time = _myScenario.getTime();
-		if(time != -1) 
+		if (time != -1)
 		{
 			_myTimeProvider.setTime(this, new HiResDate(time), true);
 		}
-		
+
 		// and show the loaded status in the ui
 		setScenarioStatus(_myScenario, "Loaded");
 	}
-	
-	/** update the status in the UI
+
+	/**
+	 * update the status in the UI
 	 * 
-	 * @param scen the scenario we're updating
-	 * @param text the text to display
+	 * @param scen
+	 *          the scenario we're updating
+	 * @param text
+	 *          the text to display
 	 */
 	private void setScenarioStatus(final ScenarioType scen, final String text)
 	{
@@ -473,15 +530,14 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		{
 			public void run()
 			{
-				if(scen == _myScenario)
+				if (scen == _myScenario)
 				{
-				_myUI.getSingleScenarioStatus().setText(text);
+					_myUI.getSingleScenarioStatus().setText(text);
 				}
 			}
 		});
-		
+
 	}
-	
 
 	/**
 	 * a scenario controller has been loaded, tell our listeners
@@ -505,12 +561,14 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 			NodeList nl = document.getElementsByTagName("*");
 			return nl.item(0).getNodeName();
-		} catch (IOException ioe)
+		}
+		catch (IOException ioe)
 		{
 			// ioe.printStackTrace();
 			return null;
 			// return "Not Valid XML File";
-		} catch (Exception sxe)
+		}
+		catch (Exception sxe)
 		{
 			// Exception x = sxe;
 			return null;
