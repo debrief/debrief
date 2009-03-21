@@ -28,6 +28,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	public static final String PLUGIN_ID = "org.mwc.asset.core";
 
 	public static final String SCENARIO_CONTROLLER = "org.mwc.asset.ScenarioController";
+	public static final String SCENARIO_CONTROLLER2 = "org.mwc.asset.ScenarioController2";
 
 	public static final String VESSEL_MONITOR = "org.mwc.asset.VesselMonitor";
 
