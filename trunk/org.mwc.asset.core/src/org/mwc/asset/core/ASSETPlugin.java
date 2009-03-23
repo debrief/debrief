@@ -2,6 +2,8 @@ package org.mwc.asset.core;
 
 import java.io.InputStream;
 
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.ObjectUndoContext;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IStartup;
@@ -34,6 +36,13 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 
 	public static final String SENSOR_MONITOR = "org.mwc.asset.SensorMonitor";
 
+	
+	/**
+	 * and the context used to describe our undo list
+	 */
+	public final static IUndoContext ASSET_CONTEXT = new ObjectUndoContext("ASSET");
+
+	
 	// The shared instance
 	private static ASSETPlugin plugin;
 

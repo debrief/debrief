@@ -17,6 +17,7 @@ import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.operation.IRunnableWithProgress;
+import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -31,7 +32,11 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IPersistableElement;
 import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
@@ -604,10 +609,10 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		{
 			public void run()
 			{
-				_myScenario.step();
+				openPlotter();
 			}
 		};
-		_actionLoadTestData.setText("Step");
+		_actionLoadTestData.setText("View in LPD");
 
 		_actionReloadDatafiles = new Action()
 		{
@@ -618,6 +623,44 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		};
 		_actionReloadDatafiles.setText("Reload");
 		_actionReloadDatafiles.setToolTipText("Reload data files");
+	}
+
+	protected void openPlotter()
+	{
+		IWorkbenchPage page = this.getViewSite().getPage();
+		IEditorInput ie = new IEditorInput(){
+			public boolean exists()
+			{
+				return true;
+			}
+			public ImageDescriptor getImageDescriptor()
+			{
+				return ImageDescriptor.getMissingImageDescriptor();
+			}
+			public String getName()
+			{
+				return "Pending";
+			}
+			public IPersistableElement getPersistable()
+			{
+				return null;
+			}
+			public String getToolTipText()
+			{
+				return "Pending plot";
+			}
+			@SuppressWarnings("unchecked")
+			public Object getAdapter(Class adapter)
+			{
+				return null;
+			}};
+		try
+		{
+			page.openEditor(ie, "org.mwc.asset.ASSETPlotEditor");
+		} catch (PartInitException e)
+		{
+			e.printStackTrace();
+		}		
 	}
 
 	protected void reloadDataFiles()
