@@ -130,7 +130,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		{
 			public void finished(long elapsedTime, String reason)
 			{
-				setScenarioStatus(_myScenario, "Stopped:" + reason);
+				setScenarioStatus(_myScenario, reason);
 			}
 
 			public void newScenarioStepTime(int val)
