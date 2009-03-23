@@ -22,7 +22,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 		IWorkbenchWindowActionDelegate
 {
 
-	protected CorePlotEditor _myEditor = null;
+	protected IChartBasedEditor _myEditor = null;
 
 	/*
 	 * (non-Javadoc)
@@ -35,9 +35,9 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 		if (targetEditor == null)
 			return;
 
-		if (targetEditor instanceof CorePlotEditor)
+		if (targetEditor instanceof IChartBasedEditor)
 		{
-			_myEditor = (CorePlotEditor) targetEditor;
+			_myEditor = (IChartBasedEditor) targetEditor;
 		}
 		else
 		{
@@ -47,7 +47,7 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 
 	}
 
-	public CorePlotEditor getEditor()
+	public IChartBasedEditor getEditor()
 	{
 		_myEditor = null;
 		// do we know our editor?
@@ -65,15 +65,10 @@ abstract public class CoreEditorAction implements IEditorActionDelegate,
 		return _myEditor;
 	}
 
-	protected IResourceProvider getPlot()
-	{
-		return getEditor();
-	}
-
 	protected PlainChart getChart()
 	{
 		PlainChart res = null;
-		CorePlotEditor editor = getEditor();
+		IChartBasedEditor editor = getEditor();
 		if (editor != null)
 			res = editor.getChart();
 		return res;

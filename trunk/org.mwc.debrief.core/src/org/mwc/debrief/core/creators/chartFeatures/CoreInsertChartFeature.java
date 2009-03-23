@@ -8,6 +8,7 @@ import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
+import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
@@ -145,11 +146,11 @@ abstract public class CoreInsertChartFeature extends CoreEditorAction
 						}
 
 						// find the editor
-						CorePlotEditor editor = getEditor();
+						IChartBasedEditor editor = getEditor();
 
 						// highlight the editor
 						PlatformUI.getWorkbench().getActiveWorkbenchWindow()
-								.getActivePage().activate(editor);
+								.getActivePage().activate((IWorkbenchPart) editor);
 
 						// select the shape
 						editor.selectPlottable(_theShape, _theLayer);

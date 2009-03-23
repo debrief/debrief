@@ -22,6 +22,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.*;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
+import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.actions.RangeBearing;
 import org.mwc.cmap.plotViewer.editors.chart.*;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
@@ -35,7 +36,7 @@ import MWC.GenericData.*;
 import MWC.TacticalData.IRollingNarrativeProvider;
 
 public abstract class CorePlotEditor extends EditorPart implements IResourceProvider,
-		IControllableViewport, ISelectionProvider, IPlotGUI
+		IControllableViewport, ISelectionProvider, IPlotGUI, IChartBasedEditor
 {
 
 	// //////////////////////////////
