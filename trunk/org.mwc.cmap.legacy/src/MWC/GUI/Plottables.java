@@ -258,7 +258,10 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 
 		// drop out if we don't have a data area for the projection
 		if (wa == null)
+		{
 			dest.getProjection().zoom(0.0);
+			wa = dest.getProjection().getVisibleDataArea();
+		}
 
 		while (enumer.hasNext())
 		{
