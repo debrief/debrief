@@ -853,12 +853,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						if (_myTemporalDataset != part)
-						{
-							// ok, we can't control this in the normal way, do some control
-							// hiding
-							reformatUI(false);
-						}
+						// ok, we can't control this in the normal way, do some control
+						// hiding
+						reformatUI(false);
 					}
 				});
 
