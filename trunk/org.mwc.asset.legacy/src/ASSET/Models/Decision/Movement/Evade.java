@@ -128,10 +128,12 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 				_evading = true;
 
 				// get teh target
-				ParticipantType target = monitor.getThisParticipant(_myTarget.intValue());
+				ParticipantType target = monitor.getThisParticipant(_myTarget
+						.intValue());
 
 				// what's his bearing rate?
-				WorldVector wv = target.getStatus().getLocation().subtract(status.getLocation());
+				WorldVector wv = target.getStatus().getLocation().subtract(
+						status.getLocation());
 
 				double brg = wv.getBearing();
 				double rng = wv.getRange();
@@ -238,17 +240,18 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 						finalDemandedCourse = new Double(demCourse);
 						// take us in the opposite direction, to ensure we're going the
 						// long way....
-						
+
 						// 
-						if(relBrg < 0)
+						if (relBrg < 0)
 						{
 							// he's on our left, go right
 							demCourse -= 90;
 						}
 						else
 							demCourse += 90;
-						
-						super.setLastActivity("Steering away prior to getting on final course");
+
+						super
+								.setLastActivity("Steering away prior to getting on final course");
 
 					}
 				}
@@ -258,7 +261,6 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 				res.setCourse(demCourse);
 				res.setSpeed(new WorldSpeed(8, WorldSpeed.Kts));
 			}
-
 			else
 			{
 				// right, do we have a final destination?
@@ -271,6 +273,7 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 					// are we on course yet?
 					if (Math.abs(sds.getCourse() - status.getCourse()) < 1)
 					{
+						res = new SimpleDemandedStatus(1, time);
 						res.setCourse(finalCourse);
 					}
 				}
@@ -318,8 +321,8 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 	 * @param tSpd
 	 * @return
 	 */
-	private static double calcBDot(double brg, double rng, double oCrse, double oSpd,
-			double tCrse, double tSpd)
+	private static double calcBDot(double brg, double rng, double oCrse,
+			double oSpd, double tCrse, double tSpd)
 	{
 		double relBrg = brg - oCrse;
 		double ATB = brg - Math.PI - tCrse;
@@ -356,7 +359,8 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 	 *          parameter for decide
 	 * @return the returned ASSET.Participants.DemandedStatus
 	 */
-	public ASSET.Participants.DemandedStatus decide(final ASSET.Participants.Status status,
+	public ASSET.Participants.DemandedStatus decide(
+			final ASSET.Participants.Status status,
 			ASSET.Models.Movement.MovementCharacteristics chars,
 			ASSET.Participants.DemandedStatus demStatus,
 			final ASSET.Models.Detection.DetectionList detections,
@@ -419,7 +423,8 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 								if (brg != null)
 								{
 									// is this of our target type
-									final ASSET.Participants.Category thisTarget = de.getTargetType();
+									final ASSET.Participants.Category thisTarget = de
+											.getTargetType();
 									if (_myTargetType.matches(thisTarget))
 									{
 										// yes, continue with this loop
@@ -560,7 +565,7 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 	 *             $Log: Evade.java,v $
 	 *             Revision 1.2  2006/11/06 16:11:36  Ian.Mayo
 	 *             Introduce UK CQD manoeuvre
-	 *
+	 * 
 	 *             Revision 1.1  2006/08/08 14:21:27  Ian.Mayo
 	 *             Second import
 	 *            
@@ -666,11 +671,13 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 		{
 			try
 			{
-				final java.beans.PropertyDescriptor[] res = {
+				final java.beans.PropertyDescriptor[] res =
+				{
 						prop("TargetType", "the type of vessel this model is evading"),
 						prop("FleeSpeed", "the speed this participant flees at (kts)"),
 						prop("FleeHeight", "the Height this participant flees at(m)"),
-						prop("FleePeriod", "the period this participant flees for (minutes)"),
+						prop("FleePeriod",
+								"the period this participant flees for (minutes)"),
 						prop("Name", "the name of this evasion model"), };
 				// res[0].setPropertyEditorClass(ASSET.GUI.Editors.TargetTypeEditor.class);
 				return res;
@@ -694,8 +701,8 @@ public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
 		 */
 		public Editable getEditable()
 		{
-			return new Evade(null, new WorldSpeed(12, WorldSpeed.M_sec), new WorldDistance(12,
-					WorldDistance.METRES), null);
+			return new Evade(null, new WorldSpeed(12, WorldSpeed.M_sec),
+					new WorldDistance(12, WorldDistance.METRES), null);
 		}
 
 	}
