@@ -10,4 +10,5 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.asset.legacy,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

@@ -15,6 +15,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.asset.sample_data,
  org.mwc.cmap.legacy,
  org.eclipse.draw2d;bundle-version="3.4.2"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.asset.core,
  org.mwc.asset.core.property_support
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

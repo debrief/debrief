@@ -10,5 +10,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy,
  org.mwc.asset.legacy
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: VesselMonitor.jar
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
