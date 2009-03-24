@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.core"
    name="Debrief Core"
-   version="1.0.59"
+   version="1.0.60"
    provider-name="MWC"
    class="org.mwc.debrief.core.DebriefPlugin">
 
@@ -12,23 +12,49 @@
          <export name="*"/>
       </library>
    </runtime>
-
-   <extension
-         point="org.eclipse.ui.editors">
-      <editor
-            name="Debrief Plot Editor"
-            extensions="xml,rep"
-            icon="icons/debrief_icon.gif"
-            class="org.mwc.debrief.core.editors.PlotEditor"
-            id="org.mwc.debrief.PlotEditor">
-      </editor>
-   </extension>
    <extension
          point="org.eclipse.ui.views">
       <category
             id="org.mwc.debrief.core.DebriefCategory"
             name="Debrief"/>
    </extension>   
+
+   <extension
+         point="org.eclipse.ui.editors">
+      <editor
+            name="Debrief Plot Editor"
+            icon="icons/debrief_icon.gif"
+            class="org.mwc.debrief.core.editors.PlotEditor"
+            id="org.mwc.debrief.PlotEditor">
+	      <contentTypeBinding
+	         contentTypeId="org.mwc.debrief.contenttype.DebriefPlot">
+	      </contentTypeBinding>
+       <contentTypeBinding
+             contentTypeId="org.mwc.debrief.contenttype.ReplayFile">
+       </contentTypeBinding>
+      </editor>
+   </extension>
+   
+   <extension point="org.eclipse.core.contenttype.contentTypes">
+   <content-type base-type="org.eclipse.core.runtime.xml"
+                 file-extensions="xml"
+                 id="org.mwc.debrief.contenttype.DebriefPlot"
+                 name="Debrief Plot File"
+                 priority="normal">
+      <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
+         <parameter name="element"
+                    value="plot">
+         </parameter>
+      </describer>
+   	</content-type>
+   <content-type
+         id="org.mwc.debrief.contenttype.ReplayFile"
+         file-extensions="rep"
+         name="Replay Track File"
+         priority="normal">
+   </content-type>
+	</extension>
+	
   
    
    <requires>

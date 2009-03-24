@@ -5,7 +5,8 @@
       version="1.0.76">
 
    <description>
-      [1.0.76] Force inclusion of sdk plugin (to allow classic updates)
+      [1.0.77] Explicitly indicate which types of xml file get edited by Debrief
+[1.0.76] Force inclusion of sdk plugin (to allow classic updates)
 [1.0.75] Ditch old track representation
 [1.0.74] Handle TMA &amp; Sensor tracks with identical names
 [1.0.73] More robust file-save across network shares (including
