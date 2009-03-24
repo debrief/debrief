@@ -684,6 +684,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		}
 		catch (PartInitException e)
 		{
+			ASSETPlugin.logError(Status.ERROR, "trouble opening ScenarioPlotter", e);
 			e.printStackTrace();
 		}
 	}
