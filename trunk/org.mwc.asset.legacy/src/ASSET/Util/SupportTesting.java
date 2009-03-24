@@ -413,8 +413,7 @@ public class SupportTesting extends junit.framework.TestCase
 
 
 
-  @SuppressWarnings("unchecked")
-	public static void callTestMethods(SupportTesting tt)
+  public static void callTestMethods(SupportTesting tt)
   {
     // find and run all methods beginning with test
     Method[] methods = tt.getClass().getMethods();

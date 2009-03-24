@@ -31,6 +31,11 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 	// //////////////////////////////////////////////////
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * the event fired to show the calculations in a detection
 	 */
 	final public static String SENSOR_COMPONENT_EVENT = "SensorComponents";

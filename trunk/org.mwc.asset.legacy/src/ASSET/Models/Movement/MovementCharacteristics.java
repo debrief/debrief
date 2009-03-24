@@ -27,6 +27,11 @@ public abstract class MovementCharacteristics implements MWC.GUI.Editable, java.
   //////////////////////////////////////////////////////
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * maximum speed (m/sec)
    */
   private WorldSpeed _maxSpeed = null;

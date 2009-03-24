@@ -19,6 +19,11 @@ import java.beans.PropertyDescriptor;
 public abstract class ThreeDimMovementCharacteristics extends MovementCharacteristics
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * min Height at which we can travel
    */
   protected WorldDistance _minHeight;

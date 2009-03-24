@@ -32,6 +32,12 @@ abstract public class InitialSensor extends CoreSensor
 
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+
+	/**
    * *************************************************
    * constructor
    * *************************************************

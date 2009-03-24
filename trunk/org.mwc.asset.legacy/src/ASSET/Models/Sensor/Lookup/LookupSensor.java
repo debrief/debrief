@@ -42,6 +42,11 @@ public abstract class LookupSensor extends CoreSensor
 	// //////////////////////////////////////////////////////////
 
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * our record of past detections
 	 */
 	protected Hashtable<ParticipantType, LastTargetContact> _pastContacts;

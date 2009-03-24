@@ -35,6 +35,11 @@ abstract public class Loader extends SwingCustomEditor
 {
 
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
    * the loader to handle actually building the scenario
    */
   LoaderCore _myLoader;

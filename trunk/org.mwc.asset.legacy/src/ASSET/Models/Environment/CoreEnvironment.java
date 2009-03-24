@@ -18,6 +18,11 @@ import MWC.GenericData.WorldVector;
 abstract public class CoreEnvironment implements EnvironmentType, java.io.Serializable, MWCModel
 {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
 	private String _myName;
 
   /**

@@ -174,6 +174,10 @@ public class UserControlEditor extends MWC.GUI.Properties.Swing.SwingCustomEdito
   abstract private class DemandedSliders extends JPanel
   {
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		/**
      * the demanded vlaue
      */
     JSlider _demanded;

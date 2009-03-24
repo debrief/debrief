@@ -15,6 +15,10 @@ import ASSET.Models.Sensor.Initial.InitialSensor.InitialSensorComponentsEvent;
 public abstract class BaseSensorViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor implements java.beans.PropertyChangeListener, MWC.GUI.Properties.NoEditorButtons
 {
   /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/**
    * the list of sensor components we build up, consuming them at each refresh
    */
   protected Vector<Object> _sensorEvents = new Vector<Object>(0, 1);
