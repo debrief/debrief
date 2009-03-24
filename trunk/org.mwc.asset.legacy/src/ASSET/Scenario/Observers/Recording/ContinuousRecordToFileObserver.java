@@ -45,8 +45,8 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
    */
   protected void performSetupProcessing(ScenarioType scenario)
   {
-    // ok, just create the output file
-    createOutputFile();
+    // ok, we don't create the output file here,
+  	// we defer output file creation until the first step
   }
 
   /**

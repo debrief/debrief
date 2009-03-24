@@ -183,7 +183,7 @@ public abstract class RecordToFileObserverType extends CoreObserver
       theName = theName.replaceAll("%s", scenario.getName());
 
       // now the current DTG
-      SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_hhmmss");
+      SimpleDateFormat sdf = new SimpleDateFormat("yyMMdd_HHmmss");
       theName = theName.replaceAll("%d", sdf.format(new Date()));
 
     }

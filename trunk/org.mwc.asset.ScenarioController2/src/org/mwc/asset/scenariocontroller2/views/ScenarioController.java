@@ -6,11 +6,16 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.Enumeration;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.eclipse.core.resources.IProject;
+import org.eclipse.core.resources.ResourcesPlugin;
+import org.eclipse.core.runtime.CoreException;
+import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
@@ -57,6 +62,7 @@ import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
+import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.ASSETReaderWriter;
 import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
@@ -140,8 +146,18 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				// update our own status indicator(s)
 				setScenarioStatus(_myScenario, reason);
 
-				// it's stopped running, tell the time controller, just in case it
-				// wants to respond
+				// it's stopped running, refresh the workspace
+				IProject theProj = getAProject();
+				try
+				{
+					theProj.refreshLocal(2,null);
+				}
+				catch (CoreException e)
+				{
+					ASSETPlugin.logError(Status.ERROR, "Had trouble refreshing project folder", e);
+					e.printStackTrace();
+				}
+				
 			}
 
 			public void newScenarioStepTime(int val)
@@ -458,6 +474,40 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 						controlFile, new java.io.FileInputStream(controlFile));
 
 				_theObservers = results.observerList;
+
+				// since we have a results container - we have enough information to set
+				// the output files
+				File tgtDir = results.outputDirectory;
+
+				// if the tgt dir is a relative reference, make it relative to
+				// our first project, not the user's login directory
+				if (isRelativePath(tgtDir))
+				{
+					// prepend the target directory with the root of the current project
+					IProject someProject = getAProject();
+					if (someProject != null)
+					{
+						// get the file-system path to this folder
+						IPath filePath = someProject.getLocation();
+
+						// ok, now stick the output folder in this parent
+						tgtDir = new File(filePath.toOSString() + "\\" + tgtDir.getPath());
+					}
+				}
+
+				Enumeration<ScenarioObserver> numer = _theObservers.elements();
+				while (numer.hasMoreElements())
+				{
+					ScenarioObserver thisS = numer.nextElement();
+					// does this worry about the output file?
+					if (thisS instanceof RecordToFileObserverType)
+					{
+						// yup, better store it...
+						RecordToFileObserverType rs = (RecordToFileObserverType) thisS;
+						rs.setDirectory(tgtDir);
+					}
+				}
+
 			}
 
 			if (_theObservers != null)
@@ -488,6 +538,40 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private IProject getAProject()
+	{
+		IProject res = null;
+		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
+				.getProjects();
+		if(projects != null)
+		{
+			if(projects.length > 0)
+				res = projects[0];
+		}
+		return res;
+	}
+
+	private static boolean isRelativePath(File tgtDir)
+	{
+		boolean res = true;
+
+		String thePath = tgtDir.getPath();
+		
+		// use series of tests to check whether this is a relative path
+		if(thePath.contains(":"))
+			res = false;
+		if(thePath.contains("\\\\"))
+			res = false;
+		if(thePath.charAt(0) == '\\')
+			res = false;
+		if(thePath.contains("//"))
+			res = false;
+		if(thePath.charAt(0) == '/')
+			res = false;	
+
+		return res;
 	}
 
 	private void loadThisObserverList(String controlFile,
@@ -623,8 +707,9 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		};
 		_viewInPlotter.setText("View in LPD");
 		_viewInPlotter.setToolTipText("View 2D overview of scenario");
-		_viewInPlotter.setImageDescriptor(CorePlugin.getImageDescriptor("icons/overview.gif"));
-		
+		_viewInPlotter.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/overview.gif"));
+
 		_actionReloadDatafiles = new Action()
 		{
 			public void run()
@@ -790,4 +875,29 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		// ignore...
 	}
 
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testMe extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testMe(final String val)
+		{
+			super(val);
+		}
+
+		@SuppressWarnings("synthetic-access")
+		public final void testRelativePathMethod()
+		{
+		  super.assertEquals("failed to recognise drive", false, ScenarioController.isRelativePath(new File("c:\\test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("\\test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("\\\\test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("//test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("////test.rep")));
+		  super.assertEquals("failed to recognise absolute ref", true, ScenarioController.isRelativePath(new File("test.rep")));
+		  super.assertEquals("failed to recognise relative ref", true, ScenarioController.isRelativePath(new File("./test.rep")));
+		  super.assertEquals("failed to recognise parent ref", true, ScenarioController.isRelativePath(new File("../test.rep")));
+		}
+	}
 }

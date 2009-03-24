@@ -138,7 +138,10 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
 
     // just check that/if we have an output file
     if (_os == null)
-      return;
+    {
+    	// ok, better sort out the output files.
+    	createOutputFile();
+    }
 
     // get the positions of the participants
     final Integer[] lst = _myScenario.getListOfParticipants();

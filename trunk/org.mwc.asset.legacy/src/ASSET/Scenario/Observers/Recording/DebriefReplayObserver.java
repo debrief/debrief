@@ -388,7 +388,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     }
 
     String msg = ";SENSOR: " + dateStr + " " + wrapName(hostName) + " " + col + " " + locStr + " " +
-      brgTxt + rangeTxt +
+      brgTxt + " " + rangeTxt +
       " " + sensor_name + " " + label + System.getProperty("line.separator");
 
     try
