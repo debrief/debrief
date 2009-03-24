@@ -33,6 +33,8 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	public static final String SCENARIO_CONTROLLER2 = "org.mwc.asset.ScenarioController2";
 
 	public static final String VESSEL_MONITOR = "org.mwc.asset.VesselMonitor";
+	
+	public static final String STATIC_DATA = "org.mwc.asset.sample_data";
 
 	public static final String SENSOR_MONITOR = "org.mwc.asset.SensorMonitor";
 
@@ -57,7 +59,6 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	public ASSETPlugin()
 	{
 		plugin = this;
-
 	}
 
 	/*

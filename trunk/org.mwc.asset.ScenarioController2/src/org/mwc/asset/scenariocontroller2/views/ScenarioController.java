@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -41,6 +42,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.core.ASSETPlugin;
+import org.mwc.asset.sample_data.SampleDataPlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
@@ -66,11 +68,10 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 public class ScenarioController extends ViewPart implements ISelectionProvider
 {
 
-	// private static final String DUMMY_CONTROL_FILE =
-	// "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_control.xml";
-	// private static final String DUMMY_SCENARIO_FILE =
-	// "C:\\dev\\cmap\\org.mwc.asset.sample_data\\data\\force_prot_scenario.xml";
-
+	/**
+	 * remember the files we've loaded
+	 * 
+	 */
 	private String _scenarioFileName = null;
 	private String _controlFileName = null;
 
@@ -78,7 +79,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	 * ui bits
 	 * 
 	 */
-	private Action _actionLoadTestData;
+	private Action _viewInPlotter;
 	private Action _actionReloadDatafiles;
 	private DropTarget target;
 	private UISkeleton _myUI;
@@ -135,7 +136,11 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		{
 			public void finished(long elapsedTime, String reason)
 			{
+				// update our own status indicator(s)
 				setScenarioStatus(_myScenario, reason);
+
+				// it's stopped running, tell the time controller, just in case it
+				// wants to respond
 			}
 
 			public void newScenarioStepTime(int val)
@@ -592,27 +597,27 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 	private void fillLocalPullDown(IMenuManager manager)
 	{
-		manager.add(_actionLoadTestData);
+		manager.add(_viewInPlotter);
 		manager.add(new Separator());
 		manager.add(_actionReloadDatafiles);
 	}
 
 	private void fillLocalToolBar(IToolBarManager manager)
 	{
-		manager.add(_actionLoadTestData);
+		manager.add(_viewInPlotter);
 		manager.add(_actionReloadDatafiles);
 	}
 
 	private void makeActions()
 	{
-		_actionLoadTestData = new Action()
+		_viewInPlotter = new Action()
 		{
 			public void run()
 			{
 				openPlotter();
 			}
 		};
-		_actionLoadTestData.setText("View in LPD");
+		_viewInPlotter.setText("View in LPD");
 
 		_actionReloadDatafiles = new Action()
 		{
@@ -628,43 +633,93 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	protected void openPlotter()
 	{
 		IWorkbenchPage page = this.getViewSite().getPage();
-		IEditorInput ie = new IEditorInput(){
+		IEditorInput ie = new IEditorInput()
+		{
 			public boolean exists()
 			{
 				return true;
 			}
+
 			public ImageDescriptor getImageDescriptor()
 			{
 				return ImageDescriptor.getMissingImageDescriptor();
 			}
+
 			public String getName()
 			{
 				return "Pending";
 			}
+
 			public IPersistableElement getPersistable()
 			{
 				return null;
 			}
+
 			public String getToolTipText()
 			{
 				return "Pending plot";
 			}
+
 			@SuppressWarnings("unchecked")
 			public Object getAdapter(Class adapter)
 			{
 				return null;
-			}};
+			}
+		};
 		try
 		{
 			page.openEditor(ie, "org.mwc.asset.ASSETPlotEditor");
-		} catch (PartInitException e)
+		}
+		catch (PartInitException e)
 		{
 			e.printStackTrace();
-		}		
+		}
 	}
 
 	protected void reloadDataFiles()
 	{
+		// get ourselves a scenario file, if we don't have one.
+		if (_scenarioFileName == null)
+		{
+			URL scenURL = null;
+			try
+			{
+				SampleDataPlugin data = new SampleDataPlugin();
+				scenURL = data.getFileURL("/data/lookup_tutorial_scenario.xml");
+			}
+			catch (IOException e)
+			{
+				// aah well, never mind
+				ASSETPlugin.logError(Status.ERROR, "Failed to load demo scenario data",
+						e);
+				e.printStackTrace();
+			}
+			// did it work?
+			if (scenURL != null)
+				_scenarioFileName = scenURL.getFile();
+		}
+
+		// now for the control file
+		if (_controlFileName == null)
+		{
+			URL contURL = null;
+			try
+			{
+				SampleDataPlugin data = new SampleDataPlugin();
+				contURL = data.getFileURL("/data/lookup_test_control.xml");
+			}
+			catch (IOException e)
+			{
+				// aah well, never mind
+				ASSETPlugin.logError(Status.ERROR, "Failed to load demo control data",
+						e);
+				e.printStackTrace();
+			}
+			// did it work?
+			if (contURL != null)
+				_controlFileName = contURL.getFile();
+		}
+
 		// ok, force the data-files to be reloaded
 		if (_scenarioFileName != null)
 			filesDropped(new String[]

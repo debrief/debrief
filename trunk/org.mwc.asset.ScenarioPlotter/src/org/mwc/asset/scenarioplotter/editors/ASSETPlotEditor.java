@@ -1,26 +1,10 @@
 package org.mwc.asset.scenarioplotter.editors;
 
-import java.awt.Color;
-import java.util.Iterator;
-import java.util.Vector;
-
-import org.eclipse.core.resources.IMarker;
-import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.IProgressMonitor;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.viewers.ISelection;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.ISelectionProvider;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.swt.dnd.DND;
-import org.eclipse.swt.dnd.DropTarget;
-import org.eclipse.swt.dnd.DropTargetEvent;
-import org.eclipse.swt.dnd.DropTargetListener;
-import org.eclipse.swt.dnd.FileTransfer;
-import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
@@ -29,35 +13,26 @@ import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.asset.core.ASSETPlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
-import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.Layers.DataListener;
-import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
-import MWC.TacticalData.IRollingNarrativeProvider;
 
 public class ASSETPlotEditor extends EditorPart implements
 		IControllableViewport, IChartBasedEditor
@@ -127,6 +102,9 @@ public class ASSETPlotEditor extends EditorPart implements
 
 		// make sure we can see the data
 		_myChart.rescale();
+		
+		// hey, push ourselves out a little, so we keep it in sight.
+		_myChart.getCanvas().getProjection().zoom(2.0);
 		
 		// and ask for a refresh
 		fireDirty();
