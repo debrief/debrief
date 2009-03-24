@@ -43,6 +43,7 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.sample_data.SampleDataPlugin;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
@@ -402,6 +403,9 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				}
 			}
 		}
+
+		// lastly, select me - so our listeners get informed
+		activateMe();
 	}
 
 	private void scenarioAssigned(String thisName)
@@ -618,7 +622,9 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			}
 		};
 		_viewInPlotter.setText("View in LPD");
-
+		_viewInPlotter.setToolTipText("View 2D overview of scenario");
+		_viewInPlotter.setImageDescriptor(CorePlugin.getImageDescriptor("icons/overview.gif"));
+		
 		_actionReloadDatafiles = new Action()
 		{
 			public void run()
@@ -628,6 +634,8 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		};
 		_actionReloadDatafiles.setText("Reload");
 		_actionReloadDatafiles.setToolTipText("Reload data files");
+		ImageDescriptor desc = CorePlugin.getImageDescriptor("icons/repaint.gif");
+		_actionReloadDatafiles.setImageDescriptor(desc);
 	}
 
 	protected void openPlotter()
@@ -668,10 +676,29 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		};
 		try
 		{
+			// first, open the editor
 			page.openEditor(ie, "org.mwc.asset.ASSETPlotEditor");
+
+			// now fire ourselves as active
+			activateMe();
 		}
 		catch (PartInitException e)
 		{
+			e.printStackTrace();
+		}
+	}
+
+	private void activateMe()
+	{
+		try
+		{
+			getSite().getWorkbenchWindow().getActivePage().showView(
+					getViewSite().getId());
+		}
+		catch (PartInitException e)
+		{
+			ASSETPlugin.logError(Status.ERROR,
+					"failed to activate scenario controller", e);
 			e.printStackTrace();
 		}
 	}
