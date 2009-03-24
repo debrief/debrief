@@ -1,10 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Sample_data Plug-in
-Bundle-SymbolicName: org.mwc.asset.sample_data
+Bundle-SymbolicName: org.mwc.asset.sample_data;singleton:=true
 Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.asset.sample_data.SampleDataPlugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime
-Eclipse-LazyStart: false
 Export-Package: org.mwc.asset.sample_data
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
