@@ -349,7 +349,7 @@
          point="org.eclipse.ui.editorActions">
       <editorContribution
             id="org.mwc.debrief.core.editors.PlotEditorActions"
-            targetID="org.mwc.debrief.core.editors.PlotEditor">
+            targetID="org.mwc.debrief.PlotEditor">
          <menu
                id="org.mwc.debrief.core.EditorView"
                label="&amp;View"
@@ -395,6 +395,7 @@
         point="org.eclipse.core.runtime.products">
      <product
            application="org.eclipse.ui.ide.workbench"
+           description="Debrief Maritime Analysis Software"
            name="DebriefNG">
         <property
               name="aboutImage"
