@@ -4,15 +4,22 @@
 package org.mwc.debrief.core.creators.chartFeatures;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.plotViewer.actions.CoreEditorAction;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.Palette.PlainCreate;
 import MWC.GenericData.WorldArea;
