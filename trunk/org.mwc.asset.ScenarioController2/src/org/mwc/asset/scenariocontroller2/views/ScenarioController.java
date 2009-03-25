@@ -353,7 +353,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 
 	}
 
-	protected void filesDropped(String[] fileNames)
+	public void filesDropped(String[] fileNames)
 	{
 		// ok, loop through the files
 		for (int i = 0; i < fileNames.length; i++)
