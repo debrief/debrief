@@ -1,0 +1,14 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Demonstrator Plug-in
+Bundle-SymbolicName: org.mwc.gnd.demonstrator; singleton:=true
+Bundle-Version: 1.0.0
+Bundle-Activator: org.mwc.gnd.demonstrator.Activator
+Require-Bundle: org.eclipse.ui,
+ org.eclipse.core.runtime,
+ org.eclipse.ui.views;bundle-version="3.3.1",
+ org.mwc.debrief.legacy;bundle-version="1.0.64",
+ org.mwc.cmap.legacy;bundle-version="1.0.46",
+ org.mwc.cmap.core;bundle-version="1.0.65"
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
