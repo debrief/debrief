@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<clay-model clay-version="1.4.2">
+<database-model alias="" author="" begin-script="" end-script="" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
+<database-model-description/>
+<schema-list>
+<schema alias="" name="DEFAULT_SCHEMA" remarks="" uid="b235e6:1204ba64eba:-7ffd">
+<schema-description/>
+<domain-list/>
+<table-list>
+<table alias="" name="Exercises" remarks="" uid="b235e6:1204ba64eba:-7fff">
+<table-description/>
+<table-figure-bounds height="72" width="164" x="36" y="22"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="exerciseId" remarks="" uid="669c84:1204bafd94d:-7fee">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7feb">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_EXERCISES" remarks="" uid="b235e6:1204ba64eba:-7ffe">
+<primary-key-description/>
+<primary-key-column name="exerciseId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list/>
+<index-list>
+<index alias="" name="IX_Exercises_id" remarks="Serial counter must be unique" uid="669c84:1204bafd94d:-7fda" unique="true">
+<index-description/>
+<index-column name="exerciseId" sort="ASC"/>
+</index>
+<index alias="" name="IX_Exercises_name" remarks="Exercise names must be unique" uid="669c84:1204bafd94d:-7fd5" unique="true">
+<index-description/>
+<index-column name="name" sort="ASC"/>
+</index>
+</index-list>
+</table>
+<table alias="" name="Serials" remarks="Time limited component of exercise" uid="669c84:1204bafd94d:-7fff">
+<table-description/>
+<table-figure-bounds height="91" width="138" x="50" y="171"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="serialId" remarks="" uid="669c84:1204bafd94d:-7fe4">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7fe3">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="exerciseId" remarks="" uid="669c84:1204bafd94d:-7fa6">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_SERIALS" remarks="" uid="669c84:1204bafd94d:-7ffe">
+<primary-key-description/>
+<primary-key-column name="serialId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_Serials_1" on-delete="" on-update="" referenced-key="PK_EXERCISES" referenced-table="Exercises" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7fa7">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="exerciseId" referenced-key-column-name="exerciseId"/>
+</foreign-key>
+</foreign-key-list>
+<index-list>
+<index alias="" name="IX_Serials_id" remarks="" uid="669c84:1204bafd94d:-7fd9" unique="false">
+<index-description/>
+<index-column name="serialId" sort="ASC"/>
+</index>
+</index-list>
+</table>
+<table alias="" name="Datasets" remarks="" uid="669c84:1204bafd94d:-7ffd">
+<table-description/>
+<table-figure-bounds height="122" width="156" x="399" y="483"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7fde">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7fdb">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7d1d">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sensorId" remarks="" uid="669c84:1204bafd94d:-7ca0">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_DATASETS" remarks="" uid="669c84:1204bafd94d:-7ffc">
+<primary-key-description/>
+<primary-key-column name="datasetId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_Datasets_1" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7d1e">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="dataSourceId" referenced-key-column-name="dataSourceId"/>
+</foreign-key>
+<foreign-key alias="" name="FK_Datasets_2" on-delete="" on-update="" referenced-key="PK_SENSORTYPES" referenced-table="SensorTypes" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7ca1">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="sensorId" referenced-key-column-name="sensorId"/>
+</foreign-key>
+</foreign-key-list>
+<index-list>
+<index alias="" name="IX_Datasets_id" remarks="" uid="669c84:1204bafd94d:-7fd8" unique="true">
+<index-description/>
+<index-column name="datasetId" sort="ASC"/>
+</index>
+</index-list>
+</table>
+<table alias="" name="DataSources" remarks="" uid="669c84:1204bafd94d:-7f0d">
+<table-description>Platform or vehicle that hosts sensor</table-description>
+<table-figure-bounds height="93" width="122" x="58" y="514"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7f08">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="name" remarks="" uid="669c84:1204bafd94d:-7f07">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_DATASOURCES" remarks="" uid="669c84:1204bafd94d:-7f0c">
+<primary-key-description/>
+<primary-key-column name="dataSourceId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list/>
+<index-list>
+<index alias="" name="IX_DataSources_id" remarks="" uid="669c84:1204bafd94d:-7eb0" unique="true">
+<index-description/>
+<index-column name="dataSourceId" sort="ASC"/>
+</index>
+<index alias="" name="IX_DataSources_Name" remarks="" uid="669c84:1204bafd94d:-7eaf" unique="true">
+<index-description/>
+<index-column name="name" sort="ASC"/>
+</index>
+</index-list>
+</table>
+<table alias="" name="Participations" remarks="" uid="669c84:1204bafd94d:-7eae">
+<table-description>Instances of a data source taking part in a serial</table-description>
+<table-figure-bounds height="74" width="154" x="40" y="356"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7d86">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="serialId" remarks="" uid="669c84:1204bafd94d:-7d52">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_PARTICIPATIONS" remarks="" uid="669c84:1204bafd94d:-7ead">
+<primary-key-description/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_Participations_1" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7d87">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="dataSourceId" referenced-key-column-name="dataSourceId"/>
+</foreign-key>
+<foreign-key alias="" name="FK_Participations_2" on-delete="" on-update="" referenced-key="PK_SERIALS" referenced-table="Serials" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7d53">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="serialId" referenced-key-column-name="serialId"/>
+</foreign-key>
+</foreign-key-list>
+<index-list>
+<index alias="" name="IX_Participations_1" remarks="" uid="669c84:1204bafd94d:-7d22" unique="true">
+<index-description/>
+<index-column name="dataSourceId" sort="ASC"/>
+<index-column name="serialId" sort="ASC"/>
+</index>
+</index-list>
+</table>
+<table alias="" name="DataItem" remarks="" uid="669c84:1204bafd94d:-7cd6">
+<table-description>All data recordings</table-description>
+<table-figure-bounds height="124" width="178" x="711" y="480"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="itemId" remarks="" uid="669c84:1204bafd94d:-7cd2">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="location" remarks="" uid="669c84:1204bafd94d:-7cd1">
+<column-description/>
+<data-type jdbc-type="1111" name="POINT" selected-variant-pattern="POINT">
+<variant type-name-pattern="POINT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dateTime" remarks="" uid="669c84:1204bafd94d:-7cd0">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7ccb">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_DATAITEM" remarks="" uid="669c84:1204bafd94d:-7cd5">
+<primary-key-description/>
+<primary-key-column name="itemId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="FK_DataItem_1" on-delete="" on-update="" referenced-key="PK_DATASETS" referenced-table="Datasets" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7ccc">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="datasetId" referenced-key-column-name="datasetId"/>
+</foreign-key>
+</foreign-key-list>
+<index-list>
+<index alias="" name="IX_DataItem_id" remarks="" uid="669c84:1204bafd94d:-7c8c" unique="true">
+<index-description/>
+<index-column name="itemId" sort="ASC"/>
+</index>
+<index alias="" name="IX_DataItem_dtg" remarks="" uid="669c84:1204bafd94d:-7c88" unique="false">
+<index-description/>
+<index-column name="dateTime" sort="ASC"/>
+</index>
+</index-list>
+</table>
+<table alias="" name="SensorTypes" remarks="" uid="669c84:1204bafd94d:-7cc5">
+<table-description/>
+<table-figure-bounds height="125" width="159" x="405" y="219"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sensorId" remarks="" uid="669c84:1204bafd94d:-7cc1">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7cc0">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_SENSORTYPES" remarks="" uid="669c84:1204bafd94d:-7cc4">
+<primary-key-description/>
+<primary-key-column name="sensorId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list/>
+<index-list>
+<index alias="" name="IX_SensorTypes_id" remarks="" uid="669c84:1204bafd94d:-7c8e" unique="true">
+<index-description/>
+<index-column name="sensorId" sort="ASC"/>
+</index>
+<index alias="" name="IX_SensorTypes_name" remarks="" uid="669c84:1204bafd94d:-7c8d" unique="true">
+<index-description/>
+<index-column name="name" sort="ASC"/>
+</index>
+</index-list>
+</table>
+</table-list>
+</schema>
+</schema-list>
+</database-model>
+</clay-model>
