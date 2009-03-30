@@ -9,7 +9,7 @@
 <table-list>
 <table alias="" name="Exercises" remarks="" uid="b235e6:1204ba64eba:-7fff">
 <table-description/>
-<table-figure-bounds height="72" width="164" x="36" y="22"/>
+<table-figure-bounds height="72" width="164" x="37" y="22"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="exerciseId" remarks="" uid="669c84:1204bafd94d:-7fee">
 <column-description/>
@@ -45,7 +45,7 @@
 </table>
 <table alias="" name="Serials" remarks="Time limited component of exercise" uid="669c84:1204bafd94d:-7fff">
 <table-description/>
-<table-figure-bounds height="122" width="181" x="42" y="171"/>
+<table-figure-bounds height="122" width="181" x="28" y="171"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="serialId" remarks="" uid="669c84:1204bafd94d:-7fe4">
 <column-description/>
@@ -110,7 +110,7 @@
 </table>
 <table alias="" name="Datasets" remarks="" uid="669c84:1204bafd94d:-7ffd">
 <table-description/>
-<table-figure-bounds height="122" width="156" x="370" y="449"/>
+<table-figure-bounds height="122" width="156" x="365" y="496"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7fde">
 <column-description/>
@@ -181,7 +181,7 @@
 </table>
 <table alias="" name="DataSources" remarks="" uid="669c84:1204bafd94d:-7f0d">
 <table-description>Platform or vehicle that hosts sensor</table-description>
-<table-figure-bounds height="93" width="122" x="58" y="514"/>
+<table-figure-bounds height="93" width="122" x="58" y="510"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7f08">
 <column-description/>
@@ -215,7 +215,7 @@
 </table>
 <table alias="" name="Participations" remarks="" uid="669c84:1204bafd94d:-7eae">
 <table-description>Instances of a data source taking part in a serial</table-description>
-<table-figure-bounds height="74" width="154" x="40" y="356"/>
+<table-figure-bounds height="74" width="154" x="42" y="356"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7d86">
 <column-description/>
@@ -260,7 +260,7 @@
 </table>
 <table alias="" name="DataItem" remarks="" uid="669c84:1204bafd94d:-7cd6">
 <table-description>All data recordings</table-description>
-<table-figure-bounds height="124" width="178" x="689" y="329"/>
+<table-figure-bounds height="124" width="178" x="682" y="495"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="itemId" remarks="" uid="669c84:1204bafd94d:-7cd2">
 <column-description/>
