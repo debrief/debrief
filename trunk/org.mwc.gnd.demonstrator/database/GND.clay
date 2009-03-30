@@ -23,6 +23,12 @@
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="description" remarks="" uid="1b7c63f:12055d7ae12:-7f4d">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
 </column-list>
 <primary-key alias="" name="PK_EXERCISES" remarks="" uid="b235e6:1204ba64eba:-7ffe">
 <primary-key-description/>
@@ -31,10 +37,6 @@
 <unique-key-list/>
 <foreign-key-list/>
 <index-list>
-<index alias="" name="IX_Exercises_id" remarks="Serial counter must be unique" uid="669c84:1204bafd94d:-7fda" unique="true">
-<index-description/>
-<index-column name="exerciseId" sort="ASC"/>
-</index>
 <index alias="" name="IX_Exercises_name" remarks="Exercise names must be unique" uid="669c84:1204bafd94d:-7fd5" unique="true">
 <index-description/>
 <index-column name="name" sort="ASC"/>
@@ -43,7 +45,7 @@
 </table>
 <table alias="" name="Serials" remarks="Time limited component of exercise" uid="669c84:1204bafd94d:-7fff">
 <table-description/>
-<table-figure-bounds height="91" width="138" x="50" y="171"/>
+<table-figure-bounds height="122" width="181" x="42" y="171"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="serialId" remarks="" uid="669c84:1204bafd94d:-7fe4">
 <column-description/>
@@ -63,6 +65,32 @@
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="startDTG" remarks="" uid="1b7c63f:12055d7ae12:-7f51">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="endDTG" remarks="" uid="1b7c63f:12055d7ae12:-7f50">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="description" remarks="" uid="1b7c63f:12055d7ae12:-7f4a">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
 </column-list>
 <primary-key alias="" name="PK_SERIALS" remarks="" uid="669c84:1204bafd94d:-7ffe">
 <primary-key-description/>
@@ -78,16 +106,11 @@
 <foreign-key-column column-name="exerciseId" referenced-key-column-name="exerciseId"/>
 </foreign-key>
 </foreign-key-list>
-<index-list>
-<index alias="" name="IX_Serials_id" remarks="" uid="669c84:1204bafd94d:-7fd9" unique="false">
-<index-description/>
-<index-column name="serialId" sort="ASC"/>
-</index>
-</index-list>
+<index-list/>
 </table>
 <table alias="" name="Datasets" remarks="" uid="669c84:1204bafd94d:-7ffd">
 <table-description/>
-<table-figure-bounds height="122" width="156" x="399" y="483"/>
+<table-figure-bounds height="122" width="156" x="370" y="449"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7fde">
 <column-description/>
@@ -107,7 +130,7 @@
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sensorId" remarks="" uid="669c84:1204bafd94d:-7ca0">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="formatId" remarks="" uid="1b7c63f:12055d7ae12:-7f74">
 <column-description/>
 <data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
 <variant type-name-pattern="INTEGER"/>
@@ -127,20 +150,22 @@
 </foreign-key-figure>
 <foreign-key-column column-name="dataSourceId" referenced-key-column-name="dataSourceId"/>
 </foreign-key>
-<foreign-key alias="" name="FK_Datasets_2" on-delete="" on-update="" referenced-key="PK_SENSORTYPES" referenced-table="SensorTypes" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7ca1">
+<foreign-key alias="" name="FK_Datasets_2" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1b7c63f:12055d7ae12:-7fda">
 <foreign-key-description/>
 <foreign-key-figure>
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
-<foreign-key-column column-name="sensorId" referenced-key-column-name="sensorId"/>
+<foreign-key-column column-name="dataSourceId" referenced-key-column-name="dataSourceId"/>
+</foreign-key>
+<foreign-key alias="" name="FK_Datasets_3" on-delete="" on-update="" referenced-key="PK_DATAFORMATS" referenced-table="DataFormats" referenced-table-schema="DEFAULT_SCHEMA" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1b7c63f:12055d7ae12:-7f75">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="formatId" referenced-key-column-name="formatId"/>
 </foreign-key>
 </foreign-key-list>
-<index-list>
-<index alias="" name="IX_Datasets_id" remarks="" uid="669c84:1204bafd94d:-7fd8" unique="true">
-<index-description/>
-<index-column name="datasetId" sort="ASC"/>
-</index>
-</index-list>
+<index-list/>
 </table>
 <table alias="" name="DataSources" remarks="" uid="669c84:1204bafd94d:-7f0d">
 <table-description>Platform or vehicle that hosts sensor</table-description>
@@ -223,7 +248,7 @@
 </table>
 <table alias="" name="DataItem" remarks="" uid="669c84:1204bafd94d:-7cd6">
 <table-description>All data recordings</table-description>
-<table-figure-bounds height="124" width="178" x="711" y="480"/>
+<table-figure-bounds height="124" width="178" x="689" y="329"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="itemId" remarks="" uid="669c84:1204bafd94d:-7cd2">
 <column-description/>
@@ -231,10 +256,10 @@
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="location" remarks="" uid="669c84:1204bafd94d:-7cd1">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7ccb">
 <column-description/>
-<data-type jdbc-type="1111" name="POINT" selected-variant-pattern="POINT">
-<variant type-name-pattern="POINT"/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dateTime" remarks="" uid="669c84:1204bafd94d:-7cd0">
@@ -247,10 +272,22 @@
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7ccb">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="location" remarks="" uid="669c84:1204bafd94d:-7cd1">
 <column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
+<data-type jdbc-type="1111" name="POINT" selected-variant-pattern="POINT">
+<variant type-name-pattern="POINT"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schema" remarks="URI definition of how any XML child-data is stored" uid="1b7c63f:12055d7ae12:-7f45">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="data" remarks="Block of supplemental data, encoded according to schema field" uid="1b7c63f:12055d7ae12:-7f44">
+<column-description/>
+<data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
+<variant type-name-pattern="TEXT"/>
 </data-type>
 </column>
 </column-list>
@@ -269,21 +306,17 @@
 </foreign-key>
 </foreign-key-list>
 <index-list>
-<index alias="" name="IX_DataItem_id" remarks="" uid="669c84:1204bafd94d:-7c8c" unique="true">
-<index-description/>
-<index-column name="itemId" sort="ASC"/>
-</index>
 <index alias="" name="IX_DataItem_dtg" remarks="" uid="669c84:1204bafd94d:-7c88" unique="false">
 <index-description/>
 <index-column name="dateTime" sort="ASC"/>
 </index>
 </index-list>
 </table>
-<table alias="" name="SensorTypes" remarks="" uid="669c84:1204bafd94d:-7cc5">
-<table-description/>
-<table-figure-bounds height="125" width="159" x="405" y="219"/>
+<table alias="" name="DataFormats" remarks="" uid="669c84:1204bafd94d:-7cc5">
+<table-description>Types of data format. Typically one per sensor or data file type.</table-description>
+<table-figure-bounds height="125" width="159" x="364" y="246"/>
 <column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="sensorId" remarks="" uid="669c84:1204bafd94d:-7cc1">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="formatId" remarks="" uid="669c84:1204bafd94d:-7cc1">
 <column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
@@ -295,18 +328,32 @@
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="icon" remarks="Path to icon used for this format" uid="1b7c63f:12055d7ae12:-7ff3">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schema" remarks="URI for this resource, possibly XML schema path" uid="1b7c63f:12055d7ae12:-7ff2">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="1b7c63f:12055d7ae12:-7fb9">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
 </column-list>
-<primary-key alias="" name="PK_SENSORTYPES" remarks="" uid="669c84:1204bafd94d:-7cc4">
+<primary-key alias="" name="PK_DATAFORMATS" remarks="" uid="669c84:1204bafd94d:-7cc4">
 <primary-key-description/>
-<primary-key-column name="sensorId"/>
+<primary-key-column name="formatId"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list/>
 <index-list>
-<index alias="" name="IX_SensorTypes_id" remarks="" uid="669c84:1204bafd94d:-7c8e" unique="true">
-<index-description/>
-<index-column name="sensorId" sort="ASC"/>
-</index>
 <index alias="" name="IX_SensorTypes_name" remarks="" uid="669c84:1204bafd94d:-7c8d" unique="true">
 <index-description/>
 <index-column name="name" sort="ASC"/>
