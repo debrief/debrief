@@ -65,6 +65,7 @@ import ASSET.Scenario.Observers.*;
 import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefDeployableSensorLocationObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
+import ASSET.Scenario.Observers.Recording.RecordStatusToDBObserverType;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
 import ASSET.Scenario.Observers.Summary.ElapsedTimeObserver;
 import ASSET.Scenario.Observers.Summary.FinalStateObserver;
@@ -300,6 +301,10 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       else if (observer instanceof DetectionObserver)
       {
         DetectionObserverHandler.exportThis(observer, sens, doc);
+      }
+      else if (observer instanceof RecordStatusToDBObserverType)
+      {
+        RecordToDatabaseObserverHandler.exportThis(observer, sens, doc);
       }
 
     }

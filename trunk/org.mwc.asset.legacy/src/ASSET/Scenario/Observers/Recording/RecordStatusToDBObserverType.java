@@ -10,7 +10,7 @@ import java.sql.Statement;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Vector;
+import java.util.Iterator;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
@@ -26,6 +26,7 @@ import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.CoreObserver;
 import MWC.GenericData.Duration;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
@@ -36,6 +37,12 @@ import MWC.GenericData.WorldSpeed;
 public class RecordStatusToDBObserverType extends CoreObserver implements
 		ASSET.Scenario.ScenarioSteppedListener
 {
+	private static final String POSITION_FORMAT = "SIMPLE_POSITION_FORMAT";
+
+	private static final String NARRATIVE_FORMAT = "SIMPLE_NARRATIVE_FORMAT";
+
+	private static final String DETECTION_FORMAT = "SIMPLE_DETECTION_FORMAT";
+
 	/**
 	 * keep track of whether the analyst wants detections recorded
 	 */
@@ -60,6 +67,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 	private HashMap<String, Integer> _participantIds;
 
+	private String _datasetPrefix;
+
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
@@ -83,11 +92,12 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	 *          what to call this narrative observer
 	 * @param isActive
 	 *          whether this observer is active
+	 * @param datasetPrefix
 	 */
 	public RecordStatusToDBObserverType(final boolean recordDetections,
 			boolean recordDecisions, final boolean recordPositions,
 			final TargetType subjectToTrack, final String observerName,
-			boolean isActive)
+			boolean isActive, String datasetPrefix)
 	{
 		super(observerName, isActive);
 
@@ -95,6 +105,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		_recordDecisions = recordDecisions;
 		_recordPositions = recordPositions;
 		_subjectToTrack = subjectToTrack;
+		_datasetPrefix = datasetPrefix;
 
 		_participantIds = new HashMap<String, Integer>();
 	}
@@ -130,55 +141,16 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	protected void writeThesePositionDetails(WorldLocation loc, Status stat,
 			ParticipantType pt, long newTime)
 	{
-		// start off with the dataset
 		try
 		{
 			// see if we've loaded this participant
-			Integer theIndex = _participantIds.get(pt.getName());
-			int thisParticipantIndex = 0;
+			Integer theIndex = _participantIds.get(pt.getName() + POSITION_FORMAT);
 			PreparedStatement stP;
-			Statement st = _conn.createStatement();
 
 			if (theIndex == null)
 			{
-				// does it exist in the database?
-				ResultSet rs = st.executeQuery("SELECT datasourceid from datasources where name = '"
-								+ pt.getName() + "';");
-				if(rs.next())
-				{
-					thisParticipantIndex = rs.getInt(1);
-				}
-				else
-				{
-					// nope, better create it
-					stP = _conn
-							.prepareStatement("INSERT INTO datasources(name) VALUES (?)");
-					stP.setString(1, pt.getName());
-					stP.executeUpdate();
-					stP.close();
-
-					// and get the id
-					rs = st
-							.executeQuery("SELECT Max(datasourceid) AS MaxOfID FROM datasources;");
-					rs.next();
-					thisParticipantIndex = rs.getInt(1);
-				}
-
-				// ok, now create the dataset
-				stP = _conn
-						.prepareStatement("INSERT INTO datasets(name, datasourceid, formatId) VALUES (?,?,1)");
-				stP.setString(1, "Position log:" + new Date().toGMTString());
-				stP.setInt(2, thisParticipantIndex);
-				stP.executeUpdate();
-				stP.close();
-
-				// and get the id
-				rs = st
-						.executeQuery("SELECT Max(datasetid) AS MaxOfID FROM datasets;");
-				rs.next();
-				int thisDatasetIndex = rs.getInt(1);
-				theIndex = new Integer(thisDatasetIndex);
-				_participantIds.put(pt.getName(), theIndex);
+				theIndex = getDatasetIndexFor(pt.getName(), POSITION_FORMAT);
+				_participantIds.put(pt.getName() + POSITION_FORMAT, theIndex);
 			}
 
 			stP = _conn
@@ -189,14 +161,82 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			stP.setDouble(4, loc.getLong());
 			stP.executeUpdate();
 			stP.close();
-			
-			// and close our reuseable statement
-			st.close();
 		}
 		catch (SQLException e)
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private Integer getDatasetIndexFor(String participantName, String dataFormat)
+			throws SQLException
+	{
+		int thisParticipantIndex = 0;
+		ResultSet rs;
+		PreparedStatement stP;
+		Statement st = _conn.createStatement();
+
+		// does the participant in the database?
+		rs = st.executeQuery("SELECT datasourceid from datasources where name = '"
+				+ participantName + "';");
+		if (rs.next())
+		{
+			thisParticipantIndex = rs.getInt(1);
+		}
+		else
+		{
+			// nope, better create it
+			stP = _conn.prepareStatement("INSERT INTO datasources(name) VALUES (?)");
+			stP.setString(1, participantName);
+			stP.executeUpdate();
+			stP.close();
+
+			// and get the id
+			rs = st
+					.executeQuery("SELECT Max(datasourceid) AS MaxOfID FROM datasources;");
+			rs.next();
+			thisParticipantIndex = rs.getInt(1);
+		}
+
+		// does the data format in the database?
+		int thisFormatIndex = 0;
+		rs = st.executeQuery("SELECT formatid from dataformats where name = '"
+				+ dataFormat + "';");
+		if (rs.next())
+		{
+			thisFormatIndex = rs.getInt(1);
+		}
+		else
+		{
+			// nope, better create it
+			stP = _conn.prepareStatement("INSERT INTO dataformats(name) VALUES (?)");
+			stP.setString(1, dataFormat);
+			stP.executeUpdate();
+			stP.close();
+
+			// and get the id
+			rs = st.executeQuery("SELECT Max(formatid) AS MaxOfID FROM dataformats;");
+			rs.next();
+			thisFormatIndex = rs.getInt(1);
+		}
+
+		// ok, now create the dataset
+		stP = _conn
+				.prepareStatement("INSERT INTO datasets(name, datasourceid, formatId) VALUES (?,?,?)");
+		stP.setString(1, _datasetPrefix + " dated:" + new Date().toString());
+		stP.setInt(2, thisParticipantIndex);
+		stP.setInt(3, thisFormatIndex);
+		stP.executeUpdate();
+		stP.close();
+
+		// and get the id
+		rs = st.executeQuery("SELECT Max(datasetid) AS MaxOfID FROM datasets;");
+		rs.next();
+		int thisDatasetIndex = rs.getInt(1);
+
+		st.close();
+
+		return new Integer(thisDatasetIndex);
 	}
 
 	/**
@@ -212,6 +252,49 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	protected void writeTheseDetectionDetails(ParticipantType pt,
 			DetectionList detections, long dtg)
 	{
+		try
+		{
+			// check there are some decisions
+			if (detections.size() == 0)
+				return;
+
+			// see if we've loaded this participant
+			Integer theIndex = _participantIds.get(pt.getName() + DETECTION_FORMAT);
+			PreparedStatement stP;
+
+			if (theIndex == null)
+			{
+				theIndex = getDatasetIndexFor(pt.getName(), DETECTION_FORMAT);
+				_participantIds.put(pt.getName() + DETECTION_FORMAT, theIndex);
+			}
+
+			stP = _conn
+					.prepareStatement("INSERT INTO dataItem(datasetid, datetime, data) VALUES (?, ?, ?)");
+			stP.setInt(1, theIndex.intValue());
+			stP.setTimestamp(2, new Timestamp(dtg));
+
+			Iterator<DetectionEvent> iter = detections.iterator();
+			while (iter.hasNext())
+			{
+				DetectionEvent de = iter.next();
+				String detStr = "";
+				Float brg = de.getBearing();
+				if (brg != null)
+					detStr += "Brg:" + brg.floatValue();
+				WorldDistance dist = de.getRange();
+				if (dist != null)
+					detStr += " Rng:" + dist.toString();
+				detStr += " " + de.getTargetType().toString();
+				stP.setString(3, detStr);
+				stP.executeUpdate();
+			}
+
+			stP.close();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -227,6 +310,30 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	protected void writeThisDecisionDetail(ParticipantType pt, String activity,
 			long dtg)
 	{
+		try
+		{
+			// see if we've loaded this participant
+			Integer theIndex = _participantIds.get(pt.getName() + NARRATIVE_FORMAT);
+			PreparedStatement stP;
+
+			if (theIndex == null)
+			{
+				theIndex = getDatasetIndexFor(pt.getName(), NARRATIVE_FORMAT);
+				_participantIds.put(pt.getName() + NARRATIVE_FORMAT, theIndex);
+			}
+
+			stP = _conn
+					.prepareStatement("INSERT INTO dataItem(datasetid, datetime, data) VALUES (?, ?, ?)");
+			stP.setInt(1, theIndex.intValue());
+			stP.setTimestamp(2, new Timestamp(dtg));
+			stP.setString(3, activity);
+			stP.executeUpdate();
+			stP.close();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -391,7 +498,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 				TargetType target)
 		{
 			RecordStatusToDBObserverType observer = new RecordStatusToDBObserverType(
-					testDets, testDecs, testPos, target, "trial", true);
+					testDets, testDecs, testPos, target, "trial", true, "AND SOME");
 			assertNotNull("observer wasn't created", observer);
 
 			// and the scenario
@@ -407,9 +514,6 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 					new Duration(12, Duration.HOURS), "do wait"));
 			OpticSensor sampleSensor = new OpticSensor(12)
 			{
-				/**
-				 * 
-				 */
 				private static final long serialVersionUID = 1L;
 
 				// what is the detection strength for this target?

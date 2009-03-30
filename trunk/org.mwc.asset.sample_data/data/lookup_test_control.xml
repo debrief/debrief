@@ -5,6 +5,7 @@
 		<TimeObserver Name="run for 5 hours" Active="true">
 			<Duration Units="hours" Value="5"/>
 		</TimeObserver>
-		<RecordToDatabaseObserver Active="true" Name="Record to REP" record_detections="true" record_positions="true" record_decisions="false"/>
+		<RecordToDatabaseObserver dataset_prefix="ASSET Run" Active="true" Name="Record to DB" record_detections="true" record_positions="true" record_decisions="true"/>
+		<DebriefReplayObserver directory_name=".\" Active="true" Name="Record to REP" file_name="res_%d.rep" record_detections="true" record_positions="true" record_decisions="false"/>
 	</ObserverList>
 </ScenarioController>

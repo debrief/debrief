@@ -67,8 +67,12 @@ abstract class RecordToDatabaseObserverHandler extends MWC.Utilities.ReaderWrite
   boolean _recordDecisions = false;
   TargetType _targetType = null;
   protected String _name;
+  protected String _datasetPrefix;
   protected boolean _isActive;
 
+  
+  
+  private static final String DATASET_PREFIX = "dataset_prefix";
   private static final String RECORD_DETECTIONS = "record_detections";
   private static final String RECORD_DECISIONS = "record_decisions";
   private static final String RECORD_POSITIONS = "record_positions";
@@ -116,7 +120,15 @@ abstract class RecordToDatabaseObserverHandler extends MWC.Utilities.ReaderWrite
         _name = val;
       }
     });
+    addAttributeHandler(new HandleAttribute(DATASET_PREFIX)
+    {
+      public void setValue(String name, final String val)
+      {
+        _datasetPrefix = val;
+      }
+    });
 
+        
     addHandler(new TargetTypeHandler(TARGET_TYPE)
     {
       public void setTargetType(TargetType type1)
@@ -136,7 +148,7 @@ abstract class RecordToDatabaseObserverHandler extends MWC.Utilities.ReaderWrite
   {
     // create ourselves
     final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _recordDetections,
-                                                              _recordDecisions, _recordPositions, _targetType);
+                                                              _recordDecisions, _recordPositions, _targetType, _datasetPrefix);
 
     setObserver(debriefObserver);
 
@@ -152,10 +164,10 @@ abstract class RecordToDatabaseObserverHandler extends MWC.Utilities.ReaderWrite
   }
 
   protected RecordStatusToDBObserverType getObserver(String name, boolean isActive, boolean recordDetections,
-                                              boolean recordDecisions, boolean recordPositions, TargetType subject)
+                                              boolean recordDecisions, boolean recordPositions, TargetType subject, String datasetPrefix)
   {
     //return new DebriefReplayObserver(_directory, _fileName, recordDetections, recordDecisions, recordPositions, subject, name, isActive);
-    return new RecordStatusToDBObserverType(recordDetections, recordDecisions, recordPositions, subject, name, isActive);
+    return new RecordStatusToDBObserverType(recordDetections, recordDecisions, recordPositions, subject, name, isActive, datasetPrefix);
   }
 
 
