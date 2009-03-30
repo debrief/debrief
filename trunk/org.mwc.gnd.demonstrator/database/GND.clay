@@ -3,18 +3,17 @@
 <database-model alias="" author="" begin-script="" end-script="" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
 <database-model-description/>
 <schema-list>
-<schema alias="" name="CMAP" remarks="" uid="b235e6:1204ba64eba:-7ffd">
-<schema-description/>
-<domain-list/>
-<table-list/>
-</schema>
 <schema alias="" name="public" remarks="" uid="411d67:120567367c4:-7fed">
 <schema-description/>
 <domain-list/>
 <table-list>
 <table alias="" name="dataformats" remarks="" uid="411d67:120567367c4:-7fec">
-<table-description/>
-<table-figure-bounds height="-1" width="-1" x="593" y="326"/>
+<table-description>This refers to a source and type of data.  &#13;
+&#13;
+Thus, it may be NMEA0183, REP track format, one of the Debrief data formats (track, sensor, tma).&#13;
+&#13;
+It may also be a format from a named sensor, </table-description>
+<table-figure-bounds height="-1" width="-1" x="338" y="161"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('dataformats_formatid_seq'::regclass)" mandatory="true" name="formatid" remarks="" uid="411d67:120567367c4:-7fea">
 <column-description/>
@@ -62,7 +61,7 @@
 </table>
 <table alias="" name="dataitem" remarks="" uid="411d67:120567367c4:-7fe4">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="309" y="68"/>
+<table-figure-bounds height="-1" width="-1" x="642" y="406"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('dataitem_itemid_seq'::regclass)" mandatory="true" name="itemid" remarks="" uid="411d67:120567367c4:-7fe2">
 <column-description/>
@@ -128,7 +127,7 @@
 </table>
 <table alias="" name="datasets" remarks="" uid="411d67:120567367c4:-7fdb">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="309" y="311"/>
+<table-figure-bounds height="-1" width="-1" x="331" y="403"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('datasets_datasetid_seq'::regclass)" mandatory="true" name="datasetid" remarks="" uid="411d67:120567367c4:-7fd9">
 <column-description/>
@@ -192,7 +191,7 @@
 </table>
 <table alias="" name="datasources" remarks="" uid="411d67:120567367c4:-7fd3">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="48" y="365"/>
+<table-figure-bounds height="-1" width="-1" x="33" y="429"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('datasources_datasourceid_seq'::regclass)" mandatory="true" name="datasourceid" remarks="" uid="411d67:120567367c4:-7fd1">
 <column-description/>
@@ -222,7 +221,7 @@
 </table>
 <table alias="" name="exercises" remarks="" uid="411d67:120567367c4:-7fce">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="34" y="19"/>
+<table-figure-bounds height="-1" width="-1" x="38" y="19"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('exercises_exerciseid_seq'::regclass)" mandatory="true" name="exerciseid" remarks="" uid="411d67:120567367c4:-7fcc">
 <column-description/>
@@ -258,7 +257,7 @@
 </table>
 <table alias="" name="participations" remarks="" uid="411d67:120567367c4:-7fc8">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="42" y="277"/>
+<table-figure-bounds height="-1" width="-1" x="58" y="277"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="true" name="datasourceid" remarks="" uid="411d67:120567367c4:-7fc6">
 <column-description/>
@@ -299,7 +298,7 @@
 </table>
 <table alias="" name="serials" remarks="" uid="411d67:120567367c4:-7fc4">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="35" y="127"/>
+<table-figure-bounds height="-1" width="-1" x="36" y="127"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('serials_serialid_seq'::regclass)" mandatory="true" name="serialid" remarks="" uid="411d67:120567367c4:-7fc2">
 <column-description/>
