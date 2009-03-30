@@ -29,6 +29,12 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    */
 	protected boolean _haveOutputPositions = false;
 
+  /**
+   * keep our own little register of symbols for participant types
+   * - the method to retreive the symbol for a participant type is a compleicated one
+   */
+  static private HashMap<String, String> _mySymbolRegister = new HashMap<String, String>();
+  
   /***************************************************************
    *  constructor
    ***************************************************************/
@@ -77,11 +83,6 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
    * *************************************************************
    */
 
-  /**
-   * keep our own little register of symbols for participant types
-   * - the method to retreive the symbol for a participant type is a compleicated one
-   */
-  static private HashMap<String, String> _mySymbolRegister = new HashMap<String, String>();
 
   static public String writeDetailsToBuffer(final MWC.GenericData.WorldLocation loc,
                                             final ASSET.Participants.Status stat,

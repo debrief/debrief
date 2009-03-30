@@ -122,6 +122,14 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
         _myList.add(obs);
       }
     });
+    
+    addHandler(new RecordToDatabaseObserverHandler()
+    {
+      public void setObserver(final ScenarioObserver obs)
+      {
+        _myList.add(obs);
+      }
+    });
 
     addHandler(new DebriefDeployableSensorLocationObserverHandler()
     {

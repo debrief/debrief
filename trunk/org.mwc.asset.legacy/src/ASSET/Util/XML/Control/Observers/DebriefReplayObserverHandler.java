@@ -47,8 +47,8 @@ package ASSET.Util.XML.Control.Observers;
  */
 
 import ASSET.Models.Decision.TargetType;
-import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Scenario.Observers.ScenarioObserver;
+import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
 
 
@@ -118,7 +118,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
   public void elementClosed()
   {
     // create ourselves
-    final DebriefReplayObserver debriefObserver = getObserver(_name, _isActive, _recordDetections,
+    final ScenarioObserver debriefObserver = getObserver(_name, _isActive, _recordDetections,
                                                               _recordDecisions, _recordPositions, _targetType);
 
     setObserver(debriefObserver);
@@ -134,7 +134,7 @@ abstract class DebriefReplayObserverHandler extends CoreFileObserverHandler
 
   }
 
-  protected DebriefReplayObserver getObserver(String name, boolean isActive, boolean recordDetections,
+  protected ScenarioObserver getObserver(String name, boolean isActive, boolean recordDetections,
                                               boolean recordDecisions, boolean recordPositions, TargetType subject)
   {
     return new DebriefReplayObserver(_directory, _fileName, recordDetections, recordDecisions, recordPositions, subject, name, isActive);
