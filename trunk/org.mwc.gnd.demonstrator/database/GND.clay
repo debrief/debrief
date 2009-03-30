@@ -130,10 +130,10 @@
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="formatId" remarks="Format used for any data embedded in 'data' column of data item" uid="1b7c63f:12055d7ae12:-7f74">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="formatId" remarks="" uid="1b7c63f:12055d7ae12:-7f74">
 <column-description/>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="TRUE" mandatory="true" name="visible" remarks="Whether this dataset is displayed" uid="411d67:120567367c4:-7ff7">
@@ -155,13 +155,6 @@
 </primary-key>
 <unique-key-list/>
 <foreign-key-list>
-<foreign-key alias="" name="FK_Datasets_1" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7d1e">
-<foreign-key-description/>
-<foreign-key-figure>
-<fk-fig-bendpoint-list/>
-</foreign-key-figure>
-<foreign-key-column column-name="dataSourceId" referenced-key-column-name="dataSourceId"/>
-</foreign-key>
 <foreign-key alias="" name="FK_Datasets_2" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1b7c63f:12055d7ae12:-7fda">
 <foreign-key-description/>
 <foreign-key-figure>
@@ -233,7 +226,13 @@
 <primary-key alias="" name="PK_PARTICIPATIONS" remarks="" uid="669c84:1204bafd94d:-7ead">
 <primary-key-description/>
 </primary-key>
-<unique-key-list/>
+<unique-key-list>
+<unique-key alias="" name="UQ_Participations_1" remarks="" uid="411d67:120567367c4:-7fef">
+<unique-key-description/>
+<unique-key-column name="dataSourceId"/>
+<unique-key-column name="serialId"/>
+</unique-key>
+</unique-key-list>
 <foreign-key-list>
 <foreign-key alias="" name="FK_Participations_1" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7d87">
 <foreign-key-description/>
