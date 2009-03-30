@@ -6,68 +6,79 @@
 <schema alias="" name="CMAP" remarks="" uid="b235e6:1204ba64eba:-7ffd">
 <schema-description/>
 <domain-list/>
+<table-list/>
+</schema>
+<schema alias="" name="public" remarks="" uid="411d67:120567367c4:-7fed">
+<schema-description/>
+<domain-list/>
 <table-list>
-<table alias="" name="Exercises" remarks="" uid="b235e6:1204ba64eba:-7fff">
+<table alias="" name="dataformats" remarks="" uid="411d67:120567367c4:-7fec">
 <table-description/>
-<table-figure-bounds height="72" width="164" x="37" y="22"/>
+<table-figure-bounds height="-1" width="-1" x="593" y="326"/>
 <column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="exerciseId" remarks="" uid="669c84:1204bafd94d:-7fee">
+<column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('dataformats_formatid_seq'::regclass)" mandatory="true" name="formatid" remarks="" uid="411d67:120567367c4:-7fea">
 <column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7feb">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fe9">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="description" remarks="" uid="1b7c63f:12055d7ae12:-7f4d">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="icon" remarks="" uid="411d67:120567367c4:-7fe8">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schema" remarks="" uid="411d67:120567367c4:-7fe7">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="true" name="datasetid" remarks="" uid="411d67:120567367c4:-7fe6">
+<column-description/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
 </data-type>
 </column>
 </column-list>
-<primary-key alias="" name="PK_EXERCISES" remarks="" uid="b235e6:1204ba64eba:-7ffe">
+<primary-key alias="" name="dataformats_pkey" remarks="" uid="411d67:120567367c4:-7feb">
 <primary-key-description/>
-<primary-key-column name="exerciseId"/>
+<primary-key-column name="formatid"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list/>
 <index-list>
-<index alias="" name="IX_Exercises_name" remarks="Exercise names must be unique" uid="669c84:1204bafd94d:-7fd5" unique="true">
+<index alias="" name="ix_sensortypes_name" remarks="" uid="411d67:120567367c4:-7fe5" unique="true">
 <index-description/>
 <index-column name="name" sort="ASC"/>
 </index>
 </index-list>
 </table>
-<table alias="" name="Serials" remarks="Time limited component of exercise" uid="669c84:1204bafd94d:-7fff">
+<table alias="" name="dataitem" remarks="" uid="411d67:120567367c4:-7fe4">
 <table-description/>
-<table-figure-bounds height="122" width="181" x="28" y="171"/>
+<table-figure-bounds height="-1" width="-1" x="309" y="68"/>
 <column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="serialId" remarks="" uid="669c84:1204bafd94d:-7fe4">
+<column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('dataitem_itemid_seq'::regclass)" mandatory="true" name="itemid" remarks="" uid="411d67:120567367c4:-7fe2">
 <column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7fe3">
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="true" name="datasetid" remarks="" uid="411d67:120567367c4:-7fe1">
 <column-description/>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="exerciseId" remarks="" uid="669c84:1204bafd94d:-7fa6">
+<column alias="" auto-increment="false" column-size="29" decimal-digits="6" default-value="" mandatory="true" name="datetime" remarks="" uid="411d67:120567367c4:-7fe0">
 <column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="startDTG" remarks="" uid="1b7c63f:12055d7ae12:-7f51">
-<column-description/>
-<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP(%p)">
 <variant type-name-pattern="TIMESTAMP"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
 <variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
@@ -75,301 +86,281 @@
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="endDTG" remarks="" uid="1b7c63f:12055d7ae12:-7f50">
-<column-description/>
-<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
-<variant type-name-pattern="TIMESTAMP"/>
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
-<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="description" remarks="" uid="1b7c63f:12055d7ae12:-7f4a">
-<column-description/>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
-</data-type>
-</column>
-</column-list>
-<primary-key alias="" name="PK_SERIALS" remarks="" uid="669c84:1204bafd94d:-7ffe">
-<primary-key-description/>
-<primary-key-column name="serialId"/>
-</primary-key>
-<unique-key-list/>
-<foreign-key-list>
-<foreign-key alias="" name="FK_Serials_1" on-delete="" on-update="" referenced-key="PK_EXERCISES" referenced-table="Exercises" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7fa7">
-<foreign-key-description/>
-<foreign-key-figure>
-<fk-fig-bendpoint-list/>
-</foreign-key-figure>
-<foreign-key-column column-name="exerciseId" referenced-key-column-name="exerciseId"/>
-</foreign-key>
-</foreign-key-list>
-<index-list/>
-</table>
-<table alias="" name="Datasets" remarks="" uid="669c84:1204bafd94d:-7ffd">
-<table-description/>
-<table-figure-bounds height="122" width="156" x="365" y="496"/>
-<column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7fde">
-<column-description/>
-<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
-<variant type-name-pattern="SERIAL"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7fdb">
-<column-description/>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7d1d">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="formatId" remarks="" uid="1b7c63f:12055d7ae12:-7f74">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="TRUE" mandatory="true" name="visible" remarks="Whether this dataset is displayed" uid="411d67:120567367c4:-7ff7">
-<column-description/>
-<data-type jdbc-type="16" name="BOOLEAN" selected-variant-pattern="BOOLEAN">
-<variant type-name-pattern="BOOLEAN"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="0" mandatory="true" name="version" remarks="Version number of this dataset (zero is current)" uid="411d67:120567367c4:-7ff4">
-<column-description/>
-<data-type jdbc-type="4" name="INT" selected-variant-pattern="INT">
-<variant type-name-pattern="INT"/>
-</data-type>
-</column>
-</column-list>
-<primary-key alias="" name="PK_DATASETS" remarks="" uid="669c84:1204bafd94d:-7ffc">
-<primary-key-description/>
-<primary-key-column name="datasetId"/>
-</primary-key>
-<unique-key-list/>
-<foreign-key-list>
-<foreign-key alias="" name="FK_Datasets_2" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1b7c63f:12055d7ae12:-7fda">
-<foreign-key-description/>
-<foreign-key-figure>
-<fk-fig-bendpoint-list/>
-</foreign-key-figure>
-<foreign-key-column column-name="dataSourceId" referenced-key-column-name="dataSourceId"/>
-</foreign-key>
-<foreign-key alias="" name="FK_Datasets_3" on-delete="" on-update="" referenced-key="PK_DATAFORMATS" referenced-table="DataFormats" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1b7c63f:12055d7ae12:-7f75">
-<foreign-key-description/>
-<foreign-key-figure>
-<fk-fig-bendpoint-list/>
-</foreign-key-figure>
-<foreign-key-column column-name="formatId" referenced-key-column-name="formatId"/>
-</foreign-key>
-</foreign-key-list>
-<index-list/>
-</table>
-<table alias="" name="DataSources" remarks="" uid="669c84:1204bafd94d:-7f0d">
-<table-description>Platform or vehicle that hosts sensor</table-description>
-<table-figure-bounds height="93" width="122" x="58" y="510"/>
-<column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7f08">
-<column-description/>
-<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
-<variant type-name-pattern="SERIAL"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="name" remarks="" uid="669c84:1204bafd94d:-7f07">
-<column-description/>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
-</data-type>
-</column>
-</column-list>
-<primary-key alias="" name="PK_DATASOURCES" remarks="" uid="669c84:1204bafd94d:-7f0c">
-<primary-key-description/>
-<primary-key-column name="dataSourceId"/>
-</primary-key>
-<unique-key-list/>
-<foreign-key-list/>
-<index-list>
-<index alias="" name="IX_DataSources_id" remarks="" uid="669c84:1204bafd94d:-7eb0" unique="true">
-<index-description/>
-<index-column name="dataSourceId" sort="ASC"/>
-</index>
-<index alias="" name="IX_DataSources_Name" remarks="" uid="669c84:1204bafd94d:-7eaf" unique="true">
-<index-description/>
-<index-column name="name" sort="ASC"/>
-</index>
-</index-list>
-</table>
-<table alias="" name="Participations" remarks="" uid="669c84:1204bafd94d:-7eae">
-<table-description>Instances of a data source taking part in a serial</table-description>
-<table-figure-bounds height="74" width="154" x="42" y="356"/>
-<column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dataSourceId" remarks="" uid="669c84:1204bafd94d:-7d86">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="serialId" remarks="" uid="669c84:1204bafd94d:-7d52">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
-</data-type>
-</column>
-</column-list>
-<primary-key alias="" name="PK_PARTICIPATIONS" remarks="" uid="669c84:1204bafd94d:-7ead">
-<primary-key-description/>
-</primary-key>
-<unique-key-list>
-<unique-key alias="" name="UQ_Participations_1" remarks="" uid="411d67:120567367c4:-7fef">
-<unique-key-description/>
-<unique-key-column name="dataSourceId"/>
-<unique-key-column name="serialId"/>
-</unique-key>
-</unique-key-list>
-<foreign-key-list>
-<foreign-key alias="" name="FK_Participations_1" on-delete="" on-update="" referenced-key="PK_DATASOURCES" referenced-table="DataSources" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7d87">
-<foreign-key-description/>
-<foreign-key-figure>
-<fk-fig-bendpoint-list/>
-</foreign-key-figure>
-<foreign-key-column column-name="dataSourceId" referenced-key-column-name="dataSourceId"/>
-</foreign-key>
-<foreign-key alias="" name="FK_Participations_2" on-delete="" on-update="" referenced-key="PK_SERIALS" referenced-table="Serials" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7d53">
-<foreign-key-description/>
-<foreign-key-figure>
-<fk-fig-bendpoint-list/>
-</foreign-key-figure>
-<foreign-key-column column-name="serialId" referenced-key-column-name="serialId"/>
-</foreign-key>
-</foreign-key-list>
-<index-list>
-<index alias="" name="IX_Participations_1" remarks="" uid="669c84:1204bafd94d:-7d22" unique="true">
-<index-description/>
-<index-column name="dataSourceId" sort="ASC"/>
-<index-column name="serialId" sort="ASC"/>
-</index>
-</index-list>
-</table>
-<table alias="" name="DataItem" remarks="" uid="669c84:1204bafd94d:-7cd6">
-<table-description>All data recordings</table-description>
-<table-figure-bounds height="124" width="178" x="682" y="495"/>
-<column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="itemId" remarks="" uid="669c84:1204bafd94d:-7cd2">
-<column-description/>
-<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
-<variant type-name-pattern="SERIAL"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="669c84:1204bafd94d:-7ccb">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="dateTime" remarks="" uid="669c84:1204bafd94d:-7cd0">
-<column-description/>
-<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
-<variant type-name-pattern="TIMESTAMP"/>
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
-<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="location" remarks="" uid="669c84:1204bafd94d:-7cd1">
+<column alias="" auto-increment="false" column-size="2147483647" decimal-digits="0" default-value="" mandatory="false" name="location" remarks="" uid="411d67:120567367c4:-7fdf">
 <column-description/>
 <data-type jdbc-type="1111" name="POINT" selected-variant-pattern="POINT">
 <variant type-name-pattern="POINT"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schema" remarks="URI definition of how any XML child-data is stored" uid="1b7c63f:12055d7ae12:-7f45">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schema" remarks="" uid="411d67:120567367c4:-7fde">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="data" remarks="Block of supplemental data, encoded according to schema field" uid="1b7c63f:12055d7ae12:-7f44">
+<column alias="" auto-increment="false" column-size="2147483647" decimal-digits="0" default-value="" mandatory="false" name="data" remarks="" uid="411d67:120567367c4:-7fdd">
 <column-description/>
 <data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
 <variant type-name-pattern="TEXT"/>
 </data-type>
 </column>
 </column-list>
-<primary-key alias="" name="PK_DATAITEM" remarks="" uid="669c84:1204bafd94d:-7cd5">
+<primary-key alias="" name="dataitem_pkey" remarks="" uid="411d67:120567367c4:-7fe3">
 <primary-key-description/>
-<primary-key-column name="itemId"/>
+<primary-key-column name="itemid"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list>
-<foreign-key alias="" name="FK_DataItem_1" on-delete="" on-update="" referenced-key="PK_DATASETS" referenced-table="Datasets" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="669c84:1204bafd94d:-7ccc">
+<foreign-key alias="" name="fk_dataitem_1" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="datasets_pkey" referenced-table="datasets" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="411d67:120567367c4:-7fbc">
 <foreign-key-description/>
 <foreign-key-figure>
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
-<foreign-key-column column-name="datasetId" referenced-key-column-name="datasetId"/>
+<foreign-key-column column-name="datasetid" referenced-key-column-name="datasetid"/>
 </foreign-key>
 </foreign-key-list>
 <index-list>
-<index alias="" name="IX_DataItem_dtg" remarks="" uid="669c84:1204bafd94d:-7c88" unique="false">
+<index alias="" name="ix_dataitem_dtg" remarks="" uid="411d67:120567367c4:-7fdc" unique="false">
 <index-description/>
-<index-column name="dateTime" sort="ASC"/>
+<index-column name="datetime" sort="ASC"/>
 </index>
 </index-list>
 </table>
-<table alias="" name="DataFormats" remarks="" uid="669c84:1204bafd94d:-7cc5">
-<table-description>Types of data format. Typically one per sensor or data file type.</table-description>
-<table-figure-bounds height="125" width="159" x="364" y="246"/>
+<table alias="" name="datasets" remarks="" uid="411d67:120567367c4:-7fdb">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="309" y="311"/>
 <column-list>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="formatId" remarks="" uid="669c84:1204bafd94d:-7cc1">
+<column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('datasets_datasetid_seq'::regclass)" mandatory="true" name="datasetid" remarks="" uid="411d67:120567367c4:-7fd9">
 <column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="669c84:1204bafd94d:-7cc0">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fd8">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="icon" remarks="Path to icon used for this format" uid="1b7c63f:12055d7ae12:-7ff3">
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="true" name="datasourceid" remarks="" uid="411d67:120567367c4:-7fd7">
 <column-description/>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schema" remarks="URI for this resource, possibly XML schema path" uid="1b7c63f:12055d7ae12:-7ff2">
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="false" name="formatid" remarks="" uid="411d67:120567367c4:-7fd6">
 <column-description/>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetId" remarks="" uid="1b7c63f:12055d7ae12:-7fb9">
+<column alias="" auto-increment="false" column-size="1" decimal-digits="0" default-value="true" mandatory="true" name="visible" remarks="" uid="411d67:120567367c4:-7fd5">
 <column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
+<data-type jdbc-type="16" name="BOOL" selected-variant-pattern="BOOL">
+<variant type-name-pattern="BOOL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="0" mandatory="true" name="version" remarks="" uid="411d67:120567367c4:-7fd4">
+<column-description/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
 </data-type>
 </column>
 </column-list>
-<primary-key alias="" name="PK_DATAFORMATS" remarks="" uid="669c84:1204bafd94d:-7cc4">
+<primary-key alias="" name="datasets_pkey" remarks="" uid="411d67:120567367c4:-7fda">
 <primary-key-description/>
-<primary-key-column name="formatId"/>
+<primary-key-column name="datasetid"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="fk_datasets_3" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="dataformats_pkey" referenced-table="dataformats" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="411d67:120567367c4:-7fbb">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="formatid" referenced-key-column-name="formatid"/>
+</foreign-key>
+<foreign-key alias="" name="fk_datasets_2" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="datasources_pkey" referenced-table="datasources" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="411d67:120567367c4:-7fba">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="datasourceid" referenced-key-column-name="datasourceid"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
+</table>
+<table alias="" name="datasources" remarks="" uid="411d67:120567367c4:-7fd3">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="48" y="365"/>
+<column-list>
+<column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('datasources_datasourceid_seq'::regclass)" mandatory="true" name="datasourceid" remarks="" uid="411d67:120567367c4:-7fd1">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="name" remarks="" uid="411d67:120567367c4:-7fd0">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="datasources_pkey" remarks="" uid="411d67:120567367c4:-7fd2">
+<primary-key-description/>
+<primary-key-column name="datasourceid"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list/>
 <index-list>
-<index alias="" name="IX_SensorTypes_name" remarks="" uid="669c84:1204bafd94d:-7c8d" unique="true">
+<index alias="" name="ix_datasources_name" remarks="" uid="411d67:120567367c4:-7fcf" unique="true">
 <index-description/>
 <index-column name="name" sort="ASC"/>
 </index>
 </index-list>
+</table>
+<table alias="" name="exercises" remarks="" uid="411d67:120567367c4:-7fce">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="34" y="19"/>
+<column-list>
+<column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('exercises_exerciseid_seq'::regclass)" mandatory="true" name="exerciseid" remarks="" uid="411d67:120567367c4:-7fcc">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fcb">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="description" remarks="" uid="411d67:120567367c4:-7fca">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="exercises_pkey" remarks="" uid="411d67:120567367c4:-7fcd">
+<primary-key-description/>
+<primary-key-column name="exerciseid"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list/>
+<index-list>
+<index alias="" name="ix_exercises_name" remarks="" uid="411d67:120567367c4:-7fc9" unique="true">
+<index-description/>
+<index-column name="name" sort="ASC"/>
+</index>
+</index-list>
+</table>
+<table alias="" name="participations" remarks="" uid="411d67:120567367c4:-7fc8">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="42" y="277"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="true" name="datasourceid" remarks="" uid="411d67:120567367c4:-7fc6">
+<column-description/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="true" name="serialid" remarks="" uid="411d67:120567367c4:-7fc5">
+<column-description/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="Participations_PrimaryKey" remarks="" uid="411d67:120567367c4:-7fc7">
+<primary-key-description/>
+<primary-key-column name="datasourceid"/>
+<primary-key-column name="serialid"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="fk_participations_1" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="datasources_pkey" referenced-table="datasources" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="411d67:120567367c4:-7fb9">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="datasourceid" referenced-key-column-name="datasourceid"/>
+</foreign-key>
+<foreign-key alias="" name="fk_participations_2" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="serials_pkey" referenced-table="serials" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="411d67:120567367c4:-7fb8">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="serialid" referenced-key-column-name="serialid"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
+</table>
+<table alias="" name="serials" remarks="" uid="411d67:120567367c4:-7fc4">
+<table-description/>
+<table-figure-bounds height="-1" width="-1" x="35" y="127"/>
+<column-list>
+<column alias="" auto-increment="true" column-size="10" decimal-digits="0" default-value="nextval('serials_serialid_seq'::regclass)" mandatory="true" name="serialid" remarks="" uid="411d67:120567367c4:-7fc2">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fc1">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="10" decimal-digits="0" default-value="" mandatory="true" name="exerciseid" remarks="" uid="411d67:120567367c4:-7fc0">
+<column-description/>
+<data-type jdbc-type="4" name="INT4" selected-variant-pattern="INT4">
+<variant type-name-pattern="INT4"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="29" decimal-digits="6" default-value="" mandatory="false" name="startdtg" remarks="" uid="411d67:120567367c4:-7fbf">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP(%p)">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="29" decimal-digits="6" default-value="" mandatory="false" name="enddtg" remarks="" uid="411d67:120567367c4:-7fbe">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP(%p)">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="description" remarks="" uid="411d67:120567367c4:-7fbd">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="serials_pkey" remarks="" uid="411d67:120567367c4:-7fc3">
+<primary-key-description/>
+<primary-key-column name="serialid"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list>
+<foreign-key alias="" name="fk_serials_1" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="exercises_pkey" referenced-table="exercises" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="411d67:120567367c4:-7fb7">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="exerciseid" referenced-key-column-name="exerciseid"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
 </table>
 </table-list>
 </schema>
