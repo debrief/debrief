@@ -21,7 +21,7 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fe9">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="formatname" remarks="" uid="411d67:120567367c4:-7fe9">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
@@ -49,11 +49,11 @@ It may also be a format from a named sensor, </table-description>
 <index-list>
 <index alias="" name="ix_sensortypes_name" remarks="" uid="411d67:120567367c4:-7fe5" unique="true">
 <index-description/>
-<index-column name="name" sort="ASC"/>
+<index-column name="formatname" sort="ASC"/>
 </index>
 </index-list>
 </table>
-<table alias="" name="dataitem" remarks="" uid="411d67:120567367c4:-7fe4">
+<table alias="" name="dataitems" remarks="" uid="411d67:120567367c4:-7fe4">
 <table-description/>
 <table-figure-bounds height="-1" width="-1" x="711" y="441"/>
 <column-list>
@@ -135,7 +135,7 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fd8">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="datasetname" remarks="" uid="411d67:120567367c4:-7fd8">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
@@ -209,19 +209,19 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="name" remarks="" uid="411d67:120567367c4:-7fd0">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="sourcename" remarks="" uid="411d67:120567367c4:-7fd0">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="nationalityId" remarks="" uid="f92ae2:1205b76aea2:-7fcb">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="nationalityId" remarks="" uid="f92ae2:1205b76aea2:-7fcb">
 <column-description/>
 <data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="designatorId" remarks="" uid="f92ae2:1205b76aea2:-7f6b">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="designatorId" remarks="" uid="f92ae2:1205b76aea2:-7f6b">
 <column-description/>
 <data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
 <variant type-name-pattern="INTEGER"/>
@@ -234,7 +234,7 @@ It may also be a format from a named sensor, </table-description>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list>
-<foreign-key alias="" name="FK_datasources_1" on-delete="" on-update="" referenced-key="PK_NATIONALITIES" referenced-table="Nationalities" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="f92ae2:1205b76aea2:-7fcc">
+<foreign-key alias="" name="FK_datasources_1" on-delete="" on-update="" referenced-key="PK_NATIONALITIES" referenced-table="nationalities" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="f92ae2:1205b76aea2:-7fcc">
 <foreign-key-description/>
 <foreign-key-figure>
 <fk-fig-bendpoint-list/>
@@ -261,7 +261,7 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fcb">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="exercisename" remarks="" uid="411d67:120567367c4:-7fcb">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
@@ -283,7 +283,7 @@ It may also be a format from a named sensor, </table-description>
 <index-list>
 <index alias="" name="ix_exercises_name" remarks="" uid="411d67:120567367c4:-7fc9" unique="true">
 <index-description/>
-<index-column name="name" sort="ASC"/>
+<index-column name="exercisename" sort="ASC"/>
 </index>
 </index-list>
 </table>
@@ -338,7 +338,7 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="name" remarks="" uid="411d67:120567367c4:-7fc1">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="serialname" remarks="" uid="411d67:120567367c4:-7fc1">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
@@ -393,7 +393,7 @@ It may also be a format from a named sensor, </table-description>
 </foreign-key-list>
 <index-list/>
 </table>
-<table alias="" name="Nationalities" remarks="" uid="f92ae2:1205b76aea2:-7feb">
+<table alias="" name="nationalities" remarks="" uid="f92ae2:1205b76aea2:-7feb">
 <table-description/>
 <table-figure-bounds height="52" width="142" x="704" y="258"/>
 <column-list>
