@@ -13,7 +13,7 @@
 Thus, it may be NMEA0183, REP track format, one of the Debrief data formats (track, sensor, tma).&#13;
 &#13;
 It may also be a format from a named sensor, </table-description>
-<table-figure-bounds height="-1" width="-1" x="338" y="161"/>
+<table-figure-bounds height="-1" width="-1" x="15" y="461"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="formatid" remarks="" uid="411d67:120567367c4:-7fea">
 <column-description/>
@@ -55,7 +55,7 @@ It may also be a format from a named sensor, </table-description>
 </table>
 <table alias="" name="dataitem" remarks="" uid="411d67:120567367c4:-7fe4">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="655" y="392"/>
+<table-figure-bounds height="-1" width="-1" x="711" y="441"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="itemid" remarks="" uid="411d67:120567367c4:-7fe2">
 <column-description/>
@@ -69,11 +69,11 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="29" decimal-digits="6" default-value="" mandatory="true" name="datetime" remarks="" uid="411d67:120567367c4:-7fe0">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datetime" remarks="" uid="411d67:120567367c4:-7fe0">
 <column-description/>
-<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP(%p)">
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
 <variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
@@ -127,7 +127,7 @@ It may also be a format from a named sensor, </table-description>
 </table>
 <table alias="" name="datasets" remarks="" uid="411d67:120567367c4:-7fdb">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="331" y="403"/>
+<table-figure-bounds height="-1" width="-1" x="343" y="441"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetid" remarks="" uid="411d67:120567367c4:-7fd9">
 <column-description/>
@@ -165,6 +165,16 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="INT4"/>
 </data-type>
 </column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="now()" mandatory="true" name="created" remarks="When this dataset was imported" uid="f92ae2:1205b76aea2:-7ff0">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
 </column-list>
 <primary-key alias="" name="datasets_pkey" remarks="" uid="411d67:120567367c4:-7fda">
 <primary-key-description/>
@@ -191,7 +201,7 @@ It may also be a format from a named sensor, </table-description>
 </table>
 <table alias="" name="datasources" remarks="" uid="411d67:120567367c4:-7fd3">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="33" y="429"/>
+<table-figure-bounds height="-1" width="-1" x="343" y="248"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasourceid" remarks="" uid="411d67:120567367c4:-7fd1">
 <column-description/>
@@ -205,23 +215,45 @@ It may also be a format from a named sensor, </table-description>
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="nationalityId" remarks="" uid="f92ae2:1205b76aea2:-7fcb">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="designatorId" remarks="" uid="f92ae2:1205b76aea2:-7f6b">
+<column-description/>
+<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
+<variant type-name-pattern="INTEGER"/>
+</data-type>
+</column>
 </column-list>
 <primary-key alias="" name="datasources_pkey" remarks="" uid="411d67:120567367c4:-7fd2">
 <primary-key-description/>
 <primary-key-column name="datasourceid"/>
 </primary-key>
 <unique-key-list/>
-<foreign-key-list/>
-<index-list>
-<index alias="" name="ix_datasources_name" remarks="" uid="411d67:120567367c4:-7fcf" unique="true">
-<index-description/>
-<index-column name="name" sort="ASC"/>
-</index>
-</index-list>
+<foreign-key-list>
+<foreign-key alias="" name="FK_datasources_1" on-delete="" on-update="" referenced-key="PK_NATIONALITIES" referenced-table="Nationalities" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="f92ae2:1205b76aea2:-7fcc">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="nationalityId" referenced-key-column-name="nationalityId"/>
+</foreign-key>
+<foreign-key alias="" name="FK_datasources_2" on-delete="" on-update="" referenced-key="PK_DESIGNATORS" referenced-table="designators" referenced-table-schema="CMAP" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="f92ae2:1205b76aea2:-7f6c">
+<foreign-key-description/>
+<foreign-key-figure>
+<fk-fig-bendpoint-list/>
+</foreign-key-figure>
+<foreign-key-column column-name="designatorId" referenced-key-column-name="designatorId"/>
+</foreign-key>
+</foreign-key-list>
+<index-list/>
 </table>
 <table alias="" name="exercises" remarks="" uid="411d67:120567367c4:-7fce">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="38" y="19"/>
+<table-figure-bounds height="-1" width="-1" x="709" y="25"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="exerciseid" remarks="" uid="411d67:120567367c4:-7fcc">
 <column-description/>
@@ -257,7 +289,7 @@ It may also be a format from a named sensor, </table-description>
 </table>
 <table alias="" name="participations" remarks="" uid="411d67:120567367c4:-7fc8">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="58" y="277"/>
+<table-figure-bounds height="-1" width="-1" x="19" y="260"/>
 <column-list>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasourceid" remarks="" uid="411d67:120567367c4:-7fc6">
 <column-description/>
@@ -298,7 +330,7 @@ It may also be a format from a named sensor, </table-description>
 </table>
 <table alias="" name="serials" remarks="" uid="411d67:120567367c4:-7fc4">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="36" y="127"/>
+<table-figure-bounds height="-1" width="-1" x="7" y="7"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="serialid" remarks="" uid="411d67:120567367c4:-7fc2">
 <column-description/>
@@ -318,21 +350,21 @@ It may also be a format from a named sensor, </table-description>
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="29" decimal-digits="6" default-value="" mandatory="false" name="startdtg" remarks="" uid="411d67:120567367c4:-7fbf">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="startdtg" remarks="" uid="411d67:120567367c4:-7fbf">
 <column-description/>
-<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP(%p)">
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
 <variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="29" decimal-digits="6" default-value="" mandatory="false" name="enddtg" remarks="" uid="411d67:120567367c4:-7fbe">
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="enddtg" remarks="" uid="411d67:120567367c4:-7fbe">
 <column-description/>
-<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP(%p)">
-<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
 <variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
@@ -359,6 +391,56 @@ It may also be a format from a named sensor, </table-description>
 <foreign-key-column column-name="exerciseid" referenced-key-column-name="exerciseid"/>
 </foreign-key>
 </foreign-key-list>
+<index-list/>
+</table>
+<table alias="" name="Nationalities" remarks="" uid="f92ae2:1205b76aea2:-7feb">
+<table-description/>
+<table-figure-bounds height="52" width="142" x="704" y="258"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="nationalityId" remarks="" uid="f92ae2:1205b76aea2:-7fe5">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="20" decimal-digits="0" default-value="" mandatory="true" name="nationality" remarks="" uid="f92ae2:1205b76aea2:-7fe4">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_NATIONALITIES" remarks="" uid="f92ae2:1205b76aea2:-7fea">
+<primary-key-description/>
+<primary-key-column name="nationalityId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list/>
+<index-list/>
+</table>
+<table alias="" name="designators" remarks="" uid="f92ae2:1205b76aea2:-7fb3">
+<table-description/>
+<table-figure-bounds height="53" width="149" x="341" y="113"/>
+<column-list>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="designatorId" remarks="" uid="f92ae2:1205b76aea2:-7fad">
+<column-description/>
+<data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
+<variant type-name-pattern="SERIAL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="20" decimal-digits="0" default-value="" mandatory="true" name="designator" remarks="" uid="f92ae2:1205b76aea2:-7fac">
+<column-description/>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+</data-type>
+</column>
+</column-list>
+<primary-key alias="" name="PK_DESIGNATORS" remarks="" uid="f92ae2:1205b76aea2:-7fb2">
+<primary-key-description/>
+<primary-key-column name="designatorId"/>
+</primary-key>
+<unique-key-list/>
+<foreign-key-list/>
 <index-list/>
 </table>
 </table-list>
