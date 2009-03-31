@@ -26,6 +26,7 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
   private static final String DEBRIEF_LAYER_NAME = "DebriefLayer";
 
 	ScenarioType _theScenario;
+	Layers _myLayers = null;
 
   static final public String SCENARIO_NAME = "Scenario";
   static final private String TIME = "StartTime";
@@ -37,10 +38,16 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 
   public ScenarioHandler(final ASSET.Scenario.CoreScenario theScenario)
   {
+  	this(theScenario, null);
+  }
+
+  public ScenarioHandler(final ASSET.Scenario.CoreScenario theScenario, Layers theLayers)
+  {
     // inform our parent what type of class we are
     super(SCENARIO_NAME);
 
     _theScenario = theScenario;
+    _myLayers = theLayers;
 
     // sort out the handlers
     addAttributeHandler(new HandleDateTimeAttribute(TIME)
@@ -97,7 +104,8 @@ public class ScenarioHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
     {
       public void setLayer(BaseLayer theLayer)
       {
-      	_theScenario.setBackdrop(theLayer);
+      	if(_myLayers != null)
+      		_myLayers.addThisLayer(theLayer);
       }
     });
     

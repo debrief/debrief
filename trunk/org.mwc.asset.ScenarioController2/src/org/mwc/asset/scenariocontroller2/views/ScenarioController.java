@@ -438,7 +438,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			// final SampleDataPlugin thePlugin = SampleDataPlugin.getDefault();
 			InputStream theStream = new FileInputStream(theFile);//
 			// thePlugin.getResource(thePath);
-			ASSETReaderWriter.importThis(_myScenario, scenarioStr, theStream);
+			ASSETReaderWriter.importThis(_myScenario, _scenarioWrapper, scenarioStr, theStream);
 
 			fireScenarioChanged();
 		}

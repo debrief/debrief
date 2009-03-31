@@ -24,6 +24,7 @@ import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.Utilities.ReaderWriter.XML.*;
 
 /**
@@ -97,6 +98,24 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     // import the datafile into this set of layers
     xr.doImport(new InputSource(is), handler);
   }
+  
+  /**
+   * handle the import of XML data, creating a new session for it
+   */
+  static public void importThis(final ASSET.Scenario.CoreScenario theScenario,
+  															final Layers theLayers,
+                                final String fName,
+                                final java.io.InputStream is)
+  {
+    // create the new handler
+    final ASSETReaderWriter xr = new ASSETReaderWriter();
+
+    final MWCXMLReader handler = new ScenarioHandler(theScenario, theLayers);
+
+    // import the datafile into this set of layers
+    xr.doImport(new InputSource(is), handler);
+  }
+  
 
   /**
    * handle the import of XML data, creating a new session for it
