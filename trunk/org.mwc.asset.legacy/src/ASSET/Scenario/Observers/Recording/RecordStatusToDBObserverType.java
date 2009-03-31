@@ -154,7 +154,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItem(datasetid, datetime, latitude, longitude) VALUES (?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, latitude, longitude) VALUES (?, ?, ?, ?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(stat.getTime()));
 			stP.setDouble(3, loc.getLat());
@@ -176,8 +176,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		PreparedStatement stP;
 		Statement st = _conn.createStatement();
 
-		// does the participant in the database?
-		rs = st.executeQuery("SELECT datasourceid from datasources where name = '"
+		// does the participant exist in the database?
+		rs = st.executeQuery("SELECT datasourceid from datasources where sourcename = '"
 				+ participantName + "';");
 		if (rs.next())
 		{
@@ -186,7 +186,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		else
 		{
 			// nope, better create it
-			stP = _conn.prepareStatement("INSERT INTO datasources(name) VALUES (?)");
+			stP = _conn.prepareStatement("INSERT INTO datasources(sourcename) VALUES (?)");
 			stP.setString(1, participantName);
 			stP.executeUpdate();
 			stP.close();
@@ -200,7 +200,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 		// does the data format in the database?
 		int thisFormatIndex = 0;
-		rs = st.executeQuery("SELECT formatid from dataformats where name = '"
+		rs = st.executeQuery("SELECT formatid from dataformats where formatname = '"
 				+ dataFormat + "';");
 		if (rs.next())
 		{
@@ -209,7 +209,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		else
 		{
 			// nope, better create it
-			stP = _conn.prepareStatement("INSERT INTO dataformats(name) VALUES (?)");
+			stP = _conn.prepareStatement("INSERT INTO dataformats(formatname) VALUES (?)");
 			stP.setString(1, dataFormat);
 			stP.executeUpdate();
 			stP.close();
@@ -222,7 +222,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 		// ok, now create the dataset
 		stP = _conn
-				.prepareStatement("INSERT INTO datasets(name, datasourceid, formatId) VALUES (?,?,?)");
+				.prepareStatement("INSERT INTO datasets(datasetname, datasourceid, formatId) VALUES (?,?,?)");
 		stP.setString(1, _datasetPrefix + " dated:" + new Date().toString());
 		stP.setInt(2, thisParticipantIndex);
 		stP.setInt(3, thisFormatIndex);
@@ -269,7 +269,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItem(datasetid, datetime, data) VALUES (?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, data) VALUES (?, ?, ?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(dtg));
 
@@ -323,7 +323,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItem(datasetid, datetime, data) VALUES (?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, data) VALUES (?, ?, ?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(dtg));
 			stP.setString(3, activity);
