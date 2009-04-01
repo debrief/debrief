@@ -9620,10 +9620,8 @@
               <guilabel>SSKRecharge</guilabel> fom from
               <guilabel>Elements</guilabel> tab. Name it as
               <computeroutput>Emergency Snort</computeroutput>, set the minimum level as 5 and the safe level as 15, and indicate that the SSK will snort at a speed of 4 knots.
-              <footnote>
-                <para>So, when the SSK battery level reaches dangerously low levels it will conduct a snort however hostile its current environment may be.  Obviously it won't conduct a very long snort - just enought to keep the SSK operational.</para>
-              </footnote>
             </para>
+            <para>So, when the SSK battery level reaches dangerously low levels it will conduct a snort however hostile its current environment may be.  Obviously it won't conduct a very long snort - just enought to keep the SSK operational.</para>
             <para>The next component of the SSK evasive behaviour will cover the evasion itself.  Beneatch the
               <guilabel>SSK Recharge</guilabel> component insert an
               <guilabel>Evade</guilabel> component, naming it
