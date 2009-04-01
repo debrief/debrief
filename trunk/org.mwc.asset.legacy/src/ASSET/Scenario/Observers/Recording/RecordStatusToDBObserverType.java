@@ -12,6 +12,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
+import sun.awt.SunHints.LCDContrastKey;
+
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
@@ -154,11 +156,13 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, latitude, longitude) VALUES (?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, latitude, longitude, loc) VALUES" + 
+							"(?, ?, ?, ?, ?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(stat.getTime()));
 			stP.setDouble(3, loc.getLat());
 			stP.setDouble(4, loc.getLong());
+			stP.setObject(5, createGeometry(loc));
 			stP.executeUpdate();
 			stP.close();
 		}
@@ -168,6 +172,13 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		}
 	}
 
+	private org.postgis.PGgeometry createGeometry(WorldLocation loc)
+	{
+		org.postgis.Point theP = new org.postgis.Point(loc.getLong(), loc.getLat(), -loc.getDepth());
+		theP.setSrid(4326);
+		return  new org.postgis.PGgeometry(theP);
+	}
+	
 	private Integer getDatasetIndexFor(String participantName, String dataFormat)
 			throws SQLException
 	{
@@ -557,7 +568,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			cs.step();
 
 			// do lots more steps
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < 1; i++)
 			{
 				// do a step
 				cs.step();
@@ -610,7 +621,12 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		{
 			String url = "jdbc:postgresql://localhost:5432/GND";
 			_conn = DriverManager.getConnection(url, "postgres", "4pfonmr");
+			
+			// also tell the connection about our new custom data types
+	    ((org.postgresql.PGConnection)_conn).addDataType("geometry",org.postgis.PGgeometry.class);
+	    ((org.postgresql.PGConnection)_conn).addDataType("box3d",org.postgis.PGbox3d.class);
 
+	    
 			// _conn = DriverManager.getConnection("//localhost:5432/GND", "postgres",
 			// "4pfonmr");
 
@@ -621,16 +637,65 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			e.printStackTrace();
 		}
 	}
+	
+  /**
+   * get the editor for this item
+   *
+   * @return the BeanInfo data for this editable object
+   */
+  public MWC.GUI.Editable.EditorType getInfo()
+  {
+    if (_myEditor == null)
+      _myEditor =  new RecordToDbObserverInfo(this);;
 
-	@Override
-	public EditorType getInfo()
-	{
-		return null;
-	}
+    return _myEditor;
+  }
+	
 
 	@Override
 	public boolean hasEditor()
 	{
-		return false;
+		return true;
 	}
+	
+	 //////////////////////////////////////////////////////////////////////
+  // editable properties
+  //////////////////////////////////////////////////////////////////////
+
+  static public class RecordToDbObserverInfo extends MWC.GUI.Editable.EditorType
+  {
+
+
+    /**
+     * constructor for editable details of a set of Layers
+     *
+     * @param obj the Layers themselves
+     */
+    public RecordToDbObserverInfo(final RecordStatusToDBObserverType obj)
+    {
+      super(obj, obj.getName(), "Edit");
+    }
+
+    /**
+     * editable GUI properties for our participant
+     *
+     * @return property descriptions
+     */
+    public java.beans.PropertyDescriptor[] getPropertyDescriptors()
+    {
+      try
+      {
+        final java.beans.PropertyDescriptor[] res = {
+          prop("Active", "Whether this observer is active"),
+          prop("Name", "The name of this observer"),
+        };
+
+        return res;
+      }
+      catch (java.beans.IntrospectionException e)
+      {
+        return super.getPropertyDescriptors();
+      }
+    }
+  }
 }

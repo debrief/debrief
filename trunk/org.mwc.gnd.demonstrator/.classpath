@@ -4,5 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="libs/postgresql-8.3-604.jdbc3.jar"/>
+	<classpathentry kind="lib" path="libs/postgis_1.3.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

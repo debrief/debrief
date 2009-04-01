@@ -9,5 +9,7 @@
 	<classpathentry kind="lib" path="libs/parser.jar"/>
 	<classpathentry kind="lib" path="libs/saxpath.jar"/>
 	<classpathentry kind="lib" path="libs/xerces.jar"/>
+	<classpathentry kind="lib" path="libs/postgis_1.3.5.jar"/>
+	<classpathentry kind="lib" path="libs/postgresql-8.3-604.jdbc4.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
