@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <clay-model clay-version="1.4.2">
-<database-model alias="" author="" begin-script="" end-script="&#13;&#10;select AddGeometryColumn('dataitems', 'loc', 4326,'POINT',2);" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
+<database-model alias="" author="" begin-script="" end-script="&#13;&#10;select AddGeometryColumn('dataitems', 'loc', 4326,'POINT',3);" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
 <database-model-description/>
 <schema-list>
 <schema alias="" name="CMAP" remarks="" uid="411d67:120567367c4:-7fed">
