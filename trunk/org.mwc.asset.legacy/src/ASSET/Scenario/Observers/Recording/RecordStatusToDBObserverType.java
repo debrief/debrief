@@ -12,8 +12,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 
-import sun.awt.SunHints.LCDContrastKey;
-
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
