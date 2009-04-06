@@ -497,17 +497,17 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 		public void testCombinations()
 		{
-			doThisTest(true, true, true, null);
+//			doThisTest(true, true, true, null);
 			doThisTest(true, false, false, null);
-			doThisTest(false, true, false, null);
-			doThisTest(false, false, false, null);
+//			doThisTest(false, true, false, null);
+//			doThisTest(false, false, false, null);
 		}
 
 		public void doThisTest(boolean testPos, boolean testDecs, boolean testDets,
 				TargetType target)
 		{
 			RecordStatusToDBObserverType observer = new RecordStatusToDBObserverType(
-					testDets, testDecs, testPos, target, "trial", true, "AND SOME");
+					testDets, testDecs, testPos, target, "trial", true, "monster run");
 			assertNotNull("observer wasn't created", observer);
 
 			// and the scenario
@@ -566,7 +566,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			cs.step();
 
 			// do lots more steps
-			for (int i = 0; i < 1; i++)
+			for (int i = 0; i < 300000; i++)
 			{
 				// do a step
 				cs.step();
@@ -574,9 +574,11 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 			// and the close
 			observer.tearDown(cs);
-
+			
+			System.out.println("complete");
+			
 			// and close the file
-			assertNull("stream wasn't closed", observer._conn);
+		//	assertNull("stream wasn't closed", observer._conn);
 
 		}
 
