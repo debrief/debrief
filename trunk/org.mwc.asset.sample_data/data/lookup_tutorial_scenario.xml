@@ -141,12 +141,10 @@
 		</Helo>
 	</Participants>
 	<DebriefLayer>
-		<layers>
 			<layer LineThickness="0" Name="Chart Features" Visible="true">
 				<scale AutoMode="true" DisplayUnits="kyd" Location="BottomLeft" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
 					<colour Value="DARK_GREY"/>
 				</scale>
 			</layer>
-		</layers>	
 	</DebriefLayer>
 </Scenario>
