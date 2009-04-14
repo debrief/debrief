@@ -652,7 +652,6 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
   }
 	
 
-	@Override
 	public boolean hasEditor()
 	{
 		return true;
