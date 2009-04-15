@@ -462,18 +462,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
-		if (res == null)
-		{
-			final Enumeration<Editable> iter = _thePositions.elements();
-			while (iter.hasMoreElements())
-			{
-				res.add(iter.nextElement());
-			}
-		} else
-		{
-			// ok, we want to wrap our fast-data as a set of plottables
-			res.add(_thePositions);
-		}
+		// ok, we want to wrap our fast-data as a set of plottables
+		res.add(_thePositions);
 
 		return new IteratorWrapper(res.iterator());
 	}
