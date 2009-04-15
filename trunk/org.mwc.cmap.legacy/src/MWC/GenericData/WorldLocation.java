@@ -486,9 +486,11 @@ public class WorldLocation implements Serializable, Cloneable
     boolean res = true;
     if (o._theDepth != _theDepth)
       res = false;
-    if (o._theLat != _theLat)
+    // ok, let's allow a little flexibility here... lets
+    // do it to the nearest 10e-10 meters (yes, a millionth of a meter)
+    if (Math.abs(o._theLat - _theLat) > 1.0E-11)
       res = false;
-    if (o._theLong != _theLong)
+    if (Math.abs(o._theLong - _theLong) > 1.0E-11)
       res = false;
 
     return res;
