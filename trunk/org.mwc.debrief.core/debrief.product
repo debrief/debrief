@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="Spring 2009" useFeatures="true">
+<product name="DebriefNG" uid="org.mwc.debrief.core.Debrief" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="Spring 2009" useFeatures="true">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/DebriefNGlogo.gif"/>
