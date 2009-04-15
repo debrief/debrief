@@ -138,6 +138,7 @@ package Debrief.Wrappers;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Plottable;
 import MWC.GenericData.*;
+import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import java.awt.*;
@@ -183,7 +184,12 @@ public final class SensorContactWrapper extends
 	/**
 	 * origin of the target, or null to read origin from host vessel
 	 */
-	private WorldLocation _origin;
+	private WorldLocation _absoluteOrigin;
+
+	/**
+	 * the calculated origin for this item, when we're dependent on a parent track
+	 */
+	private WorldLocation _calculatedOrigin;
 
 	/**
 	 * whether to show the label
@@ -217,10 +223,6 @@ public final class SensorContactWrapper extends
 
 	private String _sensorName;
 
-	// ///////////////////////////////////////////
-	// constructor
-	// ///////////////////////////////////////////
-
 	/**
 	 * default constructor, used when we read in from XML
 	 */
@@ -249,8 +251,9 @@ public final class SensorContactWrapper extends
 	 * @param sensorName
 	 */
 	public SensorContactWrapper(final String trackName, final HiResDate dtg,
-			final WorldDistance range, final double bearingDegs, final WorldLocation origin,
-			final java.awt.Color color, final String label, final int style, String sensorName)
+			final WorldDistance range, final double bearingDegs,
+			final WorldLocation origin, final java.awt.Color color,
+			final String label, final int style, String sensorName)
 	{
 		this();
 		_trackName = trackName;
@@ -273,43 +276,72 @@ public final class SensorContactWrapper extends
 	// accessor methods
 	// ///////////////////////////////////////////
 
+	public void clearCalculatedOrigin()
+	{
+		_calculatedOrigin = null;
+	}
+
 	/**
 	 * set the origin for this object
 	 */
 	public final void setOrigin(final WorldLocation val)
 	{
-		_origin = val;
+		_absoluteOrigin = val;
 	}
 
 	public WorldLocation getOrigin()
 	{
-		return _origin;
+		return _absoluteOrigin;
 	}
-		
+
 	/**
 	 * return the coordinates for the start of the line
 	 */
-	public final WorldLocation getOrigin(final Debrief.Tools.Tote.WatchableList parent)
+	public final WorldLocation getOrigin(
+			final Debrief.Tools.Tote.WatchableList parent)
 	{
-		if ((_origin == null) && (parent != null))
+		if ((_calculatedOrigin == null) && (parent != null))
 		{
-			// get the origin
-			final Debrief.Tools.Tote.Watchable[] list = parent.getNearestTo(_DTG);
-			Debrief.Tools.Tote.Watchable wa = null;
-			if (list.length > 0)
-				wa = list[0];
-
-			// did we find it?
-			if (wa != null)
+			if (_absoluteOrigin != null)
+				_calculatedOrigin = new WorldLocation(_absoluteOrigin);
+			else
 			{
-				// yes, store it
-				_origin = wa.getLocation();
 
+				// better calculate it ourselves then
+				
+				// get the origin
+				final Debrief.Tools.Tote.Watchable[] list = parent.getNearestTo(_DTG);
+				Debrief.Tools.Tote.Watchable wa = null;
+				if (list.length > 0)
+					wa = list[0];
+
+				// did we find it?
+				if (wa != null)
+				{
+					// yes, store it
+					_calculatedOrigin = wa.getLocation();
+
+					// ok, are we dealing with an offset?
+					WorldDistance offset = _mySensor.getSensorOffset();
+					if (offset != null)
+					{
+						// yup, better apply the offset
+
+						// get the current heading
+						double hdg = wa.getCourse();
+
+						// and calculate where it leaves us
+						WorldVector vector = new WorldVector(hdg, offset, null);
+
+						// now apply this vector to the origin
+						_calculatedOrigin = _calculatedOrigin.add(vector);
+					}
+				}
 			}
 
 		}
 
-		return _origin;
+		return _calculatedOrigin;
 	}
 
 	/**
@@ -319,10 +351,11 @@ public final class SensorContactWrapper extends
 	{
 		WorldLocation res = null;
 
-		if (_origin != null)
+		if (_calculatedOrigin != null)
 		{
 			// also do the far end
-			res = _origin.add(new WorldVector(_bearing, _range.getValueIn(WorldDistance.DEGS), 0d));
+			res = _calculatedOrigin.add(new WorldVector(_bearing, _range
+					.getValueIn(WorldDistance.DEGS), 0d));
 		}
 
 		return res;
@@ -355,8 +388,6 @@ public final class SensorContactWrapper extends
 	{
 		_DTG = val;
 	}
-
-	
 
 	public final void setColor(final Color val)
 	{
@@ -438,8 +469,8 @@ public final class SensorContactWrapper extends
 		// do we need an origin
 		final WorldLocation origin = getOrigin(track);
 
-		final TimePeriod trackPeriod = new TimePeriod.BaseTimePeriod(track.getStartDTG(),
-				track.getEndDTG());
+		final TimePeriod trackPeriod = new TimePeriod.BaseTimePeriod(track
+				.getStartDTG(), track.getEndDTG());
 		if (!trackPeriod.contains(this.getTime()))
 		{
 			// don't bother trying to plot it, we're outside the parent period
@@ -580,7 +611,6 @@ public final class SensorContactWrapper extends
 	{
 		_range = dist;
 	}
-	
 
 	/**
 	 * it this Label item currently visible?
@@ -682,8 +712,8 @@ public final class SensorContactWrapper extends
 		if (getVisible())
 		{
 			// get the range from the origin
-			if (_origin != null)
-				res = _origin.rangeFrom(other);
+			if (_calculatedOrigin != null)
+				res = _calculatedOrigin.rangeFrom(other);
 
 			final WorldLocation farEnd = getFarEnd();
 
@@ -692,9 +722,9 @@ public final class SensorContactWrapper extends
 				res = Math.min(res, farEnd.rangeFrom(other));
 
 			// lastly determine the range from the nearest point on the track
-			if ((_origin != null) && (farEnd != null))
+			if ((_calculatedOrigin != null) && (farEnd != null))
 			{
-				WorldDistance dist = other.rangeFrom(_origin, farEnd);
+				WorldDistance dist = other.rangeFrom(_calculatedOrigin, farEnd);
 				res = Math.min(res, dist.getValueIn(WorldDistance.DEGS));
 			}
 		}
@@ -768,7 +798,8 @@ public final class SensorContactWrapper extends
 	 */
 	public String getMultiLineName()
 	{
-		return "Sensor:" + getSensorName() + "\nDTG:" + getName() + "\nTrack:" + getLabel();
+		return "Sensor:" + getSensorName() + "\nDTG:" + getName() + "\nTrack:"
+				+ getLabel();
 	}
 
 	/**
@@ -838,7 +869,8 @@ public final class SensorContactWrapper extends
 	/**
 	 * the definition of what is editable about this object
 	 */
-	public static final class SensorContactInfo extends MWC.GUI.Editable.EditorType
+	public static final class SensorContactInfo extends
+			MWC.GUI.Editable.EditorType
 	{
 
 		/**
@@ -862,48 +894,47 @@ public final class SensorContactWrapper extends
 		{
 			try
 			{
-				final PropertyDescriptor[] res = {
+				final PropertyDescriptor[] res =
+				{
 						prop("Label", "the label for this data item"),
 						prop("Visible", "whether this sensor contact data is visible"),
-						prop("LabelVisible", "whether the label for this contact is visible"),
+						prop("LabelVisible",
+								"whether the label for this contact is visible"),
 						prop("Color", "the color for this sensor contact"),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
-						longProp("PutLabelAt", "whereabouts on the line to position the label",
+						longProp("PutLabelAt",
+								"whereabouts on the line to position the label",
 								MWC.GUI.Properties.LineLocationPropertyEditor.class),
 						longProp("LineStyle", "style to use to plot the line",
 								MWC.GUI.Properties.LineStylePropertyEditor.class) };
 
-
 				// see if we need to add rng/brg or origin data
 				SensorContactWrapper tc = (SensorContactWrapper) getData();
-				final PropertyDescriptor[] res1; 
-				if(tc.getOrigin() == null)
+				final PropertyDescriptor[] res1;
+				if (tc.getOrigin() == null)
 				{
 					// has origin
-					final PropertyDescriptor[] res2 = 
-					{
-							prop("Range", "range to centre of solution", SPATIAL),
-							prop("Bearing", "bearing to centre of solution", SPATIAL)
-					};
-					res1 = res2;					
+					final PropertyDescriptor[] res2 =
+					{ prop("Range", "range to centre of solution", SPATIAL),
+							prop("Bearing", "bearing to centre of solution", SPATIAL) };
+					res1 = res2;
 				}
 				else
 				{
 					// rng, brg data
-					final PropertyDescriptor[] res2 = 
-					{
-							prop("Origin", "centre of solution", SPATIAL)
-					};
+					final PropertyDescriptor[] res2 =
+					{ prop("Origin", "centre of solution", SPATIAL) };
 					res1 = res2;
 				}
-				
-				PropertyDescriptor[] res3 = new PropertyDescriptor[res.length + res1.length];
+
+				PropertyDescriptor[] res3 = new PropertyDescriptor[res.length
+						+ res1.length];
 				System.arraycopy(res, 0, res3, 0, res.length);
 				System.arraycopy(res1, 0, res3, res.length, res1.length);
-								
-				return res3;				
-				
+
+				return res3;
+
 			}
 			catch (IntrospectionException e)
 			{
@@ -920,7 +951,8 @@ public final class SensorContactWrapper extends
 		{
 			// just add the reset color field first
 			final Class<SensorContactWrapper> c = SensorContactWrapper.class;
-			final MethodDescriptor[] mds = { method(c, "resetColor", null, "Reset Color"), };
+			final MethodDescriptor[] mds =
+			{ method(c, "resetColor", null, "Reset Color"), };
 			return mds;
 		}
 
@@ -945,10 +977,11 @@ public final class SensorContactWrapper extends
 		public final void testMyCode()
 		{
 			// setup our object to be tested
-			final WorldLocation origin = new WorldLocation(2, 2, 0);
+			final WorldLocation origin = new WorldLocation(0, 0, 0);
 			final SensorContactWrapper ed = new SensorContactWrapper("blank track",
-					new HiResDate(new java.util.Date().getTime()), new WorldDistance(3000, WorldDistance.YARDS), 55, origin,
-					java.awt.Color.red, "my label", 1, "theSensorName");
+					new HiResDate(new java.util.Date().getTime()), new WorldDistance(1,
+							WorldDistance.DEGS), 55, origin, java.awt.Color.red, "my label",
+					1, "theSensorName");
 
 			// check the editable parameters
 			editableTesterSupport.testParams(ed, this);
@@ -956,20 +989,79 @@ public final class SensorContactWrapper extends
 			/**
 			 * test the distance calcs
 			 */
-			final WorldVector test_vector = new WorldVector(MWC.Algorithms.Conversions
-					.Degs2Rads(335), MWC.Algorithms.Conversions.Yds2Degs(4000), 0);
-			final WorldLocation test_end = origin.add(test_vector);
-			final WorldVector test_other_vector = new WorldVector(MWC.Algorithms.Conversions
-					.Degs2Rads(55), MWC.Algorithms.Conversions.Yds2Degs(4000), 0);
+			final WorldVector test_other_vector = new WorldVector(
+					MWC.Algorithms.Conversions.Degs2Rads(55), 1, 0);
 			final WorldLocation test_other_end = origin.add(test_other_vector);
 
 			// ok, now test that we find the distance from the indicated point
-			double dist = MWC.Algorithms.Conversions.Degs2Yds(ed.rangeFrom(test_end));
-			assertEquals("find nearest from origin", dist, 4000d, 0.001);
+			double dist = ed.rangeFrom(test_other_end);
+			assertEquals("find nearest from origin", 0d, dist, 0.001);
 
-			dist = MWC.Algorithms.Conversions.Degs2Yds(ed.rangeFrom(test_other_end));
-			assertEquals("find nearest from far end", dist, 1000d, 0.001);
+		}
 
+		public void testSensorOffset()
+		{
+			WorldLocation locationRes = new WorldLocation(0, 0, 0);
+			WorldLocation locationBitNorth = new WorldLocation(1, 0, 0);
+			WorldLocation locationBitSouth = new WorldLocation(-1, 0, 0);
+			WorldLocation locationBitEast = new WorldLocation(0, 1, 0);
+			WorldLocation location = new WorldLocation(0, 0, 0);
+			WorldLocation location2 = new WorldLocation(0, 1, 0);
+			WorldLocation locationBitNorth2 = new WorldLocation(1, 1, 0);
+			HiResDate theDate = new HiResDate(1000);
+			
+			SensorWrapper sw = new SensorWrapper("some sensor");
+			SensorContactWrapper scw = new SensorContactWrapper();
+			sw.add(scw);
+			scw.setDTG(theDate);
+			
+			
+			Fix fx = new Fix();
+			fx.setLocation(location);
+			fx.setTime(theDate);
+			fx.setCourse(0);
+			FixWrapper fw = new FixWrapper(fx);
+			TrackWrapper host = new TrackWrapper();
+			host.addFix(fw);
+
+			host.add(sw);
+
+			WorldLocation wl = scw.getOrigin();
+			assertNull("should not be a location yet", wl);
+
+			// ok, and try to do it from the parent
+			wl = scw.getOrigin(host);
+			assertNotNull("should be a location", wl);
+			assertEquals("should be fix location", locationRes, wl);
+
+			// now give it an offset
+			sw.setSensorOffset(new WorldDistance(1, WorldDistance.DEGS));
+			sw.setWormInHole(false);
+
+			// and try again
+			wl = scw.getOrigin(host);
+			assertNotNull("should be a location", wl);
+			assertEquals("should be offset location", locationBitNorth, wl);
+
+			// and try again, with a negative offset
+			sw.setSensorOffset(new WorldDistance(-1, WorldDistance.DEGS));
+			wl = scw.getOrigin(host);
+			assertNotNull("should be a location", wl);
+			assertEquals("should be offset location", locationBitSouth, wl);
+
+			// and try again, giving the host a course this time
+			fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
+			sw.setSensorOffset(new WorldDistance(1, WorldDistance.DEGS));
+			wl = scw.getOrigin(host);
+			assertNotNull("should be a location", wl);
+			assertEquals("should be centre of rectangle", locationBitEast, wl);
+
+			// check offset knows about track being shifted
+			fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(0.0));
+			fw.setFixLocation(location2);
+			wl = scw.getOrigin(host);
+			assertNotNull("should be a location", wl);
+			assertEquals("should be centre of rectangle", locationBitNorth2, wl);
 		}
 
 	}

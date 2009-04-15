@@ -9,6 +9,8 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Collection;
@@ -293,20 +295,48 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// add fix to the track
 		_thePositions.add(theFix);
 
-		// and add the fix wrapper to our data list
-//		_theTrack.addFix(theFix.getFix());
-
-
 		// and extend the start/end DTGs
-		if(_myTimePeriod == null)
-			_myTimePeriod = new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(), theFix.getDateTimeGroup());
+		if (_myTimePeriod == null)
+			_myTimePeriod = new TimePeriod.BaseTimePeriod(theFix.getDateTimeGroup(),
+					theFix.getDateTimeGroup());
 		else
 			_myTimePeriod.extend(theFix.getDateTimeGroup());
-		
-		if(_myWorldArea == null)
+
+		if (_myWorldArea == null)
 			_myWorldArea = new WorldArea(theFix.getLocation(), theFix.getLocation());
 		else
 			_myWorldArea.extend(theFix.getLocation());
+
+		// we want to listen out for the fix being moved. better listen in to it
+		theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+				new PropertyChangeListener()
+				{
+
+					public void propertyChange(PropertyChangeEvent arg0)
+					{
+						fixMoved();
+					}
+				});
+	}
+
+	/**
+	 * one of our fixes has moved. better tell any bits that rely on the locations
+	 * of our bits
+	 * 
+	 * @param theFix
+	 *          the fix that moved
+	 */
+	protected void fixMoved()
+	{
+		if (_mySensors != null)
+		{
+			Iterator<SensorWrapper> iter = _mySensors.iterator();
+			while (iter.hasNext())
+			{
+				SensorWrapper nextS = iter.next();
+				nextS.setHost(this);
+			}
+		}
 	}
 
 	/**
@@ -496,7 +526,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			if ((dtg.greaterThanOrEqualTo(start)) && (dtg.lessThanOrEqualTo(end)))
 			{
 				fw.setVisible(true);
-			} else
+			}
+			else
 			{
 				fw.setVisible(false);
 			}
@@ -612,7 +643,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (!getVisible())
 		{
 			// hey, we're invisible, return null
-		} else
+		}
+		else
 		{
 			final Enumeration<Editable> it = this._thePositions.elements();
 			while (it.hasMoreElements())
@@ -628,7 +660,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					{
 						// no, initialise it
 						res = new WorldArea(fw.getLocation(), fw.getLocation());
-					} else
+					}
+					else
 					{
 						// yes, extend to include the new area
 						res.extend(fw.getLocation());
@@ -690,7 +723,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getEndDTG()
 	{
 		HiResDate res = null;
-		if(_myTimePeriod != null)
+		if (_myTimePeriod != null)
 			res = _myTimePeriod.getEndDTG();
 		return res;
 	}
@@ -768,7 +801,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
 			{
 				// don't bother with it.
-			} else
+			}
+			else
 			{
 
 				// SPECIAL CASE! If we've been asked to show interpolated data
@@ -792,7 +826,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							set.add(nearest);
 						}
 					}
-				} else
+				}
+				else
 				{
 					// bugger that - get the real data
 
@@ -800,7 +835,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					if (starter == null)
 					{
 						starter = new FixWrapper(new Fix((start), _zeroLocation, 0.0, 0.0));
-					} else
+					}
+					else
 					{
 						starter.getFix().setTime(new HiResDate(0, start.getMicros() - 1));
 					}
@@ -809,7 +845,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					{
 						finisher = new FixWrapper(new Fix(new HiResDate(0,
 								end.getMicros() + 1), _zeroLocation, 0.0, 0.0));
-					} else
+					}
+					else
 					{
 						finisher.getFix().setTime(new HiResDate(0, end.getMicros() + 1));
 					}
@@ -918,7 +955,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if ((srchDTG.equals(lastDTG)) && (lastFix != null))
 		{
 			res = lastFix;
-		} else
+		}
+		else
 		{
 			// see if this DTG is inside our data range
 			// in which case we will just return null
@@ -939,7 +977,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				if (nearestFix == null)
 				{
 					nearestFix = new FixWrapper(new Fix(srchDTG, _zeroLocation, 0.0, 0.0));
-				} else
+				}
+				else
 					nearestFix.getFix().setTime(srchDTG);
 
 				// right, we really should be filtering the list according to if
@@ -1122,7 +1161,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getStartDTG()
 	{
 		HiResDate res = null;
-		if(_myTimePeriod != null)
+		if (_myTimePeriod != null)
 			res = _myTimePeriod.getStartDTG();
 		return res;
 	}
@@ -1170,8 +1209,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * filtered, and which have valid depths. The isVisible flag indicates whether
 	 * a track has been filtered or not. We also have the getVisibleFixesBetween
 	 * method (below) which decides if a fix is visible if it is set to Visible,
-	 * and it's label or symbol are visible. <p/> We don't have to worry about a
-	 * valid depth, since 3d doesn't show points with invalid depth values
+	 * and it's label or symbol are visible.
+	 * <p/>
+	 * We don't have to worry about a valid depth, since 3d doesn't show points
+	 * with invalid depth values
 	 * 
 	 * @param start
 	 *          start DTG
@@ -1374,7 +1415,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// nope. Don't join it to the last position.
 					// ok, if we've built up a polygon, we need to write it now
 					paintTrack(dest, lastCol);
-				} else
+				}
+				else
 				{
 					// yup, it's visible. carry on.
 
@@ -1434,7 +1476,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// polyline at the end
 							_myPts[_ptCtr++] = thisP.x;
 							_myPts[_ptCtr++] = thisP.y;
-						} else
+						}
+						else
 						{
 
 							// nope, output however much line we've got so far -
@@ -1516,8 +1559,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * paint any polyline that we've built up
 	 * 
-	 * @param dest -
-	 *          where we're painting to
+	 * @param dest
+	 *          - where we're painting to
 	 * @param thisCol
 	 */
 	private void paintTrack(final CanvasType dest, final Color thisCol)
@@ -1567,10 +1610,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (point instanceof SensorWrapper)
 		{
 			_mySensors.remove(point);
-		} else if (point instanceof TMAWrapper)
+		}
+		else if (point instanceof TMAWrapper)
 		{
 			_mySolutions.remove(point);
-		} else if (point instanceof SensorContactWrapper)
+		}
+		else if (point instanceof SensorContactWrapper)
 		{
 			// ok, cycle through our sensors, try to remove this contact...
 			final Iterator<SensorWrapper> iter = _mySensors.iterator();
@@ -1580,7 +1625,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// try to remove it from this one...
 				sw.removeElement(point);
 			}
-		} else
+		}
+		else
 		{
 			_thePositions.removeElement(point);
 		}
@@ -1634,7 +1680,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				final FixWrapper fw = (FixWrapper) iter.nextElement();
 				setter.execute(fw, true);
 			}
-		} else
+		}
+		else
 		{
 			// no, we're not just blindly doing all of them. do them at the
 			// correct
@@ -1652,7 +1699,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				// we can ignore this, since we have just hidden all of the
 				// points
-			} else
+			}
+			else
 			{
 
 				// pass through the track setting the values
@@ -1673,14 +1721,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					{
 						// start is at our freq, so we don't need to increment
 						// it
-					} else
+					}
+					else
 					{
 						num++;
 					}
 
 					// calculate new start time
 					start_time = num * freq;
-				} else
+				}
+				else
 				{
 					// there is not one of our 'intervals' between the start and
 					// the end,
@@ -1854,7 +1904,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (val.equals(_theSnailShape.getType()))
 		{
 			// don't bother we're using it already
-		} else
+		}
+		else
 		{
 			// remember the size of the symbol
 			final double scale = _theSnailShape.getScaleVal();
@@ -1894,6 +1945,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public void shift(WorldLocation feature, WorldVector vector)
 	{
 		feature.addToMe(vector);
+		
+		// right, one of our fixes has moved. get the sensors to update themselves
+		fixMoved();
 	}
 
 	// ///////////////////////////////////////////////////////////////
@@ -2152,7 +2206,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			if (thePlottable instanceof FixWrapper)
 			{
 				super.add(thePlottable);
-			} else
+			}
+			else
 			{
 				System.err.println("Trying to add wront");
 			}
@@ -2240,7 +2295,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					final PropertyDescriptor[] res =
 					{ expertProp("Visible", "whether this layer is visible", FORMAT), };
 					return res;
-				} catch (final IntrospectionException e)
+				}
+				catch (final IntrospectionException e)
 				{
 					e.printStackTrace();
 					return super.getPropertyDescriptors();
@@ -2277,10 +2333,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		@SuppressWarnings("synthetic-access")
 		public final void testFilterToTimePeriod()
 		{
-			TrackWrapper tw = getDummyTrack();		 			
+			TrackWrapper tw = getDummyTrack();
 			HiResDate startH = new HiResDate(150, 0);
 			HiResDate endH = new HiResDate(450, 0);
-			tw.filterListTo(startH , endH );
+			tw.filterListTo(startH, endH);
 			int ctr = countVisibleFixes(tw);
 			int sCtr = countVisibleSensorWrappers(tw);
 			int tCtr = countVisibleSolutionWrappers(tw);
@@ -2288,21 +2344,21 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			assertEquals("contains correct number of sensor entries", 6, sCtr);
 			assertEquals("contains correct number of sensor entries", 5, tCtr);
 
-			tw = getDummyTrack();			 			
+			tw = getDummyTrack();
 			startH = new HiResDate(350, 0);
 			endH = new HiResDate(550, 0);
-			tw.filterListTo(startH , endH );
+			tw.filterListTo(startH, endH);
 			ctr = countVisibleFixes(tw);
 			sCtr = countVisibleSensorWrappers(tw);
 			tCtr = countVisibleSolutionWrappers(tw);
 			assertEquals("contains correct number of entries", 2, ctr);
 			assertEquals("contains correct number of sensor entries", 1, sCtr);
 			assertEquals("contains correct number of sensor entries", 1, tCtr);
-			
-			tw = getDummyTrack();			 			
+
+			tw = getDummyTrack();
 			startH = new HiResDate(0, 0);
 			endH = new HiResDate(450, 0);
-			tw.filterListTo(startH , endH );
+			tw.filterListTo(startH, endH);
 			ctr = countVisibleFixes(tw);
 			sCtr = countVisibleSensorWrappers(tw);
 			tCtr = countVisibleSolutionWrappers(tw);
@@ -2314,16 +2370,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		@SuppressWarnings("synthetic-access")
 		private int countVisibleSensorWrappers(TrackWrapper tw)
 		{
-			Iterator<SensorWrapper> iter2 = tw._mySensors.iterator();			
+			Iterator<SensorWrapper> iter2 = tw._mySensors.iterator();
 			int sCtr = 0;
-			while(iter2.hasNext())
+			while (iter2.hasNext())
 			{
 				SensorWrapper sw = iter2.next();
 				Enumeration<Editable> enumS = sw.elements();
-				while(enumS.hasMoreElements())
+				while (enumS.hasMoreElements())
 				{
 					Plottable pl = (Plottable) enumS.nextElement();
-					if(pl.getVisible())
+					if (pl.getVisible())
 						sCtr++;
 				}
 			}
@@ -2333,32 +2389,32 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		@SuppressWarnings("synthetic-access")
 		private int countVisibleSolutionWrappers(TrackWrapper tw)
 		{
-			Iterator<TMAWrapper> iter2 = tw._mySolutions.iterator();			
+			Iterator<TMAWrapper> iter2 = tw._mySolutions.iterator();
 			int sCtr = 0;
-			while(iter2.hasNext())
+			while (iter2.hasNext())
 			{
 				TMAWrapper sw = iter2.next();
 				Enumeration<Editable> enumS = sw.elements();
-				while(enumS.hasMoreElements())
+				while (enumS.hasMoreElements())
 				{
 					Plottable pl = (Plottable) enumS.nextElement();
-					if(pl.getVisible())
+					if (pl.getVisible())
 						sCtr++;
 				}
 			}
 			return sCtr;
 		}
-		
+
 		@SuppressWarnings("synthetic-access")
 		private int countVisibleFixes(TrackWrapper tw)
 		{
 			int ctr = 0;
 			Enumeration<Editable> iter;
 			iter = tw._thePositions.elements();
-			while(iter.hasMoreElements())
+			while (iter.hasMoreElements())
 			{
 				Plottable thisE = (Plottable) iter.nextElement();
-				if(thisE.getVisible())
+				if (thisE.getVisible())
 					ctr++;
 			}
 			return ctr;
@@ -2391,44 +2447,56 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			fw5.setLabel("fw5");
 			tw.addFix(fw1);
 			tw.addFix(fw2);
-		  tw.addFix(fw3);
+			tw.addFix(fw3);
 			tw.addFix(fw4);
 			tw.addFix(fw5);
 			// also give it some sensor data
 			SensorWrapper swa = new SensorWrapper("title one");
-			SensorContactWrapper  scwa1 = new SensorContactWrapper("aaa", new HiResDate(150,0),null,0,null,null,null,0,null);
-			SensorContactWrapper  scwa2 = new SensorContactWrapper("bbb", new HiResDate(180,0),null,0,null,null,null,0,null);
-			SensorContactWrapper  scwa3 = new SensorContactWrapper("ccc", new HiResDate(250,0),null,0,null,null,null,0,null);
+			SensorContactWrapper scwa1 = new SensorContactWrapper("aaa",
+					new HiResDate(150, 0), null, 0, null, null, null, 0, null);
+			SensorContactWrapper scwa2 = new SensorContactWrapper("bbb",
+					new HiResDate(180, 0), null, 0, null, null, null, 0, null);
+			SensorContactWrapper scwa3 = new SensorContactWrapper("ccc",
+					new HiResDate(250, 0), null, 0, null, null, null, 0, null);
 			swa.add(scwa1);
 			swa.add(scwa2);
 			swa.add(scwa3);
 			tw.add(swa);
 			SensorWrapper sw = new SensorWrapper("title two");
-			SensorContactWrapper  scw1 = new SensorContactWrapper("ddd", new HiResDate(260,0),null,0,null,null,null,0,null);
-			SensorContactWrapper  scw2 = new SensorContactWrapper("eee", new HiResDate(280,0),null,0,null,null,null,0,null);
-			SensorContactWrapper  scw3 = new SensorContactWrapper("fff", new HiResDate(350,0),null,0,null,null,null,0,null);
+			SensorContactWrapper scw1 = new SensorContactWrapper("ddd",
+					new HiResDate(260, 0), null, 0, null, null, null, 0, null);
+			SensorContactWrapper scw2 = new SensorContactWrapper("eee",
+					new HiResDate(280, 0), null, 0, null, null, null, 0, null);
+			SensorContactWrapper scw3 = new SensorContactWrapper("fff",
+					new HiResDate(350, 0), null, 0, null, null, null, 0, null);
 			sw.add(scw1);
 			sw.add(scw2);
 			sw.add(scw3);
 			tw.add(sw);
 
 			TMAWrapper mwa = new TMAWrapper("bb");
-			TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb", new HiResDate(130),null, 0,0,0, null, null, null, null);
-			TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb", new HiResDate(190),null, 0,0,0, null, null, null, null);
-			TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb", new HiResDate(230),null, 0,0,0, null, null, null, null);
+			TMAContactWrapper tcwa1 = new TMAContactWrapper("aaa", "bbb",
+					new HiResDate(130), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcwa2 = new TMAContactWrapper("bbb", "bbb",
+					new HiResDate(190), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcwa3 = new TMAContactWrapper("ccc", "bbb",
+					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
 			mwa.add(tcwa1);
 			mwa.add(tcwa2);
 			mwa.add(tcwa3);
 			tw.add(mwa);
 			TMAWrapper mw = new TMAWrapper("cc");
-			TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb", new HiResDate(230),null, 0,0,0, null, null, null, null);
-			TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb", new HiResDate(330),null, 0,0,0, null, null, null, null);
-			TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb", new HiResDate(390),null, 0,0,0, null, null, null, null);
+			TMAContactWrapper tcw1 = new TMAContactWrapper("ddd", "bbb",
+					new HiResDate(230), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcw2 = new TMAContactWrapper("eee", "bbb",
+					new HiResDate(330), null, 0, 0, 0, null, null, null, null);
+			TMAContactWrapper tcw3 = new TMAContactWrapper("fff", "bbb",
+					new HiResDate(390), null, 0, 0, 0, null, null, null, null);
 			mw.add(tcw1);
 			mw.add(tcw2);
 			mw.add(tcw3);
 			tw.add(mw);
-			
+
 			return tw;
 		}
 
@@ -2949,7 +3017,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
 				return res;
-			} catch (final IntrospectionException e)
+			}
+			catch (final IntrospectionException e)
 			{
 				e.printStackTrace();
 				return super.getPropertyDescriptors();

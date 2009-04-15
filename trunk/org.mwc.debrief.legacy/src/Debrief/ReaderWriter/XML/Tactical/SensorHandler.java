@@ -11,7 +11,10 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GUI.Editable;
+import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
+
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
@@ -19,6 +22,9 @@ import org.xml.sax.Attributes;
 abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
   Debrief.Wrappers.SensorWrapper _mySensor;
+	private static final String WORM_IN_HOLE = "WormInHole";
+
+	private static final String OFFSET = "Offset";
 
   public SensorHandler()
   {
@@ -73,6 +79,22 @@ abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
         _mySensor.setLineThickness(val);
       }
     });
+
+	addHandler(new WorldDistanceHandler(OFFSET) {
+		public void setWorldDistance(WorldDistance value) {
+			_mySensor.setSensorOffset(value);
+		}
+	});
+
+	addAttributeHandler(new HandleBooleanAttribute(WORM_IN_HOLE) {
+
+		@Override
+		public void setValue(String name, boolean value) {
+			_mySensor.setWormInHole(value);
+		}
+	});
+    
+    
   }
 
   // this is one of ours, so get on with it!
@@ -123,6 +145,20 @@ abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
     trk.setAttribute("TrackName", sensor.getTrackName());
     trk.setAttribute("LineThickness", writeThis(sensor.getLineThickness()));
     ColourHandler.exportColour(sensor.getColor(), trk, doc);
+    
+
+	// do we have an offset?
+	WorldDistance theOFfset = sensor.getSensorOffset();
+	if (theOFfset != null)
+		MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler
+				.exportDistance(theOFfset, trk, doc);
+
+	// and the worm in the hole indicator?
+	Boolean wormy = sensor.getWormInHole();
+	if (wormy != null) {
+		trk.setAttribute(WORM_IN_HOLE, writeThis(wormy));
+	}
+    
 
     // now the points
     java.util.Enumeration<Editable> iter = sensor.elements();

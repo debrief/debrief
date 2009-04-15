@@ -186,7 +186,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implement
   /**
    * set our host track
    */
-  public final void setHost(final Debrief.Tools.Tote.WatchableList host)
+  public void setHost(final Debrief.Tools.Tote.WatchableList host)
   {
     _myHost = host;
   }

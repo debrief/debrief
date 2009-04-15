@@ -147,593 +147,721 @@ package Debrief.Wrappers;
 
 import java.beans.*;
 
+import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
 public final class SensorWrapper extends TacticalDataWrapper
 {
 
-  ////////////////////////////////////////
-  // member variables
-  ////////////////////////////////////////
- 
+	// //////////////////////////////////////
+	// member variables
+	// //////////////////////////////////////
 
-  /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	/**
-   * more optimisatons
-   */
-  transient private SensorContactWrapper nearestContact;
+	 * more optimisatons
+	 */
+	transient private SensorContactWrapper nearestContact;
 
-  ////////////////////////////////////////
-  // constructors
-  /**
-   * ////////////////////////////////////////
-   */
-  public SensorWrapper(final String title)
-  {
-  	super(title);
-  }
+	/**
+	 * the (optional) sensor offset value, indicating the forward/backward offset
+	 * compared to the attack datum of the platform.
+	 */
+	private WorldDistance _sensorOffset = null;
 
-  ////////////////////////////////////////
-  // member methods to meet plain wrapper responsibilities
-  ////////////////////////////////////////
+	/**
+	 * the (optional) indicator for whether the centre of this sensor is in a
+	 * straight line fwd/backward of the attack datum, or whether it's a dragged
+	 * sensor that follows the track of it's host platform (like a towed array).
+	 */
+	private Boolean _wormInHole = null;
 
+	// //////////////////////////////////////
+	// constructors
+	/**
+	 * ////////////////////////////////////////
+	 */
+	public SensorWrapper(final String title)
+	{
+		super(title);
+	}
 
-  /**
-   * the real getBounds object, which uses properties of the parent
-   */
-  public final MWC.GenericData.WorldArea getBounds()
-  {
-    // we no longer just return the bounds of the track, because a portion
-    // of the track may have been made invisible.
-    // instead, we will pass through the full dataset and find the outer bounds of the visible area
-    WorldArea res = null;
+	// //////////////////////////////////////
+	// member methods to meet plain wrapper responsibilities
+	// //////////////////////////////////////
 
-    if (!getVisible())
-    {
-      // hey, we're invisible, return null
-    }
-    else
-    {
-      final java.util.Iterator<Editable> it = this._myContacts.iterator();
-      while (it.hasNext())
-      {
-        final SensorContactWrapper fw = (SensorContactWrapper) it.next();
+	/**
+	 * the real getBounds object, which uses properties of the parent
+	 */
+	public final MWC.GenericData.WorldArea getBounds()
+	{
+		// we no longer just return the bounds of the track, because a portion
+		// of the track may have been made invisible.
+		// instead, we will pass through the full dataset and find the outer
+		// bounds of the visible area
+		WorldArea res = null;
 
-        // is this point visible?
-        if (fw.getVisible())
-        {
+		if (!getVisible())
+		{
+			// hey, we're invisible, return null
+		}
+		else
+		{
+			final java.util.Iterator<Editable> it = this._myContacts.iterator();
+			while (it.hasNext())
+			{
+				final SensorContactWrapper fw = (SensorContactWrapper) it.next();
 
-          // has our data been initialised?
-          if (res == null)
-          {
-            // no, initialise it
-            WorldLocation startOfLine = fw.getOrigin(_myHost);
+				// is this point visible?
+				if (fw.getVisible())
+				{
 
-            // we may not have a sensor-data origin, since the sensor may be out of the time period of the track
-            if(startOfLine != null)
-              res = new WorldArea(startOfLine, fw.getFarEnd());
-          }
-          else
-          {
-            // yes, extend to include the new area
-            res.extend(fw.getOrigin(_myHost));
-            res.extend(fw.getFarEnd());
-          }
-        }
-      }
-    }
+					// has our data been initialised?
+					if (res == null)
+					{
+						// no, initialise it
+						WorldLocation startOfLine = fw.getOrigin(_myHost);
 
-    return res;
-  }
- 
-  
-  /**
-   * getInfo
-   *
-   * @return the returned MWC.GUI.Editable.EditorType
-   */
-  public final MWC.GUI.Editable.EditorType getInfo()
-  {
-    if (_myEditor == null)
-      _myEditor = new SensorInfo(this);
+						// we may not have a sensor-data origin, since the
+						// sensor may be out of the time period of the track
+						if (startOfLine != null)
+							res = new WorldArea(startOfLine, fw.getFarEnd());
+					}
+					else
+					{
+						// yes, extend to include the new area
+						res.extend(fw.getOrigin(_myHost));
+						res.extend(fw.getFarEnd());
+					}
+				}
+			}
+		}
 
-    return _myEditor;
-  }
+		return res;
+	}
 
-  /**
-   * add
-   *
-   * @param plottable parameter for add
-   */
-  public final void add(final MWC.GUI.Editable plottable)
-  {
-    // check it's a sensor contact entry
-    if (plottable instanceof SensorContactWrapper)
-    {
-      _myContacts.add(plottable);
+	/**
+	 * getInfo
+	 * 
+	 * @return the returned MWC.GUI.Editable.EditorType
+	 */
+	public final MWC.GUI.Editable.EditorType getInfo()
+	{
+		if (_myEditor == null)
+			_myEditor = new SensorInfo(this);
 
-      final SensorContactWrapper scw = (SensorContactWrapper) plottable;
+		return _myEditor;
+	}
 
-      // maintain our time period
-      if (_timePeriod == null)
-        _timePeriod = new MWC.GenericData.TimePeriod.BaseTimePeriod(scw.getDTG(), scw.getDTG());
-      else
-        _timePeriod.extend(scw.getDTG());
+	/**
+	 * add
+	 * 
+	 * @param plottable
+	 *          parameter for add
+	 */
+	public final void add(final MWC.GUI.Editable plottable)
+	{
+		// check it's a sensor contact entry
+		if (plottable instanceof SensorContactWrapper)
+		{
+			_myContacts.add(plottable);
 
-      // and tell the contact about us
-      scw.setSensor(this);
-    }
-  }
+			final SensorContactWrapper scw = (SensorContactWrapper) plottable;
 
+			// maintain our time period
+			if (_timePeriod == null)
+				_timePeriod = new MWC.GenericData.TimePeriod.BaseTimePeriod(scw
+						.getDTG(), scw.getDTG());
+			else
+				_timePeriod.extend(scw.getDTG());
 
-	
+			// and tell the contact about us
+			scw.setSensor(this);
+		}
+	}
+
 	public boolean hasOrderedChildren()
 	{
 		return false;
 	}
+
+	// ///////////////////////////////////////
+	// other member functions
+	// ///////////////////////////////////////
+
+	/**
+   */
+
+	public final String toString()
+	{
+		return "Sensor:" + getName() + " (" + _myContacts.size() + " items)";
+	}
+
+	/**
+	 * how far away are we from this point? or return null if it can't be
+	 * calculated
+	 */
+	public final double rangeFrom(final WorldLocation other)
+	{
+		double res = INVALID_RANGE;
+
+		// if we have a nearest contact, see how far away it is.
+		if (nearestContact != null)
+			res = nearestContact.rangeFrom(other);
+
+		return res;
+	}
+
+	// /////////////////////////////////////////////////////////////////
+	// support for WatchableList interface (required for Snail Trail plotting)
+	// //////////////////////////////////////////////////////////////////
+
+	/**
+	 * get the watchable in this list nearest to the specified DTG - we take most
+	 * of this processing from the similar method in TrackWrappper. If the DTG is
+	 * after our end, return our last point
+	 * 
+	 * @param DTG
+	 *          the DTG to search for
+	 * @return the nearest Watchable
+	 */
+	public final Debrief.Tools.Tote.Watchable[] getNearestTo(final HiResDate DTG)
+	{
+
+		/**
+		 * we need to end up with a watchable, not a fix, so we need to work our way
+		 * through the fixes
+		 */
+		Debrief.Tools.Tote.Watchable[] res = new Debrief.Tools.Tote.Watchable[]
+		{};
+
+		// check that we do actually contain some data
+		if (_myContacts.size() == 0)
+			return res;
+
+		// see if this is the DTG we have just requestsed
+		if ((DTG.equals(lastDTG)) && (lastContact != null))
+		{
+			res = lastContact;
+		}
+		else
+		{
+			// see if this DTG is inside our data range
+			// in which case we will just return null
+			final SensorContactWrapper theFirst = (SensorContactWrapper) _myContacts
+					.first();
+			final SensorContactWrapper theLast = (SensorContactWrapper) _myContacts
+					.last();
+
+			if ((DTG.greaterThanOrEqualTo(theFirst.getDTG()))
+					&& (DTG.lessThanOrEqualTo(theLast.getDTG())))
+			{
+				// yes it's inside our data range, find the first fix
+				// after the indicated point
+
+				// see if we have to create our local temporary fix
+				if (nearestContact == null)
+				{
+					nearestContact = new SensorContactWrapper(null, DTG, null, -1, null,
+							null, null, 0, getName());
+				}
+				else
+					nearestContact.setDTG(DTG);
+
+				// get the data..
+				final java.util.Vector<SensorContactWrapper> list = new java.util.Vector<SensorContactWrapper>(
+						0, 1);
+				boolean finished = false;
+				final java.util.Iterator<Editable> it = _myContacts.iterator();
+				while ((it.hasNext()) && (!finished))
+				{
+					final SensorContactWrapper scw = (SensorContactWrapper) it.next();
+					HiResDate thisDate = scw.getTime();
+					if (thisDate.lessThan(DTG))
+					{
+						// before it, ignore!
+					}
+					else if (thisDate.greaterThan(DTG))
+					{
+						// hey, it's a possible - if we haven't found an exact
+						// match
+						if (list.size() == 0)
+						{
+							list.add(scw);
+						}
+						else
+						{
+							// hey, we're finished!
+							finished = true;
+						}
+					}
+					else
+					{
+						// hey, it must be at the same time!
+						list.add(scw);
+					}
+
+				}
+
+				if (list.size() > 0)
+				{
+					final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]
+					{ null };
+					res = list.toArray(dummy);
+				}
+			}
+			else if (DTG.greaterThanOrEqualTo(theLast.getDTG()))
+			{
+				// is it after the last one? If so, just plot the last one. This
+				// helps us when we're doing snail trails.
+				final java.util.Vector<SensorContactWrapper> list = new java.util.Vector<SensorContactWrapper>(
+						0, 1);
+				list.add(theLast);
+				final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]
+				{ null };
+				res = list.toArray(dummy);
+			}
+
+			// and remember this fix
+			lastContact = res;
+			lastDTG = DTG;
+		}
+
+		return res;
+
+	}
+
+	// ///////////////////////////////////////////
+	// constructor
+	// ///////////////////////////////////////////
+
+	public Boolean getWormInHole()
+	{
+		return _wormInHole;
+	}
+
+	public void setWormInHole(Boolean wormInHole)
+	{
+		_wormInHole = wormInHole;
+	}
+
+	public WorldDistance getSensorOffset()
+	{
+		return _sensorOffset;
+	}
+
 	
-  /////////////////////////////////////////
-  // other member functions
-  /////////////////////////////////////////
-
-  /**
-   */
-
-  public final String toString()
-  {
-    return "Sensor:" + getName() + " (" + _myContacts.size() + " items)";
-  }
-  
-  /** how far away are we from this point?
-   * or return null if it can't be calculated
-   */
-  public final double rangeFrom(final WorldLocation other)
-  {
-  	double res = INVALID_RANGE;
-  	
-  	// if we have a nearest contact, see how far away it is.
-  	if(nearestContact != null)
-  		res = nearestContact.rangeFrom(other);
-  		
-  	return res;
-  }  
-
-  ///////////////////////////////////////////////////////////////////
-  // support for WatchableList interface (required for Snail Trail plotting)
-  ////////////////////////////////////////////////////////////////////
-
-
-  /**
-   * get the watchable in this list nearest to the specified DTG - we take most of this processing
-   * from the similar method in TrackWrappper. If the DTG is after our end, return our last point
-   *
-   * @param DTG the DTG to search for
-   * @return the nearest Watchable
-   */
-  public final Debrief.Tools.Tote.Watchable[] getNearestTo(final HiResDate DTG)
-  {
-
-    /** we need to end up with a watchable, not a fix,
-     * so we need to work our way through the fixes
-     */
-    Debrief.Tools.Tote.Watchable[] res = new Debrief.Tools.Tote.Watchable[]{};
-
-    // check that we do actually contain some data
-    if (_myContacts.size() == 0)
-      return res;
-
-    // see if this is the DTG we have just requestsed
-    if ((DTG.equals(lastDTG)) && (lastContact != null))
-    {
-      res = lastContact;
-    }
-    else
-    {
-      // see if this DTG is inside our data range
-      // in which case we will just return null
-      final SensorContactWrapper theFirst = (SensorContactWrapper) _myContacts.first();
-      final SensorContactWrapper theLast = (SensorContactWrapper) _myContacts.last();
-
-      if ((DTG.greaterThanOrEqualTo(theFirst.getDTG())) &&
-        (DTG.lessThanOrEqualTo(theLast.getDTG())))
-      {
-        // yes it's inside our data range, find the first fix
-        // after the indicated point
-
-        // see if we have to create our local temporary fix
-        if (nearestContact == null)
-        {
-          nearestContact = new SensorContactWrapper( null, DTG, null, -1, null, null, null, 0, getName());
-        }
-        else
-          nearestContact.setDTG(DTG);
-
-        // get the data..
-        final java.util.Vector<SensorContactWrapper> list = new java.util.Vector<SensorContactWrapper>(0, 1);
-        boolean finished = false;
-        final java.util.Iterator<Editable> it = _myContacts.iterator();
-        while ((it.hasNext()) && (!finished))
-        {
-          final SensorContactWrapper scw = (SensorContactWrapper) it.next();
-          HiResDate thisDate = scw.getTime();
-          if (thisDate.lessThan(DTG))
-          {
-            // before it, ignore!
-          }
-          else if (thisDate.greaterThan(DTG))
-          {
-            // hey, it's a possible - if we haven't found an exact match
-            if (list.size() == 0)
-            {
-              list.add(scw);
-            }
-            else
-            {
-              // hey, we're finished!
-              finished = true;
-            }
-          }
-          else
-          {
-            // hey, it must be at the same time!
-            list.add(scw);
-          }
-
-        }
-
-        if (list.size() > 0)
-        {
-          final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]{null};
-          res = list.toArray(dummy);
-        }
-      }
-      else if (DTG.greaterThanOrEqualTo(theLast.getDTG()))
-      {
-        // is it after the last one?  If so, just plot the last one.  This helps us when we're doing snail trails.
-        final java.util.Vector<SensorContactWrapper> list = new java.util.Vector<SensorContactWrapper>(0, 1);
-        list.add(theLast);
-        final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]{null};
-        res = list.toArray(dummy);
-      }
-
-      // and remember this fix
-      lastContact = res;
-      lastDTG = DTG;
-    }
-
-    return res;
-
-
-  }
-
-  ////////////////////////////////////////////////////////////////////////////
-  //  embedded class, used for editing the projection
-  ////////////////////////////////////////////////////////////////////////////
-  /**
-   * the definition of what is editable about this object
-   */
-  public final class SensorInfo extends MWC.GUI.Editable.EditorType
-  {
-
-    /**
-     * constructor for editable details of a set of Layers
-     *
-     * @param data the Layers themselves
-     */
-    public SensorInfo(final SensorWrapper data)
-    {
-      super(data, data.getName(), "Sensor");
-    }
-
-    /**
-     * The things about these Layers which are editable.
-     * We don't really use this list, since we have our own custom editor anyway
-     *
-     * @return property descriptions
-     */
-    public final PropertyDescriptor[] getPropertyDescriptors()
-    {
-      try
-      {
-        final PropertyDescriptor[] res = {
-          prop("Name", "the name for this sensor"),
-          prop("Visible", "whether this sensor data is visible"),
-          prop("LineThickness", "the thickness to draw these sensor lines"),
-          prop("Color", "the colour to plot this set of sensor data"),
-        };
-
-        res[2].setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
-
-
-        return res;
-      }
-      catch (IntrospectionException e)
-      {
-        return super.getPropertyDescriptors();
-      }
-    }
-  }
-
-  //////////////////////////////////////////////////////
-  // nested class for testing
-  ///////////////////////////////////////////////////////
-
-  static public final class testSensors extends junit.framework.TestCase
-  {
-    static public final String TEST_ALL_TEST_TYPE = "UNIT";
-
-    public testSensors(final String val)
-    {
-      super(val);
-    }
-
-    public final void testValues()
-    {
-      // ok, create the test object
-      final SensorWrapper sensor = new SensorWrapper("tester");
-
-      final java.util.Calendar cal = new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
-
-      // and create the list of sensor contact data items
-      cal.set(2001, 10, 4, 4, 4, 0);
-      final long start_time = cal.getTime().getTime();
-      sensor.add(new SensorContactWrapper( "tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 23);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 25);
-      sensor.add(new SensorContactWrapper( "tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 27);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 02);
-      sensor.add(new SensorContactWrapper( "tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 01);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 05);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 55);
-      final long end_time = cal.getTime().getTime();
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      // so, we've now build up the list
-      // check it has the correct quantity
-      assertTrue("Count of items", (sensor._myContacts.size() == 8));
-
-      // check the outer limits
-      final HiResDate start = sensor.getStartDTG();
-      final HiResDate end = sensor.getEndDTG();
-      assertEquals("first time", start.getDate().getTime(), start_time);
-      assertEquals("last time", end.getDate().getTime(), end_time);
-
-      ////////////////////////////////////////////////////////////////////////
-      // finding the nearest entry
-      cal.set(2001, 10, 4, 4, 4, 05);
-      Debrief.Tools.Tote.Watchable[] list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime()));
-      SensorContactWrapper nearest = (SensorContactWrapper) list[0];
-      assertEquals("Nearest matching fix", nearest.getDTG().getDate().getTime(), cal.getTime().getTime());
-
-      final java.util.Calendar cal_other = new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
-      cal_other.set(2001, 10, 4, 4, 4, 03);
-      list = sensor.getNearestTo(new HiResDate(cal_other.getTime().getTime()));
-      nearest = (SensorContactWrapper) list[0];
-      assertTrue("Nearest or greater than fix", (nearest.getDTG().getMicros() / 1000 == cal.getTime().getTime()));
-
-      /////////////////////////////////////////////////////////////////////
-      // filter the list
-      cal.set(2001, 10, 4, 4, 4, 22);
-      cal_other.set(2001, 10, 4, 4, 4, 25);
-
-      //////////////////////////////////////////////////////////////////////////
-      // do the filter
-      sensor.filterListTo(new HiResDate(cal.getTime().getTime()), new HiResDate(cal_other.getTime().getTime()));
-
-      // see how many remain visible
-      java.util.Enumeration<Editable> iter = sensor.elements();
-      int counter = 0;
-      while (iter.hasMoreElements())
-      {
-        final SensorContactWrapper contact = (SensorContactWrapper) iter.nextElement();
-        if (contact.getVisible())
-          counter++;
-      }
-      // check that the correct number are visible
-      assertTrue("Correct filtering of list", (counter == 2));
-
-      // clear the filter
-      sensor.filterListTo(sensor.getStartDTG(), sensor.getEndDTG());
-      // see how many remain visible
-      iter = sensor.elements();
-      counter = 0;
-      while (iter.hasMoreElements())
-      {
-        final SensorContactWrapper contact = (SensorContactWrapper) iter.nextElement();
-        if (contact.getVisible())
-          counter++;
-      }
-      // check that the correct number are visible
-      assertTrue("Correct removal of list filter", (counter == 8));
-
-      ////////////////////////////////////////////////////////
-      // get items between
-      java.util.Collection<Editable> res = sensor.getItemsBetween(new HiResDate(cal.getTime().getTime()),
-                                                        new HiResDate(cal_other.getTime().getTime()));
-      assertTrue("get items between", (res.size() == 2));
-
-      // do recheck, since this time we will be resetting the working variables, rather and creating them
-      cal.set(2001, 10, 4, 4, 4, 5);
-      cal_other.set(2001, 10, 4, 4, 4, 27);
-      res = sensor.getItemsBetween(new HiResDate(cal.getTime().getTime()),
-                                    new HiResDate(cal_other.getTime().getTime()));
-      assertEquals("recheck get items between:" + res.size(), 4, res.size());
-
-      // and show all of the data
-      res = sensor.getItemsBetween(sensor.getStartDTG(), sensor.getEndDTG());
-      assertTrue("recheck get items between:" + res.size(), (res.size() == 8));
-
-      ///////////////////////////////////////////////////////////
-      // test the position related stuff
-      final TrackWrapper track = new TrackWrapper();
-
-      // and add the fixes
-      cal.set(2001, 10, 4, 4, 4, 0);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.0, 2.0, 0.0), 12, 12)));
-
-
-      cal.set(2001, 10, 4, 4, 4, 01);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.0, 2.25, 0.0), 12, 12)));
-
-      cal.set(2001, 10, 4, 4, 4, 02);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.0, 2.5, 0.0), 12, 12)));
-      cal.set(2001, 10, 4, 4, 4, 05);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.0, 2.75, 0.0), 12, 12)));
-      cal.set(2001, 10, 4, 4, 4, 23);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.25, 2.0, 0.0), 12, 12)));
-      cal.set(2001, 10, 4, 4, 4, 25);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.5, 2.0, 0.0), 12, 12)));
-      cal.set(2001, 10, 4, 4, 4, 28);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.75, 2.0, 0.0), 12, 12)));
-      cal.set(2001, 10, 4, 4, 4, 55);
-      track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal.getTime().getTime(), 0),
-                                                           new MWC.GenericData.WorldLocation(2.25, 2.25, 0.0), 12, 12)));
-
-      // ok, put the sensor data into the track
-      track.add(sensor);
-
-      // now find the location of an item, any item!
-      cal.set(2001, 10, 4, 4, 4, 27);
-      list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(),0));
-      nearest = (SensorContactWrapper) list[0];
-      assertEquals("first test", nearest.getOrigin(track), new MWC.GenericData.WorldLocation(2.75, 2.0, 0.0));
-
-      // ah-ha! what about a contact between two fixes
-      cal.set(2001, 10, 4, 4, 4, 26);
-      list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      nearest = (SensorContactWrapper) list[0];
-      assertEquals("test mid way", nearest.getOrigin(track), new MWC.GenericData.WorldLocation(2.75, 2.0, 0.0));
-
-      // ok, that was half-way, what making it nearer to one of the fixes
-      cal.set(2001, 10, 4, 4, 4, 25);
-      list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      nearest = (SensorContactWrapper) list[0];
-      assertEquals("test nearer first point", nearest.getOrigin(track), (new MWC.GenericData.WorldLocation(2.5, 2.0, 0.0)));
-
-      // start point?
-      cal.set(2001, 10, 4, 4, 4, 0);
-      list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      nearest = (SensorContactWrapper) list[0];
-      assertEquals("test start point", nearest.getOrigin(track), new MWC.GenericData.WorldLocation(2.0, 2.0, 0.0));
-
-      // end point?
-      cal.set(2001, 10, 4, 4, 4, 55);
-      list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      nearest = (SensorContactWrapper) list[0];
-      assertEquals("test end point", nearest.getOrigin(track), new MWC.GenericData.WorldLocation(2.25, 2.25, 0.0));
-
-      // before start of track data?
-      cal.set(2001, 10, 4, 4, 3, 0);
-      list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      assertEquals("before range of data", list.length, 0);
-
-      // after end of track data?
-      cal.set(2001, 10, 4, 4, 7, 0);
-      list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      assertEquals("after end of data", list.length, 1);
-
-
-    }
-
-    public final void testDuplicates()
-    {
-      // ok, create the test object
-      final SensorWrapper sensor = new SensorWrapper("tester");
-
-      final java.util.Calendar cal = new java.util.GregorianCalendar(2001, 10, 4, 4, 4, 0);
-
-      // and create the list of sensor contact data items
-      cal.set(2001, 10, 4, 4, 4, 0);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 23);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 24);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 25);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()),null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 25);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 01);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 05);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      cal.set(2001, 10, 4, 4, 4, 55);
-      sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime().getTime()), null, 0, null, null, null, 1, sensor.getName()));
-
-      // so, we've now build up the list
-      // check it has the correct quantity
-      assertEquals("Count of items", 8, sensor._myContacts.size());
-
-      // check the correct number get returned
-      cal.set(2001, 10, 4, 4, 4, 25);
-      final Debrief.Tools.Tote.Watchable[] list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
-      assertEquals("after end of data", 2, list.length);
-
-    }
-
-
-    public void testMultipleContacts()
-    {
-      SensorWrapper sw = new SensorWrapper("bbb");
-      SensorContactWrapper sc1 = new SensorContactWrapper("bbb", new HiResDate(0,9), null, 0, null, null, "first", 0, sw.getName());
-      SensorContactWrapper sc2 = new SensorContactWrapper("bbb", new HiResDate(0,12), null, 0, null, null, "first", 0, sw.getName());
-      SensorContactWrapper sc3 = new SensorContactWrapper("bbb", new HiResDate(0,7), null, 0, null, null, "first", 0, sw.getName());
-      SensorContactWrapper sc4 = new SensorContactWrapper("bbb", new HiResDate(0,13), null, 0, null, null, "first", 0, sw.getName());
-
-      sw.add(sc1);
-      sw.add(sc2);
-      sw.add(sc3);
-      sw.add(sc4);
-
-      assertEquals("four contacts loaded", 4, sw._myContacts.size());
-
-      // check we can delete from it
-      sw.removeElement(sc3);
-
-      assertEquals("now only three contacts loaded", 3, sw._myContacts.size());
-
-
-    }
-  }
-
-  public static void main(final String[] args)
-  {
-    final testSensors ts = new testSensors("Ian");
-    ts.testDuplicates();
-    ts.testValues();
-  }
-
+	public void setSensorOffset(WorldDistance sensorOffset)
+	{
+		_sensorOffset = sensorOffset;
+
+		if (_sensorOffset != null)
+		{
+			clearChildOffsets();
+		}
+	}
+
+	private void clearChildOffsets()
+	{
+		// we also need to reset the origins on our child elements, since
+		// the offset will have changed
+		final java.util.Iterator<Editable> it = this._myContacts.iterator();
+		while (it.hasNext())
+		{
+			final SensorContactWrapper fw = (SensorContactWrapper) it.next();
+			fw.clearCalculatedOrigin();
+		}
+	}
+	
+	
+
+	/** override the parent method - since we want to reset the origin
+	 * for our child sensor data items
+	 */
+	public void setHost(WatchableList host)
+	{
+		super.setHost(host);
+		
+		// and clear offsets
+		clearChildOffsets();
+	}
+
+
+
+	// //////////////////////////////////////////////////////////////////////////
+	// embedded class, used for editing the projection
+	// //////////////////////////////////////////////////////////////////////////
+	/**
+	 * the definition of what is editable about this object
+	 */
+	public final class SensorInfo extends MWC.GUI.Editable.EditorType
+	{
+
+		/**
+		 * constructor for editable details of a set of Layers
+		 * 
+		 * @param data
+		 *          the Layers themselves
+		 */
+		public SensorInfo(final SensorWrapper data)
+		{
+			super(data, data.getName(), "Sensor");
+		}
+
+		/**
+		 * The things about these Layers which are editable. We don't really use
+		 * this list, since we have our own custom editor anyway
+		 * 
+		 * @return property descriptions
+		 */
+		public final PropertyDescriptor[] getPropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+						prop("Name", "the name for this sensor"),
+						prop("Visible", "whether this sensor data is visible"),
+						prop("LineThickness", "the thickness to draw these sensor lines"),
+						prop("Color", "the colour to plot this set of sensor data"),
+						prop("SensorOffset",
+								"the forward/backward offset of this sensor from the attack datum"),
+						prop(
+								"WormInHole",
+								"whether the origin of this sensor is offset in straight line, or back along the host track") };
+
+				res[2]
+						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
+
+				return res;
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}
+	}
+
+	// ////////////////////////////////////////////////////
+	// nested class for testing
+	// /////////////////////////////////////////////////////
+
+	static public final class testSensors extends junit.framework.TestCase
+	{
+		static public final String TEST_ALL_TEST_TYPE = "UNIT";
+
+		public testSensors(final String val)
+		{
+			super(val);
+		}
+
+		public final void testValues()
+		{
+			// ok, create the test object
+			final SensorWrapper sensor = new SensorWrapper("tester");
+
+			final java.util.Calendar cal = new java.util.GregorianCalendar(2001, 10,
+					4, 4, 4, 0);
+
+			// and create the list of sensor contact data items
+			cal.set(2001, 10, 4, 4, 4, 0);
+			final long start_time = cal.getTime().getTime();
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 23);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 25);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 27);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 02);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 01);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 05);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 55);
+			final long end_time = cal.getTime().getTime();
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			// so, we've now build up the list
+			// check it has the correct quantity
+			assertTrue("Count of items", (sensor._myContacts.size() == 8));
+
+			// check the outer limits
+			final HiResDate start = sensor.getStartDTG();
+			final HiResDate end = sensor.getEndDTG();
+			assertEquals("first time", start.getDate().getTime(), start_time);
+			assertEquals("last time", end.getDate().getTime(), end_time);
+
+			// //////////////////////////////////////////////////////////////////////
+			// finding the nearest entry
+			cal.set(2001, 10, 4, 4, 4, 05);
+			Debrief.Tools.Tote.Watchable[] list = sensor.getNearestTo(new HiResDate(
+					cal.getTime().getTime()));
+			SensorContactWrapper nearest = (SensorContactWrapper) list[0];
+			assertEquals("Nearest matching fix",
+					nearest.getDTG().getDate().getTime(), cal.getTime().getTime());
+
+			final java.util.Calendar cal_other = new java.util.GregorianCalendar(
+					2001, 10, 4, 4, 4, 0);
+			cal_other.set(2001, 10, 4, 4, 4, 03);
+			list = sensor.getNearestTo(new HiResDate(cal_other.getTime().getTime()));
+			nearest = (SensorContactWrapper) list[0];
+			assertTrue("Nearest or greater than fix",
+					(nearest.getDTG().getMicros() / 1000 == cal.getTime().getTime()));
+
+			// ///////////////////////////////////////////////////////////////////
+			// filter the list
+			cal.set(2001, 10, 4, 4, 4, 22);
+			cal_other.set(2001, 10, 4, 4, 4, 25);
+
+			// ////////////////////////////////////////////////////////////////////////
+			// do the filter
+			sensor.filterListTo(new HiResDate(cal.getTime().getTime()),
+					new HiResDate(cal_other.getTime().getTime()));
+
+			// see how many remain visible
+			java.util.Enumeration<Editable> iter = sensor.elements();
+			int counter = 0;
+			while (iter.hasMoreElements())
+			{
+				final SensorContactWrapper contact = (SensorContactWrapper) iter
+						.nextElement();
+				if (contact.getVisible())
+					counter++;
+			}
+			// check that the correct number are visible
+			assertTrue("Correct filtering of list", (counter == 2));
+
+			// clear the filter
+			sensor.filterListTo(sensor.getStartDTG(), sensor.getEndDTG());
+			// see how many remain visible
+			iter = sensor.elements();
+			counter = 0;
+			while (iter.hasMoreElements())
+			{
+				final SensorContactWrapper contact = (SensorContactWrapper) iter
+						.nextElement();
+				if (contact.getVisible())
+					counter++;
+			}
+			// check that the correct number are visible
+			assertTrue("Correct removal of list filter", (counter == 8));
+
+			// //////////////////////////////////////////////////////
+			// get items between
+			java.util.Collection<Editable> res = sensor.getItemsBetween(
+					new HiResDate(cal.getTime().getTime()), new HiResDate(cal_other
+							.getTime().getTime()));
+			assertTrue("get items between", (res.size() == 2));
+
+			// do recheck, since this time we will be resetting the working
+			// variables, rather and creating them
+			cal.set(2001, 10, 4, 4, 4, 5);
+			cal_other.set(2001, 10, 4, 4, 4, 27);
+			res = sensor.getItemsBetween(new HiResDate(cal.getTime().getTime()),
+					new HiResDate(cal_other.getTime().getTime()));
+			assertEquals("recheck get items between:" + res.size(), 4, res.size());
+
+			// and show all of the data
+			res = sensor.getItemsBetween(sensor.getStartDTG(), sensor.getEndDTG());
+			assertTrue("recheck get items between:" + res.size(), (res.size() == 8));
+
+			// /////////////////////////////////////////////////////////
+			// test the position related stuff
+			final TrackWrapper track = new TrackWrapper();
+
+			// and add the fixes
+			cal.set(2001, 10, 4, 4, 4, 0);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0, 2.0,
+					0.0), 12, 12)));
+
+			cal.set(2001, 10, 4, 4, 4, 01);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0,
+					2.25, 0.0), 12, 12)));
+
+			cal.set(2001, 10, 4, 4, 4, 02);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0, 2.5,
+					0.0), 12, 12)));
+			cal.set(2001, 10, 4, 4, 4, 05);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.0,
+					2.75, 0.0), 12, 12)));
+			cal.set(2001, 10, 4, 4, 4, 23);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.25,
+					2.0, 0.0), 12, 12)));
+			cal.set(2001, 10, 4, 4, 4, 25);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.5, 2.0,
+					0.0), 12, 12)));
+			cal.set(2001, 10, 4, 4, 4, 28);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.75,
+					2.0, 0.0), 12, 12)));
+			cal.set(2001, 10, 4, 4, 4, 55);
+			track.addFix(new FixWrapper(new MWC.TacticalData.Fix(new HiResDate(cal
+					.getTime().getTime(), 0), new MWC.GenericData.WorldLocation(2.25,
+					2.25, 0.0), 12, 12)));
+
+			// ok, put the sensor data into the track
+			track.add(sensor);
+
+			// now find the location of an item, any item!
+			cal.set(2001, 10, 4, 4, 4, 27);
+			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			nearest = (SensorContactWrapper) list[0];
+			assertEquals("first test", nearest.getOrigin(track),
+					new MWC.GenericData.WorldLocation(2.75, 2.0, 0.0));
+
+			// ah-ha! what about a contact between two fixes
+			cal.set(2001, 10, 4, 4, 4, 26);
+			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			nearest = (SensorContactWrapper) list[0];
+			assertEquals("test mid way", nearest.getOrigin(track),
+					new MWC.GenericData.WorldLocation(2.75, 2.0, 0.0));
+
+			// ok, that was half-way, what making it nearer to one of the fixes
+			cal.set(2001, 10, 4, 4, 4, 25);
+			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			nearest = (SensorContactWrapper) list[0];
+			assertEquals("test nearer first point", nearest.getOrigin(track),
+					(new MWC.GenericData.WorldLocation(2.5, 2.0, 0.0)));
+
+			// start point?
+			cal.set(2001, 10, 4, 4, 4, 0);
+			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			nearest = (SensorContactWrapper) list[0];
+			assertEquals("test start point", nearest.getOrigin(track),
+					new MWC.GenericData.WorldLocation(2.0, 2.0, 0.0));
+
+			// end point?
+			cal.set(2001, 10, 4, 4, 4, 55);
+			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			nearest = (SensorContactWrapper) list[0];
+			assertEquals("test end point", nearest.getOrigin(track),
+					new MWC.GenericData.WorldLocation(2.25, 2.25, 0.0));
+
+			// before start of track data?
+			cal.set(2001, 10, 4, 4, 3, 0);
+			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			assertEquals("before range of data", list.length, 0);
+
+			// after end of track data?
+			cal.set(2001, 10, 4, 4, 7, 0);
+			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			assertEquals("after end of data", list.length, 1);
+
+		}
+
+		public final void testDuplicates()
+		{
+			// ok, create the test object
+			final SensorWrapper sensor = new SensorWrapper("tester");
+
+			final java.util.Calendar cal = new java.util.GregorianCalendar(2001, 10,
+					4, 4, 4, 0);
+
+			// and create the list of sensor contact data items
+			cal.set(2001, 10, 4, 4, 4, 0);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 23);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 24);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 25);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 25);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 01);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 05);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			cal.set(2001, 10, 4, 4, 4, 55);
+			sensor.add(new SensorContactWrapper("tester", new HiResDate(cal.getTime()
+					.getTime()), null, 0, null, null, null, 1, sensor.getName()));
+
+			// so, we've now build up the list
+			// check it has the correct quantity
+			assertEquals("Count of items", 8, sensor._myContacts.size());
+
+			// check the correct number get returned
+			cal.set(2001, 10, 4, 4, 4, 25);
+			final Debrief.Tools.Tote.Watchable[] list = sensor
+					.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
+			assertEquals("after end of data", 2, list.length);
+
+		}
+
+		public void testMultipleContacts()
+		{
+			SensorWrapper sw = new SensorWrapper("bbb");
+			SensorContactWrapper sc1 = new SensorContactWrapper("bbb", new HiResDate(
+					0, 9), null, 0, null, null, "first", 0, sw.getName());
+			SensorContactWrapper sc2 = new SensorContactWrapper("bbb", new HiResDate(
+					0, 12), null, 0, null, null, "first", 0, sw.getName());
+			SensorContactWrapper sc3 = new SensorContactWrapper("bbb", new HiResDate(
+					0, 7), null, 0, null, null, "first", 0, sw.getName());
+			SensorContactWrapper sc4 = new SensorContactWrapper("bbb", new HiResDate(
+					0, 13), null, 0, null, null, "first", 0, sw.getName());
+
+			sw.add(sc1);
+			sw.add(sc2);
+			sw.add(sc3);
+			sw.add(sc4);
+
+			assertEquals("four contacts loaded", 4, sw._myContacts.size());
+
+			// check we can delete from it
+			sw.removeElement(sc3);
+
+			assertEquals("now only three contacts loaded", 3, sw._myContacts.size());
+
+		}
+	}
+
+	public static void main(final String[] args)
+	{
+		final testSensors ts = new testSensors("Ian");
+		ts.testDuplicates();
+		ts.testValues();
+	}
 
 }
