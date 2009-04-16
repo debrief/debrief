@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.track_shift.feature"
       label="org.mwc.debrief.track_shift.feature"
-      version="1.0.6">
+      version="1.0.7">
 
    <description>
-      [1.0.6] Update to JDK1.6
+      [1.0.6] Reflect introduction of sensor offsets
+[1.0.6] Update to JDK1.6
 [1.0.5] Add help link
 [1.0.4] Update online update location
 [1.0.3] Minor typo

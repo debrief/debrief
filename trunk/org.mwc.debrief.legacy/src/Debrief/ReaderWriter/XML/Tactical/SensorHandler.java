@@ -151,7 +151,7 @@ abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 	WorldDistance theOFfset = sensor.getSensorOffset();
 	if (theOFfset != null)
 		MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler
-				.exportDistance(theOFfset, trk, doc);
+				.exportDistance(OFFSET, theOFfset, trk, doc);
 
 	// and the worm in the hole indicator?
 	Boolean wormy = sensor.getWormInHole();

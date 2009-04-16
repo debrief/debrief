@@ -2066,7 +2066,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					final SensorContactWrapper scw = (SensorContactWrapper) enumS
 							.nextElement();
 					// does this fix have it's own origin?
-					final WorldLocation sensorOrigin = scw.getOrigin(null);
+					final WorldLocation sensorOrigin = scw.getOrigin();
 
 					if (sensorOrigin != null)
 					{

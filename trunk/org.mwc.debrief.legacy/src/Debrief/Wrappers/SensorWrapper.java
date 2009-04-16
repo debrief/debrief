@@ -172,14 +172,14 @@ public final class SensorWrapper extends TacticalDataWrapper
 	 * the (optional) sensor offset value, indicating the forward/backward offset
 	 * compared to the attack datum of the platform.
 	 */
-	private WorldDistance _sensorOffset = null;
+	private WorldDistance _sensorOffset = new WorldDistance(0, WorldDistance.YARDS);
 
 	/**
 	 * the (optional) indicator for whether the centre of this sensor is in a
 	 * straight line fwd/backward of the attack datum, or whether it's a dragged
 	 * sensor that follows the track of it's host platform (like a towed array).
 	 */
-	private Boolean _wormInHole = null;
+	private Boolean _wormInHole = Boolean.FALSE;
 
 	// //////////////////////////////////////
 	// constructors
@@ -225,7 +225,7 @@ public final class SensorWrapper extends TacticalDataWrapper
 					if (res == null)
 					{
 						// no, initialise it
-						WorldLocation startOfLine = fw.getOrigin(_myHost);
+						WorldLocation startOfLine = fw.getCalculatedOrigin(_myHost);
 
 						// we may not have a sensor-data origin, since the
 						// sensor may be out of the time period of the track
@@ -235,7 +235,7 @@ public final class SensorWrapper extends TacticalDataWrapper
 					else
 					{
 						// yes, extend to include the new area
-						res.extend(fw.getOrigin(_myHost));
+						res.extend(fw.getCalculatedOrigin(_myHost));
 						res.extend(fw.getFarEnd());
 					}
 				}
@@ -734,35 +734,35 @@ public final class SensorWrapper extends TacticalDataWrapper
 			cal.set(2001, 10, 4, 4, 4, 27);
 			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			nearest = (SensorContactWrapper) list[0];
-			assertEquals("first test", nearest.getOrigin(track),
+			assertEquals("first test", nearest.getCalculatedOrigin(track),
 					new MWC.GenericData.WorldLocation(2.75, 2.0, 0.0));
 
 			// ah-ha! what about a contact between two fixes
 			cal.set(2001, 10, 4, 4, 4, 26);
 			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			nearest = (SensorContactWrapper) list[0];
-			assertEquals("test mid way", nearest.getOrigin(track),
+			assertEquals("test mid way", nearest.getCalculatedOrigin(track),
 					new MWC.GenericData.WorldLocation(2.75, 2.0, 0.0));
 
 			// ok, that was half-way, what making it nearer to one of the fixes
 			cal.set(2001, 10, 4, 4, 4, 25);
 			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			nearest = (SensorContactWrapper) list[0];
-			assertEquals("test nearer first point", nearest.getOrigin(track),
+			assertEquals("test nearer first point", nearest.getCalculatedOrigin(track),
 					(new MWC.GenericData.WorldLocation(2.5, 2.0, 0.0)));
 
 			// start point?
 			cal.set(2001, 10, 4, 4, 4, 0);
 			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			nearest = (SensorContactWrapper) list[0];
-			assertEquals("test start point", nearest.getOrigin(track),
+			assertEquals("test start point", nearest.getCalculatedOrigin(track),
 					new MWC.GenericData.WorldLocation(2.0, 2.0, 0.0));
 
 			// end point?
 			cal.set(2001, 10, 4, 4, 4, 55);
 			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			nearest = (SensorContactWrapper) list[0];
-			assertEquals("test end point", nearest.getOrigin(track),
+			assertEquals("test end point", nearest.getCalculatedOrigin(track),
 					new MWC.GenericData.WorldLocation(2.25, 2.25, 0.0));
 
 			// before start of track data?

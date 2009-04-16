@@ -28,15 +28,14 @@
         <title>Debrief Project Sponsor</title>
         <para>
           <address>
-            <firstname>Lt Cdr Andy Evans</firstname>
-            <surname>SM OA</surname>
+            <firstname>Lt Cdr Bob Mannion</firstname>
+            <surname>SO2 UW OA</surname>
             <lineage>Maritime Warfare Centre</lineage>
             <street>Marlborough Building, HMS Collingwood</street>
             <city>Fareham</city>
             <state>HANTS</state>
             <country>UK</country>
             <postcode>  PO14 1AS</postcode>
-            <country>e-mail: smtac.oa@mwc.rn.mod.uk</country>
           </address>
         </para>
       </formalpara>
@@ -430,13 +429,12 @@
                 <entry id="project_sponsor">
                   <para>Debrief project sponsor.
                     <address>
-<firstname>Lt Cdr Andy Evans RN</firstname>
+<firstname>Lt Cdr Bob Mannion RN</firstname>
 <lineage>Maritime Warfare Centre</lineage>
 <street>Marlborough Building, HMS Collingwood</street>
 <city>Fareham, HANTS</city>
 <postcode>  PO14 1AS</postcode>
 <country>United Kingdom</country>
-<email>smtac.oa@mwc.rn.mod.uk</email>
  </address></para>
                 </entry>
               </row>
@@ -1173,8 +1171,7 @@ Naval Undersea Warfare Center (NUWC)
                     works well in conjunction with the Zoom in button, since this does not take the
                     mouse out of "zoom in" mode -- therefore you can zoom in on areas, click zoom
                     out a couple of times, then zoom in again, all with the minimum of mouse clicks.
-                    The wheel-mouse may also be used to zoom out as described above in <link
-                      linkend="toggle_buttons"/>
+                    The wheel-mouse may also be used to zoom out as described above in <emphasis>Toggle Buttons</emphasis>
                   </para>
                 </listitem>
               </varlistentry>

@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.21">
+      version="1.0.22">
 
    <description>
-      [1.0.21] Include support for updated narrative viewer
+      [1.0.22] Include sensor offset details
+[1.0.21] Include support for updated narrative viewer
 [1.0.20] Include instructions on persistent rng/brg display
 [1.0.19] Include ETOPO setup guidance, put pdf in root of install
 [1.0.18] Force update

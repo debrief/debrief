@@ -297,13 +297,19 @@ public final class SensorContactWrapper extends
 	/**
 	 * return the coordinates for the start of the line
 	 */
-	public final WorldLocation getOrigin(
-			final Debrief.Tools.Tote.WatchableList parent)
+	public final WorldLocation getCalculatedOrigin(
+			 Debrief.Tools.Tote.WatchableList parent)
 	{
+		if(parent == null)
+			parent = _mySensor.getHost();
+		
 		if ((_calculatedOrigin == null) && (parent != null))
 		{
 			if (_absoluteOrigin != null)
+			{
+				// note, we don't bother with the offset if we have an absolute origin
 				_calculatedOrigin = new WorldLocation(_absoluteOrigin);
+			}
 			else
 			{
 
@@ -467,7 +473,7 @@ public final class SensorContactWrapper extends
 		}
 
 		// do we need an origin
-		final WorldLocation origin = getOrigin(track);
+		final WorldLocation origin = getCalculatedOrigin(track);
 
 		final TimePeriod trackPeriod = new TimePeriod.BaseTimePeriod(track
 				.getStartDTG(), track.getEndDTG());
@@ -570,11 +576,11 @@ public final class SensorContactWrapper extends
 	public final MWC.GenericData.WorldArea getBounds()
 	{
 		WorldArea res = null;
-		final WorldLocation origin = getOrigin(null);
+		final WorldLocation origin = getCalculatedOrigin(null);
 
 		// do we know our origin?
 		if (origin != null)
-			res = new WorldArea(getOrigin(null), getFarEnd());
+			res = new WorldArea(getCalculatedOrigin(null), getFarEnd());
 
 		// done.
 		return res;
@@ -822,7 +828,7 @@ public final class SensorContactWrapper extends
 	 */
 	public final WorldLocation getLocation()
 	{
-		return this.getOrigin(null);
+		return this.getCalculatedOrigin(null);
 	}
 
 	/**
@@ -1030,7 +1036,7 @@ public final class SensorContactWrapper extends
 			assertNull("should not be a location yet", wl);
 
 			// ok, and try to do it from the parent
-			wl = scw.getOrigin(host);
+			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be fix location", locationRes, wl);
 
@@ -1039,31 +1045,30 @@ public final class SensorContactWrapper extends
 			sw.setWormInHole(false);
 
 			// and try again
-			wl = scw.getOrigin(host);
+			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be offset location", locationBitNorth, wl);
 
 			// and try again, with a negative offset
 			sw.setSensorOffset(new WorldDistance(-1, WorldDistance.DEGS));
-			wl = scw.getOrigin(host);
+			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be offset location", locationBitSouth, wl);
 
 			// and try again, giving the host a course this time
 			fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
 			sw.setSensorOffset(new WorldDistance(1, WorldDistance.DEGS));
-			wl = scw.getOrigin(host);
+			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be centre of rectangle", locationBitEast, wl);
 
 			// check offset knows about track being shifted
 			fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(0.0));
 			fw.setFixLocation(location2);
-			wl = scw.getOrigin(host);
+			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be centre of rectangle", locationBitNorth2, wl);
 		}
 
 	}
-
 }

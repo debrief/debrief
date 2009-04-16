@@ -868,7 +868,7 @@ public class StackedDotsView extends ViewPart
 					final WorldVector targetOffset)
 			{
 				// copy our locations
-				_workingSensorLocation.copy(_sensor.getOrigin(null));
+				_workingSensorLocation.copy(_sensor.getCalculatedOrigin(null));
 				_workingTargetLocation.copy(_targetLocation);
 
 				// apply the offsets

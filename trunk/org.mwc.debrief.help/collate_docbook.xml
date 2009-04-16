@@ -148,8 +148,8 @@
 		<echo message="Inserting history" />
 		<antcall target="insert_history_link" />
 
-		<!-- lastly, do the pdf stage -->
-		<antcall target="docbook_to_pdf"></antcall>
+		<!-- lastly, do the pdf stage-->
+		<antcall target="docbook_to_pdf"></antcall> 
 		
 	</target>
 

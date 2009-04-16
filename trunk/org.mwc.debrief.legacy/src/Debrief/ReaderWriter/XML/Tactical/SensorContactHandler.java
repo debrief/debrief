@@ -196,7 +196,7 @@ abstract public class SensorContactHandler extends
 					fCol, eFix, doc);
 
 		// and now the centre item,
-		MWC.GenericData.WorldLocation origin = contact.getOrigin(null);
+		MWC.GenericData.WorldLocation origin = contact.getOrigin();
 		if (origin != null)
 			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
 					origin, "centre", eFix, doc);

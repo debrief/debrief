@@ -904,7 +904,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
                                    final WorldVector targetOffset)
       {
         // copy our locations
-        _workingSensorLocation.copy(_sensor.getOrigin(null));
+        _workingSensorLocation.copy(_sensor.getCalculatedOrigin(null));
         _workingTargetLocation.copy(_targetLocation);
 
         // apply the offsets
@@ -1044,7 +1044,7 @@ public final class DragTrackEditor extends PropertyEditorSupport implements Acti
               if (scw.getVisible())
               {
                 // does this fix have it's own origin?
-                final WorldLocation sensorOrigin = scw.getOrigin(_theTrack);
+                final WorldLocation sensorOrigin = scw.getCalculatedOrigin(_theTrack);
 
                 // did we get a sensor origin?
                 // we don't if the sensor data is outside the track period
