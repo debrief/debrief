@@ -2987,7 +2987,7 @@ Naval Undersea Warfare Center (NUWC)
             >12:34.00</computeroutput>). Some forms of analysis conducted with Debrief rely on the
             use of relative times, such as a weapon firing where T-Zero is the time of fire, as
             described in <xref linkend="z_zero_times"/>. To show these relative times on the lower
-            axis of the time-variable plot, select <anchor id="time_var_rel_times"/><guilabel
+            axis of the time-variable plot, select <guilabel
               >RelativeTimes</guilabel> from the time-variable plot property window. Once this mode
             is selected, times will be shown relative to the last time-zero value set. By default,
             the times are shown in a normal <computeroutput>HH:mm:ss</computeroutput> format, but 
