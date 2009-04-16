@@ -7,6 +7,7 @@
 package org.mwc.debrief.core.loaders.xml_handlers;
 
 import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -119,6 +120,8 @@ public final class DebriefEclipseXMLReaderWriter extends
 		{
 			TransformerFactory tF = TransformerFactory.newInstance();
 			Transformer tr = tF.newTransformer();
+			tr.setOutputProperty(OutputKeys.INDENT, "yes");
+
 			DOMSource source = new DOMSource(doc);
 			StreamResult result = new StreamResult(os);
 
