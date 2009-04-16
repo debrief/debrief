@@ -2990,7 +2990,7 @@ Naval Undersea Warfare Center (NUWC)
             axis of the time-variable plot, select <anchor id="time_var_rel_times"/><guilabel
               >RelativeTimes</guilabel> from the time-variable plot property window. Once this mode
             is selected, times will be shown relative to the last time-zero value set. By default,
-            the times are shown in a normal <computeroutput>HH:mm:ss</computeroutput> format, but
+            the times are shown in a normal <computeroutput>HH:mm:ss</computeroutput> format, but 
             the <guilabel>DateTickUnits</guilabel> drop-down list contains a number of display
             formats which specifically support presentation of elapsed times. </para>
         </sect2>
