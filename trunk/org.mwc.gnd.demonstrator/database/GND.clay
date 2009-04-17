@@ -23,19 +23,19 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="formatname" remarks="" uid="585e93:12060ac7e64:-7fcc">
-<column-description/>
+<column-description>human-readable description of this format</column-description>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="icon" remarks="" uid="585e93:12060ac7e64:-7fcb">
-<column-description/>
+<column-description>path to icon to show for this data type</column-description>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schemaname" remarks="" uid="585e93:12060ac7e64:-7fca">
-<column-description/>
+<column-description>URI of XML schema used to constrain data of this type for insertion into entry content element</column-description>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
@@ -54,7 +54,7 @@
 </index>
 </index-list>
 </table>
-<table alias="" name="TemporalDataItems" remarks="" uid="585e93:12060ac7e64:-7fc8">
+<table alias="" name="DataItems" remarks="" uid="585e93:12060ac7e64:-7fc8">
 <table-description/>
 <table-figure-bounds height="-1" width="-1" x="518" y="432"/>
 <column-list>
@@ -81,13 +81,13 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schematype" remarks="" uid="585e93:12060ac7e64:-7fc3">
-<column-description/>
+<column-description>Mime-type of information in data element.  Some dataformats may have entries in range of encoding styles</column-description>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="2147483647" decimal-digits="0" default-value="" mandatory="false" name="data" remarks="" uid="585e93:12060ac7e64:-7fc2">
-<column-description/>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="data" remarks="" uid="585e93:12060ac7e64:-7fc2">
+<column-description>Data nugget for this entry. XML encoded data, XHTML encoded information, BASE64 encoded binary..</column-description>
 <data-type jdbc-type="-1" literal-prefix="'" literal-suffix="'" name="TEXT" selected-variant-pattern="TEXT">
 <variant type-name-pattern="TEXT"/>
 </data-type>
@@ -160,18 +160,6 @@
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="1" decimal-digits="0" default-value="true" mandatory="true" name="visible" remarks="" uid="585e93:12060ac7e64:-7fb8">
-<column-description/>
-<data-type jdbc-type="16" name="BOOL" selected-variant-pattern="BOOL">
-<variant type-name-pattern="BOOL"/>
-</data-type>
-</column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="0" mandatory="true" name="versionNum" remarks="" uid="585e93:12060ac7e64:-7fb7">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
-</data-type>
-</column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="now()" mandatory="true" name="created" remarks="" uid="585e93:12060ac7e64:-7fb6">
 <column-description/>
 <data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
@@ -223,22 +211,22 @@
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="sourcename" remarks="" uid="585e93:12060ac7e64:-7fb2">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="sourcename" remarks="" uid="585e93:12060ac7e64:-7fb2">
 <column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="nationalityid" remarks="" uid="585e93:12060ac7e64:-7fb1">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
+<column alias="" auto-increment="false" column-size="20" decimal-digits="0" default-value="" mandatory="false" name="nationality" remarks="" uid="585e93:12060ac7e64:-7fb1">
+<column-description>Short-version of nationality of this platform</column-description>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="designatorid" remarks="" uid="585e93:12060ac7e64:-7fb0">
-<column-description/>
-<data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
-<variant type-name-pattern="INTEGER"/>
+<column alias="" auto-increment="false" column-size="20" decimal-digits="0" default-value="" mandatory="false" name="designator" remarks="" uid="585e93:12060ac7e64:-7fb0">
+<column-description>Standard designator keyword for this platform</column-description>
+<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
 </column-list>
