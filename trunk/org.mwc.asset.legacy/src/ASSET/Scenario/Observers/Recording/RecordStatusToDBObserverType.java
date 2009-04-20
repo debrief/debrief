@@ -69,6 +69,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 	private String _datasetPrefix;
 
+	private String _scenarioName;
+
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
@@ -154,13 +156,11 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, latitude, longitude, loc) VALUES" + 
-							"(?, ?, ?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, location) VALUES" + 
+							"(?, ?, ?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(stat.getTime()));
-			stP.setDouble(3, loc.getLat());
-			stP.setDouble(4, loc.getLong());
-			stP.setObject(5, createGeometry(loc));
+			stP.setObject(3, createGeometry(loc));
 			stP.executeUpdate();
 			stP.close();
 		}
@@ -186,7 +186,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		Statement st = _conn.createStatement();
 
 		// does the participant exist in the database?
-		rs = st.executeQuery("SELECT datasourceid from datasources where sourcename = '"
+		rs = st.executeQuery("SELECT platformid from platforms where platformname = '"
 				+ participantName + "';");
 		if (rs.next())
 		{
@@ -195,21 +195,43 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		else
 		{
 			// nope, better create it
-			stP = _conn.prepareStatement("INSERT INTO datasources(sourcename) VALUES (?)");
+			stP = _conn.prepareStatement("INSERT INTO platforms(platformname) VALUES (?)");
 			stP.setString(1, participantName);
 			stP.executeUpdate();
 			stP.close();
 
 			// and get the id
 			rs = st
-					.executeQuery("SELECT Max(datasourceid) AS MaxOfID FROM datasources;");
+					.executeQuery("SELECT Max(platformid) AS MaxOfID FROM platforms;");
 			rs.next();
 			thisParticipantIndex = rs.getInt(1);
 		}
 
 		// does the data format in the database?
+		int thisExerciseIndex = 0;
+		rs = st.executeQuery("SELECT exerciseid from exercises where exercisename = '"
+				+ _scenarioName + "';");
+		if (rs.next())
+		{
+			thisExerciseIndex = rs.getInt(1);
+		}
+		else
+		{
+			// nope, better create it
+			stP = _conn.prepareStatement("INSERT INTO exercises(exercisename) VALUES (?)");
+			stP.setString(1, _scenarioName);
+			stP.executeUpdate();
+			stP.close();
+
+			// and get the id
+			rs = st.executeQuery("SELECT Max(exerciseid) AS MaxOfID FROM exercises;");
+			rs.next();
+			thisExerciseIndex = rs.getInt(1);
+		}		
+		
+		// does the data format in the database?
 		int thisFormatIndex = 0;
-		rs = st.executeQuery("SELECT formatid from dataformats where formatname = '"
+		rs = st.executeQuery("SELECT formatid from formats where formatname = '"
 				+ dataFormat + "';");
 		if (rs.next())
 		{
@@ -218,23 +240,24 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		else
 		{
 			// nope, better create it
-			stP = _conn.prepareStatement("INSERT INTO dataformats(formatname) VALUES (?)");
+			stP = _conn.prepareStatement("INSERT INTO formats(formatname) VALUES (?)");
 			stP.setString(1, dataFormat);
 			stP.executeUpdate();
 			stP.close();
 
 			// and get the id
-			rs = st.executeQuery("SELECT Max(formatid) AS MaxOfID FROM dataformats;");
+			rs = st.executeQuery("SELECT Max(formatid) AS MaxOfID FROM formats;");
 			rs.next();
 			thisFormatIndex = rs.getInt(1);
 		}
 
 		// ok, now create the dataset
 		stP = _conn
-				.prepareStatement("INSERT INTO datasets(datasetname, datasourceid, formatId) VALUES (?,?,?)");
+				.prepareStatement("INSERT INTO datasets(datasetname, platformid, formatId, exerciseid) VALUES (?,?,?,?)");
 		stP.setString(1, _datasetPrefix + " dated:" + new Date().toString());
 		stP.setInt(2, thisParticipantIndex);
 		stP.setInt(3, thisFormatIndex);
+		stP.setInt(4, thisExerciseIndex);
 		stP.executeUpdate();
 		stP.close();
 
@@ -278,7 +301,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, data) VALUES (?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, summary) VALUES (?, ?, ?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(dtg));
 
@@ -332,7 +355,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, datetime, data) VALUES (?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, summary) VALUES (?, ?, ?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(dtg));
 			stP.setString(3, activity);
@@ -617,6 +640,9 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			e.printStackTrace();
 		}
 
+		// store the scenario name, so we can create our exercuse
+		_scenarioName = scenario.getName() + " ran on:" + new Date().toGMTString();
+		
 		try
 		{
 			String url = "jdbc:postgresql://localhost:5432/GND";
