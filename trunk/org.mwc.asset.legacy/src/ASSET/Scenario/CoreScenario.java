@@ -672,14 +672,14 @@ public class CoreScenario implements ScenarioType
       final Iterator<ScenarioSteppedListener> it = _stepListeners.iterator();
       while (it.hasNext())
       {
+        final ScenarioSteppedListener pcl = (ScenarioSteppedListener) it.next();
         try
         {
-          final ScenarioSteppedListener pcl = (ScenarioSteppedListener) it.next();
           pcl.step(time);
         }
         catch (Exception e)
         {
-          System.out.println("time:" + time);
+          System.out.println("time:" + time + " pcl was:" + pcl);
           e.printStackTrace();  //To change body of catch statement use Options | File Templates.
         }
       }
