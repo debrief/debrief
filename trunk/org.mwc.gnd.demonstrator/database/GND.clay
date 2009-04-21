@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <clay-model clay-version="1.4.2">
-<database-model alias="" author="" begin-script="" end-script="-- we're going to add a postgis point into the column titled location&#13;&#10;-- start off by ditching the existing (illustrative) one&#13;&#10;alter table dataitems drop column location;&#13;&#10;&#13;&#10;-- now do the PostGIS command&#13;&#10;select AddGeometryColumn('dataitems', 'location', 4326,'POINT',3);" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
+<database-model alias="" author="" begin-script="" end-script="-- we're going to add a postgis point into the column titled location&#13;&#10;-- start off by ditching the existing (illustrative) one&#13;&#10;ALTER TABLE dataitems DROP COLUMN location;&#13;&#10;&#13;&#10;-- now do the PostGIS command&#13;&#10;SELECT AddGeometryColumn('dataitems', 'location', 4326,'POINT',3);&#13;&#10;&#13;&#10;CREATE VIEW DatasetsView AS&#13;&#10;SELECT &#13;&#10;  datasets.datasetid, &#13;&#10;  datasets.datasetname, &#13;&#10;  datasets.created,&#13;&#10;  exercises.exerciseid, &#13;&#10;  exercises.exercisename, &#13;&#10;  formats.formatid, &#13;&#10;  formats.formatname, &#13;&#10;  platforms.platformid, &#13;&#10;  platforms.platformname &#13;&#10;FROM &#13;&#10;  public.datasets, &#13;&#10;  public.exercises, &#13;&#10;  public.formats, &#13;&#10;  public.platforms&#13;&#10;WHERE &#13;&#10;  datasets.platformid = platforms.platformid AND&#13;&#10;  datasets.exerciseid = exercises.exerciseid AND&#13;&#10;  datasets.formatid = formats.formatid&#13;&#10;ORDER BY&#13;&#10;  datasets.created ASC;&#13;&#10;" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
 <database-model-description/>
 <schema-list>
 <schema alias="" name="CMAP" remarks="" uid="411d67:120567367c4:-7fed">
@@ -22,22 +22,28 @@
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="formatname" remarks="" uid="585e93:12060ac7e64:-7fcc">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="formatname" remarks="human readable name for format" uid="585e93:12060ac7e64:-7fcc">
 <column-description>human-readable description of this format</column-description>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="iconname" remarks="" uid="585e93:12060ac7e64:-7fcb">
+<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="iconname" remarks="path of image file used as icon for this data-type" uid="585e93:12060ac7e64:-7fcb">
 <column-description>path to icon to show for this data type</column-description>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
-<column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="schemaname" remarks="" uid="585e93:12060ac7e64:-7fca">
-<column-description>URI of XML schema used to constrain data of this type for insertion into entry content element</column-description>
-<data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
-<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="false" mandatory="false" name="hasSummary" remarks="whether this data format includes human readable summary data" uid="1801443:120c7740f71:-7ff9">
+<column-description/>
+<data-type jdbc-type="16" name="BOOL" selected-variant-pattern="BOOL">
+<variant type-name-pattern="BOOL"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="false" mandatory="false" name="hasLocation" remarks="whether this data type has location information" uid="1801443:120c7740f71:-7ff8">
+<column-description/>
+<data-type jdbc-type="16" name="BOOL" selected-variant-pattern="BOOL">
+<variant type-name-pattern="BOOL"/>
 </data-type>
 </column>
 </column-list>
