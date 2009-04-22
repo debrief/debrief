@@ -37,11 +37,11 @@ import MWC.GenericData.WorldSpeed;
 public class RecordStatusToDBObserverType extends CoreObserver implements
 		ASSET.Scenario.ScenarioSteppedListener
 {
-	private static final String POSITION_FORMAT = "SIMPLE_POSITION_FORMAT";
+	private static final String POSITION_FORMAT = "data.pos";
 
-	private static final String NARRATIVE_FORMAT = "SIMPLE_NARRATIVE_FORMAT";
+	private static final String NARRATIVE_FORMAT = "data.narr";
 
-	private static final String DETECTION_FORMAT = "SIMPLE_DETECTION_FORMAT";
+	private static final String DETECTION_FORMAT = "data.detect";
 
 	/**
 	 * keep track of whether the analyst wants detections recorded
@@ -156,11 +156,13 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			}
 
 			stP = _conn
-					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, location) VALUES" + 
-							"(?, ?, ?)");
+					.prepareStatement("INSERT INTO dataItems(datasetid, dtg, location, contenttype, content) VALUES" + 
+							"(?, ?, ?,?,?)");
 			stP.setInt(1, theIndex.intValue());
 			stP.setTimestamp(2, new Timestamp(stat.getTime()));
 			stP.setObject(3, createGeometry(loc));
+			stP.setString(4, "application/vstatus+xml");
+			stP.setString(5, wrapStatus(stat.getCourse(), stat.getSpeed()));
 			stP.executeUpdate();
 			stP.close();
 		}
@@ -168,6 +170,11 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		{
 			e.printStackTrace();
 		}
+	}
+
+	private String wrapStatus(double course, WorldSpeed speed)
+	{
+		return "<status course=\"" + course + "\" speed=\"" + speed.toString() + "\" />";
 	}
 
 	private org.postgis.PGgeometry createGeometry(WorldLocation loc)
@@ -240,8 +247,9 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		else
 		{
 			// nope, better create it
-			stP = _conn.prepareStatement("INSERT INTO formats(formatname) VALUES (?)");
+			stP = _conn.prepareStatement("INSERT INTO formats(formatname, iconname) VALUES (?,?)");
 			stP.setString(1, dataFormat);
+			stP.setString(2, dataFormat  +".png");
 			stP.executeUpdate();
 			stP.close();
 
