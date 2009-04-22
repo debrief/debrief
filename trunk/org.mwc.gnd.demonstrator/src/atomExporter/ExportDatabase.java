@@ -13,16 +13,14 @@ import java.util.Date;
 
 import org.apache.abdera.Abdera;
 import org.apache.abdera.ext.geo.GeoHelper;
-import org.apache.abdera.ext.geo.Position;
 import org.apache.abdera.factory.Factory;
+import org.apache.abdera.model.Categories;
 import org.apache.abdera.model.Category;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
 import org.postgis.Geometry;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
-
-import MWC.GenericData.WorldLocation;
 
 public class ExportDatabase
 {
@@ -53,6 +51,50 @@ public class ExportDatabase
 
 		exportDetail();
 		
+		exportCategory("Platforms","PlatformId", "PlatformName", "Platforms");
+		exportCategory("Exercises","ExerciseId", "ExerciseName", "Exercises");
+		exportCategory("Formats","FormatId", "FormatName", "Formats");
+		
+	}
+
+	private static void exportCategory(String table, String idField,
+			String nameField, String outputFile)
+	{
+		Abdera abdera = new Abdera();
+		Factory factory = abdera.getFactory();
+		ResultSet rsf;
+		Statement st;
+		Categories theseCats = factory.newCategories();
+		theseCats.setFixed(true);
+		try
+		{
+			st = _conn.createStatement();
+
+			// get the list of datasets
+			rsf = st.executeQuery("SELECT * from " + table + " ORDER BY " + idField + " ASC ;");
+			
+			// loop through them
+			while(rsf.next())
+			{
+				Category thisC = factory.newCategory();
+				thisC.setTerm(rsf.getString(1));
+				thisC.setLabel(rsf.getString(2));
+				thisC.setScheme(table);
+				theseCats.addCategory(thisC);				
+			}
+			// and output the file
+			File oFile = new File("c:\\tmp\\atomOutput\\cats" );
+			oFile.mkdir();
+			theseCats.writeTo("prettyxml", new FileOutputStream(
+					"c:\\tmp\\atomOutput\\cats\\" + table + ".xml"));
+			theseCats.writeTo("json", new FileOutputStream(
+					"c:\\tmp\\atomOutput\\cats\\" + table + ".json"));
+				
+		}
+		catch(Exception e)
+		{
+			e.printStackTrace();
+		}
 	}
 
 	private static void exportDetail()
