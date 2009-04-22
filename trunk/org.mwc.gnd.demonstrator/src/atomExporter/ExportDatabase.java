@@ -16,8 +16,11 @@ import org.apache.abdera.ext.geo.GeoHelper;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Categories;
 import org.apache.abdera.model.Category;
+import org.apache.abdera.model.Collection;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
+import org.apache.abdera.model.Service;
+import org.apache.abdera.model.Workspace;
 import org.postgis.Geometry;
 import org.postgis.PGgeometry;
 import org.postgis.Point;
@@ -32,6 +35,8 @@ public class ExportDatabase
 	 */
 	public static void main(String[] args)
 	{
+		System.out.println("started export of database to Atom");
+		Date startD = new Date();
 		// check we have the driver
 		try
 		{
@@ -46,55 +51,129 @@ public class ExportDatabase
 		connectToDatabase();
 
 		exportCore("SELECT * from datasetsview order by datasetid asc;", "datasets");
-		exportCore("SELECT * from datasetsview where datasetid <= 10 order by datasetid asc;", "datasets_filter1");
-		exportCore("SELECT * from datasetsview where datasetid > 10 order by datasetid asc;", "datasets_filter2");
+		exportCore(
+				"SELECT * from datasetsview where datasetid <= 10 order by datasetid asc;",
+				"datasets_filter1");
+		exportCore(
+				"SELECT * from datasetsview where datasetid > 10 order by datasetid asc;",
+				"datasets_filter2");
 
 		exportDetail();
-		
-		exportCategory("Platforms","PlatformId", "PlatformName", "Platforms");
-		exportCategory("Exercises","ExerciseId", "ExerciseName", "Exercises");
-		exportCategory("Formats","FormatId", "FormatName", "Formats");
-		
+
+		exportCategory("Platforms", "PlatformId", "PlatformName", "Platforms");
+		exportCategory("Exercises", "ExerciseId", "ExerciseName", "Exercises");
+		exportCategory("Formats", "FormatId", "FormatName", "Formats");
+
+		exportServiceDoc();
+
+		Date endD = new Date();
+		System.out.println("took " + (endD.getTime() - startD.getTime()) / 1000
+				+ " secs");
+
+	}
+
+	private static void exportServiceDoc()
+	{
+		Factory factory = Abdera.getNewFactory();
+		Service service = factory.newService();
+		// first the core
+		Workspace core = service.addWorkspace("Core");
+		Collection coreData = factory.newCollection();
+		coreData.setTitle("Core");
+		coreData.setHref("datasets.xml");
+		core.addCollection(coreData);
+		Categories tgtCats = factory.newCategories();
+		loadCategories("platforms", "platformId", tgtCats);
+		loadCategories("formats", "formatId", tgtCats);
+		loadCategories("exercises", "exerciseId", tgtCats);
+		coreData.addCategories(tgtCats);
+
+		// now the workspace
+		Workspace detail = service.addWorkspace("detail");
+		detail
+				.addComment("We don't include detail collections, there are too many");
+		// and output it
+		try
+		{
+			service.writeTo("prettyxml", new FileOutputStream(
+					"c:\\tmp\\atomOutput\\service.xml"));
+			service.writeTo("json", new FileOutputStream(
+					"c:\\tmp\\atomOutput\\servce.json"));
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 	private static void exportCategory(String table, String idField,
 			String nameField, String outputFile)
 	{
+		Categories theseCats = loadCategories(table, idField, null);
+		// and output the file
+		File oFile = new File("c:\\tmp\\atomOutput\\cats");
+		oFile.mkdir();
+		try
+		{
+			theseCats.writeTo("prettyxml", new FileOutputStream(
+					"c:\\tmp\\atomOutput\\cats\\" + table + ".xml"));
+			theseCats.writeTo("json", new FileOutputStream(
+					"c:\\tmp\\atomOutput\\cats\\" + table + ".json"));
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	private static Categories loadCategories(String table, String idField,
+			Categories theseCats)
+	{
 		Abdera abdera = new Abdera();
 		Factory factory = abdera.getFactory();
 		ResultSet rsf;
 		Statement st;
-		Categories theseCats = factory.newCategories();
-		theseCats.setFixed(true);
+		if (theseCats == null)
+		{
+			theseCats = factory.newCategories();
+			theseCats.setFixed(true);
+		}
 		try
 		{
 			st = _conn.createStatement();
 
 			// get the list of datasets
-			rsf = st.executeQuery("SELECT * from " + table + " ORDER BY " + idField + " ASC ;");
-			
+			rsf = st.executeQuery("SELECT * from " + table + " ORDER BY " + idField
+					+ " ASC ;");
+
 			// loop through them
-			while(rsf.next())
+			while (rsf.next())
 			{
 				Category thisC = factory.newCategory();
+				thisC.setScheme("cats/" + table + ".xml");
 				thisC.setTerm(rsf.getString(1));
 				thisC.setLabel(rsf.getString(2));
-				thisC.setScheme(table);
-				theseCats.addCategory(thisC);				
+				theseCats.addCategory(thisC);
 			}
-			// and output the file
-			File oFile = new File("c:\\tmp\\atomOutput\\cats" );
-			oFile.mkdir();
-			theseCats.writeTo("prettyxml", new FileOutputStream(
-					"c:\\tmp\\atomOutput\\cats\\" + table + ".xml"));
-			theseCats.writeTo("json", new FileOutputStream(
-					"c:\\tmp\\atomOutput\\cats\\" + table + ".json"));
-				
+
+			rsf.close();
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+		return theseCats;
 	}
 
 	private static void exportDetail()
@@ -120,15 +199,17 @@ public class ExportDatabase
 				Feed feed = abdera.newFeed();
 				feed.setId(thisId);
 				feed.addAuthor("Ian Mayo");
-				feed.setUpdated(new Date());
-				feed.setTitle("List of all datasets");
+				// sort out the date
+				Date theDate = rsf.getTimestamp(3);
+				feed.setUpdated(theDate);
+				feed.setTitle("Dataset id:" + thisId);
 
 				Category platCat = factory.newCategory();
-				platCat.setScheme("platforms");
+				platCat.setScheme("cats/platforms.xml");
 				Category formatCat = factory.newCategory();
-				formatCat.setScheme("formats");
+				formatCat.setScheme("cats/formats.xml");
 				Category exCat = factory.newCategory();
-				exCat.setScheme("exercises");
+				exCat.setScheme("cats/exercises.xml");
 				platCat.setTerm(rsf.getString(11));
 				platCat.setLabel(rsf.getString(12));
 				formatCat.setTerm(rsf.getString(6));
@@ -142,7 +223,7 @@ public class ExportDatabase
 				// now loop through the entries in this dataset
 				// get the list of datasets
 				rse = st2.executeQuery("SELECT * from dataitems where datasetid = "
-						+ thisId + " limit 100;");
+						+ thisId + " ;");
 
 				// loop through dataitems
 				while (rse.next())
@@ -150,30 +231,34 @@ public class ExportDatabase
 					// first the short entry (for insertion into the feed)
 					Entry thisE = feed.addEntry();
 					thisE.setId(rse.getString(1));
-					thisE.setUpdated(rse.getString(3));
-					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1) + ".json", "self",
-							"application/atom+json", null, null, 0);
-					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1) +  ".xml", "self",
-							"application/atom+xml", null, null, 0);
+					Date eDate = rse.getTimestamp(3);
+					thisE.setUpdated(eDate);
+					thisE.setTitle("Observation:" + thisE.getId());
+
+					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1)
+							+ ".json", "self", "application/atom+json", null, null, 0);
+					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1)
+							+ ".xml", "self", "application/atom+xml", null, null, 0);
 					// check we have content
 					String theContent = rse.getString(6);
-					if(theContent != null)
-					 thisE.setContent(rse.getString(6), rse.getString(5));
+					if (theContent != null)
+						thisE.setContent(rse.getString(6), rse.getString(5));
 					// see if we have a summary
 					String theSumm = rse.getString(4);
 					if (theSumm != null)
 						thisE.setSummary(theSumm);
 					// see if we have a position
 					Object thePos = rse.getObject(7);
-					if(thePos != null)
+					if (thePos != null)
 					{
 						PGgeometry obj = (PGgeometry) thePos;
 						Geometry geo = obj.getGeometry();
 						org.postgis.Point pt = (Point) geo;
-						org.apache.abdera.ext.geo.Position pos = new org.apache.abdera.ext.geo.Point(pt.y, pt.x);
+						org.apache.abdera.ext.geo.Position pos = new org.apache.abdera.ext.geo.Point(
+								pt.y, pt.x);
 						GeoHelper.addPosition(thisE, pos);
 					}
-					
+
 				}
 
 				rse.close();
@@ -207,12 +292,13 @@ public class ExportDatabase
 		Feed feed = abdera.newFeed();
 		ResultSet rs;
 		Statement st;
+
 		try
 		{
 			st = _conn.createStatement();
 
 			// create feed
-			feed.setId("datasets");
+			feed.setId("Core");
 			feed.addAuthor("Ian Mayo");
 			feed.setUpdated(new Date());
 			feed.setTitle("List of all datasets");
@@ -220,6 +306,12 @@ public class ExportDatabase
 			// get the list of datasets
 			rs = st.executeQuery(thisDatasetQuery);
 
+			String wmsStr = "http://localhost:8080/geoserver/wms/" +
+			"service=WMS&" +
+			"srs=EPSG:4326&" +
+			"format=image/png&" +
+			"version=1.1.1&";
+			
 			// loop through datasets
 			while (rs.next())
 			{
@@ -227,21 +319,27 @@ public class ExportDatabase
 				Entry ent = feed.addEntry();
 				ent.setId(rs.getString(1));
 				ent.setTitle("d" + rs.getString(1));
-				ent.setUpdated(rs.getString(3));
+				ent.setUpdated(rs.getTimestamp(3));
 				ent.setSummary(rs.getString(2));
 				ent.addLink("detail/" + rs.getString(1) + ".xml", "alternate",
 						"application/atom+xml", null, null, 0);
 				ent.addLink("detail/" + rs.getString(1) + ".json", "alternate",
 						"application/atom+json", null, null, 0);
-				ent.addLink("/wms/" + rs.getString(1), "alternate", "application/wms",
-						null, null, 0);
+				// see if it has position
+				Boolean hasPos = rs.getBoolean(10);
+				if (hasPos)
+				{
+					ent.addLink(wmsStr + "CQL=(datasetid=" + rs.getString(1) + ")", "alternate",
+							"application/wms", null, null, 0);
+				}
 
+				// first the 'big' categories
 				Category platCat = factory.newCategory();
-				platCat.setScheme("platforms");
+				platCat.setScheme("cats/platforms.xml");
 				Category formatCat = factory.newCategory();
-				formatCat.setScheme("formats");
+				formatCat.setScheme("cats/formats.xml");
 				Category exCat = factory.newCategory();
-				exCat.setScheme("exercises");
+				exCat.setScheme("cats/exercises.xml");
 				platCat.setTerm(rs.getString(11));
 				platCat.setLabel(rs.getString(12));
 				formatCat.setTerm(rs.getString(6));
@@ -251,6 +349,16 @@ public class ExportDatabase
 				ent.addCategory(platCat);
 				ent.addCategory(formatCat);
 				ent.addCategory(exCat);
+
+				// now the presentational categories
+				Category withSummary = factory.newCategory();
+				withSummary.setScheme("cats/hasSummary");
+				withSummary.setTerm(new Boolean(rs.getBoolean(9)).toString());
+				ent.addCategory(withSummary);
+				Category withPos = factory.newCategory();
+				withPos.setScheme("cats/hasPosition");
+				withPos.setTerm(new Boolean(rs.getBoolean(10)).toString());
+				ent.addCategory(withPos);
 			}
 			rs.close();
 		}
