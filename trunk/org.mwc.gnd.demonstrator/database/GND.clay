@@ -62,7 +62,7 @@
 </table>
 <table alias="" name="datasets" remarks="Single collection of observations, typically a single data-file" uid="585e93:12060ac7e64:-7fbe">
 <table-description/>
-<table-figure-bounds height="-1" width="-1" x="298" y="196"/>
+<table-figure-bounds height="-1" width="-1" x="299" y="181"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetid" remarks="" uid="585e93:12060ac7e64:-7fbc">
 <column-description/>
@@ -95,6 +95,26 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="now()" mandatory="true" name="created" remarks="" uid="585e93:12060ac7e64:-7fb6">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="startTime" remarks="Date time of first data point" uid="686c5e:120cd3a1ac5:-7ff9">
+<column-description/>
+<data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
+<variant type-name-pattern="TIMESTAMP"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
+<variant type-name-pattern="TIMESTAMP WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITH TIME ZONE"/>
+<variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p) WITHOUT TIME ZONE"/>
+</data-type>
+</column>
+<column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="endTime" remarks="date time of last data point" uid="686c5e:120cd3a1ac5:-7ff8">
 <column-description/>
 <data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
