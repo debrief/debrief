@@ -12,11 +12,17 @@ import java.sql.Statement;
 import java.util.Date;
 
 import org.apache.abdera.Abdera;
+import org.apache.abdera.ext.geo.GeoHelper;
+import org.apache.abdera.ext.geo.Position;
 import org.apache.abdera.factory.Factory;
 import org.apache.abdera.model.Category;
 import org.apache.abdera.model.Entry;
 import org.apache.abdera.model.Feed;
-import org.apache.abdera.writer.WriterOptions;
+import org.postgis.Geometry;
+import org.postgis.PGgeometry;
+import org.postgis.Point;
+
+import MWC.GenericData.WorldLocation;
 
 public class ExportDatabase
 {
@@ -41,29 +47,122 @@ public class ExportDatabase
 
 		connectToDatabase();
 
-		exportCore();
+		exportCore("SELECT * from datasetsview order by datasetid asc;", "datasets");
+		exportCore("SELECT * from datasetsview where datasetid <= 10 order by datasetid asc;", "datasets_filter1");
+		exportCore("SELECT * from datasetsview where datasetid > 10 order by datasetid asc;", "datasets_filter2");
 
-		 exportDetail();
+		exportDetail();
+		
 	}
 
 	private static void exportDetail()
 	{
-		// get the list of dataset
+		Abdera abdera = new Abdera();
+		Factory factory = abdera.getFactory();
+		ResultSet rsf, rse;
+		Statement st, st2;
+		try
+		{
+			st = _conn.createStatement();
+			st2 = _conn.createStatement();
 
-		// loop through datasets
+			// get the list of datasets
+			rsf = st.executeQuery("SELECT * from datasetsview;");
 
-		// create this feed
+			// loop through datasets
+			while (rsf.next())
+			{
+				String thisId = rsf.getString(1);
 
-		// loop through dataitems
+				// create this feed
+				Feed feed = abdera.newFeed();
+				feed.setId(thisId);
+				feed.addAuthor("Ian Mayo");
+				feed.setUpdated(new Date());
+				feed.setTitle("List of all datasets");
 
-		// create this entry
+				Category platCat = factory.newCategory();
+				platCat.setScheme("platforms");
+				Category formatCat = factory.newCategory();
+				formatCat.setScheme("formats");
+				Category exCat = factory.newCategory();
+				exCat.setScheme("exercises");
+				platCat.setTerm(rsf.getString(11));
+				platCat.setLabel(rsf.getString(12));
+				formatCat.setTerm(rsf.getString(6));
+				formatCat.setLabel(rsf.getString(7));
+				exCat.setTerm(rsf.getString(4));
+				exCat.setLabel(rsf.getString(5));
+				feed.addCategory(platCat);
+				feed.addCategory(formatCat);
+				feed.addCategory(exCat);
+
+				// now loop through the entries in this dataset
+				// get the list of datasets
+				rse = st2.executeQuery("SELECT * from dataitems where datasetid = "
+						+ thisId + " limit 100;");
+
+				// loop through dataitems
+				while (rse.next())
+				{
+					// first the short entry (for insertion into the feed)
+					Entry thisE = feed.addEntry();
+					thisE.setId(rse.getString(1));
+					thisE.setUpdated(rse.getString(3));
+					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1) + ".json", "self",
+							"application/atom+json", null, null, 0);
+					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1) +  ".xml", "self",
+							"application/atom+xml", null, null, 0);
+					// check we have content
+					String theContent = rse.getString(6);
+					if(theContent != null)
+					 thisE.setContent(rse.getString(6), rse.getString(5));
+					// see if we have a summary
+					String theSumm = rse.getString(4);
+					if (theSumm != null)
+						thisE.setSummary(theSumm);
+					// see if we have a position
+					Object thePos = rse.getObject(7);
+					if(thePos != null)
+					{
+						PGgeometry obj = (PGgeometry) thePos;
+						Geometry geo = obj.getGeometry();
+						org.postgis.Point pt = (Point) geo;
+						org.apache.abdera.ext.geo.Position pos = new org.apache.abdera.ext.geo.Point(pt.y, pt.x);
+						GeoHelper.addPosition(thisE, pos);
+					}
+					
+				}
+
+				rse.close();
+
+				// and output the file
+				feed.writeTo("prettyxml", new FileOutputStream(
+						"c:\\tmp\\atomOutput\\detail\\" + thisId + ".xml"));
+				feed.writeTo("json", new FileOutputStream(
+						"c:\\tmp\\atomOutput\\detail\\" + thisId + ".json"));
+			}
+			rsf.close();
+		}
+		catch (SQLException e)
+		{
+			e.printStackTrace();
+		}
+		catch (FileNotFoundException e)
+		{
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 	}
 
-	private static void exportCore()
+	private static void exportCore(String thisDatasetQuery, String thisDatasetName)
 	{
 		Abdera abdera = new Abdera();
 		Factory factory = abdera.getFactory();
-		Feed feed = abdera.newFeed();			
+		Feed feed = abdera.newFeed();
 		ResultSet rs;
 		Statement st;
 		try
@@ -77,20 +176,23 @@ public class ExportDatabase
 			feed.setTitle("List of all datasets");
 
 			// get the list of datasets
-			rs = st.executeQuery("SELECT * from datasetsview;");
+			rs = st.executeQuery(thisDatasetQuery);
 
-			
 			// loop through datasets
 			while (rs.next())
 			{
 				// create this entry
 				Entry ent = feed.addEntry();
 				ent.setId(rs.getString(1));
-				ent.setTitle("d"+rs.getString(1));
+				ent.setTitle("d" + rs.getString(1));
 				ent.setUpdated(rs.getString(3));
 				ent.setSummary(rs.getString(2));
-				ent.addLink("/detail/" + rs.getString(1), "alternate", "application/atom+xml", null,null, 0);
-				ent.addLink("/wms/" + rs.getString(1), "alternate", "application/wms", null,null, 0);
+				ent.addLink("detail/" + rs.getString(1) + ".xml", "alternate",
+						"application/atom+xml", null, null, 0);
+				ent.addLink("detail/" + rs.getString(1) + ".json", "alternate",
+						"application/atom+json", null, null, 0);
+				ent.addLink("/wms/" + rs.getString(1), "alternate", "application/wms",
+						null, null, 0);
 
 				Category platCat = factory.newCategory();
 				platCat.setScheme("platforms");
@@ -114,12 +216,16 @@ public class ExportDatabase
 		{
 			e.printStackTrace();
 		}
-		
+
 		// ok, now output it.
 		try
 		{
-			feed.writeTo("prettyxml", new FileOutputStream("c:\\tmp\\atomOutput\\detail.xml"));
-			feed.writeTo("json", new FileOutputStream("c:\\tmp\\atomOutput\\detail.json"));
+			File tgtDir = new File("c:\\tmp\\atomOutput\\detail");
+			tgtDir.mkdir();
+			feed.writeTo("prettyxml", new FileOutputStream("c:\\tmp\\atomOutput\\"
+					+ thisDatasetName + ".xml"));
+			feed.writeTo("json", new FileOutputStream("c:\\tmp\\atomOutput\\"
+					+ thisDatasetName + ".json"));
 		}
 		catch (FileNotFoundException e)
 		{
