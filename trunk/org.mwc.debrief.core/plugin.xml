@@ -30,7 +30,10 @@
 	         contentTypeId="org.mwc.debrief.contenttype.DebriefPlot">
 	      </contentTypeBinding>
        <contentTypeBinding
-             contentTypeId="org.mwc.debrief.contenttype.ReplayFile">
+             contentTypeId="org.mwc.debrief.contenttype.ReplayTrackFile">
+       </contentTypeBinding>
+       <contentTypeBinding
+             contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
        </contentTypeBinding>
       </editor>
    </extension>
@@ -48,9 +51,15 @@
       </describer>
    	</content-type>
    <content-type
-         id="org.mwc.debrief.contenttype.ReplayFile"
+         id="org.mwc.debrief.contenttype.ReplayTrackFile"
          file-extensions="rep"
          name="Replay Track File"
+         priority="normal">
+   </content-type>
+   <content-type
+         id="org.mwc.debrief.contenttype.ReplaySensorFile"
+         file-extensions="dsf"
+         name="Debrief Sensor File"
          priority="normal">
    </content-type>
 	</extension>
