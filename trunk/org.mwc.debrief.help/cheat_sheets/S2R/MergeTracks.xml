@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Merging one or more tracks">
+   <intro>
+      <description>
+         This cheat sheet covers the process for merging two or more tracks.  These tracks may be conventional platform tracks produced from positional sensor data, or they may be TMA tracks produced from the analysis of bearing data.<br/>
+Please see the associated help page for a discussion of the track merge operation.
+      </description>
+   </intro>
+   <item
+         title="Select tracks">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Right click on tracks">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Select Merge Tracks button">
+      <description>
+         <b>Click on the &apos;Merge Tracks&apos; operation</b>
+      </description>
+      <subitem
+            label="If the track sections cover overlapping time periods the merge operation will fail. Just decide which track is the more accurate track and trim the time period of the other track, then start the merge operation again. If track overlap is a frequently occuring problem, please contact the maintainer and a merge algorithm will be developed."
+            skip="true">
+      </subitem>
+   </item>
+   <item
+         title="Assess">
+      <description>
+         Have a look at the merged tracks, assess the performance.
+      </description>
+   </item>
+</cheatsheet>
