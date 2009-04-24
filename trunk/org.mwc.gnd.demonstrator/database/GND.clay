@@ -183,6 +183,12 @@
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
+<column alias="" auto-increment="false" column-size="6" decimal-digits="0" default-value="FF0000" mandatory="false" name="color" remarks="RGB color definition to be used as presentation clue for plottign this platform tracks" uid="d13e2e:120d85db8a3:-7ff9">
+<column-description/>
+<data-type jdbc-type="1" literal-prefix="'" literal-suffix="'" name="CHAR" selected-variant-pattern="CHAR(%n)">
+<variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="CHAR(%n)"/>
+</data-type>
+</column>
 </column-list>
 <primary-key alias="" name="datasources_pkey" remarks="" uid="585e93:12060ac7e64:-7fb4">
 <primary-key-description/>
