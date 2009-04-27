@@ -365,6 +365,7 @@ public class ImportReplay extends PlainImporterBase
 			_theImporters.addElement(new ImportNarrative());
 			_theImporters.addElement(new ImportNarrative2());
 			_theImporters.addElement(new ImportSensor());
+			_theImporters.addElement(new ImportSensor2());
 			_theImporters.addElement(new ImportTMA_Pos());
 			_theImporters.addElement(new ImportTMA_RngBrg());
 			// note that we don't rely on ImportFix for importing Replay fixes, since

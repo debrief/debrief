@@ -132,22 +132,26 @@
 // Revision 1.0 2001-08-09 14:16:51+01 administrator
 // Initial revision
 //
-
 package Debrief.Wrappers;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Plottable;
-import MWC.GenericData.*;
-import MWC.TacticalData.Fix;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Plottable;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
@@ -224,6 +228,20 @@ public final class SensorContactWrapper extends
 	private String _sensorName;
 
 	/**
+	 * the (optional) ambiguous bearing
+	 * 
+	 */
+	private boolean _hasAmbiguous;
+	private double _bearingAmbig;
+
+	/**
+	 * the (optional) frequency
+	 * 
+	 */
+	private boolean _hasFreq;
+	private double _freq;
+
+	/**
 	 * default constructor, used when we read in from XML
 	 */
 	public SensorContactWrapper()
@@ -255,26 +273,60 @@ public final class SensorContactWrapper extends
 			final WorldLocation origin, final java.awt.Color color,
 			final String label, final int style, String sensorName)
 	{
-		this();
-		_trackName = trackName;
-		_DTG = dtg;
-		_range = range;
-		_bearing = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
-
-		// store the origin, and update the far end if required
-		setOrigin(origin);
-
-		// and the gui parameters
-		setColor(color);
-		_myLineStyle = style;
-		_theLabel.setLocation(origin);
-		_theLabel.setString(label);
-		_sensorName = sensorName;
+		this(trackName, dtg, range, bearingDegs, null, null, origin, color, label,
+				style, sensorName);
 	}
 
 	// ///////////////////////////////////////////
 	// accessor methods
 	// ///////////////////////////////////////////
+
+	public SensorContactWrapper(String theTrack, HiResDate theDtg,
+			WorldDistance range, double brg, Double brg2, Double freq,
+			WorldLocation origin, Color theColor, String labelStr, int theStyle,
+			String sensorName)
+	{
+		this();
+
+		_trackName = theTrack;
+		_DTG = theDtg;
+		_range = range;
+		_bearing = MWC.Algorithms.Conversions.Degs2Rads(brg);
+
+		// do we have ambiguous bearing data?
+		if (brg2 != null)
+		{
+			_hasAmbiguous = true;
+			_bearingAmbig = brg2.doubleValue();
+		}
+		else
+		{
+			_hasAmbiguous = false;
+			_bearingAmbig = 0d;
+		}
+		
+		// do we have frequency data?
+		if(freq != null)
+		{
+			_hasFreq = true;
+			_freq = freq.doubleValue();
+		}
+		else
+		{
+			_hasFreq = false;
+			_freq = 0d;
+		}
+
+		// store the origin, and update the far end if required
+		setOrigin(origin);
+
+		// and the gui parameters
+		setColor(theColor);
+		_myLineStyle = theStyle;
+		_theLabel.setLocation(origin);
+		_theLabel.setString(labelStr);
+		_sensorName = sensorName;
+	}
 
 	public void clearCalculatedOrigin()
 	{
@@ -298,11 +350,11 @@ public final class SensorContactWrapper extends
 	 * return the coordinates for the start of the line
 	 */
 	public final WorldLocation getCalculatedOrigin(
-			 Debrief.Tools.Tote.WatchableList parent)
+			Debrief.Tools.Tote.WatchableList parent)
 	{
-		if(parent == null)
+		if (parent == null)
 			parent = _mySensor.getHost();
-		
+
 		if ((_calculatedOrigin == null) && (parent != null))
 		{
 			if (_absoluteOrigin != null)
@@ -314,7 +366,7 @@ public final class SensorContactWrapper extends
 			{
 
 				// better calculate it ourselves then
-				
+
 				// get the origin
 				final Debrief.Tools.Tote.Watchable[] list = parent.getNearestTo(_DTG);
 				Debrief.Tools.Tote.Watchable wa = null;
@@ -592,6 +644,56 @@ public final class SensorContactWrapper extends
 	public final double getBearing()
 	{
 		return MWC.Algorithms.Conversions.Rads2Degs(_bearing);
+	}
+
+	/**
+	 * do we have ambiguous data?
+	 * 
+	 * @return yes/no
+	 */
+	public final boolean getHasAmbiguousBearing()
+	{
+		return _hasAmbiguous;
+	}
+
+	public final void setHasAmbiguousBearing(boolean val)
+	{
+		_hasAmbiguous = val;
+	}
+
+	/**
+	 * get the ambiguous bearing
+	 * 
+	 * @return the value
+	 */
+	public final double getAmbiguousBearing()
+	{
+		return _bearingAmbig;
+	}
+
+	public void setAmbiguousBearing(double val)
+	{
+		_bearingAmbig = val;
+	}
+
+	public final boolean getHasFrequency()
+	{
+		return _hasFreq;
+	}
+
+	public final void setHasFrequency(boolean val)
+	{
+		_hasFreq = val;
+	}
+
+	public double getFrequency()
+	{
+		return _freq;
+	}
+
+	public void setFrequency(double val)
+	{
+		_freq = val;
 	}
 
 	/**
@@ -907,6 +1009,14 @@ public final class SensorContactWrapper extends
 						prop("LabelVisible",
 								"whether the label for this contact is visible"),
 						prop("Color", "the color for this sensor contact"),
+						prop("HasFrequency",
+								"whether this data item includes frequency data"),
+						prop("HasAmbiguousBearing",
+								"whether this data item includes an ambiguous bearing line"),
+						prop("Frequency",
+								"the (optional) fruquency measurement for this data item"),
+						prop("AmbiguousBearing",
+								"the (optional) Ambiguous Bearing line for this data item"),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
 						longProp("PutLabelAt",
@@ -1015,13 +1125,12 @@ public final class SensorContactWrapper extends
 			WorldLocation location2 = new WorldLocation(0, 1, 0);
 			WorldLocation locationBitNorth2 = new WorldLocation(1, 1, 0);
 			HiResDate theDate = new HiResDate(1000);
-			
+
 			SensorWrapper sw = new SensorWrapper("some sensor");
 			SensorContactWrapper scw = new SensorContactWrapper();
 			sw.add(scw);
 			scw.setDTG(theDate);
-			
-			
+
 			Fix fx = new Fix();
 			fx.setLocation(location);
 			fx.setTime(theDate);
