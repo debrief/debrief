@@ -17,7 +17,7 @@ import org.w3c.dom.Element;
 
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
-import MWC.GenericData.WorldDistanceWithUnits;
+import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.LayerHandler;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
@@ -206,8 +206,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements LayerHandler
    	csp.setYMin(_yMin);
    	csp.setYMax(_yMax);
    	csp.setOrientation(_orientation);
-   	csp.setXDelta(new WorldDistanceWithUnits(_xDelta, WorldDistanceWithUnits.NM));
-   	csp.setYDelta(new WorldDistanceWithUnits(_yDelta, WorldDistanceWithUnits.NM));
+   	csp.setXDelta(new WorldDistance(_xDelta, WorldDistance.NM));
+   	csp.setYDelta(new WorldDistance(_yDelta, WorldDistance.NM));
    	csp.setFillGrid(_fillGrid);
    	csp.setPlotLines(_plotLines);
    	if(_fillColor != null)
@@ -271,8 +271,8 @@ abstract public class Grid4WHandler extends MWCXMLReader implements LayerHandler
   {
     // do the visibility
     gridElement.setAttribute(VISIBLE, writeThis(theGrid.getVisible()));
-    gridElement.setAttribute(XDELTA, writeThis(theGrid.getXDelta().getValueIn(WorldDistanceWithUnits.NM)));
-    gridElement.setAttribute(YDELTA, writeThis(theGrid.getYDelta().getValueIn(WorldDistanceWithUnits.NM)));
+    gridElement.setAttribute(XDELTA, writeThis(theGrid.getXDelta().getValueIn(WorldDistance.NM)));
+    gridElement.setAttribute(YDELTA, writeThis(theGrid.getYDelta().getValueIn(WorldDistance.NM)));
     gridElement.setAttribute(XMIN, theGrid.getXMin());
     gridElement.setAttribute(XMAX, theGrid.getXMax());
     gridElement.setAttribute(YMIN, writeThis(theGrid.getYMin().intValue()));

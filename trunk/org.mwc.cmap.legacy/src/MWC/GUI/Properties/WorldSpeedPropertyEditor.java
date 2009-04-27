@@ -101,23 +101,21 @@ abstract public class WorldSpeedPropertyEditor extends
   }
 
   /**
-   * extract the values currently stored in the text boxes (distance in minutes)
+   * extract the values currently stored in the text boxes
    */
   public Object getValue()
   {
     WorldSpeed val = null;
     try
     {
-      // get the distance
+      // get the speed
       double duration = getSpeed();
 
       // get the units scale factor
       int units = getUnits();
 
-      // scale the distance to our output units (minutes)
+      // scale the speed to our output units (minutes)
       val = new WorldSpeed(duration, units);
-
-
     }
     catch (NumberFormatException e)
     {
@@ -146,9 +144,8 @@ abstract public class WorldSpeedPropertyEditor extends
     else
     {
       // get the best units
-      int units = WorldSpeed.selectUnitsFor(_myVal.getValueIn(WorldSpeed.M_sec));
-      setUnits(units);
-      setSpeed(_myVal.getValueIn(units));
+      setUnits(_myVal.getUnits());
+      setSpeed(_myVal.getValue());
     }
   }
 

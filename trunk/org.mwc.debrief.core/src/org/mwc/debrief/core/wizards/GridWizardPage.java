@@ -6,7 +6,7 @@ import org.eclipse.jface.viewers.ISelection;
 
 import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.*;
-import MWC.GenericData.WorldDistanceWithUnits;
+import MWC.GenericData.WorldDistance;
 
 /**
  * The "New" wizard page allows setting the container for the new file as well
@@ -53,9 +53,9 @@ public class GridWizardPage extends CorePlottableWizardPage
 			PropertyEditorSupport
 	{
 
-		protected WorldDistanceWithUnits _myDistance;
+		protected WorldDistance _myDistance;
 
-		private static WorldDistanceWithUnits[] _myDistances;
+		private static WorldDistance[] _myDistances;
 
 		private static String[] _myTags;
 
@@ -63,14 +63,14 @@ public class GridWizardPage extends CorePlottableWizardPage
 		{
 			if (_myDistances == null)
 			{
-				_myDistances = new WorldDistanceWithUnits[] {
-						new WorldDistanceWithUnits(500, WorldDistanceWithUnits.METRES),
-						new WorldDistanceWithUnits(1, WorldDistanceWithUnits.KM),
-						new WorldDistanceWithUnits(1, WorldDistanceWithUnits.MINUTES),
-						new WorldDistanceWithUnits(5, WorldDistanceWithUnits.MINUTES),
-						new WorldDistanceWithUnits(15, WorldDistanceWithUnits.MINUTES),
-						new WorldDistanceWithUnits(30, WorldDistanceWithUnits.MINUTES),
-						new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS), };
+				_myDistances = new WorldDistance[] {
+						new WorldDistance(500, WorldDistance.METRES),
+						new WorldDistance(1, WorldDistance.KM),
+						new WorldDistance(1, WorldDistance.MINUTES),
+						new WorldDistance(5, WorldDistance.MINUTES),
+						new WorldDistance(15, WorldDistance.MINUTES),
+						new WorldDistance(30, WorldDistance.MINUTES),
+						new WorldDistance(1, WorldDistance.DEGS), };
 
 				// and now convert them to strings
 				_myTags = new String[_myDistances.length];
@@ -78,7 +78,7 @@ public class GridWizardPage extends CorePlottableWizardPage
 				// cycle through converting as we go
 				for (int i = 0; i < _myDistances.length; i++)
 				{
-					WorldDistanceWithUnits thisDist = _myDistances[i];
+					WorldDistance thisDist = _myDistances[i];
 					_myTags[i] = thisDist.toString();
 
 				}
@@ -89,9 +89,9 @@ public class GridWizardPage extends CorePlottableWizardPage
 
 		public void setValue(Object p1)
 		{
-			if (p1 instanceof WorldDistanceWithUnits)
+			if (p1 instanceof WorldDistance)
 			{
-				_myDistance = (WorldDistanceWithUnits) p1;
+				_myDistance = (WorldDistance) p1;
 			}
 			if (p1 instanceof String)
 			{

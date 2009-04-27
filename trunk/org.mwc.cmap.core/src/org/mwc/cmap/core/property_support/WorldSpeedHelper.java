@@ -41,9 +41,7 @@ public class WorldSpeedHelper extends EditorHelper
 			 */
 			protected int getUnitsValue()
 			{
-		    // so, what are the preferred units?
-		    int theUnits = WorldSpeed.selectUnitsFor(_myVal.getValueIn(WorldSpeed.getSIUnits()));
-		    return theUnits;
+		    return _myVal.getUnits();
 			}
 
 			/**
@@ -51,11 +49,7 @@ public class WorldSpeedHelper extends EditorHelper
 			 */
 			protected double getDoubleValue()
 			{
-		    // so, what are the preferred units?
-		    int theUnits = WorldSpeed.selectUnitsFor(_myVal.getValueIn(WorldSpeed.getSIUnits()));
-
-		    double theValue = _myVal.getValueIn(theUnits);				
-				return theValue;
+				return _myVal.getValue();
 			}
 
 			/**
@@ -108,7 +102,6 @@ public class WorldSpeedHelper extends EditorHelper
 
 	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
-		// TODO create the editor
 		final Button myCheckbox = new Button(parent, SWT.CHECK);
 		myCheckbox.addSelectionListener(new SelectionAdapter(){
 			public void widgetSelected(SelectionEvent e)

@@ -19,7 +19,7 @@ import org.w3c.dom.NodeList;
 abstract public class WorldDistanceHandler extends MWCXMLReader
 {
 
-  String _units;
+  String _units = WorldDistance.UnitLabels[WorldDistance.NM];
   double _value;
   private static final String UNITS = "Units";
   private static final String VALUE = "Value";
@@ -60,7 +60,8 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
 
     setWorldDistance(res);
 
-    _units = null;
+    // reset the units.  If it doesn't get overwritten we continue to use NM
+    _units = WorldDistance.UnitLabels[WorldDistance.NM];
     _value = -1;
 
 
@@ -95,22 +96,14 @@ abstract public class WorldDistanceHandler extends MWCXMLReader
   public static void exportDistance(String myType, WorldDistance distance, org.w3c.dom.Element parent,
                                     org.w3c.dom.Document doc)
   {
-
-
+  	// create the object
     org.w3c.dom.Element eLoc = doc.createElement(myType);
-    // set the attributes
-    int theUnit = MWC.GUI.Properties.DistancePropertyEditor.selectUnitsFor(distance.getValueIn(WorldDistance.NM));
+    
+    // store the fields
+    eLoc.setAttribute(VALUE, writeThis(distance.getDistance()));
+    eLoc.setAttribute(UNITS, distance.getUnitsLabel());
 
-    // and get value
-    double value = distance.getValueIn(theUnit);
-
-
-    // get the name of the units
-    String units = WorldDistance.getLabelFor(theUnit);
-
-    eLoc.setAttribute(VALUE, writeThis(value));
-    eLoc.setAttribute(UNITS, units);
-
+    // remember it
     parent.appendChild(eLoc);
   }
 

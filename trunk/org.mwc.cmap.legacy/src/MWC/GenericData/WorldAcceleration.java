@@ -17,9 +17,14 @@ final public class WorldAcceleration
   /////////////////////////////////////////////////////////////////
 
   /**
-   * the actual speed (in minutes)
+   * the actual speed (in user selected units)
    */
-  double _mySpeed;
+  double _myAccel;
+  
+  /** the user's selection of units
+   * 
+   */
+  int _myUnits;
 
   /**
    * the types of units we can handle
@@ -56,7 +61,8 @@ final public class WorldAcceleration
    */
   public WorldAcceleration(double value, int units)
   {
-    _mySpeed = convert(units, WorldAcceleration.M_sec_sec, value);
+    _myAccel = value;
+    _myUnits = units;
   }
 
   /**
@@ -64,7 +70,8 @@ final public class WorldAcceleration
    */
   public WorldAcceleration(WorldAcceleration other)
   {
-    _mySpeed = other._mySpeed;
+    _myAccel = other._myAccel;
+    _myUnits = other._myUnits;
   }
 
 
@@ -121,9 +128,24 @@ final public class WorldAcceleration
    */
   public double getValueIn(int units)
   {
-    return convert(WorldAcceleration.M_sec_sec, units, _mySpeed);
+    return convert(WorldAcceleration.M_sec_sec, units, _myAccel);
   }
 
+  public double getValue()
+  {
+  	return _myAccel;
+  }
+  
+  public int getUnits()
+  {
+  	return _myUnits;
+  }
+  
+  public String getUnitsLabel()
+  {
+  	return getLabelFor(_myUnits);
+  }
+  
   /**
    * get the SI units for  this type
    */
@@ -137,60 +159,9 @@ final public class WorldAcceleration
    */
   public String toString()
   {
-    // so, what are the preferred units?
-    int theUnits = selectUnitsFor(_mySpeed);
-
-    double theValue = getValueIn(theUnits);
-
-    String res = theValue + " " + getLabelFor(theUnits);
-
+    String res = _myAccel + " " + getUnitsLabel();
     return res;
   }
-
-  /**
-   * method to find the smallest set of units which will show the
-   * indicated value (in millis) as a whole or 1/2 value
-   */
-  static public int selectUnitsFor(double millis)
-  {
-
-    int goodUnits = -1;
-
-    // how many set of units are there?
-    int len = UnitLabels.length;
-
-    // count downwards from last value
-    for (int thisUnit = len - 1; thisUnit >= 0; thisUnit--)
-    {
-      // convert to this value
-      double newVal = convert(WorldAcceleration.M_sec_sec, thisUnit, millis);
-
-      // double the value, so that 1/2 values are valid
-      newVal *= 2;
-
-      // is this a whole number?
-      if (Math.abs(newVal - (int) newVal) < 0.0000000001)
-      {
-        goodUnits = thisUnit;
-        break;
-      }
-    }
-
-    //  did we find a match?
-    if (goodUnits != -1)
-    {
-      // ok, it must have worked
-    }
-    else
-    {
-      //  no, just use metres
-      goodUnits = WorldAcceleration.M_sec_sec;
-    }
-
-    // return the result
-    return goodUnits;
-  }
-
 
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
@@ -210,7 +181,7 @@ final public class WorldAcceleration
       assertEquals("m sec correct", w1.getValueIn(WorldAcceleration.M_sec_sec), 1d, 0.000001);
 
       WorldAcceleration w2 = new WorldAcceleration(1, WorldAcceleration.Kts_sec);
-      assertEquals("correct value stored", 0.514444, w2._mySpeed, 0.001);
+      assertEquals("correct value stored", 0.514444, w2._myAccel, 0.001);
       assertEquals("m/sec correct", w2.getValueIn(WorldAcceleration.M_sec_sec), 0.5144444, 0.000001);
       assertEquals("kts correct", w2.getValueIn(WorldAcceleration.Kts_sec), 1, 0.000001);
 

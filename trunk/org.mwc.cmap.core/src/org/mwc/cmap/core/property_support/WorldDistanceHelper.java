@@ -37,7 +37,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 	 */
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new WorldDistanceWithUnitsCellEditor(parent);
+		return new WorldDistanceCellEditor(parent);
 	}
 
 	public ILabelProvider getLabelFor(Object currentValue)
@@ -73,14 +73,14 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		return myCheckbox;
 	}
 
-	public static class WorldDistanceWithUnitsCellEditor extends ValueWithUnitsCellEditor
+	public static class WorldDistanceCellEditor extends ValueWithUnitsCellEditor
 	{
 		/**
 		 * the world distance we're editing
 		 */
 		WorldDistance _myVal;
 
-		public WorldDistanceWithUnitsCellEditor(Composite parent)
+		public WorldDistanceCellEditor(Composite parent)
 		{
 			super(parent, "Distance", "Units");
 		}
@@ -91,9 +91,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		protected int getUnitsValue()
 		{
 			// so, what are the preferred units?
-			int theUnits = WorldDistance.selectUnitsFor(_myVal.getValueIn(WorldDistance
-					.getSIUnits()));
-			return theUnits;
+			return _myVal.getUnits();
 		}
 
 		/**
@@ -101,11 +99,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 		 */
 		protected double getDoubleValue()
 		{
-			// so, what are the preferred units?
-			int theUnits = WorldDistance.selectUnitsFor(_myVal.getValueIn(WorldDistance
-					.getSIUnits()));
-
-			double theValue = _myVal.getValueIn(theUnits);
+			double theValue = _myVal.getValue();
 
 			// try to round it to a sensible value
 			theValue = Math.round(theValue * 100) / 100d;

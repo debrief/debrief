@@ -336,7 +336,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
       if (_gridPainter == null)
         _gridPainter = new GridPainter();
 
-      _gridPainter.setDelta(new WorldDistanceWithUnits(_gridDelta.getValueIn(WorldDistance.NM), WorldDistanceWithUnits.MINUTES));
+      _gridPainter.setDelta(new WorldDistance(_gridDelta.getValueIn(WorldDistance.NM), WorldDistance.MINUTES));
       _gridPainter.setPlotLabels(false);
       _gridPainter.setColor(Color.lightGray);
       _gridPainter.paint(ca);

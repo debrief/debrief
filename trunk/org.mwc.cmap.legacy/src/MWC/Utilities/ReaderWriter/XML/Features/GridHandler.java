@@ -12,7 +12,7 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 import org.w3c.dom.*;
 
 import MWC.GUI.Chart.Painters.GridPainter;
-import MWC.GenericData.WorldDistanceWithUnits;
+import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.*;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
@@ -99,11 +99,11 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
     // do we know our units
     if (_myUnits == null)
     // no, we don't - assume they're in NM
-      csp.setDelta(new MWC.GenericData.WorldDistanceWithUnits(_delta, WorldDistanceWithUnits.NM));
+      csp.setDelta(new MWC.GenericData.WorldDistance(_delta, WorldDistance.NM));
     else
     {
       // yes, we do - best use them
-      csp.setDelta(new MWC.GenericData.WorldDistanceWithUnits(_delta, WorldDistanceWithUnits.getUnitIndexFor(_myUnits)));
+      csp.setDelta(new MWC.GenericData.WorldDistance(_delta, WorldDistance.getUnitIndexFor(_myUnits)));
     }
 
     csp.setPlotLabels(_plotLabels);

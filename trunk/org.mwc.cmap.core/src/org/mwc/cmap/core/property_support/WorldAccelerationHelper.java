@@ -41,9 +41,7 @@ public class WorldAccelerationHelper extends EditorHelper
 			 */
 			protected int getUnitsValue()
 			{
-		    // so, what are the preferred units?
-		    int theUnits = WorldAcceleration.selectUnitsFor(_myVal.getValueIn(WorldAcceleration.getSIUnits()));
-		    return theUnits;
+				return _myVal.getUnits();
 			}
 
 			/**
@@ -51,11 +49,7 @@ public class WorldAccelerationHelper extends EditorHelper
 			 */
 			protected double getDoubleValue()
 			{
-		    // so, what are the preferred units?
-		    int theUnits = WorldAcceleration.selectUnitsFor(_myVal.getValueIn(WorldAcceleration.getSIUnits()));
-
-		    double theValue = _myVal.getValueIn(theUnits);				
-				return theValue;
+				return _myVal.getValue();
 			}
 
 			/**

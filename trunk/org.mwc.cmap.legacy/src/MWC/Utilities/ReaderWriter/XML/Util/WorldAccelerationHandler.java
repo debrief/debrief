@@ -75,10 +75,10 @@ abstract public class WorldAccelerationHandler extends BaseDataHandler
     org.w3c.dom.Element eLoc = doc.createElement(element_type);
 
     // set the attributes
-    int theUnit = WorldAcceleration.selectUnitsFor(Acceleration.getValueIn(WorldAcceleration.getSIUnits()));
+    int theUnit = Acceleration.getUnits();
 
     // and get value
-    double value = Acceleration.getValueIn(theUnit);
+    double value = Acceleration.getValue();
 
     // get the name of the units
     String units = WorldAcceleration.getLabelFor(theUnit);

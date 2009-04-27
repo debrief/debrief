@@ -22,7 +22,7 @@ package MWC.GUI.Properties.Swing;
 //
 
 
-import MWC.GenericData.WorldDistanceWithUnits;
+import MWC.GenericData.WorldDistance;
 
 import javax.swing.*;
 import java.awt.event.*;
@@ -87,7 +87,7 @@ public class SwingDistanceWithUnitsPropertyEditor extends
 		_theHolder.setLayout(new BorderLayout());
 		_theDistance = new JTextField();
     _theDistance.setToolTipText("the distance");
-		_theUnits = new JComboBox(WorldDistanceWithUnits.UnitLabels);
+		_theUnits = new JComboBox(WorldDistance.UnitLabels);
     _theUnits.setToolTipText("the Units");
 		_theHolder.add("Center",_theDistance);
 		_theHolder.add("East",_theUnits);
@@ -182,7 +182,7 @@ public class SwingDistanceWithUnitsPropertyEditor extends
     try
     {
       // convert to a new distance
-      double newDist = WorldDistanceWithUnits.convert(_oldUnits, newUnits, getDistance());
+      double newDist = WorldDistance.convert(_oldUnits, newUnits, getDistance());
 
       // and remember the units
       _oldUnits = newUnits;

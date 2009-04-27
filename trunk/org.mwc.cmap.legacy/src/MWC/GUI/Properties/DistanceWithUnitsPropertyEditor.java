@@ -22,7 +22,7 @@ package MWC.GUI.Properties;
 
 
 import java.beans.*;
-import MWC.GenericData.WorldDistanceWithUnits;
+import MWC.GenericData.WorldDistance;
 
 import java.awt.*;
 import java.text.*;
@@ -39,7 +39,7 @@ abstract public class DistanceWithUnitsPropertyEditor extends
   ////////////////////////////////////////////////////////////
 	/** the value we are editing (in minutes)
 	 */
-  private WorldDistanceWithUnits _myVal;
+  private WorldDistance _myVal;
 
   /** the formatting object used to write to screen
    *
@@ -78,10 +78,10 @@ abstract public class DistanceWithUnitsPropertyEditor extends
 		if(p1 != null)
     {
       // check it's a Double
-      if(p1 instanceof WorldDistanceWithUnits)
+      if(p1 instanceof WorldDistance)
       {
         // store the distance
-        _myVal = (WorldDistanceWithUnits)p1;
+        _myVal = (WorldDistance)p1;
       }
     }
   }
@@ -95,13 +95,13 @@ abstract public class DistanceWithUnitsPropertyEditor extends
     int goodUnits = -1;
 
     // how many set of units are there?
-    int len = WorldDistanceWithUnits.UnitLabels.length;
+    int len = WorldDistance.UnitLabels.length;
 
     // count downwards from last value
     for(int thisUnit=len - 1; thisUnit>= 0; thisUnit--)
     {
       // convert to this value
-      double newVal = WorldDistanceWithUnits.convert(WorldDistanceWithUnits.NM, thisUnit, minutes);
+      double newVal = WorldDistance.convert(WorldDistance.NM, thisUnit, minutes);
 
       // double the value, so that 1/2 values are valid
       newVal *= 2;
@@ -122,7 +122,7 @@ abstract public class DistanceWithUnitsPropertyEditor extends
     else
     {
       //  no, just use metres
-      goodUnits = WorldDistanceWithUnits.METRES;
+      goodUnits = WorldDistance.METRES;
     }
 
     // return the result
@@ -140,7 +140,7 @@ abstract public class DistanceWithUnitsPropertyEditor extends
 	 */
   public Object getValue()
   {
-		WorldDistanceWithUnits val=null;
+		WorldDistance val=null;
 		try{
       // get the distance
       double distance = getDistance();
@@ -149,7 +149,7 @@ abstract public class DistanceWithUnitsPropertyEditor extends
       int units = getUnits();
 
       // scale the distance to our output units (minutes)
-      val = new WorldDistanceWithUnits(distance, units);
+      val = new WorldDistance(distance, units);
 
 
 		}
@@ -178,7 +178,7 @@ abstract public class DistanceWithUnitsPropertyEditor extends
     else
     {
       // get the best units
-      int units = WorldDistanceWithUnits.getUnitIndexFor(_myVal.getUnitsLabel());
+      int units = WorldDistance.getUnitIndexFor(_myVal.getUnitsLabel());
       setUnits(units);
 			setDistance(_myVal.getDistance());
     }

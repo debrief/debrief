@@ -168,7 +168,7 @@ public class GridPainter implements Plottable, Serializable
   /**
    * the grid separation (in degrees)
    */
-  protected WorldDistanceWithUnits _myDelta;
+  protected WorldDistance _myDelta;
 
   /**
    * whether this grid is visible
@@ -209,7 +209,7 @@ public class GridPainter implements Plottable, Serializable
     GRID_TYPE_NAME = "Grid";
 		_myName = GRID_TYPE_NAME;
 
-    setDelta(new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS));
+    setDelta(new WorldDistance(1, WorldDistance.DEGS));
     // make it visible to start with
     setVisible(true);
   }
@@ -243,7 +243,7 @@ public class GridPainter implements Plottable, Serializable
    *
    * @param val the size in minutes
    */
-  public void setDelta(WorldDistanceWithUnits val)
+  public void setDelta(WorldDistance val)
   {
     _myDelta = val;
   }
@@ -253,7 +253,7 @@ public class GridPainter implements Plottable, Serializable
    *
    * @return the size in minutes
    */
-  public WorldDistanceWithUnits getDelta()
+  public WorldDistance getDelta()
   {
     return _myDelta;
   }
@@ -315,7 +315,7 @@ public class GridPainter implements Plottable, Serializable
       return;
 
     // get the delta in degrees
-    double deltaDegs = _myDelta.getValueIn(WorldDistanceWithUnits.DEGS);
+    double deltaDegs = _myDelta.getValueIn(WorldDistance.DEGS);
 
     // ok, find the outer limits of the lines to plot
     WorldArea bounds = getOuterBounds(g, screenArea, deltaDegs);
@@ -347,8 +347,8 @@ public class GridPainter implements Plottable, Serializable
     int counter = 0;
 
     final WorldLocation gridOrigin = getGridLabelOrigin(bounds);
-    int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myDelta.getValueIn(WorldDistanceWithUnits.DEGS));
-    int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myDelta.getValueIn(WorldDistanceWithUnits.DEGS));
+    int latGridCounterOffset = (int) ((gridOrigin.getLat() - minLat) / _myDelta.getValueIn(WorldDistance.DEGS));
+    int longGridCounterOffset = (int) ((gridOrigin.getLong() - minLong) / _myDelta.getValueIn(WorldDistance.DEGS));
 
     // if we're using a local plot we need to decrement both of these offsets by one
     if (this.isLocalPlotting())

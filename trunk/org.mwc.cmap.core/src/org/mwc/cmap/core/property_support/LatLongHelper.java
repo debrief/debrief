@@ -13,7 +13,7 @@ import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.views.properties.*;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.WorldDistanceHelper.WorldDistanceWithUnitsCellEditor;
+import org.mwc.cmap.core.property_support.WorldDistanceHelper.WorldDistanceCellEditor;
 
 import MWC.GenericData.*;
 import MWC.Utilities.TextFormatting.*;
@@ -193,7 +193,7 @@ public class LatLongHelper extends EditorHelper
 					{
 						public CellEditor createPropertyEditor(Composite parent)
 						{
-							return new WorldDistanceWithUnitsCellEditor(parent);
+							return new WorldDistanceCellEditor(parent);
 						}
 					},
 
@@ -220,7 +220,7 @@ public class LatLongHelper extends EditorHelper
 			_longHem = _origLongHem = "" + bLong.hem;
 
 			_depth = _origDepth = new WorldDistance(location.getDepth(),
-					WorldDistanceWithUnits.METRES);
+					WorldDistance.METRES);
 			
 			_pSupport = new PropertyChangeSupport(this);
 
@@ -398,7 +398,7 @@ public class LatLongHelper extends EditorHelper
 
 			// hold on, do we have a depth?
 			if (_depth != null)
-				depth = _depth.getValueIn(WorldDistanceWithUnits.METRES);
+				depth = _depth.getValueIn(WorldDistance.METRES);
 
 			// produce a new location from our data values
 			WorldLocation res = new WorldLocation((int) Double.parseDouble(_latDeg),

@@ -36,6 +36,10 @@ abstract public class SensorContactHandler extends
 	 */
 	static final MWC.GUI.Properties.LineStylePropertyEditor ls = new MWC.GUI.Properties.LineStylePropertyEditor();
 
+	static final String RANGE = "Range";
+	
+	private WorldDistance _myRange = null;
+	
 	public SensorContactHandler() {
 		// inform our parent what type of class we are
 		super("sensor_contact");
@@ -127,12 +131,17 @@ abstract public class SensorContactHandler extends
 			}
 		});
 
-	}
+		addHandler(new WorldDistanceHandler(RANGE) {
+			public void setWorldDistance(WorldDistance value) {
+				_myRange = value;
+			}
+		});
+		}
 
 	public final void handleOurselves(String name, Attributes atts) {
 		// create the new items
 		_theContact = new Debrief.Wrappers.SensorContactWrapper();
-
+	
 		lp.setValue(null);
 		ls.setValue(null);
 		ll.setValue(null);
@@ -141,8 +150,19 @@ abstract public class SensorContactHandler extends
 	}
 
 	public final void elementClosed() {
+		// do we have a range?
+		if(_myRange != null)
+		{
+			_theContact.setRange(_myRange);
+			
+			// and clear it
+			_myRange = null;
+		}
+
+		// and store it
 		addContact(_theContact);
 
+		
 		// reset our variables
 		_theContact = null;
 	}
@@ -164,12 +184,16 @@ abstract public class SensorContactHandler extends
 		eFix.setAttribute("Dtg", writeThis(contact.getDTG()));
 
 		eFix.setAttribute("Visible", writeThis(contact.getVisible()));
-		eFix.setAttribute("Bearing", writeThis(contact.getBearing()));
-		eFix.setAttribute("Range", writeThis(contact.getRange().getValueIn(
-				WorldDistance.YARDS)));
+		eFix.setAttribute("Bearing", writeThis(contact.getBearing()));		
 		eFix.setAttribute("LabelShowing", writeThis(contact.getLabelVisible()));
 		eFix.setAttribute("Label", toXML(contact.getLabel()));
+		// we no longer export range as an attribute, but as an element-so we can store units
+		//	eFix.setAttribute("Range", writeThis(contact.getRange().getValueIn(
+		//	WorldDistance.YARDS)));
 
+		// sort out the range
+		WorldDistanceHandler.exportDistance(RANGE, contact.getRange(), eFix, doc);
+		
 		// sort out the line style
 		ls.setValue(contact.getLineStyle());
 		eFix.setAttribute("LineStyle", ls.getAsText().replace(' ', '_')); // note,
@@ -200,7 +224,6 @@ abstract public class SensorContactHandler extends
 		if (origin != null)
 			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
 					origin, "centre", eFix, doc);
-
 
 		parent.appendChild(eFix);
 

@@ -157,7 +157,6 @@ import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldDistanceWithUnits;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
@@ -186,12 +185,12 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	/**
 	 * the horizontal grid separation (in degrees)
 	 */
-	protected WorldDistanceWithUnits _myXDelta;
+	protected WorldDistance _myXDelta;
 
 	/**
 	 * the vertical grid separation (in degrees)
 	 */
-	protected WorldDistanceWithUnits _myYDelta;
+	protected WorldDistance _myYDelta;
 
 	/**
 	 * whether this grid is visible
@@ -281,8 +280,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		_origin = origin;
 
 		// give it some default deltas
-		setXDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
-		setYDelta(new WorldDistanceWithUnits(10, WorldDistanceWithUnits.NM));
+		setXDelta(new WorldDistance(10, WorldDistance.NM));
+		setYDelta(new WorldDistance(10, WorldDistance.NM));
 
 		_orientation = 0;
 
@@ -320,7 +319,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param val
 	 *          the size
 	 */
-	public void setYDelta(WorldDistanceWithUnits val)
+	public void setYDelta(WorldDistance val)
 	{
 		_myYDelta = val;
 	}
@@ -330,7 +329,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * 
 	 * @return the size
 	 */
-	public WorldDistanceWithUnits getYDelta()
+	public WorldDistance getYDelta()
 	{
 		return _myYDelta;
 	}
@@ -341,7 +340,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * @param val
 	 *          the size
 	 */
-	public void setXDelta(WorldDistanceWithUnits val)
+	public void setXDelta(WorldDistance val)
 	{
 		_myXDelta = val;
 	}
@@ -351,7 +350,7 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 	 * 
 	 * @return the size
 	 */
-	public WorldDistanceWithUnits getXDelta()
+	public WorldDistance getXDelta()
 	{
 		return _myXDelta;
 	}
@@ -769,10 +768,10 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			WorldLocation origin = new WorldLocation(2, 3, 2);
 			Grid4WPainter pt = new Grid4WPainter(origin);
 			Assert.assertEquals("wrong name", pt.getName(), DEFAULT_NAME);
-			Assert.assertEquals("wrong x def", new WorldDistanceWithUnits(10,
-					WorldDistanceWithUnits.NM), pt.getXDelta());
-			Assert.assertEquals("wrong y def", new WorldDistanceWithUnits(10,
-					WorldDistanceWithUnits.NM), pt.getYDelta());
+			Assert.assertEquals("wrong x def", new WorldDistance(10,
+					WorldDistance.NM), pt.getXDelta());
+			Assert.assertEquals("wrong y def", new WorldDistance(10,
+					WorldDistance.NM), pt.getYDelta());
 			Assert.assertEquals("wrong init index", 1, pt.getYMin().intValue());
 			Assert.assertEquals("wrong init index", 24, pt.getYMax().intValue());
 			Assert.assertEquals("wrong init index", "A", pt.getXMin());
@@ -785,8 +784,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 		{
 			Grid4WPainter pt = new Grid4WPainter(null);
 			pt.setName("new grid");
-			pt.setXDelta(new WorldDistanceWithUnits(12, WorldDistanceWithUnits.DEGS));
-			pt.setYDelta(new WorldDistanceWithUnits(5, WorldDistanceWithUnits.DEGS));
+			pt.setXDelta(new WorldDistance(12, WorldDistance.DEGS));
+			pt.setYDelta(new WorldDistance(5, WorldDistance.DEGS));
 			pt.setXMin("C");
 			pt.setXMax("E");
 			pt.setYMin(7);
@@ -794,10 +793,10 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			WorldLocation origin = new WorldLocation(2, 2, 0);
 			pt.setOrigin(origin);
 			Assert.assertEquals("wrong name", "new grid", pt.getName());
-			Assert.assertEquals("wrong x val", new WorldDistanceWithUnits(12,
-					WorldDistanceWithUnits.DEGS), pt.getXDelta());
-			Assert.assertEquals("wrong y val", new WorldDistanceWithUnits(5,
-					WorldDistanceWithUnits.DEGS), pt.getYDelta());
+			Assert.assertEquals("wrong x val", new WorldDistance(12,
+					WorldDistance.DEGS), pt.getXDelta());
+			Assert.assertEquals("wrong y val", new WorldDistance(5,
+					WorldDistance.DEGS), pt.getYDelta());
 			Assert.assertEquals("wrong x index", "C", pt.getXMin());
 			Assert.assertEquals("wrong x index", "E", pt.getXMax());
 			Assert.assertEquals("wrong y index", 7, pt.getYMin().intValue());
@@ -811,10 +810,10 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			int x = 1, y = 1;
 			WorldLocation origin = new WorldLocation(0, 0, 0);
 			double orientation = 0;
-			WorldDistanceWithUnits xDelta = new WorldDistanceWithUnits(1,
-					WorldDistanceWithUnits.DEGS);
-			WorldDistanceWithUnits yDelta = new WorldDistanceWithUnits(1,
-					WorldDistanceWithUnits.DEGS);
+			WorldDistance xDelta = new WorldDistance(1,
+					WorldDistance.DEGS);
+			WorldDistance yDelta = new WorldDistance(1,
+					WorldDistance.DEGS);
 
 			Grid4WPainter pt = new Grid4WPainter(origin);
 			pt.setXDelta(xDelta);
@@ -834,8 +833,8 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
 
 			// have another go
-			pt.setXDelta(new WorldDistanceWithUnits(2, WorldDistanceWithUnits.DEGS));
-			pt.setYDelta(new WorldDistanceWithUnits(3, WorldDistanceWithUnits.DEGS));
+			pt.setXDelta(new WorldDistance(2, WorldDistance.DEGS));
+			pt.setYDelta(new WorldDistance(3, WorldDistance.DEGS));
 			newLoc = pt.calcLocationFor(x, y);
 			Assert.assertEquals("easy Lat wrong", 2d, newLoc.getLat(), 0.001);
 			Assert.assertEquals("easy Long wrong", 0d, newLoc.getLong(), 0.001);
@@ -849,25 +848,6 @@ public class Grid4WPainter implements Plottable, Serializable, DraggableItem
 			// now try more complex orientations
 
 		}
-		// public void testBounds()
-		// {
-		// Grid4WPainter pt = new Grid4WPainter();
-		// pt.setOrigin(new WorldLocation(2,2,0));
-		// pt.setXDelta(new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS));
-		// pt.setYDelta(new WorldDistanceWithUnits(1, WorldDistanceWithUnits.DEGS));
-		// pt.setXMin("C");
-		// pt.setXMax("D");
-		// pt.setYMin(3);
-		// pt.setYMax(5);
-		//		  
-		// WorldArea bounds = pt.getBounds();
-		// WorldLocation topLeft = new WorldLocation(4,7,0);
-		// WorldLocation bottomRight= new WorldLocation(6,4,0);
-		// WorldArea eBounds = new WorldArea(topLeft, bottomRight);
-		// Assert.assertEquals("wrong bounds", eBounds, bounds);
-		//		  
-		// }
-
 	}
 
 	private static String indices[] =

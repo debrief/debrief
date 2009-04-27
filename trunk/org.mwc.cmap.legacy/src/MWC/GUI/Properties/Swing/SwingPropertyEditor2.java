@@ -392,8 +392,6 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 			PropertyEditorManager.registerEditor(BoundedInteger.class,
 					SwingBoundedIntegerEditor.class);
 			PropertyEditorManager.registerEditor(MWC.GenericData.WorldDistance.class,
-					SwingDistancePropertyEditor.class);
-			PropertyEditorManager.registerEditor(MWC.GenericData.WorldDistanceWithUnits.class,
 					SwingDistanceWithUnitsPropertyEditor.class);
 			PropertyEditorManager.registerEditor(MWC.GenericData.Duration.class,
 					SwingDurationPropertyEditor.class);

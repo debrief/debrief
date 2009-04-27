@@ -6,31 +6,47 @@
  */
 package MWC.GenericData;
 
+import java.io.Serializable;
+
+import junit.framework.Assert;
+
 
 /**
  * class which represents a distance as a value plus a set of units
  */
-final public class WorldDistance
+final public class WorldDistance implements Serializable
 {
   /////////////////////////////////////////////////////////////////
   // member variables
   /////////////////////////////////////////////////////////////////
 
+
   /**
-   * the actual distance (in minutes)
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
+   * the actual distance (in unknown units)
    */
   private double _myDistance;
+
+  /**
+   * the units selected
+   */
+  private int _myUnits;
 
   /**
    * the types of units we can handle
    */
   static public final int METRES = 0;
   static public final int YARDS = 1;
-  static public final int KYDS = 2;
-  static public final int KM = 3;
-  static public final int NM = 4;
+  static public final int KM = 2;
+  static public final int NM = 3;
+  static public final int MINUTES = 4;
   static public final int DEGS = 5;
-  static public final int FT = 6;
+  static public final int KYDS = 6;
+  static public final int FT = 7;
 
   /**
    * the scale factors for the units compared to minutes
@@ -38,12 +54,13 @@ final public class WorldDistance
   static private double _scaleVals[] =
     {1852,
      2025.371828,
-     2.025371828,
      1.852,
      1,
+     1,
      0.016666666666666666666667,
-     6076.11548
-    };
+     2.025371828,
+     6076.11548     
+     };
 
   /**
    * the units labels
@@ -51,10 +68,11 @@ final public class WorldDistance
   static public final String[] UnitLabels =
     {"m",
      "yds",
-     "kyds",
      "km",
      "nm",
-     "degs",
+     "minutes",
+     "degs" ,
+     "kyds",
      "ft"};
 
 
@@ -70,7 +88,8 @@ final public class WorldDistance
    */
   public WorldDistance(double value, int units)
   {
-  	setValues(value, units);
+    _myDistance = value;
+    _myUnits = units;
   }
 
   /**
@@ -79,23 +98,68 @@ final public class WorldDistance
   public WorldDistance(WorldDistance other)
   {
     _myDistance = other._myDistance;
+    _myUnits = other._myUnits;
   }
-  
+
+
   public WorldDistance( WorldVector separation)
   {
   	 this(separation.getRange(), WorldDistance.DEGS);
   }
-
   
-  public void setValues(double value, int units)
-  {
-    _myDistance = convert(units, WorldDistance.NM, value);
-  }
-
   /////////////////////////////////////////////////////////////////
   // member methods
   /////////////////////////////////////////////////////////////////
 
+  @Override
+public int hashCode() {
+	final int prime = 31;
+	int result = 1;
+	long temp;
+	temp = Double.doubleToLongBits(_myDistance);
+	result = prime * result + (int) (temp ^ (temp >>> 32));
+	result = prime * result + _myUnits;
+	return result;
+}
+
+@Override
+public boolean equals(Object obj) {
+	if (this == obj)
+		return true;
+	if (obj == null)
+		return false;
+	if (!(obj instanceof WorldDistance))
+		return false;
+	final WorldDistance other = (WorldDistance) obj;
+	return this.getValueIn(WorldDistance.DEGS) == other.getValueIn(WorldDistance.DEGS);
+}
+
+/**
+   * accessor to indicate if this distance represents an absolute or angular distance
+   */
+  public boolean isAngular()
+  {
+    return (_myUnits == DEGS) || (_myUnits == MINUTES);
+  }
+
+  /**
+   * get a string representing the units in use
+   */
+  public String getUnitsLabel()
+  {
+    return getLabelFor(_myUnits);
+  }
+
+  public int getUnits()
+  {
+  	return _myUnits;
+  }
+  
+  public double getValue()
+  {
+  	return _myDistance;
+  }
+  
   /**
    * perform a units conversion
    */
@@ -123,6 +187,14 @@ final public class WorldDistance
   }
 
   /**
+   * get the distance value (in whatever is the selected units)
+   */
+  public double getDistance()
+  {
+    return _myDistance;
+  }
+
+  /**
    * get the index for this type of unit
    */
   static public int getUnitIndexFor(String units)
@@ -145,7 +217,13 @@ final public class WorldDistance
    */
   public double getValueIn(int units)
   {
-    return convert(WorldDistance.NM, units, _myDistance);
+    double res;
+    if (units == _myUnits)
+      res = _myDistance;
+    else
+      res = convert(_myUnits, units, _myDistance);
+
+    return res;
   }
 
   /**
@@ -153,69 +231,10 @@ final public class WorldDistance
    */
   public String toString()
   {
-    // so, what are the preferred units?
-    int theUnits = selectUnitsFor(_myDistance);
-
-    double theValue = getValueIn(theUnits);
-
-    String res = theValue + " " + getLabelFor(theUnits);
+    String res = _myDistance + " " + getLabelFor(_myUnits);
 
     return res;
   }
-
-
-  /**
-   * get the SI units for  this type
-   */
-  public static int getSIUnits()
-  {
-    return METRES;
-  }  
-  
-  /**
-   * method to find the smallest set of units which will show the
-   * indicated value (in millis) as a whole or 1/2 value
-   */
-  static public int selectUnitsFor(double millis)
-  {
-
-    int goodUnits = -1;
-
-    // how many set of units are there?
-    int len = UnitLabels.length;
-
-    // count downwards from last value
-    for (int thisUnit = len - 1; thisUnit >= 0; thisUnit--)
-    {
-      // convert to this value
-      double newVal = convert(NM, thisUnit, millis);
-
-      // double the value, so that 1/2 values are valid
-      newVal *= 2;
-
-      // is this a whole number?
-      if (Math.abs(newVal - (int) newVal) < 0.0000000001)
-      {
-        goodUnits = thisUnit;
-        break;
-      }
-    }
-
-    //  did we find a match?
-    if (goodUnits != -1)
-    {
-      // ok, it must have worked
-    }
-    else
-    {
-      //  no, just use metres
-      goodUnits = NM;
-    }
-
-    // return the result
-    return goodUnits;
-  }
-
 
   ////////////////////////////////////////////////////////////
   // comparison methods
@@ -230,16 +249,15 @@ final public class WorldDistance
   {
     return this.getValueIn(METRES) > other.getValueIn(METRES);
   }
-
-
+  
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
   //////////////////////////////////////////////////////////////////////////////////////////////////
-  static public final class WorldDistanceTest extends junit.framework.TestCase
+  static public final class DistWithUnitsTest extends junit.framework.TestCase
   {
     static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-    public WorldDistanceTest(String val)
+    public DistWithUnitsTest(String val)
     {
       super(val);
     }
@@ -266,8 +284,19 @@ final public class WorldDistance
       assertEquals("retrieve metres label", WorldDistance.getLabelFor(WorldDistance.METRES), "m");
       assertEquals("retrieve degs label", WorldDistance.getLabelFor(WorldDistance.DEGS), "degs");
 
+      WorldDistance w6 = new WorldDistance(2000, WorldDistance.YARDS);
+      assertEquals("Kyds correct", w6.getValueIn(WorldDistance.KYDS), 2d, 0.000001);
+
+      
     }
 
+    public final void testEquals()
+    {
+    	WorldDistance da = new WorldDistance(60, WorldDistance.MINUTES);
+    	WorldDistance db = new WorldDistance(1, WorldDistance.DEGS);
+    	Assert.assertEquals("distances should be equal", da, db);
+    }
+    
     public final void testStrings()
     {
       WorldDistance da = new WorldDistance(12, METRES);
@@ -276,8 +305,14 @@ final public class WorldDistance
 
       da = new WorldDistance(1.75, KM);
       res = da.toString();
-      assertEquals("correct output format", res, "1750.0 m");
+      assertEquals("correct output format, received:" + res, res, "1.75 km");
     }
   }
+
+	public void setValues(double range, int degs2)
+	{
+		_myDistance = range;
+		_myUnits = degs2;
+	}
 
 }

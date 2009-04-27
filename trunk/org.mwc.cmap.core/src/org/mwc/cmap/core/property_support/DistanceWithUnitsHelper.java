@@ -9,7 +9,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
 
-import MWC.GenericData.WorldDistanceWithUnits;
+import MWC.GenericData.WorldDistance;
 
 public class DistanceWithUnitsHelper extends EditorHelper
 {
@@ -19,7 +19,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 	 */
 	public DistanceWithUnitsHelper()
 	{
-		super(WorldDistanceWithUnits.class);
+		super(WorldDistance.class);
 	}
 
 	/** create an instance of the cell editor suited to our data-type
@@ -34,14 +34,14 @@ public class DistanceWithUnitsHelper extends EditorHelper
 			/** the world distance we're editing
 			 * 
 			 */
-			WorldDistanceWithUnits _myVal;
+			WorldDistance _myVal;
 			
 			/**
 			 * @return
 			 */
 			protected int getUnitsValue()
 			{
-				return WorldDistanceWithUnits.getUnitIndexFor(_myVal.getUnitsLabel());
+				return WorldDistance.getUnitIndexFor(_myVal.getUnitsLabel());
 			}
 
 			/**
@@ -57,7 +57,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 			 */
 			protected String[] getTagsList()
 			{
-				return WorldDistanceWithUnits.UnitLabels;
+				return WorldDistance.UnitLabels;
 			}
 			
 			/**
@@ -67,7 +67,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 			 */
 			protected Object createResultsObject(double dist, int units)
 			{
-				return new WorldDistanceWithUnits(dist, units);
+				return new WorldDistance(dist, units);
 			}
 
 			/** convert the object to our data units
@@ -76,7 +76,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 			 */
 			protected void storeMe(Object value)
 			{
-				_myVal = (WorldDistanceWithUnits) value;
+				_myVal = (WorldDistance) value;
 			}
 		};
 	}
@@ -87,7 +87,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		{
 			public String getText(Object element)
 			{
-				WorldDistanceWithUnits val = (WorldDistanceWithUnits) element;
+				WorldDistance val = (WorldDistance) element;
 				return val.toString();
 			}
 

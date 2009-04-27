@@ -17,9 +17,14 @@ final public class WorldSpeed
   /////////////////////////////////////////////////////////////////
 
   /**
-   * the actual speed (in minutes)
+   * the actual speed (in user specified minutes)
    */
   double _mySpeed;
+  
+  /** the selected units
+   * 
+   */
+  int _myUnits = Kts;
 
   /**
    * the types of units we can handle
@@ -62,7 +67,8 @@ final public class WorldSpeed
    */
   public WorldSpeed(double value, int units)
   {
-    _mySpeed = convert(units, WorldSpeed.M_sec, value);
+    _mySpeed = value;
+    _myUnits = units;
   }
 
   /**
@@ -71,6 +77,7 @@ final public class WorldSpeed
   public WorldSpeed(WorldSpeed other)
   {
     _mySpeed = other._mySpeed;
+    _myUnits = other._myUnits;
   }
 
 
@@ -96,6 +103,24 @@ final public class WorldSpeed
     return tmpVal * scaleVal;
   }
 
+  
+  /** get my units, in string form
+   * 
+   * @return
+   */
+  public String getUnitsLabel()
+  {
+  	return getLabelFor(_myUnits);
+  }
+  
+  /** get my units, in int counter form
+   * 
+   */
+  public int getUnits()
+  {
+  	return _myUnits;
+  }
+  
   /**
    * get the string representing this set of units
    */
@@ -130,6 +155,14 @@ final public class WorldSpeed
     return convert(WorldSpeed.M_sec, units, _mySpeed);
   }
 
+  /** get this speed, expressed in it's native units
+   * 
+   */
+  public double getValue()
+  {
+  	return _mySpeed;
+  }
+  
   /**
    * get the SI units for  this type
    */
@@ -143,58 +176,7 @@ final public class WorldSpeed
    */
   public String toString()
   {
-    // so, what are the preferred units?
-    int theUnits = selectUnitsFor(_mySpeed);
-
-    double theValue = getValueIn(theUnits);
-
-    String res = theValue + " " + getLabelFor(theUnits);
-
-    return res;
-  }
-
-  /**
-   * method to find the smallest set of units which will show the
-   * indicated value (in millis) as a whole or 1/2 value
-   */
-  static public int selectUnitsFor(double millis)
-  {
-
-    int goodUnits = -1;
-
-    // how many set of units are there?
-    int len = UnitLabels.length;
-
-    // count downwards from last value
-    for (int thisUnit = len - 1; thisUnit >= 0; thisUnit--)
-    {
-      // convert to this value
-      double newVal = convert(WorldSpeed.M_sec, thisUnit, millis);
-
-      // double the value, so that 1/2 values are valid
-      newVal *= 2;
-
-      // is this a whole number?
-      if (Math.abs(newVal - (int) newVal) < 0.0000000001)
-      {
-        goodUnits = thisUnit;
-        break;
-      }
-    }
-
-    //  did we find a match?
-    if (goodUnits != -1)
-    {
-      // ok, it must have worked
-    }
-    else
-    {
-      //  no, just use metres
-      goodUnits = WorldSpeed.M_sec;
-    }
-
-    // return the result
-    return goodUnits;
+    return _mySpeed + " " + getUnitsLabel();
   }
 
 

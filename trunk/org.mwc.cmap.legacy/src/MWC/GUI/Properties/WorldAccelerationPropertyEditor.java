@@ -149,9 +149,8 @@ abstract public class WorldAccelerationPropertyEditor extends
     else
     {
       // get the best units
-      int units = WorldAcceleration.selectUnitsFor(_myVal.getValueIn(WorldAcceleration.M_sec_sec));
-      setUnits(units);
-      setAcceleration(_myVal.getValueIn(units));
+      setUnits(_myVal.getUnits());
+      setAcceleration(_myVal.getValue());
     }
   }
 

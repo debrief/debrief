@@ -20,14 +20,13 @@ abstract public class WorldSpeedHandler extends BaseDataHandler
   // member variables
   //////////////////////////////////////////////////
   private final static String _myType = "Speed";
-
-
+ 
   //////////////////////////////////////////////////
   // constuctor
   //////////////////////////////////////////////////
   public WorldSpeedHandler()
   {
-    super(_myType);
+    super(_myType);   
   }
 
   public WorldSpeedHandler(String myType)
@@ -61,16 +60,8 @@ abstract public class WorldSpeedHandler extends BaseDataHandler
     org.w3c.dom.Element eLoc = doc.createElement(element_type);
 
     // set the attributes
-    int theUnit = WorldSpeed.selectUnitsFor(speed.getValueIn(WorldSpeed.getSIUnits()));
-
-    // and get value
-    double value = speed.getValueIn(theUnit);
-
-    // get the name of the units
-    String units = WorldSpeed.getLabelFor(theUnit);
-
-    eLoc.setAttribute(VALUE, writeThis(value));
-    eLoc.setAttribute(UNITS, units);
+    eLoc.setAttribute(VALUE, writeThis(speed.getValue()));
+    eLoc.setAttribute(UNITS, speed.getUnitsLabel());
 
     parent.appendChild(eLoc);
   }
