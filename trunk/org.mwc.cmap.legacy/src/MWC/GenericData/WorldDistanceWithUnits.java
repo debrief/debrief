@@ -218,51 +218,6 @@ public boolean equals(Object obj) {
     return res;
   }
 
-  /**
-   * method to find the smallest set of units which will show the
-   * indicated value (in millis) as a whole or 1/2 value
-   */
-  static public int selectUnitsFor(double millis)
-  {
-
-    int goodUnits = -1;
-
-    // how many set of units are there?
-    int len = UnitLabels.length;
-
-    // count downwards from last value
-    for (int thisUnit = len - 1; thisUnit >= 0; thisUnit--)
-    {
-      // convert to this value
-      double newVal = convert(NM, thisUnit, millis);
-
-      // double the value, so that 1/2 values are valid
-      newVal *= 2;
-
-      // is this a whole number?
-      if (Math.abs(newVal - (int) newVal) < 0.0000000001)
-      {
-        goodUnits = thisUnit;
-        break;
-      }
-    }
-
-    //  did we find a match?
-    if (goodUnits != -1)
-    {
-      // ok, it must have worked
-    }
-    else
-    {
-      //  no, just use metres
-      goodUnits = NM;
-    }
-
-    // return the result
-    return goodUnits;
-  }
-
-
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
   //////////////////////////////////////////////////////////////////////////////////////////////////
