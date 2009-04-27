@@ -68,6 +68,10 @@
             id="org.mwc.debrief.help.cheat_maintaining"
             name="Maintaining Debrief"
             parentCategory="org.mwc.debrief.help.cheats"/>         
+      <category
+            id="org.mwc.debrief.help.trackRecon"
+            name="Track Reconstruction"
+            parentCategory="org.mwc.debrief.help.cheats"/>         
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/CreatePlot.xml"
@@ -188,6 +192,11 @@
             contentFile="cheat_sheets/narratives/AnalysingNarrativeData.xml"
             id="org.mwc.debrief.help.narrativs.analysing"
             name="Analysing narrative data in Debrief"/>            
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.trackRecon"
+            contentFile="cheat_sheets/trackRecon/MergeTracks.xml"
+            id="org.mwc.debrief.help.trackRecon.MergeTracks"
+            name="Merging two or more tracks in Debrief"/>            
 
 </extension>
    <extension
