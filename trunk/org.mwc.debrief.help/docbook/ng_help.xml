@@ -4365,14 +4365,21 @@ Naval Undersea Warfare Center (NUWC)
         <sect2 id="prepare_sensor_data">
           <title>Preparing Sensor Data</title>
           <para> Sensor data is loaded into Debrief in REP files, just like any other Debrief data.
-            The line format is:
+            The line format is one of:
             <screen>
               <markup>;SENSOR: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B RRRR yy..yy xx..xx
  ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs), range(yds), sensor name, label (to end of line)</markup>
-            </screen></para>
+            </screen>
+            or
+            <screen>
+              <markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
+ ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs), ambigous bearing (degs) [or the single word NULL], frequency(Hz),  range(yds), sensor name, label (to end of line)</markup>
+            </screen>
+            </para>
           <para>As you can see, unlike other Debrief line formats, this format allows for NULL
             fields. Where the sensor latitude and longitude values are replaced by the single word
-            NULL, Debrief plots this sensor contact using a relative origin. </para>
+            NULL, Debrief plots this sensor contact using a relative origin.  NULL values may also be 
+            provided for the ambiguous sensor bearing and/or detection frequency. </para>
         </sect2>
         <sect2 id="rel_sensor_data">
           <title>Relative Data</title>
