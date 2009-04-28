@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="C:\dev\Asset\trunk\docs\ASSET.xsd" Created="2004-01-12T13:00:03" Name="Lookup sensor tutorial" StartTime="2003-01-24T13:00:03">
+<Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="C:\dev\Asset\trunk\docs\ASSET.xsd" Created="2004-01-12T13:00:03" Name="Fisherman demo" StartTime="2003-01-24T13:00:03">
 	<StepTime Units="seconds" Value="15"/>
 	<Participants>
 		<Surface Name="FISHER_1" id="55">
