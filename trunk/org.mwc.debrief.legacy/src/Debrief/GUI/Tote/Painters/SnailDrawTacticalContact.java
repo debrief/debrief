@@ -195,6 +195,11 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
   public abstract static class PlottableWrapperWithTimeAndOverrideableColor extends PlainWrapper
   {
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
      * get the raw (stored) color value for this item.  This may be different to the value
      * returned by getColor(), since that may actually return the parent's color when null.
      *

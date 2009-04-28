@@ -214,7 +214,6 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     return res;
   }
 
-  @SuppressWarnings("unchecked")
 	public final MWC.GUI.Tools.Action getData()
   {
     // retrieve the necessary input data

@@ -60,12 +60,12 @@ package Debrief.Tools.Tote.Calculations;
 // Initial revision
 //
 
-import java.text.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
-import junit.framework.Assert;
-import Debrief.Tools.Tote.*;
 import Debrief.GUI.Frames.Application;
-import MWC.Algorithms.*;
+import Debrief.Tools.Tote.Watchable;
+import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 
 /**
