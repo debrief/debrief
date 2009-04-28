@@ -61,6 +61,8 @@ package Debrief.Tools.Tote.Calculations;
 //
 
 import java.text.*;
+
+import junit.framework.Assert;
 import Debrief.Tools.Tote.*;
 import Debrief.GUI.Frames.Application;
 import MWC.Algorithms.*;

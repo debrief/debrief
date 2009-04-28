@@ -140,10 +140,13 @@ import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
+import junit.framework.Assert;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
+import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
@@ -231,14 +234,14 @@ public final class SensorContactWrapper extends
 	 * the (optional) ambiguous bearing
 	 * 
 	 */
-	private boolean _hasAmbiguous;
+	private boolean _hasAmbiguous = false;
 	private double _bearingAmbig;
 
 	/**
 	 * the (optional) frequency
 	 * 
 	 */
-	private boolean _hasFreq;
+	private boolean _hasFreq = false;
 	private double _freq;
 
 	/**
@@ -297,16 +300,16 @@ public final class SensorContactWrapper extends
 		if (brg2 != null)
 		{
 			_hasAmbiguous = true;
-			_bearingAmbig = brg2.doubleValue();
+			_bearingAmbig = MWC.Algorithms.Conversions.Degs2Rads(brg2.doubleValue());
 		}
 		else
 		{
 			_hasAmbiguous = false;
 			_bearingAmbig = 0d;
 		}
-		
+
 		// do we have frequency data?
-		if(freq != null)
+		if (freq != null)
 		{
 			_hasFreq = true;
 			_freq = freq.doubleValue();
@@ -405,14 +408,39 @@ public final class SensorContactWrapper extends
 	/**
 	 * return the coordinates of the end of hte line
 	 */
-	public final WorldLocation getFarEnd()
+	final WorldLocation getFarEnd()
+	{
+		WorldLocation res = null;
+
+		// do we have a calculated origin?
+		if (_calculatedOrigin == null)
+		{
+			// nope, copy the absolute origin - if we have one
+			_calculatedOrigin = _absoluteOrigin;
+		}
+
+		// have we found one?
+		if (_calculatedOrigin != null)
+		{
+			// also do the far end
+			res = _calculatedOrigin.add(new WorldVector(_bearing, _range
+					.getValueIn(WorldDistance.DEGS), 0d));
+		}
+
+		return res;
+	}
+
+	/**
+	 * return the coordinates of the end of hte line
+	 */
+	private final WorldLocation getAmbiguousFarEnd()
 	{
 		WorldLocation res = null;
 
 		if (_calculatedOrigin != null)
 		{
 			// also do the far end
-			res = _calculatedOrigin.add(new WorldVector(_bearing, _range
+			res = _calculatedOrigin.add(new WorldVector(_bearingAmbig, _range
 					.getValueIn(WorldDistance.DEGS), 0d));
 		}
 
@@ -556,6 +584,15 @@ public final class SensorContactWrapper extends
 		// draw the line
 		dest.drawLine(pt.x, pt.y, farEnd.x, farEnd.y);
 
+		// do we have an ambiguous bearing
+		if (this.getHasAmbiguousBearing())
+		{
+			final WorldLocation theOtherFarEnd = getAmbiguousFarEnd();
+			final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
+			// draw the line
+			dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
+		}
+
 		if (!keep_simple)
 		{
 			// restore the solid line style, for the next poor bugger
@@ -668,12 +705,67 @@ public final class SensorContactWrapper extends
 	 */
 	public final double getAmbiguousBearing()
 	{
-		return _bearingAmbig;
+		return MWC.Algorithms.Conversions.Rads2Degs(_bearingAmbig);
+	}
+
+	public void keepPortBearing()
+	{
+		ditchBearing(true);
+	}
+
+	private void ditchBearing(boolean isPort)
+	{
+
+		// get the origin
+		final Debrief.Tools.Tote.Watchable[] list = _mySensor._myHost
+				.getNearestTo(_DTG);
+		Debrief.Tools.Tote.Watchable wa = null;
+		if (list.length > 0)
+			wa = list[0];
+
+		// did we find it?
+		if (wa != null)
+		{
+			// find out current course
+			double course = MWC.Algorithms.Conversions.Rads2Degs(wa.getCourse());
+
+			// cool, we have a course - we can go for it. remember the bearings
+			double bearing1 = getBearing();
+			double bearing2 = getAmbiguousBearing();
+
+			// is the first bearing our one?
+			double relB = relBearing(course, bearing1);
+
+			// we're only going to show the bearing in 'getBearing', make sure this is the one we want.
+			if ((relB > 0) && (isPort))
+			{
+				// bearing 1 is starboard, we want to keep port,
+				// better swap them
+				setBearing(bearing2);
+				setAmbiguousBearing(bearing1);
+			}
+
+			if ((relB < 0) && (!isPort))
+			{
+				// bearing 1 is port, we want to keep starboard,
+				// better swap them
+				setBearing(bearing2);
+				setAmbiguousBearing(bearing1);
+			}
+
+			// remember we're morally ambiguous
+			setHasAmbiguousBearing(false);
+		}
+	}
+
+	public void keepStarboardBearing()
+	{
+		ditchBearing(false);
 	}
 
 	public void setAmbiguousBearing(double val)
 	{
-		_bearingAmbig = val;
+		_bearingAmbig = MWC.Algorithms.Conversions.Degs2Rads(val);
 	}
 
 	public final boolean getHasFrequency()
@@ -971,6 +1063,26 @@ public final class SensorContactWrapper extends
 		return this.getDTG();
 	}
 
+	/**
+	 * calculate the relative bearing when on this course
+	 * 
+	 * @param course
+	 *          current course (Degs)
+	 * @param bearing
+	 *          absolute bearing to target (degs)
+	 * @return relative bearing to target (degs)
+	 */
+	public static double relBearing(double course, double bearing)
+	{
+		double res = bearing - course;
+		while (res > 180)
+			res -= 360;
+		while (res < -180)
+			res += 360;
+
+		return res;
+	}
+
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
 	// //////////////////////////////////////////////////////////////////////////
@@ -1010,31 +1122,33 @@ public final class SensorContactWrapper extends
 								"whether the label for this contact is visible"),
 						prop("Color", "the color for this sensor contact"),
 						prop("HasFrequency",
-								"whether this data item includes frequency data"),
+								"whether this data item includes frequency data", OPTIONAL),
 						prop("HasAmbiguousBearing",
-								"whether this data item includes an ambiguous bearing line"),
-						prop("Frequency",
-								"the (optional) fruquency measurement for this data item"),
+								"whether this data item includes an ambiguous bearing line",
+								OPTIONAL),
+						prop("Frequency", "the frequency measurement for this data item",
+								OPTIONAL),
 						prop("AmbiguousBearing",
-								"the (optional) Ambiguous Bearing line for this data item"),
+								"the Ambiguous Bearing line for this data item", OPTIONAL),
 						longProp("LabelLocation", "the label location",
 								MWC.GUI.Properties.LocationPropertyEditor.class),
 						longProp("PutLabelAt",
 								"whereabouts on the line to position the label",
 								MWC.GUI.Properties.LineLocationPropertyEditor.class),
 						longProp("LineStyle", "style to use to plot the line",
-								MWC.GUI.Properties.LineStylePropertyEditor.class) };
+								MWC.GUI.Properties.LineStylePropertyEditor.class),
+						prop("Range", "range to centre of solution", SPATIAL),
+						prop("Bearing", "bearing to centre of solution", SPATIAL)
+
+				};
 
 				// see if we need to add rng/brg or origin data
 				SensorContactWrapper tc = (SensorContactWrapper) getData();
 				final PropertyDescriptor[] res1;
 				if (tc.getOrigin() == null)
 				{
-					// has origin
-					final PropertyDescriptor[] res2 =
-					{ prop("Range", "range to centre of solution", SPATIAL),
-							prop("Bearing", "bearing to centre of solution", SPATIAL) };
-					res1 = res2;
+					// no origin, don't try to edit it
+					res1 = new PropertyDescriptor[0];
 				}
 				else
 				{
@@ -1068,8 +1182,69 @@ public final class SensorContactWrapper extends
 			// just add the reset color field first
 			final Class<SensorContactWrapper> c = SensorContactWrapper.class;
 			final MethodDescriptor[] mds =
-			{ method(c, "resetColor", null, "Reset Color"), };
+			{ method(c, "resetColor", null, "Reset Color") };
 			return mds;
+		}
+
+		public final SubjectAction[] getUndoableActions()
+		{
+			final SubjectAction[] res = new SubjectAction[]
+			{ new DitchAmbiguousBearing(true, "Keep port bearing"),
+					new DitchAmbiguousBearing(false, "Keep starboard bearing") };
+			return res;
+		}
+
+	}
+
+	public static class DitchAmbiguousBearing implements SubjectAction
+	{
+		private final boolean _keepPort;
+		private String _title;
+
+		/**
+		 * create an instance of this operation
+		 * 
+		 * @param keepPort
+		 *          whether to keep the port removal
+		 * @param title
+		 *          what to call ourselves
+		 */
+		public DitchAmbiguousBearing(boolean keepPort, String title)
+		{
+			_keepPort = keepPort;
+			_title = title;
+		}
+
+		public String toString()
+		{
+			return _title;
+		}
+
+		@Override
+		public void execute(Editable subject)
+		{
+			SensorContactWrapper contact = (SensorContactWrapper) subject;
+			// go for it
+			contact.ditchBearing(_keepPort);
+		}
+
+		@Override
+		public void undo(Editable subject)
+		{
+			SensorContactWrapper _contact = (SensorContactWrapper) subject;
+			_contact.setHasAmbiguousBearing(true);
+		}
+
+		@Override
+		public boolean isRedoable()
+		{
+			return true;
+		}
+
+		@Override
+		public boolean isUndoable()
+		{
+			return true;
 		}
 
 	}
@@ -1177,6 +1352,24 @@ public final class SensorContactWrapper extends
 			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be centre of rectangle", locationBitNorth2, wl);
+		}
+
+		public final void testRelBearingCalc()
+		{
+			Assert.assertEquals("test  1", 120d, relBearing(0, 120));
+			Assert.assertEquals("test  1", -120d, relBearing(0, -120));
+			Assert.assertEquals("test  1", 20d, relBearing(100, 120));
+			Assert.assertEquals("test  1", -120d, relBearing(100, -20));
+			Assert.assertEquals("test  1", 20d, relBearing(100, -240));
+			Assert.assertEquals("test  1", -120d, relBearing(-260, 340));
+			Assert.assertEquals("test  1", 20d, relBearing(-260, 120));
+			Assert.assertEquals("test  1", -120d, relBearing(100, 340));
+			Assert.assertEquals("test  1", -10d, relBearing(350, -20));
+			Assert.assertEquals("test  1", 5d, relBearing(350, -5));
+			Assert.assertEquals("test  1", 170d, relBearing(170, -20));
+			Assert.assertEquals("test  1", -175d, relBearing(170, -5));
+			Assert.assertEquals("test  1", -20d, relBearing(170, 150));
+			Assert.assertEquals("test  1", 20d, relBearing(170, 190));
 		}
 
 	}

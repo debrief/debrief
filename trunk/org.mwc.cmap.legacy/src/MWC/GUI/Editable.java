@@ -153,11 +153,22 @@
 
 package MWC.GUI;
 
-import java.beans.*;
-import java.lang.reflect.*;
+import java.beans.BeanDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
+import java.beans.SimpleBeanInfo;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
-import junit.framework.*;
+import junit.framework.Assert;
+import junit.framework.TestCase;
 import MWC.GUI.Properties.Swing.SwingPropertyEditor2;
+import MWC.GUI.Tools.SubjectAction;
 
 /**
  * Interface defining behaviour for a screen item which should be editable by
@@ -236,6 +247,8 @@ public interface Editable
     public final static String VISIBILITY = "Visibility";
     
     public final static String TEMPORAL = "Time-Related";
+    
+    public final static String OPTIONAL = "Optional";
 
     /***************************************************************************
      * member values
@@ -427,6 +440,16 @@ public interface Editable
       return super.getPropertyDescriptors();
     }
 
+    /** get a series of undo-able operations
+     * 
+     * @return the list
+     */
+		public SubjectAction[] getUndoableActions()
+		{
+			return null;
+		}
+
+    
     /**
      * add the property listener which just listens out for a single property
      * type

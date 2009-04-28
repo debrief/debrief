@@ -19,6 +19,35 @@ abstract public class SensorContactHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader {
 
 
+	private static final String SENSOR_CONTACT = "sensor_contact";
+
+	private static final String LINE_STYLE = "LineStyle";
+
+	private static final String PUT_LABEL_AT = "PutLabelAt";
+
+	private static final String LABEL_LOCATION = "LabelLocation";
+
+	private static final String VISIBLE = "Visible";
+
+	private static final String LABEL_SHOWING = "LabelShowing";
+
+	private static final String LABEL = "Label";
+
+	private static final String BEARING = "Bearing";
+
+	private static final String CENTRE = "centre";
+
+	private static final String DTG = "Dtg";
+
+	private static final String AMBIGUOUS_BEARING = "AmbiguousBearing";
+	private static final String HAS_AMBIGUOUS_BEARING = "HasAmbiguousBearing";
+
+	private static final String FREQUENCY = "Frequency";
+	private static final String HAS_FREQUENCY = "HasFrequency";
+
+	private static final String RANGE = "Range";
+	
+
 	Debrief.Wrappers.SensorContactWrapper _theContact;
 
 	/**
@@ -36,53 +65,63 @@ abstract public class SensorContactHandler extends
 	 */
 	static final MWC.GUI.Properties.LineStylePropertyEditor ls = new MWC.GUI.Properties.LineStylePropertyEditor();
 
-	static final String RANGE = "Range";
-	
 	private WorldDistance _myRange = null;
 	
 	public SensorContactHandler() {
 		// inform our parent what type of class we are
-		super("sensor_contact");
+		super(SENSOR_CONTACT);
 
-		addAttributeHandler(new HandleAttribute("Label") {
+		addAttributeHandler(new HandleAttribute(LABEL) {
 			public void setValue(String name, String value) {
 				_theContact.setLabel(fromXML(value));
 			}
 		});
 
-		addAttributeHandler(new HandleAttribute("Range") {
-			public void setValue(String name, String value) {
-				try {
+		addAttributeHandler(new HandleDoubleAttribute(RANGE) {
+			public void setValue(String name, double value) {
 					_theContact.setRange(new WorldDistance(
-							readThisDouble(value), WorldDistance.YARDS));
-				} catch (java.text.ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:"
-							+ name + " value is:" + value);
-				}
-
+							value, WorldDistance.YARDS));
 			}
 		});
 
-
-		addAttributeHandler(new HandleAttribute("Bearing") {
-			public void setValue(String name, String value) {
-				try {
-					_theContact.setBearing(readThisDouble(value));
-				} catch (java.text.ParseException pe) {
-					MWC.Utilities.Errors.Trace.trace(pe, "Failed reading in:"
-							+ name + " value is:" + value);
-				}
-
+		addAttributeHandler(new HandleDoubleAttribute(BEARING) {
+			public void setValue(String name, double value) {
+					_theContact.setBearing(value);
 			}
 		});
 
-		addAttributeHandler(new HandleAttribute("Dtg") {
+		
+		addAttributeHandler(new HandleDoubleAttribute(AMBIGUOUS_BEARING) {
+			public void setValue(String name, double value) {
+					_theContact.setAmbiguousBearing(value);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(HAS_AMBIGUOUS_BEARING) {
+			public void setValue(String name, boolean value) {
+					_theContact.setHasAmbiguousBearing(value);
+			}
+		});
+		
+		addAttributeHandler(new HandleDoubleAttribute(FREQUENCY) {
+			public void setValue(String name, double value) {
+					_theContact.setFrequency(value);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(HAS_FREQUENCY) {
+			public void setValue(String name, boolean value) {
+					_theContact.setHasFrequency(value);
+			}
+		});
+		
+		
+
+		addAttributeHandler(new HandleAttribute(DTG) {
 			public void setValue(String name, String value) {
 				_theContact.setDTG(parseThisDate(value));
 			}
 		});
 
-		addHandler(new LocationHandler("centre") {
+		addHandler(new LocationHandler(CENTRE) {
 			public void setLocation(MWC.GenericData.WorldLocation res) {
 				_theContact.setOrigin(res);
 			}
@@ -94,19 +133,19 @@ abstract public class SensorContactHandler extends
 			}
 		});
 
-		addAttributeHandler(new HandleBooleanAttribute("LabelShowing") {
+		addAttributeHandler(new HandleBooleanAttribute(LABEL_SHOWING) {
 			public void setValue(String name, boolean value) {
 				_theContact.setLabelVisible(value);
 			}
 		});
 
-		addAttributeHandler(new HandleBooleanAttribute("Visible") {
+		addAttributeHandler(new HandleBooleanAttribute(VISIBLE) {
 			public void setValue(String name, boolean value) {
 				_theContact.setVisible(value);
 			}
 		});
 
-		addAttributeHandler(new HandleAttribute("LabelLocation") {
+		addAttributeHandler(new HandleAttribute(LABEL_LOCATION) {
 			public void setValue(String name, String val) {
 				lp.setAsText(val);
 				Integer res = (Integer) lp.getValue();
@@ -114,7 +153,7 @@ abstract public class SensorContactHandler extends
 					_theContact.setLabelLocation(res);
 			}
 		});
-		addAttributeHandler(new HandleAttribute("PutLabelAt") {
+		addAttributeHandler(new HandleAttribute(PUT_LABEL_AT) {
 			public void setValue(String name, String val) {
 				ll.setAsText(val);
 				Integer res = (Integer) ll.getValue();
@@ -122,7 +161,7 @@ abstract public class SensorContactHandler extends
 					_theContact.setPutLabelAt(res);
 			}
 		});
-		addAttributeHandler(new HandleAttribute("LineStyle") {
+		addAttributeHandler(new HandleAttribute(LINE_STYLE) {
 			public void setValue(String name, String val) {
 				ls.setAsText(val.replace('_', ' '));
 				Integer res = (Integer) ls.getValue();
@@ -179,24 +218,32 @@ abstract public class SensorContactHandler extends
 		 * (Top|Left|Bottom|Centre|Right) "Left" LineStyle
 		 * (SOLID|DOTTED|DOT_DASH|SHORT_DASHES|LONG_DASHES|UNCONNECTED) "SOLID"
 		 */
-		Element eFix = doc.createElement("sensor_contact");
+		Element eFix = doc.createElement(SENSOR_CONTACT);
 
-		eFix.setAttribute("Dtg", writeThis(contact.getDTG()));
+		eFix.setAttribute(DTG, writeThis(contact.getDTG()));
 
-		eFix.setAttribute("Visible", writeThis(contact.getVisible()));
-		eFix.setAttribute("Bearing", writeThis(contact.getBearing()));		
-		eFix.setAttribute("LabelShowing", writeThis(contact.getLabelVisible()));
-		eFix.setAttribute("Label", toXML(contact.getLabel()));
+		eFix.setAttribute(VISIBLE, writeThis(contact.getVisible()));
+		eFix.setAttribute(BEARING, writeThis(contact.getBearing()));		
+		eFix.setAttribute(LABEL_SHOWING, writeThis(contact.getLabelVisible()));
+		eFix.setAttribute(LABEL, toXML(contact.getLabel()));
 		// we no longer export range as an attribute, but as an element-so we can store units
 		//	eFix.setAttribute("Range", writeThis(contact.getRange().getValueIn(
 		//	WorldDistance.YARDS)));
 
+		// do we have ambiguous data?
+		eFix.setAttribute(AMBIGUOUS_BEARING, writeThis(contact.getAmbiguousBearing()));
+		eFix.setAttribute(HAS_AMBIGUOUS_BEARING, writeThis(contact.getHasAmbiguousBearing()));
+
+		// do we have frequency data?
+		eFix.setAttribute(FREQUENCY, writeThis(contact.getFrequency()));
+		eFix.setAttribute(HAS_FREQUENCY, writeThis(contact.getHasFrequency()));
+			
 		// sort out the range
 		WorldDistanceHandler.exportDistance(RANGE, contact.getRange(), eFix, doc);
 		
 		// sort out the line style
 		ls.setValue(contact.getLineStyle());
-		eFix.setAttribute("LineStyle", ls.getAsText().replace(' ', '_')); // note,
+		eFix.setAttribute(LINE_STYLE, ls.getAsText().replace(' ', '_')); // note,
 																			// we
 																			// swap
 																			// spaces
@@ -205,11 +252,11 @@ abstract public class SensorContactHandler extends
 
 		// and the line label location
 		ll.setValue(contact.getPutLabelAt());
-		eFix.setAttribute("PutLabelAt", ll.getAsText());
+		eFix.setAttribute(PUT_LABEL_AT, ll.getAsText());
 
 		// and the label itself
 		lp.setValue(contact.getLabelLocation());
-		eFix.setAttribute("LabelLocation", lp.getAsText());
+		eFix.setAttribute(LABEL_LOCATION, lp.getAsText());
 
 		// note, we are accessing the "actual" colour for this fix, we are not
 		// using the
@@ -223,7 +270,7 @@ abstract public class SensorContactHandler extends
 		MWC.GenericData.WorldLocation origin = contact.getOrigin();
 		if (origin != null)
 			MWC.Utilities.ReaderWriter.XML.Util.LocationHandler.exportLocation(
-					origin, "centre", eFix, doc);
+					origin, CENTRE, eFix, doc);
 
 		parent.appendChild(eFix);
 

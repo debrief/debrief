@@ -32,6 +32,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Editable.EditorType;
+import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -127,8 +128,25 @@ public class RightClickSupport
 					final MethodDescriptor thisMethD = meths[i];
 
 					// create button for this method
-					Action doThisAction = new SubjectAction(thisMethD.getDisplayName(),
+					Action doThisAction = new SubjectMethod(thisMethD.getDisplayName(),
 							editables, thisMethD.getMethod(), myTopLayer, theLayers);
+
+					// ok - add to the list.
+					manager.add(doThisAction);
+				}
+			}
+
+			// hmm, now do the same for the undoable methods
+			MWC.GUI.Tools.SubjectAction[] actions = getUndoableActionsFor(editables);
+			if (meths != null)
+			{
+				for (int i = 0; i < actions.length; i++)
+				{
+					final MWC.GUI.Tools.SubjectAction thisMethD = actions[i];
+
+					// create button for this method
+					IAction doThisAction = generateUndoableActionFor(thisMethD,
+					editables, theLayers, theTopLayer);
 
 					// ok - add to the list.
 					manager.add(doThisAction);
@@ -212,6 +230,68 @@ public class RightClickSupport
 		}
 
 		return res;
+	}
+	
+	/** have a look at the supplied editors, find which properties are common */
+	protected static MWC.GUI.Tools.SubjectAction[] getUndoableActionsFor(Editable[] editables)
+	{
+		MWC.GUI.Tools.SubjectAction[] res = null;
+		MWC.GUI.Tools.SubjectAction[] demo = new MWC.GUI.Tools.SubjectAction[] {};
+
+		// right, get the first set of properties
+		if (editables.length > 0)
+		{
+			Editable first = editables[0];
+			res = first.getInfo().getUndoableActions();
+
+			// only continue if there are any methods to compare against
+			if (res != null)
+			{
+				// right, are there any more?
+				if (editables.length > 1)
+				{
+					// pass through the others, finding the common ground
+					for (int cnt = 1; cnt < editables.length; cnt++)
+					{
+						Editable thisE = editables[cnt];
+
+						// get its props
+						EditorType thisEditor = thisE.getInfo();
+
+						// do we have an editor?
+						if (thisEditor != null)
+						{
+							MWC.GUI.Tools.SubjectAction[] newSet = thisEditor.getUndoableActions();
+
+							// find the common ones
+							res = (MWC.GUI.Tools.SubjectAction[]) getIntersectionFor(res, newSet, demo);
+						}
+					}
+				}
+			}
+		}
+		return res;
+	}
+
+	private static MWC.GUI.Tools.SubjectAction[] getIntersectionFor(
+			MWC.GUI.Tools.SubjectAction[] a, MWC.GUI.Tools.SubjectAction[] b,
+			MWC.GUI.Tools.SubjectAction[] demo)
+	{
+		Vector<MWC.GUI.Tools.SubjectAction> res = new Vector<MWC.GUI.Tools.SubjectAction>();
+
+		for (int cnta = 0; cnta < a.length; cnta++)
+		{
+			MWC.GUI.Tools.SubjectAction thisP = a[cnta];
+			for (int cntb = 0; cntb < b.length; cntb++)
+			{
+				MWC.GUI.Tools.SubjectAction thatP = b[cntb];
+				if (thisP.toString().equals(thatP.toString()))
+				{
+					res.add(thisP);
+				}
+			}
+		}
+		return res.toArray(demo);
 	}
 
 	/** have a look at the supplied editors, find which properties are common */
@@ -320,7 +400,7 @@ public class RightClickSupport
 	 * 
 	 * @author ian.mayo
 	 */
-	private static class SubjectAction extends Action
+	private static class SubjectMethod extends Action
 	{
 		private Editable[] _subjects;
 
@@ -342,7 +422,7 @@ public class RightClickSupport
 		 * @param theLayers
 		 *          the host for the target layer
 		 */
-		public SubjectAction(String title, Editable[] subject, Method method,
+		public SubjectMethod(String title, Editable[] subject, Method method,
 				Layer topLayer, Layers theLayers)
 		{
 			super(title);
@@ -519,6 +599,33 @@ public class RightClickSupport
 		return subMenu;
 	}
 
+	static private IAction generateUndoableActionFor(
+			final MWC.GUI.Tools.SubjectAction theAction, final Editable[] editables,
+			final Layers theLayers, final Layer topLevelLayer)
+	{
+
+		IAction changeThis = new Action(theAction.toString(),
+				IAction.AS_PUSH_BUTTON)
+		{
+			public void run()
+			{
+				try
+				{
+					AbstractOperation la = new UndoableAction(
+							theAction.toString(), editables, theAction, theLayers, topLevelLayer);
+
+					CorePlugin.run(la);
+				} catch (Exception e)
+				{
+					CorePlugin.logError(IStatus.INFO,
+							"While executing undoable operations for for:" + theAction.toString(), e);
+				}
+			}
+		};
+		return changeThis;
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	static private MenuManager generateListEditorFor(IMenuManager manager,
 			MenuManager subMenu, final PropertyDescriptor thisP,
@@ -783,6 +890,112 @@ public class RightClickSupport
 		}
 
 	}
+
+	/**
+	 * embedded class to store a property change in an action
+	 * 
+	 * @author ian.mayo
+	 */
+	private static class UndoableAction extends AbstractOperation
+	{
+		private final SubjectAction _action;
+
+		private final Layers _layers;
+
+		private final Layer _parentLayer;
+
+		private final Editable[] _subjects;
+
+		public UndoableAction(final String propertyName,
+				final Editable[] editable, final SubjectAction action,
+				final Layers layers, final Layer parentLayer)
+		{
+			super(propertyName + " for multiple items");
+			_layers = layers;
+			_action = action;
+			_parentLayer = parentLayer;
+			_subjects = editable;
+			// put in the global context, for some reason
+			super.addContext(CorePlugin.CMAP_CONTEXT);
+		}
+
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			IStatus res = Status.OK_STATUS;
+			for (int cnt = 0; cnt < _subjects.length; cnt++)
+			{
+				Editable thisSubject = _subjects[cnt];
+				try
+				{
+					_action.execute(thisSubject);
+				} catch (IllegalArgumentException e)
+				{
+					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
+							+ thisSubject.getName(), e);
+					res = null;
+				}
+			}
+
+			// and tell everybody
+			fireUpdate();
+			return res;
+		}
+
+		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			IStatus res = Status.OK_STATUS;
+			for (int cnt = 0; cnt < _subjects.length; cnt++)
+			{
+				Editable thisSubject = _subjects[cnt];
+				try
+				{
+					_action.execute(thisSubject);
+				} catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
+							+ thisSubject.getName(), e);
+					res = null;
+				}
+			}
+
+			// and tell everybody
+			fireUpdate();
+
+			return res;
+		}
+
+		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			IStatus res = Status.OK_STATUS;
+			for (int cnt = 0; cnt < _subjects.length; cnt++)
+			{
+				Editable thisSubject = _subjects[cnt];
+				try
+				{
+					_action.undo(thisSubject);
+				} catch (Exception e)
+				{
+					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
+							+ thisSubject.getName(), e);
+					res = null;
+				}
+			}
+			// and tell everybody
+			fireUpdate();
+
+			return res;
+		}
+
+		private void fireUpdate()
+		{
+			_layers.fireModified(_parentLayer);
+		}
+
+	}
+
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
