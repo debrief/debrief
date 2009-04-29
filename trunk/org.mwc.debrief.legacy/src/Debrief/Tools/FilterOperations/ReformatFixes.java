@@ -391,7 +391,7 @@ public final class ReformatFixes implements FilterOperation
         if(thisList instanceof TrackWrapper)
         {
           TrackWrapper thisTrack = (TrackWrapper) thisList;
-          validItems = thisTrack.getVisibleItemsBetween(_start_time, _end_time);
+          validItems = thisTrack.getUnfilteredItems(_start_time, _end_time);
         }
         else
         {
