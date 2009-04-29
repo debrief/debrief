@@ -151,7 +151,7 @@ import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
-public final class SensorWrapper extends TacticalDataWrapper
+public class SensorWrapper extends TacticalDataWrapper
 {
 
 	// //////////////////////////////////////

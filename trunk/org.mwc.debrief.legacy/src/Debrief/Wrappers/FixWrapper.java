@@ -238,16 +238,32 @@
 package Debrief.Wrappers;
 
 
+import java.awt.Color;
+import java.awt.Font;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.util.TimeZone;
+import java.util.Vector;
+
+import Debrief.Tools.Tote.Watchable;
+import Debrief.Wrappers.TrackWrapper.PlottableLayer;
 import MWC.Algorithms.Conversions;
-import MWC.GenericData.*;
-import MWC.TacticalData.*;
-import MWC.GUI.*;
-import MWC.Utilities.TextFormatting.*;
-import Debrief.Tools.Tote.*;
-import java.io.*;
-import java.beans.*;
-import java.awt.*;
-import java.util.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.DynamicPlottable;
+import MWC.GUI.Editable;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottable;
+import MWC.GUI.Tools.SubjectAction;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import MWC.Utilities.TextFormatting.GeneralFormat;
 
 /** The fix wrapper has the responsibility for the GUI
  * and data aspects of the fix, tying the two together.
@@ -858,6 +874,16 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
       };
       return mds;
     }
+    
+		public final SubjectAction[] getUndoableActions()
+		{
+			FixWrapper fw = (FixWrapper) getData();
+			String lbl = fw.getLabel();
+			final SubjectAction[] res = new SubjectAction[]
+			{ new SplitTrack(true, "Split track before " + lbl),
+					new SplitTrack(false, "Split track after " + lbl) };
+			return res;
+		}    
 
 
   }
@@ -957,7 +983,62 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     }
   }
 
-  public static void main(String[] args)
+  private static class SplitTrack implements SubjectAction
+	{
+		private final boolean _splitBefore;
+		private String _title;
+		private Vector<PlottableLayer> _splitSections;
+	
+		/**
+		 * create an instance of this operation
+		 * 
+		 * @param keepPort
+		 *          whether to keep the port removal
+		 * @param title
+		 *          what to call ourselves
+		 */
+		public SplitTrack(boolean splitBefore, String title)
+		{
+			_splitBefore = splitBefore;
+			_title = title;
+		}
+	
+		public String toString()
+		{
+			return _title;
+		}
+	
+		@Override
+		public void execute(Editable subject)
+		{
+			FixWrapper fix = (FixWrapper) subject;
+			TrackWrapper parent = fix.getTrackWrapper();
+			_splitSections = parent.splitTrack(fix, _splitBefore);
+		}
+	
+		@Override
+		public void undo(Editable subject)
+		{
+			FixWrapper fix = (FixWrapper) subject;
+			TrackWrapper parent = fix.getTrackWrapper();
+			parent.combineSections(_splitSections);
+		}
+	
+		@Override
+		public boolean isRedoable()
+		{
+			return true;
+		}
+	
+		@Override
+		public boolean isUndoable()
+		{
+			return true;
+		}
+	
+	}
+
+	public static void main(String[] args)
   {
     testMe tm = new testMe("scrap");
     tm.testMyParams();

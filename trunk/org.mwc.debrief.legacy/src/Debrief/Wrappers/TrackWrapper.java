@@ -351,7 +351,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		final java.util.Enumeration<Editable> iter = other.elements();
 		while (iter.hasMoreElements())
 		{
-			add(iter.nextElement());
+			Editable nextItem = iter.nextElement();
+			if(nextItem instanceof Layer)
+				append((Layer) nextItem);
+			else
+				add(nextItem);
 		}
 	}
 
@@ -439,7 +443,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<SensorWrapper> iter = _mySensors.elements();
 			while (iter.hasMoreElements())
 			{
-				res.add(iter.nextElement());
+				SensorWrapper sw = iter.nextElement();
+				Enumeration<Editable> ele = sw.elements();
+				while(ele.hasMoreElements())
+				{
+					res.add(ele.nextElement());
+				}
 			}
 		}
 
@@ -448,7 +457,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Enumeration<TMAWrapper> iter = _mySolutions.elements();
 			while (iter.hasMoreElements())
 			{
-				res.add(iter.nextElement());
+				TMAWrapper sw = iter.nextElement();
+				Enumeration<Editable> ele = sw.elements();
+				while(ele.hasMoreElements())
+				{
+					res.add(ele.nextElement());
+				}
 			}
 		}
 
@@ -708,11 +722,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		} // whether we're visible
 
 		return res;
-	}
-
-	public final TrackWrapper getDragTrack()
-	{
-		return this;
 	}
 
 	/**
@@ -1224,9 +1233,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final HiResDate end)
 	{
 
-		// if we have an invalid end point, just return the full track
-		if (end == TimePeriod.INVALID_DATE)
-			return _thePositions.getData();
 
 		// see if we have _any_ points in range
 		if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
@@ -1247,50 +1253,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			final FixWrapper fw = (FixWrapper) iter.nextElement();
 			if (fw.getVisible())
-			{
-				// is it visible?
-				if (thePeriod.contains(fw.getTime()))
-				{
-					res.add(fw);
-				}
-			}
-		}
-
-		return res;
-	}
-
-	/**
-	 * get the set of fixes contained within this time period
-	 * 
-	 * @param start
-	 *          start DTG
-	 * @param end
-	 *          end DTG
-	 * @return series of fixes
-	 */
-	public final Collection<Editable> getVisibleItemsBetween(
-			final HiResDate start, final HiResDate end)
-	{
-
-		// see if we have _any_ points in range
-		if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
-			return null;
-
-		if (this.getVisible() == false)
-			return null;
-
-		// get ready for the output
-		final Vector<Editable> res = new Vector<Editable>(0, 1);
-
-		// put the data into a period
-		final TimePeriod thePeriod = new TimePeriod.BaseTimePeriod(start, end);
-
-		// step through our fixes
-		final Enumeration<Editable> iter = _thePositions.elements();
-		while (iter.hasMoreElements())
-		{
-			final FixWrapper fw = (FixWrapper) iter.nextElement();
-			if (fw.getVisible() && (fw.getSymbolShowing() || fw.getLabelShowing()))
 			{
 				// is it visible?
 				if (thePeriod.contains(fw.getTime()))
@@ -2541,7 +2503,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// make the fourth item not visible
 			fw4.setVisible(false);
 
-			col = tw.getVisibleItemsBetween(new HiResDate(0, 3), new HiResDate(0, 5));
+			col = tw.getUnfilteredItems(new HiResDate(0, 3), new HiResDate(0, 5));
 			assertEquals("found correct number of items", 2, col.size());
 
 			final Watchable[] pts2 = tw.getNearestTo(new HiResDate(0, 3));
@@ -3025,6 +2987,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
+	}
+
+	public Vector<PlottableLayer> splitTrack(FixWrapper fix, boolean before)
+	{
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	public void combineSections(Vector<PlottableLayer> sections)
+	{
+		// TODO Auto-generated method stub
+		
 	}
 
 }
