@@ -138,7 +138,7 @@ public class RightClickSupport
 
 			// hmm, now do the same for the undoable methods
 			MWC.GUI.Tools.SubjectAction[] actions = getUndoableActionsFor(editables);
-			if (meths != null)
+			if (actions != null)
 			{
 				for (int i = 0; i < actions.length; i++)
 				{
