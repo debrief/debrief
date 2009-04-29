@@ -2,13 +2,16 @@ package Debrief.Wrappers;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.SortedSet;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
+import MWC.GenericData.HiResDate;
 
 public class TrackWrapper_Support
 {
@@ -35,7 +38,7 @@ public class TrackWrapper_Support
 	 * embedded class to allow us to pass the local iterator (Iterator) used
 	 * internally outside as an Enumeration
 	 */
-	static final class IteratorWrapper implements
+	public static final class IteratorWrapper implements
 			java.util.Enumeration<Editable>
 	{
 		private final Iterator<Editable> _val;
@@ -63,7 +66,7 @@ public class TrackWrapper_Support
 	 * @author Administrator
 	 * 
 	 */
-	final public class SegmentList extends BaseItemLayer
+	final public static class SegmentList extends BaseItemLayer
 	{
 
 		/**
@@ -74,6 +77,11 @@ public class TrackWrapper_Support
 		public void addSegment(TrackSegment segment)
 		{
 			super.add(segment);
+		}
+		
+		public void add(Editable item)
+		{
+			System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO SEGMENT LIST");
 		}
 
 	}
@@ -91,9 +99,45 @@ public class TrackWrapper_Support
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
+		
+		
 
 		private boolean _plotDR = false;
 
+		
+		/** sort the items in ascending order
+		 * 
+		 */
+		public int compareTo(Plottable arg0)
+		{
+			int res = 0;
+			if(arg0 instanceof TrackSegment)
+			{
+				// sort them in dtg order
+				TrackSegment other = (TrackSegment) arg0;
+				res = startDTG().compareTo(other.startDTG());
+			}
+			else
+			{
+				// just use string comparison
+				res = getName().compareTo(arg0.getName());
+			}
+			return  res;
+		}		
+		
+		/** find the start time of each segment
+		 * 
+		 * @return
+		 */
+		public HiResDate startDTG()
+		{
+			Collection<Editable> items = getData();
+			SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
+			Editable first = sortedItems.first();
+			FixWrapper fw = (FixWrapper) first;
+			return fw.getDateTimeGroup();
+		}
+		
 		public boolean getPlotDR()
 		{
 			return _plotDR;
@@ -103,10 +147,19 @@ public class TrackWrapper_Support
 		{
 			_plotDR = _plotdr;
 		}
+		
+		public void add(Editable item)
+		{
+			System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO TRACK SEGMENT");
+		}				
 
 		public void addFix(FixWrapper fix)
 		{
 			super.add(fix);
+			
+			// if this is the first item, use it's label as our name			
+			if(this.getName() == null)
+				this.setName(startDTG().getDate().toString());
 		}
 
 	}
@@ -124,22 +177,6 @@ public class TrackWrapper_Support
 		 */
 		private static final long serialVersionUID = 1L;
 
-		/**
-		 * only allow fixes to be added...
-		 * 
-		 * @param thePlottable
-		 */
-		public void add(Editable thePlottable)
-		{
-			if (thePlottable instanceof FixWrapper)
-			{
-				super.add(thePlottable);
-			}
-			else
-			{
-				System.err.println("Trying to add wront");
-			}
-		}
 
 		public void append(Layer other)
 		{

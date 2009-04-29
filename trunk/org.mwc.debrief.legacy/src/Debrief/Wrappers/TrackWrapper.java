@@ -24,6 +24,7 @@ import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper_Support.FixSetter;
+import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
@@ -130,7 +131,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the list of wrappers we hold
 	 */
-	private TrackSegment _thePositions;
+	private SegmentList _thePositions;
 
 	/**
 	 * the symbol to pass on to a snail plotter
@@ -175,7 +176,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public TrackWrapper()
 	{
 		// declare our arrays
-		_thePositions = new TrackWrapper_Support.TrackSegment();
+		_thePositions = new TrackWrapper_Support.SegmentList();
 		_thePositions.setName("Positions");
 
 		_linkPositions = true;
@@ -281,8 +282,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public final void addFix(final FixWrapper theFix)
 	{
-		// add fix to the track
-		_thePositions.add(theFix);
+		// do we have any track segments
+		if(_thePositions.size() == 0)
+		{
+			// nope, add one
+			TrackWrapper_Support.TrackSegment firstSegment = new TrackWrapper_Support.TrackSegment();
+			firstSegment.setName("Positions");
+			_thePositions.addSegment(firstSegment);
+		}
+		
+		// add fix to last track segment
+		TrackSegment last = (TrackSegment) _thePositions.last();
+		last.addFix(theFix);
 
 		// and extend the start/end DTGs
 		if (_myTimePeriod == null)
@@ -358,7 +369,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// and my objects
 		// first ask them to close themselves
-		final Enumeration<Editable> it = _thePositions.elements();
+		final Enumeration<Editable> it = getPositions();
 		while (it.hasMoreElements())
 		{
 			final Object val = it.nextElement();
@@ -457,7 +468,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		if (_thePositions != null)
 		{
-			final Enumeration<Editable> iter = _thePositions.elements();
+			final Enumeration<Editable> iter = getPositions();
 			while (iter.hasMoreElements())
 			{
 				res.add(iter.nextElement());
@@ -496,7 +507,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		// ok, we want to wrap our fast-data as a set of plottables
-		res.add(_thePositions);
+		// see how many track segments we have
+		if(_thePositions.size() == 1)
+		{
+			// just the one, insert it
+			res.add(_thePositions.first());
+		}
+		else
+		{
+			// more than one, insert them as a tree
+			res.add(_thePositions);
+		}
 
 		return new TrackWrapper_Support.IteratorWrapper(res.iterator());
 	}
@@ -521,7 +542,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public final void filterListTo(final HiResDate start, final HiResDate end)
 	{
-		final Enumeration<Editable> fixWrappers = _thePositions.elements();
+		final Enumeration<Editable> fixWrappers = getPositions();
 		while (fixWrappers.hasMoreElements())
 		{
 			final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
@@ -575,7 +596,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
 		// cycle through the fixes
-		final Enumeration<Editable> fixes = _thePositions.elements();
+		final Enumeration<Editable> fixes = getPositions();
 		while (fixes.hasMoreElements())
 		{
 			final FixWrapper thisF = (FixWrapper) fixes.nextElement();
@@ -612,7 +633,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
 
 		// cycle through the fixes
-		final Enumeration<Editable> fixes = _thePositions.elements();
+		final Enumeration<Editable> fixes = getPositions();
 		while (fixes.hasMoreElements())
 		{
 			final FixWrapper thisF = (FixWrapper) fixes.nextElement();
@@ -649,7 +670,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else
 		{
-			final Enumeration<Editable> it = this._thePositions.elements();
+			final Enumeration<Editable> it = getPositions();
 			while (it.hasMoreElements())
 			{
 				final FixWrapper fw = (FixWrapper) it.nextElement();
@@ -850,7 +871,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					}
 
 					// ok, ready, go for it.
-					set = _thePositions.subSet(starter, finisher);
+					set = getPositionsBetween(starter, finisher);
 				}
 
 			}
@@ -945,9 +966,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// special case - if we've been asked for an invalid time value
 		if (srchDTG == TimePeriod.INVALID_DATE)
+		{
+			TrackSegment seg = (TrackSegment) _thePositions.first();
+			final FixWrapper fix = (FixWrapper) seg.first();
 			// just return our first location
 			return new Debrief.Tools.Tote.Watchable[]
-			{ (Watchable) _thePositions.first() };
+			{ (Watchable) fix };
+		}
 
 		// see if this is the DTG we have just requestsed
 		if ((srchDTG.equals(lastDTG)) && (lastFix != null))
@@ -956,10 +981,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else
 		{
+			TrackSegment firstSeg = (TrackSegment) _thePositions.first();
+			TrackSegment lastSeg = (TrackSegment) _thePositions.last();
+			
 			// see if this DTG is inside our data range
 			// in which case we will just return null
-			final FixWrapper theFirst = (FixWrapper) _thePositions.first();
-			final FixWrapper theLast = (FixWrapper) _thePositions.last();
+			final FixWrapper theFirst = (FixWrapper) firstSeg.first();
+			final FixWrapper theLast = (FixWrapper) lastSeg.last();
 
 			if ((srchDTG.greaterThanOrEqualTo(theFirst.getTime()))
 					&& (srchDTG.lessThanOrEqualTo(theLast.getTime())))
@@ -985,7 +1013,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// how do we do filters?
 
 				// get the data. use tailSet, since it's inclusive...
-				SortedSet<Editable> set = _thePositions.tailSet(nearestFix);
+				SortedSet<Editable> set = getRawPositions().tailSet(nearestFix);
 
 				// see if the requested DTG was inside the range of the data
 				if (!set.isEmpty())
@@ -1041,7 +1069,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// headSet operation is exclusive - so we need to
 							// find the one
 							// after the first
-							final SortedSet<Editable> otherSet = _thePositions
+							final SortedSet<Editable> otherSet = getRawPositions()
 									.headSet(nearestFix);
 
 							FixWrapper previous = null;
@@ -1078,6 +1106,45 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	}
 
+
+	private SortedSet<Editable> getPositionsBetween(FixWrapper starter2,
+			FixWrapper finisher2)
+	{
+		// first get them all as one list
+		SortedSet<Editable> pts =  getRawPositions();
+		
+		// now do the sort
+		return pts.subSet(starter2, finisher2);
+	}
+	
+	private SortedSet<Editable> getRawPositions()
+	{
+		SortedSet<Editable> res = null;
+		
+		// do we just have the one list?
+		if(_thePositions.size() == 1)
+		{
+			TrackSegment p = (TrackSegment) _thePositions.first();
+			res = (SortedSet<Editable>)p.getData();
+		}
+		else
+		{
+			// loop through them
+			res = new TreeSet<Editable>();
+			Enumeration<Editable> segs = _thePositions.elements();
+			while(segs.hasMoreElements())
+			{
+				TrackSegment seg = (TrackSegment) segs.nextElement();
+				Enumeration<Editable> pts = seg.elements();
+				while(pts.hasMoreElements())
+				{
+					res.add(pts.nextElement());
+				}
+			}			
+		}
+		return res;
+	}
+	
 	/**
 	 * get the position data, not all the sensor/contact/position data mixed
 	 * together
@@ -1086,11 +1153,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public final Enumeration<Editable> getPositions()
 	{
-		Enumeration<Editable> res = null;
-		if (_thePositions != null)
-			res = _thePositions.elements();
-
-		return res;
+		SortedSet<Editable> res = getRawPositions();
+		return new TrackWrapper_Support.IteratorWrapper(res.iterator());
 	}
 
 	/**
@@ -1215,7 +1279,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		final TimePeriod thePeriod = new TimePeriod.BaseTimePeriod(start, end);
 
 		// step through our fixes
-		final Enumeration<Editable> iter = _thePositions.elements();
+		final Enumeration<Editable> iter = getPositions();
 		while (iter.hasMoreElements())
 		{
 			final FixWrapper fw = (FixWrapper) iter.nextElement();
@@ -1254,7 +1318,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public int numFixes()
 	{
-		return _thePositions.size();
+		return getRawPositions().size();
 	}
 
 	/**
@@ -1333,7 +1397,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// ///////////////////////////////////////////
 			// let the fixes draw themselves in
 			// ///////////////////////////////////////////
-			final Enumeration<Editable> fixWrappers = _thePositions.elements();
+			final Enumeration<Editable> fixWrappers = getPositions();
 			while (fixWrappers.hasMoreElements())
 			{
 				final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
@@ -1555,9 +1619,19 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				sw.removeElement(point);
 			}
 		}
-		else
+		else if(point instanceof TrackSegment)
 		{
 			_thePositions.removeElement(point);
+		}
+		else
+		{
+			// loop through the segments
+			Enumeration<Editable>segments = _thePositions.elements();
+			while(segments.hasMoreElements())
+			{
+				TrackSegment seg = (TrackSegment) segments.nextElement();
+				seg.removeElement(point);
+			}
 		}
 
 	}
@@ -1598,7 +1672,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (freq == TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY)
 		{
 			// show all of the labels
-			final Enumeration<Editable> iter = _thePositions.elements();
+			final Enumeration<Editable> iter = getPositions();
 			while (iter.hasMoreElements())
 			{
 				final FixWrapper fw = (FixWrapper) iter.nextElement();
@@ -1612,7 +1686,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// frequency
 
 			// hide all of the labels/symbols first
-			final Enumeration<Editable> enumA = _thePositions.elements();
+			final Enumeration<Editable> enumA = getPositions();
 			while (enumA.hasMoreElements())
 			{
 				final FixWrapper fw = (FixWrapper) enumA.nextElement();
