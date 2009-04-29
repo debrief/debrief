@@ -249,7 +249,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.TrackWrapper.TrackSegment;
+import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;

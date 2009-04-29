@@ -23,6 +23,8 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
+import Debrief.Wrappers.TrackWrapper_Support.FixSetter;
+import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
@@ -30,7 +32,6 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
-import MWC.GUI.Plottables;
 import MWC.GUI.Canvas.MockCanvasType;
 import MWC.GUI.Layer.ProvidesContiguousElements;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
@@ -62,7 +63,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * keep track of versions - version id
 	 */
 	static final long serialVersionUID = 1;
-
 
 	/**
 	 * whether to interpolate points in this track
@@ -175,7 +175,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public TrackWrapper()
 	{
 		// declare our arrays
-		_thePositions = new TrackSegment();
+		_thePositions = new TrackWrapper_Support.TrackSegment();
 		_thePositions.setName("Positions");
 
 		_linkPositions = true;
@@ -341,7 +341,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		while (iter.hasMoreElements())
 		{
 			Editable nextItem = iter.nextElement();
-			if(nextItem instanceof Layer)
+			if (nextItem instanceof Layer)
 				append((Layer) nextItem);
 			else
 				add(nextItem);
@@ -434,7 +434,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				SensorWrapper sw = iter.nextElement();
 				Enumeration<Editable> ele = sw.elements();
-				while(ele.hasMoreElements())
+				while (ele.hasMoreElements())
 				{
 					res.add(ele.nextElement());
 				}
@@ -448,7 +448,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				TMAWrapper sw = iter.nextElement();
 				Enumeration<Editable> ele = sw.elements();
-				while(ele.hasMoreElements())
+				while (ele.hasMoreElements())
 				{
 					res.add(ele.nextElement());
 				}
@@ -498,7 +498,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// ok, we want to wrap our fast-data as a set of plottables
 		res.add(_thePositions);
 
-		return new IteratorWrapper(res.iterator());
+		return new TrackWrapper_Support.IteratorWrapper(res.iterator());
 	}
 
 	/**
@@ -1093,7 +1093,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return res;
 	}
 
-
 	/**
 	 * get the list of sensors for this track
 	 */
@@ -1201,7 +1200,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final Collection<Editable> getUnfilteredItems(final HiResDate start,
 			final HiResDate end)
 	{
-
 
 		// see if we have _any_ points in range
 		if ((getStartDTG().greaterThan(end)) || (getEndDTG().lessThan(start)))
@@ -1766,7 +1764,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		_theLabel.setVisible(val);
 	}
 
-
 	/**
 	 * whether to show the position fixes
 	 * 
@@ -1777,10 +1774,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_showPositions = val;
 	}
-	
-	/** whether positions are being shown
+
+	/**
+	 * whether positions are being shown
 	 * 
-	 * @return yes/no
+	 * @return
 	 */
 	public final boolean getPositionsVisible()
 	{
@@ -1870,7 +1868,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public void shift(WorldLocation feature, WorldVector vector)
 	{
 		feature.addToMe(vector);
-		
+
 		// right, one of our fixes has moved. get the sensors to update themselves
 		fixMoved();
 	}
@@ -2009,7 +2007,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				handledData = true;
 
 			} // whether this is a sensor wrapper
-			else if (thisO instanceof TrackWrapper.TrackSegment)
+			else if (thisO instanceof TrackSegment)
 			{
 				final TrackSegment tw = (TrackSegment) thisO;
 				final Enumeration<Editable> enumS = tw.elements();
@@ -2058,214 +2056,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		return visible;
-	}
-
-	// /////////////////////////////////////////////////
-	// nested interface which contains a single method, taking a
-	// boolean parameter
-	// ////////////////////////////////////////////////
-	/**
-	 * interface defining a boolean operation which is applied to all fixes in a
-	 * track
-	 */
-	protected interface FixSetter
-	{
-		/**
-		 * operation to apply to a fix
-		 * 
-		 * @param fix
-		 *          subject of operation
-		 * @param val
-		 *          yes/no value to apply
-		 */
-		public void execute(FixWrapper fix, boolean val);
-	}
-
-	// //////////////////////////////////////////////////////////////////
-	// embedded class to allow us to pass the local iterator (Iterator) used
-	// internally
-	// outside as an Enumeration
-	// /////////////////////////////////////////////////////////////////
-	private static final class IteratorWrapper implements
-			java.util.Enumeration<Editable>
-	{
-		private final Iterator<Editable> _val;
-
-		public IteratorWrapper(final Iterator<Editable> iterator)
-		{
-			_val = iterator;
-		}
-
-		public final boolean hasMoreElements()
-		{
-			return _val.hasNext();
-
-		}
-
-		public final Editable nextElement()
-		{
-			return _val.next();
-		}
-	}
-
-	/** the collection of track segments
-	 * 
-	 * @author Administrator
-	 *
-	 */
-	final public class SegmentList extends BaseItemLayer
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-	
-		public void addSegment(TrackSegment segment)
-		{
-			super.add(segment);
-		}
-		
-	}
-	
-	/** a single collection of track points
-	 * 
-	 * @author Administrator
-	 *
-	 */
-	final public class TrackSegment extends BaseItemLayer
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-		
-		private boolean _plotDR = false;
-		
-		public boolean getPlotDR()
-		{
-			return _plotDR;
-		}
-
-		public void setPlotDR(boolean _plotdr)
-		{
-			_plotDR = _plotdr;
-		}
-
-		public void addFix(FixWrapper fix)
-		{
-			super.add(fix);			
-		}
-		
-		
-		
-	}
-	
-	/**
-	 * convenience class that makes our plottables look like a layer
-	 * 
-	 * @author ian.mayo
-	 */
-	abstract public class BaseItemLayer extends Plottables implements Layer
-	{
-
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		/**
-		 * only allow fixes to be added...
-		 * 
-		 * @param thePlottable
-		 */
-		public void add(Editable thePlottable)
-		{
-			if (thePlottable instanceof FixWrapper)
-			{
-				super.add(thePlottable);
-			}
-			else
-			{
-				System.err.println("Trying to add wront");
-			}
-		}
-
-		public void append(Layer other)
-		{
-			// ok, pass through and add the items
-			final Enumeration<Editable> enumer = other.elements();
-			while (enumer.hasMoreElements())
-			{
-				final Plottable pl = (Plottable) enumer.nextElement();
-				add(pl);
-			}
-		}
-
-		public void exportShape()
-		{
-			// ignore..
-		}
-
-		/**
-		 * get the editing information for this type
-		 */
-		public Editable.EditorType getInfo()
-		{
-			return new BaseLayerInfo(this);
-		}
-
-		public int getLineThickness()
-		{
-			// ignore..
-			return 1;
-		}
-
-
-		public boolean hasOrderedChildren()
-		{
-			return true;
-		}
-
-		/**
-		 * class containing editable details of a track
-		 */
-		public final class BaseLayerInfo extends Editable.EditorType
-		{
-
-			/**
-			 * constructor for this editor, takes the actual track as a parameter
-			 * 
-			 * @param data
-			 *          track being edited
-			 */
-			public BaseLayerInfo(final BaseItemLayer data)
-			{
-				super(data, data.getName(), "");
-			}
-
-			public final String getName()
-			{
-				return super.getName();
-			}
-
-			public final PropertyDescriptor[] getPropertyDescriptors()
-			{
-				try
-				{
-					final PropertyDescriptor[] res =
-					{ expertProp("Visible", "whether this layer is visible", FORMAT), };
-					return res;
-				}
-				catch (final IntrospectionException e)
-				{
-					e.printStackTrace();
-					return super.getPropertyDescriptors();
-				}
-			}
-		}
-
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2371,8 +2161,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		private int countVisibleFixes(TrackWrapper tw)
 		{
 			int ctr = 0;
-			Enumeration<Editable> iter;
-			iter = tw._thePositions.elements();
+			Enumeration<Editable> iter = tw.getPositions();
 			while (iter.hasMoreElements())
 			{
 				Plottable thisE = (Plottable) iter.nextElement();
