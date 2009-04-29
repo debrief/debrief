@@ -221,4 +221,5 @@ Export-Package:
    Debrief.Tools.Tote,
    MWC.GUI.Properties,
    MWC.GUI"
-Require-Bundle: org.mwc.cmap.legacy
+Require-Bundle: org.mwc.cmap.legacy,
+ org.junit4
