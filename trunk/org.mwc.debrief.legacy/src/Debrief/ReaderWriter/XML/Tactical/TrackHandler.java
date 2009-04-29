@@ -97,13 +97,6 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 				_myTrack.setVisible(val);
 			}
 		});
-		addAttributeHandler(new HandleBooleanAttribute("PositionsLinked")
-		{
-			public void setValue(String name, boolean val)
-			{
-				_myTrack.setPositionsLinked(val);
-			}
-		});
 		addAttributeHandler(new HandleBooleanAttribute("PositionsVisible")
 		{
 			public void setValue(String name, boolean val)
@@ -197,7 +190,6 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 		Element trk = doc.createElement("track");
 		trk.setAttribute("Name", toXML(track.getName()));
 		trk.setAttribute("Visible", writeThis(track.getVisible()));
-		trk.setAttribute("PositionsLinked", writeThis(track.getPositionsLinked()));
 		trk.setAttribute("PositionsVisible", writeThis(track.getPositionsVisible()));
 		trk.setAttribute("NameVisible", writeThis(track.getNameVisible()));
 		trk.setAttribute("NameAtStart", writeThis(track.getNameAtStart()));

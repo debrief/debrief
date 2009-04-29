@@ -223,10 +223,6 @@ abstract public class SetTimeZero implements FilterOperation
 
           if(fw != null)
           {
-            // check that the track has positions showing
-            if(tw.getPositionsVisible() == false)
-              tw.setPositionsVisible(true);
-
             // and make this symbol visible
             fw.setSymbolShowing(true);
           }

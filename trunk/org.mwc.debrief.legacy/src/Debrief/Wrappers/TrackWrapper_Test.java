@@ -3,9 +3,8 @@
  */
 package Debrief.Wrappers;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
-import java.util.Collection;
 import java.util.Enumeration;
 
 import org.junit.After;
@@ -25,7 +24,7 @@ import MWC.TacticalData.Fix;
  * @author Administrator
  *
  */
-public class TrackWrapperTest
+public class TrackWrapper_Test
 {
 
 	private static final String TRACK_NAME = "test track";

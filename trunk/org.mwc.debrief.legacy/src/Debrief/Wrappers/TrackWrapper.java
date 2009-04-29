@@ -44,9 +44,6 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
-// our old collections package used prior to JDK 1.2
-// import com.sun.java.util.collections.*;
-
 /**
  * the TrackWrapper maintains the GUI and data attributes of the whole track
  * iteself, but the responsibility for the fixes within the track are demoted to
@@ -66,14 +63,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	static final long serialVersionUID = 1;
 
-	public static void main(final String[] args)
-	{
-		final testMe tm = new testMe("scrap");
-		tm.testGettingTimes();
-		tm.testGetItemsBetween_Second();
-		tm.testMyParams();
-
-	}
 
 	/**
 	 * whether to interpolate points in this track
@@ -141,7 +130,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	/**
 	 * the list of wrappers we hold
 	 */
-	private PlottableLayer _thePositions;
+	private TrackSegment _thePositions;
 
 	/**
 	 * the symbol to pass on to a snail plotter
@@ -186,7 +175,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public TrackWrapper()
 	{
 		// declare our arrays
-		_thePositions = new PlottableLayer();
+		_thePositions = new TrackSegment();
 		_thePositions.setName("Positions");
 
 		_linkPositions = true;
@@ -1104,26 +1093,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return res;
 	}
 
-	/**
-	 * determine whether we are linking the points on the track
-	 * 
-	 * @return yes/no
-	 */
-	public final boolean getPositionsLinked()
-	{
-		return _linkPositions;
-	}
-
-	/**
-	 * whether the individual fixes themselves are shown either by a symbol or
-	 * label
-	 * 
-	 * @return yes/no
-	 */
-	public final boolean getPositionsVisible()
-	{
-		return _showPositions;
-	}
 
 	/**
 	 * get the list of sensors for this track
@@ -1619,11 +1588,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		_theSnailShape.setColor(theCol);
 	}
 
-	public final void setDragTrack(TrackWrapper track)
-	{
-		//
-	}
-
 	/**
 	 * the setter function which passes through the track
 	 */
@@ -1802,16 +1766,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		_theLabel.setVisible(val);
 	}
 
-	/**
-	 * indicate whether to join the points on the track
-	 * 
-	 * @param val
-	 *          yes/no
-	 */
-	public final void setPositionsLinked(final boolean val)
-	{
-		_linkPositions = val;
-	}
 
 	/**
 	 * whether to show the position fixes
@@ -1822,6 +1776,15 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final void setPositionsVisible(final boolean val)
 	{
 		_showPositions = val;
+	}
+	
+	/** whether positions are being shown
+	 * 
+	 * @return yes/no
+	 */
+	public final boolean getPositionsVisible()
+	{
+		return _showPositions;
 	}
 
 	/**
@@ -2046,9 +2009,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				handledData = true;
 
 			} // whether this is a sensor wrapper
-			else if (thisO instanceof TrackWrapper.PlottableLayer)
+			else if (thisO instanceof TrackWrapper.TrackSegment)
 			{
-				final PlottableLayer tw = (PlottableLayer) thisO;
+				final TrackSegment tw = (TrackSegment) thisO;
 				final Enumeration<Editable> enumS = tw.elements();
 
 				// fire recursively, smart-arse.
@@ -2145,12 +2108,66 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 	}
 
+	/** the collection of track segments
+	 * 
+	 * @author Administrator
+	 *
+	 */
+	final public class SegmentList extends BaseItemLayer
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+	
+		public void addSegment(TrackSegment segment)
+		{
+			super.add(segment);
+		}
+		
+	}
+	
+	/** a single collection of track points
+	 * 
+	 * @author Administrator
+	 *
+	 */
+	final public class TrackSegment extends BaseItemLayer
+	{
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		private boolean _plotDR = false;
+		
+		public boolean getPlotDR()
+		{
+			return _plotDR;
+		}
+
+		public void setPlotDR(boolean _plotdr)
+		{
+			_plotDR = _plotdr;
+		}
+
+		public void addFix(FixWrapper fix)
+		{
+			super.add(fix);			
+		}
+		
+		
+		
+	}
+	
 	/**
 	 * convenience class that makes our plottables look like a layer
 	 * 
 	 * @author ian.mayo
 	 */
-	public class PlottableLayer extends Plottables implements Layer
+	abstract public class BaseItemLayer extends Plottables implements Layer
 	{
 
 		/**
@@ -2196,7 +2213,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		 */
 		public Editable.EditorType getInfo()
 		{
-			return new plottableLayerInfo(this);
+			return new BaseLayerInfo(this);
 		}
 
 		public int getLineThickness()
@@ -2205,14 +2222,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			return 1;
 		}
 
-		/**
-		 * @return
-		 */
-		@Override
-		public boolean getVisible()
-		{
-			return getPositionsLinked();
-		}
 
 		public boolean hasOrderedChildren()
 		{
@@ -2220,18 +2229,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		/**
-		 * @param visible
-		 */
-		@Override
-		public void setVisible(boolean visible)
-		{
-			setPositionsLinked(visible);
-		}
-
-		/**
 		 * class containing editable details of a track
 		 */
-		public final class plottableLayerInfo extends Editable.EditorType
+		public final class BaseLayerInfo extends Editable.EditorType
 		{
 
 			/**
@@ -2240,7 +2240,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			 * @param data
 			 *          track being edited
 			 */
-			public plottableLayerInfo(final PlottableLayer data)
+			public BaseLayerInfo(final BaseItemLayer data)
 			{
 				super(data, data.getName(), "");
 			}
@@ -2948,7 +2948,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				{
 						expertProp("SymbolType",
 								"the type of symbol plotted for this label", FORMAT),
-						legacyProp("DragTrack", "drag the track location"),
 						expertProp("LineThickness", "the width to draw this track", FORMAT),
 						expertProp("Name", "the track name"),
 						expertProp("InterpolatePoints",
@@ -2956,7 +2955,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								SPATIAL),
 						expertProp("Color", "the track color", FORMAT),
 						expertProp("TrackFont", "the track label font", FORMAT),
-						expertProp("PositionsLinked", "link the track Positions"),
 						expertProp("NameVisible", "show the track label", VISIBILITY),
 						expertProp("PositionsVisible", "show individual Positions",
 								VISIBILITY),
@@ -2975,8 +2973,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				res[0]
 						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor.class);
 				res[1]
-						.setPropertyEditorClass(Debrief.Tools.Reconstruction.DragTrackEditor.class);
-				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
 				return res;
 			}
@@ -2989,16 +2985,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	}
 
-	public Vector<PlottableLayer> splitTrack(FixWrapper fix, boolean before)
+	public Vector<TrackSegment> splitTrack(FixWrapper fix, boolean before)
 	{
 		// TODO Auto-generated method stub
 		return null;
 	}
 
-	public void combineSections(Vector<PlottableLayer> sections)
+	public void combineSections(Vector<TrackSegment> sections)
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 }

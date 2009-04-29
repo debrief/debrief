@@ -249,7 +249,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.TrackWrapper.PlottableLayer;
+import Debrief.Wrappers.TrackWrapper.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
@@ -987,7 +987,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	{
 		private final boolean _splitBefore;
 		private String _title;
-		private Vector<PlottableLayer> _splitSections;
+		private Vector<TrackSegment> _splitSections;
 	
 		/**
 		 * create an instance of this operation
