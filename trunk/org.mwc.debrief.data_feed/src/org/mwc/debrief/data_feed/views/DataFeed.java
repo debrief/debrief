@@ -79,7 +79,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 	 */
 	private ComboViewer _sourceList;
 
-	private ArrayList _dataProviders;
+	private ArrayList<RealTimeProvider> _dataProviders;
 
 	/**
 	 * The constructor.
@@ -93,7 +93,7 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 		// sort out the list of data-sources
 		CorePlugin.logError(Status.INFO, "Starting to load data providers", null);
 
-		_dataProviders = new ArrayList();
+		_dataProviders = new ArrayList<RealTimeProvider>();
 		IExtensionPoint point = Platform.getExtensionRegistry().getExtensionPoint(
 				"org.mwc.debrief.data_feed", "RealTimeProvider");
 
@@ -157,9 +157,9 @@ public class DataFeed extends ViewPart implements LiveFeedViewer
 				return prov.getName();
 			}});
 		// add them
-		for (Iterator iter = _dataProviders.iterator(); iter.hasNext();)
+		for (Iterator<RealTimeProvider> iter = _dataProviders.iterator(); iter.hasNext();)
 		{
-			RealTimeProvider prov = (RealTimeProvider) iter.next();
+			RealTimeProvider prov = iter.next();
 			_sourceList.add(prov);
 		}
 
