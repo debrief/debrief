@@ -39,6 +39,7 @@ public class DebriefPlugin extends AbstractUIPlugin {
 		// also provide someps extra functionality to the right-click editor
 		RightClickSupport.addRightClickGenerator(new GenerateTrack());
 		RightClickSupport.addRightClickGenerator(new InterpolateTrack());		
+		RightClickSupport.addRightClickGenerator(new MergeTrack());		
 		
 		// and the Replay importer/exporter (used to export items from the layer-manager)
 		ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());

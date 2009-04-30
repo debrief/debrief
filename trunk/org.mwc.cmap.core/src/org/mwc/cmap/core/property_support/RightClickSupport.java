@@ -896,7 +896,7 @@ public class RightClickSupport
 	 * 
 	 * @author ian.mayo
 	 */
-	private static class UndoableAction extends AbstractOperation
+	public static class UndoableAction extends AbstractOperation
 	{
 		private final SubjectAction _action;
 
