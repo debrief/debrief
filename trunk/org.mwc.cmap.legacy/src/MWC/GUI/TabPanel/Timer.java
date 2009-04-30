@@ -1,6 +1,5 @@
 package MWC.GUI.TabPanel;
 
-
 import java.awt.AWTEventMulticaster;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
@@ -27,461 +26,501 @@ import java.beans.VetoableChangeListener;
 //					is capitalized too).  Made package level data protected.
 
 /**
- *
- * Sets a timer to wait before an action event is posted to a component.
- * The caller can specify the target component, the event to send to the
- * component, and the time delay.
- *
- * The timer is implemented as a thread.  The one of the start(...) methods should
- * be called to start the thread.
- *
- *
+ * 
+ * Sets a timer to wait before an action event is posted to a component. The
+ * caller can specify the target component, the event to send to the component,
+ * and the time delay.
+ * 
+ * The timer is implemented as a thread. The one of the start(...) methods
+ * should be called to start the thread.
+ * 
+ * 
  * @version 1.0, Nov 26, 1996
- *
- * @author	Symantec
- *
+ * 
+ * @author Symantec
+ * 
  */
 public class Timer implements Runnable, java.io.Serializable
 {
-    /**
+	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-		/**
-     * Creates a timer with the default delay.
-     * After 1000 miliseconds this timer will fire an ActionEvent.
-	 * It will not repeat.
-     */
-    public Timer()
-    {
+
+	/**
+	 * Creates a timer with the default delay. After 1000 miliseconds this timer
+	 * will fire an ActionEvent. It will not repeat.
+	 */
+	public Timer()
+	{
 		this(1000, false);
-    }
+	}
 
-    /**
-     * Creates a timer with specified delay.
-     * After the specified delay this timer will fire an ActionEvent.
-	 * It will not repeat.
-     * @param d the delay in milliseconds
-     */
-    public Timer(int d)
-    {
+	/**
+	 * Creates a timer with specified delay. After the specified delay this timer
+	 * will fire an ActionEvent. It will not repeat.
+	 * 
+	 * @param d
+	 *          the delay in milliseconds
+	 */
+	public Timer(int d)
+	{
 		this(d, false);
-    }
+	}
 
-    /**
-     * Creates a timer with specified repeat setting and the default delay.
-     * After 1000 miliseconds this timer will fire an ActionEvent.
-	 * It may repeat, depending on r.
-     * @param r if true, reset and repeat after generating the event
-     */
-    public Timer(boolean r)
-    {
+	/**
+	 * Creates a timer with specified repeat setting and the default delay. After
+	 * 1000 miliseconds this timer will fire an ActionEvent. It may repeat,
+	 * depending on r.
+	 * 
+	 * @param r
+	 *          if true, reset and repeat after generating the event
+	 */
+	public Timer(boolean r)
+	{
 		this(1000, r);
-    }
+	}
 
-    /**
-     * Creates a timer with specified delay and repeat setting.
-     * After the specified delay this timer will fire an ActionEvent.
-	 * It may repeat, depending on r.
-     * @param d the delay in milliseconds
-     * @param r if true, reset and repeat after generating the event
-     */
-    public Timer(int d, boolean r)
-    {
-        delay     = d;
-        repeat    = r;
-        execute   = false;
-        thread    = new Thread(this);
-    }
+	/**
+	 * Creates a timer with specified delay and repeat setting. After the
+	 * specified delay this timer will fire an ActionEvent. It may repeat,
+	 * depending on r.
+	 * 
+	 * @param d
+	 *          the delay in milliseconds
+	 * @param r
+	 *          if true, reset and repeat after generating the event
+	 */
+	public Timer(int d, boolean r)
+	{
+		delay = d;
+		repeat = r;
+		execute = false;
+		thread = new Thread(this);
+	}
 
-    /**
+	/**
 	 * @deprecated
 	 * @see symantec.itools.util.Timer#Timer(int, boolean)
-     */
+	 */
 	public Timer(Component t)
-    {
-        this(1000);
-    }
+	{
+		this(1000);
+	}
 
-    /**
+	/**
 	 * @deprecated
 	 * @see symantec.itools.util.Timer#Timer(int, boolean)
-     */
-    public Timer(Component t, int d)
-    {
-        this(d, false);
-    }
+	 */
+	public Timer(Component t, int d)
+	{
+		this(d, false);
+	}
 
-    /**
+	/**
 	 * @deprecated
 	 * @see symantec.itools.util.Timer#Timer(int, boolean)
-     */
-    public Timer(Component t, int d, boolean r)
-    {
-        this(d, r);
-    }
-
-    /**
-	 * @deprecated
-	 * @see symantec.itools.util.Timer#Timer(int, boolean)
-     */
-    public Timer(Component t, int d, boolean r, int e)
-    {
+	 */
+	public Timer(Component t, int d, boolean r)
+	{
 		this(d, r);
 	}
 
-    /**
-     * Sets the delay time for this timer.
-     * @param d the delay in milliseconds.  This delay will be used starting
-     *          after the current delay elapses
-     *
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     * @see #getDelay()
-     */
-    public void setDelay(int d) throws PropertyVetoException
-    {
-    	Integer newValue = new Integer(d);
-    	Integer oldValue = new Integer(delay);
+	/**
+	 * @deprecated
+	 * @see symantec.itools.util.Timer#Timer(int, boolean)
+	 */
+	public Timer(Component t, int d, boolean r, int e)
+	{
+		this(d, r);
+	}
+
+	/**
+	 * Sets the delay time for this timer.
+	 * 
+	 * @param d
+	 *          the delay in milliseconds. This delay will be used starting after
+	 *          the current delay elapses
+	 * 
+	 * @exception PropertyVetoException
+	 *              if the specified property value is unacceptable
+	 * @see #getDelay()
+	 */
+	public void setDelay(int d) throws PropertyVetoException
+	{
+		Integer newValue = new Integer(d);
+		Integer oldValue = new Integer(delay);
 
 		vetos.fireVetoableChange("delay", oldValue, newValue);
 
-        delay = d;
+		delay = d;
 
 		changes.firePropertyChange("delay", oldValue, newValue);
-    }
+	}
 
-    /**
-     * Obtains the delay time setting for this timer.
-     * @return the current delay setting for this timer, in milliseconds
-     * @see #setDelay(int)
-     */
-    public int getDelay()
-    {
-        return delay;
-    }
+	/**
+	 * Obtains the delay time setting for this timer.
+	 * 
+	 * @return the current delay setting for this timer, in milliseconds
+	 * @see #setDelay(int)
+	 */
+	public int getDelay()
+	{
+		return delay;
+	}
 
-
-    /**
-     * Changes the repeat setting of the timer.
-     * If the repeat setting is false a single event will be generated.  When
-     * set to true the timer produces a series of events.
-     *
-     * @param f reset and repeat after generating the event
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     * @see #isRepeat
-     */
-    public void setRepeat(boolean f) throws PropertyVetoException
-    {
-    	Boolean newValue = new Boolean(f);
-    	Boolean oldValue = new Boolean(repeat);
+	/**
+	 * Changes the repeat setting of the timer. If the repeat setting is false a
+	 * single event will be generated. When set to true the timer produces a
+	 * series of events.
+	 * 
+	 * @param f
+	 *          reset and repeat after generating the event
+	 * @exception PropertyVetoException
+	 *              if the specified property value is unacceptable
+	 * @see #isRepeat
+	 */
+	public void setRepeat(boolean f) throws PropertyVetoException
+	{
+		Boolean newValue = new Boolean(f);
+		Boolean oldValue = new Boolean(repeat);
 
 		vetos.fireVetoableChange("repeat", oldValue, newValue);
 
 		repeat = f;
 
 		changes.firePropertyChange("repeat", oldValue, newValue);
-    }
+	}
 
-    /**
-     * Obtains the repeat setting of the timer.
-     * @return true if this timer is set to repeat, false if this timer does not repeat
-     * @see #setRepeat
-     */
-    public boolean isRepeat()
-    {
-        return repeat;
-    }
+	/**
+	 * Obtains the repeat setting of the timer.
+	 * 
+	 * @return true if this timer is set to repeat, false if this timer does not
+	 *         repeat
+	 * @see #setRepeat
+	 */
+	public boolean isRepeat()
+	{
+		return repeat;
+	}
 
-    /**
+	/**
 	 * @deprecated
 	 * @see #isRepeat()
-     */
-    public boolean getRepeat()
-    {
-        return isRepeat();
-    }
+	 */
+	public boolean getRepeat()
+	{
+		return isRepeat();
+	}
 
-    /**
-     * Pauses the timer.
-     * Differs from stop in that the timer
-     * is continued from whatever state it was in before
-     * pausing.
-     * <p>
-     * start() and stop() overrule this function.
-     * @see #resume
-     * @see #start
-     * @see #stop
-     */
-    public void pause()
-    {
-    	execute = false;
-    }
+	/**
+	 * Pauses the timer. Differs from stop in that the timer is continued from
+	 * whatever state it was in before pausing.
+	 * <p>
+	 * start() and stop() overrule this function.
+	 * 
+	 * @see #resume
+	 * @see #start
+	 * @see #stop
+	 */
+	public void pause()
+	{
+		execute = false;
+	}
 
-    /**
-     * Resumes the timer.
-     * Differs from start in that the timer
-     * is continued from whatever state it was in before
-     * pausing.
-     * <p>
-     * start() and stop() overrule this function
-     * @see #pause
-     * @see #start
-     * @see #stop
-     */
-    @SuppressWarnings("deprecation")
-		public void resume()
-    {
-    	if(execute != true)
-    	{
-	    	execute = true;
-		    thread.resume();
+	/**
+	 * Resumes the timer. Differs from start in that the timer is continued from
+	 * whatever state it was in before pausing.
+	 * <p>
+	 * start() and stop() overrule this function
+	 * 
+	 * @see #pause
+	 * @see #start
+	 * @see #stop
+	 */
+	@SuppressWarnings("deprecation")
+	public void resume()
+	{
+		if (execute != true)
+		{
+			execute = true;
+			thread.resume();
 		}
 	}
 
-    /**
-     * Starts the timer with existing settings.
-     * @see #start(int)
-     * @see #start(boolean)
-     * @see #start(int, boolean)
-     * @see #stop
-     * @see #run
-     */
-    @SuppressWarnings("deprecation")
-		public void start()
-    {
-	    execute = true;
-	    live	= true;
-	    if(thread.isAlive())
-	    {
-	    	thread.resume();
-	    }
-	    else
+	/**
+	 * Starts the timer with existing settings.
+	 * 
+	 * @see #start(int)
+	 * @see #start(boolean)
+	 * @see #start(int, boolean)
+	 * @see #stop
+	 * @see #run
+	 */
+	@SuppressWarnings("deprecation")
+	public void start()
+	{
+		execute = true;
+		live = true;
+		if (thread.isAlive())
 		{
-	    	thread	= new Thread(this);
-		    thread.start();
+			thread.resume();
 		}
-    }
+		else
+		{
+			thread = new Thread(this);
+			thread.start();
+		}
+	}
 
-    /**
-     * Starts the timer using the specified delay.
-     * @param d the delay in milliseconds
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     * @see #start()
-     * @see #start(boolean)
-     * @see #start(int, boolean)
-     * @see #stop
-     * @see #run
-     */
-    public void start(int d) throws PropertyVetoException
-    {
-	    setDelay(d);
+	/**
+	 * Starts the timer using the specified delay.
+	 * 
+	 * @param d
+	 *          the delay in milliseconds
+	 * @exception PropertyVetoException
+	 *              if the specified property value is unacceptable
+	 * @see #start()
+	 * @see #start(boolean)
+	 * @see #start(int, boolean)
+	 * @see #stop
+	 * @see #run
+	 */
+	public void start(int d) throws PropertyVetoException
+	{
+		setDelay(d);
 
-	    start();
-    }
+		start();
+	}
 
-    /**
-     * Starts the timer using the specified repeat setting.
-     * @param r reset and repeat after generating the event
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     * @see #start()
-     * @see #start(int)
-     * @see #start(int, boolean)
-     * @see #stop
-     * @see #run
-     */
-    public void start(boolean r) throws PropertyVetoException
-    {
-	    setRepeat(r);
+	/**
+	 * Starts the timer using the specified repeat setting.
+	 * 
+	 * @param r
+	 *          reset and repeat after generating the event
+	 * @exception PropertyVetoException
+	 *              if the specified property value is unacceptable
+	 * @see #start()
+	 * @see #start(int)
+	 * @see #start(int, boolean)
+	 * @see #stop
+	 * @see #run
+	 */
+	public void start(boolean r) throws PropertyVetoException
+	{
+		setRepeat(r);
 
-	    start();
-    }
+		start();
+	}
 
-    /**
-     * Starts the timer using the specified delay and repeat settings.
-     * @param d the delay in milliseconds
-     * @param r reset and repeat after generating the event
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     * @see #start()
-     * @see #start(int)
-     * @see #start(boolean)
-     * @see #stop
-     * @see #run
-     */
-    public void start(int d, boolean r) throws PropertyVetoException
-    {
-	    setDelay(d);
-	    setRepeat(r);
+	/**
+	 * Starts the timer using the specified delay and repeat settings.
+	 * 
+	 * @param d
+	 *          the delay in milliseconds
+	 * @param r
+	 *          reset and repeat after generating the event
+	 * @exception PropertyVetoException
+	 *              if the specified property value is unacceptable
+	 * @see #start()
+	 * @see #start(int)
+	 * @see #start(boolean)
+	 * @see #stop
+	 * @see #run
+	 */
+	public void start(int d, boolean r) throws PropertyVetoException
+	{
+		setDelay(d);
+		setRepeat(r);
 
-	    start();
-    }
+		start();
+	}
 
-    /**
-     * Stops the timer.  After return the timer will generate no more events.
-     * @see #start
-     */
-    @SuppressWarnings("deprecation")
-		public void stop()
-    {
-	    execute		= false;
-	    repeating	= false;
-	    live		= false;
-	    thread.resume();
-    }
+	/**
+	 * Stops the timer. After return the timer will generate no more events.
+	 * 
+	 * @see #start
+	 */
+	@SuppressWarnings("deprecation")
+	public void stop()
+	{
+		execute = false;
+		repeating = false;
+		live = false;
+		thread.resume();
+	}
 
-    /**
-     * The thread body.  This method is called by the Java virtual machine in response to a
-     * start call by the user.
-     * @see #start()
-     * @see #start(int)
-     * @see #start(boolean)
-     * @see #start(int, boolean)
-     * @see #stop
-     */
-    @SuppressWarnings({ "deprecation", "deprecation" })
-		public void run()
-    {
-        if(!execute) thread.suspend();
+	/**
+	 * The thread body. This method is called by the Java virtual machine in
+	 * response to a start call by the user.
+	 * 
+	 * @see #start()
+	 * @see #start(int)
+	 * @see #start(boolean)
+	 * @see #start(int, boolean)
+	 * @see #stop
+	 */
+	@SuppressWarnings(
+	{ "deprecation"})
+	public void run()
+	{
+		if (!execute)
+			thread.suspend();
 		try
 		{
-            while(live)
-            {
-                do
-                {
+			while (live)
+			{
+				do
+				{
 					repeating = repeat;
-                    Thread.sleep(delay);
-                    if (execute)
-                    {
-                    	sourceActionEvent();
-                    }
-                }
-                while (repeating && live);
+					Thread.sleep(delay);
+					if (execute)
+					{
+						sourceActionEvent();
+					}
+				}
+				while (repeating && live);
 
-                if((!execute && live) || !repeating)
-                	thread.suspend();
-            }
-	   }
-        catch (InterruptedException e)
-        {
-        }
-    }
+				if ((!execute && live) || !repeating)
+					thread.suspend();
+			}
+		}
+		catch (InterruptedException e)
+		{
+		}
+	}
 
-    /**
-     * Sets the command name of the action event fired by this button.
-     * @param command Tthe name of the action event command fired by this button
-     * @see #getActionCommand
-     * @exception PropertyVetoException
-     * if the specified property value is unacceptable
-     */
-    public void setActionCommand(String command) throws PropertyVetoException
-    {
-    	String oldValue = actionCommand;
+	/**
+	 * Sets the command name of the action event fired by this button.
+	 * 
+	 * @param command
+	 *          Tthe name of the action event command fired by this button
+	 * @see #getActionCommand
+	 * @exception PropertyVetoException
+	 *              if the specified property value is unacceptable
+	 */
+	public void setActionCommand(String command) throws PropertyVetoException
+	{
+		String oldValue = actionCommand;
 
 		vetos.fireVetoableChange("actionCommand", oldValue, command);
-        actionCommand = command;
+		actionCommand = command;
 		changes.firePropertyChange("actionCommand", oldValue, command);
-    }
+	}
 
-    /**
-     * Returns the command name of the action event fired by this button.
-     * @see #setActionCommand
-     */
-    public String getActionCommand()
-    {
-        return actionCommand;
-    }
+	/**
+	 * Returns the command name of the action event fired by this button.
+	 * 
+	 * @see #setActionCommand
+	 */
+	public String getActionCommand()
+	{
+		return actionCommand;
+	}
 
-    /**
-     * Adds the specified action listener to receive action events
-     * from this button.
-     * @param l the action listener
-     */
+	/**
+	 * Adds the specified action listener to receive action events from this
+	 * button.
+	 * 
+	 * @param l
+	 *          the action listener
+	 */
 	public void addActionListener(ActionListener l)
 	{
 		actionListener = AWTEventMulticaster.add(actionListener, l);
 	}
 
-    /**
-     * Removes the specified action listener so it no longer receives
-     * action events from this button.
-     * @param l the action listener
-     */
+	/**
+	 * Removes the specified action listener so it no longer receives action
+	 * events from this button.
+	 * 
+	 * @param l
+	 *          the action listener
+	 */
 	public void removeActionListener(ActionListener l)
 	{
 		actionListener = AWTEventMulticaster.remove(actionListener, l);
 	}
 
-    /**
-     * Fires an action event to the listeners.
-     * @see #setActionCommand
-     */
+	/**
+	 * Fires an action event to the listeners.
+	 * 
+	 * @see #setActionCommand
+	 */
 	public void sourceActionEvent()
 	{
 		if (actionListener != null)
-			actionListener.actionPerformed(new ActionEvent(this, ActionEvent.ACTION_PERFORMED, actionCommand));
+			actionListener.actionPerformed(new ActionEvent(this,
+					ActionEvent.ACTION_PERFORMED, actionCommand));
 	}
 
-    /**
-     * Adds a listener for all property change events.
-     * @param listener the listener to add
-     * @see #removePropertyChangeListener
-     */
-    public void addPropertyChangeListener(PropertyChangeListener listener)
-    {
-    	changes.addPropertyChangeListener(listener);
-    }
+	/**
+	 * Adds a listener for all property change events.
+	 * 
+	 * @param listener
+	 *          the listener to add
+	 * @see #removePropertyChangeListener
+	 */
+	public void addPropertyChangeListener(PropertyChangeListener listener)
+	{
+		changes.addPropertyChangeListener(listener);
+	}
 
-    /**
-     * Removes a listener for all property change events.
-     * @param listener the listener to remove
-     * @see #addPropertyChangeListener
-     */
-    public void removePropertyChangeListener(PropertyChangeListener listener)
-    {
-    	changes.removePropertyChangeListener(listener);
-    }
+	/**
+	 * Removes a listener for all property change events.
+	 * 
+	 * @param listener
+	 *          the listener to remove
+	 * @see #addPropertyChangeListener
+	 */
+	public void removePropertyChangeListener(PropertyChangeListener listener)
+	{
+		changes.removePropertyChangeListener(listener);
+	}
 
-    /**
-     * Adds a listener for all vetoable property change events.
-     * @param listener the listener to add
-     * @see #removeVetoableChangeListener
-     */
-    public void addVetoableChangeListener(VetoableChangeListener listener)
-    {
+	/**
+	 * Adds a listener for all vetoable property change events.
+	 * 
+	 * @param listener
+	 *          the listener to add
+	 * @see #removeVetoableChangeListener
+	 */
+	public void addVetoableChangeListener(VetoableChangeListener listener)
+	{
 		vetos.addVetoableChangeListener(listener);
-    }
+	}
 
-    /**
-     * Removes a listener for all vetoable property change events.
-     * @param listener the listener to remove
-     * @see #addVetoableChangeListener
-     */
-    public void removeVetoableChangeListener(VetoableChangeListener listener)
-    {
-    	vetos.removeVetoableChangeListener(listener);
-    }
+	/**
+	 * Removes a listener for all vetoable property change events.
+	 * 
+	 * @param listener
+	 *          the listener to remove
+	 * @see #addVetoableChangeListener
+	 */
+	public void removeVetoableChangeListener(VetoableChangeListener listener)
+	{
+		vetos.removeVetoableChangeListener(listener);
+	}
 
-    private void readObject(java.io.ObjectInputStream in) throws java.io.IOException, ClassNotFoundException {
-        in.defaultReadObject();
+	private void readObject(java.io.ObjectInputStream in)
+			throws java.io.IOException, ClassNotFoundException
+	{
+		in.defaultReadObject();
 
-        execute   = false;
-        thread    = new Thread(this);
-    }
+		execute = false;
+		thread = new Thread(this);
+	}
 
-    protected Component  target;
-    protected int        eventType;
-   	protected boolean    repeat;
-    protected boolean    repeating;
-    protected boolean    execute;
-    protected boolean	   live;
-    protected int        delay;
-    protected String actionCommand;
+	protected Component target;
+	protected int eventType;
+	protected boolean repeat;
+	protected boolean repeating;
+	protected boolean execute;
+	protected boolean live;
+	protected int delay;
+	protected String actionCommand;
 	protected ActionListener actionListener = null;
-    transient protected Thread thread;
+	transient protected Thread thread;
 	private VetoableChangeSupport vetos = new VetoableChangeSupport(this);
-    private PropertyChangeSupport changes = new PropertyChangeSupport(this);
+	private PropertyChangeSupport changes = new PropertyChangeSupport(this);
 }

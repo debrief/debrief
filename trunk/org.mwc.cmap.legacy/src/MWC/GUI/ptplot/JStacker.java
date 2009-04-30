@@ -15,6 +15,10 @@ abstract public class JStacker extends Panel {
   // member variables
   ///////////////////////////////////////////////
   
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	// the plot object
 	private Plot sPlot;
 

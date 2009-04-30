@@ -64,7 +64,12 @@ public abstract class PlotLive extends Plot implements Runnable {
     ///////////////////////////////////////////////////////////////////
     ////                         public methods                    ////
 
-    /** Redefine in derived classes to add points to the plot.
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+		/** Redefine in derived classes to add points to the plot.
      *  Adding many points at once will make the plot somewhat faster
      *  because the thread yields between calls to this method.
      *  However, the plot will also be somewhat less responsive to user

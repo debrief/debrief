@@ -163,7 +163,13 @@ public class DateFormatPropertyEditor extends PropertyEditorSupport
   abstract static public class SwingDateFormatEditor extends javax.swing.JComboBox
   {
 
-    public SwingDateFormatEditor()
+    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+
+		public SwingDateFormatEditor()
     {
       // get our property editor data
       DateFormatPropertyEditor pe = new DateFormatPropertyEditor();

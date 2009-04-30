@@ -455,6 +455,10 @@ public class SwingPropertiesPanel extends SwingTabPanel implements PropertiesPan
   {
 
     /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		/**
      * list of objects which want to know if/when we close (in particular toolbars when we are already closing)
      */
     private Vector<ClosingEventListener> _closeListeners;

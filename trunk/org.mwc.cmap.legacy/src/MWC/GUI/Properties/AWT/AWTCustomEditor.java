@@ -51,7 +51,11 @@ import MWC.GUI.Properties.PropertiesPanel;
 
 abstract public class AWTCustomEditor extends Panel implements Customizer
 {
-  /////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	/////////////////////////////////////////////////////////////
   // member variables
   ////////////////////////////////////////////////////////////
   protected PlainChart _theChart;
