@@ -17,6 +17,8 @@ import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
 import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -295,12 +297,12 @@ public class TrackWrapper_Test
 	@Test
 	public void testGetItemsBetween()
 	{
-		assertEquals("found the items", 2, _tw.getItemsBetween(new HiResDate(200003),
-				new HiResDate(400003)).size());
+		assertEquals("found the items", 2, _tw.getItemsBetween(
+				new HiResDate(200003), new HiResDate(400003)).size());
 		assertEquals("found the items", 3, _tw.getItemsBetween(new HiResDate(0),
 				new HiResDate(300000)).size());
-		assertEquals("found the items", 6, _tw.getItemsBetween(new HiResDate(100000),
-				new HiResDate(800000)).size());
+		assertEquals("found the items", 6, _tw.getItemsBetween(
+				new HiResDate(100000), new HiResDate(800000)).size());
 	}
 
 	/**
@@ -467,9 +469,9 @@ public class TrackWrapper_Test
 		assertEquals("now two segments", 2, segs.size());
 		assertEquals("first is of correct length", 2, segs.firstElement().size());
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
-		
+
 		// check the names.
-		Enumeration<Editable> items= _tw.elements();
+		Enumeration<Editable> items = _tw.elements();
 		SegmentList list = (SegmentList) items.nextElement();
 		Enumeration<Editable> segments = list.elements();
 		TrackSegment s1 = (TrackSegment) segments.nextElement();
@@ -484,7 +486,7 @@ public class TrackWrapper_Test
 		assertEquals("first is of correct length", 2, segs2.firstElement().size());
 		assertEquals("first is of correct length", 2, segs2.lastElement().size());
 
-		items= _tw.elements();
+		items = _tw.elements();
 		list = (SegmentList) items.nextElement();
 		segments = list.elements();
 		s1 = (TrackSegment) segments.nextElement();
@@ -493,21 +495,21 @@ public class TrackWrapper_Test
 		assertEquals("correct layer name:", "010001.40", s1.getName());
 		assertEquals("correct layer name:", "010005.00", s2.getName());
 		assertEquals("correct layer name:", "010008.20", s3.getName());
-		
+
 		// now recombine them
 		_tw.combineSections(segs2);
 		assertEquals("has 2 segments", 2, numSegments());
 		assertEquals("first is of correct length", 2, segs.firstElement().size());
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
 
-		items= _tw.elements();
+		items = _tw.elements();
 		list = (SegmentList) items.nextElement();
 		segments = list.elements();
 		s1 = (TrackSegment) segments.nextElement();
 		s2 = (TrackSegment) segments.nextElement();
 		assertEquals("correct layer name:", "010001.40", s1.getName());
 		assertEquals("correct layer name:", "010005.00", s2.getName());
-		
+
 		_tw.combineSections(segs);
 		assertEquals("has 1 segment1", 1, numSegments());
 		assertEquals("first is of correct length", 6, segs.firstElement().size());
@@ -523,9 +525,9 @@ public class TrackWrapper_Test
 			Object child = layers.nextElement();
 			if (child instanceof TrackSegment)
 			{
-					res++;
+				res++;
 			}
-			else if(child instanceof SegmentList)
+			else if (child instanceof SegmentList)
 			{
 				SegmentList segl = (SegmentList) child;
 				Enumeration<Editable> segs = segl.elements();
@@ -534,9 +536,9 @@ public class TrackWrapper_Test
 					res++;
 					segs.nextElement();
 				}
-				
+
 			}
-				
+
 		}
 		return res;
 	}
@@ -556,15 +558,123 @@ public class TrackWrapper_Test
 
 	}
 
-	/**
-	 * Test method for
-	 * {@link Debrief.Wrappers.TrackWrapper#combineSections(java.util.Vector)}.
-	 */
 	@Test
-	public void testCombineSections()
+	public void testTrackMerge1()
 	{
-		// fail("Not yet implemented"); // TODO
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(310000, 32, 33));
+		ts2.addFix(createFix(311000, 32, 33));
+		ts2.addFix(createFix(312000, 32, 33));
+		ts2.addFix(createFix(313000, 32, 33));
+		ts2.addFix(createFix(314000, 32, 33));
+		TrackWrapper tw3 = new TrackWrapper();
+		tw3.setName("tw3");
+		tw3.add(ts2);
+		Layers theLayers = new Layers();
+		theLayers.addThisLayer(tw3);
+		theLayers.addThisLayer(_tw);
+
+		// check startup status
+		assertEquals("track starts correctly", 6, trackLength());
+		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
+		assertEquals("have right num tracks", 2, theLayers.size());
+
+		// do a merge
+		Layer[] parents = new Layer[]
+		{ _tw, tw3 };
+		Editable[] subjects = new Editable[]
+		{ _tw, ts2 };
+		TrackWrapper.mergeTracks(ts2, theLayers, parents, subjects);
+
+		// have a look at the results
+		assertEquals("track 3 is longer", 11, tw3.numFixes());
+		assertEquals("track got ditched", 1, theLayers.size());
 	}
+
+	@Test
+	public void testTrackMerge2()
+	{
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(310000, 32, 33));
+		ts2.addFix(createFix(311000, 32, 33));
+		ts2.addFix(createFix(312000, 32, 33));
+		ts2.addFix(createFix(313000, 32, 33));
+		ts2.addFix(createFix(314000, 32, 33));
+		TrackWrapper tw3 = new TrackWrapper();
+		tw3.setName("tw3");
+		tw3.add(ts2);
+		Layers theLayers = new Layers();
+		theLayers.addThisLayer(tw3);
+		theLayers.addThisLayer(_tw);
+
+		// check startup status
+		assertEquals("track starts correctly", 6, trackLength());
+		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
+		assertEquals("have right num tracks", 2, theLayers.size());
+
+		// do a merge
+		Layer[] parents = new Layer[]
+		{ _tw, tw3 };
+		Editable[] subjects = new Editable[]
+		{ _tw, ts2 };
+		TrackWrapper.mergeTracks(_tw, theLayers, parents, subjects);
+
+		// have a look at the results
+		assertEquals("track is longer", 11, _tw.numFixes());
+		assertEquals("track got ditched", 1, theLayers.size());
+	}
+
+	// ////////////
+
+	@Test
+	public void testTrackGroup1()
+	{
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(310000, 32, 33));
+		ts2.addFix(createFix(311000, 32, 33));
+		ts2.addFix(createFix(312000, 32, 33));
+		ts2.addFix(createFix(313000, 32, 33));
+		ts2.addFix(createFix(314000, 32, 33));
+		TrackWrapper tw3 = new TrackWrapper();
+		tw3.setName("tw3");
+		tw3.add(ts2);
+		Layers theLayers = new Layers();
+		theLayers.addThisLayer(tw3);
+		theLayers.addThisLayer(_tw);
+
+		// check startup status
+		assertEquals("track starts correctly", 6, trackLength());
+		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
+		assertEquals("have right num tracks", 2, theLayers.size());
+
+		// do a merge
+		Layer[] parents = new Layer[]
+		{ _tw, tw3 };
+		Editable[] subjects = new Editable[]
+		{ _tw, ts2 };
+		TrackWrapper.groupTracks(_tw, theLayers, parents, subjects);
+
+		// have a look at the results
+		assertEquals("track 3 is longer", 11, _tw.numFixes());
+
+		// check it's been a group, not an add
+		Enumeration<Editable> iter = _tw.elements();
+		_ctr = 0;
+		while (iter.hasMoreElements())
+		{
+			SegmentList sl = (SegmentList) iter.nextElement();
+			Enumeration<Editable> segments = sl.elements();
+			while (segments.hasMoreElements())
+			{
+				_ctr++;
+				segments.nextElement();
+			}
+		}
+		assertEquals("track _tw has several segments", 2, _ctr);
+
+		assertEquals("track got ditched", 1, theLayers.size());
+	}
+
 
 	private FixWrapper createFix(int time, double vLat, double vLong)
 	{

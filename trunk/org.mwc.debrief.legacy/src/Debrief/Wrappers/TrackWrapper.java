@@ -31,6 +31,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.Canvas.MockCanvasType;
@@ -265,6 +266,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			done = true;
 
 		}
+		else if(point instanceof TrackSegment)
+		{
+			_thePositions.addSegment((TrackSegment) point);
+			done = true;
+		}
 
 		if (!done)
 		{
@@ -283,14 +289,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final void addFix(final FixWrapper theFix)
 	{
 		// do we have any track segments
-		if(_thePositions.size() == 0)
+		if (_thePositions.size() == 0)
 		{
 			// nope, add one
 			TrackWrapper_Support.TrackSegment firstSegment = new TrackWrapper_Support.TrackSegment();
 			firstSegment.setName("Positions");
 			_thePositions.addSegment(firstSegment);
 		}
-		
+
 		// add fix to last track segment
 		TrackSegment last = (TrackSegment) _thePositions.last();
 		last.addFix(theFix);
@@ -348,14 +354,24 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public final void append(final Layer other)
 	{
-		final java.util.Enumeration<Editable> iter = other.elements();
-		while (iter.hasMoreElements())
+		// is it a track?
+		if(other instanceof TrackWrapper)
 		{
-			Editable nextItem = iter.nextElement();
-			if (nextItem instanceof Layer)
-				append((Layer) nextItem);
-			else
-				add(nextItem);
+			// yes, break it down.
+			final java.util.Enumeration<Editable> iter = other.elements();
+			while (iter.hasMoreElements())
+			{
+				Editable nextItem = iter.nextElement();
+				if (nextItem instanceof Layer)
+					append((Layer) nextItem);
+				else
+					add(nextItem);
+			}
+		}
+		else
+		{
+			// nope, just add it to us.
+			add(other);
 		}
 	}
 
@@ -508,7 +524,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// ok, we want to wrap our fast-data as a set of plottables
 		// see how many track segments we have
-		if(_thePositions.size() == 1)
+		if (_thePositions.size() == 1)
 		{
 			// just the one, insert it
 			res.add(_thePositions.first());
@@ -983,7 +999,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			TrackSegment firstSeg = (TrackSegment) _thePositions.first();
 			TrackSegment lastSeg = (TrackSegment) _thePositions.last();
-			
+
 			// see if this DTG is inside our data range
 			// in which case we will just return null
 			final FixWrapper theFirst = (FixWrapper) firstSeg.first();
@@ -1069,8 +1085,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// headSet operation is exclusive - so we need to
 							// find the one
 							// after the first
-							final SortedSet<Editable> otherSet = getRawPositions()
-									.headSet(nearestFix);
+							final SortedSet<Editable> otherSet = getRawPositions().headSet(
+									nearestFix);
 
 							FixWrapper previous = null;
 
@@ -1106,44 +1122,43 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	}
 
-
 	private SortedSet<Editable> getPositionsBetween(FixWrapper starter2,
 			FixWrapper finisher2)
 	{
 		// first get them all as one list
-		SortedSet<Editable> pts =  getRawPositions();
-		
+		SortedSet<Editable> pts = getRawPositions();
+
 		// now do the sort
 		return pts.subSet(starter2, finisher2);
 	}
-	
+
 	private SortedSet<Editable> getRawPositions()
 	{
 		SortedSet<Editable> res = null;
-		
+
 		// do we just have the one list?
-		if(_thePositions.size() == 1)
+		if (_thePositions.size() == 1)
 		{
 			TrackSegment p = (TrackSegment) _thePositions.first();
-			res = (SortedSet<Editable>)p.getData();
+			res = (SortedSet<Editable>) p.getData();
 		}
 		else
 		{
 			// loop through them
 			res = new TreeSet<Editable>();
 			Enumeration<Editable> segs = _thePositions.elements();
-			while(segs.hasMoreElements())
+			while (segs.hasMoreElements())
 			{
 				// get this segment
 				TrackSegment seg = (TrackSegment) segs.nextElement();
-				
+
 				// add all the points
 				res.addAll(seg.getData());
-			}			
+			}
 		}
 		return res;
 	}
-	
+
 	/**
 	 * get the position data, not all the sensor/contact/position data mixed
 	 * together
@@ -1618,15 +1633,15 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				sw.removeElement(point);
 			}
 		}
-		else if(point instanceof TrackSegment)
+		else if (point instanceof TrackSegment)
 		{
 			_thePositions.removeElement(point);
 		}
 		else
 		{
 			// loop through the segments
-			Enumeration<Editable>segments = _thePositions.elements();
-			while(segments.hasMoreElements())
+			Enumeration<Editable> segments = _thePositions.elements();
+			while (segments.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
 				seg.removeElement(point);
@@ -2151,21 +2166,21 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// are we still in one section?
 		if (_thePositions.size() == 1)
-		{		
+		{
 			relevantSegment = (TrackSegment) _thePositions.first();
 
-			// yup, looks like we're going to be splitting it. 
+			// yup, looks like we're going to be splitting it.
 			// better give it a proper name
-			relevantSegment.setName(relevantSegment.startDTG().getDate().toString());			
+			relevantSegment.setName(relevantSegment.startDTG().getDate().toString());
 		}
 		else
 		{
 			// ok, find which segment cotains our data
 			Enumeration<Editable> segments = _thePositions.elements();
-			while(segments.hasMoreElements())
+			while (segments.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
-				if(seg.getData().contains(splitPoint))
+				if (seg.getData().contains(splitPoint))
 				{
 					relevantSegment = seg;
 					break;
@@ -2180,7 +2195,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// put the lists back into plottable layers
 		TrackSegment ts1 = new TrackSegment(p1);
 		TrackSegment ts2 = new TrackSegment(p2);
-		
+
 		// were we splitting before or after?
 		if (splitBeforePoint)
 		{
@@ -2192,7 +2207,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			ts2.removeElement(splitPoint);
 			ts1.addFix(splitPoint);
 		}
-
 
 		// now clear the positions
 		_thePositions.removeElement(relevantSegment);
@@ -2235,8 +2249,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// and put the keepers back in
 		_thePositions.addSegment(keeper);
-	}	
-	
+	}
+
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2951,6 +2965,155 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
+	}
+
+	/**
+	 * perform a merge of the supplied tracks.
+	 * 
+	 * @param target
+	 *          the final recipient of the other items
+	 * @param theLayers 
+	 * @param parents
+	 *          the parent tracks for the supplied items
+	 * @param subjects
+	 *          the actual selected items
+	 * @return sufficient information to undo the merge
+	 */
+	public static void mergeTracks(final Editable target,
+			Layers theLayers, final Layer[] parents, final Editable[] subjects)
+	{
+		Layer receiver = (Layer) target;
+
+		// ok, loop through the subjects, adding them onto the target
+		for (int i = 0; i < subjects.length; i++)
+		{
+			Layer thisL = (Layer) subjects[i];
+			TrackWrapper thisP = (TrackWrapper) parents[i];
+			if (thisL != target)
+			{
+				// is it a plain segment?
+				if (thisL instanceof TrackWrapper)
+				{
+					// pass down through the positions/segments
+					Enumeration<Editable> pts = thisL.elements();
+					
+					while(pts.hasMoreElements())
+					{
+						Editable obj = pts.nextElement();
+						if(obj instanceof SegmentList)
+						{
+							SegmentList sl = (SegmentList) obj;
+							Enumeration<Editable> segs = sl.elements();
+							while(segs.hasMoreElements())
+							{
+								TrackSegment ts = (TrackSegment) segs.nextElement();
+								receiver.add(ts);
+							}
+						}
+						else
+						{
+							Layer ts = (Layer) obj;
+							receiver.append(ts);
+						}
+					}
+				}
+				else 
+				{
+					// get it's data, and add it to the target
+					receiver.append(thisL);
+				}
+
+				// and remove the layer from it's parent
+				if (thisL instanceof TrackSegment)
+				{
+					thisP.removeElement(thisL);
+					
+					// does this just leave an empty husk?
+					if(thisP.numFixes() == 0)
+					{
+						// may as well ditch it anyway
+						theLayers.removeThisLayer(thisP);
+					}
+					
+				}
+				else
+				{
+					// we'll just remove it from the top level layer
+					theLayers.removeThisLayer(thisL);
+				}
+			}
+
+		}
+	}
+
+	/** put the other objects into this one as children
+	 * 
+	 * @param wrapper whose going to receive it
+	 * @param theLayers the top level layers object
+	 * @param parents the track wrapppers containing the children
+	 * @param subjects the items to insert.
+	 */
+	public static void groupTracks(TrackWrapper target, Layers theLayers,
+			Layer[] parents, Editable[] subjects)
+	{
+		// ok, loop through the subjects, adding them onto the target
+		for (int i = 0; i < subjects.length; i++)
+		{
+			Layer thisL = (Layer) subjects[i];
+			TrackWrapper thisP = (TrackWrapper) parents[i];
+			if (thisL != target)
+			{
+				// is it a plain segment?
+				if (thisL instanceof TrackWrapper)
+				{
+					// pass down through the positions/segments
+					Enumeration<Editable> pts = thisL.elements();
+					
+					while(pts.hasMoreElements())
+					{
+						Editable obj = pts.nextElement();
+						if(obj instanceof SegmentList)
+						{
+							SegmentList sl = (SegmentList) obj;
+							Enumeration<Editable> segs = sl.elements();
+							while(segs.hasMoreElements())
+							{
+								TrackSegment ts = (TrackSegment) segs.nextElement();
+								target.add(ts);
+							}
+						}
+						else
+						{
+							Layer ts = (Layer) obj;
+							target.add(ts);
+						}
+					}
+				}
+				else 
+				{
+					// get it's data, and add it to the target
+					target.add(thisL);
+				}
+
+				// and remove the layer from it's parent
+				if (thisL instanceof TrackSegment)
+				{
+					thisP.removeElement(thisL);
+					
+					// does this just leave an empty husk?
+					if(thisP.numFixes() == 0)
+					{
+						// may as well ditch it anyway
+						theLayers.removeThisLayer(thisP);
+					}					
+				}
+				else
+				{
+					// we'll just remove it from the top level layer
+					theLayers.removeThisLayer(thisL);
+				}
+			}
+		}
 	}
 
 }
