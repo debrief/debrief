@@ -219,9 +219,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		{
 			if (duffItemFound)
 			{
-				String txt = "Sorry, not all items are suitable data-sources for an xy plot";
-				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "XY Plot",
-						txt);
+				// don't output this message, since it popups up when we're not even trying to do an xy plot.
+//				String txt = "Sorry, not all items are suitable data-sources for an xy plot";
+//				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "XY Plot",
+//						txt);
 				return;
 			}
 			else
