@@ -929,6 +929,9 @@ public class RightClickSupport
 				try
 				{
 					_action.execute(thisSubject);
+					
+					// fire an update
+					_layers.fireModified(_parentLayer);
 				} catch (IllegalArgumentException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
@@ -952,6 +955,8 @@ public class RightClickSupport
 				try
 				{
 					_action.execute(thisSubject);
+					// fire an update
+					_layers.fireModified(_parentLayer);
 				} catch (Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
@@ -976,6 +981,8 @@ public class RightClickSupport
 				try
 				{
 					_action.undo(thisSubject);
+					// fire an update
+					_layers.fireModified(_parentLayer);
 				} catch (Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
