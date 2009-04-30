@@ -12,6 +12,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class TrackWrapper_Support
@@ -108,6 +109,14 @@ public class TrackWrapper_Support
 		private static final long serialVersionUID = 1L;
 		
 		
+
+		@Override
+		public double rangeFrom(WorldLocation other)
+		{
+			double oneEnd = this.first().rangeFrom(other);
+			double otherEnd = this.last().rangeFrom(other);
+			return Math.min(oneEnd, otherEnd);
+		}
 
 		private boolean _plotDR = false;
 

@@ -604,6 +604,32 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					newPeriod);
 		}
 	}
+	
+
+	public void findNearestSegmentHotspotFor(WorldLocation cursorLoc,
+			Point cursorPt, LocationConstruct currentNearest)
+	{
+		// initialise thisDist, since we're going to be over-writing it
+		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);
+
+		// cycle through the track segments
+		Collection<Editable> segments = _thePositions.getData();
+		for (Iterator<Editable> iterator = segments.iterator(); iterator.hasNext();)
+		{
+			TrackSegment thisSeg = (TrackSegment) iterator.next();
+			if (thisSeg.getVisible())
+			{
+				// how far away is it?
+				
+				thisDist = new WorldDistance(thisSeg.rangeFrom(cursorLoc), WorldDistance.DEGS);
+
+				// is it closer?
+				currentNearest.checkMe(this, thisDist, null, this);
+			}
+			
+		}
+	}
+	
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 			ComponentConstruct currentNearest, Layer parentLayer)
