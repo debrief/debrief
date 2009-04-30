@@ -17,7 +17,6 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
-import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -2208,19 +2207,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		res.add(ts2);
 
 		return res;
-	}
-
-	
-	private void listIt(SortedSet<Editable> p2)
-	{
-		System.err.println("=============");
-		Iterator<Editable> iter = p2.iterator();
-		while(iter.hasNext())
-		{
-			FixWrapper fw = (FixWrapper) iter.next();
-			System.err.println("| " + p2 + " - " + fw.getTime().getDate().toString());
-		}
-		System.err.println("=============");
 	}
 
 	/**

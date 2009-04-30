@@ -5,7 +5,6 @@ package Debrief.Wrappers;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Vector;
 
