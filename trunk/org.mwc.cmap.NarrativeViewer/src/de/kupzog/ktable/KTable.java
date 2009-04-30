@@ -2313,7 +2313,7 @@ public class KTable extends Canvas {
 				label.setLayoutData(new GridData(GridData.FILL_BOTH));
 				label.setForeground(getDisplay().getSystemColor(SWT.COLOR_INFO_FOREGROUND));
 				label.setBackground(getDisplay().getSystemColor(SWT.COLOR_INFO_BACKGROUND));
-				if (tooltip != null || !tooltip.equals(""))
+				if (tooltip != null && !(tooltip.equals("")))
 					label.setText(tooltip);
 				else
 					label.setText(m_nativTooltip);
