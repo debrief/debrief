@@ -8,10 +8,14 @@ import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorActionDelegate;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.IWorkbenchWindowActionDelegate;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.interfaces.IResourceProvider;
-import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 
 import MWC.GUI.PlainChart;
 

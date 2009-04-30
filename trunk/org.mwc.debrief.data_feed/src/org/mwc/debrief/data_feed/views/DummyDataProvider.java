@@ -3,15 +3,8 @@
  */
 package org.mwc.debrief.data_feed.views;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.util.Date;
 
-import Debrief.ReaderWriter.Replay.*;
-import Debrief.Wrappers.*;
-import MWC.GenericData.*;
-import MWC.TacticalData.*;
-import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.Timer.TimerListener;
 
 /**
@@ -30,13 +23,13 @@ public class DummyDataProvider implements RealTimeProvider, TimerListener
 	 */
 	private LiveFeedViewer _myHost;
 
-	private HiResDate _dtg;
-
-	private WorldLocation _lastLoc;
-
-	private PlainImporterBase _iff;
-
-	private TrackWrapper _trk;
+//	private HiResDate _dtg;
+//
+//	private WorldLocation _lastLoc;
+//
+//	private PlainImporterBase _iff;
+//
+//	private TrackWrapper _trk;
 
 	public DummyDataProvider()
 	{

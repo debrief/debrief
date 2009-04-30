@@ -81,7 +81,6 @@ public abstract class KTableSortedModel extends KTableDefaultModel {
 	 * @param comparator
 	 *            The KTableSortComparator that knows how to sort the rows!
 	 */
-	@SuppressWarnings("unchecked")
 	public void sort(KTableSortComparator comparator) {
 		Collections.sort(rowMapping, comparator);
 
