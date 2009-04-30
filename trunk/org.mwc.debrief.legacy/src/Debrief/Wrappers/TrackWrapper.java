@@ -624,7 +624,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				thisDist = new WorldDistance(thisSeg.rangeFrom(cursorLoc), WorldDistance.DEGS);
 
 				// is it closer?
-				currentNearest.checkMe(this, thisDist, null, this);
+				currentNearest.checkMe(thisSeg, thisDist, null, this);
 			}
 			
 		}

@@ -33,13 +33,6 @@ import MWC.GenericData.*;
  */
 public class DragFeature extends CoreDragAction
 {
-
-	public static void checkClosest(Plottable thisSubject,
-			MWC.GenericData.WorldLocation cursorPos, LocationConstruct currentNearest,
-			DragTargetChecker helper)
-	{
-	}
-
 	protected void execute()
 	{
 		// ok, fire our parent

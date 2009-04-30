@@ -1,5 +1,6 @@
 package Debrief.Wrappers;
 
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
@@ -11,8 +12,10 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
+import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class TrackWrapper_Support
@@ -100,7 +103,7 @@ public class TrackWrapper_Support
 	 * @author Administrator
 	 * 
 	 */
-	final public static class TrackSegment extends BaseItemLayer
+	final public static class TrackSegment extends BaseItemLayer implements DraggableItem
 	{
 
 		/**
@@ -108,7 +111,35 @@ public class TrackWrapper_Support
 		 */
 		private static final long serialVersionUID = 1L;
 		
-		
+		/**
+		 * move the whole of the track be the provided offset
+		 */
+		public final void shiftTrack(Enumeration<Editable> theEnum,
+				final WorldVector offset)
+		{
+			if (theEnum == null)
+				theEnum = elements();
+
+			while (theEnum.hasMoreElements())
+			{
+				final Object thisO = theEnum.nextElement();
+				if (thisO instanceof FixWrapper)
+				{
+					final FixWrapper fw = (FixWrapper) thisO;
+
+					final WorldLocation copiedLoc = new WorldLocation(fw.getFix()
+							.getLocation());
+					copiedLoc.addToMe(offset);
+
+					// and replace the location (this method updates all 3 location
+					// contained
+					// in the fix wrapper
+					fw.setFixLocation(copiedLoc);
+
+					// ok - job well done
+				}
+			}
+		}
 
 		@Override
 		public double rangeFrom(WorldLocation other)
@@ -209,6 +240,21 @@ public class TrackWrapper_Support
 			
 			// override the name, just in case this point is earlier			
 			sortOutDate();
+		}
+
+		@Override
+		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+				LocationConstruct currentNearest, Layer parentLayer)
+		{
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void shift(WorldVector vector)
+		{
+			// TODO Auto-generated method stub
+			
 		}
 
 	}
