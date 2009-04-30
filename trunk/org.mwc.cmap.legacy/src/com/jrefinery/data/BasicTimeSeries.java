@@ -430,7 +430,7 @@ public class BasicTimeSeries extends Series implements Serializable {
      *
      * @throws SeriesException if there is a problem adding the data.
      */
-    @SuppressWarnings({ "unchecked", "unchecked" })
+    @SuppressWarnings({ "unchecked" })
 		public void add(TimeSeriesDataPair pair) throws SeriesException {
 
         // check arguments...
