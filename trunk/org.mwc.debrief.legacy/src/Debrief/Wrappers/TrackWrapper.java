@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
+import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
 
@@ -1134,12 +1135,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			Enumeration<Editable> segs = _thePositions.elements();
 			while(segs.hasMoreElements())
 			{
+				// get this segment
 				TrackSegment seg = (TrackSegment) segs.nextElement();
-				Enumeration<Editable> pts = seg.elements();
-				while(pts.hasMoreElements())
-				{
-					res.add(pts.nextElement());
-				}
+				
+				// add all the points
+				res.addAll(seg.getData());
 			}			
 		}
 		return res;
@@ -2132,6 +2132,125 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		return visible;
 	}
 
+	/**
+	 * split this whole track into two sub-tracks
+	 * 
+	 * @param splitPoint
+	 *          the point at which we perform the split
+	 * @param splitBeforePoint
+	 *          whether to put split before or after specified point
+	 * @return a list of the new track segments (used for subsequent undo
+	 *         operations)
+	 */
+	public Vector<TrackSegment> splitTrack(FixWrapper splitPoint,
+			boolean splitBeforePoint)
+	{
+		System.err.println("Track: doing split at" + splitPoint);
+		Vector<TrackSegment> res = null;
+
+		TrackSegment relevantSegment = null;
+
+		// are we still in one section?
+		if (_thePositions.size() == 1)
+		{		
+			relevantSegment = (TrackSegment) _thePositions.first();
+
+			// yup, looks like we're going to be splitting it. 
+			// better give it a proper name
+			relevantSegment.setName(relevantSegment.startDTG().getDate().toString());			
+		}
+		else
+		{
+			// ok, find which segment cotains our data
+			Enumeration<Editable> segments = _thePositions.elements();
+			while(segments.hasMoreElements())
+			{
+				TrackSegment seg = (TrackSegment) segments.nextElement();
+				if(seg.getData().contains(splitPoint))
+				{
+					relevantSegment = seg;
+					break;
+				}
+			}
+		}
+
+		// yup, do our first split
+		SortedSet<Editable> p1 = relevantSegment.headSet(splitPoint);
+		SortedSet<Editable> p2 = relevantSegment.tailSet(splitPoint);
+
+		// put the lists back into plottable layers
+		TrackSegment ts1 = new TrackSegment(p1);
+		TrackSegment ts2 = new TrackSegment(p2);
+		
+		// were we splitting before or after?
+		if (splitBeforePoint)
+		{
+			// cool, that's the normal behaviour of tail set.
+		}
+		else
+		{
+			// bugger, better move fix from second set to first
+			ts2.removeElement(splitPoint);
+			ts1.addFix(splitPoint);
+		}
+
+
+		// now clear the positions
+		_thePositions.removeElement(relevantSegment);
+
+		// and put back our new layers
+		_thePositions.addSegment(ts1);
+		_thePositions.addSegment(ts2);
+
+		// remember them
+		res = new Vector<TrackSegment>();
+		res.add(ts1);
+		res.add(ts2);
+
+		return res;
+	}
+
+	
+	private void listIt(SortedSet<Editable> p2)
+	{
+		System.err.println("=============");
+		Iterator<Editable> iter = p2.iterator();
+		while(iter.hasNext())
+		{
+			FixWrapper fw = (FixWrapper) iter.next();
+			System.err.println("| " + p2 + " - " + fw.getTime().getDate().toString());
+		}
+		System.err.println("=============");
+	}
+
+	/**
+	 * switch the two track sections into one track section
+	 * 
+	 * @param res
+	 *          the previously split track sections
+	 */
+	public void combineSections(Vector<TrackSegment> res)
+	{
+		// ok, remember the first
+		TrackSegment keeper = res.firstElement();
+
+		// now remove them all, adding them to the first
+		Iterator<TrackSegment> iter = res.iterator();
+		while (iter.hasNext())
+		{
+			TrackSegment pl = iter.next();
+			if (pl != keeper)
+			{
+				keeper.append((Layer) pl);
+			}
+
+			_thePositions.removeElement(pl);
+		}
+
+		// and put the keepers back in
+		_thePositions.addSegment(keeper);
+	}	
+	
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2845,18 +2964,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				return super.getPropertyDescriptors();
 			}
 		}
-
-	}
-
-	public Vector<TrackSegment> splitTrack(FixWrapper fix, boolean before)
-	{
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	public void combineSections(Vector<TrackSegment> sections)
-	{
-		// TODO Auto-generated method stub
 
 	}
 

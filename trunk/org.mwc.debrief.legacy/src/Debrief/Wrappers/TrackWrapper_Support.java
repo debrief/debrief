@@ -12,6 +12,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
 import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class TrackWrapper_Support
 {
@@ -84,6 +85,12 @@ public class TrackWrapper_Support
 			System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO SEGMENT LIST");
 		}
 
+		@Override
+		public void append(Layer other)
+		{
+			System.err.println("SHOULD NOT BE ADDING LAYER TO SEGMENTS LIST");
+		}
+
 	}
 
 	/**
@@ -104,7 +111,41 @@ public class TrackWrapper_Support
 
 		private boolean _plotDR = false;
 
+
+		public void append(Layer other)
+		{
+			// ok, pass through and add the items
+			final Enumeration<Editable> enumer = other.elements();
+			while (enumer.hasMoreElements())
+			{
+				final FixWrapper pl =  (FixWrapper) enumer.nextElement();
+				addFix(pl);
+			}
+		}
 		
+		/** create a segment based on the suppplied items
+		 * 
+		 * @param theItems
+		 */
+		public TrackSegment(SortedSet<Editable> theItems)
+		{
+			getData().addAll(theItems);
+			
+			// now sort out the name
+			sortOutDate();
+		}
+
+		private void sortOutDate()
+		{
+			if(getData().size() > 0)
+				setName(FormatRNDateTime.toString(startDTG().getDate().getTime()));
+		}
+		
+		public TrackSegment()
+		{
+			// no-op constructor
+		}
+
 		/** sort the items in ascending order
 		 * 
 		 */
@@ -157,9 +198,8 @@ public class TrackWrapper_Support
 		{
 			super.add(fix);
 			
-			// if this is the first item, use it's label as our name			
-			if(this.getName() == null)
-				this.setName(startDTG().getDate().toString());
+			// override the name, just in case this point is earlier			
+			sortOutDate();
 		}
 
 	}
@@ -177,17 +217,6 @@ public class TrackWrapper_Support
 		 */
 		private static final long serialVersionUID = 1L;
 
-
-		public void append(Layer other)
-		{
-			// ok, pass through and add the items
-			final Enumeration<Editable> enumer = other.elements();
-			while (enumer.hasMoreElements())
-			{
-				final Plottable pl = (Plottable) enumer.nextElement();
-				add(pl);
-			}
-		}
 
 		public void exportShape()
 		{

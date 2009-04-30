@@ -998,7 +998,7 @@ public class RightClickSupport
 
 		private void fireUpdate()
 		{
-			_layers.fireModified(_parentLayer);
+			_layers.fireExtended(null,_parentLayer);
 		}
 
 	}
