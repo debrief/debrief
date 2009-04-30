@@ -802,7 +802,7 @@ public class JFreeChartDemoBase
    *
    * @return a chart.
    */
-  @SuppressWarnings({ "deprecation", "deprecation" })
+  @SuppressWarnings({ "deprecation" })
 	public JFreeChart createNullXYPlot()
   {
 
