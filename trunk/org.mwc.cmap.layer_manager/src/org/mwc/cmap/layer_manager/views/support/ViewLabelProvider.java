@@ -13,6 +13,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.*;
 
 import Debrief.Wrappers.*;
+import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.GUI.*;
 import MWC.GUI.Chart.Painters.*;
 import MWC.GUI.VPF.FeaturePainter;
@@ -105,10 +106,16 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 
 			if (editable instanceof TrackWrapper)
 				imageKey = "track.gif";
+			else if (editable instanceof SensorWrapper)
+				imageKey = "SensorFit.png";
+			else if (editable instanceof SensorContactWrapper)
+				imageKey = "active16.png";
+			else if (editable instanceof TrackSegment)
+				imageKey = "tracksegment.gif";
 			else if (editable instanceof Layer)
 				imageKey = "layer.gif";
 			else if (editable instanceof FixWrapper)
-				imageKey = "fix.gif";
+				imageKey = "Location.png";
 			else if (editable instanceof ShapeWrapper)
 				imageKey = "shape.gif";
 			else if (editable instanceof GridPainter)
