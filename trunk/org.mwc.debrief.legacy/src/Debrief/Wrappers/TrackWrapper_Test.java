@@ -676,6 +676,55 @@ public class TrackWrapper_Test
 	}
 
 
+	@Test
+	public void testTrackGroupOrder()
+	{
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(310000, 32, 33));
+		ts2.addFix(createFix(311000, 32, 33));
+		ts2.addFix(createFix(312000, 32, 33));
+		ts2.addFix(createFix(313000, 32, 33));
+		ts2.addFix(createFix(314000, 32, 33));
+
+		TrackSegment ts3 = new TrackSegment();
+		ts3.addFix(createFix(410000, 32, 33));
+		ts3.addFix(createFix(411000, 32, 33));
+		ts3.addFix(createFix(412000, 32, 33));
+		ts3.addFix(createFix(413000, 32, 33));
+		ts3.addFix(createFix(414000, 32, 33));
+		
+		TrackWrapper tw3 = new TrackWrapper();		
+		tw3.setName("tw3");
+		tw3.add(ts2);
+		tw3.add(ts3);
+		
+		Enumeration<Editable> elements = tw3.elements();
+		SegmentList list = (SegmentList) elements.nextElement();
+		Enumeration<Editable> segments = list.elements();
+		TrackSegment seg1 = (TrackSegment) segments.nextElement();
+		TrackSegment seg2 = (TrackSegment) segments.nextElement();
+		
+		assertEquals("correct one is first", ts2, seg1);
+		assertEquals("correct one is segment", ts3, seg2);
+		
+
+		// try in another list
+		assertEquals("correct one is first", ts2, seg1);
+		assertEquals("correct one is segment", ts3, seg2);
+
+		tw3 = new TrackWrapper();		
+		tw3.setName("tw3");
+		tw3.add(ts2);
+		tw3.add(ts3);
+		
+		elements = tw3.elements();
+		list = (SegmentList) elements.nextElement();
+		segments = list.elements();
+		seg1 = (TrackSegment) segments.nextElement();
+		seg2 = (TrackSegment) segments.nextElement();
+	}
+	
+
 	private FixWrapper createFix(int time, double vLat, double vLong)
 	{
 		FixWrapper fw = new FixWrapper(new Fix(new HiResDate(time),
