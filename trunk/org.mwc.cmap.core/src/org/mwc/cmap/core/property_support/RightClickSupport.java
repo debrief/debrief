@@ -29,6 +29,7 @@ import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Editable.EditorType;
@@ -441,8 +442,18 @@ public class RightClickSupport
 				{
 					_method.invoke(thisSubject, new Object[0]);
 
-					// hey, let's do a redraw aswell...
-					_theLayers.fireModified(_topLayer);
+					// hmm, the method may have actually changed the data, we need to find out if it 
+					// needs an extend
+					if(_method.isAnnotationPresent(FireExtended.class))
+					{
+						_theLayers.fireExtended(null, _topLayer);
+					}
+					else
+					{
+						// hey, let's do a redraw aswell...
+						_theLayers.fireModified(_topLayer);
+					}
+					
 				} catch (IllegalArgumentException e)
 				{
 					CorePlugin.logError(Status.ERROR,
