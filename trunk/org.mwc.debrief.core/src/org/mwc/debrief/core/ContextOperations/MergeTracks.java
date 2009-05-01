@@ -113,9 +113,10 @@ public class MergeTracks implements RightClickContextItemGenerator
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
-			fireModified();
-			return Status.OK_STATUS;
+			int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
+			if(res == IStatus.OK)
+				fireModified();
+			return new Status(res, null, "Merge successful", null);
 		}
 
 		

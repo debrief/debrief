@@ -257,6 +257,15 @@ public class TrackWrapper_Support
 			
 		}
 
+		public HiResDate endDTG()
+		{
+			Collection<Editable> items = getData();
+			SortedSet<Editable> sortedItems = (SortedSet<Editable>) items;
+			Editable last = sortedItems.last();
+			FixWrapper fw = (FixWrapper) last;
+			return fw.getDateTimeGroup();
+		}
+
 	}
 
 	/**

@@ -1,121 +1,179 @@
 package org.mwc.debrief.core;
 
-import java.util.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.ui.*;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorRegistry;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
-
-import org.mwc.debrief.core.ContextOperations.*;
+import org.mwc.debrief.core.ContextOperations.GenerateTrack;
+import org.mwc.debrief.core.ContextOperations.GroupTracks;
+import org.mwc.debrief.core.ContextOperations.InterpolateTrack;
+import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.osgi.framework.BundleContext;
 
+import MWC.GUI.MessageProvider;
 import MWC.Utilities.ReaderWriter.ImportManager;
 
 /**
  * The main plugin class to be used in the desktop.
  */
-public class DebriefPlugin extends AbstractUIPlugin {
-	//The shared instance.
+public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
+{
+	// The shared instance.
 	private static DebriefPlugin plugin;
-	//Resource bundle.
-	private ResourceBundle resourceBundle;
-	
-	/**
-	 * The constructor.
-	 */
-	public DebriefPlugin() {
-		super();
-		plugin = this;
-	}
-
-	/**
-	 * This method is called upon plug-in activation
-	 */
-	public void start(BundleContext context) throws Exception {
-		super.start(context);
-		
-		// also provide someps extra functionality to the right-click editor
-		RightClickSupport.addRightClickGenerator(new GenerateTrack());
-		RightClickSupport.addRightClickGenerator(new InterpolateTrack());		
-		RightClickSupport.addRightClickGenerator(new MergeTracks());		
-		RightClickSupport.addRightClickGenerator(new GroupTracks());		
-		
-		// and the Replay importer/exporter (used to export items from the layer-manager)
-		ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
-		
-		// make Debrief the default editor for XML files
-		IEditorRegistry editorRegistry = PlatformUI.getWorkbench().getEditorRegistry();
-		editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
-		
-	}
-
-	/**
-	 * This method is called when the plug-in is stopped
-	 */
-	public void stop(BundleContext context) throws Exception {
-		super.stop(context);
-		plugin = null;
-		resourceBundle = null;
-	}
 
 	/**
 	 * Returns the shared instance.
 	 */
-	public static DebriefPlugin getDefault() {
+	public static DebriefPlugin getDefault()
+	{
 		return plugin;
 	}
 
 	/**
-	 * Returns the string from the plugin's resource bundle,
-	 * or 'key' if not found.
+	 * Returns an image descriptor for the image file at the given plug-in
+	 * relative path.
+	 * 
+	 * @param path
+	 *          the path
+	 * @return the image descriptor
 	 */
-	public static String getResourceString(String key) {
-		ResourceBundle bundle = DebriefPlugin.getDefault().getResourceBundle();
-		try {
+	public static ImageDescriptor getImageDescriptor(String path)
+	{
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.core",
+				path);
+	}
+
+	/**
+	 * Returns the string from the plugin's resource bundle, or 'key' if not
+	 * found.
+	 */
+	public static String getResourceString(String key)
+	{
+		final ResourceBundle bundle = DebriefPlugin.getDefault()
+				.getResourceBundle();
+		try
+		{
 			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e) {
+		}
+		catch (final MissingResourceException e)
+		{
 			return key;
 		}
 	}
 
 	/**
+	 * error logging utility
+	 * 
+	 * @param severity
+	 *          the severity; one of <code>OK</code>, <code>ERROR</code>,
+	 *          <code>INFO</code>, <code>WARNING</code>, or <code>CANCEL</code>
+	 * @param message
+	 *          a human-readable message, localized to the current locale
+	 * @param exception
+	 *          a low-level exception, or <code>null</code> if not applicable
+	 */
+	public static void logError(int severity, String message, Throwable exception)
+	{
+		final Status stat = new Status(severity, "org.mwc.debrief.core",
+				IStatus.OK, message, exception);
+		getDefault().getLog().log(stat);
+	}
+
+	// Resource bundle.
+	private ResourceBundle resourceBundle;
+
+	/**
+	 * The constructor.
+	 */
+	public DebriefPlugin()
+	{
+		super();
+		plugin = this;
+	}
+
+	/**
 	 * Returns the plugin's resource bundle,
 	 */
-	public ResourceBundle getResourceBundle() {
-		try {
+	public ResourceBundle getResourceBundle()
+	{
+		try
+		{
 			if (resourceBundle == null)
-				resourceBundle = ResourceBundle.getBundle("org.mwc.debrief.core.CorePluginResources");
-		} catch (MissingResourceException x) {
+				resourceBundle = ResourceBundle
+						.getBundle("org.mwc.debrief.core.CorePluginResources");
+		}
+		catch (final MissingResourceException x)
+		{
 			resourceBundle = null;
 		}
 		return resourceBundle;
 	}
 
-	/**
-	 * Returns an image descriptor for the image file at the given
-	 * plug-in relative path.
-	 *
-	 * @param path the path
-	 * @return the image descriptor
-	 */
-	public static ImageDescriptor getImageDescriptor(String path) {
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.core", path);
-	}
-	
-	/** error logging utility
-	 * 
-	 * @param severity the severity; one of <code>OK</code>, <code>ERROR</code>, 
-	 * <code>INFO</code>, <code>WARNING</code>,  or <code>CANCEL</code>
-	 * @param message a human-readable message, localized to the
-	 *    current locale
-	 * @param exception a low-level exception, or <code>null</code> if not
-	 *    applicable 
-	 */
-	public static void logError(int severity, String message, Throwable exception)
+	@Override
+	public void show(final String title, final String  message, final int status)
 	{
-		Status stat = new Status(severity,"org.mwc.debrief.core", Status.OK, message, exception);
-		getDefault().getLog().log(stat);
+		Display.getCurrent().asyncExec(new Runnable()
+		{
+			public void run()
+			{
+				// sort out the status
+				if (status == MessageProvider.INFO || status == MessageProvider.OK)
+					MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+							title, message);
+				else if(status == MessageProvider.WARNING)
+					MessageDialog.openWarning(Display.getCurrent().getActiveShell(),
+							title, message);
+				else if(status == MessageProvider.ERROR)
+					MessageDialog.openError(Display.getCurrent().getActiveShell(),
+							title, message);
+			}
+		});
+	}
+
+	/**
+	 * This method is called upon plug-in activation
+	 */
+	@Override
+	public void start(BundleContext context) throws Exception
+	{
+		super.start(context);
+
+		// also provide someps extra functionality to the right-click editor
+		RightClickSupport.addRightClickGenerator(new GenerateTrack());
+		RightClickSupport.addRightClickGenerator(new InterpolateTrack());
+		RightClickSupport.addRightClickGenerator(new MergeTracks());
+		RightClickSupport.addRightClickGenerator(new GroupTracks());
+
+		// and the Replay importer/exporter (used to export items from the
+		// layer-manager)
+		ImportManager.addImporter(new Debrief.ReaderWriter.Replay.ImportReplay());
+
+		// make Debrief the default editor for XML files
+		final IEditorRegistry editorRegistry = PlatformUI.getWorkbench()
+				.getEditorRegistry();
+		editorRegistry.setDefaultEditor("*.xml", "org.mwc.debrief.PlotEditor");
+
+		// tell the message provider where it can fire messages to
+		MessageProvider.Base.setProvider(this);
+
+	}
+
+	/**
+	 * This method is called when the plug-in is stopped
+	 */
+	@Override
+	public void stop(BundleContext context) throws Exception
+	{
+		super.stop(context);
+		plugin = null;
+		resourceBundle = null;
 	}
 }

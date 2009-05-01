@@ -19,6 +19,7 @@ import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.MessageProvider;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -40,6 +41,7 @@ public class TrackWrapper_Test
 	private final FixWrapper fw1 = createFix(300000, 2, 3);
 	private final FixWrapper fw2 = createFix(500000, 2, 3);
 	private TrackWrapper _tw;
+	private MessageProvider.TestableMessageProvider _messages;
 
 	private int _ctr = 0;
 
@@ -57,6 +59,8 @@ public class TrackWrapper_Test
 		_tw.addFix(createFix(400000, 3, 3));
 		_tw.addFix(fw2);
 		_tw.addFix(createFix(600000, 4, 6));
+		_messages = new MessageProvider.TestableMessageProvider();
+		MessageProvider.Base.setProvider(_messages);
 	}
 
 	/**
@@ -255,28 +259,6 @@ public class TrackWrapper_Test
 		assertEquals("start off with them all visible", 6, countVisibleItems());
 		_tw.filterListTo(new HiResDate(200000), new HiResDate(400000));
 		assertEquals("start off with them all visible", 3, countVisibleItems());
-	}
-
-	/**
-	 * Test method for
-	 * {@link Debrief.Wrappers.TrackWrapper#findNearestHotSpotIn(java.awt.Point, MWC.GenericData.WorldLocation, MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct, MWC.GUI.Layer)}
-	 * .
-	 */
-	@Test
-	public void testFindNearestHotSpotInPointWorldLocationComponentConstructLayer()
-	{
-		// fail("Not yet implemented"); // TODO
-	}
-
-	/**
-	 * Test method for
-	 * {@link Debrief.Wrappers.TrackWrapper#findNearestHotSpotIn(java.awt.Point, MWC.GenericData.WorldLocation, MWC.GUI.Shapes.DraggableItem.LocationConstruct, MWC.GUI.Layer)}
-	 * .
-	 */
-	@Test
-	public void testFindNearestHotSpotInPointWorldLocationLocationConstructLayer()
-	{
-		// fail("Not yet implemented"); // TODO
 	}
 
 	/**
@@ -562,11 +544,11 @@ public class TrackWrapper_Test
 	public void testTrackMerge1()
 	{
 		TrackSegment ts2 = new TrackSegment();
-		ts2.addFix(createFix(310000, 32, 33));
-		ts2.addFix(createFix(311000, 32, 33));
-		ts2.addFix(createFix(312000, 32, 33));
-		ts2.addFix(createFix(313000, 32, 33));
-		ts2.addFix(createFix(314000, 32, 33));
+		ts2.addFix(createFix(910000, 32, 33));
+		ts2.addFix(createFix(911000, 32, 33));
+		ts2.addFix(createFix(912000, 32, 33));
+		ts2.addFix(createFix(913000, 32, 33));
+		ts2.addFix(createFix(914000, 32, 33));
 		TrackWrapper tw3 = new TrackWrapper();
 		tw3.setName("tw3");
 		tw3.add(ts2);
@@ -595,6 +577,40 @@ public class TrackWrapper_Test
 	public void testTrackMerge2()
 	{
 		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(910000, 32, 33));
+		ts2.addFix(createFix(911000, 32, 33));
+		ts2.addFix(createFix(912000, 32, 33));
+		ts2.addFix(createFix(913000, 32, 33));
+		ts2.addFix(createFix(914000, 32, 33));
+		TrackWrapper tw3 = new TrackWrapper();
+		tw3.setName("tw3");
+		tw3.add(ts2);
+		Layers theLayers = new Layers();
+		theLayers.addThisLayer(tw3);
+		theLayers.addThisLayer(_tw);
+
+		// check startup status
+		assertEquals("track starts correctly", 6, trackLength());
+		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
+		assertEquals("have right num tracks", 2, theLayers.size());
+
+		// do a merge
+		Layer[] parents = new Layer[]
+		{ _tw, tw3 };
+		Editable[] subjects = new Editable[]
+		{ _tw, ts2 };
+		TrackWrapper.mergeTracks(_tw, theLayers, parents, subjects);
+
+		// have a look at the results
+		assertEquals("track is longer", 11, _tw.numFixes());
+		assertEquals("track got ditched", 1, theLayers.size());
+	}
+
+
+	@Test
+	public void testTrackMerge3()
+	{
+		TrackSegment ts2 = new TrackSegment();
 		ts2.addFix(createFix(310000, 32, 33));
 		ts2.addFix(createFix(311000, 32, 33));
 		ts2.addFix(createFix(312000, 32, 33));
@@ -620,10 +636,18 @@ public class TrackWrapper_Test
 		TrackWrapper.mergeTracks(_tw, theLayers, parents, subjects);
 
 		// have a look at the results
-		assertEquals("track is longer", 11, _tw.numFixes());
-		assertEquals("track got ditched", 1, theLayers.size());
+		assertEquals("track starts correctly", 6, trackLength());
+		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
+		assertEquals("have right num tracks", 2, theLayers.size());
+		
+		// check the error message got thrown
+		assertEquals("have error", 1, _messages._messages.size());
+		assertEquals("correct title", "Merge tracks", _messages._titles.firstElement());
+		assertEquals("correct title", "Sorry, '010005.10' and 'test track' overlap in time. Please correct this and retry", _messages._messages.firstElement());
+		assertEquals("correct title", MessageProvider.ERROR, _messages._statuses.firstElement());
 	}
 
+	
 	// ////////////
 
 	@Test
