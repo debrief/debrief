@@ -1099,7 +1099,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		// declare our arrays
 		_thePositions = new TrackWrapper_Support.SegmentList();
-		_thePositions.setName("Positions");
 
 		_linkPositions = true;
 
@@ -2396,115 +2395,122 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// ///////////////////////////////////////////
 			// let the fixes draw themselves in
 			// ///////////////////////////////////////////
-			final Enumeration<Editable> fixWrappers = getPositions();
-			while (fixWrappers.hasMoreElements())
+			
+			Enumeration<Editable> segments = _thePositions.elements();
+			while(segments.hasMoreElements())
 			{
-				final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
-
-				// is this fix visible
-				if (!fw.getVisible())
+				TrackSegment seg = (TrackSegment) segments.nextElement();
+				final Enumeration<Editable> fixWrappers = seg.elements();
+				while (fixWrappers.hasMoreElements())
 				{
-					// nope. Don't join it to the last position.
-					// ok, if we've built up a polygon, we need to write it now
-					paintTrack(dest, lastCol);
-				}
-				else
-				{
-					// yup, it's visible. carry on.
+					final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
 
-					// ok, so we have plotted something
-					plotted_anything = true;
-
-					// this is a valid one, remember the details
-					lastLocation = fw.getLocation();
-					final java.awt.Point thisP = dest.toScreen(lastLocation);
-
-					// just check that there's enough GUI to create the plot
-					// (i.e. has a point been returned)
-					if (thisP == null)
-						return;
-
-					// so, we're looking at the first data point. Do
-					// we want to use this to locate the track name?
-					if (_LabelAtStart)
+					// is this fix visible
+					if (!fw.getVisible())
 					{
-						// or have we already sorted out the location
-						if (!locatedTrack)
-						{
-							locatedTrack = true;
-							_theLabel.setLocation(new WorldLocation(lastLocation));
-						}
+						// nope. Don't join it to the last position.
+						// ok, if we've built up a polygon, we need to write it now
+						paintTrack(dest, lastCol);
 					}
-
-					// are we
-					if (_linkPositions)
+					else
 					{
-						// right, just check if we're a different colour to the
-						// previous one
-						final Color thisCol = fw.getColor();
+						// yup, it's visible. carry on.
 
-						// do we know the previous colour
-						if (lastCol == null)
+						// ok, so we have plotted something
+						plotted_anything = true;
+
+						// this is a valid one, remember the details
+						lastLocation = fw.getLocation();
+						final java.awt.Point thisP = dest.toScreen(lastLocation);
+
+						// just check that there's enough GUI to create the plot
+						// (i.e. has a point been returned)
+						if (thisP == null)
+							return;
+
+						// so, we're looking at the first data point. Do
+						// we want to use this to locate the track name?
+						if (_LabelAtStart)
 						{
-							lastCol = thisCol;
+							// or have we already sorted out the location
+							if (!locatedTrack)
+							{
+								locatedTrack = true;
+								_theLabel.setLocation(new WorldLocation(lastLocation));
+							}
 						}
 
-						// is this to be joined to the previous one?
-						if (fw.getLineShowing())
+						// are we
+						if (_linkPositions)
 						{
-							// so, grow the the polyline, unless we've got a colour
-							// change...
-							if (thisCol != lastCol)
+							// right, just check if we're a different colour to the
+							// previous one
+							final Color thisCol = fw.getColor();
+
+							// do we know the previous colour
+							if (lastCol == null)
 							{
-								// add our position to the list - so it finishes on us
+								lastCol = thisCol;
+							}
+
+							// is this to be joined to the previous one?
+							if (fw.getLineShowing())
+							{
+								// so, grow the the polyline, unless we've got a colour
+								// change...
+								if (thisCol != lastCol)
+								{
+									// add our position to the list - so it finishes on us
+									_myPts[_ptCtr++] = thisP.x;
+									_myPts[_ptCtr++] = thisP.y;
+
+									// yup, better get rid of the previous polygon
+									paintTrack(dest, lastCol);
+								}
+
+								// add our position to the list - we'll output the
+								// polyline at the end
+								_myPts[_ptCtr++] = thisP.x;
+								_myPts[_ptCtr++] = thisP.y;
+							}
+							else
+							{
+
+								// nope, output however much line we've got so far -
+								// since this
+								// line won't be joined to future points
+								paintTrack(dest, thisCol);
+
+								// start off the next line
 								_myPts[_ptCtr++] = thisP.x;
 								_myPts[_ptCtr++] = thisP.y;
 
-								// yup, better get rid of the previous polygon
-								paintTrack(dest, lastCol);
 							}
 
-							// add our position to the list - we'll output the
-							// polyline at the end
-							_myPts[_ptCtr++] = thisP.x;
-							_myPts[_ptCtr++] = thisP.y;
+							// set the colour of the track from now on to this
+							// colour, so that
+							// the "link" to the next fix is set to this colour if
+							// left
+							// unchanged
+							dest.setColor(fw.getColor());
+
+							// and remember the last colour
+							lastCol = thisCol;
+
 						}
-						else
+
+						if (_showPositions)
 						{
-
-							// nope, output however much line we've got so far -
-							// since this
-							// line won't be joined to future points
-							paintTrack(dest, thisCol);
-
-							// start off the next line
-							_myPts[_ptCtr++] = thisP.x;
-							_myPts[_ptCtr++] = thisP.y;
-
+							fw.paintMe(dest);
 						}
-
-						// set the colour of the track from now on to this
-						// colour, so that
-						// the "link" to the next fix is set to this colour if
-						// left
-						// unchanged
-						dest.setColor(fw.getColor());
-
-						// and remember the last colour
-						lastCol = thisCol;
-
 					}
 
-					if (_showPositions)
-					{
-						fw.paintMe(dest);
-					}
 				}
+				// ok, just see if we have any pending polylines to paint
+				paintTrack(dest, lastCol);
 
 			}
-
-			// ok, just see if we have any pending polylines to paint
-			paintTrack(dest, lastCol);
+			
 
 			// are we trying to put the label at the end of the track?
 			if (!_LabelAtStart)

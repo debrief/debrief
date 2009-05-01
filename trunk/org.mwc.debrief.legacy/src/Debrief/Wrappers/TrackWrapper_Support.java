@@ -2,16 +2,20 @@ package Debrief.Wrappers;
 
 import java.awt.Point;
 import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
 
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
+import MWC.GUI.PlottablesType;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -78,10 +82,29 @@ public class TrackWrapper_Support
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
+		
+		public SegmentList()
+		{
+			setName("Track segments");
+		}
 
 		public void addSegment(TrackSegment segment)
 		{
+			if(this.size() == 1)
+			{
+				// aah, currently, it's name's probably wrong sort out it's date
+				TrackSegment first = (TrackSegment) getData().iterator().next();
+				first.sortOutDate();
+			}
+			
 			super.add(segment);
+			
+			// if we've just got the one, set it's name to positions
+			if(this.size() == 1)
+			{
+				TrackSegment first = (TrackSegment) getData().iterator().next();
+				first.setName("Positions");
+			}
 		}
 		
 		public void add(Editable item)
@@ -94,9 +117,93 @@ public class TrackWrapper_Support
 		{
 			System.err.println("SHOULD NOT BE ADDING LAYER TO SEGMENTS LIST");
 		}
+		
+		
+		
+		@Override
+		public EditorType getInfo()
+		{
+			return new SegmentInfo(this);
+		}
+
+		@FireExtended
+		public void mergeAllSegments()
+		{
+			Collection<Editable> segs = getData();
+			TrackSegment first = null;
+			for (Iterator<Editable> iterator = segs.iterator(); iterator.hasNext();)
+			{
+				TrackSegment segment = (TrackSegment) iterator.next();
+				
+				if(first == null)
+					first = segment;
+				else
+				{
+					first.append((Layer)segment);
+				}				
+			}
+			
+			// ditch the segments
+			this.removeAllElements();
+			
+			// and put the first one back in
+			this.addSegment(first);
+			
+			// and fire some kind of update...
+		}
+		
+		/**
+		 * class containing editable details of a track
+		 */
+		public final class SegmentInfo extends Editable.EditorType
+		{
+
+			/**
+			 * constructor for this editor, takes the actual track as a parameter
+			 * 
+			 * @param data
+			 *          track being edited
+			 */
+			public SegmentInfo(final SegmentList data)
+			{
+				super(data, data.getName(), "");
+			}
+
+			public final String getName()
+			{
+				return super.getName();
+			}
+
+			public final PropertyDescriptor[] getPropertyDescriptors()
+			{
+				try
+				{
+					final PropertyDescriptor[] res =
+					{ expertProp("Visible", "whether this layer is visible", FORMAT), };
+					return res;
+				}
+				catch (final IntrospectionException e)
+				{
+					e.printStackTrace();
+					return super.getPropertyDescriptors();
+				}
+			}
+
+			@Override
+		    public final MethodDescriptor[] getMethodDescriptors()
+		    {
+		      // just add the reset color field first
+		      final Class<SegmentList> c = SegmentList.class;
+		      final MethodDescriptor[] mds = {
+		        method(c, "mergeAllSegments", null, "Merge all track segments")
+		      };
+		      return mds;
+			}
+		}
+		
 
 	}
-
+	
 	/**
 	 * a single collection of track points
 	 * 
@@ -110,6 +217,12 @@ public class TrackWrapper_Support
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
+
+		/** define the length of the stalk we plot when dragging
+		 * 
+		 */
+		final int len = 400;
+		
 		
 		/**
 		 * move the whole of the track be the provided offset
@@ -175,7 +288,7 @@ public class TrackWrapper_Support
 			sortOutDate();
 		}
 
-		private void sortOutDate()
+		public void sortOutDate()
 		{
 			if(getData().size() > 0)
 				setName(FormatRNDateTime.toString(startDTG().getDate().getTime()));
@@ -250,11 +363,87 @@ public class TrackWrapper_Support
 			
 		}
 
+		
+		
+		@Override
+		public void paint(CanvasType dest)
+		{
+			Collection<Editable> items = getData();
+
+			// ok - draw that line!
+			Point lastPoint = null;
+			Point lastButOne = null;
+			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+			{
+				FixWrapper thisF = (FixWrapper) iterator.next();
+				Point thisPoint = dest.toScreen(thisF.getFixLocation());
+				
+				// do we have enough for a line?
+				if(lastPoint != null)
+				{
+					// draw that line
+					dest.drawLine(lastPoint.x, lastPoint.y, thisPoint.x, thisPoint.y);
+
+					// are we at the start of the line?
+					if(lastButOne == null)
+					{
+						drawMyStalk(dest, lastPoint, thisPoint, false);
+					}					
+				}				
+				
+				lastButOne = lastPoint;
+				lastPoint = new Point(thisPoint);
+				
+				// also draw in a marker for this point
+				dest.drawRect(lastPoint.x-1, lastPoint.y-1,3,3);
+			}
+			
+			// lastly 'plot on' from the last points
+			drawMyStalk(dest, lastPoint, lastButOne, true);
+			
+		}
+
+		private void drawMyStalk(CanvasType dest, Point lastPoint, Point thisPoint, boolean forwards)
+		{
+			// yup, we've now got just two points. plot a 'back-trace'
+			double xDelta = thisPoint.x - lastPoint.x;
+			double yDelta = thisPoint.y - lastPoint.y;
+			
+			double gradient = xDelta / yDelta;
+
+			int myLen = len;
+			if(!forwards)
+				myLen = -len;
+			
+			Point backPoint = new Point(lastPoint.x + (int)(myLen * gradient),lastPoint.y + myLen );
+			dest.setLineStyle(2);
+			dest.drawLine(lastPoint.x, lastPoint.y, backPoint.x, backPoint.y);
+			
+			// hey, chuck in a circle
+			int radius = 10;
+			dest.drawOval(lastPoint.x - radius - (int)xDelta, lastPoint.y -radius - (int)yDelta,radius*2, radius*2);
+			
+			dest.setLineStyle(CanvasType.SOLID);
+		}
+
 		@Override
 		public void shift(WorldVector vector)
 		{
-			// TODO Auto-generated method stub
-			
+			// add this vector to all my points.
+			Collection<Editable> items = getData();
+			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+			{
+				FixWrapper thisFix =  (FixWrapper) iterator.next();
+
+				final WorldLocation copiedLoc = new WorldLocation(thisFix.getFix()
+						.getLocation());
+				copiedLoc.addToMe(vector);
+
+				// and replace the location (this method updates all 3 location
+				// contained
+				// in the fix wrapper
+				thisFix.setFixLocation(copiedLoc);
+			}
 		}
 
 		public HiResDate endDTG()

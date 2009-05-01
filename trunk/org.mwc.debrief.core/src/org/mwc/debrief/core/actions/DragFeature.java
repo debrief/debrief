@@ -52,8 +52,17 @@ public class DragFeature extends CoreDragAction
 		}
 
 	}
+	
+	public Cursor getDragCursor()
+	{
+		return new Cursor(Display.getDefault(), DebriefPlugin
+				.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 4,
+				2);
+	}
 
-	public static void findNearest(Layer thisLayer,
+
+
+	public void findNearest(Layer thisLayer,
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
 			LocationConstruct currentNearest, Layer parentLayer)
 	{
@@ -139,7 +148,7 @@ public class DragFeature extends CoreDragAction
 	 * 
 	 * @author Ian
 	 */
-	final static public class DragFeatureMode extends SWTChart.PlotMouseDragger
+	final public class DragFeatureMode extends SWTChart.PlotMouseDragger
 	{
 
 		/**
@@ -311,9 +320,7 @@ public class DragFeature extends CoreDragAction
 					if (_newCursor != null)
 					{
 						_newCursor.dispose();
-						_newCursor = new Cursor(Display.getDefault(), DebriefPlugin
-								.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 4,
-								2);
+						_newCursor = getDragCursor();
 						theCanvas.getCanvas().setCursor(_newCursor);
 					}
 				}

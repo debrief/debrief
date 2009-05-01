@@ -574,6 +574,51 @@ public class TrackWrapper_Test
 	}
 
 	@Test
+	public void testTrackMergeAllSegments()
+	{
+		TrackSegment ts1 = new TrackSegment();
+		ts1.addFix(createFix(110000, 32, 33));
+		ts1.addFix(createFix(111000, 32, 33));
+		ts1.addFix(createFix(112000, 32, 33));
+		ts1.addFix(createFix(113000, 32, 33));
+		ts1.addFix(createFix(114000, 32, 33));
+
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(210000, 32, 33));
+		ts2.addFix(createFix(211000, 32, 33));
+		ts2.addFix(createFix(212000, 32, 33));
+		ts2.addFix(createFix(213000, 32, 33));
+		ts2.addFix(createFix(214000, 32, 33));
+
+		TrackSegment ts3 = new TrackSegment();
+		ts3.addFix(createFix(910000, 32, 33));
+		ts3.addFix(createFix(911000, 32, 33));
+		ts3.addFix(createFix(912000, 32, 33));
+		ts3.addFix(createFix(913000, 32, 33));
+		ts3.addFix(createFix(914000, 32, 33));
+		
+		TrackWrapper tw = new TrackWrapper();
+		tw.add(ts1);
+		tw.add(ts2);
+		tw.add(ts3);
+		
+		Enumeration<Editable> data = tw.elements();
+		SegmentList sl = (SegmentList) data.nextElement();
+		
+		// check it's got the segs
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());
+		assertEquals("has all fixes",15, tw.numFixes());
+
+		// do the merge
+		sl.mergeAllSegments();
+		
+		assertEquals("has merged", "Track segments (1 items)", sl.toString());
+		assertEquals("track has correct data", "Positions (15 items)", tw.elements().nextElement().toString());
+		assertEquals("has all fixes",15, tw.numFixes());
+
+	}
+	
+	@Test
 	public void testTrackMerge2()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -643,7 +688,7 @@ public class TrackWrapper_Test
 		// check the error message got thrown
 		assertEquals("have error", 1, _messages._messages.size());
 		assertEquals("correct title", "Merge tracks", _messages._titles.firstElement());
-		assertEquals("correct title", "Sorry, '010005.10' and 'test track' overlap in time. Please correct this and retry", _messages._messages.firstElement());
+		assertEquals("correct title", "Sorry, 'Positions' and 'test track' overlap in time. Please correct this and retry", _messages._messages.firstElement());
 		assertEquals("correct title", MessageProvider.ERROR, _messages._statuses.firstElement());
 	}
 
