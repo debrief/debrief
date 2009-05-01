@@ -1099,6 +1099,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		// declare our arrays
 		_thePositions = new TrackWrapper_Support.SegmentList();
+		_thePositions.setWrapper(this);
 
 		_linkPositions = true;
 
@@ -1188,6 +1189,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else if (point instanceof TrackSegment)
 		{
+			TrackSegment seg = (TrackSegment) point;
+			seg.setWrapper(this);
 			_thePositions.addSegment((TrackSegment) point);
 			done = true;
 		}
@@ -1220,6 +1223,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// add fix to last track segment
 		final TrackSegment last = (TrackSegment) _thePositions.last();
 		last.addFix(theFix);
+		
+		// tell the fix about it's daddy
+		theFix.setTrackWrapper(this);
 
 		// and extend the start/end DTGs
 		if (_myTimePeriod == null)
@@ -1255,7 +1261,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final void append(final Layer other)
 	{
 		// is it a track?
-		if (other instanceof TrackWrapper)
+		if ((other instanceof TrackWrapper) || (other instanceof TrackSegment))
 		{
 			// yes, break it down.
 			final java.util.Enumeration<Editable> iter = other.elements();

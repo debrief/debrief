@@ -9,170 +9,58 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
+import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.GUI.Editable;
-import MWC.Utilities.ReaderWriter.XML.Util.*;
+import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 
-public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
+public final class TrackHandler extends
+		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
+
+	private static final String TRACK_SEGMENT = "TrackSegment";
 
 	private static final String LINE_THICKNESS = "LineThickness";
 
 	private static final String INTERPOLATE_POINTS = "InterpolatePoints";
 
-	 final MWC.GUI.Layers _theLayers;
+	final MWC.GUI.Layers _theLayers;
 
 	// private MWC.GUI.Layer _myLayer;
 
 	// our "working" track
-	 Debrief.Wrappers.TrackWrapper _myTrack;
+	Debrief.Wrappers.TrackWrapper _myTrack;
 
 	/**
 	 * class which contains list of textual representations of label locations
 	 */
 	static final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
 
-	public TrackHandler(MWC.GUI.Layers theLayers)
+	private static void exportThisSegment(org.w3c.dom.Document doc, Element trk,
+			TrackSegment seg)
 	{
-		// inform our parent what type of class we are
-		super("track");
+		final Element segE = doc.createElement(TRACK_SEGMENT);
 
-		// store the layers object, so that we can add ourselves to it
-		_theLayers = theLayers;
+		// insert the fixes
+		final Collection<Editable> pts = seg.getData();
+		for (final Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
+		{
+			final FixWrapper fix = (FixWrapper) iterator.next();
+			FixHandler.exportFix(fix, segE, doc);
+		}
 
-		addHandler(new SensorHandler()
-		{
-			public void addSensor(Debrief.Wrappers.SensorWrapper sensor)
-			{
-				addThis(sensor);
-			}
-		});
-
-		addHandler(new TMAHandler()
-		{
-			public void addContact(TMAWrapper data)
-			{
-				addThis(data);
-			}
-		});
-
-		addHandler(new ColourHandler()
-		{
-			public void setColour(java.awt.Color res)
-			{
-				_myTrack.setColor(res);
-			}
-		});
-
-		addHandler(new FontHandler()
-		{
-			public void setFont(java.awt.Font font)
-			{
-				_myTrack.setTrackFont(font);
-			}
-		});
-
-		addHandler(new FixHandler()
-		{
-			public void addPlottable(MWC.GUI.Plottable fix)
-			{
-				addThis(fix);
-			}
-		});
-		addAttributeHandler(new HandleAttribute("Name")
-		{
-			public void setValue(String name, String val)
-			{
-				_myTrack.setName(fromXML(val));
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute("Visible")
-		{
-			public void setValue(String name, boolean val)
-			{
-				_myTrack.setVisible(val);
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute("PositionsVisible")
-		{
-			public void setValue(String name, boolean val)
-			{
-				_myTrack.setPositionsVisible(val);
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute("NameVisible")
-		{
-			public void setValue(String name, boolean val)
-			{
-				_myTrack.setNameVisible(val);
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute("NameAtStart")
-		{
-			public void setValue(String name, boolean val)
-			{
-				_myTrack.setNameAtStart(val);
-			}
-		});
-		addAttributeHandler(new HandleBooleanAttribute(INTERPOLATE_POINTS)
-		{
-			public void setValue(String name, boolean val)
-			{
-				_myTrack.setInterpolatePoints(val);
-			}
-		});
-		addAttributeHandler(new HandleAttribute("NameLocation")
-		{
-			public void setValue(String name, String val)
-			{
-				lp.setAsText(val);
-				_myTrack.setNameLocation((Integer) lp.getValue());
-			}
-		});
-		addAttributeHandler(new HandleAttribute("Symbol")
-		{
-			public void setValue(String name, String value)
-			{
-				_myTrack.setSymbolType(value);
-			}
-		});
-		addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
-		{
-			public void setValue(String name, int value)
-			{
-				_myTrack.setLineThickness(value);
-			}
-		});
-
-	}
-
-	// this is one of ours, so get on with it!
-	protected final void handleOurselves(String name, Attributes attributes)
-	{
-		// create the wrapper
-		_myTrack = new Debrief.Wrappers.TrackWrapper();
-
-		// marry them together
-
-		super.handleOurselves(name, attributes);
-
-	}
-
-	void addThis(MWC.GUI.Plottable val)
-	{
-		_myTrack.add(val);
-	}
-
-	public final void elementClosed()
-	{
-		// our layer is complete, add it to the parent!
-		_theLayers.addThisLayer(_myTrack);
-
-		_myTrack = null;
+		trk.appendChild(segE);
 	}
 
 	public static void exportTrack(Debrief.Wrappers.TrackWrapper track,
@@ -187,68 +75,250 @@ public final class TrackHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRea
 		 * (Top|Left|Bottom|Centre|Right) "Right" Symbol CDATA "SQUARE" >
 		 */
 
-		Element trk = doc.createElement("track");
+		final Element trk = doc.createElement("track");
 		trk.setAttribute("Name", toXML(track.getName()));
 		trk.setAttribute("Visible", writeThis(track.getVisible()));
-		trk.setAttribute("PositionsVisible", writeThis(track.getPositionsVisible()));
+		trk
+				.setAttribute("PositionsVisible",
+						writeThis(track.getPositionsVisible()));
 		trk.setAttribute("NameVisible", writeThis(track.getNameVisible()));
 		trk.setAttribute("NameAtStart", writeThis(track.getNameAtStart()));
 		trk.setAttribute(LINE_THICKNESS, writeThis(track.getLineThickness()));
-		trk.setAttribute(INTERPOLATE_POINTS, writeThis(track.getInterpolatePoints()));
+		trk.setAttribute(INTERPOLATE_POINTS,
+				writeThis(track.getInterpolatePoints()));
 		lp.setValue(track.getNameLocation());
 		trk.setAttribute("NameLocation", lp.getAsText());
 		trk.setAttribute("Symbol", track.getSymbolType());
 		ColourHandler.exportColour(track.getColor(), trk, doc);
 
 		// and the font
-		java.awt.Font theFont = track.getTrackFont();
+		final java.awt.Font theFont = track.getTrackFont();
 		if (theFont != null)
 		{
 			FontHandler.exportFont(theFont, trk, doc);
 		}
-
+		
 		// first output any sensor data
-		java.util.Enumeration<SensorWrapper> sensors = track.getSensors();
+		final java.util.Enumeration<SensorWrapper> sensors = track.getSensors();
 
 		// check if there is any data!
 		if (sensors != null)
 		{
 			while (sensors.hasMoreElements())
 			{
-				Debrief.Wrappers.SensorWrapper thisS = (Debrief.Wrappers.SensorWrapper) sensors
-						.nextElement();
+				final Debrief.Wrappers.SensorWrapper thisS = sensors.nextElement();
 				SensorHandler.exportSensor(thisS, trk, doc);
 			}
 		}
 
 		// first output any sensor data
-		java.util.Enumeration<TMAWrapper> solutions = track.getSolutions();
+		final java.util.Enumeration<TMAWrapper> solutions = track.getSolutions();
 
 		// check if there is any data!
 		if (solutions != null)
 		{
 			while (solutions.hasMoreElements())
 			{
-				Debrief.Wrappers.TMAWrapper thisS = (Debrief.Wrappers.TMAWrapper) solutions
-						.nextElement();
+				final Debrief.Wrappers.TMAWrapper thisS = solutions.nextElement();
 				TMAHandler.exportSolutionTrack(thisS, trk, doc);
 			}
 		}
 
-		// now the points
-		java.util.Enumeration<Editable> iter = track.getPositions();
-		while (iter.hasMoreElements())
+		Enumeration<Editable> allItems = track.elements();
+		while(allItems.hasMoreElements())
 		{
-			MWC.GUI.Plottable pl = (MWC.GUI.Plottable) iter.nextElement();
-			// check that this isn't a naughty Sensor data item
-			if (pl instanceof Debrief.Wrappers.FixWrapper)
+			Editable next = allItems.nextElement();
+			if (next instanceof SegmentList)
 			{
-				Debrief.Wrappers.FixWrapper fw = (Debrief.Wrappers.FixWrapper) pl;
-				FixHandler.exportFix(fw, trk, doc);
+				final SegmentList list = (SegmentList) next;
+				Element sList = doc.createElement(SegmentListHandler.SEGMENT_LIST);			
+				final Collection<Editable> items = list.getData();
+				for (final Iterator<Editable> iterator = items.iterator(); iterator
+						.hasNext();)
+				{
+					final TrackSegment editable = (TrackSegment) iterator.next();
+					exportThisSegment(doc, sList, editable);
+				}
+				trk.appendChild(sList);
+				break;
 			}
-
+			else if (next instanceof TrackSegment)
+			{
+				exportThisSegment(doc, trk, (TrackSegment) next);
+				break;
+			}
 		}
+
 		parent.appendChild(trk);
+	}
+
+	public TrackHandler(MWC.GUI.Layers theLayers)
+	{
+		// inform our parent what type of class we are
+		super("track");
+
+		// store the layers object, so that we can add ourselves to it
+		_theLayers = theLayers;
+
+		addHandler(new SensorHandler()
+		{
+			@Override
+			public void addSensor(Debrief.Wrappers.SensorWrapper sensor)
+			{
+				addThis(sensor);
+			}
+		});
+		
+		addHandler(new SegmentListHandler(){
+			@Override
+			public void addThisSegment(TrackSegment list)
+			{
+			 addThis(list);
+			}});
+
+		addHandler(new TrackSegmentHandler(){
+			@Override
+			public void addSegment(TrackSegment list)
+			{
+			 addThis(list);
+			}});
+
+		addHandler(new TMAHandler()
+		{
+			@Override
+			public void addContact(TMAWrapper data)
+			{
+				addThis(data);
+			}
+		});
+
+		addHandler(new ColourHandler()
+		{
+			@Override
+			public void setColour(java.awt.Color res)
+			{
+				_myTrack.setColor(res);
+			}
+		});
+
+		addHandler(new FontHandler()
+		{
+			@Override
+			public void setFont(java.awt.Font font)
+			{
+				_myTrack.setTrackFont(font);
+			}
+		});
+
+		addHandler(new FixHandler()
+		{
+			@Override
+			public void addPlottable(MWC.GUI.Plottable fix)
+			{
+				addThis(fix);
+			}
+		});
+		addAttributeHandler(new HandleAttribute("Name")
+		{
+			@Override
+			public void setValue(String name, String val)
+			{
+				_myTrack.setName(fromXML(val));
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute("Visible")
+		{
+			@Override
+			public void setValue(String name, boolean val)
+			{
+				_myTrack.setVisible(val);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute("PositionsVisible")
+		{
+			@Override
+			public void setValue(String name, boolean val)
+			{
+				_myTrack.setPositionsVisible(val);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute("NameVisible")
+		{
+			@Override
+			public void setValue(String name, boolean val)
+			{
+				_myTrack.setNameVisible(val);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute("NameAtStart")
+		{
+			@Override
+			public void setValue(String name, boolean val)
+			{
+				_myTrack.setNameAtStart(val);
+			}
+		});
+		addAttributeHandler(new HandleBooleanAttribute(INTERPOLATE_POINTS)
+		{
+			@Override
+			public void setValue(String name, boolean val)
+			{
+				_myTrack.setInterpolatePoints(val);
+			}
+		});
+		addAttributeHandler(new HandleAttribute("NameLocation")
+		{
+			@Override
+			public void setValue(String name, String val)
+			{
+				lp.setAsText(val);
+				_myTrack.setNameLocation((Integer) lp.getValue());
+			}
+		});
+		addAttributeHandler(new HandleAttribute("Symbol")
+		{
+			@Override
+			public void setValue(String name, String value)
+			{
+				_myTrack.setSymbolType(value);
+			}
+		});
+		addAttributeHandler(new HandleIntegerAttribute(LINE_THICKNESS)
+		{
+			@Override
+			public void setValue(String name, int value)
+			{
+				_myTrack.setLineThickness(value);
+			}
+		});
+
+	}
+
+	void addThis(MWC.GUI.Plottable val)
+	{
+		_myTrack.add(val);
+	}
+
+	@Override
+	public final void elementClosed()
+	{
+		// our layer is complete, add it to the parent!
+		_theLayers.addThisLayer(_myTrack);
+
+		_myTrack = null;
+	}
+
+	// this is one of ours, so get on with it!
+	@Override
+	protected final void handleOurselves(String name, Attributes attributes)
+	{
+		// create the wrapper
+		_myTrack = new Debrief.Wrappers.TrackWrapper();
+
+		// marry them together
+
+		super.handleOurselves(name, attributes);
+
 	}
 
 }

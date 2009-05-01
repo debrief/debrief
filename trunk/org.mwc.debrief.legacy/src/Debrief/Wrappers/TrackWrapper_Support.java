@@ -77,7 +77,7 @@ public class TrackWrapper_Support
 	 */
 	final public static class SegmentList extends BaseItemLayer
 	{
-
+		
 		/**
 		 * 
 		 */
@@ -88,8 +88,32 @@ public class TrackWrapper_Support
 			setName("Track segments");
 		}
 
+		
+		@Override
+		public void setWrapper(TrackWrapper wrapper)
+		{
+			// is it different?
+			if(wrapper == _myTrack)
+				return;
+			
+			// store the value
+			super.setWrapper(wrapper);
+
+			// update our segments
+			Collection<Editable> items = getData();
+			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+			{
+				TrackSegment seg = (TrackSegment) iterator.next();
+				seg.setWrapper(_myTrack);
+			}
+		}
+
+
+
 		public void addSegment(TrackSegment segment)
 		{
+			segment.setWrapper(_myTrack);
+			
 			if(this.size() == 1)
 			{
 				// aah, currently, it's name's probably wrong sort out it's date
@@ -223,6 +247,25 @@ public class TrackWrapper_Support
 		 */
 		final int len = 400;
 		
+		@Override
+		public void setWrapper(TrackWrapper wrapper)
+		{
+			// is it different?
+			if(wrapper == _myTrack)
+				return;
+			
+			// store the value
+			super.setWrapper(wrapper);
+
+			// update our segments
+			Collection<Editable> items = getData();
+			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+			{
+				FixWrapper fix =  (FixWrapper) iterator.next();				
+				fix.setTrackWrapper(_myTrack);
+			}
+		}
+		
 		
 		/**
 		 * move the whole of the track be the provided offset
@@ -272,6 +315,7 @@ public class TrackWrapper_Support
 			while (enumer.hasMoreElements())
 			{
 				final FixWrapper pl =  (FixWrapper) enumer.nextElement();
+				
 				addFix(pl);
 			}
 		}
@@ -353,14 +397,15 @@ public class TrackWrapper_Support
 			
 			// override the name, just in case this point is earlier			
 			sortOutDate();
+			
+			// tell it about our daddy
+			fix.setTrackWrapper(_myTrack);
 		}
 
 		@Override
 		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 				LocationConstruct currentNearest, Layer parentLayer)
 		{
-			// TODO Auto-generated method stub
-			
 		}
 
 		
@@ -470,10 +515,17 @@ public class TrackWrapper_Support
 		 */
 		private static final long serialVersionUID = 1L;
 
-
+		protected TrackWrapper _myTrack;
+		
+		
 		public void exportShape()
 		{
 			// ignore..
+		}
+		
+		public void setWrapper(TrackWrapper wrapper)
+		{
+			_myTrack = wrapper;
 		}
 
 		/**

@@ -571,6 +571,7 @@ public class TrackWrapper_Test
 		// have a look at the results
 		assertEquals("track 3 is longer", 11, tw3.numFixes());
 		assertEquals("track got ditched", 1, theLayers.size());
+		assertEquals("fix has new parent", "tw3", fw1.getTrackWrapper().getName());
 	}
 
 	@Test
@@ -649,6 +650,9 @@ public class TrackWrapper_Test
 		// have a look at the results
 		assertEquals("track is longer", 11, _tw.numFixes());
 		assertEquals("track got ditched", 1, theLayers.size());
+		TrackSegment sl = (TrackSegment) _tw.elements().nextElement();
+		assertEquals("just the one segment - with all our points", 11, sl.size());
+		
 	}
 
 
