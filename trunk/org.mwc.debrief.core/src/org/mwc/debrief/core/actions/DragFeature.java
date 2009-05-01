@@ -8,25 +8,38 @@ import java.awt.Font;
 import java.awt.Point;
 import java.util.Enumeration;
 
-import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.GC;
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.plotViewer.actions.CoreDragAction;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvasAdapter;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author ian.mayo
