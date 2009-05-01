@@ -33,25 +33,6 @@ import MWC.GenericData.*;
  */
 public class DragFeature extends CoreDragAction
 {
-	protected void execute()
-	{
-		// ok, fire our parent
-		super.execute();
-
-		// now, try to open the stacked dots view
-		try
-		{
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-			page.showView(CorePlugin.STACKED_DOTS);
-		}
-		catch (PartInitException e)
-		{
-			CorePlugin.logError(Status.ERROR, "Failed to open stacked dots", e);
-		}
-
-	}
 	
 	public Cursor getDragCursor()
 	{

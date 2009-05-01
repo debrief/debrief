@@ -3038,23 +3038,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		while (theEnum.hasMoreElements())
 		{
 			final Object thisO = theEnum.nextElement();
-			if (thisO instanceof FixWrapper)
+			if (thisO instanceof TrackSegment)
 			{
-				final FixWrapper fw = (FixWrapper) thisO;
-
-				final WorldLocation copiedLoc = new WorldLocation(fw.getFix()
-						.getLocation());
-				copiedLoc.addToMe(offset);
-
-				// and replace the location (this method updates all 3 location
-				// contained
-				// in the fix wrapper
-				fw.setFixLocation(copiedLoc);
+				TrackSegment seg = (TrackSegment) thisO;
+				seg.shift(offset);
 
 				// ok - job well done
 				handledData = true;
 
-			} // whether this was a fix wrapper
+			} 
+			else if (thisO instanceof SegmentList)
+			{
+				SegmentList list = (SegmentList) thisO;
+				Collection<Editable> items = list.getData();
+				for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+				{
+					TrackSegment segment = (TrackSegment) iterator.next();
+					segment.shift(offset);
+				}
+				handledData = true;
+			}
 			else if (thisO instanceof SensorWrapper)
 			{
 				final SensorWrapper sw = (SensorWrapper) thisO;
