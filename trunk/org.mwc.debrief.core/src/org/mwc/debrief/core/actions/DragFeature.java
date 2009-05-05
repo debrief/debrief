@@ -13,13 +13,7 @@ import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Display;
-import org.eclipse.ui.IEditorPart;
-import org.eclipse.ui.IWorkbench;
-import org.eclipse.ui.IWorkbenchPage;
-import org.eclipse.ui.IWorkbenchWindow;
-import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.operations.DebriefActionWrapper;
 import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.plotViewer.actions.CoreDragAction;
@@ -29,7 +23,6 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
 
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -46,6 +39,21 @@ import MWC.GenericData.WorldVector;
  */
 public class DragFeature extends CoreDragAction
 {
+	
+	/** wrapper for an operation we apply to an object - such as drag
+	 * 
+	 * @author Administrator
+	 *
+	 */
+	public static interface DragOperation
+	{
+		/** do the operation
+		 * 
+		 * @param item what we're doing it to
+		 * @param offset how far to do it
+		 */
+		public void apply(DraggableItem item, WorldVector offset);
+	}
 	
 	public Cursor getDragCursor()
 	{
@@ -142,7 +150,7 @@ public class DragFeature extends CoreDragAction
 	 * 
 	 * @author Ian
 	 */
-	final public class DragFeatureMode extends SWTChart.PlotMouseDragger
+	public class DragFeatureMode extends SWTChart.PlotMouseDragger
 	{
 
 		/**
@@ -195,7 +203,7 @@ public class DragFeature extends CoreDragAction
 		 * @param theCanvas
 		 */
 		public void doMouseMove(final org.eclipse.swt.graphics.Point pt, final int JITTER,
-				final Layers theData, SWTCanvas theCanvas)
+				final Layers theData, final SWTCanvas theCanvas)
 		{
 
 			// check we're not currently dragging something
@@ -283,7 +291,7 @@ public class DragFeature extends CoreDragAction
 		}
 
 		@SuppressWarnings("deprecation")
-		final public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
+		public void doMouseDrag(org.eclipse.swt.graphics.Point pt, int JITTER,
 				Layers theLayers, SWTCanvas theCanvas)
 		{
 			
@@ -333,27 +341,6 @@ public class DragFeature extends CoreDragAction
 
 				// remember the last location
 				_lastLocation = newLocation;
-
-				// cool, is it a track that we've just dragged?
-				if (_hoverTarget instanceof TrackWrapper)
-				{
-					// if the current editor is a track data provider,
-					// tell it that we've shifted
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-					IWorkbenchPage page = win.getActivePage();
-					IEditorPart editor = page.getActiveEditor();
-					TrackDataProvider dataMgr = (TrackDataProvider) editor
-							.getAdapter(TrackDataProvider.class);
-					// is it one of ours?
-					if (dataMgr != null)
-					{
-						{
-							dataMgr.fireTrackShift((TrackWrapper) _hoverTarget);
-						}
-					}
-				}
-				
 				// ok, let's ditch the GC
 				gc.dispose();
 
@@ -366,7 +353,7 @@ public class DragFeature extends CoreDragAction
 		}
 
 		@SuppressWarnings("deprecation")
-		final public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
+		public void doMouseUp(org.eclipse.swt.graphics.Point point, int keyState)
 		{
 			if(_hoverTarget == null)
 				return;
@@ -396,7 +383,7 @@ public class DragFeature extends CoreDragAction
 			WorldVector reverse = _startLocation.subtract(_lastLocation);
 
 			// apply the reverse vector
-			_hoverTarget.shift(reverse);
+			getOperation().apply(_hoverTarget, reverse);
 
 			// and get the chart to redraw itself
 			_myChart.update();
@@ -406,7 +393,7 @@ public class DragFeature extends CoreDragAction
 
 			// put it into our action
 			DragFeatureAction dta = new DragFeatureAction(forward, _hoverTarget, _myChart
-					.getLayers(), _parentLayer);
+					.getLayers(), _parentLayer, getOperation());
 
 			// and wrap it
 			DebriefActionWrapper daw = new DebriefActionWrapper(dta, _myChart.getLayers());
@@ -431,6 +418,18 @@ public class DragFeature extends CoreDragAction
 					new java.awt.Point(point.x, point.y)));
 			_myChart = theChart;
 		}
+		
+		public DragOperation getOperation()
+		{
+			return new DragOperation(){
+
+				@Override
+				public void apply(DraggableItem item, WorldVector offset) {
+					item.shift(offset);
+				}
+				
+			};
+		}
 
 		public Cursor getNormalCursor()
 		{
@@ -454,7 +453,7 @@ public class DragFeature extends CoreDragAction
 			// ok, move the target to the new location...
 			if (newVector != null)
 			{
-				_hoverTarget.shift(newVector);
+				getOperation().apply(_hoverTarget, newVector);
 			}
 
 			if (_hoverTarget != null)
@@ -497,40 +496,6 @@ public class DragFeature extends CoreDragAction
 
 	}
 
-	public static abstract class DragTargetChecker
-	{
-		/**
-		 * decide whether to inspect child components of this layer
-		 * 
-		 * @param target
-		 * @return
-		 */
-		abstract public boolean breakDown(Layer target);
-
-		/**
-		 * decide if this is a candidate for dragging
-		 */
-		abstract public boolean isDraggingCandidate(Plottable target);
-
-		/**
-		 * return the current location of the nearest draggable component
-		 * 
-		 * @param target
-		 * @param spot
-		 *          TODO
-		 * @param nearestLocation
-		 *          TODO
-		 * @return
-		 */
-		public void updateNearest(Plottable target, WorldLocation spot,
-				LocationConstruct nearestLocation)
-		{
-
-		}
-
-		abstract public WorldLocation findNearestHotSpot(Plottable target, WorldLocation spot);
-	}
-
 	/**
 	 * action representing a track being dragged. It's undo-able and redo-able,
 	 * since it's quite simple really.
@@ -555,7 +520,9 @@ public class DragFeature extends CoreDragAction
 		/**
 		 * the layer to update after drag is complete
 		 */
-		private Layer _parentLayer;
+		private final Layer _parentLayer;
+
+		private final DragOperation _operation;
 
 		/**
 		 * constructor - providing the parameters to store to execute/reproduce the
@@ -566,12 +533,13 @@ public class DragFeature extends CoreDragAction
 		 * @param theLayers
 		 */
 		public DragFeatureAction(final WorldVector theOffset, final DraggableItem theTrack,
-				final Layers theLayers, final Layer parentLayer)
+				final Layers theLayers, final Layer parentLayer, final DragOperation operation)
 		{
 			_theOffset = theOffset;
 			_itemToDrag = theTrack;
 			_theLayers = theLayers;
 			_parentLayer = parentLayer;
+			_operation = operation;
 		}
 
 		/**
@@ -590,7 +558,7 @@ public class DragFeature extends CoreDragAction
 		public void execute()
 		{
 			// apply the shift
-			_itemToDrag.shift(_theOffset);
+			_operation.apply(_itemToDrag, _theOffset);
 
 			// update the layers
 			_theLayers.fireModified(_parentLayer);
@@ -606,7 +574,7 @@ public class DragFeature extends CoreDragAction
 			final WorldVector reverseVector = _theOffset.generateInverse();
 
 			// and apply it
-			_itemToDrag.shift(reverseVector);
+			_operation.apply(_itemToDrag, reverseVector);
 
 			_theLayers.fireModified(_parentLayer);
 		}

@@ -10,18 +10,26 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IEditorPart;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
+import MWC.GenericData.WorldVector;
 
 /**
  * @author ian.mayo
@@ -29,11 +37,17 @@ import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 public class DragSegment extends DragFeature
 {
 	
-	public static class DragMode extends Action
+	public static class DragMode extends Action implements DragFeature.DragOperation
 	{
 		public DragMode(String title)
 		{
 			super(title, IAction.AS_RADIO_BUTTON);
+		}
+
+		@Override
+		public void apply(DraggableItem item, WorldVector offset) {
+			item.shift(offset);
+			System.err.println("doing:" + this.getText());
 		}
 	}
 	
@@ -135,5 +149,51 @@ public class DragSegment extends DragFeature
 		return new Cursor(Display.getDefault(), DebriefPlugin
 				.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 4,
 				2);
+	}
+	
+	
+	
+	@Override
+	public PlotMouseDragger getDragMode() {
+		return new DragSegmentMode();
+	}
+
+
+
+	public class DragSegmentMode extends DragFeature.DragFeatureMode
+	{
+
+		@Override
+		public void doMouseDrag(Point pt, int JITTER, Layers theLayers,
+				SWTCanvas theCanvas) {
+			
+			// let the parent do the leg-work
+			super.doMouseDrag(pt, JITTER, theLayers, theCanvas);
+			
+			// cool, is it a track that we've just dragged?
+			if (_hoverTarget instanceof TrackWrapper)
+			{
+				// if the current editor is a track data provider,
+				// tell it that we've shifted
+				IWorkbench wb = PlatformUI.getWorkbench();
+				IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+				IWorkbenchPage page = win.getActivePage();
+				IEditorPart editor = page.getActiveEditor();
+				TrackDataProvider dataMgr = (TrackDataProvider) editor
+						.getAdapter(TrackDataProvider.class);
+				// is it one of ours?
+				if (dataMgr != null)
+				{
+					{
+						dataMgr.fireTrackShift((TrackWrapper) _hoverTarget);
+					}
+				}
+			}
+		}
+
+		@Override
+		public DragOperation getOperation() {
+			return _currentDragMode;
+		}
 	}
 }
