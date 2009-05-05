@@ -693,7 +693,7 @@ public class TrackWrapper_Test
 		assertEquals("have error", 1, _messages._messages.size());
 		assertEquals("correct title", "Merge tracks", _messages._titles.firstElement());
 		assertEquals("correct title", "Sorry, 'Positions' and 'test track' overlap in time. Please correct this and retry", _messages._messages.firstElement());
-		assertEquals("correct title", MessageProvider.ERROR, _messages._statuses.firstElement());
+		assertEquals("correct title", MessageProvider.ERROR,(int) _messages._statuses.firstElement());
 	}
 
 	
