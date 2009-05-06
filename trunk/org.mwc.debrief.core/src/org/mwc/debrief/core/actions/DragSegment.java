@@ -54,7 +54,6 @@ public class DragSegment extends DragFeature
 		@Override
 		public void apply(DraggableItem item, WorldVector offset) {
 			item.shift(offset);
-			System.err.println("doing:" + this.getText());
 		}
 		
 		public void findNearest(Layer thisLayer,
