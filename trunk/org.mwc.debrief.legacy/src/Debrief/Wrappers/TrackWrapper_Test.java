@@ -374,7 +374,7 @@ public class TrackWrapper_Test
 	{
 		WorldLocation wl = new WorldLocation(4, 1, 0);
 		double res = _tw.rangeFrom(wl);
-		assertEquals("correct range", 0d, res);
+		assertEquals("correct range", 0d, res, 0.001);
 	}
 
 	/**
@@ -574,6 +574,40 @@ public class TrackWrapper_Test
 		assertEquals("fix has new parent", "tw3", fw1.getTrackWrapper().getName());
 	}
 
+
+	@Test
+	public void testTrackStartEnd()
+	{
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(910000, 32, 33));
+		ts2.addFix(createFix(911000, 32, 33));
+		ts2.addFix(createFix(912000, 32, 33));
+		ts2.addFix(createFix(913000, 32, 33));
+		ts2.addFix(createFix(914000, 32, 33));
+		TrackWrapper tw3 = new TrackWrapper();
+		tw3.setName("tw3");
+		tw3.add(ts2);
+		Layers theLayers = new Layers();
+		theLayers.addThisLayer(tw3);
+		theLayers.addThisLayer(_tw);
+
+		// check startup status
+		assertEquals("track starts correctly", 6, trackLength());
+		assertEquals("track 3 starts correctly", 5, tw3.numFixes());
+		assertEquals("have right num tracks", 2, theLayers.size());
+
+		// do a merge
+		Layer[] parents = new Layer[]
+		{ _tw, tw3 };
+		Editable[] subjects = new Editable[]
+		{ _tw, ts2 };
+		TrackWrapper.mergeTracks(ts2, theLayers, parents, subjects);
+
+		// have a look at the results
+		assertEquals("track 3 is longer", 11, tw3.numFixes());
+		assertEquals("track got ditched", 1, theLayers.size());
+		assertEquals("fix has new parent", "tw3", fw1.getTrackWrapper().getName());
+	}
 	@Test
 	public void testTrackMergeAllSegments()
 	{
@@ -617,6 +651,11 @@ public class TrackWrapper_Test
 		assertEquals("track has correct data", "Positions (15 items)", tw.elements().nextElement().toString());
 		assertEquals("has all fixes",15, tw.numFixes());
 
+		
+		assertEquals("correct start time", 110000, tw.getStartDTG().getDate().getTime());
+		assertEquals("correct end time", 914000, tw.getEndDTG().getDate().getTime());
+		
+		
 	}
 	
 	@Test
