@@ -245,7 +245,7 @@ public class TrackWrapper_Support
 		/** define the length of the stalk we plot when dragging
 		 * 
 		 */
-		final int len = 400;
+		final int len = 200;
 		
 		@Override
 		public void setWrapper(TrackWrapper wrapper)
