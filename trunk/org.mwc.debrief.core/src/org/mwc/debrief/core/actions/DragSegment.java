@@ -37,6 +37,11 @@ import MWC.GenericData.WorldVector;
 public class DragSegment extends DragFeature
 {
 
+	/** combination of action & operation, passed to UI inclusion
+	 * 
+	 * @author Ian Mayo
+	 *
+	 */
 	public static class DragMode extends Action implements
 			DragFeature.DragOperation
 	{
@@ -51,6 +56,14 @@ public class DragSegment extends DragFeature
 			item.shift(offset);
 		}
 
+		/** implement per-action hotspot generation, since some modes
+		 * have unique processing requirements
+		 * @param thisLayer
+		 * @param cursorLoc
+		 * @param cursorPos
+		 * @param currentNearest
+		 * @param parentLayer
+		 */
 		public void findNearest(Layer thisLayer,
 				MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
 				LocationConstruct currentNearest, Layer parentLayer)
@@ -73,6 +86,12 @@ public class DragSegment extends DragFeature
 		}
 	}
 
+	/** custom drag mode, for working with track segments. It elects to
+	 * use the currently selected DragMode
+	 * 
+	 * @author Ian Mayo
+	 *
+	 */
 	public class DragSegmentMode extends DragFeature.DragFeatureMode
 	{
 
