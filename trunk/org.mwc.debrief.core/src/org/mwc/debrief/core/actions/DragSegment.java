@@ -23,6 +23,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
+import org.mwc.debrief.core.actions.drag.FreeDragMode;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
@@ -45,9 +46,29 @@ public class DragSegment extends DragFeature
 		}
 
 		@Override
+		public void run() {
+			_currentDragMode = this;
+			super.run();
+		}
+
+		@Override
 		public void apply(DraggableItem item, WorldVector offset) {
 			item.shift(offset);
 			System.err.println("doing:" + this.getText());
+		}
+		
+		public void findNearest(Layer thisLayer,
+				MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
+				LocationConstruct currentNearest, Layer parentLayer)
+		{
+			// we only act on track wrappers, check if this is one
+			if (thisLayer instanceof TrackWrapper)
+			{
+				TrackWrapper thisTrack = (TrackWrapper) thisLayer;
+				// find it's nearest segment
+				thisTrack.findNearestSegmentHotspotFor(cursorLoc, cursorPos,
+						currentNearest);
+			}
 		}
 	}
 	
@@ -57,30 +78,10 @@ public class DragSegment extends DragFeature
 		if(_dragModes == null)
 		{
 			_dragModes = new Vector<Action>();
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepCourse = new DragMode("crse"){
-				public void run()
-				{
-					super.run();
-					_currentDragMode = this;
-				}};
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new DragMode("spd"){
-			public void run()
-			{
-				super.run();
-				_currentDragMode = this;
-			}};
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepRange = new DragMode("rng"){
-			public void run()
-			{
-				super.run();
-				_currentDragMode = this;
-			}};
-			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode("[]"){
-			public void run()
-			{
-				super.run();
-				_currentDragMode = this;
-			}};
+			org.mwc.debrief.core.actions.DragSegment.DragMode keepCourse = new FreeDragMode();
+			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new DragMode("spd");
+			org.mwc.debrief.core.actions.DragSegment.DragMode keepRange = new DragMode("rng");
+			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode("[]");
 			
 			_dragModes.add(keepCourse);
 			_dragModes.add(keepSpeed);
@@ -133,14 +134,7 @@ public class DragSegment extends DragFeature
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
 			LocationConstruct currentNearest, Layer parentLayer)
 	{
-		// we only act on track wrappers, check if this is one
-		if (thisLayer instanceof TrackWrapper)
-		{
-			TrackWrapper thisTrack = (TrackWrapper) thisLayer;
-			// find it's nearest segment
-			thisTrack.findNearestSegmentHotspotFor(cursorLoc, cursorPos,
-					currentNearest);
-		}
+		_currentDragMode.findNearest(thisLayer, cursorLoc, cursorPos, currentNearest, parentLayer);
 	}
 
 	@Override

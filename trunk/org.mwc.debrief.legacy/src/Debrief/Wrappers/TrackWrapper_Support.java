@@ -15,9 +15,9 @@ import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.Plottables;
-import MWC.GUI.PlottablesType;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -300,9 +300,16 @@ public class TrackWrapper_Support
 		@Override
 		public double rangeFrom(WorldLocation other)
 		{
-			double oneEnd = this.first().rangeFrom(other);
-			double otherEnd = this.last().rangeFrom(other);
-			return Math.min(oneEnd, otherEnd);
+			FixWrapper first = (FixWrapper) this.first();
+			FixWrapper last = (FixWrapper) this.last();
+			WorldArea area = new WorldArea(first.getFixLocation(), last.getFixLocation());
+			WorldLocation centrePt = area.getCentre();
+			double centre = centrePt.rangeFrom(other);
+			double oneEnd = first.rangeFrom(other);
+			double otherEnd = last.rangeFrom(other);
+			double res = Math.min(centre, oneEnd);
+			res = Math.min(res, otherEnd);
+			return res;
 		}
 
 		private boolean _plotDR = false;
