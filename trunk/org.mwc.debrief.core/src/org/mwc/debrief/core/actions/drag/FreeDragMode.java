@@ -5,7 +5,11 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import org.eclipse.swt.graphics.Cursor;
+import org.eclipse.swt.widgets.Display;
+import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.DragMode;
+import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -28,6 +32,14 @@ public class FreeDragMode extends DragMode
 	{
 		super("free");
 	}
+	
+	public Cursor getHotspotCursor()
+	{
+		return new Cursor(Display.getDefault(), DebriefPlugin
+				.getImageDescriptor("icons/SelectFeatureHitRotate.ico").getImageData(), 4,
+				2);		
+	}
+
 
 	protected TrackSegment findNearest(TrackWrapper track, WorldLocation loc)
 	{
@@ -111,39 +123,11 @@ public class FreeDragMode extends DragMode
 			WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
 			WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-			DraggableItem centreEnd = new DraggableItem()
-			{
-
-				@Override
-				public void findNearestHotSpotIn(Point cursorPos,
-						WorldLocation cursorLoc, LocationConstruct currentNearest,
-						Layer parentLayer)
-				{
-				}
-
-				@Override
-				public String getName()
-				{
-					return "centre point";
-				}
-
-				@Override
-				public void paint(CanvasType dest)
-				{
-					seg.paint(dest);
-				}
-
-				@Override
-				public void shift(WorldVector vector)
-				{
-					//
-					seg.shift(vector);
-				}
-			};
-			DraggableItem firstEnd = new RotateSegment(cursorLoc, last
+			DraggableItem centreEnd = new DragOperation(seg);
+			DraggableItem firstEnd = new RotateOperation(cursorLoc, last
 					.getFixLocation(), seg);
 
-			DraggableItem lastEnd = new RotateSegment(cursorLoc, first
+			DraggableItem lastEnd = new RotateOperation(cursorLoc, first
 					.getFixLocation(), seg);
 
 			currentNearest.checkMe(firstEnd, firstDist, null, parentLayer);
@@ -188,7 +172,51 @@ public class FreeDragMode extends DragMode
 		return res;
 	}
 
-	public static class RotateSegment implements DraggableItem
+	public static class DragOperation implements DraggableItem, IconProvider
+	{
+
+		final private TrackSegment _mySegment;
+
+		public DragOperation(TrackSegment segment)
+		{
+			_mySegment = segment;
+			
+		}
+		@Override
+		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
+				LocationConstruct currentNearest, Layer parentLayer)
+		{
+		}
+
+		@Override
+		public String getName()
+		{
+			return "centre point";
+		}
+
+		@Override
+		public void paint(CanvasType dest)
+		{
+			_mySegment.paint(dest);
+		}
+
+		@Override
+		public void shift(WorldVector vector)
+		{
+			//
+			_mySegment.shift(vector);
+		}
+
+		@Override
+		public Cursor getHotspotCursor()
+		{
+		  return new Cursor(Display.getDefault(), DebriefPlugin
+					.getImageDescriptor("icons/SelectFeatureHitDrag.ico").getImageData(), 4,
+					2);	
+		}
+	}
+
+	public static class RotateOperation implements DraggableItem, IconProvider
 	{
 		WorldLocation workingLoc;
 		double originalBearing;
@@ -196,7 +224,7 @@ public class FreeDragMode extends DragMode
 		Double lastRotate = null;
 		TrackSegment _segment;
 
-		public RotateSegment(WorldLocation cursorLoc, WorldLocation origin,
+		public RotateOperation(WorldLocation cursorLoc, WorldLocation origin,
 				TrackSegment segment)
 		{
 			workingLoc = cursorLoc;
@@ -268,6 +296,14 @@ public class FreeDragMode extends DragMode
 					thisFix.setFixLocation(newLoc);
 				}
 			}
+		}
+
+		@Override
+		public Cursor getHotspotCursor()
+		{
+		  return new Cursor(Display.getDefault(), DebriefPlugin
+					.getImageDescriptor("icons/SelectFeatureHitRotate.ico").getImageData(), 4,
+					2);	
 		}
 	};
 

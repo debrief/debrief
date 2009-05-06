@@ -61,6 +61,13 @@ public class DragFeature extends CoreDragAction
 				.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 4,
 				2);
 	}
+	
+	public Cursor getHotspotCursor(DraggableItem hoverTarget)
+	{
+		return new Cursor(Display.getDefault(), DebriefPlugin
+				.getImageDescriptor("icons/SelectFeatureHit.ico").getImageData(), 4,
+				2);			
+	}
 
 
 
@@ -259,8 +266,7 @@ public class DragFeature extends CoreDragAction
 					if (_newCursor != null)
 						_newCursor.dispose();
 
-					_newCursor = new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
-							"icons/SelectFeatureHit.ico").getImageData(), 4, 2);
+					_newCursor = getHotspotCursor(currentNearest._object);
 
 					// and assign it to the control
 					theCanvas.getCanvas().setCursor(_newCursor);

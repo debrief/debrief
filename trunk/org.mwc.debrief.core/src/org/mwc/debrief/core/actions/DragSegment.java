@@ -3,10 +3,9 @@
  */
 package org.mwc.debrief.core.actions;
 
-
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.swt.graphics.Cursor;
@@ -37,8 +36,9 @@ import MWC.GenericData.WorldVector;
  */
 public class DragSegment extends DragFeature
 {
-	
-	public static class DragMode extends Action implements DragFeature.DragOperation
+
+	public static class DragMode extends Action implements
+			DragFeature.DragOperation
 	{
 		public DragMode(String title)
 		{
@@ -46,16 +46,11 @@ public class DragSegment extends DragFeature
 		}
 
 		@Override
-		public void run() {
-			_currentDragMode = this;
-			super.run();
-		}
-
-		@Override
-		public void apply(DraggableItem item, WorldVector offset) {
+		public void apply(DraggableItem item, WorldVector offset)
+		{
 			item.shift(offset);
 		}
-		
+
 		public void findNearest(Layer thisLayer,
 				MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
 				LocationConstruct currentNearest, Layer parentLayer)
@@ -69,100 +64,26 @@ public class DragSegment extends DragFeature
 						currentNearest);
 			}
 		}
-	}
-	
-	private static Vector<Action> _dragModes;
-	
-	public static Vector<Action> getDragModes(){
-		if(_dragModes == null)
+
+		@Override
+		public void run()
 		{
-			_dragModes = new Vector<Action>();
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepCourse = new FreeDragMode();
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new DragMode("spd");
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepRange = new DragMode("rng");
-			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode("[]");
-			
-			_dragModes.add(keepCourse);
-			_dragModes.add(keepSpeed);
-			_dragModes.add(keepRange);
-			_dragModes.add(translate);
-			
-			// and initiate the drag
-		//	translate.setChecked(true);
-			translate.run();
-			
+			_currentDragMode = this;
+			super.run();
 		}
-		return _dragModes;
 	}
-
-	public DragSegment()
-	{
-
-	}
-	
-	protected static DragMode _currentDragMode;
-	
-	protected void execute()
-	{
-		// ok, fire our parent
-		super.execute();
-
-		// now, try to open the stacked dots view
-		try
-		{
-			IWorkbench wb = PlatformUI.getWorkbench();
-			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
-			IWorkbenchPage page = win.getActivePage();
-			page.showView(CorePlugin.STACKED_DOTS);
-
-			System.err.println("run mode is:" + _currentDragMode.getText());
-			
-		}
-		catch (PartInitException e)
-		{
-			CorePlugin.logError(Status.ERROR, "Failed to open stacked dots", e);
-		}
-
-		
-	}
-	
-	/** simpler test that just supports tracks
-	 * 
-	 */
-	public void findNearest(Layer thisLayer,
-			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
-			LocationConstruct currentNearest, Layer parentLayer)
-	{
-		_currentDragMode.findNearest(thisLayer, cursorLoc, cursorPos, currentNearest, parentLayer);
-	}
-
-	@Override
-	public Cursor getDragCursor()
-	{
-		return new Cursor(Display.getDefault(), DebriefPlugin
-				.getImageDescriptor("icons/SelectFeatureHitDown.ico").getImageData(), 4,
-				2);
-	}
-	
-	
-	
-	@Override
-	public PlotMouseDragger getDragMode() {
-		return new DragSegmentMode();
-	}
-
-
 
 	public class DragSegmentMode extends DragFeature.DragFeatureMode
 	{
 
 		@Override
 		public void doMouseDrag(Point pt, int JITTER, Layers theLayers,
-				SWTCanvas theCanvas) {
-			
+				SWTCanvas theCanvas)
+		{
+
 			// let the parent do the leg-work
 			super.doMouseDrag(pt, JITTER, theLayers, theCanvas);
-			
+
 			// cool, is it a track that we've just dragged?
 			if (_hoverTarget instanceof TrackWrapper)
 			{
@@ -185,8 +106,115 @@ public class DragSegment extends DragFeature
 		}
 
 		@Override
-		public DragOperation getOperation() {
+		public DragOperation getOperation()
+		{
 			return _currentDragMode;
 		}
+	}
+
+	public static interface IconProvider
+	{
+		public Cursor getHotspotCursor();
+	}
+
+	private static Vector<Action> _dragModes;
+
+	protected static DragMode _currentDragMode;
+
+	public static Vector<Action> getDragModes()
+	{
+		if (_dragModes == null)
+		{
+			_dragModes = new Vector<Action>();
+			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode(
+					"[]");
+			org.mwc.debrief.core.actions.DragSegment.DragMode keepCourse = new FreeDragMode();
+			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new DragMode(
+					"spd");
+			org.mwc.debrief.core.actions.DragSegment.DragMode keepRange = new DragMode(
+					"rng");
+
+			_dragModes.add(keepCourse);
+			_dragModes.add(keepSpeed);
+			_dragModes.add(keepRange);
+			_dragModes.add(translate);
+
+			// and initiate the drag
+			translate.setChecked(true);
+			translate.run();
+
+		}
+		return _dragModes;
+	}
+
+	public DragSegment()
+	{
+
+	}
+
+	@Override
+	protected void execute()
+	{
+		// ok, fire our parent
+		super.execute();
+
+		// now, try to open the stacked dots view
+		try
+		{
+			IWorkbench wb = PlatformUI.getWorkbench();
+			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+			IWorkbenchPage page = win.getActivePage();
+			page.showView(CorePlugin.STACKED_DOTS);
+
+			System.err.println("run mode is:" + _currentDragMode.getText());
+
+		}
+		catch (PartInitException e)
+		{
+			CorePlugin.logError(IStatus.ERROR, "Failed to open stacked dots", e);
+		}
+
+	}
+
+	/**
+	 * simpler test that just supports tracks
+	 * 
+	 */
+	@Override
+	public void findNearest(Layer thisLayer,
+			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
+			LocationConstruct currentNearest, Layer parentLayer)
+	{
+		_currentDragMode.findNearest(thisLayer, cursorLoc, cursorPos,
+				currentNearest, parentLayer);
+	}
+
+	@Override
+	public Cursor getDragCursor()
+	{
+		return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+				"icons/SelectFeatureHitDown.ico").getImageData(), 4, 2);
+	}
+
+	@Override
+	public PlotMouseDragger getDragMode()
+	{
+		return new DragSegmentMode();
+	}
+
+	@Override
+	public Cursor getHotspotCursor(DraggableItem hoverTarget)
+	{
+		Cursor res = null;
+		if (hoverTarget instanceof IconProvider)
+		{
+			IconProvider iconP = (IconProvider) hoverTarget;
+			res = iconP.getHotspotCursor();
+		}
+
+		if (res == null)
+			res = super.getHotspotCursor(hoverTarget);
+
+		return res;
 	}
 }
