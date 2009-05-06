@@ -1737,10 +1737,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public final HiResDate getEndDTG()
 	{
-		HiResDate res = null;
-		if (_myTimePeriod != null)
-			res = _myTimePeriod.getEndDTG();
-		return res;
+		TimePeriod res = getTimePeriod();
+		
+		return res.getEndDTG();
 	}
 
 	// //////////////////////////////////////
@@ -2205,9 +2204,27 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public final HiResDate getStartDTG()
 	{
-		HiResDate res = null;
-		if (_myTimePeriod != null)
-			res = _myTimePeriod.getStartDTG();
+		TimePeriod res = getTimePeriod();
+		
+		return res.getStartDTG();
+	}
+
+	private TimePeriod getTimePeriod()
+	{
+		TimePeriod res = null;
+
+		Enumeration<Editable> segs = _thePositions.elements();
+		while (segs.hasMoreElements())
+		{
+			TrackSegment seg = (TrackSegment) segs.nextElement();
+			if(res == null)
+				res = new TimePeriod.BaseTimePeriod(seg.startDTG(), seg.endDTG());
+			else
+			{
+				res.extend(seg.startDTG());
+				res.extend(seg.startDTG());
+			}
+		}
 		return res;
 	}
 
