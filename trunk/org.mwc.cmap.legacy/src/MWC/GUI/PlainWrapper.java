@@ -191,7 +191,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     // keep track of versions
     static final long serialVersionUID = 1;
 
-    private java.awt.Color _theColor;
+    private java.awt.Color _theColor = Color.yellow;
 
     /**
      * whether this shape is visible
