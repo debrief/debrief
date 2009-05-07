@@ -15,15 +15,20 @@ import org.junit.Test;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
+import Debrief.Wrappers.TrackWrapper_Support.TMASegment;
 import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.Plottable;
+import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
 /**
@@ -399,7 +404,6 @@ public class TrackWrapper_Test
 	@Test
 	public void testShiftWorldLocationWorldVector()
 	{
-		// fail("Not yet implemented"); // TODO
 	}
 
 	/**
@@ -409,7 +413,6 @@ public class TrackWrapper_Test
 	@Test
 	public void testShiftWorldVector()
 	{
-		// fail("Not yet implemented"); // TODO
 	}
 
 	/**
@@ -420,7 +423,6 @@ public class TrackWrapper_Test
 	@Test
 	public void testShiftTrack()
 	{
-		// fail("Not yet implemented"); // TODO
 	}
 
 	/**
@@ -438,6 +440,50 @@ public class TrackWrapper_Test
 		assertEquals("is vis", true, _tw.visibleBetween(new HiResDate(300000),
 				new HiResDate(500000)));
 	}
+	
+	/**
+	 * .
+	 */
+	@Test
+	public void testTMASegment()
+	{
+		TrackWrapper tw = new TrackWrapper();
+		
+		FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
+		FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
+		tw.addFix(f1);
+		tw.addFix(f2);
+		tw.addFix(createFix(300000, 3, 3, 4, 12));
+		tw.addFix(createFix(400000, 4, 6, 4, 12));
+		
+		TimePeriod period = new TimePeriod.BaseTimePeriod(new HiResDate(100000), new HiResDate(400000));
+		Duration interval = new Duration(50000, Duration.MILLISECONDS);
+		WorldVector offset = new WorldVector(12, 12, 0);
+		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+		double course = 33;
+		
+		// ok, create the segment
+		TMASegment seg = new TMASegment(tw,period, interval, offset, speed, course );
+		
+		// check the create worked
+		assertEquals("enough points created", 7, seg.size());
+		
+		// check the before
+		FixWrapper firstFix =		(FixWrapper) seg.getData().iterator().next();
+		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+		assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
+		assertEquals("correct course before", 33, MWC.Algorithms.Conversions.Rads2Degs( firstFix.getCourse()), 0.001);
+		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+		
+		seg.setCourse(35);
+		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+
+		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
+		assertEquals("correct speed after", 15, seg.getSpeed().getValueIn(WorldSpeed.Kts), 0.001);
+		assertEquals("correct course after", 35, MWC.Algorithms.Conversions.Rads2Degs(firstFix.getCourse()), 0.001);
+		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+	}
+
 
 	/**
 	 * Test method for
@@ -842,6 +888,19 @@ public class TrackWrapper_Test
 		FixWrapper fw = new FixWrapper(new Fix(new HiResDate(time),
 				new WorldLocation(vLat, vLong, 0), 1, 1));
 		return fw;
+	}
+	
+	
+	
+
+	private FixWrapper createFix(int time, int vLat, int vLong, int crseDegs, int spdKts)
+	{
+		FixWrapper theFix = createFix(time, vLat, vLong);
+		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
+		theFix.getFix().setSpeed(new WorldSpeed(spdKts, 
+				WorldSpeed.Kts).getValueIn(WorldSpeed.ft_sec)/3);
+
+		return theFix;
 	}
 
 	private int trackLength()

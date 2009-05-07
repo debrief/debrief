@@ -883,6 +883,11 @@ public final class SensorContactWrapper extends
 	{
 		_mySensor = sensor;
 	}
+	
+	public final SensorWrapper getSensor()
+	{
+		return _mySensor;
+	}
 
 	/**
 	 * get the label for this data item
