@@ -128,7 +128,7 @@ final public class WorldAcceleration
    */
   public double getValueIn(int units)
   {
-    return convert(WorldAcceleration.M_sec_sec, units, _myAccel);
+    return convert(_myUnits, units, _myAccel);
   }
 
   public double getValue()
@@ -181,7 +181,8 @@ final public class WorldAcceleration
       assertEquals("m sec correct", w1.getValueIn(WorldAcceleration.M_sec_sec), 1d, 0.000001);
 
       WorldAcceleration w2 = new WorldAcceleration(1, WorldAcceleration.Kts_sec);
-      assertEquals("correct value stored", 0.514444, w2._myAccel, 0.001);
+      assertEquals("correct value stored", 1, w2._myAccel, 0.001);
+      assertEquals("correct units stored", WorldAcceleration.Kts_sec, w2._myUnits, 0.001);
       assertEquals("m/sec correct", w2.getValueIn(WorldAcceleration.M_sec_sec), 0.5144444, 0.000001);
       assertEquals("kts correct", w2.getValueIn(WorldAcceleration.Kts_sec), 1, 0.000001);
 
