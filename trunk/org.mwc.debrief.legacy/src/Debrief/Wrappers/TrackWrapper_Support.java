@@ -9,6 +9,7 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
 
+import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -390,7 +391,7 @@ public class TrackWrapper_Support
 		 * the feature we're based on
 		 * 
 		 */
-		private WatchableList _origin;
+		private WatchableList _referenceTrack;
 
 		/**
 		 * the offset we apply to the origin
@@ -398,42 +399,23 @@ public class TrackWrapper_Support
 		 */
 		private WorldVector _offset;
 
-		/** base constructor - sorts out the obvious
-		 * 
-		 * @param courseDegs
-		 * @param speed
-		 * @param offset
-		 */
-		protected TMASegment(final double courseDegs, final WorldSpeed speed, final WorldVector offset)
-		{
-			_course = courseDegs	;
-			_speed = speed;
-			_offset = offset;
-		}
+		private WorldVector _vecTempLastVector = null;
+
+		private long _vecTempLastDTG = -2;
 
 		/**
-		 * build up a solution from the supplied sensor data
+		 * base constructor - sorts out the obvious
 		 * 
-		 * @param observations
-		 *          create a single position for the DTG of each solution
-		 * @param offset
-		 *          the range/brg from the host's position at the DTG of the first
-		 *          observation
-		 * @param speed
-		 *          the initial target speed estimate
 		 * @param courseDegs
-		 *          the initial target course estimate
+		 * @param speed
+		 * @param offset
 		 */
-		public TMASegment(SensorWrapper sw, WorldVector offset,
-				WorldSpeed speed, double courseDegs)
+		protected TMASegment(final double courseDegs, final WorldSpeed speed,
+				final WorldVector offset)
 		{
-			this(courseDegs, speed, offset);
-
-			// sort out the origin
-      _origin = sw.getHost();
-
-			// create the points
-			createPointsFrom(sw);
+			_course = courseDegs;
+			_speed = speed;
+			_offset = offset;
 		}
 
 		/**
@@ -456,7 +438,7 @@ public class TrackWrapper_Support
 
 			// sort out the origin
 			SensorContactWrapper scw = observations[0];
-			_origin = scw.getSensor().getHost();
+			_referenceTrack = scw.getSensor().getHost();
 
 			// create the points
 			createPointsFrom(observations);
@@ -475,19 +457,67 @@ public class TrackWrapper_Support
 		 * @param courseDegs
 		 *          the initial target course estimate
 		 */
-		public TMASegment(WatchableList origin, TimePeriod period, Duration interval, WorldVector offset,
-				WorldSpeed speed, double courseDegs)
+		public TMASegment(SensorWrapper sw, WorldVector offset, WorldSpeed speed,
+				double courseDegs)
 		{
 			this(courseDegs, speed, offset);
 
 			// sort out the origin
-			_origin = origin;
+			_referenceTrack = sw.getHost();
+
+			// create the points
+			createPointsFrom(sw);
+		}
+
+		/**
+		 * build up a solution from the supplied sensor data
+		 * 
+		 * @param observations
+		 *          create a single position for the DTG of each solution
+		 * @param offset
+		 *          the range/brg from the host's position at the DTG of the first
+		 *          observation
+		 * @param speed
+		 *          the initial target speed estimate
+		 * @param courseDegs
+		 *          the initial target course estimate
+		 */
+		public TMASegment(WatchableList origin, TimePeriod period,
+				Duration interval, WorldVector offset, WorldSpeed speed,
+				double courseDegs)
+		{
+			this(courseDegs, speed, offset);
+
+			// sort out the origin
+			_referenceTrack = origin;
 
 			// create the points
 			createPointsFor(period, interval);
 		}
-		
-		/** produce a series of regularly spaced fixes, during the specified period
+
+		private Fix createFix(long thisT)
+		{
+			Fix fix = new Fix(new HiResDate(thisT), new WorldLocation(0, 0, 0),
+					MWC.Algorithms.Conversions.Degs2Rads(_course), _speed
+							.getValueIn(WorldSpeed.ft_sec) / 3);
+			return fix;
+		}
+
+		/**
+		 * create a fix at the specified dtg
+		 * 
+		 * @param thisS
+		 * @return
+		 */
+		private FixWrapper createPointFor(SensorContactWrapper thisS)
+		{
+			FixWrapper newFix = new FixWrapper(createFix(thisS.getDTG().getDate()
+					.getTime()));
+			return newFix;
+		}
+
+		/**
+		 * produce a series of regularly spaced fixes, during the specified period
 		 * 
 		 * @param period
 		 * @param interval
@@ -501,14 +531,6 @@ public class TrackWrapper_Support
 				FixWrapper nextFix = new FixWrapper(createFix(thisT));
 				addFix(nextFix);
 			}
-		}
-
-		private Fix createFix(long thisT)
-		{
-			Fix fix = new Fix(new HiResDate(thisT), new WorldLocation(0, 0, 0),
-					MWC.Algorithms.Conversions.Degs2Rads(_course), _speed
-							.getValueIn(WorldSpeed.ft_sec) / 3);
-			return fix;
 		}
 
 		private void createPointsFrom(SensorContactWrapper[] observations)
@@ -534,19 +556,6 @@ public class TrackWrapper_Support
 		}
 
 		/**
-		 * create a fix at the specified dtg
-		 * 
-		 * @param thisS
-		 * @return
-		 */
-		private FixWrapper createPointFor(SensorContactWrapper thisS)
-		{
-			FixWrapper newFix = new FixWrapper(createFix(thisS.getDTG().getDate()
-					.getTime()));
-			return newFix;
-		}
-
-		/**
 		 * get the current course of this leg
 		 * 
 		 * @return course (degs)
@@ -563,6 +572,23 @@ public class TrackWrapper_Support
 		}
 
 		/**
+		 * get the start of this tma segment
+		 * 
+		 * @return
+		 */
+		public WorldLocation getOrigin()
+		{
+			WorldLocation res = null;
+			Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
+			if (pts.length > 0)
+			{
+				WorldLocation startPos = pts[0].getLocation();
+				res = startPos.add(_offset);
+			}
+			return res;
+		}
+
+		/**
 		 * the constant speed of this segment
 		 * 
 		 * @return the current speed
@@ -570,6 +596,69 @@ public class TrackWrapper_Support
 		public WorldSpeed getSpeed()
 		{
 			return _speed;
+		}
+
+		@Override
+		public void paint(CanvasType dest)
+		{
+			Collection<Editable> items = getData();
+
+			// ok - draw that line!
+			Point lastPoint = null;
+			Point lastButOne = null;
+			WorldLocation tmaLastLoc = null;
+			long tmaLastDTG = 0;
+
+			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+			{
+				FixWrapper thisF = (FixWrapper) iterator.next();
+
+				long thisTime = thisF.getDateTimeGroup().getDate().getTime();
+
+				// ok, is this our first location?
+				if (tmaLastLoc == null)
+				{
+					tmaLastLoc = new WorldLocation(getOrigin());
+				}
+				else
+				{
+					// calculate a new vector
+					long timeDelta = thisTime - tmaLastDTG;
+					WorldVector thisVec = vectorFor(timeDelta);
+					tmaLastLoc.addToMe(thisVec);
+				}
+
+				// dump the location into the fix
+				thisF.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+
+				// cool, remember the time.
+				tmaLastDTG = thisTime;
+
+				Point thisPoint = dest.toScreen(thisF.getFixLocation());
+
+				// do we have enough for a line?
+				if (lastPoint != null)
+				{
+					// draw that line
+					dest.drawLine(lastPoint.x, lastPoint.y, thisPoint.x, thisPoint.y);
+
+					// are we at the start of the line?
+					if (lastButOne == null)
+					{
+						drawMyStalk(dest, lastPoint, thisPoint, true);
+					}
+				}
+
+				lastButOne = lastPoint;
+				lastPoint = new Point(thisPoint);
+
+				// also draw in a marker for this point
+				dest.drawRect(lastPoint.x - 1, lastPoint.y - 1, 3, 3);
+			}
+
+			// lastly 'plot on' from the last points
+			drawMyStalk(dest, lastPoint, lastButOne, false);
+
 		}
 
 		/**
@@ -589,6 +678,9 @@ public class TrackWrapper_Support
 				FixWrapper fix = (FixWrapper) iterator.next();
 				fix.getFix().setCourse(crseRads);
 			}
+
+			// ditch our temp vector, we've got to recalc it
+			_vecTempLastDTG = -2;
 		}
 
 		/**
@@ -601,13 +693,53 @@ public class TrackWrapper_Support
 		{
 			_speed = speed;
 
-			double spdYps = speed.getValueIn(WorldSpeed.ft_sec)/3;
+			double spdYps = speed.getValueIn(WorldSpeed.ft_sec) / 3;
 			Collection<Editable> data = getData();
 			for (Iterator<Editable> iterator = data.iterator(); iterator.hasNext();)
 			{
 				FixWrapper fix = (FixWrapper) iterator.next();
 				fix.getFix().setSpeed(spdYps);
 			}
+
+			// ditch our temp vector, we've got to recalc it
+			_vecTempLastDTG = -2;
+
+		}
+
+		@Override
+		public void shift(WorldVector vector)
+		{
+			// really, we just need to add this vector to our orign
+			WorldLocation tmpOrigin = new WorldLocation(getOrigin());
+			tmpOrigin.addToMe(_offset);
+			tmpOrigin.addToMe(vector);
+
+			_offset = tmpOrigin.subtract(getOrigin());
+		}
+
+		/**
+		 * represent the named leg as a DR vector
+		 * 
+		 * @param fw
+		 *          the leg we're looking at
+		 * @param period
+		 *          how long it's travelling for
+		 * @return a vector representing the subject
+		 */
+		public WorldVector vectorFor(long period)
+		{
+			// have we already looked for this
+			if (period != _vecTempLastDTG)
+			{
+				// nope better calc it
+				double spdFtSec = getSpeed().getValueIn(WorldSpeed.ft_sec);
+				WorldDistance dist = new WorldDistance(spdFtSec * period / 1000,
+						WorldDistance.FT);
+				_vecTempLastVector = new WorldVector(MWC.Algorithms.Conversions
+						.Degs2Rads(getCourse()), dist, null);
+			}
+
+			return _vecTempLastVector;
 		}
 
 	}
@@ -704,8 +836,8 @@ public class TrackWrapper_Support
 			return res;
 		}
 
-		private void drawMyStalk(CanvasType dest, Point lastPoint, Point thisPoint,
-				boolean forwards)
+		protected void drawMyStalk(CanvasType dest, Point lastPoint,
+				Point thisPoint, boolean forwards)
 		{
 			// yup, we've now got just two points. plot a 'back-trace'
 			double xDelta = thisPoint.x - lastPoint.x;
@@ -761,6 +893,7 @@ public class TrackWrapper_Support
 			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
 			{
 				FixWrapper thisF = (FixWrapper) iterator.next();
+
 				Point thisPoint = dest.toScreen(thisF.getFixLocation());
 
 				// do we have enough for a line?

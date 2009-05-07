@@ -715,16 +715,22 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
    */
   public final void setFixLocation(final WorldLocation val)
   {
-    // TODO: rationalise all of these world locations
+  	// set the central bits
+  	setFixLocationSilent(val);
+  	
+    // also, fire the parent's updated method
+    super.getSupport().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);  
+  }
+
+  /** set the current location of the fix
+   */
+  public final void setFixLocationSilent(final WorldLocation val)
+  {
     _theFix.setLocation(val);
     _theLabel.setLocation(val);
     _theLocationWrapper.setLocation(val);
 
     _myArea = new WorldArea(val, val);
-    
-    // also, fire the parent's updated method
-    super.getSupport().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null, val);
-    
   }
 
 

@@ -25,6 +25,7 @@ import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper_Support.FixSetter;
 import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
+import Debrief.Wrappers.TrackWrapper_Support.TMASegment;
 import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
@@ -882,17 +883,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		{
 			Editable editable = subjects[i];
 			TimePeriod thisPeriod = null;
-			if(editable instanceof TrackWrapper)
+			if (editable instanceof TrackWrapper)
 			{
 				TrackWrapper tw = (TrackWrapper) editable;
-				thisPeriod = new TimePeriod.BaseTimePeriod(tw.getStartDTG(), tw.getEndDTG());
+				thisPeriod = new TimePeriod.BaseTimePeriod(tw.getStartDTG(), tw
+						.getEndDTG());
 			}
-			else if(editable instanceof TrackSegment)
+			else if (editable instanceof TrackSegment)
 			{
 				TrackSegment ts = (TrackSegment) editable;
 				thisPeriod = new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
 			}
-			_periods[i] =thisPeriod;
+			_periods[i] = thisPeriod;
 		}
 		// now test them.
 		String failedMsg = null;
@@ -903,26 +905,29 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				TimePeriod timePeriod2 = _periods[j];
 				// check it's not us
-				if(timePeriod2 != timePeriod)
+				if (timePeriod2 != timePeriod)
 				{
-					if(timePeriod.overlaps(timePeriod2))
+					if (timePeriod.overlaps(timePeriod2))
 					{
-						failedMsg = "'" + subjects[i].getName() + "' and '" + subjects[j].getName() + "'";
+						failedMsg = "'" + subjects[i].getName() + "' and '"
+								+ subjects[j].getName() + "'";
 						break;
 					}
 				}
-				
+
 			}
-			
+
 		}
 
 		// how did we get on?
-		if(failedMsg != null)
+		if (failedMsg != null)
 		{
-			MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg + " overlap in time. Please correct this and retry", MessageProvider.ERROR);
+			MessageProvider.Base.Provider.show("Merge tracks", "Sorry, " + failedMsg
+					+ " overlap in time. Please correct this and retry",
+					MessageProvider.ERROR);
 			return MessageProvider.ERROR;
 		}
-		
+
 		// ok, loop through the subjects, adding them onto the target
 		for (int i = 0; i < subjects.length; i++)
 		{
@@ -983,7 +988,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 
 		}
-		
+
 		return MessageProvider.OK;
 	}
 
@@ -1223,7 +1228,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// add fix to last track segment
 		final TrackSegment last = (TrackSegment) _thePositions.last();
 		last.addFix(theFix);
-		
+
 		// tell the fix about it's daddy
 		theFix.setTrackWrapper(this);
 
@@ -1738,7 +1743,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getEndDTG()
 	{
 		TimePeriod res = getTimePeriod();
-		
+
 		return res.getEndDTG();
 	}
 
@@ -2205,7 +2210,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getStartDTG()
 	{
 		TimePeriod res = getTimePeriod();
-		
+
 		return res.getStartDTG();
 	}
 
@@ -2217,7 +2222,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		while (segs.hasMoreElements())
 		{
 			TrackSegment seg = (TrackSegment) segs.nextElement();
-			if(res == null)
+			if (res == null)
 				res = new TimePeriod.BaseTimePeriod(seg.startDTG(), seg.endDTG());
 			else
 			{
@@ -2418,11 +2423,23 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// ///////////////////////////////////////////
 			// let the fixes draw themselves in
 			// ///////////////////////////////////////////
-			
+
 			Enumeration<Editable> segments = _thePositions.elements();
-			while(segments.hasMoreElements())
+			while (segments.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
+
+				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
+				// MODE
+				boolean tmaIsRelative = (seg instanceof TMASegment);
+				TMASegment tmaSegment = null;
+				WorldLocation tmaLastLoc = null;
+				long tmaLastDTG = 0;
+				if (tmaIsRelative)
+				{
+					tmaSegment = (TMASegment) seg;
+				}
+
 				final Enumeration<Editable> fixWrappers = seg.elements();
 				while (fixWrappers.hasMoreElements())
 				{
@@ -2442,8 +2459,37 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						// ok, so we have plotted something
 						plotted_anything = true;
 
+						// ok, are we in relative?
+						if (tmaIsRelative)
+						{
+							long thisTime = fw.getDateTimeGroup().getDate().getTime();
+
+							// ok, is this our first location?
+							if (tmaLastLoc == null)
+							{
+								tmaLastLoc = new WorldLocation(tmaSegment.getOrigin());
+								lastLocation = tmaLastLoc;
+							}
+							else
+							{
+								// calculate a new vector
+								long timeDelta = thisTime - tmaLastDTG;
+								WorldVector thisVec = tmaSegment.vectorFor(timeDelta);
+								tmaLastLoc.addToMe(thisVec);
+								lastLocation = tmaLastLoc;
+							}
+
+							// dump the location into the fix
+							fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+
+							// cool.
+							tmaLastDTG = thisTime;
+
+						}
+
 						// this is a valid one, remember the details
 						lastLocation = fw.getLocation();
+
 						final java.awt.Point thisP = dest.toScreen(lastLocation);
 
 						// just check that there's enough GUI to create the plot
@@ -2533,7 +2579,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				paintTrack(dest, lastCol);
 
 			}
-			
 
 			// are we trying to put the label at the end of the track?
 			if (!_LabelAtStart)
@@ -3063,7 +3108,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// ok - job well done
 				handledData = true;
 
-			} 
+			}
 			else if (thisO instanceof SegmentList)
 			{
 				SegmentList list = (SegmentList) thisO;
