@@ -152,7 +152,7 @@ final public class WorldSpeed
    */
   public double getValueIn(int units)
   {
-    return convert(WorldSpeed.M_sec, units, _mySpeed);
+    return convert(_myUnits, units, _mySpeed);
   }
 
   /** get this speed, expressed in it's native units
@@ -198,7 +198,8 @@ final public class WorldSpeed
       assertEquals("m sec correct", w1.getValueIn(WorldSpeed.M_sec), 1d, 0.000001);
 
       WorldSpeed w2 = new WorldSpeed(1, WorldSpeed.Kts);
-      assertEquals("correct value stored", 0.514444, w2._mySpeed, 0.001);
+      assertEquals("correct value stored", 1, w2._mySpeed, 0.001);
+      assertEquals("correct unts stored", WorldSpeed.Kts, w2._myUnits, 0.001);
       assertEquals("m/sec correct", w2.getValueIn(WorldSpeed.M_sec), 0.5144444, 0.000001);
       assertEquals("kts correct", w2.getValueIn(WorldSpeed.Kts), 1, 0.000001);
 
@@ -219,6 +220,10 @@ final public class WorldSpeed
       assertEquals("retrieve ft/s label", WorldSpeed.getLabelFor(WorldSpeed.ft_sec), "ft/s");
       assertEquals("retrieve kts label", WorldSpeed.getLabelFor(WorldSpeed.Kts), "kts");
 
+      // test conversions
+      WorldDistance w6 = new WorldDistance(10, WorldDistance.YARDS);
+      assertEquals("valid units conversion", 30, w6.getValueIn(WorldDistance.FT), 0.001);
+      
     }
 
     public final void testStrings()
