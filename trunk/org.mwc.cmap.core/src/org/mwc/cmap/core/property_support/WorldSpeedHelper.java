@@ -7,6 +7,7 @@ import org.eclipse.jface.viewers.*;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 
 import MWC.GenericData.*;
@@ -80,6 +81,66 @@ public class WorldSpeedHelper extends EditorHelper
 			}
 		};
 	}
+	
+	/** create an instance of the cell editor suited to our data-type
+	 * 
+	 * @param parent
+	 * @return
+	 */
+	public ValueWithUnitsControl getControlFor()
+	{
+		return new ValueWithUnitsControl("Speed", "Units")
+		{
+			/** the world distance we're editing
+			 * 
+			 */
+			WorldSpeed _myVal;
+			
+			/**
+			 * @return
+			 */
+			protected int getUnitsValue()
+			{
+		    return _myVal.getUnits();
+			}
+
+			/**
+			 * @return
+			 */
+			protected double getDoubleValue()
+			{
+				return _myVal.getValue();
+			}
+
+			/**
+			 * @return
+			 */
+			protected String[] getTagsList()
+			{
+				return WorldSpeed.UnitLabels;
+			}
+			
+			/**
+			 * @param dist the value typed in
+			 * @param units the units for the value
+			 * @return an object representing the new data value
+			 */
+			protected Object createResultsObject(double dist, int units)
+			{
+				return new WorldSpeed(dist, units);
+			}
+
+			/** convert the object to our data units
+			 * 
+			 * @param value
+			 */
+			protected void storeMe(Object value)
+			{
+				_myVal = (WorldSpeed) value;
+			}
+		};
+	}
+	
 
 	public ILabelProvider getLabelFor(Object currentValue)
 	{
@@ -102,13 +163,11 @@ public class WorldSpeedHelper extends EditorHelper
 
 	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
-		final Button myCheckbox = new Button(parent, SWT.CHECK);
-		myCheckbox.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e)
-			{
-				Boolean val = new Boolean(myCheckbox.getSelection());
-				property.setValue(val);
-			}});
-		return myCheckbox;
+		
+		REFACTOR ValueWithUnitsControl and ValueWithUnitsCellEditor
+		ValueWithUnitsControl editor = getControlFor();
+		Control control = editor.createControl(parent);
+		return control;
+
 	}	
 }

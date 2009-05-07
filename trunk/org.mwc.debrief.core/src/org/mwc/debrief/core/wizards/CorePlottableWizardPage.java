@@ -39,6 +39,34 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	 */
 	private Button _enabledBtn;
 
+	private boolean _optional;
+
+	/**
+	 * Constructor for SampleNewWizardPage.
+	 * 
+	 * @param pageName
+	 */
+	public CorePlottableWizardPage(ISelection selection, String pageName,
+			String title, String description, String imageName, boolean optional)
+	{
+		super(pageName);
+		_optional = optional;
+		setTitle(title);
+		setDescription(description);
+		this.selection = selection;
+
+		// ok, now try to set the image
+		if (imageName != null)
+		{
+			ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin(
+					"org.mwc.debrief.core", imageName);
+			if (id != null)
+				super.setImageDescriptor(id);
+			else
+				CorePlugin.logError(Status.WARNING, "Wizard image file not found for:"
+						+ imageName, null);
+		}
+	}
 
 	/**
 	 * Constructor for SampleNewWizardPage.
@@ -48,22 +76,9 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	public CorePlottableWizardPage(ISelection selection, String pageName,
 			String title, String description, String imageName)
 	{
-		super(pageName);
-		setTitle(title);
-		setDescription(description);
-		this.selection = selection;
-		
-		// ok, now try to set the image
-		if(imageName != null)
-		{
-			ImageDescriptor id = AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.core", imageName);
-			if(id != null)
-				super.setImageDescriptor(id);
-			else
-				CorePlugin.logError(Status.WARNING, "Wizard image file not found for:" + imageName, null);
-		}
+		this(selection, pageName, title, description, imageName, true);
 	}
-	
+
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
@@ -83,11 +98,15 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	final public Plottable getPlottable()
 	{
 		final Plottable res;
-		
+
 		// hmm, does the user want one?
-		if(_enabledBtn.getSelection())
+		if (!_optional)
 		{
 			// yes, return it.
+			res = _plottable;
+		}
+		else if (_enabledBtn.getSelection())
+		{
 			res = _plottable;
 		}
 		else
@@ -95,7 +114,7 @@ abstract public class CorePlottableWizardPage extends WizardPage
 			// no, return null instead
 			res = null;
 		}
-		
+
 		return res;
 	}
 
@@ -117,27 +136,31 @@ abstract public class CorePlottableWizardPage extends WizardPage
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
 
-		// insert the "enabled" item first
-		Label label = new Label(container, SWT.NONE);
-		label.setText("Include");
-
-		_enabledBtn = new Button(container, SWT.CHECK);
-
-		// set enabled, so the controls are editable
-		_enabledBtn.setSelection(true);
-		
-		// now start listening out for changes for the enabled btn
-		_enabledBtn.addSelectionListener(new SelectionAdapter()
+		if (_optional)
 		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				enabledChanged();
-				dialogChanged();
-			}
-		});
+			// insert the "enabled" item first
+			Label label = new Label(container, SWT.NONE);
+			label.setText("Include");
 
-		label = new Label(container, SWT.NONE);
-		label.setText("Whether to include this item");
+			_enabledBtn = new Button(container, SWT.CHECK);
+
+			// set enabled, so the controls are editable
+			_enabledBtn.setSelection(true);
+
+			// now start listening out for changes for the enabled btn
+			_enabledBtn.addSelectionListener(new SelectionAdapter()
+			{
+				public void widgetSelected(SelectionEvent e)
+				{
+					enabledChanged();
+					dialogChanged();
+				}
+			});
+
+			label = new Label(container, SWT.NONE);
+			label.setText("Whether to include this item");
+
+		}
 
 		// hey, let's try and automate it!!!
 		_plottable = createMe();
@@ -197,24 +220,26 @@ abstract public class CorePlottableWizardPage extends WizardPage
 				Control newEditor = thisProp.createEditor(container);
 				if (newEditor != null)
 				{
-					// ok, put the property name in the editor, so we can 
+					// ok, put the property name in the editor, so we can
 					// easily get it when we're doing validation
 					newEditor.setData(thisD.getName());
-					
+
 					// ok, remember the editor, so we can handle enable/disable later on
 					_myEditors.add(newEditor);
-					
-					// listen out for changes on this control, 
-					newEditor.addListener(SWT.Selection, new Listener(){
+
+					// listen out for changes on this control,
+					newEditor.addListener(SWT.Selection, new Listener()
+					{
 						public void handleEvent(Event event)
 						{
 							dialogChanged();
-						}});
+						}
+					});
 				}
 				else
 				{
 					// insert duff label as place-holder
-					label = new Label(container,SWT.BORDER);
+					label = new Label(container, SWT.BORDER);
 					label.setText("Suitable editor not found");
 				}
 
@@ -225,11 +250,15 @@ abstract public class CorePlottableWizardPage extends WizardPage
 		}
 	}
 
-	/** create a property descriptor to take the auto-determined editor class
+	/**
+	 * create a property descriptor to take the auto-determined editor class
 	 * 
-	 * @param name of property
-	 * @param description help-text
-	 * @param subject object being edited
+	 * @param name
+	 *          of property
+	 * @param description
+	 *          help-text
+	 * @param subject
+	 *          object being edited
 	 * @return new property descriptor
 	 */
 	final protected static PropertyDescriptor prop(String name,
@@ -243,18 +272,22 @@ abstract public class CorePlottableWizardPage extends WizardPage
 		}
 		catch (IntrospectionException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		return res;
 	}
 
-	/** create a property descriptor with supplied editor class
+	/**
+	 * create a property descriptor with supplied editor class
 	 * 
-	 * @param name of property
-	 * @param description help-text
-	 * @param subject object being edited
-	 * @param editorClass the specified editor to use
+	 * @param name
+	 *          of property
+	 * @param description
+	 *          help-text
+	 * @param subject
+	 *          object being edited
+	 * @param editorClass
+	 *          the specified editor to use
 	 * @return new property descriptor
 	 * @return
 	 */
@@ -302,41 +335,45 @@ abstract public class CorePlottableWizardPage extends WizardPage
 	 */
 	final void dialogChanged()
 	{
-		if(_enabledBtn.getSelection())
+		if (_optional)
 		{
-			// right, controls are enabled, check we've got something in all of them
-			for (Iterator<Control> iterator = _myEditors.iterator(); iterator.hasNext();)
+			if (_enabledBtn.getSelection())
 			{
-				Control thisC = (Control) iterator.next();
-				if(thisC instanceof Combo)
+				// right, controls are enabled, check we've got something in all of them
+				for (Iterator<Control> iterator = _myEditors.iterator(); iterator
+						.hasNext();)
 				{
-					Combo combo = (Combo) thisC;
-					int sel = combo.getSelectionIndex();
-					if(sel == -1)
+					Control thisC = (Control) iterator.next();
+					if (thisC instanceof Combo)
 					{
-						updateStatus("Please select a value for:" + combo.getData());
-						return;
+						Combo combo = (Combo) thisC;
+						int sel = combo.getSelectionIndex();
+						if (sel == -1)
+						{
+							updateStatus("Please select a value for:" + combo.getData());
+							return;
+						}
 					}
-				}
-				else if (thisC instanceof Text)
-				{
-					Text txt = (Text) thisC;
-					if(txt.getText().length() == 0)
+					else if (thisC instanceof Text)
 					{
-						updateStatus("Please enter a value for:" + txt.getData());
-						return;
+						Text txt = (Text) thisC;
+						if (txt.getText().length() == 0)
+						{
+							updateStatus("Please enter a value for:" + txt.getData());
+							return;
+						}
 					}
-				}
-				else
-				{
-					// prob just boolean, ignore.
+					else
+					{
+						// prob just boolean, ignore.
+					}
 				}
 			}
 		}
-		
+
 		// cool, everything must be ok.
 		updateStatus(null);
-	
+
 	}
 
 	final protected void updateStatus(String message)

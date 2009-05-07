@@ -16,9 +16,12 @@ import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.wizard.WizardDialog;
+import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -155,6 +158,17 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 					@Override
 					public void run()
 					{
+						
+						// get the supporting data
+				    TMAFromSensorWizard wizard = new TMAFromSensorWizard();
+		         WizardDialog dialog = new WizardDialog(Display.getCurrent().getActiveShell(), wizard);
+		         dialog.create();
+		         dialog.open();
+		         
+		      //   int res = dialog.getReturnCode();
+		       //  System.err.println("res is:" + res);
+
+						
 						// ok, go for it.
 						// sort it out as an operation
 						IUndoableOperation convertToTrack1 = new TMAfromCuts(finalItems,
