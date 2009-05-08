@@ -206,6 +206,10 @@ abstract public class CoreEditableWizardPage extends WizardPage
 
 		// finally, just clear the error message, we're not ready for it yet
 		setErrorMessage(null);
+		
+		// put the focus in our first control
+		if(_myEditors.size() > 0)
+			_myEditors.get(0).setFocus();
 
 	}
 
@@ -256,7 +260,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 				else if (thisC instanceof ValueWithUnitsControl)
 				{
 					final ValueWithUnitsControl value = (ValueWithUnitsControl) thisC;
-					if (value.getData() == null)
+					if (value.getValue() == null)
 					{
 						updateStatus("Please enter a value for:" + value.getData());
 						return;

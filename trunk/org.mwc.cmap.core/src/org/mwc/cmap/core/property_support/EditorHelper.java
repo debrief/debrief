@@ -47,6 +47,15 @@ public abstract class EditorHelper
 			{
 				// inform our parent property that we've changed
 				property.setValue(res.getText());
+				
+				// also tell any listeners
+				Listener[] listeners = res.getListeners(SWT.Selection);
+				for (int i = 0; i < listeners.length; i++)
+				{
+					Listener listener = listeners[i];
+					listener.handleEvent(new Event());
+				}
+				
 			}});
 		return res;
 	}

@@ -113,7 +113,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	 * 
 	 * @return
 	 */
-	public Object getData()
+	public Object getValue()
 	{
 		Object res = null;
 		final String distTxt = _myText.getText();
@@ -121,7 +121,12 @@ final public class ValueWithUnitsControl extends Composite implements
 		{
 			double dist = new Double(distTxt).doubleValue();
 			final int units = _myCombo.getSelectionIndex();
-			res = _myModel.createResultsObject(dist, units);
+			if(units != -1)
+				res = _myModel.createResultsObject(dist, units);
+		}
+		else
+		{
+			System.err.println("DUFF DOUBLE VALUE");
 		}
 		return res;
 	}
@@ -150,7 +155,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	 * 
 	 * @param value
 	 */
-	protected void set(Object value)
+	protected void setValue(Object value)
 	{
 		_myModel.storeMe(value);
 		doUpdate();
@@ -161,7 +166,7 @@ final public class ValueWithUnitsControl extends Composite implements
 	{
 		// store the value in the property, if we have one?
 		if (_property != null)
-			_property.setValue(getData());
+			_property.setValue(getValue());
 		
 		// also tell any listeners
 		Listener[] listeners = this.getListeners(SWT.Selection);
