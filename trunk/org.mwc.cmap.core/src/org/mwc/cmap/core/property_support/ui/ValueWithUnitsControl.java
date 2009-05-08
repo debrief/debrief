@@ -4,12 +4,15 @@
 package org.mwc.cmap.core.property_support.ui;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.ModifyEvent;
+import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Text;
+import org.mwc.cmap.core.property_support.DebriefProperty;
 
-final public class ValueWithUnitsControl extends Composite
+final public class ValueWithUnitsControl extends Composite implements ModifyListener
 {
 
 	/**
@@ -29,6 +32,12 @@ final public class ValueWithUnitsControl extends Composite
 	 * 
 	 */
 	private ValueWithUnitsDataModel _myModel;
+
+
+	/** the (optional) object we're editing
+	 * 
+	 */
+	private DebriefProperty _property;
 
 	/**
 	 * default constructor. it doesn't have all data, but we're not in control of
@@ -52,8 +61,9 @@ final public class ValueWithUnitsControl extends Composite
 		// and put in the controls
 		_myText = new Text(this, SWT.BORDER);
 		_myText.setTextLimit(7);
+		_myText.addModifyListener(this);
 		_myCombo = new Combo(this, SWT.DROP_DOWN);
-
+		_myCombo.addModifyListener(this);
 	}
 
 	/**
@@ -67,14 +77,20 @@ final public class ValueWithUnitsControl extends Composite
 	 *          the tooltip on the combo box
 	 * @param dataModel
 	 *          the data model we're manipulating
+	 * @param property
+	 *          who we tell if we've changed
 	 */
 	public ValueWithUnitsControl(Composite parent, String textTip,
-			String comboText, ValueWithUnitsDataModel dataModel)
+			String comboText, ValueWithUnitsDataModel dataModel, DebriefProperty property)
 	{
 		this(parent);
 		init(textTip, comboText, dataModel);
+		_property = property;
+		
+		if(_property != null)
+			_myModel.storeMe(property.getValue());
 	}
-
+	
 	/**
 	 * update the values displayed
 	 * 
@@ -88,16 +104,21 @@ final public class ValueWithUnitsControl extends Composite
 		_myText.setText(txt);
 	}
 
+	
+	
 	/**
 	 * encode ourselves into an object
 	 * 
 	 * @return
 	 */
-	protected Object get()
+	public Object getData()
 	{
-		final String distTxt = _myText.getText();
-		final double dist = new Double(distTxt).doubleValue();
+		final String distTxt = _myText.getText();		
+		double dist = 0;
+		if(distTxt.length() > 0)
+			dist = new Double(distTxt).doubleValue();
 		final int units = _myCombo.getSelectionIndex();
+		
 		final Object res = _myModel.createResultsObject(dist, units);
 		return res;
 	}
@@ -118,6 +139,7 @@ final public class ValueWithUnitsControl extends Composite
 		_myText.setToolTipText(textTip);
 		_myCombo.setToolTipText(comboTip);
 		_myCombo.setItems(_myModel.getTagsList());
+		_myCombo.select(0);
 	}
 
 	/**
@@ -129,6 +151,13 @@ final public class ValueWithUnitsControl extends Composite
 	{
 		_myModel.storeMe(value);
 		doUpdate();
+	}
+
+	@Override
+	public void modifyText(ModifyEvent e)
+	{
+		if(_property != null)
+			_property.setValue(getData());
 	}
 
 }

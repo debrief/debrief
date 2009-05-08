@@ -1,15 +1,15 @@
 package org.mwc.debrief.core.wizards.s2r;
 
+import org.eclipse.jface.wizard.IWizardPage;
 import org.eclipse.jface.wizard.Wizard;
 
 public class TMAFromSensorWizard extends Wizard
 {
-
   SelectOffsetPage personalInfoPage;
   EnterSolutionPage addressInfoPage;
 
   public void addPages() {
-           personalInfoPage = new SelectOffsetPage("Personal Information Page");
+           personalInfoPage = new SelectOffsetPage(null);
            addPage(personalInfoPage);
            addressInfoPage = new EnterSolutionPage(null);
            addPage(addressInfoPage);
@@ -17,5 +17,12 @@ public class TMAFromSensorWizard extends Wizard
   public boolean performFinish() {
            return true;
   }
-
+  
+	@Override
+	public IWizardPage getPage(String name)
+	{
+		return super.getPage(name);
+	}
+  
+  
 }

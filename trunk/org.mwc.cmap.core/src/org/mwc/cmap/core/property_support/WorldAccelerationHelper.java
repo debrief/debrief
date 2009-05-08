@@ -108,6 +108,6 @@ public class WorldAccelerationHelper extends EditorHelper
 
 	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
-		return new ValueWithUnitsControl(parent, "Acceleration", "Units", new WorldAccelerationModel());
+		return new ValueWithUnitsControl(parent, "Acceleration", "Units", new WorldAccelerationModel(), property);
 	}	
 }

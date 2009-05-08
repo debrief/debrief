@@ -135,10 +135,6 @@ public class FreeDragMode extends DragMode
 			currentNearest.checkMe(centreEnd, centreDist, null, parentLayer);
 
 		}
-		else
-		{
-			System.err.println("WE SHOULD HAVE A TRACK" + thisLayer);
-		}
 	}
 
 	private WorldDistance calcDist(WorldLocation myLoc, WorldLocation cursorLoc)

@@ -9,8 +9,8 @@ import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsCellEditor2;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
 import org.mwc.cmap.core.property_support.ui.ValueWithUnitsDataModel;
 
 import MWC.GenericData.WorldSpeed;
@@ -115,8 +115,8 @@ public class WorldSpeedHelper extends EditorHelper
 	public Control getEditorControlFor(Composite parent,
 			final DebriefProperty property)
 	{
-		ValueWithUnitsControl control = new ValueWithUnitsControl(parent, "Speed", "Units",
-				new WorldSpeedModel());
+		final ValueWithUnitsControl control = new ValueWithUnitsControl(parent, "Speed", "Units",
+				new WorldSpeedModel(), property);
 		return control;
 	}
 }

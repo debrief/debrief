@@ -21,7 +21,10 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
+import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
+import org.mwc.debrief.core.wizards.s2r.SelectOffsetPage;
 import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
+import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.DataItem;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -66,24 +69,21 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 		private Layers _layers;
 		private SensorContactWrapper[] _items;
 		private TrackWrapper _newTrack;
-		private int _course;
+		private double _courseDegs;
 		private WorldSpeed _speed;
 		private WorldVector _offset;
 
-		public TMAfromCuts(SensorContactWrapper[] items, Layers theLayers)
+		public TMAfromCuts(SensorContactWrapper[] items, Layers theLayers,
+				WorldVector offset, double courseDegs, WorldSpeed speed)
 		{
 			super("Create TMA solution");
 			_items = items;
 			_layers = theLayers;
-			_course = 12;
-			_speed = new WorldSpeed(4, WorldSpeed.Kts);
+			_courseDegs = courseDegs;
+			_speed = speed;
+			_offset = offset;
 			
-			// sneaky use the bearing of the first cut for the bearing
-			double brg = items[0].getBearing();
-			brg = MWC.Algorithms.Conversions.Degs2Rads(brg);
-			
-			_offset = new WorldVector(brg, new WorldDistance(1, WorldDistance.NM),
-					new WorldDistance(0, WorldDistance.DEGS));
+			System.err.println("Course:" + _courseDegs + " speed:" + _speed + " offset:" + _offset);
 		}
 
 		@Override
@@ -91,7 +91,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				throws ExecutionException
 		{
 			// create it, then
-			TMASegment seg = new TMASegment(_items, _offset, _speed, _course);
+			TMASegment seg = new TMASegment(_items, _offset, _speed, _courseDegs);
 
 			// now wrap it
 			_newTrack = new TrackWrapper();
@@ -159,23 +159,60 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 					public void run()
 					{
 						
+						// get ready for the supporting data
+						WorldVector res = new WorldVector(0, new WorldDistance(5,
+								WorldDistance.NM), null);
+						double courseDegs = 0;
+						WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+
 						// get the supporting data
-				    TMAFromSensorWizard wizard = new TMAFromSensorWizard();
-		         WizardDialog dialog = new WizardDialog(Display.getCurrent().getActiveShell(), wizard);
-		         dialog.create();
-		         dialog.open();
-		         
-		      //   int res = dialog.getReturnCode();
-		       //  System.err.println("res is:" + res);
+						TMAFromSensorWizard wizard = new TMAFromSensorWizard();
+						WizardDialog dialog = new WizardDialog(Display.getCurrent()
+								.getActiveShell(), wizard);
+						dialog.create();
+						dialog.open();
 
-						
-						// ok, go for it.
-						// sort it out as an operation
-						IUndoableOperation convertToTrack1 = new TMAfromCuts(finalItems,
-								theLayers);
+						// did it work?
+						if (dialog.getReturnCode() == WizardDialog.OK)
+						{
 
-						// ok, stick it on the buffer
-						runIt(convertToTrack1);
+							SelectOffsetPage offsetPage = (SelectOffsetPage) wizard
+									.getPage(SelectOffsetPage.NAME);
+							if (offsetPage != null)
+							{
+								if (offsetPage.isPageComplete())
+								{
+									SelectOffsetPage.DataItem offset = (SelectOffsetPage.DataItem) offsetPage
+											.getEditable();
+									res = new WorldVector(MWC.Algorithms.Conversions
+											.Degs2Rads(offset.getBearing()), offset.getRange(), null);
+								}
+							}
+
+							EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
+									.getPage(EnterSolutionPage.NAME);
+							if (solutionPage != null)
+							{
+								if (solutionPage.isPageComplete())
+								{
+									EnterSolutionPage.DataItem item = (DataItem) solutionPage
+											.getEditable();
+									courseDegs = item.getCourse();
+									speed = item.getSpeed();
+								}
+							}
+
+							// ok, go for it.
+							// sort it out as an operation
+							IUndoableOperation convertToTrack1 = new TMAfromCuts(finalItems,
+									theLayers, res, courseDegs, speed);
+
+							// ok, stick it on the buffer
+							runIt(convertToTrack1);
+
+						}
+						else
+							System.err.println("user cancelled");
 					}
 				};
 			}
@@ -203,22 +240,71 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				if (allGood)
 				{
 					// cool wrap it in an action.
-					_myAction = new Action(
-							"Generate TMA solution from all cust")
+					_myAction = new Action("Generate TMA solution from selected cuts")
 					{
+
 						@Override
 						public void run()
 						{
-							// ok, go for it.
-							// sort it out as an operation
-							IUndoableOperation convertToTrack1 = new TMAfromCuts(items,
-									theLayers);
 
-							// ok, stick it on the buffer
-							runIt(convertToTrack1);
+							// get the supporting data
+							TMAFromSensorWizard wizard = new TMAFromSensorWizard();
+							WizardDialog dialog = new WizardDialog(Display.getCurrent()
+									.getActiveShell(), wizard);
+							dialog.create();
+							dialog.open();
+
+							// did it work?
+							if (dialog.getReturnCode() == WizardDialog.OK)
+							{
+								WorldVector res = new WorldVector(0, new WorldDistance(5,
+										WorldDistance.NM), null);
+								double courseDegs = 0;
+								WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+
+								SelectOffsetPage offsetPage = (SelectOffsetPage) wizard
+										.getPage(SelectOffsetPage.NAME);
+								if (offsetPage != null)
+								{
+									if (offsetPage.isPageComplete())
+									{
+										SelectOffsetPage.DataItem offset = (SelectOffsetPage.DataItem) offsetPage
+												.getEditable();
+										res = new WorldVector(MWC.Algorithms.Conversions
+												.Degs2Rads(offset.getBearing()), offset.getRange(),
+												null);
+									}
+								}
+
+								EnterSolutionPage solutionPage = (EnterSolutionPage) wizard
+										.getPage(EnterSolutionPage.NAME);
+								if (solutionPage != null)
+								{
+									if (solutionPage.isPageComplete())
+									{
+										EnterSolutionPage.DataItem item = (DataItem) solutionPage
+												.getEditable();
+										courseDegs = item.getCourse();
+										speed = item.getSpeed();
+									}
+								}
+
+								// ok, go for it.
+								// sort it out as an operation
+								IUndoableOperation convertToTrack1 = new TMAfromCuts(items,
+										theLayers, res, courseDegs, speed);
+
+								// ok, stick it on the buffer
+								runIt(convertToTrack1);
+
+							}
+							else
+								System.err.println("user cancelled");
+
 						}
 					};
 				}
+				;
 			}
 
 		}

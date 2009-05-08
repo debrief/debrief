@@ -4,7 +4,7 @@ import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
 
-import MWC.GUI.Plottable;
+import MWC.GUI.Editable;
 import MWC.GUI.Chart.Painters.ScalePainter;
 
 /**
@@ -13,9 +13,8 @@ import MWC.GUI.Chart.Painters.ScalePainter;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class ScaleWizardPage extends CorePlottableWizardPage
+public class ScaleWizardPage extends CoreEditableWizardPage
 {
-	
 
 	/**
 	 * Constructor for SampleNewWizardPage.
@@ -24,33 +23,33 @@ public class ScaleWizardPage extends CorePlottableWizardPage
 	 */
 	public ScaleWizardPage(ISelection selection)
 	{
-		super(selection, "scalePage", "Add Scale to Plot", 
+		super(selection, "scalePage", "Add Scale to Plot",
 				"This page adds a scale to your plot", "images/scale_wizard.gif");
 	}
 
-	protected Plottable createMe()
+	@Override
+	protected Editable createMe()
 	{
-		if(_plottable == null)
-			 _plottable = new ScalePainter();
-		
-		return _plottable;
+		if (_editable == null)
+			_editable = new ScalePainter();
+
+		return _editable;
 	}
-	
+
 	/**
 	 * @return
 	 */
+	@Override
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors = {
-        prop("Color", "the Color to draw the Scale", getPlottable()),
-        longProp("DisplayUnits", "the units to use for the scale", getPlottable(),
-                 MWC.GUI.Properties.UnitsPropertyEditor.class),
-        longProp("Location",
-                 "the scale location",  getPlottable(),
-                 MWC.GUI.Properties.DiagonalLocationPropertyEditor.class)
-		};
+		final PropertyDescriptor[] descriptors =
+		{
+				prop("Color", "the Color to draw the Scale", getEditable()),
+				longProp("DisplayUnits", "the units to use for the scale",
+						getEditable(), MWC.GUI.Properties.UnitsPropertyEditor.class),
+				longProp("Location", "the scale location", getEditable(),
+						MWC.GUI.Properties.DiagonalLocationPropertyEditor.class) };
 		return descriptors;
 	}
-	
-	
+
 }

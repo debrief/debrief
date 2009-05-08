@@ -379,7 +379,7 @@ public class TrackWrapper_Support
 		 * steady course (Degs)
 		 * 
 		 */
-		private double _course;
+		private double _courseDegs;
 
 		/**
 		 * steady speed
@@ -413,7 +413,7 @@ public class TrackWrapper_Support
 		protected TMASegment(final double courseDegs, final WorldSpeed speed,
 				final WorldVector offset)
 		{
-			_course = courseDegs;
+			_courseDegs = courseDegs;
 			_speed = speed;
 			_offset = offset;
 		}
@@ -498,7 +498,7 @@ public class TrackWrapper_Support
 		private Fix createFix(long thisT)
 		{
 			Fix fix = new Fix(new HiResDate(thisT), new WorldLocation(0, 0, 0),
-					MWC.Algorithms.Conversions.Degs2Rads(_course), _speed
+					MWC.Algorithms.Conversions.Degs2Rads(_courseDegs), _speed
 							.getValueIn(WorldSpeed.ft_sec) / 3);
 			return fix;
 		}
@@ -535,6 +535,8 @@ public class TrackWrapper_Support
 
 		private void createPointsFrom(SensorContactWrapper[] observations)
 		{
+			System.err.println("about to create:" + observations.length + " points");
+			
 			// better start looping
 			for (int i = 0; i < observations.length; i++)
 			{
@@ -562,7 +564,7 @@ public class TrackWrapper_Support
 		 */
 		public double getCourse()
 		{
-			return _course;
+			return _courseDegs;
 		}
 
 		@Override
@@ -669,7 +671,7 @@ public class TrackWrapper_Support
 		 */
 		public void setCourse(double course)
 		{
-			_course = course;
+			_courseDegs = course;
 
 			double crseRads = MWC.Algorithms.Conversions.Degs2Rads(course);
 			Collection<Editable> data = getData();

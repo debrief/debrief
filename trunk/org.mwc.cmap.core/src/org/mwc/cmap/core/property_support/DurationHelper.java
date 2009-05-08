@@ -184,7 +184,7 @@ public class DurationHelper extends EditorHelper
 
 	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
-		return new ValueWithUnitsControl(parent, "Duration", "Units", new DurationModel());
+		return new ValueWithUnitsControl(parent, "Duration", "Units", new DurationModel(), property);
 	
 	}	
 }

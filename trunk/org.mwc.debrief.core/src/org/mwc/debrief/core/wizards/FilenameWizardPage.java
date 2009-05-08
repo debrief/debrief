@@ -4,8 +4,10 @@ import org.eclipse.core.resources.IContainer;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.Path;
+import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.window.Window;
 import org.eclipse.jface.wizard.WizardPage;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.ModifyEvent;
@@ -27,32 +29,36 @@ import org.eclipse.ui.plugin.AbstractUIPlugin;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class FilenameWizardPage extends WizardPage {
+public class FilenameWizardPage extends WizardPage
+{
 	private Text containerText;
 
 	private Text fileText;
 
-	private ISelection selection;
+	private final ISelection selection;
 
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public FilenameWizardPage(ISelection selection) {
+	public FilenameWizardPage(ISelection selection)
+	{
 		super("wizardPage");
 		setTitle("Create new Debrief Plot");
 		setDescription("This wizard creates a new Debrief Plot-file, please provide a name for the file.");
 		this.selection = selection;
-		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.debrief.core", "images/newplot_wizard.gif"));
+		super.setImageDescriptor(AbstractUIPlugin.imageDescriptorFromPlugin(
+				"org.mwc.debrief.core", "images/newplot_wizard.gif"));
 	}
 
 	/**
 	 * @see IDialogPage#createControl(Composite)
 	 */
-	public void createControl(Composite parent) {
-		Composite container = new Composite(parent, SWT.NULL);
-		GridLayout layout = new GridLayout();
+	public void createControl(Composite parent)
+	{
+		final Composite container = new Composite(parent, SWT.NULL);
+		final GridLayout layout = new GridLayout();
 		container.setLayout(layout);
 		layout.numColumns = 3;
 		layout.verticalSpacing = 9;
@@ -62,16 +68,21 @@ public class FilenameWizardPage extends WizardPage {
 		containerText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		GridData gd = new GridData(GridData.FILL_HORIZONTAL);
 		containerText.setLayoutData(gd);
-		containerText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
+		containerText.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
 				dialogChanged();
 			}
 		});
 
-		Button button = new Button(container, SWT.PUSH);
+		final Button button = new Button(container, SWT.PUSH);
 		button.setText("Browse...");
-		button.addSelectionListener(new SelectionAdapter() {
-			public void widgetSelected(SelectionEvent e) {
+		button.addSelectionListener(new SelectionAdapter()
+		{
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
 				handleBrowse();
 			}
 		});
@@ -81,8 +92,10 @@ public class FilenameWizardPage extends WizardPage {
 		fileText = new Text(container, SWT.BORDER | SWT.SINGLE);
 		gd = new GridData(GridData.FILL_HORIZONTAL);
 		fileText.setLayoutData(gd);
-		fileText.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
+		fileText.addModifyListener(new ModifyListener()
+		{
+			public void modifyText(ModifyEvent e)
+			{
 				dialogChanged();
 			}
 		});
@@ -92,17 +105,99 @@ public class FilenameWizardPage extends WizardPage {
 	}
 
 	/**
+	 * Ensures that both text fields are set.
+	 */
+
+	void dialogChanged()
+	{
+		final IResource container = ResourcesPlugin.getWorkspace().getRoot()
+				.findMember(new Path(getContainerName()));
+		final String fileName = getFileName();
+
+		if (getContainerName().length() == 0)
+		{
+			updateStatus("File container must be specified");
+			return;
+		}
+		if (container == null
+				|| (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0)
+		{
+			updateStatus("File container must exist");
+			return;
+		}
+		if (!container.isAccessible())
+		{
+			updateStatus("Project must be writable");
+			return;
+		}
+		if (fileName.length() == 0)
+		{
+			updateStatus("File name must be specified");
+			return;
+		}
+		if (fileName.replace('\\', '/').indexOf('/', 1) > 0)
+		{
+			updateStatus("File name must be valid");
+			return;
+		}
+		final int dotLoc = fileName.lastIndexOf('.');
+		if (dotLoc != -1)
+		{
+			final String ext = fileName.substring(dotLoc + 1);
+			if (ext.equalsIgnoreCase("xml") == false)
+			{
+				updateStatus("File extension must be \"xml\"");
+				return;
+			}
+		}
+		updateStatus(null);
+	}
+
+	public String getContainerName()
+	{
+		return containerText.getText();
+	}
+
+	public String getFileName()
+	{
+		return fileText.getText();
+	}
+
+	/**
+	 * Uses the standard container selection dialog to choose the new value for
+	 * the container field.
+	 */
+
+	void handleBrowse()
+	{
+		final ContainerSelectionDialog dialog = new ContainerSelectionDialog(
+				getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
+				"Select new file container");
+		if (dialog.open() == Window.OK)
+		{
+			final Object[] result = dialog.getResult();
+			if (result.length == 1)
+			{
+				containerText.setText(((Path) result[0]).toString());
+			}
+		}
+	}
+
+	/**
 	 * Tests if the current workbench selection is a suitable container to use.
 	 */
 
-	private void initialize() {
+	private void initialize()
+	{
 		if (selection != null && selection.isEmpty() == false
-				&& selection instanceof IStructuredSelection) {
-			IStructuredSelection ssel = (IStructuredSelection) selection;
+				&& selection instanceof IStructuredSelection)
+		{
+			final IStructuredSelection ssel = (IStructuredSelection) selection;
 			if (ssel.size() > 1)
 				return;
-			Object obj = ssel.getFirstElement();
-			if (obj instanceof IResource) {
+			final Object obj = ssel.getFirstElement();
+			if (obj instanceof IResource)
+			{
 				IContainer container;
 				if (obj instanceof IContainer)
 					container = (IContainer) obj;
@@ -114,74 +209,9 @@ public class FilenameWizardPage extends WizardPage {
 		fileText.setText("new_plot.xml");
 	}
 
-	/**
-	 * Uses the standard container selection dialog to choose the new value for
-	 * the container field.
-	 */
-
-	void handleBrowse() {
-		ContainerSelectionDialog dialog = new ContainerSelectionDialog(
-				getShell(), ResourcesPlugin.getWorkspace().getRoot(), false,
-				"Select new file container");
-		if (dialog.open() == ContainerSelectionDialog.OK) {
-			Object[] result = dialog.getResult();
-			if (result.length == 1) {
-				containerText.setText(((Path) result[0]).toString());
-			}
-		}
-	}
-
-	/**
-	 * Ensures that both text fields are set.
-	 */
-
-	void dialogChanged() {
-		IResource container = ResourcesPlugin.getWorkspace().getRoot()
-				.findMember(new Path(getContainerName()));
-		String fileName = getFileName();
-
-		if (getContainerName().length() == 0) {
-			updateStatus("File container must be specified");
-			return;
-		}
-		if (container == null
-				|| (container.getType() & (IResource.PROJECT | IResource.FOLDER)) == 0) {
-			updateStatus("File container must exist");
-			return;
-		}
-		if (!container.isAccessible()) {
-			updateStatus("Project must be writable");
-			return;
-		}
-		if (fileName.length() == 0) {
-			updateStatus("File name must be specified");
-			return;
-		}
-		if (fileName.replace('\\', '/').indexOf('/', 1) > 0) {
-			updateStatus("File name must be valid");
-			return;
-		}
-		int dotLoc = fileName.lastIndexOf('.');
-		if (dotLoc != -1) {
-			String ext = fileName.substring(dotLoc + 1);
-			if (ext.equalsIgnoreCase("xml") == false) {
-				updateStatus("File extension must be \"xml\"");
-				return;
-			}
-		}
-		updateStatus(null);
-	}
-
-	private void updateStatus(String message) {
+	private void updateStatus(String message)
+	{
 		setErrorMessage(message);
 		setPageComplete(message == null);
-	}
-
-	public String getContainerName() {
-		return containerText.getText();
-	}
-
-	public String getFileName() {
-		return fileText.getText();
 	}
 }

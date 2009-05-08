@@ -1,11 +1,12 @@
 package org.mwc.debrief.core.wizards;
 
-import java.beans.*;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditorSupport;
 
 import org.eclipse.jface.viewers.ISelection;
 
-import MWC.GUI.Plottable;
-import MWC.GUI.Chart.Painters.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.WorldDistance;
 
 /**
@@ -14,40 +15,8 @@ import MWC.GenericData.WorldDistance;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class GridWizardPage extends CorePlottableWizardPage
+public class GridWizardPage extends CoreEditableWizardPage
 {
-
-	/**
-	 * Constructor for SampleNewWizardPage.
-	 * 
-	 * @param pageName
-	 */
-	public GridWizardPage(ISelection selection)
-	{
-		super(selection, "gridPage", "Add Grid to Plot",
-				"This page adds a grid to your plot", "images/grid_wizard.gif");
-	}
-
-	protected Plottable createMe()
-	{
-		if (_plottable == null)
-			_plottable = new GridPainter();
-
-		return _plottable;
-	}
-
-	/**
-	 * @return
-	 */
-	protected PropertyDescriptor[] getPropertyDescriptors()
-	{
-		PropertyDescriptor[] descriptors = {
-				prop("Color", "the Color to draw the grid", getPlottable()),
-				prop("PlotLabels", "whether to plot grid labels", getPlottable()),
-				longProp("Delta", "the step size for the grid", getPlottable(),
-						DefaultDistancePropertyEditor.class) };
-		return descriptors;
-	}
 
 	public static class DefaultDistancePropertyEditor extends
 			PropertyEditorSupport
@@ -59,12 +28,19 @@ public class GridWizardPage extends CorePlottableWizardPage
 
 		private static String[] _myTags;
 
+		@Override
+		public String getAsText()
+		{
+			return _myDistance.toString();
+		}
+
+		@Override
 		public String[] getTags()
 		{
 			if (_myDistances == null)
 			{
-				_myDistances = new WorldDistance[] {
-						new WorldDistance(500, WorldDistance.METRES),
+				_myDistances = new WorldDistance[]
+				{ new WorldDistance(500, WorldDistance.METRES),
 						new WorldDistance(1, WorldDistance.KM),
 						new WorldDistance(1, WorldDistance.MINUTES),
 						new WorldDistance(5, WorldDistance.MINUTES),
@@ -78,7 +54,7 @@ public class GridWizardPage extends CorePlottableWizardPage
 				// cycle through converting as we go
 				for (int i = 0; i < _myDistances.length; i++)
 				{
-					WorldDistance thisDist = _myDistances[i];
+					final WorldDistance thisDist = _myDistances[i];
 					_myTags[i] = thisDist.toString();
 
 				}
@@ -87,6 +63,19 @@ public class GridWizardPage extends CorePlottableWizardPage
 			return _myTags;
 		}
 
+		@Override
+		public Object getValue()
+		{
+			return _myDistance;
+		}
+
+		@Override
+		public void setAsText(String val)
+		{
+			setValue(val);
+		}
+
+		@Override
 		public void setValue(Object p1)
 		{
 			if (p1 instanceof WorldDistance)
@@ -97,7 +86,7 @@ public class GridWizardPage extends CorePlottableWizardPage
 			{
 				for (int i = 0; i < _myTags.length; i++)
 				{
-					String thisTag = _myTags[i];
+					final String thisTag = _myTags[i];
 					if (p1.equals(thisTag))
 					{
 						_myDistance = _myDistances[i];
@@ -106,21 +95,41 @@ public class GridWizardPage extends CorePlottableWizardPage
 				}
 			}
 		}
+	}
 
-		public void setAsText(String val)
-		{
-			setValue(val);
-		}
+	/**
+	 * Constructor for SampleNewWizardPage.
+	 * 
+	 * @param pageName
+	 */
+	public GridWizardPage(ISelection selection)
+	{
+		super(selection, "gridPage", "Add Grid to Plot",
+				"This page adds a grid to your plot", "images/grid_wizard.gif");
+	}
 
-		public Object getValue()
-		{
-			return _myDistance;
-		}
+	@Override
+	protected Editable createMe()
+	{
+		if (_editable == null)
+			_editable = new GridPainter();
 
-		public String getAsText()
+		return _editable;
+	}
+
+	/**
+	 * @return
+	 */
+	@Override
+	protected PropertyDescriptor[] getPropertyDescriptors()
+	{
+		final PropertyDescriptor[] descriptors =
 		{
-			return _myDistance.toString();
-		}
+				prop("Color", "the Color to draw the grid", getEditable()),
+				prop("PlotLabels", "whether to plot grid labels", getEditable()),
+				longProp("Delta", "the step size for the grid", getEditable(),
+						DefaultDistancePropertyEditor.class) };
+		return descriptors;
 	}
 
 }

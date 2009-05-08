@@ -4,7 +4,7 @@ import java.beans.PropertyDescriptor;
 
 import org.eclipse.jface.viewers.ISelection;
 
-import MWC.GUI.Plottable;
+import MWC.GUI.Editable;
 import MWC.GUI.Chart.Painters.CoastPainter;
 
 /**
@@ -13,9 +13,8 @@ import MWC.GUI.Chart.Painters.CoastPainter;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class CoastWizardPage extends CorePlottableWizardPage
+public class CoastWizardPage extends CoreEditableWizardPage
 {
-	
 
 	/**
 	 * Constructor for SampleNewWizardPage.
@@ -24,28 +23,29 @@ public class CoastWizardPage extends CorePlottableWizardPage
 	 */
 	public CoastWizardPage(ISelection selection)
 	{
-		super(selection, "coastPage", "Add Coastline to Plot", 
-				"This page adds a low resolution coastline to your plot", "images/coast_wizard.gif");
+		super(selection, "coastPage", "Add Coastline to Plot",
+				"This page adds a low resolution coastline to your plot",
+				"images/coast_wizard.gif");
 	}
 
-	protected Plottable createMe()
+	@Override
+	protected Editable createMe()
 	{
-		if(_plottable == null)
-			 _plottable = CoastPainter.getCoastPainterDontLoadData();
-		
-		return _plottable;
+		if (_editable == null)
+			_editable = CoastPainter.getCoastPainterDontLoadData();
+
+		return _editable;
 	}
-	
+
 	/**
 	 * @return
 	 */
+	@Override
 	protected PropertyDescriptor[] getPropertyDescriptors()
 	{
-		PropertyDescriptor[] descriptors = {
-        prop("Color", "the Color to draw the coast", getPlottable())				
-		};
+		final PropertyDescriptor[] descriptors =
+		{ prop("Color", "the Color to draw the coast", getEditable()) };
 		return descriptors;
 	}
-	
 
 }
