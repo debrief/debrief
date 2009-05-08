@@ -3,144 +3,96 @@
  */
 package org.mwc.cmap.core.property_support;
 
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsCellEditor2;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsDataModel;
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldSpeed;
 
 public class WorldSpeedHelper extends EditorHelper
 {
 
-	/** constructor..
-	 *
+	public static class WorldSpeedModel implements ValueWithUnitsDataModel
+	{
+		/**
+		 * the world distance we're editing
+		 * 
+		 */
+		WorldSpeed _myVal;
+
+		/**
+		 * @return
+		 */
+		public int getUnitsValue()
+		{
+			return _myVal.getUnits();
+		}
+
+		/**
+		 * @return
+		 */
+		public double getDoubleValue()
+		{
+			return _myVal.getValue();
+		}
+
+		/**
+		 * @return
+		 */
+		public String[] getTagsList()
+		{
+			return WorldSpeed.UnitLabels;
+		}
+
+		/**
+		 * @param dist
+		 *          the value typed in
+		 * @param units
+		 *          the units for the value
+		 * @return an object representing the new data value
+		 */
+		public Object createResultsObject(double dist, int units)
+		{
+			return new WorldSpeed(dist, units);
+		}
+
+		/**
+		 * convert the object to our data units
+		 * 
+		 * @param value
+		 */
+		public void storeMe(Object value)
+		{
+			_myVal = (WorldSpeed) value;
+		}
+	}
+
+	/**
+	 * constructor..
+	 * 
 	 */
 	public WorldSpeedHelper()
 	{
 		super(WorldSpeed.class);
 	}
 
-	/** create an instance of the cell editor suited to our data-type
+	/**
+	 * create an instance of the cell editor suited to our data-type
 	 * 
 	 * @param parent
 	 * @return
 	 */
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new ValueWithUnitsCellEditor(parent, "Speed", "Units")
-		{
-			/** the world distance we're editing
-			 * 
-			 */
-			WorldSpeed _myVal;
-			
-			/**
-			 * @return
-			 */
-			protected int getUnitsValue()
-			{
-		    return _myVal.getUnits();
-			}
-
-			/**
-			 * @return
-			 */
-			protected double getDoubleValue()
-			{
-				return _myVal.getValue();
-			}
-
-			/**
-			 * @return
-			 */
-			protected String[] getTagsList()
-			{
-				return WorldSpeed.UnitLabels;
-			}
-			
-			/**
-			 * @param dist the value typed in
-			 * @param units the units for the value
-			 * @return an object representing the new data value
-			 */
-			protected Object createResultsObject(double dist, int units)
-			{
-				return new WorldSpeed(dist, units);
-			}
-
-			/** convert the object to our data units
-			 * 
-			 * @param value
-			 */
-			protected void storeMe(Object value)
-			{
-				_myVal = (WorldSpeed) value;
-			}
-		};
+		return new ValueWithUnitsCellEditor2(parent, "speed", "units",
+				new WorldSpeedModel());
 	}
-	
-	/** create an instance of the cell editor suited to our data-type
-	 * 
-	 * @param parent
-	 * @return
-	 */
-	public ValueWithUnitsControl getControlFor()
-	{
-		return new ValueWithUnitsControl("Speed", "Units")
-		{
-			/** the world distance we're editing
-			 * 
-			 */
-			WorldSpeed _myVal;
-			
-			/**
-			 * @return
-			 */
-			protected int getUnitsValue()
-			{
-		    return _myVal.getUnits();
-			}
-
-			/**
-			 * @return
-			 */
-			protected double getDoubleValue()
-			{
-				return _myVal.getValue();
-			}
-
-			/**
-			 * @return
-			 */
-			protected String[] getTagsList()
-			{
-				return WorldSpeed.UnitLabels;
-			}
-			
-			/**
-			 * @param dist the value typed in
-			 * @param units the units for the value
-			 * @return an object representing the new data value
-			 */
-			protected Object createResultsObject(double dist, int units)
-			{
-				return new WorldSpeed(dist, units);
-			}
-
-			/** convert the object to our data units
-			 * 
-			 * @param value
-			 */
-			protected void storeMe(Object value)
-			{
-				_myVal = (WorldSpeed) value;
-			}
-		};
-	}
-	
 
 	public ILabelProvider getLabelFor(Object currentValue)
 	{
@@ -159,15 +111,12 @@ public class WorldSpeedHelper extends EditorHelper
 		};
 		return label1;
 	}
-	
 
-	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
+	public Control getEditorControlFor(Composite parent,
+			final DebriefProperty property)
 	{
-		
-		REFACTOR ValueWithUnitsControl and ValueWithUnitsCellEditor
-		ValueWithUnitsControl editor = getControlFor();
-		Control control = editor.createControl(parent);
+		ValueWithUnitsControl control = new ValueWithUnitsControl(parent, "Speed", "Units",
+				new WorldSpeedModel());
 		return control;
-
-	}	
+	}
 }

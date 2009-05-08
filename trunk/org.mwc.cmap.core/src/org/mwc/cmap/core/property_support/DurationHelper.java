@@ -3,17 +3,80 @@
  */
 package org.mwc.cmap.core.property_support;
 
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ComboBoxCellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsCellEditor2;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsDataModel;
 
 import MWC.GUI.Properties.TimeIntervalPropertyEditor;
 import MWC.GenericData.Duration;
 
 public class DurationHelper extends EditorHelper
 {
+	
+	public static class DurationModel implements ValueWithUnitsDataModel
+	{
+
+		/** the time period we're editing
+		 * 
+		 */
+		Duration _myVal;
+		
+		/**
+		 * @return
+		 */
+		public int getUnitsValue()
+		{
+	    // so, what are the preferred units?
+	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+	    return theUnits;
+		}
+
+		/**
+		 * @return
+		 */
+		public double getDoubleValue()
+		{
+	    // so, what are the preferred units?
+	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
+
+	    double theValue = _myVal.getValueIn(theUnits);				
+			return theValue;
+		}
+
+		/**
+		 * @return
+		 */
+		public String[] getTagsList()
+		{
+			return Duration.UnitLabels;
+		}
+		
+		/**
+		 * @param dist the value typed in
+		 * @param units the units for the value
+		 * @return an object representing the new data value
+		 */
+		public Object createResultsObject(double dist, int units)
+		{
+			return new Duration(dist, units);
+		}
+
+		/** convert the object to our data units
+		 * 
+		 * @param value
+		 */
+		public void storeMe(Object value)
+		{
+			_myVal = (Duration) value;
+		}		
+	}
 	
 	/** embedded cell editor for durations
 	 * 
@@ -73,67 +136,13 @@ public class DurationHelper extends EditorHelper
 	 * @author ian.mayo
 	 *
 	 */
-	public static class DurationCellEditor extends ValueWithUnitsCellEditor
+	public static class DurationCellEditor extends ValueWithUnitsCellEditor2
 	{
-		
 		public DurationCellEditor(Composite parent)
 		{
-			super(parent, "Duration", "Units");
+			super(parent, "Duration", "Units", new DurationModel());
 		}
 
-		/** the time period we're editing
-		 * 
-		 */
-		Duration _myVal;
-		
-		/**
-		 * @return
-		 */
-		protected int getUnitsValue()
-		{
-	    // so, what are the preferred units?
-	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
-	    return theUnits;
-		}
-
-		/**
-		 * @return
-		 */
-		protected double getDoubleValue()
-		{
-	    // so, what are the preferred units?
-	    int theUnits = Duration.selectUnitsFor(_myVal.getValueIn(Duration.MILLISECONDS));
-
-	    double theValue = _myVal.getValueIn(theUnits);				
-			return theValue;
-		}
-
-		/**
-		 * @return
-		 */
-		protected String[] getTagsList()
-		{
-			return Duration.UnitLabels;
-		}
-		
-		/**
-		 * @param dist the value typed in
-		 * @param units the units for the value
-		 * @return an object representing the new data value
-		 */
-		protected Object createResultsObject(double dist, int units)
-		{
-			return new Duration(dist, units);
-		}
-
-		/** convert the object to our data units
-		 * 
-		 * @param value
-		 */
-		protected void storeMe(Object value)
-		{
-			_myVal = (Duration) value;
-		}
 	}
 	
 	/** constructor..
@@ -175,13 +184,7 @@ public class DurationHelper extends EditorHelper
 
 	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
-		final Button myCheckbox = new Button(parent, SWT.CHECK);
-		myCheckbox.addSelectionListener(new SelectionAdapter(){
-			public void widgetSelected(SelectionEvent e)
-			{
-				Boolean val = new Boolean(myCheckbox.getSelection());
-				property.setValue(val);
-			}});
-		return myCheckbox;
+		return new ValueWithUnitsControl(parent, "Duration", "Units", new DurationModel());
+	
 	}	
 }

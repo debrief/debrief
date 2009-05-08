@@ -5,22 +5,107 @@ package org.mwc.cmap.core.property_support;
 
 import java.io.Serializable;
 
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsCellEditor2;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsControl;
+import org.mwc.cmap.core.property_support.ui.ValueWithUnitsDataModel;
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldDistance;
 
 public class WorldDistanceHelper extends EditorHelper implements Serializable
 {
 
+	protected static class DistanceModel implements ValueWithUnitsDataModel
+	{
+
+		/**
+		 * the world distance we're editing
+		 */
+		WorldDistance _myVal;
+
+		/**
+		 * @return
+		 */
+		public int getUnitsValue()
+		{
+			// so, what are the preferred units?
+			return _myVal.getUnits();
+		}
+
+		/**
+		 * @return
+		 */
+		public double getDoubleValue()
+		{
+			double theValue = _myVal.getValue();
+
+			// try to round it to a sensible value
+			theValue = Math.round(theValue * 100) / 100d;
+
+			return theValue;
+		}
+
+		/**
+		 * @return
+		 */
+		public String[] getTagsList()
+		{
+			return WorldDistance.UnitLabels;
+		}
+
+		/**
+		 * @param dist
+		 *          the value typed in
+		 * @param units
+		 *          the units for the value
+		 * @return an object representing the new data value
+		 */
+		public Object createResultsObject(double dist, int units)
+		{
+			return new WorldDistance(dist, units);
+		}
+
+		/**
+		 * convert the object to our data units
+		 * 
+		 * @param value
+		 */
+		public void storeMe(Object value)
+		{
+			_myVal = (WorldDistance) value;
+		}
+		
+		
+	}
+	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
+	/** easily accessible cell editor class
+	 * 
+	 * @author Administrator
+	 *
+	 */
+	public static class WorldDistanceCellEditor extends ValueWithUnitsCellEditor2
+	{
+		/**
+		 * the world distance we're editing
+		 */
+		WorldDistance _myVal;
+
+		public WorldDistanceCellEditor(Composite parent)
+		{
+			super(parent, "Distance", "Units", new DistanceModel());
+		}
+	}	
+	
 	/**
 	 * constructor..
 	 */
@@ -37,7 +122,7 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 	 */
 	public CellEditor getCellEditorFor(Composite parent)
 	{
-		return new WorldDistanceCellEditor(parent);
+		return new ValueWithUnitsCellEditor2(parent, "Distance", "Units", new DistanceModel());
 	}
 
 	public ILabelProvider getLabelFor(Object currentValue)
@@ -60,81 +145,6 @@ public class WorldDistanceHelper extends EditorHelper implements Serializable
 
 	public Control getEditorControlFor(Composite parent, final DebriefProperty property)
 	{
-		// TODO create the editor
-		final Button myCheckbox = new Button(parent, SWT.CHECK);
-		myCheckbox.addSelectionListener(new SelectionAdapter()
-		{
-			public void widgetSelected(SelectionEvent e)
-			{
-				Boolean val = new Boolean(myCheckbox.getSelection());
-				property.setValue(val);
-			}
-		});
-		return myCheckbox;
+		return new ValueWithUnitsControl(parent, "Distance", "Units", new DistanceModel());
 	}
-
-	public static class WorldDistanceCellEditor extends ValueWithUnitsCellEditor
-	{
-		/**
-		 * the world distance we're editing
-		 */
-		WorldDistance _myVal;
-
-		public WorldDistanceCellEditor(Composite parent)
-		{
-			super(parent, "Distance", "Units");
-		}
-
-		/**
-		 * @return
-		 */
-		protected int getUnitsValue()
-		{
-			// so, what are the preferred units?
-			return _myVal.getUnits();
-		}
-
-		/**
-		 * @return
-		 */
-		protected double getDoubleValue()
-		{
-			double theValue = _myVal.getValue();
-
-			// try to round it to a sensible value
-			theValue = Math.round(theValue * 100) / 100d;
-
-			return theValue;
-		}
-
-		/**
-		 * @return
-		 */
-		protected String[] getTagsList()
-		{
-			return WorldDistance.UnitLabels;
-		}
-
-		/**
-		 * @param dist
-		 *          the value typed in
-		 * @param units
-		 *          the units for the value
-		 * @return an object representing the new data value
-		 */
-		protected Object createResultsObject(double dist, int units)
-		{
-			return new WorldDistance(dist, units);
-		}
-
-		/**
-		 * convert the object to our data units
-		 * 
-		 * @param value
-		 */
-		protected void storeMe(Object value)
-		{
-			_myVal = (WorldDistance) value;
-		}
-	};
 }

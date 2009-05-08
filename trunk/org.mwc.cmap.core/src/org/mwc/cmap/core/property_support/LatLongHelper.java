@@ -3,20 +3,32 @@
  */
 package org.mwc.cmap.core.property_support;
 
-import java.beans.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.text.DecimalFormat;
 
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.dnd.*;
+import org.eclipse.jface.viewers.CellEditor;
+import org.eclipse.jface.viewers.DialogCellEditor;
+import org.eclipse.jface.viewers.ILabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.views.properties.*;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.ui.views.properties.ComboBoxPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.eclipse.ui.views.properties.IPropertySource2;
+import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.WorldDistanceHelper.WorldDistanceCellEditor;
 
-import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.*;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.Utilities.TextFormatting.BriefFormatLocation;
+import MWC.Utilities.TextFormatting.DebriefFormatLocation;
 
 public class LatLongHelper extends EditorHelper
 {
@@ -193,7 +205,7 @@ public class LatLongHelper extends EditorHelper
 					{
 						public CellEditor createPropertyEditor(Composite parent)
 						{
-							return new WorldDistanceCellEditor(parent);
+							return new WorldDistanceHelper.WorldDistanceCellEditor(parent);
 						}
 					},
 
