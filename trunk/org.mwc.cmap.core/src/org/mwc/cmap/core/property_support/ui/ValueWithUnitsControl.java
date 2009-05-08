@@ -9,10 +9,13 @@ import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Text;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 
-final public class ValueWithUnitsControl extends Composite implements ModifyListener
+final public class ValueWithUnitsControl extends Composite implements
+		ModifyListener
 {
 
 	/**
@@ -33,8 +36,8 @@ final public class ValueWithUnitsControl extends Composite implements ModifyList
 	 */
 	private ValueWithUnitsDataModel _myModel;
 
-
-	/** the (optional) object we're editing
+	/**
+	 * the (optional) object we're editing
 	 * 
 	 */
 	private DebriefProperty _property;
@@ -81,16 +84,17 @@ final public class ValueWithUnitsControl extends Composite implements ModifyList
 	 *          who we tell if we've changed
 	 */
 	public ValueWithUnitsControl(Composite parent, String textTip,
-			String comboText, ValueWithUnitsDataModel dataModel, DebriefProperty property)
+			String comboText, ValueWithUnitsDataModel dataModel,
+			DebriefProperty property)
 	{
 		this(parent);
 		init(textTip, comboText, dataModel);
 		_property = property;
-		
-		if(_property != null)
+
+		if (_property != null)
 			_myModel.storeMe(property.getValue());
 	}
-	
+
 	/**
 	 * update the values displayed
 	 * 
@@ -104,8 +108,6 @@ final public class ValueWithUnitsControl extends Composite implements ModifyList
 		_myText.setText(txt);
 	}
 
-	
-	
 	/**
 	 * encode ourselves into an object
 	 * 
@@ -113,13 +115,14 @@ final public class ValueWithUnitsControl extends Composite implements ModifyList
 	 */
 	public Object getData()
 	{
-		final String distTxt = _myText.getText();		
-		double dist = 0;
-		if(distTxt.length() > 0)
-			dist = new Double(distTxt).doubleValue();
-		final int units = _myCombo.getSelectionIndex();
-		
-		final Object res = _myModel.createResultsObject(dist, units);
+		Object res = null;
+		final String distTxt = _myText.getText();
+		if (distTxt.length() > 0)
+		{
+			double dist = new Double(distTxt).doubleValue();
+			final int units = _myCombo.getSelectionIndex();
+			res = _myModel.createResultsObject(dist, units);
+		}
 		return res;
 	}
 
@@ -156,8 +159,18 @@ final public class ValueWithUnitsControl extends Composite implements ModifyList
 	@Override
 	public void modifyText(ModifyEvent e)
 	{
-		if(_property != null)
+		// store the value in the property, if we have one?
+		if (_property != null)
 			_property.setValue(getData());
+		
+		// also tell any listeners
+		Listener[] listeners = this.getListeners(SWT.Selection);
+		for (int i = 0; i < listeners.length; i++)
+		{
+			Listener listener = listeners[i];
+			listener.handleEvent(new Event());
+		}
+		
 	}
 
 }

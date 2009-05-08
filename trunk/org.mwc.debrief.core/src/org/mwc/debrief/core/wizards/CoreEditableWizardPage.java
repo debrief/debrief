@@ -223,7 +223,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 	{
 		boolean doCheck = false;
 		if (!_optional)
-			doCheck = false;
+			doCheck = true;
 		else if (_enabledBtn.getSelection())
 			doCheck = true;
 
