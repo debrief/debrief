@@ -178,9 +178,8 @@ abstract public class DistanceWithUnitsPropertyEditor extends
     else
     {
       // get the best units
-      int units = WorldDistance.getUnitIndexFor(_myVal.getUnitsLabel());
-      setUnits(units);
-			setDistance(_myVal.getDistance());
+      setUnits(_myVal.getUnits());
+			setDistance(_myVal.getValue());
     }
   }
 

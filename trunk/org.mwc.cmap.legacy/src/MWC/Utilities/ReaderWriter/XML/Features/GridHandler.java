@@ -15,6 +15,7 @@ import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.*;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
+import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 
 
 abstract public class GridHandler extends MWCXMLReader implements LayerHandler.exporter
@@ -28,7 +29,8 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
 
   java.awt.Color _theColor;
   boolean _isVisible;
-  double _delta;
+  WorldDistance _delta;
+  double _deltaDegs;
   boolean _plotLabels;
   String _myUnits = null;
 	protected String _myName = null;
@@ -61,7 +63,7 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
     {
       public void setValue(String name, double value)
       {
-        _delta = value;
+      	_deltaDegs = value;
       }
     });
     addAttributeHandler(new HandleAttribute("Name")
@@ -87,6 +89,14 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
       }
     });
 
+    addHandler(new WorldDistanceHandler(DELTA){
+		
+			@Override
+			public void setWorldDistance(WorldDistance res)
+			{
+				_delta = res;
+			}
+		});
   }
 
   public void elementClosed()
@@ -96,14 +106,23 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
     csp.setColor(_theColor);
     csp.setVisible(_isVisible);
 
-    // do we know our units
-    if (_myUnits == null)
-    // no, we don't - assume they're in NM
-      csp.setDelta(new MWC.GenericData.WorldDistance(_delta, WorldDistance.NM));
+    // do we have a new units value?
+    if(_delta != null)
+    {
+    	csp.setDelta(_delta);
+    }
     else
     {
-      // yes, we do - best use them
-      csp.setDelta(new MWC.GenericData.WorldDistance(_delta, WorldDistance.getUnitIndexFor(_myUnits)));
+    	// use the old value
+      // do we know our units
+      if (_myUnits == null)
+      // no, we don't - assume they're in NM
+        csp.setDelta(new MWC.GenericData.WorldDistance(_deltaDegs, WorldDistance.NM));
+      else
+      {
+        // yes, we do - best use them
+        csp.setDelta(new MWC.GenericData.WorldDistance(_deltaDegs, WorldDistance.getUnitIndexFor(_myUnits)));
+      }
     }
 
     csp.setPlotLabels(_plotLabels);
@@ -120,6 +139,7 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
     _isVisible = false;
     _myUnits = null;
     _myName = null;
+    _delta = null;
   }
 
   /**
@@ -165,7 +185,6 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
   {
     // do the visibility
     gridElement.setAttribute(VISIBLE, writeThis(theGrid.getVisible()));
-    gridElement.setAttribute(DELTA, writeThis(theGrid.getDelta().getDistance()));
     gridElement.setAttribute(UNITS, theGrid.getDelta().getUnitsLabel());
     gridElement.setAttribute(PLOT_LABELS, writeThis(theGrid.getPlotLabels()));
     
@@ -174,6 +193,9 @@ abstract public class GridHandler extends MWCXMLReader implements LayerHandler.e
     {
     	gridElement.setAttribute(NAME, theGrid.getName());
     }
+    
+    // and the delta (retaining the units
+    WorldDistanceHandler.exportDistance(DELTA, theGrid.getDelta(), gridElement, doc);
 
     // do the colour
     ColourHandler.exportColour(theGrid.getColor(), gridElement, doc);

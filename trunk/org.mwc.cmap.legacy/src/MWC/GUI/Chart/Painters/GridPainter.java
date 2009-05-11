@@ -408,7 +408,7 @@ public class GridPainter implements Plottable, Serializable
           else
           {
             // ok, use a counter for the units
-            double thisVal = (counter++ - latGridCounterOffset) * _myDelta.getDistance();
+            double thisVal = (counter++ - latGridCounterOffset) * _myDelta.getValueIn(WorldDistance.DEGS);
             val = _distanceFormatter.format(thisVal) + " " +
               _myDelta.getUnitsLabel();
           }
@@ -489,7 +489,7 @@ public class GridPainter implements Plottable, Serializable
           else
           {
             // ok, use a counter for the units
-            double thisVal = (counter++ - longGridCounterOffset) * _myDelta.getDistance();
+            double thisVal = (counter++ - longGridCounterOffset) * _myDelta.getValueIn(WorldDistance.DEGS);
             thisLabel = _distanceFormatter.format(thisVal)
               + " " + _myDelta.getUnitsLabel();
           }

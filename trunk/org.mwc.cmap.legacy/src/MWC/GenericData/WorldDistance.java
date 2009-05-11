@@ -187,14 +187,6 @@ public boolean equals(Object obj) {
   }
 
   /**
-   * get the distance value (in whatever is the selected units)
-   */
-  public double getDistance()
-  {
-    return _myDistance;
-  }
-
-  /**
    * get the index for this type of unit
    */
   static public int getUnitIndexFor(String units)
@@ -213,7 +205,7 @@ public boolean equals(Object obj) {
   }
 
   /**
-   * get this actual distance, expressed in minutes
+   * get this actual distance, in selected units
    */
   public double getValueIn(int units)
   {

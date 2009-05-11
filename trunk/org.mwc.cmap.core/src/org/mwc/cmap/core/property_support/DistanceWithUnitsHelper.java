@@ -37,7 +37,7 @@ public class DistanceWithUnitsHelper extends EditorHelper
 		 */
 		public double getDoubleValue()
 		{
-			return _myVal.getDistance();
+			return _myVal.getValue();
 		}
 
 		/**
