@@ -340,7 +340,7 @@ public class TrackWrapper_Support
 			 * @param data
 			 *          track being edited
 			 */
-			public TMASegmentInfo(final TMASegment data)
+			public TMASegmentInfo(final TrackSegment data)
 			{
 				super(data);
 			}
@@ -422,10 +422,6 @@ public class TrackWrapper_Support
 		{
 			_offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(detectionBearing), new WorldDistance(_offset.getRange(), WorldDistance.DEGS), null);
 		}
-
-		private WorldVector _vecTempLastVector = null;
-
-		private long _vecTempLastDTG = -2;
 
 		/**
 		 * base constructor - sorts out the obvious
@@ -650,7 +646,7 @@ public class TrackWrapper_Support
 				{
 					// calculate a new vector
 					long timeDelta = thisTime - tmaLastDTG;
-					WorldVector thisVec = vectorFor(timeDelta);
+					WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(), thisF.getCourse());
 					tmaLastLoc.addToMe(thisVec);
 				}
 
@@ -743,31 +739,6 @@ public class TrackWrapper_Support
 			_offset = tmpOrigin.subtract(getOrigin());
 		}
 
-		/**
-		 * represent the named leg as a DR vector
-		 * 
-		 * @param fw
-		 *          the leg we're looking at
-		 * @param period
-		 *          how long it's travelling for
-		 * @return a vector representing the subject
-		 */
-		public WorldVector vectorFor(long period)
-		{
-			// have we already looked for this
-			if (period != _vecTempLastDTG)
-			{
-				// nope better calc it
-				double spdFtSec = getSpeed().getValueIn(WorldSpeed.ft_sec);
-				WorldDistance dist = new WorldDistance(spdFtSec * period / 1000,
-						WorldDistance.FT);
-				_vecTempLastVector = new WorldVector(MWC.Algorithms.Conversions
-						.Degs2Rads(getCourse()), dist, null);
-			}
-
-			return _vecTempLastVector;
-		}
-
 	}
 
 	/**
@@ -832,7 +803,11 @@ public class TrackWrapper_Support
 		 */
 		boolean _plotRelative;
 
-		public boolean isPlotRelative()
+		private WorldVector _vecTempLastVector = null;
+
+		protected long _vecTempLastDTG = -2;
+
+		public boolean getPlotRelative()
 		{
 			return _plotRelative;
 		}
@@ -841,8 +816,6 @@ public class TrackWrapper_Support
 		{
 			_plotRelative = plotRelative;
 		}
-
-		private boolean _plotDR = false;
 
 		public TrackSegment()
 		{
@@ -954,9 +927,9 @@ public class TrackWrapper_Support
 		{
 		}
 
-		public boolean getPlotDR()
+		public Editable.EditorType getInfo()
 		{
-			return _plotDR;
+			return new TrackSegmentInfo(this);
 		}
 
 		@Override
@@ -1012,11 +985,6 @@ public class TrackWrapper_Support
 			double res = Math.min(centre, oneEnd);
 			res = Math.min(res, otherEnd);
 			return res;
-		}
-
-		public void setPlotDR(boolean _plotdr)
-		{
-			_plotDR = _plotdr;
 		}
 
 		@Override
@@ -1106,6 +1074,29 @@ public class TrackWrapper_Support
 			Editable first = sortedItems.first();
 			FixWrapper fw = (FixWrapper) first;
 			return fw.getDateTimeGroup();
+		}
+
+		/**
+		 * represent the named leg as a DR vector
+		 * 
+		 * @param fw
+		 *          the leg we're looking at
+		 * @param period
+		 *          how long it's travelling for
+		 * @return a vector representing the subject
+		 */
+		public WorldVector vectorFor(long period, double speedKts, double courseRads)
+		{
+			// have we already looked for this
+			if (period != _vecTempLastDTG)
+			{
+				// nope better calc it
+				WorldDistance dist = new WorldDistance(speedKts * period / (1000 * 60 * 60),
+						WorldDistance.KM);
+				_vecTempLastVector = new WorldVector(courseRads, dist, null);
+			}
+		
+			return _vecTempLastVector;
 		}
 
 	}

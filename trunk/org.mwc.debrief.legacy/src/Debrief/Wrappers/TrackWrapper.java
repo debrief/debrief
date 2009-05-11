@@ -2435,11 +2435,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
 				// MODE
-				boolean tmaIsRelative = (seg instanceof TMASegment);
+				boolean IsRelative = seg.getPlotRelative();
 				TMASegment tmaSegment = null;
 				WorldLocation tmaLastLoc = null;
 				long tmaLastDTG = 0;
-				if (tmaIsRelative)
+				if (IsRelative)
 				{
 					tmaSegment = (TMASegment) seg;
 				}
@@ -2464,7 +2464,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						plotted_anything = true;
 
 						// ok, are we in relative?
-						if (tmaIsRelative)
+						if (IsRelative)
 						{
 							long thisTime = fw.getDateTimeGroup().getDate().getTime();
 
@@ -2478,7 +2478,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							{
 								// calculate a new vector
 								long timeDelta = thisTime - tmaLastDTG;
-								WorldVector thisVec = tmaSegment.vectorFor(timeDelta);
+								double speedKts = fw.getSpeed();
+								double courseRads = fw.getCourse();
+								WorldVector thisVec = tmaSegment.vectorFor(timeDelta, speedKts, courseRads);
 								tmaLastLoc.addToMe(thisVec);
 								lastLocation = tmaLastLoc;
 							}
