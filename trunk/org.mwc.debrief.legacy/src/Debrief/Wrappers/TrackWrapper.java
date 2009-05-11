@@ -2429,6 +2429,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
 
+				// skip it, if it's not visible anyway
+				if(!seg.getVisible())
+					continue;
+
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
 				// MODE
 				boolean tmaIsRelative = (seg instanceof TMASegment);

@@ -331,7 +331,7 @@ public class TrackWrapper_Support
 		/**
 		 * class containing editable details of a track
 		 */
-		public final class TMASegmentInfo extends Editable.EditorType
+		public final class TMASegmentInfo extends TrackSegmentInfo
 		{
 
 			/**
@@ -342,31 +342,35 @@ public class TrackWrapper_Support
 			 */
 			public TMASegmentInfo(final TMASegment data)
 			{
-				super(data, data.getName(), "");
-			}
-
-			@Override
-			public final String getName()
-			{
-				return super.getName();
+				super(data);
 			}
 
 			@Override
 			public final PropertyDescriptor[] getPropertyDescriptors()
 			{
+				// start off with the parent
+				PropertyDescriptor[] parent = super.getPropertyDescriptors();
+				PropertyDescriptor[] mine = null;
+				
 				try
 				{
-					final PropertyDescriptor[] res =
+					PropertyDescriptor[] res =
 					{ expertProp("Visible", "whether this layer is visible", FORMAT),
-							expertProp("Course", "whether this layer is visible", SPATIAL),
-							expertProp("Speed", "whether this layer is visible", SPATIAL), };
-					return res;
+							expertProp("Course", "Course of this TMA Solution", SPATIAL),
+							expertProp("Speed", "Speed of this TMA Solution", SPATIAL), };
+					mine = res;
 				}
 				catch (final IntrospectionException e)
 				{
-					e.printStackTrace();
 					return super.getPropertyDescriptors();
 				}
+
+				// now combine them.
+				PropertyDescriptor[] bigRes = new PropertyDescriptor[parent.length + mine.length];
+				System.arraycopy(parent, 0, bigRes, 0, parent.length);
+				System.arraycopy(mine,0, bigRes, parent.length, mine.length);
+				
+				return bigRes;
 			}
 		}
 
@@ -398,6 +402,26 @@ public class TrackWrapper_Support
 		 * 
 		 */
 		private WorldVector _offset;
+		
+		public WorldDistance getDetectionRange()
+		{
+			return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
+		}
+
+		public void setDetectionRange(WorldDistance detectionRange)
+		{
+			_offset = new WorldVector(_offset.getBearing(), detectionRange, null);
+		}
+
+		public double getDetectionBearing()
+		{
+			return MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
+		}
+
+		public void setDetectionBearing(double detectionBearing)
+		{
+			_offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(detectionBearing), new WorldDistance(_offset.getRange(), WorldDistance.DEGS), null);
+		}
 
 		private WorldVector _vecTempLastVector = null;
 
@@ -755,6 +779,42 @@ public class TrackWrapper_Support
 	public static class TrackSegment extends BaseItemLayer implements
 			DraggableItem
 	{
+		
+		/**
+		 * class containing editable details of a track
+		 */
+		public class TrackSegmentInfo extends Editable.EditorType
+		{
+
+			/**
+			 * constructor for this editor, takes the actual track as a parameter
+			 * 
+			 * @param data
+			 *          track being edited
+			 */
+			public TrackSegmentInfo(final TrackSegment data)
+			{
+				super(data, data.getName(), "");
+			}
+
+			@Override
+			public  PropertyDescriptor[] getPropertyDescriptors()
+			{
+				try
+				{
+					final PropertyDescriptor[] res =
+					{ expertProp("Visible", "whether this layer is visible", FORMAT),
+							expertProp("PlotRelative", "whether to plot this track using DR (crse/speed) calculations", SPATIAL),
+};
+					return res;
+				}
+				catch (final IntrospectionException e)
+				{
+					e.printStackTrace();
+					return super.getPropertyDescriptors();
+				}
+			}
+		}		
 
 		/**
 		 * 
@@ -766,6 +826,21 @@ public class TrackWrapper_Support
 		 * 
 		 */
 		final int len = 200;
+		
+		/** whether to determine this track's positions using DR calculations
+		 * 
+		 */
+		boolean _plotRelative;
+
+		public boolean isPlotRelative()
+		{
+			return _plotRelative;
+		}
+
+		public void setPlotRelative(boolean plotRelative)
+		{
+			_plotRelative = plotRelative;
+		}
 
 		private boolean _plotDR = false;
 
