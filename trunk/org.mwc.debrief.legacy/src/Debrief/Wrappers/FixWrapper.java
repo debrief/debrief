@@ -289,9 +289,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   /** the label describing this fix
    */
   private MWC.GUI.Shapes.TextLabel _theLabel;
-  /** the connector to the next fix
-   */
-  private MWC.GUI.Shapes.LineShape _theConnector;
   /** the symbol representing the center of the fix
    */
   private LocationWrapper _theLocationWrapper;
@@ -353,8 +350,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     resetName();
     // hide the name, by default
     _showLabel = Boolean.FALSE;
-    // declare a duff connector
-    _theConnector = null;
     // declare a duff track
     _trackWrapper = null;
     // start us off with a nice font
@@ -388,7 +383,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     _theFix = null;
     _myEditor = null;
     _myArea = null;
-    _theConnector = null;
     _theLabel = null;
     _theFont = null;
     _showLabel = null;
@@ -509,7 +503,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
      */
   }
 
-  public final void paintMe(final CanvasType dest)
+  public final void paintMe(final CanvasType dest, WorldLocation centre)
   {
     _theLocationWrapper.setColor(getColor());
 
@@ -518,18 +512,18 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
       // see if the symbol should be shaded (if the lable is showing)
       _theLocationWrapper.setFillSymbol(getLabelShowing());
 
+      // override it's location
+      _theLocationWrapper.setLocation(centre);
+      
       // first draw the location (by calling the parenet
       _theLocationWrapper.paint(dest);
     }
 
-    // paint the label - if we're asked nicely
+    // override the label location
+    _theLabel.setLocation(centre);
+    
+    // and paint the label - if we're asked nicely
     paintLabel(dest);
-
-    // handle the line
-    if(_theConnector != null){
-      _theConnector.setColor(getColor());
-      _theConnector.paint(dest);
-    }
   }
 
   /** paint the label using the current settings.
