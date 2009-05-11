@@ -863,6 +863,17 @@ public class TrackWrapper_Support
 				addFix(pl);
 			}
 		}
+		
+		/**
+		 * get the start of this segment (it's the location of the first point).
+		 * 
+		 * @return
+		 */
+		public WorldLocation getOrigin()
+		{
+			FixWrapper firstW = (FixWrapper) getData().iterator().next();
+			return firstW.getFixLocation();
+		}
 
 		/**
 		 * sort the items in ascending order

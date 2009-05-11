@@ -25,7 +25,6 @@ import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper_Support.FixSetter;
 import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
-import Debrief.Wrappers.TrackWrapper_Support.TMASegment;
 import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
@@ -2436,13 +2435,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
 				// MODE
 				boolean IsRelative = seg.getPlotRelative();
-				TMASegment tmaSegment = null;
 				WorldLocation tmaLastLoc = null;
 				long tmaLastDTG = 0;
-				if (IsRelative)
-				{
-					tmaSegment = (TMASegment) seg;
-				}
 
 				final Enumeration<Editable> fixWrappers = seg.elements();
 				while (fixWrappers.hasMoreElements())
@@ -2471,7 +2465,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// ok, is this our first location?
 							if (tmaLastLoc == null)
 							{
-								tmaLastLoc = new WorldLocation(tmaSegment.getOrigin());
+								tmaLastLoc = new WorldLocation(seg.getOrigin());
 								lastLocation = tmaLastLoc;
 							}
 							else
@@ -2480,21 +2474,25 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								long timeDelta = thisTime - tmaLastDTG;
 								double speedKts = fw.getSpeed();
 								double courseRads = fw.getCourse();
-								WorldVector thisVec = tmaSegment.vectorFor(timeDelta, speedKts, courseRads);
+								WorldVector thisVec = seg.vectorFor(timeDelta, speedKts, courseRads);
 								tmaLastLoc.addToMe(thisVec);
 								lastLocation = tmaLastLoc;
 							}
-
-							// dump the location into the fix
-							fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-
-							// cool.
 							tmaLastDTG = thisTime;
 
+							// dump the location into the fix
+					//		fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+							WE DO NEED TO STORE A TEMPORARY DR LOCATION IN FIXES.
+							WE NEED THE ORIGINAL FIX, SO USER CAN SWITCH BETWEEN MODES, BUT WE
+							ALSO NEED A WORKING FIX - SINCE THE LOCATION IS REQUIRED FROM
+							NON-DR AWARE CODE
+							
 						}
-
-						// this is a valid one, remember the details
-						lastLocation = fw.getLocation();
+						else
+						{
+							// this is an absolute position
+							lastLocation = fw.getLocation();
+						}
 
 						final java.awt.Point thisP = dest.toScreen(lastLocation);
 
@@ -2576,7 +2574,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 						if (_showPositions)
 						{
-							fw.paintMe(dest);
+							fw.paintMe(dest, lastLocation);
 						}
 					}
 
