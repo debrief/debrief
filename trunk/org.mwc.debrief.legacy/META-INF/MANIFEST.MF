@@ -220,6 +220,7 @@ Export-Package:
    MWC.TacticalData,
    Debrief.Tools.Tote,
    MWC.GUI.Properties,
-   MWC.GUI"
+   MWC.GUI",
+ Debrief.Wrappers.Track
 Require-Bundle: org.mwc.cmap.legacy,
  org.junit4
