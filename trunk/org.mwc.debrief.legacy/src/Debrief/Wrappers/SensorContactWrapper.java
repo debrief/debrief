@@ -1225,7 +1225,6 @@ public final class SensorContactWrapper extends
 			return _title;
 		}
 
-		@Override
 		public void execute(Editable subject)
 		{
 			SensorContactWrapper contact = (SensorContactWrapper) subject;
@@ -1233,20 +1232,17 @@ public final class SensorContactWrapper extends
 			contact.ditchBearing(_keepPort);
 		}
 
-		@Override
 		public void undo(Editable subject)
 		{
 			SensorContactWrapper _contact = (SensorContactWrapper) subject;
 			_contact.setHasAmbiguousBearing(true);
 		}
 
-		@Override
 		public boolean isRedoable()
 		{
 			return true;
 		}
 
-		@Override
 		public boolean isUndoable()
 		{
 			return true;

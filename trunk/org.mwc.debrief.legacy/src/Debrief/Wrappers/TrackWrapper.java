@@ -2482,10 +2482,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 							// dump the location into the fix
 					//		fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-							WE DO NEED TO STORE A TEMPORARY DR LOCATION IN FIXES.
-							WE NEED THE ORIGINAL FIX, SO USER CAN SWITCH BETWEEN MODES, BUT WE
-							ALSO NEED A WORKING FIX - SINCE THE LOCATION IS REQUIRED FROM
-							NON-DR AWARE CODE
+					//		WE DO NEED TO STORE A TEMPORARY DR LOCATION IN FIXES.
+					//		WE NEED THE ORIGINAL FIX, SO USER CAN SWITCH BETWEEN MODES, BUT WE
+					//		ALSO NEED A WORKING FIX - SINCE THE LOCATION IS REQUIRED FROM
+					//		NON-DR AWARE CODE
 							
 						}
 						else

@@ -259,7 +259,6 @@ public class TrackWrapper_Support
 			}
 		}
 
-		@Override
 		public void append(Layer other)
 		{
 			System.err.println("SHOULD NOT BE ADDING LAYER TO SEGMENTS LIST");
@@ -932,7 +931,6 @@ public class TrackWrapper_Support
 			return fw.getDateTimeGroup();
 		}
 
-		@Override
 		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 				LocationConstruct currentNearest, Layer parentLayer)
 		{
@@ -1017,7 +1015,6 @@ public class TrackWrapper_Support
 			}
 		}
 
-		@Override
 		public void shift(WorldVector vector)
 		{
 			// add this vector to all my points.

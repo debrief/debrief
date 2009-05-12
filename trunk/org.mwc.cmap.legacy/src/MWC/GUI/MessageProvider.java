@@ -38,7 +38,6 @@ public interface MessageProvider
 		public Vector<String> _messages;
 		public Vector<Integer> _statuses;
 
-		@Override
 		public void show(final String title, final String message, final int status)
 		{
 			if (_titles == null)

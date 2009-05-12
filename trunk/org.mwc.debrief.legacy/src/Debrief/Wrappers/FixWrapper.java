@@ -1008,7 +1008,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			return _title;
 		}
 	
-		@Override
 		public void execute(Editable subject)
 		{
 			FixWrapper fix = (FixWrapper) subject;
@@ -1016,7 +1015,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			_splitSections = parent.splitTrack(fix, _splitBefore);
 		}
 	
-		@Override
 		public void undo(Editable subject)
 		{
 			FixWrapper fix = (FixWrapper) subject;
@@ -1024,13 +1022,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			parent.combineSections(_splitSections);
 		}
 	
-		@Override
 		public boolean isRedoable()
 		{
 			return true;
 		}
 	
-		@Override
 		public boolean isUndoable()
 		{
 			return true;

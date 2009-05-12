@@ -161,7 +161,6 @@ final public class ValueWithUnitsControl extends Composite implements
 		doUpdate();
 	}
 
-	@Override
 	public void modifyText(ModifyEvent e)
 	{
 		// store the value in the property, if we have one?
