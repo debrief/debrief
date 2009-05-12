@@ -4,6 +4,7 @@ import org.eclipse.jface.preference.*;
 import org.eclipse.ui.*;
 import org.mwc.cmap.core.CorePlugin;
 
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import MWC.GUI.Properties.UnitsPropertyEditor;
 
@@ -41,6 +42,11 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 	 */
 	private static String[][] _relBearingTags;
 	
+	/** the options for what to do when importing a track
+	 * 
+	 */
+	private static String[][] _trackModeTags;
+	
 
 	/**
 	 * Creates the field editors. Field editors are abstractions of the common GUI
@@ -73,10 +79,25 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 			_relBearingTags[1][0] = "US format (0..360)";
 			_relBearingTags[1][1] = relBearingCalc.US_REL_BEARING_FORMAT;
 		}
+		
+		// initialise the import choice tags, if we have to
+		if (_trackModeTags == null)
+		{
+			_trackModeTags = new String[3][2];
+			_trackModeTags[0][0] = "DR Track";
+			_trackModeTags[0][1] =  ImportReplay.IMPORT_AS_DR;
+			_trackModeTags[1][0] = "ATG Track";
+			_trackModeTags[1][1] = ImportReplay.IMPORT_AS_ATG;
+			_trackModeTags[2][0] = "Ask user";
+			_trackModeTags[2][1] = ImportReplay.ASK_THE_AUDIENCE;
+		}
 
+		
+		addField(new RadioGroupFieldEditor(PreferenceConstants.IMPORT_MODE,
+				"Default &track import mode:", 1, _trackModeTags, getFieldEditorParent()));
+		
 		addField(new RadioGroupFieldEditor(PreferenceConstants.RNG_UNITS,
 				"Default &range units:", 1, _distanceUnitTags, getFieldEditorParent()));
-		
 		
 		addField(new RadioGroupFieldEditor(PreferenceConstants.REL_BEARING_FORMAT,
 				"Relative &bearing format:", 1, _relBearingTags, getFieldEditorParent()));
@@ -98,6 +119,7 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 	{
 		public static final String RNG_UNITS = MWC.GUI.Properties.UnitsPropertyEditor.UNITS_PROPERTY;
 		public static final String REL_BEARING_FORMAT = relBearingCalc.REL_BEARING_FORMAT;
+		public static final String IMPORT_MODE = ImportReplay.TRACK_IMPORT_MODE;
 	}
 
 }

@@ -13,7 +13,7 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.*;
 
 import Debrief.Wrappers.*;
-import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.*;
 import MWC.GUI.Chart.Painters.*;
 import MWC.GUI.VPF.FeaturePainter;

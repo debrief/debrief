@@ -11,8 +11,8 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
-import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 
 
 abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader

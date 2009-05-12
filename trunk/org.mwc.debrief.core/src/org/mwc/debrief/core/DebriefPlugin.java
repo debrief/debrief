@@ -118,7 +118,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 		return resourceBundle;
 	}
 
-	@Override
 	public void show(final String title, final String  message, final int status)
 	{
 		Display.getCurrent().asyncExec(new Runnable()

@@ -249,7 +249,7 @@ import java.util.TimeZone;
 import java.util.Vector;
 
 import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
@@ -329,7 +329,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
    * 
    */
 	private boolean _lineShowing = true;
-
+	
   ////////////////////////////////////////
   // constructors
   ////////////////////////////////////////

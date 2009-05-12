@@ -429,7 +429,6 @@ public class DragFeature extends CoreDragAction
 		{
 			return new DragOperation(){
 
-				@Override
 				public void apply(DraggableItem item, WorldVector offset) {
 					item.shift(offset);
 				}

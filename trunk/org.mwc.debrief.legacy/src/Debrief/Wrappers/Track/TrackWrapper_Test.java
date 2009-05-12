@@ -1,7 +1,7 @@
 /**
  * 
  */
-package Debrief.Wrappers;
+package Debrief.Wrappers.Track;
 
 import static org.junit.Assert.assertEquals;
 
@@ -15,9 +15,11 @@ import org.junit.Test;
 
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
-import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
-import Debrief.Wrappers.TrackWrapper_Support.TMASegment;
-import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;

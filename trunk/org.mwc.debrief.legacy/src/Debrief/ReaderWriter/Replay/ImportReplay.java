@@ -251,6 +251,8 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
+import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.*;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
@@ -266,6 +268,16 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public class ImportReplay extends PlainImporterBase
 {
 
+	/** interface for class that is able to retrieve the import mode from the user
+	 * 
+	 * @author ianmayo
+	 * @see ImportReplay.TRACK_IMPORT_MODE
+	 */
+	public static interface ProvidesModeSelector
+	{
+		public String getSelectedImportMode(final String trackName);
+	}
+	
 	/**
 	 * the format we use to parse text
 	 */
@@ -288,9 +300,30 @@ public class ImportReplay extends PlainImporterBase
 	private static Debrief.GUI.Tote.StepControl _theStepper;
 
 	/**
+	 * the prefs provider
+	 * 
+	 */
+	private static ToolParent _myParent;
+
+	/**
 	 * the list of formatting objects we know about
 	 */
-	private final LayersFormatter[] _myFormatters = { new FormatTracks() };
+	private final LayersFormatter[] _myFormatters =
+	{ new FormatTracks() };
+
+	/**
+	 * the property name we use for importing tracks (DR/ATG)
+	 * 
+	 */
+	public final static String TRACK_IMPORT_MODE = "TRACK_IMPORT_MODE";
+
+	/**
+	 * the property values for importing modes
+	 * 
+	 */
+	public final static String IMPORT_AS_DR = "DR_IMPORT";
+	public final static String IMPORT_AS_ATG = "ATG_IMPORT";
+	public final static String ASK_THE_AUDIENCE = "ASK_AUDIENCE";
 
 	/**
 	 * constructor, initialise Vector with the list of non-Fix items which we will
@@ -301,7 +334,8 @@ public class ImportReplay extends PlainImporterBase
 
 		dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-		_myTypes = new String[] { ".rep", ".dsf", ".dtf" };
+		_myTypes = new String[]
+		{ ".rep", ".dsf", ".dtf" };
 
 		checkImporters();
 
@@ -340,6 +374,16 @@ public class ImportReplay extends PlainImporterBase
 	{
 		String res = DebriefFormatDateTime.toStringHiRes(val);
 		return res;
+	}
+
+	/**
+	 * initialise the tool, so that it knows where to get its prefs details
+	 * 
+	 * @param theParent
+	 */
+	public static void initialise(ToolParent theParent)
+	{
+		_myParent = theParent;
 	}
 
 	/**
@@ -409,17 +453,19 @@ public class ImportReplay extends PlainImporterBase
 				}
 				else
 				{
-					MWC.Utilities.Errors.Trace.trace("Annotation type not recognised for:"
-							+ theLine);
+					MWC.Utilities.Errors.Trace
+							.trace("Annotation type not recognised for:" + theLine);
 				}
 				return null;
 			}
 
 			// now read it in.
 			Object thisObject = null;
-			try{
+			try
+			{
 				thisObject = thisOne.readThisLine(theLine);
-			}catch(ParseException pe)
+			}
+			catch (ParseException pe)
 			{
 				System.err.println("Failed to read in:" + theLine);
 				pe.printStackTrace();
@@ -453,9 +499,47 @@ public class ImportReplay extends PlainImporterBase
 				// have we found the layer?
 				if (trkWrapper == null)
 				{
+					// ok, see if we're importing it as DR or ATG (or ask the audience)
+					String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
+					
+					System.err.println("import mode from props is:" + importMode);
+
+					if (importMode == ImportReplay.ASK_THE_AUDIENCE)
+					{
+						if(_myParent instanceof ProvidesModeSelector)
+						{
+							ProvidesModeSelector selector = (ProvidesModeSelector) _myParent;
+							importMode = selector.getSelectedImportMode(theTrack);
+						}
+					}
+					
+					TrackSegment layer = null;
+					
+					if (importMode == ImportReplay.IMPORT_AS_ATG)
+					{
+						layer = new TrackSegment();
+						layer.setPlotRelative(false);
+
+					}
+					else if (importMode == ImportReplay.IMPORT_AS_DR)
+					{
+						layer = new TrackSegment();
+						layer.setPlotRelative(false);
+					}
+					else
+					{
+						_myParent.logError(ToolParent.ERROR, "Incorrect prefs setting for import mode",
+								null);
+						// and drop out of the whole affair
+						throw new RuntimeException("User cancelled import");
+					}
+
 					// now create the wrapper
 					trkWrapper = new TrackWrapper();
 
+					// give it the data container
+					trkWrapper.add(layer);
+					
 					// get the colour for this track
 					trkWrapper.setColor(thisColor);
 
@@ -556,8 +640,8 @@ public class ImportReplay extends PlainImporterBase
 						{
 							// no, maybe it's a track or something like that!
 							// ditch the process and warn the users
-							throw new java.io.IOException("Sorry we cannot find details for track:"
-									+ sw.getTrackName());
+							throw new java.io.IOException(
+									"Sorry we cannot find details for track:" + sw.getTrackName());
 						}
 					}
 					catch (java.lang.ClassCastException ce)
@@ -657,8 +741,8 @@ public class ImportReplay extends PlainImporterBase
 						{
 							// no, maybe it's a track or something like that!
 							// ditch the process and warn the users
-							throw new java.io.IOException("Sorry we cannot find details for track:"
-									+ sw.getTrackName());
+							throw new java.io.IOException(
+									"Sorry we cannot find details for track:" + sw.getTrackName());
 						}
 					}
 					catch (java.lang.ClassCastException ce)
@@ -1083,11 +1167,11 @@ public class ImportReplay extends PlainImporterBase
 		{
 			super(val);
 			String fileRoot = System.getProperty("dataDir");
-			
+
 			// 
 			assertNotNull("Check data directory is configured", fileRoot);
 			fileName = fileRoot + File.separator + fileName;
-						
+
 			// and check the file exists
 			java.io.File iFile = new File(fileName);
 			assertTrue("Test file not found", iFile.exists());
@@ -1124,7 +1208,8 @@ public class ImportReplay extends PlainImporterBase
 
 			// ok, now try to read it in
 			MWC.GUI.Layers _theLayers = new MWC.GUI.Layers();
-			File[] _theFiles = new File[] { testFile };
+			File[] _theFiles = new File[]
+			{ testFile };
 
 			// add the REP importer
 			MWC.Utilities.ReaderWriter.ImportManager
@@ -1170,19 +1255,19 @@ public class ImportReplay extends PlainImporterBase
 
 			// area of coverage
 			MWC.GenericData.WorldArea area = _theLayers.elementAt(0).getBounds();
-			super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(), 11.92276,
-					0.001);
+			super.assertEquals("tl lat of first layer", area.getTopLeft().getLat(),
+					11.92276, 0.001);
 			super.assertEquals("tl long of first layer", area.getTopLeft().getLong(),
 					-11.59394, 0.00001);
-			super.assertEquals("tl depth of first layer", area.getTopLeft().getDepth(), 0,
-					0.00001);
+			super.assertEquals("tl depth of first layer", area.getTopLeft()
+					.getDepth(), 0, 0.00001);
 
-			super.assertEquals("br lat of first layer", area.getBottomRight().getLat(),
-					11.89421, 0.001);
-			super.assertEquals("br long of first layer", area.getBottomRight().getLong(),
-					-11.59376, 0.00001);
-			super.assertEquals("br depth of first layer", area.getBottomRight().getDepth(), 0,
-					0.00001);
+			super.assertEquals("br lat of first layer", area.getBottomRight()
+					.getLat(), 11.89421, 0.001);
+			super.assertEquals("br long of first layer", area.getBottomRight()
+					.getLong(), -11.59376, 0.00001);
+			super.assertEquals("br depth of first layer", area.getBottomRight()
+					.getDepth(), 0, 0.00001);
 
 		}
 	}

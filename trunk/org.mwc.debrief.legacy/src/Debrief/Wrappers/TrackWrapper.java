@@ -23,9 +23,10 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
-import Debrief.Wrappers.TrackWrapper_Support.FixSetter;
-import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
-import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support;
+import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
@@ -1219,7 +1220,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (_thePositions.size() == 0)
 		{
 			// nope, add one
-			final TrackWrapper_Support.TrackSegment firstSegment = new TrackWrapper_Support.TrackSegment();
+			final TrackSegment firstSegment = new TrackSegment();
 			firstSegment.setName("Positions");
 			_thePositions.addSegment(firstSegment);
 		}
@@ -1636,7 +1637,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theFix
 	 *          the fix that moved
 	 */
-	protected void fixMoved()
+	public void fixMoved()
 	{
 		if (_mySensors != null)
 		{
@@ -2481,11 +2482,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							tmaLastDTG = thisTime;
 
 							// dump the location into the fix
-					//		fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-					//		WE DO NEED TO STORE A TEMPORARY DR LOCATION IN FIXES.
-					//		WE NEED THE ORIGINAL FIX, SO USER CAN SWITCH BETWEEN MODES, BUT WE
-					//		ALSO NEED A WORKING FIX - SINCE THE LOCATION IS REQUIRED FROM
-					//		NON-DR AWARE CODE
+							fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
 							
 						}
 						else

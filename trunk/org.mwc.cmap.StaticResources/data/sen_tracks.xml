@@ -1,65 +1,68 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Fri May 01 10:27:37 BST 2009" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Thu Apr 30 15:58:20 BST 2009"/>
+<plot Created="Tue May 12 10:31:41 BST 2009" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Tue May 12 08:41:29 BST 2009"/>
 <session>
 <layers>
 <track InterpolatePoints="false" LineThickness="2" Name="PreFrigate" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<fix Course="149.300" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<TrackSegment>
+<fix Course="149.300" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4728894" Long="51.3579817"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 013525" Label="0135" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 013525" Label="0135" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4700227" Long="51.3598851"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 013625" Label="0136" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 013625" Label="0136" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4671588" Long="51.3617857"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 013725" Label="0137" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 013725" Label="0137" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4642922" Long="51.3636890"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 013825" Label="0138" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 013825" Label="0138" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4614283" Long="51.3655924"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 013925" Label="0139" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 013925" Label="0139" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4585616" Long="51.3674957"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 014025" Label="0140" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 014025" Label="0140" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4556949" Long="51.3693991"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 014125" Label="0141" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 014125" Label="0141" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4528310" Long="51.3712997"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 014225" Label="0142" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 014225" Label="0142" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4499644" Long="51.3732030"/>
 </centre>
 </fix>
-<fix Course="149.300" Dtg="700103 014325" Label="0143" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<fix Course="149.300" Dtg="700103 014325" Label="0143" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4471005" Long="51.3751064"/>
 </centre>
 </fix>
+</TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" Name="PreFrigate2" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" Name="PreFrigate2" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="false">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<TrackSegment>
 <fix Course="149.300" Dtg="700103 014425" Label="0144" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4457912" Long="51.4091279"/>
@@ -100,10 +103,12 @@
 <shortLocation Depth="0.000" Lat="26.4257357" Long="51.4224365"/>
 </centre>
 </fix>
+</TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" Name="Frigate" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" Name="Frigate" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="false">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<TrackSegment>
 <fix Course="149.300" Dtg="700103 015225" Label="0152" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4025639" Long="51.3988167"/>
@@ -834,10 +839,12 @@
 <shortLocation Depth="0.000" Lat="26.1017556" Long="51.7986139"/>
 </centre>
 </fix>
+</TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" Name="New_SSK" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" Name="New_SSK" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="false">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<TrackSegment>
 <fix Course="243.100" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="40.000" Lat="26.2831889" Long="52.0640194"/>
@@ -1658,14 +1665,28 @@
 <shortLocation Depth="15.000" Lat="26.1146806" Long="51.7728389"/>
 </centre>
 </fix>
+</TrackSegment>
 </track>
+<layer LineThickness="0" Name="Chart features" Visible="true">
+<line Label="New line" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
+<colour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<fontcolour CustomBlue="250" CustomGreen="250" CustomRed="250" Value="custom"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<tl>
+<shortLocation Depth="20.000" Lat="26.4718843" Long="51.3571601"/>
+</tl>
+<br>
+<shortLocation Depth="20.000" Lat="26.4456151" Long="51.3748223"/>
+</br>
+</line>
+</layer>
 </layers>
 <projection Border="1.100" Relative="false" Type="Flat">
 <tl>
-<shortLocation Depth="40.000" Lat="26.4728894" Long="51.3579817"/>
+<shortLocation Depth="20.000" Lat="26.4876659" Long="51.3332327"/>
 </tl>
 <br>
-<shortLocation Depth="0.000" Lat="26.1017556" Long="52.0640194"/>
+<shortLocation Depth="20.000" Lat="26.4283883" Long="51.3936229"/>
 </br>
 </projection>
 <gui>

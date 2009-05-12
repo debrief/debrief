@@ -13,8 +13,8 @@ import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.TrackWrapper_Support.SegmentList;
-import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
+import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -178,32 +178,27 @@ public class FreeDragMode extends DragMode
 			_mySegment = segment;
 			
 		}
-		@Override
 		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 				LocationConstruct currentNearest, Layer parentLayer)
 		{
 		}
 
-		@Override
 		public String getName()
 		{
 			return "centre point";
 		}
 
-		@Override
 		public void paint(CanvasType dest)
 		{
 			_mySegment.paint(dest);
 		}
 
-		@Override
 		public void shift(WorldVector vector)
 		{
 			//
 			_mySegment.shift(vector);
 		}
 
-		@Override
 		public Cursor getHotspotCursor()
 		{
 		  return new Cursor(Display.getDefault(), DebriefPlugin
@@ -230,25 +225,21 @@ public class FreeDragMode extends DragMode
 
 		}
 
-		@Override
 		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
 				LocationConstruct currentNearest, Layer parentLayer)
 		{
 		}
 
-		@Override
 		public String getName()
 		{
 			return "end point";
 		}
 
-		@Override
 		public void paint(CanvasType dest)
 		{
 			_segment.paint(dest);
 		}
 
-		@Override
 		public void shift(WorldVector vector)
 		{
 			// find out where the cursor currently is
@@ -294,7 +285,6 @@ public class FreeDragMode extends DragMode
 			}
 		}
 
-		@Override
 		public Cursor getHotspotCursor()
 		{
 		  return new Cursor(Display.getDefault(), DebriefPlugin

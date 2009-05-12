@@ -50,7 +50,6 @@ public class DragSegment extends DragFeature
 			super(title, IAction.AS_RADIO_BUTTON);
 		}
 
-		@Override
 		public void apply(DraggableItem item, WorldVector offset)
 		{
 			item.shift(offset);

@@ -12,7 +12,7 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.TrackWrapper_Support.TrackSegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Plottable;
 
 abstract public class TrackSegmentHandler extends

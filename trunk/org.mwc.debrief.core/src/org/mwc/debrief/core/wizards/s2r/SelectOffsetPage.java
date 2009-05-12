@@ -37,7 +37,6 @@ public class SelectOffsetPage extends CoreEditableWizardPage
 			return _range;
 		}
 
-		@Override
 		public boolean hasEditor()
 		{
 			return false;

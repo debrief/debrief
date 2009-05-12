@@ -1,30 +1,51 @@
 package org.mwc.cmap.core;
 
 import java.awt.Color;
-import java.util.*;
+import java.util.Iterator;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
-import org.eclipse.core.commands.operations.*;
+import org.eclipse.core.commands.operations.IOperationHistory;
+import org.eclipse.core.commands.operations.IUndoContext;
+import org.eclipse.core.commands.operations.IUndoableOperation;
+import org.eclipse.core.commands.operations.ObjectUndoContext;
+import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.resource.*;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.dnd.Clipboard;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.osgi.framework.BundleContext;
 
 import Debrief.GUI.Frames.Application;
+import Debrief.ReaderWriter.Replay.ImportReplay;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.CoastPainter;
-import MWC.GUI.Tools.Palette.*;
+import MWC.GUI.Tools.Palette.CreateTOPO;
+import MWC.GUI.Tools.Palette.CreateVPFLayers;
 import MWC.GenericData.WorldLocation;
 
 /**
@@ -117,6 +138,10 @@ public class CorePlugin extends AbstractUIPlugin
 		// also initialise the ETOPO wrapper (if we have to)
 		CreateTOPO.initialise(_toolParent);
 
+		// and the replay importer - since it needs to know what mode (ATG/DR)
+		// to use for new data
+		ImportReplay.initialise(_toolParent);
+		
 		// and the coastline-reader
 		CoastPainter.initialise(_toolParent);
 
@@ -500,5 +525,6 @@ public class CorePlugin extends AbstractUIPlugin
 		}
 		return res;
 	}
+
 
 }
