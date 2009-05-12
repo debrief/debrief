@@ -24,8 +24,8 @@ import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 
 /**
- * extension of track segment that represents a single TMA solution as a
- * series of fixes
+ * extension of track segment that represents a single TMA solution as a series
+ * of fixes
  * 
  * @author Ian Mayo
  * 
@@ -56,7 +56,7 @@ public class TMASegment extends TrackSegment
 			// start off with the parent
 			PropertyDescriptor[] parent = super.getPropertyDescriptors();
 			PropertyDescriptor[] mine = null;
-			
+
 			try
 			{
 				PropertyDescriptor[] res =
@@ -71,10 +71,11 @@ public class TMASegment extends TrackSegment
 			}
 
 			// now combine them.
-			PropertyDescriptor[] bigRes = new PropertyDescriptor[parent.length + mine.length];
+			PropertyDescriptor[] bigRes = new PropertyDescriptor[parent.length
+					+ mine.length];
 			System.arraycopy(parent, 0, bigRes, 0, parent.length);
-			System.arraycopy(mine,0, bigRes, parent.length, mine.length);
-			
+			System.arraycopy(mine, 0, bigRes, parent.length, mine.length);
+
 			return bigRes;
 		}
 	}
@@ -107,12 +108,24 @@ public class TMASegment extends TrackSegment
 	 * 
 	 */
 	private WorldVector _offset;
-	
+
+	/**
+	 * name of the watchable list we're going to use as our origin
+	 * 
+	 * @return
+	 */
+	private String _hostName;
+
 	public WorldDistance getDetectionRange()
 	{
 		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
 	}
 
+	public WorldVector getOffset()
+	{
+		return _offset;
+	}
+	
 	public void setDetectionRange(WorldDistance detectionRange)
 	{
 		_offset = new WorldVector(_offset.getBearing(), detectionRange, null);
@@ -125,7 +138,19 @@ public class TMASegment extends TrackSegment
 
 	public void setDetectionBearing(double detectionBearing)
 	{
-		_offset = new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(detectionBearing), new WorldDistance(_offset.getRange(), WorldDistance.DEGS), null);
+		_offset = new WorldVector(MWC.Algorithms.Conversions
+				.Degs2Rads(detectionBearing), new WorldDistance(_offset.getRange(),
+				WorldDistance.DEGS), null);
+	}
+
+	/** temporarily store the hostname, until we've finished loading and we 
+	 * can sort it out for real.
+	 * @param hostName
+	 */
+	public void setHostName(final String hostName)
+	{
+		_hostName = hostName;
+
 	}
 
 	/**
@@ -135,7 +160,7 @@ public class TMASegment extends TrackSegment
 	 * @param speed
 	 * @param offset
 	 */
-	protected TMASegment(final double courseDegs, final WorldSpeed speed,
+	public TMASegment(final double courseDegs, final WorldSpeed speed,
 			final WorldVector offset)
 	{
 		_courseDegs = courseDegs;
@@ -207,9 +232,8 @@ public class TMASegment extends TrackSegment
 	 * @param courseDegs
 	 *          the initial target course estimate
 	 */
-	public TMASegment(WatchableList origin, TimePeriod period,
-			Duration interval, WorldVector offset, WorldSpeed speed,
-			double courseDegs)
+	public TMASegment(WatchableList origin, TimePeriod period, Duration interval,
+			WorldVector offset, WorldSpeed speed, double courseDegs)
 	{
 		this(courseDegs, speed, offset);
 
@@ -261,7 +285,7 @@ public class TMASegment extends TrackSegment
 	private void createPointsFrom(SensorContactWrapper[] observations)
 	{
 		System.err.println("about to create:" + observations.length + " points");
-		
+
 		// better start looping
 		for (int i = 0; i < observations.length; i++)
 		{
@@ -305,6 +329,12 @@ public class TMASegment extends TrackSegment
 	 */
 	public WorldLocation getOrigin()
 	{
+		// have we sorted out our reference track yet?
+		if(_referenceTrack == null)
+		{
+			System.err.println("sorting out ref track using" + _hostName);
+		}
+		
 		WorldLocation res = null;
 		Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
 		if (pts.length > 0)
@@ -351,7 +381,8 @@ public class TMASegment extends TrackSegment
 			{
 				// calculate a new vector
 				long timeDelta = thisTime - tmaLastDTG;
-				WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(), thisF.getCourse());
+				WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(), thisF
+						.getCourse());
 				tmaLastLoc.addToMe(thisVec);
 			}
 
@@ -442,6 +473,11 @@ public class TMASegment extends TrackSegment
 		tmpOrigin.addToMe(vector);
 
 		_offset = tmpOrigin.subtract(getOrigin());
+	}
+
+	public WatchableList getReferenceTrack()
+	{
+		return _referenceTrack;
 	}
 
 }
