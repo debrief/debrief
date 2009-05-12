@@ -49,7 +49,9 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     // Let users override the default styles
     super(parent, style);
     setText("Select track mode");
-    message = "Use this dialog to select how to import the track titled " + trackName;
+    message = "Debrief can plot tracks using one of two modes." +
+    		"\nUse this dialog to select how to import the track titled " + trackName + "." +
+    		"\nYou can override your choice using the CMAP tab of Windows/Preferences";
   }
 
 
@@ -119,21 +121,21 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     Button[] radios = new Button[2];
 
     radios[0] = new Button(shell, SWT.RADIO);
-    radios[0].setText("Dead Reckoning (DR) Mode");
+    radios[0].setText("Dead Reckoning (DR) - positions are calculated using recorded course and speed");
 //    radios[0].setBounds(10, 5, 75, 30);
     radios[0].setData(ImportReplay.IMPORT_AS_DR);
     radios[0].addSelectionListener(this);
-    radios[0].setSelection(true);
 
     radios[1] = new Button(shell, SWT.RADIO);
-    radios[1].setText("Across The Ground (ATG) Mode");
+    radios[1].setText("Across The Ground (ATG) - where positions are plotted according to the recorded location");
  //   radios[1].setBounds(10, 30, 75, 30);
     radios[1].setData(ImportReplay.IMPORT_AS_ATG);
     radios[1].addSelectionListener(this);
+    radios[1].setSelection(true);
     
 
     final Button rememberBtn = new Button(shell, SWT.CHECK);
-    rememberBtn.setText("Remember your selection (change via Window/Preferences/CMAP)");
+    rememberBtn.setText("Automatically used this mode next time");
     rememberBtn.addSelectionListener(new SelectionListener(){
 		
 			public void widgetSelected(SelectionEvent e)
@@ -179,7 +181,6 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     cancel.addSelectionListener(new SelectionAdapter() {
       public void widgetSelected(SelectionEvent event) {
         // clear the selection
-      	System.err.println("clearing mode!");
       	_mode = null;
         shell.close();
       }
@@ -200,8 +201,6 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
 	{
 		Button btn = (Button) e.widget;
 		_mode = (String) btn.getData();
-		System.out.println("stored mode as:" + _mode);
-
 	}
 }
            

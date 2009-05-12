@@ -16,7 +16,6 @@ import java.util.Iterator;
 import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
-import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -28,8 +27,6 @@ import MWC.Utilities.ReaderWriter.XML.Util.FontHandler;
 public final class TrackHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
-
-	private static final String TRACK_SEGMENT = "TrackSegment";
 
 	private static final String LINE_THICKNESS = "LineThickness";
 
@@ -47,21 +44,7 @@ public final class TrackHandler extends
 	 */
 	static final MWC.GUI.Properties.LocationPropertyEditor lp = new MWC.GUI.Properties.LocationPropertyEditor();
 
-	private static void exportThisSegment(org.w3c.dom.Document doc, Element trk,
-			TrackSegment seg)
-	{
-		final Element segE = doc.createElement(TRACK_SEGMENT);
 
-		// insert the fixes
-		final Collection<Editable> pts = seg.getData();
-		for (final Iterator<Editable> iterator = pts.iterator(); iterator.hasNext();)
-		{
-			final FixWrapper fix = (FixWrapper) iterator.next();
-			FixHandler.exportFix(fix, segE, doc);
-		}
-
-		trk.appendChild(segE);
-	}
 
 	public static void exportTrack(Debrief.Wrappers.TrackWrapper track,
 			org.w3c.dom.Element parent, org.w3c.dom.Document doc)
@@ -137,14 +120,14 @@ public final class TrackHandler extends
 						.hasNext();)
 				{
 					final TrackSegment editable = (TrackSegment) iterator.next();
-					exportThisSegment(doc, sList, editable);
+				  TrackSegmentHandler.exportThisSegment(doc, sList, editable);
 				}
 				trk.appendChild(sList);
 				break;
 			}
 			else if (next instanceof TrackSegment)
 			{
-				exportThisSegment(doc, trk, (TrackSegment) next);
+				TrackSegmentHandler.exportThisSegment(doc, trk, (TrackSegment) next);
 				break;
 			}
 		}

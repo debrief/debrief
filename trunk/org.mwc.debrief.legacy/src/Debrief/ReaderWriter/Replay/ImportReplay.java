@@ -243,22 +243,41 @@
 
 package Debrief.ReaderWriter.Replay;
 
-import java.awt.*;
-import java.io.*;
-import java.util.*;
-
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
+import java.awt.Color;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.Enumeration;
+import java.util.StringTokenizer;
+import java.util.TimeZone;
+import java.util.Vector;
 
 import Debrief.Tools.Tote.Watchable;
-import Debrief.Wrappers.*;
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.Plottable;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
-import MWC.TacticalData.*;
-import MWC.Utilities.ReaderWriter.*;
+import MWC.TacticalData.NarrativeEntry;
+import MWC.Utilities.ReaderWriter.PlainImporterBase;
+import MWC.Utilities.ReaderWriter.PlainLineImporter;
+import MWC.Utilities.ReaderWriter.ReaderMonitor;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+
+import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 
 /**
  * class to read in a complete replay file. The class knows of the types of data
@@ -501,8 +520,6 @@ public class ImportReplay extends PlainImporterBase
 				{
 					// ok, see if we're importing it as DR or ATG (or ask the audience)
 					String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
-					
-					System.err.println("import mode from props is:" + importMode);
 
 					if (importMode == ImportReplay.ASK_THE_AUDIENCE)
 					{
@@ -513,23 +530,21 @@ public class ImportReplay extends PlainImporterBase
 						}
 					}
 					
-					TrackSegment layer = null;
+					TrackSegment initialLayer = null;
 					
 					if (importMode == ImportReplay.IMPORT_AS_ATG)
 					{
-						layer = new TrackSegment();
-						layer.setPlotRelative(false);
+						initialLayer = new TrackSegment();
+						initialLayer.setPlotRelative(false);
 
 					}
 					else if (importMode == ImportReplay.IMPORT_AS_DR)
 					{
-						layer = new TrackSegment();
-						layer.setPlotRelative(false);
+						initialLayer = new TrackSegment();
+						initialLayer.setPlotRelative(true);
 					}
 					else
 					{
-						_myParent.logError(ToolParent.ERROR, "Incorrect prefs setting for import mode",
-								null);
 						// and drop out of the whole affair
 						throw new RuntimeException("User cancelled import");
 					}
@@ -538,7 +553,7 @@ public class ImportReplay extends PlainImporterBase
 					trkWrapper = new TrackWrapper();
 
 					// give it the data container
-					trkWrapper.add(layer);
+					trkWrapper.add(initialLayer);
 					
 					// get the colour for this track
 					trkWrapper.setColor(thisColor);

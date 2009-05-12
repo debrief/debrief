@@ -147,6 +147,9 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 		CorePlugin.logError(status, text, e);
 	}
 
+	/** popup a dialog to let the user select the import mode
+	 * @return selected mode, from ImportReplay
+	 */
 	public String getSelectedImportMode(final String trackName)
 	{
 		_selectedImportMode= null;
@@ -157,6 +160,7 @@ public class DebriefToolParent implements ToolParent, ProvidesModeSelector
 				Shell active = PlatformUI.getWorkbench().getWorkbenchWindows()[0].getShell();
 				// ok, popup our custom dialog, let user decide
 				SelectImportModeDialog dialog = new SelectImportModeDialog(active, trackName);
+				// store the value
 				_selectedImportMode = dialog.open();
 			}});
 		return _selectedImportMode;
