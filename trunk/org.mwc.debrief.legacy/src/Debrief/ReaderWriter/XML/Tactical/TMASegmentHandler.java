@@ -88,7 +88,7 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 			TMASegment seg)
 	{
 		
-		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, trk, seg, TMA_SEGMENT);
+		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg, TMA_SEGMENT);
 
 		// sort out the remaining attributes
 		segE.setAttribute(COURSE_DEGS, writeThis(seg.getCourse()));
@@ -96,6 +96,8 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 		
 		WorldSpeedHandler.exportSpeed(SPEED, seg.getSpeed(), segE, doc);
 		WorldVectorHandler.exportVector(OFFSET, seg.getOffset(), segE, doc);
+		
+		trk.appendChild(segE);
 		
 	}
 

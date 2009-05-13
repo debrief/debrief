@@ -89,7 +89,7 @@ abstract public class CoreTrackSegmentHandler extends
 		segment = null;
 	}
 	
-	public static Element exportThisSegment(org.w3c.dom.Document doc, Element trk,
+	public static Element exportThisSegment(org.w3c.dom.Document doc,
 			TrackSegment seg, String segmentName)
 	{
 		final Element segE = doc.createElement(segmentName);
@@ -105,10 +105,8 @@ abstract public class CoreTrackSegmentHandler extends
 			final FixWrapper fix = (FixWrapper) iterator.next();
 			FixHandler.exportFix(fix, segE, doc);
 		}
-
-		trk.appendChild(segE);
 		
-		return trk;
+		return segE;
 	}
 
 	abstract public void addSegment(TrackSegment segment);

@@ -18,6 +18,7 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.Track.TMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
@@ -120,19 +121,30 @@ public final class TrackHandler extends
 						.hasNext();)
 				{
 					final TrackSegment editable = (TrackSegment) iterator.next();
-				  TrackSegmentHandler.exportThisSegment(doc, sList, editable);
+					exportThisTrackSegment(doc, trk, editable);
 				}
 				trk.appendChild(sList);
 				break;
 			}
 			else if (next instanceof TrackSegment)
 			{
-				TrackSegmentHandler.exportThisSegment(doc, trk, (TrackSegment) next);
+				exportThisTrackSegment(doc, trk, (TrackSegment) next);
 				break;
 			}
 		}
 
 		parent.appendChild(trk);
+	}
+
+	private static void exportThisTrackSegment(org.w3c.dom.Document doc,
+			final Element trk, TrackSegment segment)
+	{
+		// right, sort out what type it is
+		if(segment instanceof TMASegment)
+		{
+			TMASegmentHandler.exportThisTMASegment(doc, trk, (TMASegment) segment);
+		}
+		else TrackSegmentHandler.exportThisSegment(doc, trk, (TrackSegment) segment);
 	}
 
 	public TrackHandler(MWC.GUI.Layers theLayers)
@@ -158,6 +170,14 @@ public final class TrackHandler extends
 			{
 			 addThis(list);
 			}});
+		
+    addHandler(new TMASegmentHandler()
+    {
+      public void addSegment(TrackSegment segment)
+      {
+      	addThis(segment);
+      }
+    });
 
 		addHandler(new TrackSegmentHandler(){
 			@Override

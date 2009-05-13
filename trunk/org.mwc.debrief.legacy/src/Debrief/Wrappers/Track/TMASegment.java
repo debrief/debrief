@@ -252,6 +252,15 @@ public class TMASegment extends TrackSegment
 		return fix;
 	}
 
+	
+	
+	@Override
+	public boolean getPlotRelative()
+	{
+		// always return true for TMA Segments
+		return true;
+	}
+
 	/**
 	 * create a fix at the specified dtg
 	 * 

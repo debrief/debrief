@@ -52,10 +52,12 @@ abstract public class TrackSegmentHandler extends CoreTrackSegmentHandler
 			TrackSegment seg)
 	{
 		
-		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, trk, seg, TRACK_SEGMENT);
+		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg, TRACK_SEGMENT);
 
 		// sort out the remaining attributes
 		segE.setAttribute(PLOT_RELATIVE, writeThis(seg.getPlotRelative()));
+		
+		trk.appendChild(segE);
 	}
 
 }

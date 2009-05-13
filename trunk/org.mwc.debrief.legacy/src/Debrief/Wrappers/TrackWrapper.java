@@ -2492,7 +2492,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						}
 
 						final java.awt.Point thisP = dest.toScreen(lastLocation);
-
+						
 						// just check that there's enough GUI to create the plot
 						// (i.e. has a point been returned)
 						if (thisP == null)
