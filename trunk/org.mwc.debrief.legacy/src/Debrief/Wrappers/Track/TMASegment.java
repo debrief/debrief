@@ -198,30 +198,6 @@ public class TMASegment extends TrackSegment
 		createPointsFrom(sw);
 	}
 
-	/**
-	 * build up a solution from the supplied sensor data
-	 * 
-	 * @param observations
-	 *          create a single position for the DTG of each solution
-	 * @param offset
-	 *          the range/brg from the host's position at the DTG of the first
-	 *          observation
-	 * @param speed
-	 *          the initial target speed estimate
-	 * @param courseDegs
-	 *          the initial target course estimate
-	 */
-	public TMASegment(WatchableList origin, TimePeriod period, Duration interval,
-			WorldVector offset, WorldSpeed speed, double courseDegs, Layers theLayers)
-	{
-		this(courseDegs, speed, offset, theLayers);
-
-		// sort out the origin
-		_referenceTrack = origin;
-
-		// create the points
-		createPointsFor(period, interval);
-	}
 
 	private Fix createFix(long thisT)
 	{
@@ -242,23 +218,6 @@ public class TMASegment extends TrackSegment
 		FixWrapper newFix = new FixWrapper(createFix(thisS.getDTG().getDate()
 				.getTime()));
 		return newFix;
-	}
-
-	/**
-	 * produce a series of regularly spaced fixes, during the specified period
-	 * 
-	 * @param period
-	 * @param interval
-	 */
-	private void createPointsFor(TimePeriod period, Duration interval)
-	{
-		long intervalMillis = (long) interval.getValueIn(Duration.MILLISECONDS);
-		for (long thisT = period.getStartDTG().getDate().getTime(); thisT <= period
-				.getEndDTG().getDate().getTime(); thisT += intervalMillis)
-		{
-			FixWrapper nextFix = new FixWrapper(createFix(thisT));
-			addFix(nextFix);
-		}
 	}
 
 	private void createPointsFrom(SensorContactWrapper[] observations)
