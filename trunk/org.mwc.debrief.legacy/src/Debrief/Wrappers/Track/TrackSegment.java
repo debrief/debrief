@@ -372,7 +372,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 		 * @param fw
 		 *          the leg we're looking at
 		 * @param period
-		 *          how long it's travelling for
+		 *          how long it's travelling for (millis)
 		 * @return a vector representing the subject
 		 */
 		public WorldVector vectorFor(long period, double speedKts, double courseRads)
@@ -381,8 +381,10 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
 			if (period != _vecTempLastDTG)
 			{
 				// nope better calc it
-				WorldDistance dist = new WorldDistance(speedKts * period / (1000 * 60 * 60),
-						WorldDistance.KM);
+				double timeHrs = period / (1000d * 60d * 60d);
+				double distanceNm = speedKts * timeHrs;
+				WorldDistance dist = new WorldDistance(distanceNm,
+						WorldDistance.NM);
 				_vecTempLastVector = new WorldVector(courseRads, dist, null);
 			}
 		

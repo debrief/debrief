@@ -579,6 +579,34 @@ public class TrackWrapper_Test
 				"some lable", 12, sw.getName());
 	}
 
+
+	/**
+	 * Test method for
+	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
+	 * .
+	 */
+	@Test
+	public void testFixAsVector()
+	{
+		TrackSegment ts = new TrackSegment();
+		long period = 1000 * 60 * 60;
+		double speedKts = 60;
+		WorldVector res = ts.vectorFor(period, speedKts, 0);
+		assertEquals("Correct course", 0, res.getBearing(),0.001);
+		assertEquals("Correct distance", 1, res.getRange(),0.001);
+		res = ts.vectorFor(period, speedKts, 0.6);
+		assertEquals("Correct course", 0.6, res.getBearing(),0.001);
+		assertEquals("Correct distance", 1, res.getRange(),0.001);
+		double easyCourse = MWC.Algorithms.Conversions.Degs2Rads(80);
+		res = ts.vectorFor(period, speedKts, easyCourse);
+		assertEquals("Correct course", easyCourse, res.getBearing(),0.001);
+		assertEquals("Correct distance", 1, res.getRange(),0.001);
+		easyCourse = MWC.Algorithms.Conversions.Degs2Rads(280);
+		res = ts.vectorFor(period, speedKts, easyCourse);
+		assertEquals("Correct course", easyCourse, res.getBearing(),0.001);
+		assertEquals("Correct distance", 1, res.getRange(),0.001);
+	}
+	
 	/**
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
