@@ -13,6 +13,7 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
+import MWC.GUI.Layers;
 
 
 abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -22,12 +23,12 @@ abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.
 
 	SegmentList _list;
 	
-  public SegmentListHandler()
+  public SegmentListHandler(final Layers theLayers)
   {
     // inform our parent what type of class we are
     super(SEGMENT_LIST);
 
-    addHandler(new TMASegmentHandler()
+    addHandler(new TMASegmentHandler(theLayers)
     {
       public void addSegment(TrackSegment segment)
       {

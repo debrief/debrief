@@ -471,7 +471,7 @@ public class TrackWrapper_Test
 		double course = 33;
 
 		// ok, create the segment
-		TMASegment seg = new TMASegment(tw, period, interval, offset, speed, course);
+		TMASegment seg = new TMASegment(tw, period, interval, offset, speed, course, null);
 
 		// check the create worked
 		assertEquals("enough points created", 7, seg.size());
@@ -504,7 +504,7 @@ public class TrackWrapper_Test
 		sw.add(createSensorItem(tw, sw, 120000));
 		sw.add(createSensorItem(tw, sw, 130000));
 		sw.add(createSensorItem(tw, sw, 140000));
-		seg = new TMASegment(sw, offset, speed, course);
+		seg = new TMASegment(sw, offset, speed, course, null);
 
 		// check the create worked
 		assertEquals("enough points created", 4, seg.size());
@@ -545,7 +545,7 @@ public class TrackWrapper_Test
 			sensorContactWrapper.setSensor(sw);
 		}
 		
-		seg = new TMASegment(items, offset, speed, course);
+		seg = new TMASegment(items, offset, speed, course, null);
 
 		// check the create worked
 		assertEquals("enough points created", 5, seg.size());

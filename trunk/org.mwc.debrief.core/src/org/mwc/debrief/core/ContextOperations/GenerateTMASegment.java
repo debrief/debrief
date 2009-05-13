@@ -92,7 +92,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				throws ExecutionException
 		{
 			// create it, then
-			TrackSegment seg = new TMASegment(_items, _offset, _speed, _courseDegs);
+			TrackSegment seg = new TMASegment(_items, _offset, _speed, _courseDegs, _layers);
 
 			// now wrap it
 			_newTrack = new TrackWrapper();

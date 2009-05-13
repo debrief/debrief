@@ -180,7 +180,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 			}
 		});
-
+		
 		_myOperations = new PlotOperations()
 		{
 			// just provide with our complete set of layers

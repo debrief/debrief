@@ -14,6 +14,8 @@ import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -50,6 +52,9 @@ public class TMASegment extends TrackSegment
 			super(data);
 		}
 
+		private final static String SOLUTION = "Solution";
+		private final static String OFFSET = "Offset";
+		
 		@Override
 		public final PropertyDescriptor[] getPropertyDescriptors()
 		{
@@ -60,9 +65,16 @@ public class TMASegment extends TrackSegment
 			try
 			{
 				PropertyDescriptor[] res =
-				{ expertProp("Visible", "whether this layer is visible", FORMAT),
-						expertProp("Course", "Course of this TMA Solution", SPATIAL),
-						expertProp("Speed", "Speed of this TMA Solution", SPATIAL), };
+				{
+						expertProp("Visible", "whether this layer is visible", FORMAT),
+						expertProp("Course", "Course of this TMA Solution", SOLUTION),
+						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
+						expertProp("HostName",
+								"Name of the track from which range/bearing measured", OFFSET),
+						expertProp("OffsetRange", "Distance to start point on host track",
+								OFFSET),
+						expertProp("OffsetBearing",
+								"Beraing from host track to start of this solution", OFFSET) };
 				mine = res;
 			}
 			catch (final IntrospectionException e)
@@ -116,42 +128,7 @@ public class TMASegment extends TrackSegment
 	 */
 	private String _hostName;
 
-	public WorldDistance getDetectionRange()
-	{
-		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
-	}
-
-	public WorldVector getOffset()
-	{
-		return _offset;
-	}
-	
-	public void setDetectionRange(WorldDistance detectionRange)
-	{
-		_offset = new WorldVector(_offset.getBearing(), detectionRange, null);
-	}
-
-	public double getDetectionBearing()
-	{
-		return MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
-	}
-
-	public void setDetectionBearing(double detectionBearing)
-	{
-		_offset = new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(detectionBearing), new WorldDistance(_offset.getRange(),
-				WorldDistance.DEGS), null);
-	}
-
-	/** temporarily store the hostname, until we've finished loading and we 
-	 * can sort it out for real.
-	 * @param hostName
-	 */
-	public void setHostName(final String hostName)
-	{
-		_hostName = hostName;
-
-	}
+	private final Layers _theLayers;
 
 	/**
 	 * base constructor - sorts out the obvious
@@ -159,10 +136,12 @@ public class TMASegment extends TrackSegment
 	 * @param courseDegs
 	 * @param speed
 	 * @param offset
+	 * @param theLayers
 	 */
 	public TMASegment(final double courseDegs, final WorldSpeed speed,
-			final WorldVector offset)
+			final WorldVector offset, Layers theLayers)
 	{
+		_theLayers = theLayers;
 		_courseDegs = courseDegs;
 		_speed = speed;
 		_offset = offset;
@@ -182,9 +161,9 @@ public class TMASegment extends TrackSegment
 	 *          the initial target course estimate
 	 */
 	public TMASegment(SensorContactWrapper[] observations, WorldVector offset,
-			WorldSpeed speed, double courseDegs)
+			WorldSpeed speed, double courseDegs, Layers theLayers)
 	{
-		this(courseDegs, speed, offset);
+		this(courseDegs, speed, offset, theLayers);
 
 		// sort out the origin
 		SensorContactWrapper scw = observations[0];
@@ -208,9 +187,9 @@ public class TMASegment extends TrackSegment
 	 *          the initial target course estimate
 	 */
 	public TMASegment(SensorWrapper sw, WorldVector offset, WorldSpeed speed,
-			double courseDegs)
+			double courseDegs, Layers theLayers)
 	{
-		this(courseDegs, speed, offset);
+		this(courseDegs, speed, offset, theLayers);
 
 		// sort out the origin
 		_referenceTrack = sw.getHost();
@@ -233,9 +212,9 @@ public class TMASegment extends TrackSegment
 	 *          the initial target course estimate
 	 */
 	public TMASegment(WatchableList origin, TimePeriod period, Duration interval,
-			WorldVector offset, WorldSpeed speed, double courseDegs)
+			WorldVector offset, WorldSpeed speed, double courseDegs, Layers theLayers)
 	{
-		this(courseDegs, speed, offset);
+		this(courseDegs, speed, offset, theLayers);
 
 		// sort out the origin
 		_referenceTrack = origin;
@@ -250,15 +229,6 @@ public class TMASegment extends TrackSegment
 				MWC.Algorithms.Conversions.Degs2Rads(_courseDegs), _speed
 						.getValueIn(WorldSpeed.ft_sec) / 3);
 		return fix;
-	}
-
-	
-	
-	@Override
-	public boolean getPlotRelative()
-	{
-		// always return true for TMA Segments
-		return true;
 	}
 
 	/**
@@ -325,10 +295,44 @@ public class TMASegment extends TrackSegment
 		return _courseDegs;
 	}
 
+	public double getDetectionBearing()
+	{
+		return MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
+	}
+
+	public WorldDistance getDetectionRange()
+	{
+		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
+	}
+
+	public String getHostName()
+	{
+		// just check we have some data
+		if(_hostName == null)
+			_hostName = _referenceTrack.getName();
+		
+		return _hostName;
+	}
+
 	@Override
 	public EditorType getInfo()
 	{
 		return new TMASegmentInfo(this);
+	}
+
+	public WorldVector getOffset()
+	{
+		return _offset;
+	}
+
+	public double getOffsetBearing()
+	{
+		return MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
+	}
+
+	public WorldDistance getOffsetRange()
+	{
+		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
 	}
 
 	/**
@@ -336,22 +340,39 @@ public class TMASegment extends TrackSegment
 	 * 
 	 * @return
 	 */
+	@Override
 	public WorldLocation getOrigin()
 	{
-		// have we sorted out our reference track yet?
-		if(_referenceTrack == null)
-		{
-			System.err.println("sorting out ref track using" + _hostName);
-		}
-		
 		WorldLocation res = null;
-		Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
-		if (pts.length > 0)
+
+		// have we sorted out our reference track yet?
+		if (_referenceTrack == null)
 		{
-			WorldLocation startPos = pts[0].getLocation();
-			res = startPos.add(_offset);
+			setReferenceTrack();
+		}
+
+		if (_referenceTrack != null)
+		{
+			Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
+			if (pts.length > 0)
+			{
+				WorldLocation startPos = pts[0].getLocation();
+				res = startPos.add(_offset);
+			}
 		}
 		return res;
+	}
+
+	@Override
+	public boolean getPlotRelative()
+	{
+		// always return true for TMA Segments
+		return true;
+	}
+
+	public WatchableList getReferenceTrack()
+	{
+		return _referenceTrack;
 	}
 
 	/**
@@ -450,6 +471,71 @@ public class TMASegment extends TrackSegment
 		_vecTempLastDTG = -2;
 	}
 
+	public void setDetectionBearing(double detectionBearing)
+	{
+		_offset = new WorldVector(MWC.Algorithms.Conversions
+				.Degs2Rads(detectionBearing), new WorldDistance(_offset.getRange(),
+				WorldDistance.DEGS), null);
+	}
+
+	public void setDetectionRange(WorldDistance detectionRange)
+	{
+		_offset = new WorldVector(_offset.getBearing(), detectionRange, null);
+	}
+
+	/**
+	 * temporarily store the hostname, until we've finished loading and we can
+	 * sort it out for real.
+	 * 
+	 * @param hostName
+	 */
+	public void setHostName(final String hostName)
+	{
+		// better trim what we've recived
+		String name = hostName.trim();
+		
+		// have we got meaningful data?
+		if(name.length() > 0)
+		{
+			// right, see if we can find it
+			if(_theLayers != null)
+			{
+				Layer tgt = _theLayers.findLayer(name);
+				if(tgt != null)
+				{
+					// clear the reference item we're currently looking at
+					_referenceTrack = null;
+
+					// now remember the new name
+					_hostName = hostName;
+				}
+			}
+			
+		}
+
+	}
+
+	public void setOffsetBearing(double offsetBearing)
+	{
+		_offset.setValues(MWC.Algorithms.Conversions.Degs2Rads(offsetBearing),
+				_offset.getRange(), _offset.getDepth());
+	}
+
+	public void setOffsetRange(WorldDistance offsetRange)
+	{
+		_offset.setValues(_offset.getBearing(), offsetRange
+				.getValueIn(WorldDistance.DEGS), _offset.getDepth());
+	}
+
+	/**
+	 * find the reference track for this relative solution
+	 * 
+	 */
+	private void setReferenceTrack()
+	{
+		_referenceTrack = (WatchableList) _theLayers.findLayer(_hostName);
+	}
+
 	/**
 	 * set the constant speed of this segment
 	 * 
@@ -482,11 +568,6 @@ public class TMASegment extends TrackSegment
 		tmpOrigin.addToMe(vector);
 
 		_offset = tmpOrigin.subtract(getOrigin());
-	}
-
-	public WatchableList getReferenceTrack()
-	{
-		return _referenceTrack;
 	}
 
 }

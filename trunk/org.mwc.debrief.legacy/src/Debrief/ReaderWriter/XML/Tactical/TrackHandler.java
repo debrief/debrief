@@ -164,14 +164,14 @@ public final class TrackHandler extends
 			}
 		});
 		
-		addHandler(new SegmentListHandler(){
+		addHandler(new SegmentListHandler(_theLayers){
 			@Override
 			public void addThisSegment(TrackSegment list)
 			{
 			 addThis(list);
 			}});
 		
-    addHandler(new TMASegmentHandler()
+    addHandler(new TMASegmentHandler(_theLayers)
     {
       public void addSegment(TrackSegment segment)
       {

@@ -13,6 +13,7 @@ import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Track.TMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.Layers;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
@@ -30,13 +31,15 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 	protected WorldSpeed _speed;
 	protected String _host;
 	protected WorldVector _offset;
-
+	private final Layers _theLayers;
 	
-	public TMASegmentHandler()
+	public TMASegmentHandler(Layers theLayers)
 	{
 		// inform our parent what type of class we are
 		super(TMA_SEGMENT);
 
+		_theLayers = theLayers;
+		
 		addAttributeHandler(new HandleDoubleAttribute(COURSE_DEGS)
 		{
 			@Override
@@ -78,7 +81,7 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 	@Override
 	protected TrackSegment createTrack()
 	{
-		TMASegment res = new TMASegment(_courseDegs, _speed, _offset);
+		TMASegment res = new TMASegment(_courseDegs, _speed, _offset, _theLayers);
 		res.setHostName(_host);
 		return res;
 	}
