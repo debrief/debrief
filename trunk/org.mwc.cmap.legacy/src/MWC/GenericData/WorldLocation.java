@@ -406,7 +406,27 @@ public class WorldLocation implements Serializable, Cloneable
     return res.getBearing();
   }
 
-
+  /** create a new point that is this point rotated by set radians 
+   * about the supplied axis
+   * @param pOrigin centre of rotation
+   * @param brg angle rotated through (radians)
+   * @return new location
+   */
+	final public WorldLocation rotatePoint(
+			final WorldLocation pOrigin, double brg)
+	{
+		double resLong = pOrigin.getLong()
+				+ (Math.cos((brg)) * (this.getLong() - pOrigin.getLong()) - Math
+						.sin(brg)
+						* (this.getLat() - pOrigin.getLat()));
+		double resLat = pOrigin.getLat()
+				+ (Math.sin((brg)) * (this.getLong() - pOrigin.getLong()) + Math
+						.cos(brg)
+						* (this.getLat() - pOrigin.getLat()));
+		WorldLocation res = new WorldLocation(resLat, resLong, 0d);
+		return res;
+	}
+	
   /**
    * note that ADD returns a new object, this
    * remains constant
