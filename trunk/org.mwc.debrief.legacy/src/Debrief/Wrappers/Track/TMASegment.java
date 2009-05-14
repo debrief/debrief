@@ -446,12 +446,6 @@ public class TMASegment extends TrackSegment
 			{
 				// draw that line
 				dest.drawLine(lastPoint.x, lastPoint.y, thisPoint.x, thisPoint.y);
-
-				// are we at the start of the line?
-				if (lastButOne == null)
-				{
-					drawMyStalk(dest, lastPoint, thisPoint, true);
-				}
 			}
 
 			lastButOne = lastPoint;
@@ -460,10 +454,6 @@ public class TMASegment extends TrackSegment
 			// also draw in a marker for this point
 			dest.drawRect(lastPoint.x - 1, lastPoint.y - 1, 3, 3);
 		}
-
-		// lastly 'plot on' from the last points
-		drawMyStalk(dest, lastPoint, lastButOne, false);
-
 	}
 
 	/**

@@ -194,7 +194,7 @@ public class DragFeature extends CoreDragAction
 		/**
 		 * the layer to update when dragging is complete
 		 */
-		private Layer _parentLayer;
+		protected Layer _parentLayer;
 
 		private WorldLocation _lastLocation;
 

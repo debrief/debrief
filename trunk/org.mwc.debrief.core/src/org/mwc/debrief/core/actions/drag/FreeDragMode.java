@@ -130,9 +130,9 @@ public class FreeDragMode extends DragMode
 			DraggableItem lastEnd = new RotateOperation(cursorLoc, first
 					.getFixLocation(), seg);
 
-			currentNearest.checkMe(firstEnd, firstDist, null, parentLayer);
-			currentNearest.checkMe(lastEnd, lastDist, null, parentLayer);
-			currentNearest.checkMe(centreEnd, centreDist, null, parentLayer);
+			currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
+			currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
+			currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
 
 		}
 	}

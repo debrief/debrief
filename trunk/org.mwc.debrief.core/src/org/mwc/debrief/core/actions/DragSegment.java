@@ -103,7 +103,7 @@ public class DragSegment extends DragFeature
 			super.doMouseDrag(pt, JITTER, theLayers, theCanvas);
 
 			// cool, is it a track that we've just dragged?
-			if (_hoverTarget instanceof TrackWrapper)
+			if (_parentLayer instanceof TrackWrapper)
 			{
 				// if the current editor is a track data provider,
 				// tell it that we've shifted
@@ -117,7 +117,7 @@ public class DragSegment extends DragFeature
 				if (dataMgr != null)
 				{
 					{
-						dataMgr.fireTrackShift((TrackWrapper) _hoverTarget);
+						dataMgr.fireTrackShift((TrackWrapper) _parentLayer);
 					}
 				}
 			}
