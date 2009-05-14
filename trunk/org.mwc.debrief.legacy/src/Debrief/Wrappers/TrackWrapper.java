@@ -2466,7 +2466,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// ok, is this our first location?
 							if (tmaLastLoc == null)
 							{
-								tmaLastLoc = new WorldLocation(seg.getOrigin());
+								tmaLastLoc = new WorldLocation(seg.getTrackStart());
 								lastLocation = tmaLastLoc;
 							}
 							else

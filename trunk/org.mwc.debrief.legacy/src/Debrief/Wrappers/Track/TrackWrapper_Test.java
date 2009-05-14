@@ -7,6 +7,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.junit.After;
@@ -1024,6 +1025,47 @@ public class TrackWrapper_Test
 				ctr++;
 		}
 		return ctr;
+	}
+
+	/**
+	 * .
+	 */
+	@Test
+	public void testTMASegmentRotate()
+	{
+		FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
+		FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
+		WorldVector vector = new WorldVector(0, 1, 0);
+		TMASegment ts = new TMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
+			private static final long serialVersionUID = 1L;
+			public WorldLocation getTrackStart()
+			{
+				return new WorldLocation(0,1,0);
+			}};
+		ts.addFix(f1);
+		ts.addFix(f2);
+		
+		Iterator<Editable> iter = ts.getData().iterator();
+		iter.next();
+		FixWrapper farEnd = (FixWrapper) iter.next();
+		WorldLocation origin  = farEnd.getLocation();
+		double brg = MWC.Algorithms.Conversions.Degs2Rads(-90);
+		ts.rotate(brg, origin);
+		
+		// check we're on the new course
+		assertEquals("at new offset bearing", -90, ts.getOffsetBearing(), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("on new course", 0, ts.getCourse(), 0.001);
+		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
+		
+	  // ok, try to turn back!
+		ts.rotate(-brg, origin);
+		
+		// check we're on the new course
+		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("on new course", -90, ts.getCourse(), 0.001);
+		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
 	}
 
 }

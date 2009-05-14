@@ -153,20 +153,7 @@ public class FreeDragMode extends DragMode
 	 * Function
 	 */
 
-	public static WorldLocation RotatePoint(WorldLocation pPoint,
-			WorldLocation pOrigin, double brg)
-	{
-		double resLong = pOrigin.getLong()
-				+ (Math.cos((brg)) * (pPoint.getLong() - pOrigin.getLong()) - Math
-						.sin(brg)
-						* (pPoint.getLat() - pOrigin.getLat()));
-		double resLat = pOrigin.getLat()
-				+ (Math.sin((brg)) * (pPoint.getLong() - pOrigin.getLong()) + Math
-						.cos(brg)
-						* (pPoint.getLat() - pOrigin.getLat()));
-		WorldLocation res = new WorldLocation(resLat, resLong, 0d);
-		return res;
-	}
+
 
 	public static class DragOperation implements DraggableItem, IconProvider
 	{
@@ -254,35 +241,12 @@ public class FreeDragMode extends DragMode
 			// undo the previous turn
 			if (lastRotate != null)
 			{
-				rotateSegment(_segment, -lastRotate);
+				_segment.rotate(-lastRotate, _origin);
 			}
 
-			rotateSegment(_segment, brg);
+			_segment.rotate(brg, _origin);
 			// and remember it
 			lastRotate = new Double(brg);
-		}
-
-		private void rotateSegment(final TrackSegment seg, double brg)
-		{
-			// add this vector to all my points.
-			Collection<Editable> items = seg.getData();
-			for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
-			{
-				FixWrapper thisFix = (FixWrapper) iterator.next();
-
-				// is this us?
-				if (thisFix.getLocation() == _origin)
-				{
-					// ignore, it's the origin
-				}
-				else
-				{
-
-					WorldLocation newLoc = RotatePoint(thisFix.getLocation(), _origin,
-							brg);
-					thisFix.setFixLocation(newLoc);
-				}
-			}
 		}
 
 		public Cursor getHotspotCursor()
