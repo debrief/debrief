@@ -45,9 +45,10 @@ public class DragSegment extends DragFeature
 	public static class DragMode extends Action implements
 			DragFeature.DragOperation
 	{
-		public DragMode(String title)
+		public DragMode(String title, String tip)
 		{
 			super(title, IAction.AS_RADIO_BUTTON);
+			this.setToolTipText(tip);
 		}
 
 		public void apply(DraggableItem item, WorldVector offset)
@@ -145,12 +146,12 @@ public class DragSegment extends DragFeature
 		{
 			_dragModes = new Vector<Action>();
 			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode(
-					"[]");
+					"Whole", "Translate whole track");
 			org.mwc.debrief.core.actions.DragSegment.DragMode keepCourse = new FreeDragMode();
 			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new DragMode(
-					"spd");
+					"spd", "Vary course and speed of TMA solution");
 			org.mwc.debrief.core.actions.DragSegment.DragMode keepRange = new DragMode(
-					"rng");
+					"rng", "Vary speed, not course of TMA solution");
 
 			_dragModes.add(keepCourse);
 			_dragModes.add(keepSpeed);

@@ -30,7 +30,7 @@ public class FreeDragMode extends DragMode
 
 	public FreeDragMode()
 	{
-		super("free");
+		super("Speed=", "Vary course, maintain speed of TMA solution");
 	}
 	
 	public Cursor getHotspotCursor()
