@@ -23,6 +23,7 @@ import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.drag.FreeDragMode;
+import org.mwc.debrief.core.actions.drag.ShearDragMode;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
@@ -148,8 +149,7 @@ public class DragSegment extends DragFeature
 			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode(
 					"Whole", "Translate whole track");
 			org.mwc.debrief.core.actions.DragSegment.DragMode keepCourse = new FreeDragMode();
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new DragMode(
-					"spd", "Vary course and speed of TMA solution");
+			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new ShearDragMode();
 			org.mwc.debrief.core.actions.DragSegment.DragMode keepRange = new DragMode(
 					"rng", "Vary speed, not course of TMA solution");
 
