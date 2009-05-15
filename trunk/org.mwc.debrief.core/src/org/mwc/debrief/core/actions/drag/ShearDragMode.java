@@ -15,7 +15,7 @@ import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class ShearDragMode extends FreeDragMode
+public class ShearDragMode extends RotateDragMode
 {
 
 	

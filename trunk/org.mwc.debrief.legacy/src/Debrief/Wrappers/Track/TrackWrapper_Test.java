@@ -1033,12 +1033,14 @@ public class TrackWrapper_Test
 	@Test
 	public void testTMASegmentRotate()
 	{
+		
+		
 		FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
 		FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
 		WorldVector vector = new WorldVector(0, 1, 0);
 		TMASegment ts = new TMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
 			private static final long serialVersionUID = 1L;
-			public WorldLocation getTrackStart()
+			public WorldLocation getHostLocation()
 			{
 				return new WorldLocation(0,1,0);
 			}};
@@ -1060,6 +1062,46 @@ public class TrackWrapper_Test
 		
 	  // ok, try to turn back!
 		ts.rotate(-brg, origin);
+		
+		// check we're on the new course
+		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("on new course", -90, ts.getCourse(), 0.001);
+		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
+	}
+
+	/**
+	 * .
+	 */
+	@Test
+	public void testTMASegmentStretch()
+	{
+		FixWrapper f1 = createFix(0, 1, 1, 270, 12);
+		FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
+		WorldVector vector = new WorldVector(0, 1, 0);
+		TMASegment ts = new TMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
+			private static final long serialVersionUID = 1L;
+			public WorldLocation getHostLocation()
+			{
+				return new WorldLocation(0,0,0);
+			}};
+		ts.addFix(f1);
+		ts.addFix(f2);
+		
+		Iterator<Editable> iter = ts.getData().iterator();
+		FixWrapper nearEnd = (FixWrapper) iter.next();
+		WorldLocation origin  = nearEnd.getLocation();
+		double rng = 2;
+		ts.stretch(rng, origin);
+		
+		// check we're on the new course
+		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("on new course", 0, ts.getCourse(), 0.001);
+		assertEquals("at new speed", 120, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
+		
+	  // ok, try to turn back!
+		ts.rotate(-rng, origin);
 		
 		// check we're on the new course
 		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);

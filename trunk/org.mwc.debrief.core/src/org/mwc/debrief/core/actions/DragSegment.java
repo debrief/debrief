@@ -22,8 +22,9 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.actions.drag.FreeDragMode;
+import org.mwc.debrief.core.actions.drag.RotateDragMode;
 import org.mwc.debrief.core.actions.drag.ShearDragMode;
+import org.mwc.debrief.core.actions.drag.StretchDragMode;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layer;
@@ -148,14 +149,13 @@ public class DragSegment extends DragFeature
 			_dragModes = new Vector<Action>();
 			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode(
 					"Whole", "Translate whole track");
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepCourse = new FreeDragMode();
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepSpeed = new ShearDragMode();
-			org.mwc.debrief.core.actions.DragSegment.DragMode keepRange = new DragMode(
-					"rng", "Vary speed, not course of TMA solution");
+			org.mwc.debrief.core.actions.DragSegment.DragMode rotate = new RotateDragMode();
+			org.mwc.debrief.core.actions.DragSegment.DragMode shear = new ShearDragMode();
+			org.mwc.debrief.core.actions.DragSegment.DragMode stretch = new StretchDragMode();
 
-			_dragModes.add(keepCourse);
-			_dragModes.add(keepSpeed);
-			_dragModes.add(keepRange);
+			_dragModes.add(rotate);
+			_dragModes.add(shear);
+			_dragModes.add(stretch);
 			_dragModes.add(translate);
 
 			// and initiate the drag

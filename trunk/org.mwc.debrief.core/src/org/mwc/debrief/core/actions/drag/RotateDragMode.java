@@ -25,15 +25,15 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class FreeDragMode extends DragMode
+public class RotateDragMode extends DragMode
 {
 
-	public FreeDragMode()
+	public RotateDragMode()
 	{
-		this("Speed=", "Vary course, maintain speed of TMA solution");
+		this("Rotate", "Vary course, maintain speed of TMA solution");
 	}
-	
-	public FreeDragMode(String title, String toolTip)
+
+	public RotateDragMode(String title, String toolTip)
 	{
 		super(title, toolTip);
 	}
@@ -109,32 +109,51 @@ public class FreeDragMode extends DragMode
 
 			// find the nearest segment
 			final TrackSegment seg = findNearest(track, cursorLoc);
-			final FixWrapper first = (FixWrapper) seg.first();
-			final FixWrapper last = (FixWrapper) seg.last();
-			WorldLocation firstLoc = first.getFixLocation();
-			WorldLocation lastLoc = last.getFixLocation();
-			WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
-			WorldLocation centreLoc = lineBounds.getCentre();
 
-			WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
-			WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
-			WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
+			// see if it's a candidate (we may only want TMASegments)
+			if (isAcceptable(seg))
+			{
+				final FixWrapper first = (FixWrapper) seg.first();
+				final FixWrapper last = (FixWrapper) seg.last();
+				WorldLocation firstLoc = first.getFixLocation();
+				WorldLocation lastLoc = last.getFixLocation();
+				WorldArea lineBounds = new WorldArea(firstLoc, lastLoc);
+				WorldLocation centreLoc = lineBounds.getCentre();
 
-			DraggableItem centreEnd = new TranslateOperation(seg);
-			DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last);
-			DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first);
+				WorldDistance firstDist = calcDist(firstLoc, cursorLoc);
+				WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
+				WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-			currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
-			currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
-			currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
+				DraggableItem centreEnd = new TranslateOperation(seg);
+				DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last);
+				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first);
+
+				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
+				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
+				currentNearest.checkMe(centreEnd, centreDist, null, thisLayer);
+			}
 		}
 	}
 
-	/** generate an operation for when the end of the line segment is dragged
+	/** whether this type of track is suitable for our operation
 	 * 
-	 * @param cursorLoc where the cursor is
-	 * @param seg the segment that's being dragged
-	 * @param subject which end we're manipulating
+	 * @param seg
+	 * @return
+	 */
+	protected boolean isAcceptable(TrackSegment seg)
+	{
+		return true;
+	}
+
+	/**
+	 * generate an operation for when the end of the line segment is dragged
+	 * 
+	 * @param cursorLoc
+	 *          where the cursor is
+	 * @param seg
+	 *          the segment that's being dragged
+	 * @param subject
+	 *          which end we're manipulating
 	 * @return
 	 */
 	protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
@@ -143,17 +162,18 @@ public class FreeDragMode extends DragMode
 		return new RotateOperation(cursorLoc, subject.getFixLocation(), seg);
 	}
 
-	/** generate an operation for when the centre of the line segment is dragged
+	/**
+	 * generate an operation for when the centre of the line segment is dragged
 	 * 
-	 * @param seg the segment being dragged
+	 * @param seg
+	 *          the segment being dragged
 	 * @return an operation we can use to do this
 	 */
 	protected DraggableItem getCentreOperation(final TrackSegment seg)
 	{
 		return new TranslateOperation(seg);
 	}
-	
-	
+
 	private WorldDistance calcDist(WorldLocation myLoc, WorldLocation cursorLoc)
 	{
 		return new WorldDistance(myLoc.subtract(cursorLoc).getRange(),
@@ -169,8 +189,6 @@ public class FreeDragMode extends DragMode
 	 * (pPoint.X - pOrigin.X) + _ Cos(D2R(Degrees)) * (pPoint.Y - pOrigin.Y) ) End
 	 * Function
 	 */
-
-
 
 	public static class RotateOperation implements DraggableItem, IconProvider
 	{
@@ -229,9 +247,8 @@ public class FreeDragMode extends DragMode
 
 		public Cursor getHotspotCursor()
 		{
-		  return new Cursor(Display.getDefault(), DebriefPlugin
-					.getImageDescriptor("icons/SelectFeatureHitRotate.ico").getImageData(), 4,
-					2);	
+			return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
+					"icons/SelectFeatureHitRotate.ico").getImageData(), 4, 2);
 		}
 	};
 
