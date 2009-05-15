@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.4"?>
+<?pde version="3.5"?>
 
-<product name="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" useFeatures="true">
+<product name="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="Spring 2009" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Xms40m -Xmx256m</vmArgs>
+      <vmArgs>-Xms40m -Xmx256m -Xbootclasspath/a:\jre\lib\ext\j3daudio.jar;jre\lib\ext\j3dcore.jar;jre\lib\ext\j3dutils.jar;jre\lib\ext\vecmath.jar;C:\dev\cmap\org.mwc.asset.legacy\libs\postgis_1.3.5.jar;C:\dev\cmap\org.mwc.asset.legacy\libs\postgresql-8.3-604.jdbc4.jar</vmArgs>
       <vmArgsWin>-Djava.library.path=.;</vmArgsWin>
    </launcherArgs>
 
@@ -46,7 +46,7 @@
       <plugin id="org.eclipse.core.jobs"/>
       <plugin id="org.eclipse.core.resources"/>
       <plugin id="org.eclipse.core.resources.compatibility" fragment="true"/>
-      <plugin id="org.eclipse.core.resources.win32"/>
+      <plugin id="org.eclipse.core.resources.win32" fragment=""/>
       <plugin id="org.eclipse.core.runtime"/>
       <plugin id="org.eclipse.core.runtime.compatibility"/>
       <plugin id="org.eclipse.core.runtime.compatibility.registry" fragment="true"/>
@@ -64,7 +64,7 @@
       <plugin id="org.eclipse.platform"/>
       <plugin id="org.eclipse.swt"/>
       <plugin id="org.eclipse.swt.win32.win32.x86" fragment="true"/>
-      <plugin id="org.eclipse.tomcat"/>
+      <plugin id="org.eclipse.tomcat" fragment=""/>
       <plugin id="org.eclipse.ui"/>
       <plugin id="org.eclipse.ui.cheatsheets"/>
       <plugin id="org.eclipse.ui.forms"/>
@@ -82,7 +82,7 @@
       <plugin id="org.mwc.cmap.core"/>
       <plugin id="org.mwc.cmap.layer_manager"/>
       <plugin id="org.mwc.cmap.legacy"/>
-      <plugin id="org.mwc.cmap.narrative"/>
+      <plugin id="org.mwc.cmap.narrative" fragment=""/>
       <plugin id="org.mwc.cmap.plotViewer"/>
       <plugin id="org.mwc.cmap.static_resources"/>
       <plugin id="org.mwc.cmap.tests"/>
@@ -94,14 +94,16 @@
    </plugins>
 
    <features>
-      <feature id="org.eclipse.rcp" version="3.4.200.R342_v20090122-989JESTEbig-SVaL8UJHcYBr4A63"/>
-      <feature id="org.eclipse.platform" version="3.4.2.R342_v20090122-9I96EiWElHi8lheoJKJIvhM3JfVsYbRrgVIWL"/>
+      <feature id="org.eclipse.rcp" version="3.5.0.v20090423-9VA4FwxFu8XMLVz0Ldz-I7VAU"/>
+      <feature id="org.eclipse.platform" version="3.5.0.v20090423-9hD9G1HFtGfZq3hr3z-N27lx_0OoTX1vOJV"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.0"/>
+      <feature id="org.mwc.asset.help.feature" version="1.0.1"/>
+      <feature id="org.mwc.asset.sample_data.feature" version="1.0.0"/>
       <feature id="org.mwc.asset.ScenarioController2.feature" version="1.0.0"/>
       <feature id="org.mwc.asset.ScenarioPlotter.feature" version="1.0.1"/>
       <feature id="org.mwc.asset.SensorMonitor.feature" version="1.0.0"/>
       <feature id="org.mwc.asset.VesselMonitor.Feature" version="1.0.2"/>
-      <feature id="org.mwc.cmap.feature" version="1.0.73"/>
+      <feature id="org.mwc.cmap.feature" version="1.0.74"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.16"/>
       <feature id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.10"/>
       <feature id="org.mwc.cmap.overview.feature" version="1.0.6"/>
@@ -111,9 +113,8 @@
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.24"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.10"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.11"/>
-      <feature id="org.mwc.debrief.feature" version="1.0.76"/>
-      <feature id="org.eclipse.draw2d" version="3.4.2.v20090218-1145-3317w311_122502441"/>
-      <feature id="org.mwc.asset.sample_data.feature" version="1.0.0"/>
+      <feature id="org.mwc.debrief.feature" version="1.0.78"/>
    </features>
+
 
 </product>

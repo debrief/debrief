@@ -43,6 +43,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 
 	private static final String DETECTION_FORMAT = "data.detect";
 
+	private static final String DEV_PASSWORD = "MISSING";
+
 	/**
 	 * keep track of whether the analyst wants detections recorded
 	 */
@@ -391,6 +393,10 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			createConnection();
 		}
 
+		// still failing?
+		if(_conn == null)
+			return;
+		
 		// get the positions of the participants
 		final Integer[] lst = _myScenario.getListOfParticipants();
 		for (int thisIndex = 0; thisIndex < lst.length; thisIndex++)
@@ -439,8 +445,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	{
 		try
 		{
-			_conn = DriverManager.getConnection("//localhost:5432/GND", "postgres",
-					"4pfonmr");
+			String url = "jdbc:postgresql://86.134.91.5:5432/gnd";
+			_conn = DriverManager.getConnection(url, "dev", DEV_PASSWORD);
 		}
 		catch (SQLException e)
 		{
@@ -512,7 +518,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final class recToFileTest extends
+	public static final class recToDbTest extends
 			ContinuousRecordToFileObserver.RecToFileTest
 	{
 		String _buildDate;
@@ -521,7 +527,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		boolean _positionDetailsWritten;
 		boolean _decisionDetailsWritten;
 
-		public recToFileTest(final String val)
+		public recToDbTest(final String val)
 		{
 			super(val);
 		}
@@ -597,7 +603,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 			cs.step();
 
 			// do lots more steps
-			for (int i = 0; i < 300000; i++)
+			for (int i = 0; i < 3000; i++)
 			{
 				// do a step
 				cs.step();
@@ -653,8 +659,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		
 		try
 		{
-			String url = "jdbc:postgresql://localhost:5432/GND";
-			_conn = DriverManager.getConnection(url, "postgres", "4pfonmr");
+			String url = "jdbc:postgresql://86.134.91.5:5432/gnd";
+			_conn = DriverManager.getConnection(url, "dev", DEV_PASSWORD);
 			
 			// also tell the connection about our new custom data types
 	    ((org.postgresql.PGConnection)_conn).addDataType("geometry",org.postgis.PGgeometry.class);

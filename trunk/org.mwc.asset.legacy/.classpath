@@ -1,15 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="src"/>
-	<classpathentry kind="src" path="schemas"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry kind="lib" path="libs/jaxen-full.jar"/>
-	<classpathentry kind="lib" path="libs/jdom.jar"/>
-	<classpathentry kind="lib" path="libs/parser.jar"/>
-	<classpathentry kind="lib" path="libs/saxpath.jar"/>
-	<classpathentry kind="lib" path="libs/xerces.jar"/>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="src" path="schemas"/>
 	<classpathentry kind="lib" path="libs/postgis_1.3.5.jar"/>
 	<classpathentry kind="lib" path="libs/postgresql-8.3-604.jdbc4.jar"/>
+	<classpathentry kind="lib" path="libs/jdom.jar"/>
+	<classpathentry kind="lib" path="libs/jaxen-full.jar"/>
+	<classpathentry kind="lib" path="libs/saxpath.jar"/>
+	<classpathentry kind="lib" path="libs/xerces.jar"/>
+	<classpathentry kind="lib" path="libs/parser.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

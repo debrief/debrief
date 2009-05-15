@@ -19,3 +19,4 @@ Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.asset.core,
  org.mwc.asset.core.property_support
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: .
