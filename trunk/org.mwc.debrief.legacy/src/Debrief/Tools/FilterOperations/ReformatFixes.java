@@ -75,27 +75,35 @@ package Debrief.Tools.FilterOperations;
 // Initial revision
 //
 
-import Debrief.Tools.Tote.*;
-
-import java.util.*;
-import java.lang.reflect.Method;
-import java.lang.reflect.InvocationTargetException;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
 import java.beans.PropertyEditorManager;
+import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Layers;
+import javax.swing.JOptionPane;
+
+import Debrief.Tools.Tote.WatchableList;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
-import MWC.GUI.Shapes.PlainShape;
-import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.ColorPropertyEditor;
-import MWC.TacticalData.Fix;
-import MWC.GenericData.WorldLocation;
+import MWC.GUI.Shapes.CircleShape;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
-import Debrief.Wrappers.*;
-
-import javax.swing.*;
+import MWC.GenericData.WorldLocation;
+import MWC.TacticalData.Fix;
 
 /**************************************************************
  * Class which lets user reformat a series of positions in the Track/Time toolbox.
@@ -796,32 +804,6 @@ public final class ReformatFixes implements FilterOperation
     public String toString()
     {
       return _propertyName;
-    }
-
-    /** update the value
-     *
-     * @param val the new value for this property
-     */
-    public void updateTo(Object val)
-    {
-      Object[] args = {val};
-
-      try
-      {
-        _setter.invoke(_object, args);
-      }
-      catch(IllegalAccessException e)
-      {
-        e.printStackTrace();
-      }
-      catch(IllegalArgumentException e)
-      {
-        e.printStackTrace();
-      }
-      catch(InvocationTargetException e)
-      {
-        e.printStackTrace();
-      }
     }
   }
 

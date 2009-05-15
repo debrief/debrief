@@ -184,9 +184,6 @@ public class DragSegment extends DragFeature
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
 			page.showView(CorePlugin.STACKED_DOTS);
-
-			System.err.println("run mode is:" + _currentDragMode.getText());
-
 		}
 		catch (PartInitException e)
 		{

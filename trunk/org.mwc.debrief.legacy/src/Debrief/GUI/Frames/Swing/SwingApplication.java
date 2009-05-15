@@ -199,15 +199,41 @@
 package Debrief.GUI.Frames.Swing;
 
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Cursor;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MenuShortcut;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.WindowAdapter;
+import java.util.Iterator;
+import java.util.TreeMap;
 
-import javax.swing.*;
-import javax.swing.border.*;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JDesktopPane;
+import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.KeyStroke;
+import javax.swing.ToolTipManager;
+import javax.swing.border.BevelBorder;
+import javax.swing.border.TitledBorder;
 
-import Debrief.GUI.Frames.*;
-import MWC.GUI.*;
+import Debrief.GUI.Frames.Application;
+import Debrief.GUI.Frames.Session;
+import MWC.GUI.Tool;
+import MWC.GUI.Toolbar;
 import MWC.GUI.Tools.Swing.SwingMenuItem;
 
 public final class SwingApplication extends Application

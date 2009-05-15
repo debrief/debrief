@@ -16,6 +16,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 	/**
 	 * @param layout
 	 */
+	@SuppressWarnings("deprecation")
 	public void createInitialLayout(IPageLayout layout)
 	{
 		// Get the editor area.

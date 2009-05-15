@@ -17,6 +17,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -180,9 +181,9 @@ public class TMASegment extends TrackSegment
 	 */
 	public void stretch(double rngDegs, final WorldLocation origin)
 	{
-		// make it always +ve, we'll just overwrite ourselves anyway		
+		// make it always +ve, we'll just overwrite ourselves anyway
 		rngDegs = Math.abs(rngDegs);
-		
+
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
 		FixWrapper first = (FixWrapper) this.getData().iterator().next();
@@ -190,7 +191,6 @@ public class TMASegment extends TrackSegment
 		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our speed
-
 		}
 		else
 		{
@@ -232,7 +232,10 @@ public class TMASegment extends TrackSegment
 
 		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
 		this.setSpeed(newSpeed);
-
+		
+		// tell the segment it's being stretched
+		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts]";
+		
 	}
 
 	@Override
@@ -281,6 +284,13 @@ public class TMASegment extends TrackSegment
 			this.setCourse(MWC.Algorithms.Conversions.Rads2Degs(vec.getBearing()));
 
 		}
+
+		// tell the segment it's being stretched
+		int newCourse = (int) getCourse();
+		if (newCourse < 0)
+			newCourse += 360;
+		_dragMsg = "[" + newCourse + "\u00B0]";
+
 	}
 
 	/**
@@ -467,6 +477,13 @@ public class TMASegment extends TrackSegment
 		return _speed;
 	}
 
+	/**
+	 * message that we plot 1/2 way along segment when it's being stretched or
+	 * rotated
+	 * 
+	 */
+	private String _dragMsg;
+
 	@Override
 	public void paint(CanvasType dest)
 	{
@@ -476,6 +493,10 @@ public class TMASegment extends TrackSegment
 		Point lastPoint = null;
 		WorldLocation tmaLastLoc = null;
 		long tmaLastDTG = 0;
+
+		// remember the ends, so we can plot a point 1/2 way along them
+		WorldLocation firstEnd = null;
+		WorldLocation lastEnd = null;
 
 		for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
 		{
@@ -487,6 +508,7 @@ public class TMASegment extends TrackSegment
 			if (tmaLastLoc == null)
 			{
 				tmaLastLoc = new WorldLocation(getTrackStart());
+				firstEnd = new WorldLocation(tmaLastLoc);
 			}
 			else
 			{
@@ -495,6 +517,8 @@ public class TMASegment extends TrackSegment
 				WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(), thisF
 						.getCourse());
 				tmaLastLoc.addToMe(thisVec);
+
+				lastEnd = new WorldLocation(tmaLastLoc);
 			}
 
 			// dump the location into the fix
@@ -516,6 +540,16 @@ public class TMASegment extends TrackSegment
 
 			// also draw in a marker for this point
 			dest.drawRect(lastPoint.x - 1, lastPoint.y - 1, 3, 3);
+		}
+
+		// ok, plot the 1/2 way message
+		if (_dragMsg != null)
+		{
+			WorldArea area = new WorldArea(firstEnd, lastEnd);
+			WorldLocation centre = area.getCentre();
+			Point pt = dest.toScreen(centre);
+			dest.setColor(java.awt.Color.red);
+			dest.drawText(_dragMsg, pt.x, pt.y + 15);
 		}
 	}
 
@@ -638,6 +672,9 @@ public class TMASegment extends TrackSegment
 		tmpOrigin.addToMe(vector);
 
 		_offset = tmpOrigin.subtract(getTrackStart());
+		
+		// clear the drag message, there's nothing to show message
+		_dragMsg = null;
 	}
 
 }

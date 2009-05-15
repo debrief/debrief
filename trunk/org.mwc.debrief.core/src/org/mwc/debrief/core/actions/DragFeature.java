@@ -488,6 +488,7 @@ public class DragFeature extends CoreDragAction
 
 					public void drawText(String theStr, int x, int y)
 					{
+						super.drawText(theStr, x, y);
 					}
 
 				};

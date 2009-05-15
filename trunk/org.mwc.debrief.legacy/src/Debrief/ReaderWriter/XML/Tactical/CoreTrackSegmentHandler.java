@@ -28,7 +28,6 @@ abstract public class CoreTrackSegmentHandler extends
 	public static final String NAME = "Name";
 
 	private Vector<FixWrapper> _fixes;
-	private boolean _relativeMode = false;
 	private boolean _visible;
 	private String _name;
 

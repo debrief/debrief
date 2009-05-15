@@ -49,6 +49,7 @@ public class StretchDragMode extends RotateDragMode
 			
 			// and remember it
 			lastRange = new Double(rng);
+			
 		}
 	
 		public Cursor getHotspotCursor()

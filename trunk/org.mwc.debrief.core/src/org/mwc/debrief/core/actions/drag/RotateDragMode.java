@@ -243,6 +243,7 @@ public class RotateDragMode extends DragMode
 			_segment.rotate(brg, _origin);
 			// and remember it
 			lastRotate = new Double(brg);
+					
 		}
 
 		public Cursor getHotspotCursor()
