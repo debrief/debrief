@@ -655,7 +655,8 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 		}
 
 		// store the scenario name, so we can create our exercuse
-		_scenarioName = scenario.getName() + " ran on:" + new Date().toGMTString();
+		_scenarioName = scenario.getName() + " ran on:" + 
+		MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(new Date().getTime()); 
 		
 		try
 		{
