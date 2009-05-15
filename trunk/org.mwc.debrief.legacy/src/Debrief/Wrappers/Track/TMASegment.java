@@ -169,7 +169,7 @@ public class TMASegment extends TrackSegment
 		// create the points
 		createPointsFrom(observations);
 	}
-	
+
 	/**
 	 * stretch this whole track to the supplied distance
 	 * 
@@ -178,8 +178,11 @@ public class TMASegment extends TrackSegment
 	 * @param origin
 	 *          origin of stretch, probably one end of the track
 	 */
-	public void stretch(final double rngDegs, final WorldLocation origin)
+	public void stretch(double rngDegs, final WorldLocation origin)
 	{
+		// make it always +ve, we'll just overwrite ourselves anyway		
+		rngDegs = Math.abs(rngDegs);
+		
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
 		FixWrapper first = (FixWrapper) this.getData().iterator().next();
@@ -187,53 +190,50 @@ public class TMASegment extends TrackSegment
 		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our speed
-			
-			// how long do we have for the travel?
-			long periodMillis = this.endDTG().getDate().getTime() - this.startDTG().getDate().getTime();
-			
-			// what's that in hours?
-			double periodHours = periodMillis / 1000d / 60d / 60d;
-			
-			// what's distance in minutes?
-			double distMins = rngDegs * 60;
-			
-			// how far must we go to sort this
-			double spdKts = distMins / periodHours;
-			
-			WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
-			this.setSpeed(newSpeed);
+
 		}
 		else
 		{
-//			// right, we've got to shift the start point to the relevant location,
-//			// and fix the bearing
-//
-//			// start with a recalculated origin
-//			WorldLocation hostReference = getHostLocation();
-//			WorldLocation startPoint = hostReference.add(_offset);
-//
-//			// rotate the origin about the far end
-//			WorldLocation newStart = startPoint.rotatePoint(origin, -brg);
-//
-//			// find out the offset from the origin
-//			WorldVector offset = newStart.subtract(hostReference);
-//			
-//			// update the offset to the new start location
-//			this.setOffsetBearing(MWC.Algorithms.Conversions.Rads2Degs(offset
-//					.getBearing()));
-//			this.setOffsetRange(new WorldDistance(offset.getRange(),
-//					WorldDistance.DEGS));
-//
-//			// what's the course from the new start to the origin?
-//			WorldVector vec = origin.subtract(newStart);
-//			
-//			// update the course
-//			this.setCourse(MWC.Algorithms.Conversions.Rads2Degs(vec.getBearing()));
+			// right, we've got to shift the start point to the relevant location,
+			// and fix the bearing
 
+			// calculate a new start point
+			WorldVector thisLeg = getTrackStart().subtract(origin);
+
+			// now change the distance
+			WorldVector newLeg = new WorldVector(thisLeg.getBearing(), rngDegs,
+					thisLeg.getDepth());
+
+			// calculate the new start point
+			WorldLocation newStart = origin.add(newLeg);
+
+			// find out the offset from the origin
+			WorldVector offset = newStart.subtract(getHostLocation());
+
+			// update the offset to the new start location
+			this.setOffsetBearing(MWC.Algorithms.Conversions.Rads2Degs(offset
+					.getBearing()));
+			this.setOffsetRange(new WorldDistance(offset.getRange(),
+					WorldDistance.DEGS));
 		}
 
+		// how long do we have for the travel?
+		long periodMillis = this.endDTG().getDate().getTime()
+				- this.startDTG().getDate().getTime();
+
+		// what's that in hours?
+		double periodHours = periodMillis / 1000d / 60d / 60d;
+
+		// what's distance in minutes?
+		double distMins = rngDegs * 60;
+
+		// how far must we go to sort this
+		double spdKts = distMins / periodHours;
+
+		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
+		this.setSpeed(newSpeed);
+
 	}
-	
 
 	@Override
 	public void rotate(double brg, final WorldLocation origin)
@@ -267,7 +267,7 @@ public class TMASegment extends TrackSegment
 
 			// find out the offset from the origin
 			WorldVector offset = newStart.subtract(hostReference);
-			
+
 			// update the offset to the new start location
 			this.setOffsetBearing(MWC.Algorithms.Conversions.Rads2Degs(offset
 					.getBearing()));
@@ -276,7 +276,7 @@ public class TMASegment extends TrackSegment
 
 			// what's the course from the new start to the origin?
 			WorldVector vec = origin.subtract(newStart);
-			
+
 			// update the course
 			this.setCourse(MWC.Algorithms.Conversions.Rads2Degs(vec.getBearing()));
 

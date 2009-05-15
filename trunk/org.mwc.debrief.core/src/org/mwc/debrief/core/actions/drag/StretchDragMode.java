@@ -17,14 +17,12 @@ public class StretchDragMode extends RotateDragMode
 	
 	public static class StretchOperation extends RotateOperation
 	{
-		private double _originalDistDegs;
 		private Double lastRange;
 
 		public StretchOperation(WorldLocation cursorLoc, WorldLocation origin,
 				TMASegment segment)
 		{
 			super(cursorLoc, origin, segment);
-			_originalDistDegs = cursorLoc.subtract(_origin).getRange();
 		}
 
 		public void shift(WorldVector vector)
