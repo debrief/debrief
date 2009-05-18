@@ -55,7 +55,7 @@ public class StretchDragMode extends RotateDragMode
 		public Cursor getHotspotCursor()
 		{
 		  return new Cursor(Display.getDefault(), DebriefPlugin
-					.getImageDescriptor("icons/SelectFeatureHitShear.ico").getImageData(), 4,
+					.getImageDescriptor("icons/SelectFeatureHitStretch.ico").getImageData(), 4,
 					2);	
 		}
 	}

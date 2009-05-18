@@ -153,10 +153,10 @@ public class DragSegment extends DragFeature
 			org.mwc.debrief.core.actions.DragSegment.DragMode shear = new ShearDragMode();
 			org.mwc.debrief.core.actions.DragSegment.DragMode stretch = new StretchDragMode();
 
-			_dragModes.add(rotate);
-			_dragModes.add(shear);
-			_dragModes.add(stretch);
 			_dragModes.add(translate);
+			_dragModes.add(rotate);
+			_dragModes.add(stretch);
+			_dragModes.add(shear);
 
 			// and initiate the drag
 			translate.setChecked(true);

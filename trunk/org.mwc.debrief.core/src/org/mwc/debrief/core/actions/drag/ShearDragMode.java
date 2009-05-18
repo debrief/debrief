@@ -1,16 +1,12 @@
 package org.mwc.debrief.core.actions.drag;
 
-import java.awt.Point;
-
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.core.DebriefPlugin;
-import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.Track.TMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Layer;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -19,39 +15,15 @@ public class ShearDragMode extends RotateDragMode
 {
 
 	
-	public static class ShearOperation implements DraggableItem, IconProvider
+	public static class ShearOperation  extends RotateOperation
 	{
-		WorldLocation workingLoc;
-		double originalBearing;
-		WorldLocation _origin;
-		Double lastRotate = null;
-		TrackSegment _segment;
-	
+
 		public ShearOperation(WorldLocation cursorLoc, WorldLocation origin,
-				TrackSegment segment)
+				TMASegment segment)
 		{
-			workingLoc = cursorLoc;
-			_origin = origin;
-			originalBearing = cursorLoc.subtract(_origin).getBearing();
-			_segment = segment;
-	
+			super(cursorLoc, origin, segment);
 		}
-	
-		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-				LocationConstruct currentNearest, Layer parentLayer)
-		{
-		}
-	
-		public String getName()
-		{
-			return "end point";
-		}
-	
-		public void paint(CanvasType dest)
-		{
-			_segment.paint(dest);
-		}
-	
+
 		public void shift(WorldVector vector)
 		{
 			// find out where the cursor currently is
@@ -62,14 +34,22 @@ public class ShearDragMode extends RotateDragMode
 	
 			// work out the vector (bearing) from the start
 			double brg = originalBearing - thisVector.getBearing();
-	
+			
+			// work out the distance from the start
+			double rng =  thisVector.getRange(); //- _originalDistDegs;
+			
+			TMASegment seg = (TMASegment) _segment;
+		
 			// undo the previous turn
 			if (lastRotate != null)
 			{
-				_segment.rotate(-lastRotate, _origin);
+				seg.stretch(-rng, _origin);
+				seg.rotate(-lastRotate, _origin);
 			}
 	
-			_segment.rotate(brg, _origin);
+			seg.rotate(brg, _origin);
+			seg.stretch(rng, _origin);
+			
 			// and remember it
 			lastRotate = new Double(brg);
 		}
@@ -91,9 +71,13 @@ public class ShearDragMode extends RotateDragMode
 	protected DraggableItem getEndOperation(WorldLocation cursorLoc,
 			TrackSegment seg, FixWrapper subject)
 	{
-		return new ShearOperation(cursorLoc, subject.getFixLocation(), seg);
+		return new ShearOperation(cursorLoc, subject.getFixLocation(), (TMASegment) seg);
 	}
 	
-	
+	@Override
+	protected boolean isAcceptable(TrackSegment seg)
+	{
+		return (seg instanceof TMASegment);
+	}		
 	
 }
