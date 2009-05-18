@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot Created="Mon May 18 15:42:22 BST 2009" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Mon May 11 14:35:44 BST 2009"/>
+<session>
+<layers>
+<track InterpolatePoints="false" LineThickness="2" Name="New_SSK" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<colour Value="BLUE"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<TrackSegment Name="Positions" PlotRelative="false" Visible="true">
+<fix Course="165.700" Dtg="700103 030425" Label="0304" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2033722" Long="51.8349722"/>
+</centre>
+</fix>
+<fix Course="150.200" Dtg="700103 030525" Label="0305" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2023528" Long="51.8354306"/>
+</centre>
+</fix>
+<fix Course="167.300" Dtg="700103 030625" Label="0306" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2012250" Long="51.8359167"/>
+</centre>
+</fix>
+<fix Course="185.800" Dtg="700103 030725" Label="0307" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.800" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1999194" Long="51.8360000"/>
+</centre>
+</fix>
+<fix Course="205.900" Dtg="700103 030825" Label="0308" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.200" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1985528" Long="51.8355583"/>
+</centre>
+</fix>
+<fix Course="227.600" Dtg="700103 030925" Label="0309" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.600" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1973278" Long="51.8345333"/>
+</centre>
+</fix>
+<fix Course="250.800" Dtg="700103 031025" Label="0310" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1964889" Long="51.8329556"/>
+</centre>
+</fix>
+<fix Course="266.900" Dtg="700103 031125" Label="0311" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1962417" Long="51.8310222"/>
+</centre>
+</fix>
+<fix Course="271.600" Dtg="700103 031225" Label="0312" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.800" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1962833" Long="51.8289417"/>
+</centre>
+</fix>
+</TrackSegment>
+</track>
+<track InterpolatePoints="false" LineThickness="2" Name="TMA_1505" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
+<colour Value="RED"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<TMASegment CourseDegs="-79.088" HostTrack="New_SSK" Name="Positions" Visible="true">
+<fix Course="-79.088" Dtg="700103 030525" Label="0305" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="42.320" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2732529" Long="51.9504510"/>
+</centre>
+</fix>
+<fix Course="-79.088" Dtg="700103 030655" Label="0306" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="42.320" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2765908" Long="51.9311414"/>
+</centre>
+</fix>
+<fix Course="-79.088" Dtg="700103 030725" Label="0307" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="42.320" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2777035" Long="51.9247048"/>
+</centre>
+</fix>
+<fix Course="-79.088" Dtg="700103 030825" Label="0308" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="42.320" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2799287" Long="51.9118313"/>
+</centre>
+</fix>
+<fix Course="-79.088" Dtg="700103 030925" Label="0309" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="42.320" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2821540" Long="51.8989576"/>
+</centre>
+</fix>
+<fix Course="-79.088" Dtg="700103 031025" Label="0310" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="42.320" SymbolShowing="true" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2843792" Long="51.8860837"/>
+</centre>
+</fix>
+<Speed Units="kts" Value="42.320"/>
+<Offset BearingDegs="55.502">
+<Range Units="degs" Value="0.125"/>
+</Offset>
+</TMASegment>
+</track>
+</layers>
+<projection Border="1.100" Relative="false" Type="Flat">
+<tl>
+<shortLocation Depth="0.000" Lat="26.3049179" Long="51.8796448"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="26.2557960" Long="51.9657124"/>
+</br>
+</projection>
+<gui>
+<tote/>
+<component Type="Stepper">
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="Arcs" Value="180"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="CurrentTime" Value="700103 031000"/>
+<property Name="NumRings" Value="3"/>
+<property Name="PointSize" Value="5"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="Radius" Value="3000.000"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="DateFormat" Value="ddHHmm"/>
+</component>
+<Background>
+<colour Value="BLACK"/>
+</Background>
+</gui>
+</session>
+</plot>
