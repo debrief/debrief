@@ -18,6 +18,8 @@ public class ShearDragMode extends RotateDragMode
 	public static class ShearOperation  extends RotateOperation
 	{
 
+		private WorldLocation _lastLoc;
+
 		public ShearOperation(WorldLocation cursorLoc, WorldLocation origin,
 				TMASegment segment)
 		{
@@ -28,30 +30,19 @@ public class ShearDragMode extends RotateDragMode
 		{
 			// find out where the cursor currently is
 			workingLoc.addToMe(vector);
-	
-			// what's the bearing from the origin
-			WorldVector thisVector = workingLoc.subtract(_origin);
-	
-			// work out the vector (bearing) from the start
-			double brg = originalBearing - thisVector.getBearing();
-			
-			// work out the distance from the start
-			double rng =  thisVector.getRange(); //- _originalDistDegs;
 			
 			TMASegment seg = (TMASegment) _segment;
 		
 			// undo the previous turn
-			if (lastRotate != null)
+			if (_lastLoc != null)
 			{
-				seg.stretch(-rng, _origin);
-				seg.rotate(-lastRotate, _origin);
+				seg.shear(_lastLoc, _origin);
 			}
 	
-			seg.rotate(brg, _origin);
-			seg.stretch(rng, _origin);
+			seg.shear(workingLoc, _origin);
 			
 			// and remember it
-			lastRotate = new Double(brg);
+			_lastLoc = new WorldLocation(workingLoc);
 		}
 	
 		public Cursor getHotspotCursor()

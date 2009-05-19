@@ -232,10 +232,10 @@ public class TMASegment extends TrackSegment
 
 		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
 		this.setSpeed(newSpeed);
-		
+
 		// tell the segment it's being stretched
 		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts]";
-		
+
 	}
 
 	@Override
@@ -672,9 +672,81 @@ public class TMASegment extends TrackSegment
 		tmpOrigin.addToMe(vector);
 
 		_offset = tmpOrigin.subtract(getTrackStart());
-		
+
 		// clear the drag message, there's nothing to show message
 		_dragMsg = null;
+	}
+
+	/**
+	 * shear this whole track to the supplied destination
+	 * 
+	 * @param cursor
+	 *          where the user's hovering
+	 * @param origin
+	 *          origin of stretch, probably one end of the track
+	 */
+	public void shear(WorldLocation cursor, final WorldLocation origin)
+	{
+		WorldVector offset = cursor.subtract(origin);
+		double rngDegs = offset.getRange();
+
+		// make it always +ve, we'll just overwrite ourselves anyway
+		rngDegs = Math.abs(rngDegs);
+
+		double newCourse;
+
+		// right - we just stretch about the ends, and we use different
+		// processing depending on which end is being shifted.
+		FixWrapper first = (FixWrapper) this.getData().iterator().next();
+		if (first.getLocation().equals(origin))
+		{
+			// set the new course
+			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
+		}
+		else
+		{
+			// and the course
+			offset = origin.subtract(cursor);
+			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
+
+			// right, we've got to shift the start point to the relevant location,
+			// and fix the bearing
+
+			// find out the offset from the origin
+			WorldVector newOffset = cursor.subtract(getHostLocation());
+
+			// update the offset to the new start location
+			this.setOffsetBearing(MWC.Algorithms.Conversions.Rads2Degs(newOffset
+					.getBearing()));
+			this.setOffsetRange(new WorldDistance(newOffset.getRange(),
+					WorldDistance.DEGS));
+		}
+
+		// how long do we have for the travel?
+		long periodMillis = this.endDTG().getDate().getTime()
+				- this.startDTG().getDate().getTime();
+
+		// what's that in hours?
+		double periodHours = periodMillis / 1000d / 60d / 60d;
+
+		// what's distance in minutes?
+		double distMins = rngDegs * 60;
+
+		// how far must we go to sort this
+		double spdKts = distMins / periodHours;
+
+		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
+		this.setSpeed(newSpeed);
+		this.setCourse(newCourse);
+		
+		// tidy the course
+		while(newCourse < 0)
+			newCourse += 360;
+
+		// tell the segment it's being stretched
+		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts "
+				+ (int) newCourse + "\u00B0]";
+
 	}
 
 }
