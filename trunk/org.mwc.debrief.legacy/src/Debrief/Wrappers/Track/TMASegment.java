@@ -705,7 +705,7 @@ public class TMASegment extends TrackSegment
 		}
 		else
 		{
-			// and the course
+			// reverse the course the course
 			offset = origin.subtract(cursor);
 			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 
