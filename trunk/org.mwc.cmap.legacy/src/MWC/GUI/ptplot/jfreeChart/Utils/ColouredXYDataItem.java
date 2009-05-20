@@ -1,6 +1,6 @@
 package MWC.GUI.ptplot.jfreeChart.Utils;
 
-import com.jrefinery.data.XYDataPair;
+import com.jrefinery.legacy.data.XYDataPair;
 
 import java.awt.*;
 

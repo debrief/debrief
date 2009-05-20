@@ -8,7 +8,7 @@ import java.text.DecimalFormat;
 
 import MWC.GUI.ptplot.jfreeChart.Utils.ModifiedVerticalNumberAxis;
 
-import com.jrefinery.chart.*;
+import com.jrefinery.legacy.chart.*;
 
 public final class CourseFormatter implements formattingOperation, Serializable
 {

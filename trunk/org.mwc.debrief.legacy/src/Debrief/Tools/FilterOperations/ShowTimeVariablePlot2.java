@@ -128,9 +128,9 @@ import MWC.GenericData.HiResDate;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-import com.jrefinery.chart.*;
-import com.jrefinery.chart.tooltips.*;
-import com.jrefinery.data.*;
+import com.jrefinery.legacy.chart.*;
+import com.jrefinery.legacy.chart.tooltips.*;
+import com.jrefinery.legacy.data.*;
 
 public final class ShowTimeVariablePlot2 implements FilterOperation
 {
@@ -1379,7 +1379,7 @@ public final class ShowTimeVariablePlot2 implements FilterOperation
 			}
 		};
 
-		final ValueAxis xAxis = new com.jrefinery.chart.HorizontalDateAxis("time (s)");
+		final ValueAxis xAxis = new com.jrefinery.legacy.chart.HorizontalDateAxis("time (s)");
 		xAxis.setStandardTickUnits(DateAxisEditor.createStandardDateTickUnitsAsTickUnits());
 
 		final NumberAxis yAxis = new VerticalNumberAxis("y axis");

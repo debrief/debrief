@@ -48,16 +48,16 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-import com.jrefinery.chart.ChartPanel;
-import com.jrefinery.chart.HorizontalDateAxis;
-import com.jrefinery.chart.StandardXYItemRenderer;
-import com.jrefinery.chart.XYPlot;
-import com.jrefinery.chart.tooltips.XYToolTipGenerator;
-import com.jrefinery.data.BasicTimeSeries;
-import com.jrefinery.data.FixedMillisecond;
-import com.jrefinery.data.Range;
-import com.jrefinery.data.SeriesException;
-import com.jrefinery.data.TimeSeriesCollection;
+import com.jrefinery.legacy.chart.ChartPanel;
+import com.jrefinery.legacy.chart.HorizontalDateAxis;
+import com.jrefinery.legacy.chart.StandardXYItemRenderer;
+import com.jrefinery.legacy.chart.XYPlot;
+import com.jrefinery.legacy.chart.tooltips.XYToolTipGenerator;
+import com.jrefinery.legacy.data.BasicTimeSeries;
+import com.jrefinery.legacy.data.FixedMillisecond;
+import com.jrefinery.legacy.data.Range;
+import com.jrefinery.legacy.data.SeriesException;
+import com.jrefinery.legacy.data.TimeSeriesCollection;
 
 /**
  * This sample class demonstrates how to plug-in a new workbench view. The view

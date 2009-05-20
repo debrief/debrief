@@ -3,8 +3,8 @@ package MWC.GUI.ptplot.jfreeChart.Utils;
 import MWC.GUI.CanvasType;
 import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
-import com.jrefinery.chart.*;
-import com.jrefinery.data.XYDataset;
+import com.jrefinery.legacy.chart.*;
+import com.jrefinery.legacy.data.XYDataset;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

@@ -13,7 +13,8 @@ import MWC.GUI.Editable;
 import MWC.GUI.StepperListener;
 import MWC.GUI.ptplot.jfreeChart.Utils.ColouredDataItem;
 import MWC.GenericData.HiResDate;
-import com.jrefinery.chart.*;
+
+import com.jrefinery.legacy.chart.*;
 
 import java.awt.*;
 import java.beans.IntrospectionException;
@@ -352,7 +353,7 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
 
       // get the date axis
       ValueAxis va = this.getXYPlot().getDomainAxis();
-      com.jrefinery.chart.HorizontalDateAxis da = (com.jrefinery.chart.HorizontalDateAxis) va;
+      com.jrefinery.legacy.chart.HorizontalDateAxis da = (com.jrefinery.legacy.chart.HorizontalDateAxis) va;
 
       // and set the tick
       da.setTickUnit(_theDateTick.getUnit());
@@ -432,7 +433,7 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
 
       // get the date axis
       ValueAxis va = this.getXYPlot().getDomainAxis();
-      com.jrefinery.chart.HorizontalDateAxis da = (com.jrefinery.chart.HorizontalDateAxis) va;
+      com.jrefinery.legacy.chart.HorizontalDateAxis da = (com.jrefinery.legacy.chart.HorizontalDateAxis) va;
 
       // do rescale
       da.configure();

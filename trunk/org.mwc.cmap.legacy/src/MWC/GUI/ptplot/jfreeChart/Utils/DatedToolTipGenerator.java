@@ -1,7 +1,7 @@
 package MWC.GUI.ptplot.jfreeChart.Utils;
 
-import com.jrefinery.chart.tooltips.StandardXYToolTipGenerator;
-import com.jrefinery.data.XYDataset;
+import com.jrefinery.legacy.chart.tooltips.StandardXYToolTipGenerator;
+import com.jrefinery.legacy.data.XYDataset;
 
 import java.util.Date;
 

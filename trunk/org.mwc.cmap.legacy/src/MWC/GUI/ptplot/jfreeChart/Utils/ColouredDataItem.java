@@ -1,8 +1,8 @@
 package MWC.GUI.ptplot.jfreeChart.Utils;
 
-import com.jrefinery.data.TimeSeriesDataPair;
-import com.jrefinery.data.TimePeriod;
-import com.jrefinery.data.FixedMillisecond;
+import com.jrefinery.legacy.data.FixedMillisecond;
+import com.jrefinery.legacy.data.TimePeriod;
+import com.jrefinery.legacy.data.TimeSeriesDataPair;
 
 import java.awt.*;
 import java.io.Serializable;

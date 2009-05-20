@@ -99,9 +99,9 @@ import MWC.GUI.ptplot.jfreeChart.Utils.*;
 import MWC.GenericData.*;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-import com.jrefinery.chart.*;
-import com.jrefinery.chart.tooltips.XYToolTipGenerator;
-import com.jrefinery.data.*;
+import com.jrefinery.legacy.chart.*;
+import com.jrefinery.legacy.chart.tooltips.XYToolTipGenerator;
+import com.jrefinery.legacy.data.*;
 
 public final class DragTrackEditor extends PropertyEditorSupport implements ActionListener,
   PlainPropertyEditor.EditorUsesChart,

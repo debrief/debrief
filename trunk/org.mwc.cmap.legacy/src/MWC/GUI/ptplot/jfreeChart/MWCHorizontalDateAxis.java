@@ -46,7 +46,7 @@ import MWC.GUI.ptplot.*;
 
 /**
  * A horizontal axis that displays date values.  Used in XY plots.
- * @see com.jrefinery.chart.XYPlot
+ * @see com.jrefinery.legacy.chart.XYPlot
  */
 public class MWCHorizontalDateAxis extends MWCDateAxis implements HorizontalAxis {
 

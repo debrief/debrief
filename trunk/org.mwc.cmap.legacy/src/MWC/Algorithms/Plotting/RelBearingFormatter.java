@@ -7,7 +7,7 @@ import java.io.Serializable;
 
 import MWC.GUI.ptplot.jfreeChart.Utils.ModifiedVerticalNumberAxis;
 
-import com.jrefinery.chart.*;
+import com.jrefinery.legacy.chart.*;
 
 public class RelBearingFormatter implements formattingOperation, Serializable
 {

@@ -4,11 +4,11 @@ import java.awt.*;
 import java.awt.geom.*;
 import java.awt.image.ImageObserver;
 
-import com.jrefinery.chart.*;
-import com.jrefinery.chart.entity.*;
-import com.jrefinery.chart.tooltips.XYToolTipGenerator;
-import com.jrefinery.chart.urls.XYURLGenerator;
-import com.jrefinery.data.*;
+import com.jrefinery.legacy.chart.*;
+import com.jrefinery.legacy.chart.entity.*;
+import com.jrefinery.legacy.chart.tooltips.XYToolTipGenerator;
+import com.jrefinery.legacy.chart.urls.XYURLGenerator;
+import com.jrefinery.legacy.data.*;
 
 /**
  * Created by IntelliJ IDEA.
@@ -77,7 +77,7 @@ public final class ColourStandardXYItemRenderer extends StandardXYItemRenderer
    *
    * @return The paint.
    */
-  protected final Paint getPaint(final com.jrefinery.chart.Plot plot,
+  protected final Paint getPaint(final com.jrefinery.legacy.chart.Plot plot,
                                  final int series,
                                  final int item,
                                  final double x,
@@ -118,7 +118,7 @@ public final class ColourStandardXYItemRenderer extends StandardXYItemRenderer
    * @param y  the y value of the item.
    * @return yes/no
    */
-  protected boolean connectToPrevious(final com.jrefinery.chart.Plot plot, final int series, final int item, final double x, final double y)
+  protected boolean connectToPrevious(final com.jrefinery.legacy.chart.Plot plot, final int series, final int item, final double x, final double y)
   {
     final Dataset data = plot.getDataset();
 

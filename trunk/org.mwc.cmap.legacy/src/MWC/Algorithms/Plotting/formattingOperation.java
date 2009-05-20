@@ -3,7 +3,7 @@
  */
 package MWC.Algorithms.Plotting;
 
-import com.jrefinery.chart.XYPlot;
+import com.jrefinery.legacy.chart.XYPlot;
 
 public interface formattingOperation
 {

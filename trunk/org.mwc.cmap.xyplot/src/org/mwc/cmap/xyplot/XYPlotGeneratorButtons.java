@@ -21,7 +21,7 @@ import MWC.Algorithms.Plotting.*;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
-import com.jrefinery.data.AbstractDataset;
+import com.jrefinery.legacy.data.AbstractDataset;
 
 /**
  * embedded class to generate menu-items for creating tactical plot

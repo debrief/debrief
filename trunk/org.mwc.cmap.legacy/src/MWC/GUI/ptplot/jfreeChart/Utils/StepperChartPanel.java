@@ -3,8 +3,9 @@ package MWC.GUI.ptplot.jfreeChart.Utils;
 import MWC.GUI.CanvasType;
 import MWC.GUI.StepperListener;
 import MWC.GenericData.HiResDate;
-import com.jrefinery.chart.ChartPanel;
-import com.jrefinery.chart.JFreeChart;
+
+import com.jrefinery.legacy.chart.ChartPanel;
+import com.jrefinery.legacy.chart.JFreeChart;
 
 /**
  * *******************************************************************

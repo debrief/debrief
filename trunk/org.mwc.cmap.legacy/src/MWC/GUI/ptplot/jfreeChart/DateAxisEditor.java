@@ -7,8 +7,8 @@
  */
 package MWC.GUI.ptplot.jfreeChart;
 
-import com.jrefinery.chart.TickUnits;
-import com.jrefinery.chart.DateTickUnit;
+import com.jrefinery.legacy.chart.DateTickUnit;
+import com.jrefinery.legacy.chart.TickUnits;
 
 import java.text.SimpleDateFormat;
 import java.util.*;

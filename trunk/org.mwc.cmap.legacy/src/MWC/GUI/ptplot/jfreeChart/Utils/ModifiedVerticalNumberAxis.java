@@ -1,7 +1,7 @@
 package MWC.GUI.ptplot.jfreeChart.Utils;
 
-import com.jrefinery.chart.VerticalNumberAxis;
-import com.jrefinery.chart.Tick;
+import com.jrefinery.legacy.chart.Tick;
+import com.jrefinery.legacy.chart.VerticalNumberAxis;
 
 import java.awt.*;
 import java.awt.geom.Rectangle2D;

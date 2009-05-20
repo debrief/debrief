@@ -29,9 +29,9 @@ import MWC.GUI.ptplot.jfreeChart.Utils.*;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-import com.jrefinery.chart.*;
-import com.jrefinery.chart.tooltips.*;
-import com.jrefinery.data.AbstractDataset;
+import com.jrefinery.legacy.chart.*;
+import com.jrefinery.legacy.chart.tooltips.*;
+import com.jrefinery.legacy.data.AbstractDataset;
 import com.pietjonas.wmfwriter2d.ClipboardCopy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
