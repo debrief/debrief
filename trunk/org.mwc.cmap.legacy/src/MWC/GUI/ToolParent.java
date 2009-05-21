@@ -61,14 +61,15 @@ import MWC.GUI.Tools.*;
  * parent of a tool, mostly providing functionality
  * necessary setting a busy cursor
  */
-public interface ToolParent{
+public interface ToolParent extends ErrorLogger
+{
   public void setCursor(int theCursor);
   public void restoreCursor();
   public void addActionToBuffer(Action theAction);
   public String getProperty(String name);
   public java.util.Map<String, String> getPropertiesLike(String pattern);
   public void setProperty(String name, String value);
-  public void logError(int status, String text, Exception e);
+
   
 	/** Status severity constant (value 0) indicating this status represents the nominal case.
 	 * This constant is also used as the status code representing the nominal case.

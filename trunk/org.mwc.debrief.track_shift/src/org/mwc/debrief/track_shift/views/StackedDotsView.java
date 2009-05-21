@@ -1,13 +1,10 @@
 package org.mwc.debrief.track_shift.views;
 
 import java.awt.BorderLayout;
-import java.awt.Color;
 import java.awt.Frame;
-import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -26,489 +23,30 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListene
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.Algorithms.Conversions;
-import MWC.GUI.Editable;
+import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.ptplot.jfreeChart.DateAxisEditor;
 import MWC.GUI.ptplot.jfreeChart.FormattedJFreeChart;
 import MWC.GUI.ptplot.jfreeChart.Utils.ColourStandardXYItemRenderer;
-import MWC.GUI.ptplot.jfreeChart.Utils.ColouredDataItem;
 import MWC.GUI.ptplot.jfreeChart.Utils.DatedToolTipGenerator;
 import MWC.GUI.ptplot.jfreeChart.Utils.ModifiedVerticalNumberAxis;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldVector;
 
 import com.jrefinery.legacy.chart.ChartPanel;
 import com.jrefinery.legacy.chart.HorizontalDateAxis;
 import com.jrefinery.legacy.chart.StandardXYItemRenderer;
 import com.jrefinery.legacy.chart.XYPlot;
 import com.jrefinery.legacy.chart.tooltips.XYToolTipGenerator;
-import com.jrefinery.legacy.data.BasicTimeSeries;
-import com.jrefinery.legacy.data.FixedMillisecond;
 import com.jrefinery.legacy.data.Range;
-import com.jrefinery.legacy.data.SeriesException;
 import com.jrefinery.legacy.data.TimeSeriesCollection;
 
 /**
- * This sample class demonstrates how to plug-in a new workbench view. The view
- * shows data obtained from the model. The sample creates a dummy model on the
- * fly, but a real implementation would connect to the model available either in
- * this or another plug-in (e.g. the workspace). The view is connected to the
- * model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be
- * presented in the view. Each view can present the same model objects using
- * different labels and icons, if needed. Alternatively, a single label provider
- * can be shared between views in order to ensure that objects of the same type
- * are presented in the same way everywhere.
- * <p>
  */
 
-public class StackedDotsView extends ViewPart
+public class StackedDotsView extends ViewPart implements ErrorLogger
 {
-
-	// ////////////////////////////////////////////////
-	// helper class to provide support to the stacked dots
-	// ////////////////////////////////////////////////
-	public final class StackedDotHelper
-	{
-		// ////////////////////////////////////////////////
-		// class to store combination of sensor & target at same time stamp
-		// ////////////////////////////////////////////////
-		public final class Doublet
-		{
-			private final SensorContactWrapper _sensor;
-
-			private final WorldLocation _targetLocation;
-
-			// ////////////////////////////////////////////////
-			// working variables to help us along.
-			// ////////////////////////////////////////////////
-			private final WorldLocation _workingSensorLocation = new WorldLocation(
-					0.0, 0.0, 0.0);
-
-			private final WorldLocation _workingTargetLocation = new WorldLocation(
-					0.0, 0.0, 0.0);
-
-			// ////////////////////////////////////////////////
-			// constructor
-			// ////////////////////////////////////////////////
-			Doublet(final SensorContactWrapper sensor,
-					final WorldLocation targetLocation)
-			{
-				_sensor = sensor;
-				_targetLocation = targetLocation;
-			}
-
-			/**
-			 * ok find what the current bearing error is for this track
-			 * 
-			 * @param sensorOffset
-			 *          if the sensor track has been dragged
-			 * @param targetOffset
-			 *          if the target track has been dragged
-			 * @return
-			 */
-			public double calculateError(final WorldVector sensorOffset,
-					final WorldVector targetOffset)
-			{
-				// copy our locations
-				_workingSensorLocation.copy(_sensor.getCalculatedOrigin(null));
-				_workingTargetLocation.copy(_targetLocation);
-
-				// apply the offsets
-				if (sensorOffset != null)
-					_workingSensorLocation.addToMe(sensorOffset);
-				if (targetOffset != null)
-					_workingTargetLocation.addToMe(targetOffset);
-
-				// calculate the current bearing
-				final WorldVector error = _workingTargetLocation
-						.subtract(_workingSensorLocation);
-				double thisError = error.getBearing();
-				thisError = Conversions.Rads2Degs(thisError);
-
-				// and calculate the bearing error
-				final double measuredBearing = _sensor.getBearing();
-				thisError = measuredBearing - thisError;
-
-				while (thisError > 180)
-					thisError -= 360.0;
-
-				while (thisError < -180)
-					thisError += 360.0;
-
-				return thisError;
-			}
-
-			/**
-			 * get the colour of this sensor fix
-			 */
-			public Color getColor()
-			{
-				return _sensor.getColor();
-			}
-
-			// ////////////////////////////////////////////////
-			// member methods
-			// ////////////////////////////////////////////////
-			/**
-			 * get the DTG of this contact
-			 * 
-			 * @return the DTG
-			 */
-			public HiResDate getDTG()
-			{
-				return _sensor.getDTG();
-			}
-		}
-
-		/**
-		 * the track being dragged
-		 */
-		private TrackWrapper _primaryTrack;
-
-		/**
-		 * the secondary track we're monitoring
-		 */
-		private TrackWrapper _secondaryTrack;
-
-		/**
-		 * the set of points to watch on the primary track
-		 */
-		private Vector<Doublet> _primaryDoublets;
-
-		// ////////////////////////////////////////////////
-		// CONSTRUCTOR
-		// ////////////////////////////////////////////////
-
-		/**
-		 * the set of points to watch on the secondary track
-		 */
-		private Vector<Doublet> _secondaryDoublets;
-
-		// ////////////////////////////////////////////////
-		// MEMBER METHODS
-		// ////////////////////////////////////////////////
-
-		/**
-		 * constructor - takes a set of layers, within which it identifies the track
-		 * wrappers
-		 * 
-		 * @param theData
-		 *          the set of data to provide stacked dots for
-		 * @param myTrack
-		 *          the track being dragged
-		 */
-		StackedDotHelper()
-		{
-		}
-
-		private Vector<Doublet> getDoublets(final TrackWrapper sensorHost,
-				final TrackWrapper targetTrack)
-		{
-			final Vector<Doublet> res = new Vector<Doublet>(0, 1);
-
-			// ok, cycle through the sensor points on the host track
-			final Enumeration<Editable> iter = sensorHost.elements();
-			while (iter.hasMoreElements())
-			{
-				final Plottable pw = (Plottable) iter.nextElement();
-
-				if (pw.getVisible())
-				{
-					if (pw instanceof SensorWrapper)
-					{
-						final SensorWrapper sw = (SensorWrapper) pw;
-
-						// right, work through the contacts in this sensor
-						final Enumeration<Editable> theContacts = sw.elements();
-						while (theContacts.hasMoreElements())
-						{
-							final SensorContactWrapper scw = (SensorContactWrapper) theContacts
-									.nextElement();
-
-							final boolean thisVis = scw.getVisible();
-							final boolean onlyVis = _onlyVisible.isChecked();
-							if (!onlyVis || (onlyVis && thisVis))
-							{
-
-								final Watchable[] matches = targetTrack.getNearestTo(scw
-										.getDTG());
-								FixWrapper targetFix = null;
-								final int len = matches.length;
-								if (len > 0)
-								{
-									for (int i = 0; i < len; i++)
-									{
-										final Watchable thisOne = matches[i];
-										if (thisOne instanceof FixWrapper)
-										{
-											targetFix = (FixWrapper) thisOne;
-											continue;
-										}
-									}
-								}
-								if (targetFix != null)
-								{
-									// ok. found match. store it
-									final Doublet thisDub = new Doublet(scw, targetFix
-											.getLocation());
-									res.add(thisDub);
-								}
-							} // if this sensor contact is visible
-						} // looping through these sensor contacts
-					} // is this is a sensor wrapper
-				} // if this item is visible
-			} // looping through the items on this track
-
-			return res;
-		}
-
-		/**
-		 * ok, our track has been dragged, calculate the new series of offsets
-		 * 
-		 * @param currentOffset
-		 *          how far the current track has been dragged
-		 * @return the set of data items to plot
-		 */
-		public TimeSeriesCollection getUpdatedSeries(TrackManager tracks)
-		{
-			// ok, find the track wrappers
-			if (_secondaryTrack == null)
-				initialise(tracks, false);
-
-			// did it work?
-			if (_secondaryTrack == null)
-				return null;
-
-			if (_primaryDoublets == null)
-				return null;
-
-			// ok - the tracks have moved. better update the doublets
-			updateDoublets();
-
-			// create the collection of series
-			final TimeSeriesCollection theTimeSeries = new TimeSeriesCollection();
-
-			// produce a dataset for each track
-			final BasicTimeSeries primarySeries = new BasicTimeSeries(_primaryTrack
-					.getName(), FixedMillisecond.class);
-			final BasicTimeSeries secondarySeries = new BasicTimeSeries(
-					_secondaryTrack.getName(), FixedMillisecond.class);
-
-			// ok, run through the points on the primary track
-			Iterator<Doublet> iter = _primaryDoublets.iterator();
-			while (iter.hasNext())
-			{
-				final Doublet thisD = iter.next();
-
-				final Color thisColor = thisD.getColor();
-				final double thisValue = thisD.calculateError(null, null);
-				final HiResDate currentTime = thisD.getDTG();
-
-				// create a new, correctly coloured data item
-				// HI-RES NOT DONE - should provide FixedMicrosecond structure
-				final ColouredDataItem newItem = new ColouredDataItem(
-						new FixedMillisecond(currentTime.getDate().getTime()), thisValue,
-						thisColor, false, null);
-
-				try
-				{
-					// and add it to the series
-					primarySeries.add(newItem);
-				}
-				catch (final SeriesException e)
-				{
-					// hack: we shouldn't be allowing this exception. Look at why we're
-					// getting the same
-					// time period being entered twice for this track.
-
-					// Stop catching the error, load Dave W's holistic approach plot file,
-					// and check the track/fix which is causing the problem.
-
-					// e.printStackTrace(); //To change body of catch statement use File |
-					// Settings | File Templates.
-				}
-
-			}
-
-			// ok, run through the points on the primary track
-			iter = _secondaryDoublets.iterator();
-			while (iter.hasNext())
-			{
-				final Doublet thisD = iter.next();
-
-				final Color thisColor = thisD.getColor();
-				final double thisValue = thisD.calculateError(null, null);
-				final HiResDate currentTime = thisD.getDTG();
-
-				// create a new, correctly coloured data item
-				// HI-RES NOT DONE - should have FixedMicrosecond structure
-				final ColouredDataItem newItem = new ColouredDataItem(
-						new FixedMillisecond(currentTime.getDate().getTime()), thisValue,
-						thisColor, false, null);
-
-				try
-				{
-					// and add it to the series
-					secondarySeries.add(newItem);
-				}
-				catch (final SeriesException e)
-				{
-					CorePlugin
-							.logError(
-									IStatus.WARNING,
-									"Multiple fixes at same DTG when producing stacked dots - prob ignored",
-									null);
-				}
-			}
-
-			// ok, add these new series
-			theTimeSeries.addSeries(primarySeries);
-			theTimeSeries.addSeries(secondarySeries);
-
-			return theTimeSeries;
-		}
-
-		/**
-		 * initialise the data, check we've got sensor data & the correct number of
-		 * visible tracks
-		 * 
-		 * @param showError
-		 *          TODO
-		 */
-		void initialise(TrackManager tracks, boolean showError)
-		{
-
-			// have we been created?
-			if (_holder == null)
-				return;
-
-			// are we visible?
-			if (_holder.isDisposed())
-				return;
-
-			_secondaryTrack = null;
-			_primaryTrack = null;
-
-			// do we have some data?
-			if (tracks == null)
-			{
-				// output error message
-				showError(IStatus.INFO, "Please open a Debrief plot", null);
-				// showMessage("Sorry, a Debrief plot must be selected", showError);
-				return;
-			}
-
-			// check we have a primary track
-			final WatchableList priTrk = tracks.getPrimaryTrack();
-			if (priTrk == null)
-			{
-				showError(IStatus.INFO, "A primary track must be placed on the Tote",
-						null);
-				return;
-			}
-			else
-			{
-				if (!(priTrk instanceof TrackWrapper))
-				{
-					showError(IStatus.INFO, "The primary track must be a vehicle track",
-							null);
-					return;
-				}
-				else
-					_primaryTrack = (TrackWrapper) priTrk;
-			}
-
-			// now the sec track
-			final WatchableList[] secs = tracks.getSecondaryTracks();
-
-			// any?
-			if ((secs == null) || (secs.length == 0))
-			{
-				showError(IStatus.INFO,
-						"A secondary track must be present on the tote", null);
-				return;
-			}
-
-			// too many?
-			if (secs.length > 1)
-			{
-				showError(IStatus.INFO, "Only 1 secondary track may be on the tote",
-						null);
-				return;
-			}
-
-			// correct sort?
-			final WatchableList secTrk = secs[0];
-			if (!(secTrk instanceof TrackWrapper))
-			{
-				showError(IStatus.INFO, "The secondary track must be a vehicle track",
-						null);
-				return;
-			}
-			else
-			{
-				_secondaryTrack = (TrackWrapper) secTrk;
-			}
-
-			if (_primaryTrack.getSensors() == null)
-			{
-				showError(IStatus.INFO, "There must be sensor data available", null);
-				return;
-			}
-
-			// hey, we've got this far. show the right title
-			_myChart.setTitle("Bearing Error");
-
-			// ok, get the positions
-			updateDoublets();
-
-		}
-
-		/**
-		 * clear our data, all is finished
-		 */
-		public void reset()
-		{
-			if (_primaryDoublets != null)
-				_primaryDoublets.removeAllElements();
-			_primaryDoublets = null;
-			if (_secondaryDoublets != null)
-				_secondaryDoublets.removeAllElements();
-			_secondaryDoublets = null;
-			_primaryTrack = null;
-			_secondaryTrack = null;
-		}
-
-		/**
-		 * go through the tracks, finding the relevant position on the other track.
-		 * 
-		 */
-		private void updateDoublets()
-		{
-			// ok - we're now there
-			// so, do we have primary and secondary tracks?
-			if (_primaryTrack != null && _secondaryTrack != null)
-			{
-				// cool sort out the list of sensor locations for these tracks
-				_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack);
-				_secondaryDoublets = getDoublets(_secondaryTrack, _primaryTrack);
-			}
-		}
-
-	}
 
 	/**
 	 * helper application to help track creation/activation of new plots
@@ -664,6 +202,8 @@ public class StackedDotsView extends ViewPart
 		_myChart.setShowSymbols(true);
 		// shrink the title
 		_myChart.setTitleFont(_myChart.getTitleFont().deriveFont(8));
+		_myChart.setTitle("Bearing Error");
+		
 
 		final ChartPanel plotHolder = new ChartPanel(_myChart);
 		plotHolder.setMouseZoomable(true, true);
@@ -749,6 +289,9 @@ public class StackedDotsView extends ViewPart
 		_centreYAxis.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/follow_selection.gif"));
 
+		// get an error logger
+		final ErrorLogger logger = this;
+		
 		_onlyVisible = new Action("Only draw dots for visible data points",
 				IAction.AS_CHECK_BOX)
 		{
@@ -759,7 +302,7 @@ public class StackedDotsView extends ViewPart
 				super.run();
 				// we need to get a fresh set of data pairs - the number may have
 				// changed
-				_myHelper.initialise(_theTrackDataListener, true);
+				_myHelper.initialise(_theTrackDataListener, true, _onlyVisible.isChecked(), _holder, logger);
 
 				// and a new plot please
 				updateStackedDots();
@@ -797,7 +340,7 @@ public class StackedDotsView extends ViewPart
 	{
 	}
 
-	public void showError(int info, String string, Throwable object)
+	public void logError(int info, String string, Exception object)
 	{
 		// somehow, put the message into the UI
 		_myChart.setTitle(string);
@@ -814,7 +357,7 @@ public class StackedDotsView extends ViewPart
 
 		// get the current set of data to plot
 		final TimeSeriesCollection newData = _myHelper
-				.getUpdatedSeries(_theTrackDataListener);
+				.getUpdatedSeries(_theTrackDataListener, _onlyVisible.isChecked(), _holder, this);
 
 		if (_centreYAxis.isChecked())
 		{
@@ -845,6 +388,8 @@ public class StackedDotsView extends ViewPart
 		_myPartMonitor = new PartMonitor(getSite().getWorkbenchWindow()
 				.getPartService());
 
+		final ErrorLogger logger = this;
+		
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -855,7 +400,7 @@ public class StackedDotsView extends ViewPart
 						_theTrackDataListener = (TrackManager) part;
 
 						// ok - fire off the event for the new tracks
-						_myHelper.initialise(_theTrackDataListener, false);
+						_myHelper.initialise(_theTrackDataListener, false, _onlyVisible.isChecked(), _holder, logger);
 
 					}
 				});
@@ -953,7 +498,7 @@ public class StackedDotsView extends ViewPart
 
 								public void dataReformatted(Layers theData, Layer changedLayer)
 								{
-									_myHelper.initialise(_theTrackDataListener, false);
+									_myHelper.initialise(_theTrackDataListener, false, _onlyVisible.isChecked(), _holder, logger);
 									updateStackedDots();
 								}
 							};
