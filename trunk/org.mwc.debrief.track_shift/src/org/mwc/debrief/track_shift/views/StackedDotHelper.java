@@ -10,6 +10,10 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.data.general.SeriesException;
+import org.jfree.data.time.FixedMillisecond;
+import org.jfree.data.time.TimeSeries;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import Debrief.Tools.Tote.Watchable;
@@ -18,16 +22,11 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
+import JFreeChart.ColouredDataItem;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Plottable;
-import MWC.GUI.ptplot.jfreeChart.Utils.ColouredDataItem;
 import MWC.GenericData.HiResDate;
-
-import com.jrefinery.legacy.data.BasicTimeSeries;
-import com.jrefinery.legacy.data.FixedMillisecond;
-import com.jrefinery.legacy.data.SeriesException;
-import com.jrefinery.legacy.data.TimeSeriesCollection;
 
 public final class StackedDotHelper
 {
@@ -162,10 +161,10 @@ public final class StackedDotHelper
 		final TimeSeriesCollection theTimeSeries = new TimeSeriesCollection();
 
 		// produce a dataset for each track
-		final BasicTimeSeries primarySeries = new BasicTimeSeries(_primaryTrack
-				.getName(), FixedMillisecond.class);
-		final BasicTimeSeries secondarySeries = new BasicTimeSeries(
-				_secondaryTrack.getName(), FixedMillisecond.class);
+		final TimeSeries primarySeries = new TimeSeries(_primaryTrack
+				.getName());
+		final TimeSeries secondarySeries = new TimeSeries(
+				_secondaryTrack.getName());
 
 		// ok, run through the points on the primary track
 		Iterator<Doublet> iter = _primaryDoublets.iterator();

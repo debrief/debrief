@@ -16,6 +16,16 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.DateAxis;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.data.Range;
+import org.jfree.data.time.TimeSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -24,23 +34,14 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 
 import Debrief.Wrappers.TrackWrapper;
+import JFreeChart.ColourStandardXYItemRenderer;
+import JFreeChart.DateAxisEditor;
+import JFreeChart.DatedToolTipGenerator;
+import JFreeChart.FormattedJFreeChart;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Layers.DataListener;
-import MWC.GUI.ptplot.jfreeChart.DateAxisEditor;
-import MWC.GUI.ptplot.jfreeChart.FormattedJFreeChart;
-import MWC.GUI.ptplot.jfreeChart.Utils.ColourStandardXYItemRenderer;
-import MWC.GUI.ptplot.jfreeChart.Utils.DatedToolTipGenerator;
-import MWC.GUI.ptplot.jfreeChart.Utils.ModifiedVerticalNumberAxis;
-
-import com.jrefinery.legacy.chart.ChartPanel;
-import com.jrefinery.legacy.chart.HorizontalDateAxis;
-import com.jrefinery.legacy.chart.StandardXYItemRenderer;
-import com.jrefinery.legacy.chart.XYPlot;
-import com.jrefinery.legacy.chart.tooltips.XYToolTipGenerator;
-import com.jrefinery.legacy.data.Range;
-import com.jrefinery.legacy.data.TimeSeriesCollection;
 
 /**
  */
@@ -180,23 +181,27 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 	{
 
 		// first create the x (time) axis
-		final HorizontalDateAxis xAxis = new HorizontalDateAxis("time");
+		final DateAxis xAxis = new DateAxis("");
 
 		xAxis.setStandardTickUnits(DateAxisEditor
 				.createStandardDateTickUnitsAsTickUnits());
 
 		// now the y axis, inverting it if applicable
-		final ModifiedVerticalNumberAxis yAxis = new ModifiedVerticalNumberAxis(
-				"Error (degs)");
+		final ValueAxis yAxis = new NumberAxis("Error (degs)");
 
 		// create the special stepper plot
-		_myPlot = new XYPlot(null, xAxis, yAxis);
+		_myPlot = new XYPlot();
+		_myPlot.setDomainAxis(xAxis);
+		_myPlot.setRangeAxis(yAxis);
+		
+		_myPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
+		_myPlot.setOrientation(PlotOrientation.HORIZONTAL);
+		
 		// create the bit to create custom tooltips
 		final XYToolTipGenerator tooltipGenerator = new DatedToolTipGenerator();
 
 		// and the bit to plot individual points in discrete colours
-		_myPlot.setRenderer(new ColourStandardXYItemRenderer(
-				StandardXYItemRenderer.SHAPES_AND_LINES, tooltipGenerator, null));
+		_myPlot.setRenderer(new ColourStandardXYItemRenderer(tooltipGenerator, null, _myPlot));
 		// put the plot into a chart
 		_myChart = new FormattedJFreeChart("Bearing error", null, _myPlot, false);
 		_myChart.setShowSymbols(true);
@@ -300,6 +305,10 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 			public void run()
 			{
 				super.run();
+				
+				// set the title, so there's something useful in there
+				_myChart.setTitle("Bearing Error");
+				
 				// we need to get a fresh set of data pairs - the number may have
 				// changed
 				_myHelper.initialise(_theTrackDataListener, true, _onlyVisible.isChecked(), _holder, logger);
@@ -362,7 +371,7 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		if (_centreYAxis.isChecked())
 		{
 			// set the y axis to autocalculate
-			_myPlot.getVerticalValueAxis().setAutoRange(true);
+			_myPlot.getRangeAxis().setAutoRange(true);
 		}
 
 		// store the new data (letting it autocalcualte)
@@ -373,10 +382,10 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		if (_centreYAxis.isChecked())
 		{
 			// do a quick fudge to make sure zero is in the centre
-			final Range rng = _myPlot.getVerticalValueAxis().getRange();
+			final Range rng = _myPlot.getRangeAxis().getRange();
 			final double maxVal = Math.max(Math.abs(rng.getLowerBound()), Math
 					.abs(rng.getUpperBound()));
-			_myPlot.getVerticalValueAxis().setRange(-maxVal, maxVal);
+			_myPlot.getRangeAxis().setRange(-maxVal, maxVal);
 		}
 	}
 
@@ -398,6 +407,9 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 					{
 						// cool, remember about it.
 						_theTrackDataListener = (TrackManager) part;
+						
+						// set the title, so there's something useful in there
+						_myChart.setTitle("Bearing Error");
 
 						// ok - fire off the event for the new tracks
 						_myHelper.initialise(_theTrackDataListener, false, _onlyVisible.isChecked(), _holder, logger);
