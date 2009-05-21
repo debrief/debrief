@@ -190,8 +190,6 @@ public class GndDemonstrator extends ViewPart
 	{
 	}
 
-	private static Driver _myDriver;
-
 	private java.sql.Connection getConnection() throws SQLException
 	{
 		java.sql.Connection conn;
