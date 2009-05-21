@@ -348,6 +348,7 @@ public class TMASegment extends TrackSegment
 		{
 			SensorContactWrapper thisS = observations[i];
 			FixWrapper newFix = createPointFor(thisS);
+			newFix.setSymbolShowing(true);
 			addFix(newFix);
 		}
 	}
@@ -359,6 +360,7 @@ public class TMASegment extends TrackSegment
 		{
 			SensorContactWrapper thisS = (SensorContactWrapper) obs.nextElement();
 			FixWrapper newFix = createPointFor(thisS);
+			newFix.setSymbolShowing(true);			
 			addFix(newFix);
 		}
 	}
