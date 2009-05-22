@@ -28,6 +28,10 @@ import org.postgis.Point;
 public class ExportDatabase
 {
 
+	private static final String DATABASE_PASSWORD = "PASSWORD";
+	private static final String DATABASE_ROOT = "jdbc:postgresql://86.134.91.5:5432/gnd";
+	private static final String GEOSERVER_ROOT = "http://86.134.91.5:8080/geoserver/wms/";
+	private static final String DATA_ROOT = "c:\\tmp\\atomOutput\\";
 	private static Connection _conn;
 
 	/**
@@ -96,9 +100,9 @@ public class ExportDatabase
 		try
 		{
 			service.writeTo("prettyxml", new FileOutputStream(
-					"c:\\tmp\\atomOutput\\service.xml"));
+					DATA_ROOT + "service.xml"));
 			service.writeTo("json", new FileOutputStream(
-					"c:\\tmp\\atomOutput\\servce.json"));
+					DATA_ROOT + "servce.json"));
 		}
 		catch (FileNotFoundException e)
 		{
@@ -116,23 +120,21 @@ public class ExportDatabase
 	{
 		Categories theseCats = loadCategories(table, idField, null);
 		// and output the file
-		File oFile = new File("c:\\tmp\\atomOutput\\cats");
+		File oFile = new File(DATA_ROOT + "cats");
 		oFile.mkdir();
 		try
 		{
 			theseCats.writeTo("prettyxml", new FileOutputStream(
-					"c:\\tmp\\atomOutput\\cats\\" + table + ".xml"));
+					DATA_ROOT + "cats\\" + table + ".xml"));
 			theseCats.writeTo("json", new FileOutputStream(
-					"c:\\tmp\\atomOutput\\cats\\" + table + ".json"));
+					DATA_ROOT + "cats\\" + table + ".json"));
 		}
 		catch (FileNotFoundException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
@@ -200,8 +202,7 @@ public class ExportDatabase
 				feed.setId(thisId);
 				feed.addAuthor("Ian Mayo");
 				// sort out the date
-				Date theDate = rsf.getTimestamp(3);
-				feed.setUpdated(theDate);
+				feed.setUpdated(rsf.getTimestamp("endtime"));
 				feed.setTitle("Dataset id:" + thisId);
 
 				Category platCat = factory.newCategory();
@@ -210,12 +211,12 @@ public class ExportDatabase
 				formatCat.setScheme("cats/formats.xml");
 				Category exCat = factory.newCategory();
 				exCat.setScheme("cats/exercises.xml");
-				platCat.setTerm(rsf.getString(11));
-				platCat.setLabel(rsf.getString(12));
-				formatCat.setTerm(rsf.getString(6));
-				formatCat.setLabel(rsf.getString(7));
-				exCat.setTerm(rsf.getString(4));
-				exCat.setLabel(rsf.getString(5));
+				platCat.setTerm(rsf.getString("platformid"));
+				platCat.setLabel(rsf.getString("platformname"));
+				formatCat.setTerm(rsf.getString("formatid"));
+				formatCat.setLabel(rsf.getString("formatname"));
+				exCat.setTerm(rsf.getString("exerciseid"));
+				exCat.setLabel(rsf.getString("exercisename"));
 				feed.addCategory(platCat);
 				feed.addCategory(formatCat);
 				feed.addCategory(exCat);
@@ -230,25 +231,25 @@ public class ExportDatabase
 				{
 					// first the short entry (for insertion into the feed)
 					Entry thisE = feed.addEntry();
-					thisE.setId(rse.getString(1));
-					Date eDate = rse.getTimestamp(3);
+					thisE.setId(rse.getString("itemid"));
+					Date eDate = rse.getTimestamp("dtg");
 					thisE.setUpdated(eDate);
 					thisE.setTitle("Observation:" + thisE.getId());
 
-					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1)
+					thisE.addLink("/detail/" + rse.getString("itemid") + "/" + rse.getString(1)
 							+ ".json", "self", "application/atom+json", null, null, 0);
-					thisE.addLink("/detail/" + rse.getString(1) + "/" + rse.getString(1)
+					thisE.addLink("/detail/" + rse.getString("itemid") + "/" + rse.getString(1)
 							+ ".xml", "self", "application/atom+xml", null, null, 0);
 					// check we have content
-					String theContent = rse.getString(6);
+					String theContent = rse.getString("content");
 					if (theContent != null)
-						thisE.setContent(rse.getString(6), rse.getString(5));
+						thisE.setContent(rse.getString("content"), rse.getString("contenttype"));
 					// see if we have a summary
-					String theSumm = rse.getString(4);
+					String theSumm = rse.getString("summary");
 					if (theSumm != null)
 						thisE.setSummary(theSumm);
 					// see if we have a position
-					Object thePos = rse.getObject(7);
+					Object thePos = rse.getObject("location");
 					if (thePos != null)
 					{
 						PGgeometry obj = (PGgeometry) thePos;
@@ -265,9 +266,9 @@ public class ExportDatabase
 
 				// and output the file
 				feed.writeTo("prettyxml", new FileOutputStream(
-						"c:\\tmp\\atomOutput\\detail\\" + thisId + ".xml"));
+						DATA_ROOT + "detail\\" + thisId + ".xml"));
 				feed.writeTo("json", new FileOutputStream(
-						"c:\\tmp\\atomOutput\\detail\\" + thisId + ".json"));
+						DATA_ROOT + "detail\\" + thisId + ".json"));
 			}
 			rsf.close();
 		}
@@ -306,7 +307,7 @@ public class ExportDatabase
 			// get the list of datasets
 			rs = st.executeQuery(thisDatasetQuery);
 
-			String wmsStr = "http://localhost:8080/geoserver/wms/" +
+			String wmsStr = GEOSERVER_ROOT +
 			"service=WMS&" +
 			"srs=EPSG:4326&" +
 			"format=image/png&" +
@@ -317,21 +318,15 @@ public class ExportDatabase
 			{
 				// create this entry
 				Entry ent = feed.addEntry();
-				ent.setId(rs.getString(1));
-				ent.setTitle("d" + rs.getString(1));
-				ent.setUpdated(rs.getTimestamp(3));
-				ent.setSummary(rs.getString(2));
-				ent.addLink("detail/" + rs.getString(1) + ".xml", "alternate",
+				ent.setId(rs.getString("datasetid"));
+				ent.setTitle("d" + rs.getString("datasetid"));
+				ent.setPublished(rs.getTimestamp("starttime"));
+				ent.setUpdated(rs.getTimestamp("endtime"));
+				ent.setSummary(rs.getString("datasetname"));
+				ent.addLink("detail/" + rs.getString("datasetid") + ".xml", "alternate",
 						"application/atom+xml", null, null, 0);
-				ent.addLink("detail/" + rs.getString(1) + ".json", "alternate",
+				ent.addLink("detail/" + rs.getString("datasetid") + ".json", "alternate",
 						"application/atom+json", null, null, 0);
-				// see if it has position
-				Boolean hasPos = rs.getBoolean(10);
-				if (hasPos)
-				{
-					ent.addLink(wmsStr + "CQL=(datasetid=" + rs.getString(1) + ")", "alternate",
-							"application/wms", null, null, 0);
-				}
 
 				// first the 'big' categories
 				Category platCat = factory.newCategory();
@@ -340,25 +335,37 @@ public class ExportDatabase
 				formatCat.setScheme("cats/formats.xml");
 				Category exCat = factory.newCategory();
 				exCat.setScheme("cats/exercises.xml");
-				platCat.setTerm(rs.getString(11));
-				platCat.setLabel(rs.getString(12));
-				formatCat.setTerm(rs.getString(6));
-				formatCat.setLabel(rs.getString(7));
-				exCat.setTerm(rs.getString(4));
-				exCat.setLabel(rs.getString(5));
+				platCat.setTerm(rs.getString("platformid"));
+				platCat.setLabel(rs.getString("platformname"));
+				formatCat.setTerm(rs.getString("formatid"));
+				formatCat.setLabel(rs.getString("formatname"));
+				exCat.setTerm(rs.getString("exerciseid"));
+				exCat.setLabel(rs.getString("exercisename"));
 				ent.addCategory(platCat);
 				ent.addCategory(formatCat);
 				ent.addCategory(exCat);
 
 				// now the presentational categories
+				String colVal = rs.getString("color");
+				Category platformColor = factory.newCategory();
+				platformColor.setScheme("cats/platformColor");
+				platformColor.setTerm(colVal);
+				ent.addCategory(platformColor);
+				Boolean hasSummary = rs.getBoolean("hasSummary");
 				Category withSummary = factory.newCategory();
 				withSummary.setScheme("cats/hasSummary");
-				withSummary.setTerm(new Boolean(rs.getBoolean(9)).toString());
+				withSummary.setTerm(hasSummary.toString());
 				ent.addCategory(withSummary);
+				Boolean hasPos = rs.getBoolean("hasLocation");
 				Category withPos = factory.newCategory();
 				withPos.setScheme("cats/hasPosition");
-				withPos.setTerm(new Boolean(rs.getBoolean(10)).toString());
+				withPos.setTerm(new Boolean(hasPos).toString());
 				ent.addCategory(withPos);
+				if (hasPos)
+				{
+					ent.addLink(wmsStr + "CQL=datasetid=" + rs.getString("datasetid") + "", "alternate",
+							"application/wms", null, null, 0);
+				}
 			}
 			rs.close();
 		}
@@ -370,11 +377,11 @@ public class ExportDatabase
 		// ok, now output it.
 		try
 		{
-			File tgtDir = new File("c:\\tmp\\atomOutput\\detail");
+			File tgtDir = new File(DATA_ROOT + "detail");
 			tgtDir.mkdir();
-			feed.writeTo("prettyxml", new FileOutputStream("c:\\tmp\\atomOutput\\"
+			feed.writeTo("prettyxml", new FileOutputStream(DATA_ROOT
 					+ thisDatasetName + ".xml"));
-			feed.writeTo("json", new FileOutputStream("c:\\tmp\\atomOutput\\"
+			feed.writeTo("json", new FileOutputStream(DATA_ROOT
 					+ thisDatasetName + ".json"));
 		}
 		catch (FileNotFoundException e)
@@ -392,8 +399,8 @@ public class ExportDatabase
 	{
 		try
 		{
-			String url = "jdbc:postgresql://localhost:5432/GND";
-			_conn = DriverManager.getConnection(url, "postgres", "4pfonmr");
+			String url = DATABASE_ROOT;
+			_conn = DriverManager.getConnection(url, "dev", DATABASE_PASSWORD);
 
 			// also tell the connection about our new custom data types
 			((org.postgresql.PGConnection) _conn).addDataType("geometry",
