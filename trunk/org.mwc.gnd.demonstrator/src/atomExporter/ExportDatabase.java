@@ -62,7 +62,11 @@ public class ExportDatabase
 				"SELECT * from datasetsview where datasetid > 10 order by datasetid asc;",
 				"datasets_filter2");
 
-		exportDetail();
+		// first the detailed versions
+		exportDetail(true);
+		
+		// now the bare minimum version
+		exportDetail(false);
 
 		exportCategory("Platforms", "PlatformId", "PlatformName", "Platforms");
 		exportCategory("Exercises", "ExerciseId", "ExerciseName", "Exercises");
@@ -99,10 +103,9 @@ public class ExportDatabase
 		// and output it
 		try
 		{
-			service.writeTo("prettyxml", new FileOutputStream(
-					DATA_ROOT + "service.xml"));
-			service.writeTo("json", new FileOutputStream(
-					DATA_ROOT + "servce.json"));
+			service.writeTo("prettyxml", new FileOutputStream(DATA_ROOT
+					+ "service.xml"));
+			service.writeTo("json", new FileOutputStream(DATA_ROOT + "servce.json"));
 		}
 		catch (FileNotFoundException e)
 		{
@@ -124,10 +127,10 @@ public class ExportDatabase
 		oFile.mkdir();
 		try
 		{
-			theseCats.writeTo("prettyxml", new FileOutputStream(
-					DATA_ROOT + "cats\\" + table + ".xml"));
-			theseCats.writeTo("json", new FileOutputStream(
-					DATA_ROOT + "cats\\" + table + ".json"));
+			theseCats.writeTo("prettyxml", new FileOutputStream(DATA_ROOT + "cats\\"
+					+ table + ".xml"));
+			theseCats.writeTo("json", new FileOutputStream(DATA_ROOT + "cats\\"
+					+ table + ".json"));
 		}
 		catch (FileNotFoundException e)
 		{
@@ -178,7 +181,7 @@ public class ExportDatabase
 		return theseCats;
 	}
 
-	private static void exportDetail()
+	private static void exportDetail(boolean longVersion)
 	{
 		Abdera abdera = new Abdera();
 		Factory factory = abdera.getFactory();
@@ -225,7 +228,6 @@ public class ExportDatabase
 				platformColor.setScheme("cats/platformColor");
 				platformColor.setTerm(colVal);
 				feed.addCategory(platformColor);
-				
 
 				// now loop through the entries in this dataset
 				// get the list of datasets
@@ -242,18 +244,27 @@ public class ExportDatabase
 					thisE.setUpdated(eDate);
 					thisE.setTitle("Observation:" + thisE.getId());
 
-					thisE.addLink("/detail/" + rse.getString("itemid") + "/" + rse.getString(1)
-							+ ".json", "self", "application/atom+json", null, null, 0);
-					thisE.addLink("/detail/" + rse.getString("itemid") + "/" + rse.getString(1)
-							+ ".xml", "self", "application/atom+xml", null, null, 0);
-					// check we have content
-					String theContent = rse.getString("content");
-					if (theContent != null)
-						thisE.setContent(rse.getString("content"), rse.getString("contenttype"));
-					// see if we have a summary
-					String theSumm = rse.getString("summary");
-					if (theSumm != null)
-						thisE.setSummary(theSumm);
+					if (longVersion)
+					{
+						// do the detail links
+						thisE.addLink("/detail/" + rse.getString("itemid") + "/"
+								+ rse.getString(1) + ".json", "self", "application/atom+json",
+								null, null, 0);
+						thisE.addLink("/detail/" + rse.getString("itemid") + "/"
+								+ rse.getString(1) + ".xml", "self", "application/atom+xml",
+								null, null, 0);
+						
+						// check we have content
+						String theContent = rse.getString("content");
+						if (theContent != null)
+							thisE.setContent(rse.getString("content"), rse
+									.getString("contenttype"));
+						// see if we have a summary
+						String theSumm = rse.getString("summary");
+						if (theSumm != null)
+							thisE.setSummary(theSumm);
+					}
+					
 					// see if we have a position
 					Object thePos = rse.getObject("location");
 					if (thePos != null)
@@ -271,10 +282,16 @@ public class ExportDatabase
 				rse.close();
 
 				// and output the file
-				feed.writeTo("prettyxml", new FileOutputStream(
-						DATA_ROOT + "detail\\" + thisId + ".xml"));
-				feed.writeTo("json", new FileOutputStream(
-						DATA_ROOT + "detail\\" + thisId + ".json"));
+				String fName;
+				if(longVersion)
+					fName = "";
+				else
+					fName = "_short";
+					
+				feed.writeTo("prettyxml", new FileOutputStream(DATA_ROOT + "detail\\"
+						+ thisId + fName + ".xml"));
+				feed.writeTo("json", new FileOutputStream(DATA_ROOT + "detail\\"
+						+ thisId + fName + ".json"));
 			}
 			rsf.close();
 		}
@@ -313,12 +330,9 @@ public class ExportDatabase
 			// get the list of datasets
 			rs = st.executeQuery(thisDatasetQuery);
 
-			String wmsStr = GEOSERVER_ROOT +
-			"service=WMS&" +
-			"srs=EPSG:4326&" +
-			"format=image/png&" +
-			"version=1.1.1&";
-			
+			String wmsStr = GEOSERVER_ROOT + "service=WMS&" + "srs=EPSG:4326&"
+					+ "format=image/png&" + "version=1.1.1&";
+
 			// loop through datasets
 			while (rs.next())
 			{
@@ -329,10 +343,10 @@ public class ExportDatabase
 				ent.setPublished(rs.getTimestamp("starttime"));
 				ent.setUpdated(rs.getTimestamp("endtime"));
 				ent.setSummary(rs.getString("datasetname"));
-				ent.addLink("detail/" + rs.getString("datasetid") + ".xml", "alternate",
-						"application/atom+xml", null, null, 0);
-				ent.addLink("detail/" + rs.getString("datasetid") + ".json", "alternate",
-						"application/atom+json", null, null, 0);
+				ent.addLink("detail/" + rs.getString("datasetid") + ".xml",
+						"alternate", "application/atom+xml", null, null, 0);
+				ent.addLink("detail/" + rs.getString("datasetid") + ".json",
+						"alternate", "application/atom+json", null, null, 0);
 
 				// first the 'big' categories
 				Category platCat = factory.newCategory();
@@ -369,8 +383,8 @@ public class ExportDatabase
 				ent.addCategory(withPos);
 				if (hasPos)
 				{
-					ent.addLink(wmsStr + "CQL=datasetid=" + rs.getString("datasetid") + "", "alternate",
-							"application/wms", null, null, 0);
+					ent.addLink(wmsStr + "CQL=datasetid=" + rs.getString("datasetid")
+							+ "", "alternate", "application/wms", null, null, 0);
 				}
 			}
 			rs.close();
@@ -387,8 +401,8 @@ public class ExportDatabase
 			tgtDir.mkdir();
 			feed.writeTo("prettyxml", new FileOutputStream(DATA_ROOT
 					+ thisDatasetName + ".xml"));
-			feed.writeTo("json", new FileOutputStream(DATA_ROOT
-					+ thisDatasetName + ".json"));
+			feed.writeTo("json", new FileOutputStream(DATA_ROOT + thisDatasetName
+					+ ".json"));
 		}
 		catch (FileNotFoundException e)
 		{
