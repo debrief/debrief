@@ -31,7 +31,7 @@ public class ExportDatabase
 	private static final String DATABASE_PASSWORD = "PASSWORD";
 	private static final String DATABASE_ROOT = "jdbc:postgresql://86.134.91.5:5432/gnd";
 	private static final String GEOSERVER_ROOT = "http://86.134.91.5:8080/geoserver/wms/";
-	private static final String DATA_ROOT = "c:\\tmp\\atomOutput\\";
+	private static final String DATA_ROOT = "c:\\tmp\\atomData\\";
 	private static Connection _conn;
 
 	/**
@@ -220,6 +220,12 @@ public class ExportDatabase
 				feed.addCategory(platCat);
 				feed.addCategory(formatCat);
 				feed.addCategory(exCat);
+				String colVal = rsf.getString("color");
+				Category platformColor = factory.newCategory();
+				platformColor.setScheme("cats/platformColor");
+				platformColor.setTerm(colVal);
+				feed.addCategory(platformColor);
+				
 
 				// now loop through the entries in this dataset
 				// get the list of datasets
