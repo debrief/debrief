@@ -1,18 +1,18 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <clay-model clay-version="1.4.2">
-<database-model alias="" author="" begin-script="" end-script="&#10;-- switch the ownerships to the dev account&#10;ALTER TABLE public.DataItems OWNER TO dev;&#10;ALTER TABLE public.datasets OWNER TO dev;&#10;ALTER TABLE public.formats OWNER TO dev;&#10;ALTER TABLE public.exercises OWNER TO dev;&#10;ALTER TABLE public.platforms OWNER TO dev;&#10;&#10;-- we're going to add a postgis point into the column titled location&#10;-- start off by ditching the existing (illustrative) one&#10;ALTER TABLE dataitems DROP COLUMN location;&#10;&#10;-- now do the PostGIS command&#10;SELECT AddGeometryColumn('dataitems', 'location', 4326,'POINT',3);&#10;&#10;-- we have to insert the view definition by hand, since the convenience function&#10;-- only works for tables&#10;INSERT INTO geometry_columns(  f_table_catalog, f_table_schema, f_table_name,f_geometry_column,  coord_dimension, srid, &quot;type&quot;) &#10;    VALUES&#10;      ('', 'public', 'datasetsview','the_geom', 2, 4326, 'LINESTRING');&#10;&#10;-- now the view that translates a series of dataitems into a single line&#10;CREATE OR REPLACE VIEW geo_dataset_line AS &#10; SELECT st_makeline(dataitems.location) AS the_geom, dataitems.datasetid&#10;   FROM dataitems&#10;  GROUP BY dataitems.datasetid;&#10;ALTER TABLE geo_dataset_line OWNER TO dev;&#10;&#10;-- now the view that collates data for atom export&#10;CREATE OR REPLACE VIEW geo_dataset AS &#10; SELECT geo_dataset_line.datasetid AS oid, geo_dataset_line.datasetid, geo_dataset_line.the_geom, platforms.color, datasets.datasetname&#10;   FROM geo_dataset_line, datasets, platforms&#10;  WHERE geo_dataset_line.the_geom IS NOT NULL AND datasets.datasetid = geo_dataset_line.datasetid AND datasets.platformid = platforms.platformid&#10;  ORDER BY datasets.datasetid;&#10;ALTER TABLE geo_dataset OWNER TO dev;&#10;&#10;CREATE OR REPLACE VIEW datasetsview AS &#10; SELECT datasets.datasetid, datasets.datasetname, platforms.platformname, platforms.color, formats.formatname, exercises.exercisename, datasets.starttime, datasets.endtime, formats.haslocation&#10;   FROM datasets, formats, platforms, exercises&#10;  WHERE datasets.platformid = platforms.platformid AND datasets.formatid = formats.formatid AND datasets.exerciseid = exercises.exerciseid;&#10;ALTER TABLE datasetsview OWNER TO dev;&#10;&#10;CREATE OR REPLACE VIEW dataitemsview AS &#10; SELECT datasets.datasetid, dataitems.location, platforms.color, datasets.datasetname&#10;   FROM dataitems, datasets, platforms&#10;  WHERE dataitems.datasetid = datasets.datasetid AND datasets.platformid = platforms.platformid&#10;  ORDER BY datasets.datasetid, dataitems.itemid;&#10;ALTER TABLE dataitemsview OWNER TO dev;&#10;&#10;-- now the check data function that populates the dataset time periods&#10;CREATE OR REPLACE FUNCTION checkdata()&#10;  RETURNS integer AS&#10;$BODY$&#10;declare&#10;&#9;rec record;&#10;&#9;endVal timestamp;&#10;&#9;startVal timestamp;&#10;begin&#10;&#9;for rec in select &quot;datasetid&quot;  from &quot;datasets&quot; loop&#10;&#9;&#9;select into startVal dtg from &quot;dataitems&quot; where &quot;datasetid&quot;=rec.&quot;datasetid&quot; order by dtg limit 1; &#10;&#9;&#9;select into endVal dtg from &quot;dataitems&quot; where &quot;datasetid&quot;=rec.&quot;datasetid&quot; order by dtg desc limit 1; &#10;&#9;&#9;update &quot;datasets&quot; set &quot;starttime&quot;=startVal, &quot;endtime&quot;=endVal where &quot;datasetid&quot;=rec.&quot;datasetid&quot;;&#10;&#9;end loop;&#10;return 1;&#10;end;&#10;$BODY$&#10;  LANGUAGE 'plpgsql' VOLATILE&#10;  COST 100;&#10;ALTER FUNCTION checkdata() OWNER TO dev;&#10;&#10;-- PUT IN SOME SAMPLE DATA&#10;--&#10;-- start off with the attributes&#10;--&#10; insert into exercises (exerciseid, exercisename, description) values (2, 'Ferry demo ran on:15 May 2009 09:10:03 GMT','');&#10; insert into formats (formatid, formatname, iconname, hassummary, haslocation) values (2, 'data.pos', 'data.pos.png',&#9;false, true);&#10; insert into platforms (platformid, platformname, nationality, designator, color) values (2, 'FISHER_1', '', '', 'FF0000');&#10;--&#10;-- now the dataset&#10;--&#10; insert into datasets (datasetid, datasetname, platformid, exerciseid, formatid, created, starttime, endtime) values&#10;(2,'SimRun dated:Fri May 15 10:10:10 BST 2009',2,2,2,'2009-05-15 10:10:10.863956','2003-01-24 13:00:18','2003-01-24 14:01:48');&#10;&#10;--&#10;-- and the data items themselves&#10;--&#10;insert into dataitems (itemid, datasetid, dtg, summary, contenttype, content, location) values &#10;(1,2,'2003-01-24 13:00:18','','application/vstatus+xml','&lt;status course=&quot;44.0&quot; speed=&quot;3.086666666666667 m/s&quot; /&gt;','01010000A0E610000002C50F820AC04A402BB78CA4138039400000000000000080');&#10;insert into dataitems (itemid, datasetid, dtg, summary, contenttype, content, location) values &#10;(2,2,'2003-01-24 13:01:18','','application/vstatus+xml','&lt;status course=&quot;44.0&quot; speed=&quot;3.086666666666667 m/s&quot; /&gt;','01010000A0E61000000308608A34C04A40D493BF36628039400000000000000080');&#10;insert into dataitems (itemid, datasetid, dtg, summary, contenttype, content, location) values &#10;(3,2,'2003-01-24 13:19:33','','application/vstatus+xml','&lt;status course=&quot;44.0&quot; speed=&quot;3.086666666666667 m/s&quot; /&gt;','01010000A0E61000008913643229C34A40BE17537EE88539400000000000000080');&#10;" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
-<database-model-description></database-model-description>
+<database-model alias="" author="" begin-script="" end-script="&#13;&#10;-- switch the ownerships to the dev account&#13;&#10;ALTER TABLE public.DataItems OWNER TO dev;&#13;&#10;ALTER TABLE public.datasets OWNER TO dev;&#13;&#10;ALTER TABLE public.formats OWNER TO dev;&#13;&#10;ALTER TABLE public.exercises OWNER TO dev;&#13;&#10;ALTER TABLE public.platforms OWNER TO dev;&#13;&#10;&#13;&#10;-- we're going to add a postgis point into the column titled location&#13;&#10;-- start off by ditching the existing (illustrative) one&#13;&#10;ALTER TABLE dataitems DROP COLUMN location;&#13;&#10;&#13;&#10;-- now do the PostGIS command&#13;&#10;SELECT AddGeometryColumn('dataitems', 'location', 4326,'POINT',3);&#13;&#10;&#13;&#10;-- we have to insert the view definition by hand, since the convenience function&#13;&#10;-- only works for tables&#13;&#10;INSERT INTO geometry_columns(  f_table_catalog, f_table_schema, f_table_name,f_geometry_column,  coord_dimension, srid, &quot;type&quot;) &#13;&#10;    VALUES&#13;&#10;      ('', 'public', 'datasetsview','the_geom', 2, 4326, 'LINESTRING');&#13;&#10;&#13;&#10;-- now the view that translates a series of dataitems into a single line&#13;&#10;CREATE OR REPLACE VIEW geo_dataset_line AS &#13;&#10; SELECT st_makeline(dataitems.location) AS the_geom, dataitems.datasetid&#13;&#10;   FROM dataitems&#13;&#10;  GROUP BY dataitems.datasetid;&#13;&#10;ALTER TABLE geo_dataset_line OWNER TO dev;&#13;&#10;&#13;&#10;-- now the view that collates data for atom export&#13;&#10;CREATE OR REPLACE VIEW geo_dataset AS &#13;&#10; SELECT geo_dataset_line.datasetid AS oid, geo_dataset_line.datasetid, geo_dataset_line.the_geom, platforms.color, datasets.datasetname&#13;&#10;   FROM geo_dataset_line, datasets, platforms&#13;&#10;  WHERE geo_dataset_line.the_geom IS NOT NULL AND datasets.datasetid = geo_dataset_line.datasetid AND datasets.platformid = platforms.platformid&#13;&#10;  ORDER BY datasets.datasetid;&#13;&#10;ALTER TABLE geo_dataset OWNER TO dev;&#13;&#10;&#13;&#10;CREATE OR REPLACE VIEW dataitemsview AS &#13;&#10; SELECT datasets.datasetid, dataitems.location, platforms.color, datasets.datasetname&#13;&#10;   FROM dataitems, datasets, platforms&#13;&#10;  WHERE dataitems.datasetid = datasets.datasetid AND datasets.platformid = platforms.platformid&#13;&#10;  ORDER BY datasets.datasetid, dataitems.itemid;&#13;&#10;ALTER TABLE dataitemsview OWNER TO dev;&#13;&#10;&#13;&#10;-- now the check data function that populates the dataset time periods&#13;&#10;CREATE OR REPLACE FUNCTION checkdata()&#13;&#10;  RETURNS integer AS&#13;&#10;$BODY$&#13;&#10;declare&#13;&#10;&#9;rec record;&#13;&#10;&#9;endVal timestamp;&#13;&#10;&#9;startVal timestamp;&#13;&#10;begin&#13;&#10;&#9;for rec in select &quot;datasetid&quot;  from &quot;datasets&quot; loop&#13;&#10;&#9;&#9;select into startVal dtg from &quot;dataitems&quot; where &quot;datasetid&quot;=rec.&quot;datasetid&quot; order by dtg limit 1; &#13;&#10;&#9;&#9;select into endVal dtg from &quot;dataitems&quot; where &quot;datasetid&quot;=rec.&quot;datasetid&quot; order by dtg desc limit 1; &#13;&#10;&#9;&#9;update &quot;datasets&quot; set &quot;starttime&quot;=startVal, &quot;endtime&quot;=endVal where &quot;datasetid&quot;=rec.&quot;datasetid&quot;;&#13;&#10;&#9;end loop;&#13;&#10;return 1;&#13;&#10;end;&#13;&#10;$BODY$&#13;&#10;  LANGUAGE 'plpgsql' VOLATILE&#13;&#10;  COST 100;&#13;&#10;ALTER FUNCTION checkdata() OWNER TO dev;&#13;&#10;&#13;&#10;-- PUT IN SOME SAMPLE DATA&#13;&#10;--&#13;&#10;-- start off with the attributes&#13;&#10;--&#13;&#10; insert into exercises (exerciseid, exercisename, description) values (2, 'Ferry demo ran on:15 May 2009 09:10:03 GMT','');&#13;&#10; insert into formats (formatid, formatname, iconname, hassummary, haslocation) values (2, 'data.pos', 'data.pos.png',&#9;false, true);&#13;&#10; insert into platforms (platformid, platformname, nationality, designator, color) values (2, 'FISHER_1', '', '', 'FF0000');&#13;&#10;--&#13;&#10;-- now the dataset&#13;&#10;--&#13;&#10; insert into datasets (datasetid, datasetname, platformid, exerciseid, formatid, created, starttime, endtime) values&#13;&#10;(2,'SimRun dated:Fri May 15 10:10:10 BST 2009',2,2,2,'2009-05-15 10:10:10.863956','2003-01-24 13:00:18','2003-01-24 14:01:48');&#13;&#10;&#13;&#10;--&#13;&#10;-- and the data items themselves&#13;&#10;--&#13;&#10;insert into dataitems (itemid, datasetid, dtg, summary, contenttype, content, location) values &#13;&#10;(1,2,'2003-01-24 13:00:18','','application/vstatus+xml','&lt;status course=&quot;44.0&quot; speed=&quot;3.086666666666667 m/s&quot; /&gt;','01010000A0E610000002C50F820AC04A402BB78CA4138039400000000000000080');&#13;&#10;insert into dataitems (itemid, datasetid, dtg, summary, contenttype, content, location) values &#13;&#10;(2,2,'2003-01-24 13:01:18','','application/vstatus+xml','&lt;status course=&quot;44.0&quot; speed=&quot;3.086666666666667 m/s&quot; /&gt;','01010000A0E61000000308608A34C04A40D493BF36628039400000000000000080');&#13;&#10;insert into dataitems (itemid, datasetid, dtg, summary, contenttype, content, location) values &#13;&#10;(3,2,'2003-01-24 13:19:33','','application/vstatus+xml','&lt;status course=&quot;44.0&quot; speed=&quot;3.086666666666667 m/s&quot; /&gt;','01010000A0E61000008913643229C34A40BE17537EE88539400000000000000080');&#13;&#10;" name="GND" remarks="" sql-dialect-id="jp.azzurri.clay.dialect.Postgre_7_3_Dialect" uid="b235e6:1204ba64eba:-8000" version="1.0">
+<database-model-description/>
 <schema-list>
 <schema alias="public" name="public" remarks="" uid="214904:121433a78f7:-7ffb">
-<schema-description></schema-description>
+<schema-description/>
 <domain-list/>
 <table-list>
 <table alias="" name="formats" remarks="Range of formats of data submitted" uid="585e93:12060ac7e64:-7fcf">
-<table-description></table-description>
+<table-description/>
 <table-figure-bounds height="-1" width="-1" x="541" y="18"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="formatid" remarks="" uid="585e93:12060ac7e64:-7fcd">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
@@ -30,67 +30,67 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="false" mandatory="false" name="hasSummary" remarks="whether this data format includes human readable summary data" uid="1801443:120c7740f71:-7ff9">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="16" name="BOOL" selected-variant-pattern="BOOL">
 <variant type-name-pattern="BOOL"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="false" mandatory="false" name="hasLocation" remarks="whether this data type has location information" uid="1801443:120c7740f71:-7ff8">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="16" name="BOOL" selected-variant-pattern="BOOL">
 <variant type-name-pattern="BOOL"/>
 </data-type>
 </column>
 </column-list>
 <primary-key alias="" name="dataformats_pkey" remarks="" uid="585e93:12060ac7e64:-7fce">
-<primary-key-description></primary-key-description>
+<primary-key-description/>
 <primary-key-column name="formatid"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list/>
 <index-list>
 <index alias="" name="ix_sensortypes_name" remarks="" uid="585e93:12060ac7e64:-7fc9" unique="true">
-<index-description></index-description>
+<index-description/>
 <index-column name="formatname" sort="ASC"/>
 </index>
 </index-list>
 </table>
 <table alias="" name="datasets" remarks="Single collection of observations, typically a single data-file" uid="585e93:12060ac7e64:-7fbe">
-<table-description></table-description>
+<table-description/>
 <table-figure-bounds height="-1" width="-1" x="299" y="181"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetid" remarks="" uid="585e93:12060ac7e64:-7fbc">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="datasetname" remarks="" uid="585e93:12060ac7e64:-7fbb">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="platformid" remarks="" uid="1794494:120c3b13097:-7f52">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="exerciseid" remarks="" uid="7e729a:1206756fe76:-7fef">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="formatid" remarks="" uid="585e93:12060ac7e64:-7fb9">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="now()" mandatory="true" name="created" remarks="" uid="585e93:12060ac7e64:-7fb6">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
@@ -100,7 +100,7 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="startTime" remarks="Date time of first data point" uid="686c5e:120cd3a1ac5:-7ff9">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
@@ -110,7 +110,7 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="endTime" remarks="date time of last data point" uid="686c5e:120cd3a1ac5:-7ff8">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
@@ -121,27 +121,27 @@
 </column>
 </column-list>
 <primary-key alias="" name="datasets_pkey" remarks="" uid="585e93:12060ac7e64:-7fbd">
-<primary-key-description></primary-key-description>
+<primary-key-description/>
 <primary-key-column name="datasetid"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list>
 <foreign-key alias="" name="FK_datasets_3" on-delete="" on-update="" referenced-key="exercises_pkey" referenced-table="exercises" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="7e729a:1206756fe76:-7ff0">
-<foreign-key-description></foreign-key-description>
+<foreign-key-description/>
 <foreign-key-figure>
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
 <foreign-key-column column-name="exerciseid" referenced-key-column-name="exerciseid"/>
 </foreign-key>
 <foreign-key alias="" name="FK_datasets_4" on-delete="" on-update="" referenced-key="datasources_pkey" referenced-table="platforms" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="1794494:120c3b13097:-7f53">
-<foreign-key-description></foreign-key-description>
+<foreign-key-description/>
 <foreign-key-figure>
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
 <foreign-key-column column-name="platformid" referenced-key-column-name="platformid"/>
 </foreign-key>
 <foreign-key alias="" name="FK_datasets_2" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="dataformats_pkey" referenced-table="formats" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="585e93:12060ac7e64:-7f94">
-<foreign-key-description></foreign-key-description>
+<foreign-key-description/>
 <foreign-key-figure>
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
@@ -151,17 +151,17 @@
 <index-list/>
 </table>
 <table alias="" name="platforms" remarks="list of platforms that have submitted datasets" uid="585e93:12060ac7e64:-7fb5">
-<table-description></table-description>
+<table-description/>
 <table-figure-bounds height="-1" width="-1" x="37" y="20"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="platformid" remarks="" uid="585e93:12060ac7e64:-7fb3">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="platformname" remarks="" uid="585e93:12060ac7e64:-7fb2">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
@@ -179,14 +179,14 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="6" decimal-digits="0" default-value="FF0000" mandatory="false" name="color" remarks="RGB color definition to be used as presentation clue for plottign this platform tracks" uid="d13e2e:120d85db8a3:-7ff9">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="1" literal-prefix="'" literal-suffix="'" name="CHAR" selected-variant-pattern="CHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="CHAR(%n)"/>
 </data-type>
 </column>
 </column-list>
 <primary-key alias="" name="datasources_pkey" remarks="" uid="585e93:12060ac7e64:-7fb4">
-<primary-key-description></primary-key-description>
+<primary-key-description/>
 <primary-key-column name="platformid"/>
 </primary-key>
 <unique-key-list/>
@@ -194,59 +194,59 @@
 <index-list/>
 </table>
 <table alias="" name="exercises" remarks="list of exercises/trials that produced data" uid="585e93:12060ac7e64:-7fab">
-<table-description></table-description>
+<table-description/>
 <table-figure-bounds height="-1" width="-1" x="293" y="19"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="exerciseid" remarks="" uid="585e93:12060ac7e64:-7fa9">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="true" name="exercisename" remarks="" uid="585e93:12060ac7e64:-7fa8">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="description" remarks="" uid="585e93:12060ac7e64:-7fa7">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
 </column-list>
 <primary-key alias="" name="exercises_pkey" remarks="" uid="585e93:12060ac7e64:-7faa">
-<primary-key-description></primary-key-description>
+<primary-key-description/>
 <primary-key-column name="exerciseid"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list/>
 <index-list>
 <index alias="" name="ix_exercises_name" remarks="" uid="585e93:12060ac7e64:-7fa6" unique="true">
-<index-description></index-description>
+<index-description/>
 <index-column name="exercisename" sort="ASC"/>
 </index>
 </index-list>
 </table>
 <table alias="" name="DataItems" remarks="Single time-stamped observation" uid="585e93:12060ac7e64:-7fc8">
-<table-description></table-description>
+<table-description/>
 <table-figure-bounds height="-1" width="-1" x="295" y="365"/>
 <column-list>
 <column alias="" auto-increment="true" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="itemid" remarks="" uid="585e93:12060ac7e64:-7fc6">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="SERIAL" selected-variant-pattern="SERIAL">
 <variant type-name-pattern="SERIAL"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="true" name="datasetid" remarks="" uid="585e93:12060ac7e64:-7fc5">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="4" name="INTEGER" selected-variant-pattern="INTEGER">
 <variant type-name-pattern="INTEGER"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="dtg" remarks="" uid="585e93:12060ac7e64:-7fc4">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="93" name="TIMESTAMP" selected-variant-pattern="TIMESTAMP">
 <variant type-name-pattern="TIMESTAMP"/>
 <variant precision-max="9" precision-min="1" precision-variable="%p" type-name-pattern="TIMESTAMP(%p)"/>
@@ -256,19 +256,19 @@
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="0" decimal-digits="0" default-value="" mandatory="false" name="location" remarks="(optional) spatial location for this data item" uid="585e93:12060ac7e64:-7fc1">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="1111" name="POINT" selected-variant-pattern="POINT">
 <variant type-name-pattern="POINT"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="1000" decimal-digits="0" default-value="" mandatory="false" name="summary" remarks="Human-readable overview of this data item" uid="1794494:120c3b13097:-7f1a">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
 </column>
 <column alias="" auto-increment="false" column-size="255" decimal-digits="0" default-value="" mandatory="false" name="contenttype" remarks="mime-type for embedded content data. Stored in dataitem so entry can be standalone, and since some dataset formats may store range of entry types" uid="1794494:120c3b13097:-7f1f">
-<column-description></column-description>
+<column-description/>
 <data-type jdbc-type="12" literal-prefix="'" literal-suffix="'" name="VARCHAR" selected-variant-pattern="VARCHAR(%n)">
 <variant precision-max="2147483647" precision-min="1" precision-variable="%n" type-name-pattern="VARCHAR(%n)"/>
 </data-type>
@@ -281,13 +281,13 @@
 </column>
 </column-list>
 <primary-key alias="" name="dataitems_pkey" remarks="" uid="585e93:12060ac7e64:-7fc7">
-<primary-key-description></primary-key-description>
+<primary-key-description/>
 <primary-key-column name="itemid"/>
 </primary-key>
 <unique-key-list/>
 <foreign-key-list>
 <foreign-key alias="" name="fk_dataitem_1" on-delete="NO ACTION" on-update="NO ACTION" referenced-key="datasets_pkey" referenced-table="datasets" referenced-table-schema="public" remarks="" source-entity-role="" source-multiplicity="0..*" source-relationship-type="" target-entity-role="" target-multiplicity="1" target-relationship-type="" uid="585e93:12060ac7e64:-7f95">
-<foreign-key-description></foreign-key-description>
+<foreign-key-description/>
 <foreign-key-figure>
 <fk-fig-bendpoint-list/>
 </foreign-key-figure>
@@ -296,7 +296,7 @@
 </foreign-key-list>
 <index-list>
 <index alias="" name="ix_dataitem_dtg" remarks="" uid="585e93:12060ac7e64:-7fbf" unique="false">
-<index-description></index-description>
+<index-description/>
 <index-column name="dtg" sort="ASC"/>
 </index>
 </index-list>
