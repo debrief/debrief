@@ -13,7 +13,7 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 {
 	public static String NAME = "Initial SOLUTION";
 
-	public static class DataItem implements Editable
+	public static class SolutionDataItem implements Editable
 	{
 		public WorldSpeed _speed = new WorldSpeed(0, WorldSpeed.Kts);
 		public double _course = 0;
@@ -49,14 +49,14 @@ public class EnterSolutionPage extends CoreEditableWizardPage
 		
 	}
 
-	DataItem _myWrapper;
+	SolutionDataItem _myWrapper;
   
   Text secondNameText;
   protected EnterSolutionPage(ISelection selection) {
 		super(selection, NAME, "Set solution",
 				"This page lets you enter and initial solution", "images/grid_wizard.gif", false);
 		
-		_myWrapper = new DataItem();
+		_myWrapper = new SolutionDataItem();
   }
   
 

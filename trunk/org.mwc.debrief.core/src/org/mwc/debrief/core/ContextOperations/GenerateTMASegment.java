@@ -24,7 +24,7 @@ import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextIte
 import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage;
 import org.mwc.debrief.core.wizards.s2r.SelectOffsetPage;
 import org.mwc.debrief.core.wizards.s2r.TMAFromSensorWizard;
-import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.DataItem;
+import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
 
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
@@ -45,6 +45,9 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  */
 public class GenerateTMASegment implements RightClickContextItemGenerator
 {
+
+	private static final WorldSpeed DEFAULT_TARGET_SPEED = new WorldSpeed(12, WorldSpeed.Kts);
+	private static final double DEFAULT_TARGET_COURSE = 120d;
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
@@ -152,6 +155,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				}
 				SensorContactWrapper[] items = new SensorContactWrapper[wraps.size()];
 				final SensorContactWrapper[] finalItems = wraps.toArray(items);
+				final SensorContactWrapper firstContact = finalItems[0];
 
 				// cool wrap it in an action.
 				_myAction = new Action("Generate TMA solution from all cuts")
@@ -159,15 +163,13 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 					@Override
 					public void run()
 					{
-						
-						// get ready for the supporting data
-						WorldVector res = new WorldVector(0, new WorldDistance(5,
-								WorldDistance.NM), null);
+						// get ready for the supporting data (using selected sensor data, if we can)
+						WorldVector res = null;
 						double courseDegs = 0;
 						WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 
 						// get the supporting data
-						TMAFromSensorWizard wizard = new TMAFromSensorWizard();
+						TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact.getBearing(), firstContact.getRange(),DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
 						WizardDialog dialog = new WizardDialog(Display.getCurrent()
 								.getActiveShell(), wizard);
 						dialog.create();
@@ -196,7 +198,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 							{
 								if (solutionPage.isPageComplete())
 								{
-									EnterSolutionPage.DataItem item = (DataItem) solutionPage
+									EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
 											.getEditable();
 									courseDegs = item.getCourse();
 									speed = item.getSpeed();
@@ -235,11 +237,13 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				{
 					allGood = false;
 					break;
-				}
-
+				}				
+				
 				// are we good to go?
 				if (allGood)
 				{
+					final SensorContactWrapper firstContact = items[0];
+					
 					// cool wrap it in an action.
 					_myAction = new Action("Generate TMA solution from selected cuts")
 					{
@@ -249,7 +253,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 						{
 
 							// get the supporting data
-							TMAFromSensorWizard wizard = new TMAFromSensorWizard();
+							TMAFromSensorWizard wizard = new TMAFromSensorWizard(firstContact.getBearing(), firstContact.getRange(), DEFAULT_TARGET_COURSE, DEFAULT_TARGET_SPEED);
 							WizardDialog dialog = new WizardDialog(Display.getCurrent()
 									.getActiveShell(), wizard);
 							dialog.create();
@@ -283,7 +287,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 								{
 									if (solutionPage.isPageComplete())
 									{
-										EnterSolutionPage.DataItem item = (DataItem) solutionPage
+										EnterSolutionPage.SolutionDataItem item = (SolutionDataItem) solutionPage
 												.getEditable();
 										courseDegs = item.getCourse();
 										speed = item.getSpeed();

@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.dialogs.IDialogPage;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
@@ -260,7 +261,7 @@ abstract public class CoreEditableWizardPage extends WizardPage
 				else if (thisC instanceof ValueWithUnitsControl)
 				{
 					final ValueWithUnitsControl value = (ValueWithUnitsControl) thisC;
-					if (value.getValue() == null)
+					if (value.getData() == null)
 					{
 						updateStatus("Please enter a value for:" + value.getData());
 						return;
@@ -375,9 +376,31 @@ abstract public class CoreEditableWizardPage extends WizardPage
 				final Control newEditor = thisProp.createEditor(container);
 				if (newEditor != null)
 				{
-					// ok, put the property name in the editor, so we can
-					// easily get it when we're doing validation
-					newEditor.setData(thisD.getName());
+					// get the current value, so we can initialise the editor
+					try
+					{
+						Object currentVal = thisD.getReadMethod().invoke(myItem);
+						// ok, put the property name in the editor, so we can
+						// easily get it when we're doing validation
+						
+						// do we need to convert the value to text?
+						if(newEditor instanceof Text)
+						{
+							Text txtEditor = (Text) newEditor;
+							txtEditor.setText(currentVal.toString());
+						}
+						else
+						{
+							newEditor.setData(currentVal);
+						}
+						
+						newEditor.redraw();
+						
+					}
+					catch (Exception e)
+					{
+						CorePlugin.logError(Status.ERROR, "Whilst reading existing value of object:" + myItem,e);
+					}					
 					
 					// ok, remember the editor, so we can handle enable/disable later on
 					_myEditors.add(newEditor);
