@@ -39,7 +39,7 @@ public class ValueWithUnitsCellEditor2 extends CellEditor {
 
 	@Override
 	protected Object doGetValue() {
-		return _myControl.getValue();
+		return _myControl.getData();
 	}
 
 	@Override
@@ -49,7 +49,7 @@ public class ValueWithUnitsCellEditor2 extends CellEditor {
 
 	@Override
 	protected void doSetValue(Object value) {
-		_myControl.setValue(value);
+		_myControl.setData(value);
 	}
 
 }
