@@ -35,7 +35,7 @@ import MWC.GenericData.HiResDate;
  * axis steps/sizes, labels
  * *******************************************************************
  */
-public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
+public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
 {
 
 	/**
@@ -87,7 +87,7 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
 	 *          a flag indicating whether or not a legend should be created for
 	 *          the chart.
 	 */
-	public FormattedJFreeChart(String title, Font titleFont, Plot plot,
+	public NewFormattedJFreeChart(String title, Font titleFont, Plot plot,
 			boolean createLegend)
 	{
 		super(title, titleFont, plot, createLegend);
@@ -117,7 +117,7 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
 	 * @param stepper
 	 *          the provider of the time offset
 	 */
-	public FormattedJFreeChart(String title, Font titleFont, Plot plot,
+	public NewFormattedJFreeChart(String title, Font titleFont, Plot plot,
 			boolean createLegend, StepperListener.StepperController stepper)
 	{
 
@@ -468,7 +468,7 @@ public class FormattedJFreeChart extends JFreeChart implements MWC.GUI.Editable
 		 * @param data
 		 *          track being edited
 		 */
-		public PlotInfo(FormattedJFreeChart data)
+		public PlotInfo(NewFormattedJFreeChart data)
 		{
 			super(data, data.getName(), "");
 		}

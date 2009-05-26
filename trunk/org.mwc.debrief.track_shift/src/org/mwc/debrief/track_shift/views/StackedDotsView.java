@@ -37,7 +37,7 @@ import Debrief.Wrappers.TrackWrapper;
 import JFreeChart.ColourStandardXYItemRenderer;
 import JFreeChart.DateAxisEditor;
 import JFreeChart.DatedToolTipGenerator;
-import JFreeChart.FormattedJFreeChart;
+import JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -106,7 +106,7 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 	Composite _holder;
 
-	FormattedJFreeChart _myChart;
+	NewFormattedJFreeChart _myChart;
 
 	private Action _keepRange;
 
@@ -203,7 +203,7 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		// and the bit to plot individual points in discrete colours
 		_myPlot.setRenderer(new ColourStandardXYItemRenderer(tooltipGenerator, null, _myPlot));
 		// put the plot into a chart
-		_myChart = new FormattedJFreeChart("Bearing error", null, _myPlot, false);
+		_myChart = new NewFormattedJFreeChart("Bearing error", null, _myPlot, false);
 		_myChart.setShowSymbols(true);
 		// shrink the title
 		_myChart.setTitleFont(_myChart.getTitleFont().deriveFont(8));
