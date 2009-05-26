@@ -9,6 +9,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.ui.*;
+import org.jfree.data.general.AbstractSeriesDataset;
+import org.jfree.data.xy.XYDataset;
 import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
@@ -320,7 +322,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							}
 
 							// right, now for the data
-							AbstractDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary,
+							AbstractSeriesDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary,
 									theHolder, theTracks, startTime, endTime, null);
 
 							// ok, try to retrieve the view
