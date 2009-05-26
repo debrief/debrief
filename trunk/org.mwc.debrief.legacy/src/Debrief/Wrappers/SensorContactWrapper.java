@@ -252,6 +252,10 @@ public final class SensorContactWrapper extends
 		// create the label
 		_theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
 
+		// by default, objects based on plain wrapper are coloured yellow.
+		//  but, we use a null colour value to indicate 'use parent color'
+		setColor(null);
+		
 		setVisible(true);
 		setLabelVisible(false);
 	}
