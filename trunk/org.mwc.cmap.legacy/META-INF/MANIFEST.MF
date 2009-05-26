@@ -80,6 +80,7 @@ Export-Package:
    javax.vecmath,
    com.bbn.openmap,
    MWC.GUI",
+ MWC.GUI.JFreeChart,
  MWC.GUI.Java3d;
   uses:="MWC.GUI.Java3d.GUI,
    com.sun.j3d.utils.geometry,
@@ -913,6 +914,14 @@ Export-Package:
  org.j3d.util;uses:="javax.swing,org.xml.sax",
  org.j3d.util.device;uses:="com.sun.j3d.loaders,org.j3d.util,javax.media.j3d",
  org.j3d.util.interpolator;uses:="junit.framework,javax.vecmath",
+ org.jfree.chart,
+ org.jfree.chart.axis,
+ org.jfree.chart.labels,
+ org.jfree.chart.plot,
+ org.jfree.chart.renderer.xy,
+ org.jfree.data.general,
+ org.jfree.data.xy,
+ org.jfree.ui,
  vrml;uses:="javax.media.j3d,com.sun.j3d.loaders.vrml97.impl",
  vrml.field;uses:="vrml,com.sun.j3d.loaders.vrml97.impl",
  vrml.node;uses:="vrml,com.sun.j3d.loaders.vrml97.impl"
