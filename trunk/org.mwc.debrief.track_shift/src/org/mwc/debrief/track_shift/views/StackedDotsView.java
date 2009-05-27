@@ -34,10 +34,10 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 
 import Debrief.Wrappers.TrackWrapper;
-import JFreeChart.ColourStandardXYItemRenderer;
-import JFreeChart.DateAxisEditor;
-import JFreeChart.DatedToolTipGenerator;
-import JFreeChart.NewFormattedJFreeChart;
+import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
+import MWC.GUI.JFreeChart.DateAxisEditor;
+import MWC.GUI.JFreeChart.DatedToolTipGenerator;
+import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;

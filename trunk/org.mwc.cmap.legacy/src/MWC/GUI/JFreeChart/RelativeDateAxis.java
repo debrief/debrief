@@ -60,8 +60,6 @@ package MWC.GUI.JFreeChart;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.plot.XYPlot;
 
-import com.jrefinery.legacy.chart.HorizontalCategoryPlot;
-
 /**
  * A horizontal axis that displays date values.
  * <P>
@@ -108,6 +106,13 @@ public class RelativeDateAxis extends DateAxis implements CanBeRelativeToTimeSte
     _relativeTimes = relativeTimes;
   }
 
+	public RelativeDateAxis()
+	{
+		super("Time");
+	}
+
+  
+  
 //  /**
 //   * Returns true if the tick labels should be rotated to vertical, and false
 //   * for standard horizontal labels.

@@ -196,13 +196,6 @@ Export-Package:
    MWC.GUI.Properties,
    MWC.GUI,
    MWC.GUI.Tools",
- Debrief.Tools.Reconstruction;
-  uses:="javax.swing,
-   MWC.GenericData,
-   Debrief.Wrappers,
-   MWC.GUI.Properties,
-   MWC.GUI,
-   MWC.GUI.Tools",
  Debrief.Tools.Tote;
   uses:="MWC.GUI.Shapes.Symbols,
    junit.framework,

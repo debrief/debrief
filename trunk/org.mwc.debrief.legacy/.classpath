@@ -4,8 +4,6 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/jmf.jar"/>
-	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/openmap.jar"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/vrml97.jar"/>
-	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/jcommon-0.7.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

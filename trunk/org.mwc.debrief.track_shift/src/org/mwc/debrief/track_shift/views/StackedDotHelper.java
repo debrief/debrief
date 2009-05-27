@@ -22,7 +22,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import JFreeChart.ColouredDataItem;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Plottable;

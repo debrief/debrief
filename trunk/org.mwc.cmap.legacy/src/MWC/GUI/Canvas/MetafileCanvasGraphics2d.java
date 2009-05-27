@@ -32,27 +32,49 @@
 //
 package MWC.GUI.Canvas;
 
-import MWC.GUI.Canvas.Metafile.*;
-//import WMFWriter.*;
-import MWC.GUI.*;
-import MWC.Algorithms.*;
-import java.io.*;
-import java.awt.*;
+import java.awt.AWTPermission;
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Composite;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.GradientPaint;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.Image;
+import java.awt.Paint;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.Shape;
+import java.awt.Stroke;
+import java.awt.TexturePaint;
+import java.awt.font.FontRenderContext;
+import java.awt.font.GlyphVector;
+import java.awt.font.TextLayout;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.RectangularShape;
-import java.awt.font.GlyphVector;
-import java.awt.font.FontRenderContext;
-import java.awt.font.TextLayout;
-import java.awt.image.ImageObserver;
-import java.awt.image.BufferedImageOp;
 import java.awt.image.BufferedImage;
+import java.awt.image.BufferedImageOp;
+import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
-import java.util.Map;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.AttributedCharacterIterator;
+import java.util.Map;
 
-import com.jrefinery.ui.RefineryUtilities;
+import MWC.Algorithms.PlainProjection;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Canvas.Metafile.WMF;
+import MWC.GUI.Canvas.Metafile.WMFGraphics;
 
 public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
 {
@@ -1908,7 +1930,7 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
     m2.drawDirectedText("down", 900, 80, 80);
 
     m2.g.setFontEscapement(original);
-    com.jrefinery.ui.RefineryUtilities.drawRotatedString("refinery:" + m2.g.getFontEscapement(),
+    ModifiedRefineryUtilities.drawRotatedString("refinery:" + m2.g.getFontEscapement(),
                                                          m2, 130, 120, Math.PI/2);
 
     m2.endDraw(null);
@@ -1936,9 +1958,11 @@ public class MetafileCanvasGraphics2d extends Graphics2D implements CanvasType
   //////////////////////////////////////////////////
   // class to let text rotation work under our metafiles
   //////////////////////////////////////////////////
-  public static class ModifiedRefineryUtilities extends RefineryUtilities
+  public static class ModifiedRefineryUtilities 
   {
-    /**
+
+
+		/**
      * A utility method for drawing rotated text.
      * <P>
      * A common rotation is -Math.PI/2 which draws text 'vertically' (with the top of the

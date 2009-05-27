@@ -1,29 +1,53 @@
 package org.mwc.cmap.xyplot;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Vector;
 
-import org.eclipse.jface.action.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.RowLayout;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.widgets.Combo;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IViewReference;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PartInitException;
+import org.eclipse.ui.PlatformUI;
 import org.jfree.data.general.AbstractSeriesDataset;
-import org.jfree.data.xy.XYDataset;
 import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 
-import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2;
-import Debrief.Tools.FilterOperations.ShowTimeVariablePlot2.CalculationHolder;
-import Debrief.Tools.Tote.*;
-import Debrief.Tools.Tote.Calculations.*;
-import MWC.Algorithms.Plotting.*;
-import MWC.GUI.*;
-import MWC.GenericData.*;
-
-import com.jrefinery.legacy.data.AbstractDataset;
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
+import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
+import Debrief.Tools.Tote.WatchableList;
+import Debrief.Tools.Tote.toteCalculation;
+import Debrief.Tools.Tote.Calculations.bearingCalc;
+import Debrief.Tools.Tote.Calculations.bearingRateCalc;
+import Debrief.Tools.Tote.Calculations.courseCalc;
+import Debrief.Tools.Tote.Calculations.depthCalc;
+import Debrief.Tools.Tote.Calculations.rangeCalc;
+import Debrief.Tools.Tote.Calculations.relBearingCalc;
+import Debrief.Tools.Tote.Calculations.speedCalc;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.JFreeChart.BearingRateFormatter;
+import MWC.GUI.JFreeChart.CourseFormatter;
+import MWC.GUI.JFreeChart.DepthFormatter;
+import MWC.GUI.JFreeChart.RelBearingFormatter;
+import MWC.GUI.JFreeChart.formattingOperation;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 
 /**
  * embedded class to generate menu-items for creating tactical plot
@@ -52,17 +76,18 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		{
 
 			_theOperations = new Vector<CalculationHolder>(0, 1);
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new depthCalc(), new DepthFormatter(), false, 0));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new courseCalc(), new CourseFormatter(), false, 360));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new speedCalc(), null, false, 0));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new rangeCalc(), null, true, 0));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new bearingCalc(), new CourseFormatter(), true, 360));
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new bearingRateCalc(), new BearingRateFormatter(), true, 180));
 
 			// provide extra formatting to the y-axis if we're plotting in uk format
@@ -77,7 +102,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				theFormatter = null;
 
 			// and add the relative bearing calcuation
-			_theOperations.addElement(new ShowTimeVariablePlot2.CalculationHolder(
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new relBearingCalc(), theFormatter, true, 180));
 		}
 
@@ -85,7 +110,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			_pastSelections = new HashMap<String, Integer>();
 	}
 
-	ShowTimeVariablePlot2.CalculationHolder getChoice()
+	ShowTimeVariablePlot3.CalculationHolder getChoice()
 	{
 
 		// and create the title
@@ -93,7 +118,7 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		Object[] results = new Object[_theOperations.size()];
 		for (int i = 0; i < _theOperations.size(); i++)
 		{
-			ShowTimeVariablePlot2.CalculationHolder thisC = (ShowTimeVariablePlot2.CalculationHolder) _theOperations
+			ShowTimeVariablePlot3.CalculationHolder thisC = (ShowTimeVariablePlot3.CalculationHolder) _theOperations
 					.elementAt(i);
 			choices[i] = thisC.toString();
 			results[i] = thisC;
@@ -103,10 +128,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				"Please select the attribute to view", choices, results);
 
 		int selection = dialog.open();
-		ShowTimeVariablePlot2.CalculationHolder res;
+		ShowTimeVariablePlot3.CalculationHolder res;
 		if (selection == 0)
 		{
-			res = (ShowTimeVariablePlot2.CalculationHolder) dialog._result;
+			res = (ShowTimeVariablePlot3.CalculationHolder) dialog._result;
 
 			// right, remember what was selected
 			_pastSelections.put(choices[0], new Integer(dialog._resultIndex));
@@ -137,11 +162,12 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		 * @param _titles
 		 * @param _choices
 		 */
-		public GetSelection(String dialogTitle, String dialogMessage, String[] titles,
-				Object[] choices)
+		public GetSelection(String dialogTitle, String dialogMessage,
+				String[] titles, Object[] choices)
 		{
 			super(Display.getCurrent().getActiveShell(), dialogTitle, null, null,
-					MessageDialog.QUESTION, new String[] { "OK", "Cancel" }, 1);
+					MessageDialog.QUESTION, new String[]
+					{ "OK", "Cancel" }, 1);
 			this._titles = titles;
 			this._choices = choices;
 			_message = dialogMessage;
@@ -196,8 +222,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 	 * @param parentLayers
 	 * @param subjects
 	 */
-	public void generate(IMenuManager parent, Layers theLayers, Layer[] parentLayers,
-			final Editable[] subjects)
+	public void generate(IMenuManager parent, Layers theLayers,
+			Layer[] parentLayers, final Editable[] subjects)
 	{
 		final Vector<Editable> candidates = new Vector<Editable>(0, 1);
 		boolean duffItemFound = false;
@@ -221,10 +247,13 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 		{
 			if (duffItemFound)
 			{
-				// don't output this message, since it popups up when we're not even trying to do an xy plot.
-//				String txt = "Sorry, not all items are suitable data-sources for an xy plot";
-//				MessageDialog.openInformation(Display.getCurrent().getActiveShell(), "XY Plot",
-//						txt);
+				// don't output this message, since it popups up when we're not even
+				// trying to do an xy plot.
+				// String txt =
+				// "Sorry, not all items are suitable data-sources for an xy plot";
+				// MessageDialog.openInformation(Display.getCurrent().getActiveShell(),
+				// "XY Plot",
+				// txt);
 				return;
 			}
 			else
@@ -253,8 +282,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							{
 								String title = "XY Plot";
 								String message = "Time Controller is not open. Please open time-controller and select a time period";
-								MessageDialog.openError(Display.getCurrent().getActiveShell(), title,
-										message);
+								MessageDialog.openError(Display.getCurrent().getActiveShell(),
+										title, message);
 								return;
 							}
 
@@ -265,18 +294,19 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							startTime = period.getStartDTG();
 							endTime = period.getEndDTG();
 
-							if ((startTime.greaterThan(endTime)) || (startTime.equals(endTime)))
+							if ((startTime.greaterThan(endTime))
+									|| (startTime.equals(endTime)))
 							{
 								String title = "XY Plot";
 								String message = "No time period has been selected.\nPlease select start/stop time from the Time Controller";
-								MessageDialog.openError(Display.getCurrent().getActiveShell(), title,
-										message);
+								MessageDialog.openError(Display.getCurrent().getActiveShell(),
+										title, message);
 								return;
 							}
 
 							// ok, sort out what we're plotting
 							// find out what the user wants to view
-							ShowTimeVariablePlot2.CalculationHolder theHolder = getChoice();
+							ShowTimeVariablePlot3.CalculationHolder theHolder = getChoice();
 							// retrieve the necessary input data
 							toteCalculation myOperation = theHolder._theCalc;
 
@@ -318,12 +348,12 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							for (int i = 0; i < subjects.length; i++)
 							{
 								Editable thisS = subjects[i];
-								theTracks.add((WatchableList)thisS);
+								theTracks.add((WatchableList) thisS);
 							}
 
 							// right, now for the data
-							AbstractSeriesDataset ds = ShowTimeVariablePlot2.getDataSeries(thePrimary,
-									theHolder, theTracks, startTime, endTime, null);
+							AbstractSeriesDataset ds = ShowTimeVariablePlot3.getDataSeries(
+									thePrimary, theHolder, theTracks, startTime, endTime, null);
 
 							// ok, try to retrieve the view
 							IViewReference plotRef = page.findViewReference(plotId, theTitle);
@@ -368,8 +398,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 				values[i] = thisE;
 			}
 
-			GetSelection sel = new GetSelection("Select primary", "Which is the primary track",
-					labels, values);
+			GetSelection sel = new GetSelection("Select primary",
+					"Which is the primary track", labels, values);
 			int selection = sel.open();
 			if (selection == 0)
 			{

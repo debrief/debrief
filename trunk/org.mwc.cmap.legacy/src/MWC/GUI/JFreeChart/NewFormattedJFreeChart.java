@@ -26,7 +26,6 @@ import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 
 import MWC.GUI.Editable;
 import MWC.GUI.StepperListener;
-import MWC.GUI.ptplot.jfreeChart.Utils.ColouredDataItem;
 import MWC.GenericData.HiResDate;
 
 /**
@@ -188,6 +187,10 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		return this.getTitle().getText();
 	}
 
+	public void setTitleText(String text)
+	{
+		this.getTitle().setText(text);
+	}
 	/**
 	 * the title of this plot
 	 * 
@@ -198,6 +201,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 	{
 		this.getTitle().setFont(titleFont);
 	}
+
 
 	/**
 	 * the title of this plot
@@ -210,6 +214,28 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 		return this.getTitle().getFont();
 	}
 
+	
+	public Font getTickFont()
+	{
+		return this.getXYPlot().getRangeAxis().getTickLabelFont();
+	}
+
+	public void setTickFont(Font tickFont)
+	{
+		this.getXYPlot().getRangeAxis().setTickLabelFont(tickFont);
+		this.getXYPlot().getDomainAxis().setTickLabelFont(tickFont);
+	}
+
+	public Font getAxisFont()
+	{
+		return this.getXYPlot().getRangeAxis().getLabelFont();
+	}
+
+	public void setAxisFont(Font axisFont)
+	{
+		this.getXYPlot().getRangeAxis().setLabelFont(axisFont);
+	 	this.getXYPlot().getDomainAxis().setLabelFont(axisFont);
+	}
 
 	/**
 	 * accessor to get hold of the time offset provider
@@ -481,7 +507,7 @@ public class NewFormattedJFreeChart extends JFreeChart implements MWC.GUI.Editab
 				{
 						longProp("DataLineWidth", "the width to draw the data lines",
 								MWC.GUI.Properties.LineWidthPropertyEditor.class),
-						prop("Title", "the title of this plot"),
+						prop("TitleText", "the title of this plot"),
 						prop("X_AxisTitle", "the x axis title of this plot"),
 						prop("Y_AxisTitle", "the y axis title of this plot"),
 						prop("RelativeTimes",

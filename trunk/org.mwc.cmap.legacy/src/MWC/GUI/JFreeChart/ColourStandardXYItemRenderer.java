@@ -59,7 +59,11 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
     _myPlot = plot;
   }
 
-  
+  public void setPlot(XYPlot thePlot)
+  {
+  	super.setPlot(thePlot);
+  	_myPlot = thePlot;
+  }
   
   @Override
 	public Paint getItemPaint(int row, int column)

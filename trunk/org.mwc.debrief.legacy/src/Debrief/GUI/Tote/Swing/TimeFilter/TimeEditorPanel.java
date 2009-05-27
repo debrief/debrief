@@ -312,7 +312,7 @@ final public class TimeEditorPanel extends JPanel
       }
     });
     _myOperations.addElement(new DoFilter());
-    _myOperations.addElement(new ShowTimeVariablePlot2(_theParent, theStepper));
+    _myOperations.addElement(new ShowTimeVariablePlot3(_theParent, theStepper));
     _myOperations.addElement(new CopyTimeDataToClipboard());
     _myOperations.addElement(new ReformatFixes(_theData));
     _myOperations.addElement(new HideRevealObjects(_theData));

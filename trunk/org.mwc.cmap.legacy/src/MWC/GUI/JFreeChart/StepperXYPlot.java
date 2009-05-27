@@ -65,7 +65,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 	 *          The range axis.
 	 * @param theRenderer 
 	 */
-	public StepperXYPlot(final XYDataset data, final ValueAxis domainAxis,
+	public StepperXYPlot(final XYDataset data, final RelativeDateAxis domainAxis,
 			final ValueAxis rangeAxis, final StepperListener.StepperController stepper, XYItemRenderer theRenderer)
 	{
 		super(data, domainAxis, rangeAxis, theRenderer);
@@ -119,7 +119,7 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 			long theTime = _currentTime.getMicros();
 
 			// hmmm, how do we format the date
-			CanBeRelativeToTimeStepper axis = (CanBeRelativeToTimeStepper) this.getRangeAxis();
+			CanBeRelativeToTimeStepper axis = (CanBeRelativeToTimeStepper) this.getDomainAxis();
 
 			// are we working in relative time mode?
 			if (axis.isRelativeTimes())
@@ -140,14 +140,14 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 
 				// find the new x value
 				linePosition = dateAxis.dateToJava2D(new Date(theTime / 1000),
-						dataArea,this.getRangeAxisEdge());
+						dataArea,this.getDomainAxisEdge());
 			}
 			else
 			{
 				if (axis instanceof NumberAxis)
 				{
 					NumberAxis numberAxis = (NumberAxis) axis;
-					linePosition = numberAxis.valueToJava2D(theTime, dataArea,this.getRangeAxisEdge());
+					linePosition = numberAxis.valueToJava2D(theTime, dataArea,this.getDomainAxisEdge());
 				}
 			}
 

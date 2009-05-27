@@ -131,10 +131,10 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
        */
         public java.beans.BeanDescriptor getBeanDescriptor()
         {
-          final java.beans.BeanDescriptor bp = new java.beans.BeanDescriptor(ASSET.ParticipantType.class,
-                                                 ASSET.GUI.Editors.GraphicDetectionViewer.class);
-          bp.setDisplayName(super.getData().toString());
-          return bp;
+//          final java.beans.BeanDescriptor bp = new java.beans.BeanDescriptor(ASSET.ParticipantType.class,
+//                                                 ASSET.GUI.Editors.GraphicDetectionViewer.class);
+//          bp.setDisplayName(super.getData().toString());
+          return null;
         }
 
     };

@@ -45,6 +45,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.data.general.AbstractSeriesDataset;
 import org.jfree.data.xy.XYDataset;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
@@ -58,6 +59,7 @@ import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.JFreeChart.DatedToolTipGenerator;
 import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
+import MWC.GUI.JFreeChart.RelativeDateAxis;
 import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
@@ -142,7 +144,7 @@ public class XYPlotView extends ViewPart
 	/**
 	 * the data we're storing
 	 */
-	private XYDataset _dataset;
+	private AbstractSeriesDataset _dataset;
 
 	protected final class SelectionHelper implements ISelectionProvider
 	{
@@ -257,7 +259,7 @@ public class XYPlotView extends ViewPart
 	 * @param theFormatter -
 	 *          an object capable of applying formatting to the plot
 	 */
-	public void showPlot(String title, XYDataset dataset, String units,
+	public void showPlot(String title, AbstractSeriesDataset dataset, String units,
 			formattingOperation theFormatter)
 	{
 		// right, store the incoming data, so we can save it when/if
@@ -341,7 +343,7 @@ public class XYPlotView extends ViewPart
 		if(dataStr == null)
 			return;
 		
-		_dataset = (XYDataset) xs.fromXML(dataStr);
+		_dataset = (AbstractSeriesDataset) xs.fromXML(dataStr);
 
 		// right, that's the essential bits, now open the plot
 		showPlot(_myTitle, _dataset, _myUnits, _theFormatter);
@@ -382,7 +384,7 @@ public class XYPlotView extends ViewPart
 	}
 
 	private void fillThePlot(String title, String units, formattingOperation theFormatter,
-			XYDataset dataset)
+			AbstractSeriesDataset dataset)
 	{
 
 		StepControl _theStepper = null;
@@ -430,7 +432,7 @@ public class XYPlotView extends ViewPart
 		else
 		{
 			// create a date-formatting axis
-			final DateAxis dAxis = new DateAxis("time");
+			final DateAxis dAxis = new RelativeDateAxis();
 			dAxis.setStandardTickUnits(DateAxisEditor.createStandardDateTickUnitsAsTickUnits());
 			xAxis = dAxis;
 
@@ -441,7 +443,8 @@ public class XYPlotView extends ViewPart
 		// create the special stepper plot
 		ColourStandardXYItemRenderer theRenderer = new ColourStandardXYItemRenderer(
 				tooltipGenerator, null, null);
-		_thePlot = new StepperXYPlot(null, xAxis, yAxis, _theStepper, theRenderer);
+		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis, _theStepper, theRenderer);
+		theRenderer.setPlot(_thePlot);
 
 		// apply any formatting for this choice
 		if (theFormatter != null)
@@ -474,7 +477,7 @@ public class XYPlotView extends ViewPart
 		// ////////////////////////////////////////////////////
 		// put the time series into the plot
 		// ////////////////////////////////////////////////////
-		_thePlot.setDataset(dataset);
+		_thePlot.setDataset((XYDataset) dataset);
 	}
 
 	private void setupFiringChangesToChart()
