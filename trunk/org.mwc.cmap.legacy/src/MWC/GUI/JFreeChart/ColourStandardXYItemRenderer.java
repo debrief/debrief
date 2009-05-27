@@ -1,14 +1,21 @@
 package MWC.GUI.JFreeChart;
 
 import java.awt.Color;
+import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
+import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.LegendItem;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.plot.CrosshairState;
+import org.jfree.chart.plot.PlotRenderingInfo;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.renderer.xy.XYItemRendererState;
 import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
@@ -126,11 +133,9 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
    * @param plot  the plot (can be used to obtain standard color information etc).
    * @param series  the series index.
    * @param item  the item index.
-   * @param x  the x value of the item.
-   * @param y  the y value of the item.
    * @return yes/no
    */
-  protected boolean connectToPrevious(XYPlot plot, final int series, final int item, final double x, final double y)
+  protected boolean connectToPrevious(XYPlot plot, final int series, final int item)
   {
   	
     final XYDataset data = plot.getDataset();
@@ -153,6 +158,72 @@ public final class ColourStandardXYItemRenderer extends DefaultXYItemRenderer
     return res;
   }
 
+
+  /**
+   * Draws the visual representation of a single data item.
+   *
+   * @param g2  the graphics device.
+   * @param state  the renderer state.
+   * @param dataArea  the area within which the data is being drawn.
+   * @param info  collects information about the drawing.
+   * @param plot  the plot (can be used to obtain standard color
+   *              information etc).
+   * @param domainAxis  the domain axis.
+   * @param rangeAxis  the range axis.
+   * @param dataset  the dataset.
+   * @param series  the series index (zero-based).
+   * @param item  the item index (zero-based).
+   * @param crosshairState  crosshair information for the plot
+   *                        (<code>null</code> permitted).
+   * @param pass  the pass index.
+   */
+  public void drawItem(Graphics2D g2,
+                       XYItemRendererState state,
+                       Rectangle2D dataArea,
+                       PlotRenderingInfo info,
+                       XYPlot plot,
+                       ValueAxis domainAxis,
+                       ValueAxis rangeAxis,
+                       XYDataset dataset,
+                       int series,
+                       int item,
+                       CrosshairState crosshairState,
+                       int pass) {
+
+      // do nothing if item is not visible
+      if (!getItemVisible(series, item)) {
+          return;
+      }
+
+      boolean connectToPrev = connectToPrevious(_myPlot, series, item);
+      
+      // first pass draws the background (lines, for instance)
+      if (isLinePass(pass)) {
+            if (connectToPrev) {
+              if (this.getDrawSeriesLineAsPath()) {
+                  drawPrimaryLineAsPath(state, g2, plot, dataset, pass,
+                          series, item, domainAxis, rangeAxis, dataArea);
+              }
+              else {
+                  drawPrimaryLine(state, g2, plot, dataset, pass, series,
+                          item, domainAxis, rangeAxis, dataArea);
+              }
+          }
+      }
+      // second pass adds shapes where the items are ..
+      else if (isItemPass(pass)) {
+
+          // setup for collecting optional entity info...
+          EntityCollection entities = null;
+          if (info != null) {
+              entities = info.getOwner().getEntityCollection();
+          }
+
+          drawSecondaryPass(g2, plot, dataset, pass, series, item,
+                  domainAxis, dataArea, rangeAxis, crosshairState, entities);
+      }
+  }
+  
 
   /**
    * Draws the visual representation of a single data item.

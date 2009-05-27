@@ -1,5 +1,12 @@
 package MWC.GUI.JFreeChart;
 
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Insets;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.Rectangle2D;
+
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 
@@ -72,6 +79,76 @@ public final class StepperChartPanel extends ChartPanel implements StepperListen
    */
   public final void steppingModeChanged(final boolean on)
   {
+  }
+	
+  
+
+  /** Working storage for available panel area after deducting insets. */
+  private Rectangle2D available = new Rectangle2D.Double();
+
+  /** Working storage for the chart area. */
+  private Rectangle2D chartArea = new Rectangle2D.Double();
+
+  
+  /**
+   * Paints the component by drawing the chart to fill the entire component,
+   * but allowing for the insets (which will be non-zero if a border has been
+   * set for this component).  To increase performance (at the expense of
+   * memory), an off-screen buffer image can be used.
+   *
+   * @param g  the graphics device for drawing on.
+   */
+  public void paintWMFComponent(Graphics g) {
+
+      Graphics2D g2 = (Graphics2D) g;
+
+      // first determine the size of the chart rendering area...
+      Dimension size = getSize();
+      Insets insets = getInsets();
+      available.setRect(insets.left, insets.top,
+                        size.getWidth() - insets.left - insets.right,
+                        size.getHeight() - insets.top - insets.bottom);
+
+      // work out if scaling is required...
+      boolean scale = false;
+      double drawWidth = available.getWidth();
+      double drawHeight = available.getHeight();
+      double scaleX = 1.0;
+      double scaleY = 1.0;
+
+      if (drawWidth < this.getMinimumDrawWidth()) {
+          scaleX = drawWidth / getMinimumDrawWidth();
+          drawWidth = getMinimumDrawWidth();
+          scale = true;
+      }
+      else if (drawWidth > this.getMaximumDrawWidth()) {
+          scaleX = drawWidth / getMaximumDrawWidth();
+          drawWidth = getMaximumDrawWidth();
+          scale = true;
+      }
+
+      if (drawHeight < this.getMinimumDrawHeight()) {
+          scaleY = drawHeight / getMinimumDrawHeight();
+          drawHeight = getMinimumDrawHeight();
+          scale = true;
+      }
+      else if (drawHeight > this.getMaximumDrawHeight()) {
+          scaleY = drawHeight / getMaximumDrawHeight();
+          drawHeight = getMaximumDrawHeight();
+          scale = true;
+      }
+
+      chartArea.setRect(0.0, 0.0, drawWidth, drawHeight);
+
+      AffineTransform saved = g2.getTransform();
+      g2.translate(insets.left, insets.right);
+      if (scale) {
+          AffineTransform st = AffineTransform.getScaleInstance(scaleX, scaleY);
+          g2.transform(st);
+      }
+      getChart().draw(g2, chartArea, this.getChartRenderingInfo());
+      g2.setTransform(saved);
+
   }
 
   

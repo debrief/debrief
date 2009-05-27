@@ -3,13 +3,12 @@ package org.mwc.cmap.xyplot.views;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Frame;
 import java.awt.Graphics2D;
 import java.awt.Paint;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.Vector;
 
@@ -63,27 +62,12 @@ import MWC.GUI.JFreeChart.RelativeDateAxis;
 import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
+import MWC.GUI.JFreeChart.DateAxisEditor.MWCDateTickUnitWrapper;
 import MWC.GenericData.HiResDate;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import com.pietjonas.wmfwriter2d.ClipboardCopy;
 import com.thoughtworks.xstream.XStream;
 import com.thoughtworks.xstream.io.xml.DomDriver;
-
-/**
- * This sample class demonstrates how to plug-in a new workbench view. The view
- * shows data obtained from the model. The sample creates a dummy model on the
- * fly, but a real implementation would connect to the model available either in
- * this or another plug-in (e.g. the workspace). The view is connected to the
- * model using a content provider.
- * <p>
- * The view uses a label provider to define how model objects should be
- * presented in the view. Each view can present the same model objects using
- * different labels and icons, if needed. Alternatively, a single label provider
- * can be shared between views in order to ensure that objects of the same type
- * are presented in the same way everywhere.
- * <p>
- */
 
 public class XYPlotView extends ViewPart
 {
@@ -165,7 +149,8 @@ public class XYPlotView extends ViewPart
 			return null;
 		}
 
-		public void removeSelectionChangedListener(ISelectionChangedListener listener)
+		public void removeSelectionChangedListener(
+				ISelectionChangedListener listener)
 		{
 			_selectionListeners.remove(listener);
 		}
@@ -177,9 +162,11 @@ public class XYPlotView extends ViewPart
 		public void fireNewSelection(ISelection data)
 		{
 			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, data);
-			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners
+					.iterator(); stepper.hasNext();)
 			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+						.next();
 				if (thisL != null)
 				{
 					thisL.selectionChanged(sEvent);
@@ -250,17 +237,17 @@ public class XYPlotView extends ViewPart
 	/**
 	 * put some data into the view
 	 * 
-	 * @param title -
-	 *          the title for the plot
-	 * @param dataset -
-	 *          the dataset to plot
-	 * @param units -
-	 *          the units (for the y axis)
-	 * @param theFormatter -
-	 *          an object capable of applying formatting to the plot
+	 * @param title
+	 *          - the title for the plot
+	 * @param dataset
+	 *          - the dataset to plot
+	 * @param units
+	 *          - the units (for the y axis)
+	 * @param theFormatter
+	 *          - an object capable of applying formatting to the plot
 	 */
-	public void showPlot(String title, AbstractSeriesDataset dataset, String units,
-			formattingOperation theFormatter)
+	public void showPlot(String title, AbstractSeriesDataset dataset,
+			String units, formattingOperation theFormatter)
 	{
 		// right, store the incoming data, so we can save it when/if
 		// Eclipse closes with this view still open
@@ -301,7 +288,8 @@ public class XYPlotView extends ViewPart
 
 		// put in the plot-copy support
 		IActionBars actionBars = getViewSite().getActionBars();
-		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(), _exportToClipboard);
+		actionBars.setGlobalActionHandler(ActionFactory.COPY.getId(),
+				_exportToClipboard);
 
 		// and the selection provider bits
 		_selectionHelper = new SelectionHelper();
@@ -316,8 +304,9 @@ public class XYPlotView extends ViewPart
 
 	}
 
-	/** we're restoring a previous plot. retrieve the data from the memento, and stick 
-	 * it back into the plot
+	/**
+	 * we're restoring a previous plot. retrieve the data from the memento, and
+	 * stick it back into the plot
 	 * 
 	 */
 	private void restorePreviousPlot()
@@ -338,53 +327,52 @@ public class XYPlotView extends ViewPart
 
 		// and the data
 		String dataStr = _myMemento.getString(DATA);
-		
+
 		// hmm, is there anything in it?
-		if(dataStr == null)
+		if (dataStr == null)
 			return;
-		
+
 		_dataset = (AbstractSeriesDataset) xs.fromXML(dataStr);
 
 		// right, that's the essential bits, now open the plot
 		showPlot(_myTitle, _dataset, _myUnits, _theFormatter);
 
 		// right the plot's done, put back in our fancy formatting bits
-//		String str;
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.AxisFont);
-		// @@@ fix this
-//		if(str != null)
-//			_thePlotArea.setAxisFont((Font) xs.fromXML(str));
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.TickFont);
-//		if(str != null)
-//			_thePlotArea.setTickFont((Font) xs.fromXML(str));
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.TitleFont);
-//		if(str != null)
-//			_thePlotArea.setTitleFont((Font) xs.fromXML(str));
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
-//		if(str != null)
-//			_thePlotArea.setDataLineWidth(((Integer) xs.fromXML(str)).intValue());
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
-//		if(str != null)
-//			_thePlotArea.setTitle((String) xs.fromXML(str));
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.X_Title);
-//		if(str != null)
-//			_thePlotArea.setX_AxisTitle((String) xs.fromXML(str));
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.Y_Title);
-//		if(str != null)
-//			_thePlotArea.setY_AxisTitle((String) xs.fromXML(str));
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.DateUnits);
-//		if(str != null)
-//			_thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
-//		if(str != null)
-//			_thePlotArea.setRelativeTimes(((Boolean) xs.fromXML(str)).booleanValue());
-//		str = _myMemento.getString(PLOT_ATTRIBUTES.ShowSymbols);
-//		if(str != null)
-//			_thePlotArea.setShowSymbols(((Boolean) xs.fromXML(str)).booleanValue());
+		String str;
+		str = _myMemento.getString(PLOT_ATTRIBUTES.AxisFont);
+		if (str != null)
+			_thePlotArea.setAxisFont((Font) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.TickFont);
+		if (str != null)
+			_thePlotArea.setTickFont((Font) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.TitleFont);
+		if (str != null)
+			_thePlotArea.setTitleFont((Font) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.LineWidth);
+		if (str != null)
+			_thePlotArea.setDataLineWidth(((Integer) xs.fromXML(str)).intValue());
+		str = _myMemento.getString(PLOT_ATTRIBUTES.Title);
+		if (str != null)
+			_thePlotArea.setTitle((String) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.X_Title);
+		if (str != null)
+			_thePlotArea.setX_AxisTitle((String) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.Y_Title);
+		if (str != null)
+			_thePlotArea.setY_AxisTitle((String) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.DateUnits);
+		if (str != null)
+			_thePlotArea.setDateTickUnits((MWCDateTickUnitWrapper) xs.fromXML(str));
+		str = _myMemento.getString(PLOT_ATTRIBUTES.RelativeTimes);
+		if (str != null)
+			_thePlotArea.setRelativeTimes(((Boolean) xs.fromXML(str)).booleanValue());
+		str = _myMemento.getString(PLOT_ATTRIBUTES.ShowSymbols);
+		if (str != null)
+			_thePlotArea.setShowSymbols(((Boolean) xs.fromXML(str)).booleanValue());
 	}
 
-	private void fillThePlot(String title, String units, formattingOperation theFormatter,
-			AbstractSeriesDataset dataset)
+	private void fillThePlot(String title, String units,
+			formattingOperation theFormatter, AbstractSeriesDataset dataset)
 	{
 
 		StepControl _theStepper = null;
@@ -404,7 +392,7 @@ public class XYPlotView extends ViewPart
 		if (HiResDate.inHiResProcessingMode())
 		{
 
-			final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
+		//	final SimpleDateFormat _secFormat = new SimpleDateFormat("ss");
 
 			// ok, simple enough for us...
 			NumberAxis nAxis = new NumberAxis("time (secs.micros)")
@@ -414,14 +402,14 @@ public class XYPlotView extends ViewPart
 				 */
 				private static final long serialVersionUID = 1L;
 
-				public String getTickLabel(double currentTickValue)
-				{
-					long time = (long) currentTickValue;
-					Date dtg = new HiResDate(0, time).getDate();
-					String res = _secFormat.format(dtg) + "."
-							+ DebriefFormatDateTime.formatMicros(new HiResDate(0, time));
-					return res;
-				}
+//				public String getTickLabel(double currentTickValue)
+//				{
+//					long time = (long) currentTickValue;
+//					Date dtg = new HiResDate(0, time).getDate();
+//					String res = _secFormat.format(dtg) + "."
+//							+ DebriefFormatDateTime.formatMicros(new HiResDate(0, time));
+//					return res;
+//				}
 			};
 			nAxis.setAutoRangeIncludesZero(false);
 			xAxis = nAxis;
@@ -433,7 +421,8 @@ public class XYPlotView extends ViewPart
 		{
 			// create a date-formatting axis
 			final DateAxis dAxis = new RelativeDateAxis();
-			dAxis.setStandardTickUnits(DateAxisEditor.createStandardDateTickUnitsAsTickUnits());
+			dAxis.setStandardTickUnits(DateAxisEditor
+					.createStandardDateTickUnitsAsTickUnits());
 			xAxis = dAxis;
 
 			// also create the date-knowledgable tooltip writer
@@ -443,7 +432,8 @@ public class XYPlotView extends ViewPart
 		// create the special stepper plot
 		ColourStandardXYItemRenderer theRenderer = new ColourStandardXYItemRenderer(
 				tooltipGenerator, null, null);
-		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis, _theStepper, theRenderer);
+		_thePlot = new StepperXYPlot(null, (RelativeDateAxis) xAxis, yAxis,
+				_theStepper, theRenderer);
 		theRenderer.setPlot(_thePlot);
 
 		// apply any formatting for this choice
@@ -452,12 +442,12 @@ public class XYPlotView extends ViewPart
 			theFormatter.format(_thePlot);
 		}
 
-		_thePlotArea = new NewFormattedJFreeChart(title,null,
-				_thePlot, true, _theStepper);
+		_thePlotArea = new NewFormattedJFreeChart(title, null, _thePlot, true,
+				_theStepper);
 
 		// set the color of the area surrounding the plot
 		// - naah, don't bother. leave it in the application background color.
-		// _plotArea.setBackgroundPaint(Color.white);
+		_thePlotArea.setBackgroundPaint(Color.white);
 
 		// ////////////////////////////////////////////////
 		// put the holder into one of our special items
@@ -489,13 +479,13 @@ public class XYPlotView extends ViewPart
 		IEditorPart editor = page.getActiveEditor();
 
 		// do we have an active editor?
-		if(editor == null)
+		if (editor == null)
 		{
 			// nope, drop out.
 			return;
 		}
-		
-		// get it's time-provider interface		
+
+		// get it's time-provider interface
 		TimeProvider prov = (TimeProvider) editor.getAdapter(TimeProvider.class);
 
 		if (prov != null)
@@ -589,11 +579,12 @@ public class XYPlotView extends ViewPart
 		mf.setColor(mf.getBackgroundColor());
 		mf.fillRect(0, 0, dim.width, dim.height);
 
-		try{
-		// ask the canvas to paint the image
-//@@		_chartInPanel.paintWMFComponent(mf);
+		try
+		{
+			// ask the canvas to paint the image
+			_chartInPanel.paintWMFComponent(mf);
 		}
-		catch(Exception e)
+		catch (Exception e)
 		{
 			CorePlugin.logError(Status.ERROR, "Problem writing WMF", e);
 		}
@@ -666,7 +657,8 @@ public class XYPlotView extends ViewPart
 			}
 		};
 		_editMyProperties.setText("Configure plot");
-		_editMyProperties.setToolTipText("Change editable properties for this chart");
+		_editMyProperties
+				.setToolTipText("Change editable properties for this chart");
 		_editMyProperties.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/properties.gif"));
 
@@ -674,12 +666,14 @@ public class XYPlotView extends ViewPart
 		{
 			public void run()
 			{
-				try{
+				try
+				{
 					_thePlot.zoom(0.0);
 				}
-				catch(Exception e)
+				catch (Exception e)
 				{
-					MWC.Utilities.Errors.Trace.trace(e, "whilst performing resize after loading new plot");
+					MWC.Utilities.Errors.Trace.trace(e,
+							"whilst performing resize after loading new plot");
 				}
 			}
 		};
@@ -708,9 +702,10 @@ public class XYPlotView extends ViewPart
 			}
 		};
 		_exportToClipboard.setText("Copy to Clipboard");
-		_exportToClipboard.setToolTipText("Place a WMF image of the graph on the clipboard");
 		_exportToClipboard
-				.setImageDescriptor(CorePlugin.getImageDescriptor("icons/copy.png"));
+				.setToolTipText("Place a WMF image of the graph on the clipboard");
+		_exportToClipboard.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/copy.png"));
 
 	}
 
@@ -740,7 +735,8 @@ public class XYPlotView extends ViewPart
 		if (_thePlotArea != null)
 		{
 			EditableWrapper wrappedEditable = new EditableWrapper(_thePlotArea);
-			StructuredSelection _propsAsSelection = new StructuredSelection(wrappedEditable);
+			StructuredSelection _propsAsSelection = new StructuredSelection(
+					wrappedEditable);
 
 			_selectionHelper.fireNewSelection(_propsAsSelection);
 		}
@@ -798,27 +794,27 @@ public class XYPlotView extends ViewPart
 
 		// now the other plot bits
 		// @@
-//		str = xs.toXML(_thePlotArea.getAxisFont());
-//		memento.putString(PLOT_ATTRIBUTES.AxisFont, str);
-//		str = xs.toXML(_thePlotArea.getTickFont());
-//		memento.putString(PLOT_ATTRIBUTES.TickFont, str);
-//		str = xs.toXML(_thePlotArea.getTitleFont());
-//		memento.putString(PLOT_ATTRIBUTES.TitleFont, str);
-//		str = xs.toXML(new Integer(_thePlotArea.getDataLineWidth()));
-//		memento.putString(PLOT_ATTRIBUTES.LineWidth, str);
-//		str = xs.toXML(_thePlotArea.getTitle());
-//		memento.putString(PLOT_ATTRIBUTES.Title, str);
-//		str = xs.toXML(_thePlotArea.getX_AxisTitle());
-//		memento.putString(PLOT_ATTRIBUTES.X_Title, str);
-//		str = xs.toXML(_thePlotArea.getY_AxisTitle());
-//		memento.putString(PLOT_ATTRIBUTES.Y_Title, str);
-//		str = xs.toXML(_thePlotArea.getDateTickUnits());
-//		memento.putString(PLOT_ATTRIBUTES.DateUnits, str);
-//		str = xs.toXML(new Boolean(_thePlotArea.getRelativeTimes()));
-//		memento.putString(PLOT_ATTRIBUTES.RelativeTimes, str);
-//		str = xs.toXML(new Boolean(_thePlotArea.isShowSymbols()));
-//		memento.putString(PLOT_ATTRIBUTES.ShowSymbols, str);
-		
+		str = xs.toXML(_thePlotArea.getAxisFont());
+		memento.putString(PLOT_ATTRIBUTES.AxisFont, str);
+		str = xs.toXML(_thePlotArea.getTickFont());
+		memento.putString(PLOT_ATTRIBUTES.TickFont, str);
+		str = xs.toXML(_thePlotArea.getTitleFont());
+		memento.putString(PLOT_ATTRIBUTES.TitleFont, str);
+		str = xs.toXML(new Integer(_thePlotArea.getDataLineWidth()));
+		memento.putString(PLOT_ATTRIBUTES.LineWidth, str);
+		str = xs.toXML(_thePlotArea.getTitle());
+		memento.putString(PLOT_ATTRIBUTES.Title, str);
+		str = xs.toXML(_thePlotArea.getX_AxisTitle());
+		memento.putString(PLOT_ATTRIBUTES.X_Title, str);
+		str = xs.toXML(_thePlotArea.getY_AxisTitle());
+		memento.putString(PLOT_ATTRIBUTES.Y_Title, str);
+		str = xs.toXML(_thePlotArea.getDateTickUnits());
+		memento.putString(PLOT_ATTRIBUTES.DateUnits, str);
+		str = xs.toXML(new Boolean(_thePlotArea.getRelativeTimes()));
+		memento.putString(PLOT_ATTRIBUTES.RelativeTimes, str);
+		str = xs.toXML(new Boolean(_thePlotArea.isShowSymbols()));
+		memento.putString(PLOT_ATTRIBUTES.ShowSymbols, str);
+
 	}
 
 	public static class StringHolder
