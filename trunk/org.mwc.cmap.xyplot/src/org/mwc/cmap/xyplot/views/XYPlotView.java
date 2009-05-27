@@ -26,6 +26,7 @@ import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorPart;
@@ -275,10 +276,10 @@ public class XYPlotView extends ViewPart
 
 		// right, we need an SWT.EMBEDDED object to act as a holder
 		Composite holder = new Composite(parent, SWT.EMBEDDED);
+		holder.setLayoutData(new GridData(GridData.FILL_VERTICAL|GridData.FILL_HORIZONTAL));
 
 		// now we need a Swing object to put our chart into
 		_plotControl = SWT_AWT.new_Frame(holder);
-		_plotControl.setLayout(new BorderLayout());
 
 		// and lastly do the remaining bits...
 		makeActions();
