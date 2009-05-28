@@ -414,7 +414,7 @@ public final class SensorContactWrapper extends
 	 * 
 	 * @param dest
 	 */
-	final WorldLocation getFarEnd(CanvasType dest)
+	final WorldLocation getFarEnd(WorldArea outerEnvelope)
 	{
 		WorldLocation res = null;
 
@@ -434,8 +434,7 @@ public final class SensorContactWrapper extends
 			if (_range == null)
 			{
 				// just use the maximum dimension of the plot
-				rangeToUse = dest.getProjection().getDataArea().getWidth()
-						+ dest.getProjection().getDataArea().getHeight();
+				rangeToUse = outerEnvelope.getWidth() + outerEnvelope.getHeight();
 			}
 			else
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
@@ -584,7 +583,8 @@ public final class SensorContactWrapper extends
 		final Point pt = new Point(dest.toScreen(origin));
 
 		// and convert to screen coords
-		final WorldLocation theFarEnd = getFarEnd(dest);
+		final WorldLocation theFarEnd = getFarEnd(dest.getProjection()
+				.getDataArea());
 		final Point farEnd = dest.toScreen(theFarEnd);
 
 		// set the colour
@@ -691,7 +691,8 @@ public final class SensorContactWrapper extends
 			if (getRange() != null)
 				res = new WorldArea(getCalculatedOrigin(null), getFarEnd(null));
 			else
-				res = new WorldArea(getCalculatedOrigin(null),getCalculatedOrigin(null));
+				res = new WorldArea(getCalculatedOrigin(null),
+						getCalculatedOrigin(null));
 		}
 
 		// done.
@@ -940,15 +941,21 @@ public final class SensorContactWrapper extends
 
 		if (getVisible())
 		{
+			// an outer area we create for when the sensor data doesn't have range
+			// attribute
+			WorldArea outerEnvelope = null;
+
 			// get the range from the origin
-			if (_calculatedOrigin != null)
-				res = _calculatedOrigin.rangeFrom(other);
+			
+
+			res = getCalculatedOrigin(null).rangeFrom(other);
+
+			// create a monster world area - so we can extend the line
+			outerEnvelope = new WorldArea(_calculatedOrigin, _calculatedOrigin);
+			outerEnvelope.grow(1, 0);
 
 			// we can only do the far end if we have the range of the sensor contact
-			WorldLocation farEnd = null;
-
-			if (getRange() != null)
-				getFarEnd(null);
+			WorldLocation farEnd = getFarEnd(outerEnvelope);
 
 			// and get the range from the far end
 			if (farEnd != null)

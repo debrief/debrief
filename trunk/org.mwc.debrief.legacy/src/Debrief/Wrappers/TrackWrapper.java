@@ -1399,10 +1399,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (iter.hasMoreElements())
 			{
 				final SensorWrapper sw = iter.nextElement();
-				final Enumeration<Editable> ele = sw.elements();
-				while (ele.hasMoreElements())
+				// is it visible?
+				if (sw.getVisible())
 				{
-					res.add(ele.nextElement());
+					res.addAll(sw._myContacts);
 				}
 			}
 		}
@@ -1413,21 +1413,21 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (iter.hasMoreElements())
 			{
 				final TMAWrapper sw = iter.nextElement();
-				final Enumeration<Editable> ele = sw.elements();
-				while (ele.hasMoreElements())
+				if (sw.getVisible())
 				{
-					res.add(ele.nextElement());
+					res.addAll(sw._myContacts);
 				}
 			}
 		}
 
 		if (_thePositions != null)
 		{
-			final Enumeration<Editable> iter = getPositions();
-			while (iter.hasMoreElements())
-			{
-				res.add(iter.nextElement());
-			}
+			res.addAll(getRawPositions());
+//			final Enumeration<Editable> iter = getPositions();
+//			while (iter.hasMoreElements())
+//			{
+//				res.add(iter.nextElement());
+//			}
 		}
 
 		return res.elements();
@@ -2430,7 +2430,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				TrackSegment seg = (TrackSegment) segments.nextElement();
 
 				// skip it, if it's not visible anyway
-				if(!seg.getVisible())
+				if (!seg.getVisible())
 					continue;
 
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
@@ -2475,7 +2475,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								long timeDelta = thisTime - tmaLastDTG;
 								double speedKts = fw.getSpeed();
 								double courseRads = fw.getCourse();
-								WorldVector thisVec = seg.vectorFor(timeDelta, speedKts, courseRads);
+								WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+										courseRads);
 								tmaLastLoc.addToMe(thisVec);
 								lastLocation = tmaLastLoc;
 							}
@@ -2483,7 +2484,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 							// dump the location into the fix
 							fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-							
+
 						}
 						else
 						{
@@ -2492,7 +2493,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						}
 
 						final java.awt.Point thisP = dest.toScreen(lastLocation);
-						
+
 						// just check that there's enough GUI to create the plot
 						// (i.e. has a point been returned)
 						if (thisP == null)
