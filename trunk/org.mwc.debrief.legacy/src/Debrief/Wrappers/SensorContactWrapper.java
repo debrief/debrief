@@ -226,7 +226,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * whereabouts on the line where we plot the label
 	 */
-	private int _theLineLocation = MWC.GUI.Properties.LineLocationPropertyEditor.END;
+	private int _theLineLocation = MWC.GUI.Properties.LineLocationPropertyEditor.MIDDLE;
 
 	private String _sensorName;
 
@@ -434,7 +434,7 @@ public final class SensorContactWrapper extends
 			if (_range == null)
 			{
 				// just use the maximum dimension of the plot
-				rangeToUse = outerEnvelope.getWidth() + outerEnvelope.getHeight();
+				rangeToUse = Math.max(outerEnvelope.getWidth(),outerEnvelope.getHeight());
 			}
 			else
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
