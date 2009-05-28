@@ -4373,7 +4373,7 @@ Naval Undersea Warfare Center (NUWC)
             or
             <screen>
               <markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
- ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs), ambigous bearing (degs) [or the single word NULL], frequency(Hz),  range(yds), sensor name, label (to end of line)</markup>
+ ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or the single word NULL], sensor name, label (to end of line)</markup>
             </screen>
             </para>
           <para>As you can see, unlike other Debrief line formats, this format allows for NULL
