@@ -121,7 +121,8 @@ final class ImportSensor2 implements PlainLineImporter {
     double latSec, longSec;
     WorldLocation origin = null;
     HiResDate theDtg = null;
-    double brg, rng;
+    double brg;
+    WorldDistance rng=null;
     Double brg2=null, freq=null;
     java.awt.Color theColor;
 
@@ -205,8 +206,14 @@ final class ImportSensor2 implements PlainLineImporter {
     	// cool, we have data
     	freq = new Double(Double.valueOf(tmp));    	
     }
-    
-    rng = Double.valueOf(st.nextToken()).doubleValue();
+
+    // and the range
+    tmp = st.nextToken();
+    if(!tmp.startsWith("N"))
+    {
+    	// cool, we have data
+    	rng = new WorldDistance(new Double(Double.valueOf(tmp)), WorldDistance.YARDS);    	
+    }
 
     // read in the sensor name
     sensorName = st.nextToken();
@@ -224,7 +231,7 @@ final class ImportSensor2 implements PlainLineImporter {
 
     // create the contact object
     SensorContactWrapper data =
-        new SensorContactWrapper(theTrack, theDtg, new WorldDistance(rng, WorldDistance.YARDS), brg, brg2, freq, origin, theColor, theText, theStyle, sensorName);
+        new SensorContactWrapper(theTrack, theDtg, rng, brg, brg2, freq, origin, theColor, theText, theStyle, sensorName);
 
     return data;
   }

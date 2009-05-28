@@ -253,9 +253,9 @@ public final class SensorContactWrapper extends
 		_theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0, 0, 0), null);
 
 		// by default, objects based on plain wrapper are coloured yellow.
-		//  but, we use a null colour value to indicate 'use parent color'
+		// but, we use a null colour value to indicate 'use parent color'
 		setColor(null);
-		
+
 		setVisible(true);
 		setLabelVisible(false);
 	}
@@ -411,8 +411,10 @@ public final class SensorContactWrapper extends
 
 	/**
 	 * return the coordinates of the end of hte line
+	 * 
+	 * @param dest
 	 */
-	final WorldLocation getFarEnd()
+	final WorldLocation getFarEnd(CanvasType dest)
 	{
 		WorldLocation res = null;
 
@@ -426,9 +428,20 @@ public final class SensorContactWrapper extends
 		// have we found one?
 		if (_calculatedOrigin != null)
 		{
+			double rangeToUse = 0;
+
+			// do we have the range?
+			if (_range == null)
+			{
+				// just use the maximum dimension of the plot
+				rangeToUse = dest.getProjection().getDataArea().getWidth()
+						+ dest.getProjection().getDataArea().getHeight();
+			}
+			else
+				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
+
 			// also do the far end
-			res = _calculatedOrigin.add(new WorldVector(_bearing, _range
-					.getValueIn(WorldDistance.DEGS), 0d));
+			res = _calculatedOrigin.add(new WorldVector(_bearing, rangeToUse, 0d));
 		}
 
 		return res;
@@ -571,7 +584,7 @@ public final class SensorContactWrapper extends
 		final Point pt = new Point(dest.toScreen(origin));
 
 		// and convert to screen coords
-		final WorldLocation theFarEnd = getFarEnd();
+		final WorldLocation theFarEnd = getFarEnd(dest);
 		final Point farEnd = dest.toScreen(theFarEnd);
 
 		// set the colour
@@ -673,7 +686,13 @@ public final class SensorContactWrapper extends
 
 		// do we know our origin?
 		if (origin != null)
-			res = new WorldArea(getCalculatedOrigin(null), getFarEnd());
+		{
+			// do we know our range?
+			if (getRange() != null)
+				res = new WorldArea(getCalculatedOrigin(null), getFarEnd(null));
+			else
+				res = new WorldArea(getCalculatedOrigin(null),getCalculatedOrigin(null));
+		}
 
 		// done.
 		return res;
@@ -740,7 +759,8 @@ public final class SensorContactWrapper extends
 			// is the first bearing our one?
 			double relB = relBearing(course, bearing1);
 
-			// we're only going to show the bearing in 'getBearing', make sure this is the one we want.
+			// we're only going to show the bearing in 'getBearing', make sure this is
+			// the one we want.
 			if ((relB > 0) && (isPort))
 			{
 				// bearing 1 is starboard, we want to keep port,
@@ -887,7 +907,7 @@ public final class SensorContactWrapper extends
 	{
 		_mySensor = sensor;
 	}
-	
+
 	public final SensorWrapper getSensor()
 	{
 		return _mySensor;
@@ -924,7 +944,11 @@ public final class SensorContactWrapper extends
 			if (_calculatedOrigin != null)
 				res = _calculatedOrigin.rangeFrom(other);
 
-			final WorldLocation farEnd = getFarEnd();
+			// we can only do the far end if we have the range of the sensor contact
+			WorldLocation farEnd = null;
+
+			if (getRange() != null)
+				getFarEnd(null);
 
 			// and get the range from the far end
 			if (farEnd != null)

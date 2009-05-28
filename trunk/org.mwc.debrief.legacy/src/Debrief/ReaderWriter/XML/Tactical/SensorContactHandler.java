@@ -204,6 +204,7 @@ abstract public class SensorContactHandler extends
 		
 		// reset our variables
 		_theContact = null;
+		_myRange = null;
 	}
 
 	abstract public void addContact(MWC.GUI.Plottable plottable);
@@ -239,7 +240,9 @@ abstract public class SensorContactHandler extends
 		eFix.setAttribute(HAS_FREQUENCY, writeThis(contact.getHasFrequency()));
 			
 		// sort out the range
-		WorldDistanceHandler.exportDistance(RANGE, contact.getRange(), eFix, doc);
+		// do we have range?
+		if(contact.getRange() != null)
+  		WorldDistanceHandler.exportDistance(RANGE, contact.getRange(), eFix, doc);
 		
 		// sort out the line style
 		ls.setValue(contact.getLineStyle());

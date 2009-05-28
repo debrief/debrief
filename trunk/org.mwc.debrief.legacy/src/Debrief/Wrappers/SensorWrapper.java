@@ -172,7 +172,8 @@ public class SensorWrapper extends TacticalDataWrapper
 	 * the (optional) sensor offset value, indicating the forward/backward offset
 	 * compared to the attack datum of the platform.
 	 */
-	private WorldDistance _sensorOffset = new WorldDistance(0, WorldDistance.YARDS);
+	private WorldDistance _sensorOffset = new WorldDistance(0,
+			WorldDistance.YARDS);
 
 	/**
 	 * the (optional) indicator for whether the centre of this sensor is in a
@@ -230,13 +231,19 @@ public class SensorWrapper extends TacticalDataWrapper
 						// we may not have a sensor-data origin, since the
 						// sensor may be out of the time period of the track
 						if (startOfLine != null)
-							res = new WorldArea(startOfLine, fw.getFarEnd());
+							res = new WorldArea(startOfLine, startOfLine);
 					}
 					else
 					{
 						// yes, extend to include the new area
 						res.extend(fw.getCalculatedOrigin(_myHost));
-						res.extend(fw.getFarEnd());
+					}
+
+					// do we have a far end?
+
+					if (fw.getRange() != null)
+					{
+						res.extend(fw.getFarEnd(null));
 					}
 				}
 			}
@@ -455,7 +462,6 @@ public class SensorWrapper extends TacticalDataWrapper
 		return _sensorOffset;
 	}
 
-	
 	public void setSensorOffset(WorldDistance sensorOffset)
 	{
 		_sensorOffset = sensorOffset;
@@ -477,21 +483,18 @@ public class SensorWrapper extends TacticalDataWrapper
 			fw.clearCalculatedOrigin();
 		}
 	}
-	
-	
 
-	/** override the parent method - since we want to reset the origin
-	 * for our child sensor data items
+	/**
+	 * override the parent method - since we want to reset the origin for our
+	 * child sensor data items
 	 */
 	public void setHost(WatchableList host)
 	{
 		super.setHost(host);
-		
+
 		// and clear offsets
 		clearChildOffsets();
 	}
-
-
 
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
@@ -748,8 +751,9 @@ public class SensorWrapper extends TacticalDataWrapper
 			cal.set(2001, 10, 4, 4, 4, 25);
 			list = sensor.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			nearest = (SensorContactWrapper) list[0];
-			assertEquals("test nearer first point", nearest.getCalculatedOrigin(track),
-					(new MWC.GenericData.WorldLocation(2.5, 2.0, 0.0)));
+			assertEquals("test nearer first point", nearest
+					.getCalculatedOrigin(track), (new MWC.GenericData.WorldLocation(2.5,
+					2.0, 0.0)));
 
 			// start point?
 			cal.set(2001, 10, 4, 4, 4, 0);

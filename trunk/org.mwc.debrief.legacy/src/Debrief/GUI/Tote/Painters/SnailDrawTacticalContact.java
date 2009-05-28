@@ -230,7 +230,6 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
                                final MWC.GUI.CanvasType dest,
                                final boolean keep_simple);
 
-
   }
 
 
