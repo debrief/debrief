@@ -31,6 +31,7 @@ import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
@@ -761,6 +762,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						expertLongProp("LabelFrequency", "the label frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 						expertLongProp("SymbolFrequency", "the symbol frequency",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
+						expertLongProp("DataFrequency", "the data sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)
 
 				};
@@ -1006,6 +1009,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	private HiResDate _lastSymbolFrequency = new HiResDate(0,
+			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
+
+	private HiResDate _lastDataFrequency = new HiResDate(0,
 			TimeFrequencyPropertyEditor.SHOW_ALL_FREQUENCY);
 
 	/**
@@ -1423,11 +1429,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (_thePositions != null)
 		{
 			res.addAll(getRawPositions());
-//			final Enumeration<Editable> iter = getPositions();
-//			while (iter.hasMoreElements())
-//			{
-//				res.add(iter.nextElement());
-//			}
 		}
 
 		return res.elements();
@@ -1892,6 +1893,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final HiResDate getLabelFrequency()
 	{
 		return this._lastLabelFrequency;
+	}
+
+	/**
+	 * method to allow the setting of data sampling frequencies for the track
+	 * 
+	 * @return frequency to use
+	 */
+	public final HiResDate getDataFrequency()
+	{
+		return this._lastDataFrequency;
 	}
 
 	/**
@@ -2429,68 +2440,75 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
 
-				// skip it, if it's not visible anyway
-				if (!seg.getVisible())
-					continue;
-
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
 				// MODE
-				boolean IsRelative = seg.getPlotRelative();
+				boolean isRelative = seg.getPlotRelative();
 				WorldLocation tmaLastLoc = null;
 				long tmaLastDTG = 0;
+
+				// if it's not a relative track, and it's not visible, we don't need to
+				// work with ut
+				if (!getVisible() && !isRelative)
+					continue;
 
 				final Enumeration<Editable> fixWrappers = seg.elements();
 				while (fixWrappers.hasMoreElements())
 				{
 					final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
 
-					// is this fix visible
+					// is this fix visible?
 					if (!fw.getVisible())
 					{
 						// nope. Don't join it to the last position.
 						// ok, if we've built up a polygon, we need to write it now
 						paintTrack(dest, lastCol);
 					}
-					else
+
+					// Note: we're carrying on working with this position even if it isn't
+					// visible,
+					// since we need to use non-visible positions to build up a DR track.
+
+					// ok, so we have plotted something
+					plotted_anything = true;
+
+					// ok, are we in relative?
+					if (isRelative)
 					{
-						// yup, it's visible. carry on.
+						long thisTime = fw.getDateTimeGroup().getDate().getTime();
 
-						// ok, so we have plotted something
-						plotted_anything = true;
-
-						// ok, are we in relative?
-						if (IsRelative)
+						// ok, is this our first location?
+						if (tmaLastLoc == null)
 						{
-							long thisTime = fw.getDateTimeGroup().getDate().getTime();
-
-							// ok, is this our first location?
-							if (tmaLastLoc == null)
-							{
-								tmaLastLoc = new WorldLocation(seg.getTrackStart());
-								lastLocation = tmaLastLoc;
-							}
-							else
-							{
-								// calculate a new vector
-								long timeDelta = thisTime - tmaLastDTG;
-								double speedKts = fw.getSpeed();
-								double courseRads = fw.getCourse();
-								WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
-										courseRads);
-								tmaLastLoc.addToMe(thisVec);
-								lastLocation = tmaLastLoc;
-							}
-							tmaLastDTG = thisTime;
-
-							// dump the location into the fix
-							fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-
+							tmaLastLoc = new WorldLocation(seg.getTrackStart());
+							lastLocation = tmaLastLoc;
 						}
 						else
 						{
-							// this is an absolute position
-							lastLocation = fw.getLocation();
+							// calculate a new vector
+							long timeDelta = thisTime - tmaLastDTG;
+							double speedKts = fw.getSpeed();
+							double courseRads = fw.getCourse();
+							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+									courseRads);
+							tmaLastLoc.addToMe(thisVec);
+							lastLocation = tmaLastLoc;
 						}
+						tmaLastDTG = thisTime;
+
+						// dump the location into the fix
+						fw.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+
+					}
+					else
+					{
+						// this is an absolute position
+						lastLocation = fw.getLocation();
+					}
+
+					// ok, we only do this writing to screen if the actual position is
+					// visible
+					if (getVisible())
+					{
 
 						final java.awt.Point thisP = dest.toScreen(lastLocation);
 
@@ -2558,11 +2576,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 							}
 
-							// set the colour of the track from now on to this
-							// colour, so that
-							// the "link" to the next fix is set to this colour if
-							// left
-							// unchanged
+							/*
+							 * set the colour of the track from now on to this colour, so that
+							 * the "link" to the next fix is set to this colour if left
+							 * unchanged
+							 */
 							dest.setColor(fw.getColor());
 
 							// and remember the last colour
@@ -2575,8 +2593,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							fw.paintMe(dest, lastLocation);
 						}
 					}
-
 				}
+
 				// ok, just see if we have any pending polylines to paint
 				paintTrack(dest, lastCol);
 
@@ -2842,6 +2860,35 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	/**
+	 * set the data frequency (in seconds)
+	 * 
+	 * @param theVal
+	 *          frequency to use
+	 */
+	@FireExtended
+	public final void setDataFrequency(final HiResDate theVal)
+	{
+		this._lastDataFrequency = theVal;
+
+		// just check it's not a barking frequency
+		if (theVal.getDate().getTime() <= 0)
+		{
+			// ignore, we don't need to do anything for a zero or a -1
+		}
+		else
+		{
+
+			SegmentList segments = _thePositions;
+			Enumeration<Editable> theEnum = segments.elements();
+			while (theEnum.hasMoreElements())
+			{
+				TrackSegment seg = (TrackSegment) theEnum.nextElement();
+				seg.decimate(theVal, this);
+			}
+		}
+	}
+
+	/**
 	 * set the label frequency (in seconds)
 	 * 
 	 * @param theVal
@@ -2931,75 +2978,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		_showPositions = val;
 	}
-
-	// ///////////////////////////////////////////////////////////////
-	// read/write operations
-	// //////////////////////////////////////////////////////////////
-	// private void readObject(java.io.ObjectInputStream in)
-	// throws IOException, ClassNotFoundException
-	// {
-	// in.defaultReadObject();
-	//
-	// // TOD: eventually, remove support for the old "_theData" type
-	// // of storing tracks, leave to store in native (treeSet) storage
-	//
-	// // see if we are processing an old version of the file
-	// /* if(this._fastData == null)
-	// {
-	// _fastData = new com.sun.java.util.collections.TreeSet(new
-	// compareFixes());
-	//
-	// // move all of the contents of the vector to the fast wrapper
-	// java.util.Enumeration enum = _theData.elements();
-	// while(enum.hasMoreElements())
-	// {
-	// FixWrapper fw = (FixWrapper)enum.nextElement();
-	// _fastData.add(fw);
-	// }
-	//
-	//
-	// // now remove all of the elements from the old structure
-	// _theData.removeAllElements();
-	// _theData = null;
-	// }
-	// */
-	// // check that we have our track lable
-	// if(_theLabel == null)
-	// {
-	// _theLabel = new MWC.GUI.Shapes.TextLabel(new WorldLocation(0,0,0), null);
-	// _theLabel.setName(getName());
-	// _theLabel.setColor(getColor());
-	// }
-	// }
-	//
-	//
-	// private void writeObject(java.io.ObjectOutputStream out)
-	// throws IOException
-	// {
-	// // put the fast data into the old vector
-	//
-	// // create the old vector
-	// /* _theData = new java.util.Vector(_fastData.size(), 1);
-	//
-	// // get an iterator from the fast data
-	// Iterator it = _fastData.iterator();
-	//
-	// // put the fast data into the old array
-	// while(it.hasNext())
-	// {
-	// _theData.addElement(it.next());
-	// }
-	//
-	// */
-	// // allow the default write to copy the array to storage
-	// out.defaultWriteObject();
-	//
-	//
-	// }
-
-	// //////////////////////////////////////
-	// beaninfo
-	// //////////////////////////////////////
 
 	/**
 	 * how frequently symbols are placed on the track
