@@ -521,7 +521,7 @@ public class ImportReplay extends PlainImporterBase
 					// ok, see if we're importing it as DR or ATG (or ask the audience)
 					String importMode = _myParent.getProperty(TRACK_IMPORT_MODE);
 
-					if (importMode == ImportReplay.ASK_THE_AUDIENCE)
+					if (importMode.equals(ImportReplay.ASK_THE_AUDIENCE))
 					{
 						if(_myParent instanceof ProvidesModeSelector)
 						{
@@ -532,13 +532,12 @@ public class ImportReplay extends PlainImporterBase
 					
 					TrackSegment initialLayer = null;
 					
-					if (importMode == ImportReplay.IMPORT_AS_ATG)
+					if (importMode.equals(ImportReplay.IMPORT_AS_ATG))
 					{
 						initialLayer = new TrackSegment();
 						initialLayer.setPlotRelative(false);
-
 					}
-					else if (importMode == ImportReplay.IMPORT_AS_DR)
+					else if (importMode.equals(ImportReplay.IMPORT_AS_DR))
 					{
 						initialLayer = new TrackSegment();
 						initialLayer.setPlotRelative(true);
