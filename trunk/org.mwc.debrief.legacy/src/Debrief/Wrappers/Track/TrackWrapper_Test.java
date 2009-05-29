@@ -99,6 +99,59 @@ public class TrackWrapper_Test
 		assertEquals("wrong bounds returned", correctBounds, _tw.getBounds());
 	}
 
+	@Test
+	public void testDecimate()
+	{
+		TrackSegment ts1 = new TrackSegment();
+		ts1.addFix(createFix( 0 * 1000000l, 32, 33));
+		ts1.addFix(createFix( 1 * 1000000l, 32, 33));
+		ts1.addFix(createFix( 2 * 1000000l, 32, 33));
+		ts1.addFix(createFix( 3 * 1000000l, 32, 33));
+		ts1.addFix(createFix( 4 * 1000000l, 32, 33));
+
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix( 5 * 1000000l, 32, 33));
+		ts2.addFix(createFix( 6 * 1000000l, 32, 33));
+		ts2.addFix(createFix( 7 * 1000000l, 32, 33));
+		ts2.addFix(createFix( 8 * 1000000l, 32, 33));
+		ts2.addFix(createFix( 9 * 1000000l, 32, 33));
+
+		TrackSegment ts3 = new TrackSegment();
+		ts3.addFix(createFix( 10 * 1000000l, 32, 33));
+		ts3.addFix(createFix( 11 * 1000000l, 32, 33));
+		ts3.addFix(createFix( 12 * 1000000l, 32, 33));
+		ts3.addFix(createFix( 13 * 1000000l, 32, 33));
+		ts3.addFix(createFix( 24 * 1000000l, 32, 33));
+
+		TrackWrapper tw = new TrackWrapper();
+		tw.add(ts1);
+		tw.add(ts2);
+		tw.add(ts3);
+
+		Enumeration<Editable> data = tw.elements();
+		SegmentList sl = (SegmentList) data.nextElement();
+
+		// check it's got the segs
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());
+		assertEquals("has all fixes", 15, tw.numFixes());
+
+		// GO FOR ULTIMATE DECIMATION
+		tw.setDataFrequency(new HiResDate(4  * 1000000l));
+		
+		// how was it?
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());		
+		assertEquals("has all fixes", 8, tw.numFixes());
+
+		// GO FOR ULTIMATE DECIMATION
+		tw.setDataFrequency(new HiResDate(500000l));
+		
+		// how was it?
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());
+		assertEquals("has all fixes", 43, tw.numFixes());
+	}
+
+	
+	
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)}
 	 * .
@@ -117,6 +170,7 @@ public class TrackWrapper_Test
 		// now something else
 		SensorWrapper sw = new SensorWrapper("some sensor");
 		sw.add(new SensorContactWrapper());
+		sw.setVisible(true);
 		_tw.add(sw);
 
 		assertEquals("got added", 8, this.trackLength());
@@ -208,6 +262,7 @@ public class TrackWrapper_Test
 				null, null, 0, null));
 		sw.add(new SensorContactWrapper("trk", new HiResDate(14), null, 0, null,
 				null, null, 0, null));
+		sw.setVisible(true);
 
 		_tw.add(sw);
 
@@ -982,17 +1037,17 @@ public class TrackWrapper_Test
 		seg2 = (TrackSegment) segments.nextElement();
 	}
 
-	private FixWrapper createFix(int time, double vLat, double vLong)
+	public static FixWrapper createFix(long timeMillis, double vLat, double vLong)
 	{
-		FixWrapper fw = new FixWrapper(new Fix(new HiResDate(time),
+		FixWrapper fw = new FixWrapper(new Fix(new HiResDate(timeMillis),
 				new WorldLocation(vLat, vLong, 0), 1, 1));
 		return fw;
 	}
 
-	private FixWrapper createFix(int time, int vLat, int vLong, int crseDegs,
+	public static FixWrapper createFix(int timeMillis, int vLat, int vLong, int crseDegs,
 			int spdKts)
 	{
-		FixWrapper theFix = createFix(time, vLat, vLong);
+		FixWrapper theFix = createFix(timeMillis, vLat, vLong);
 		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
 		theFix.getFix()
 				.setSpeed(
@@ -1002,6 +1057,22 @@ public class TrackWrapper_Test
 		return theFix;
 	}
 
+	public static FixWrapper createFix(int timeMillis, int vLatDeg, int vLatMin, double vLatSec,
+			int vLongDeg, int vLongMin, double vLongSec, int crseDegs,
+			int spdKts)
+	{
+		double vLat = vLatDeg + (vLatMin / 60d) + (vLatSec / 3600d); 
+		double vLong = vLongDeg + (vLongMin / 60d) + (vLongSec / 3600d);
+		FixWrapper theFix = createFix(timeMillis, vLat, vLong);
+		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
+		theFix.getFix()
+				.setSpeed(
+						new WorldSpeed(spdKts, WorldSpeed.Kts)
+								.getValueIn(WorldSpeed.ft_sec) / 3);
+
+		return theFix;
+	}
+	
 	private int trackLength()
 	{
 		Enumeration<Editable> all = _tw.contiguousElements();
@@ -1097,7 +1168,7 @@ public class TrackWrapper_Test
 		// check we're on the new course
 		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
 		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
-		assertEquals("on new course", 0, ts.getCourse(), 0.001);
+		assertEquals("on new course", 270, ts.getCourse(), 1);
 		assertEquals("at new speed", 120, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
 		
 	  // ok, try to turn back!
@@ -1106,8 +1177,8 @@ public class TrackWrapper_Test
 		// check we're on the new course
 		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
 		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
-		assertEquals("on new course", -90, ts.getCourse(), 0.001);
-		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
+		assertEquals("on new course", 385, ts.getCourse(), 1);
+		assertEquals("at original speed", 120, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
 	}
 
 }

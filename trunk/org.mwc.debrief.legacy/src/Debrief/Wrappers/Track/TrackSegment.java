@@ -7,7 +7,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
+import java.util.Vector;
 
+import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
@@ -75,7 +77,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 	 * define the length of the stalk we plot when dragging
 	 * 
 	 */
-	final int len = 200;
+	private final int STALK_LEN = 200;
 
 	/**
 	 * whether to determine this track's positions using DR calculations
@@ -165,9 +167,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 
 		final double gradient = xDelta / yDelta;
 
-		int myLen = len;
+		int myLen = STALK_LEN;
 		if (!forwards)
-			myLen = -len;
+			myLen = -STALK_LEN;
 
 		final Point backPoint = new Point(lastPoint.x + (int) (myLen * gradient),
 				lastPoint.y + myLen);
@@ -330,7 +332,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 			fix.setTrackWrapper(_myTrack);
 		}
 	}
-
+	
 	public void shift(final WorldVector vector)
 	{
 		// add this vector to all my points.
@@ -424,6 +426,53 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 		}
 
 		return _vecTempLastVector;
+	}
+
+	/** switch the sample rate of this track to the supplied frequency
+	 * 
+	 * @param theVal
+	 */
+	public void decimate(HiResDate theVal, TrackWrapper parentTrack)
+	{
+		Vector<FixWrapper> newItems = new Vector<FixWrapper>();
+		boolean oldInterpolateState = parentTrack.getInterpolatePoints();
+		
+		// switch on interpolation
+		parentTrack.setInterpolatePoints(true);
+		
+		// right - sort out what time period we're working through
+		for(long tNow = startDTG().getMicros(); tNow <= endDTG().getMicros(); tNow += theVal.getMicros())
+		{
+			
+			// store the new position
+			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0,tNow));
+			if(matches.length > 0)
+			{
+				FixWrapper newF = (FixWrapper) matches[0];
+				
+				// do we correct the name?
+				if(newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
+				{
+					// reset the name
+					newF.resetName();
+				}
+				
+				newItems.add(newF);
+			}
+		}
+		
+		// ditch our positions
+		this.removeAllElements();
+		
+		// store the new positions
+		for (Iterator<FixWrapper> iterator = newItems.iterator(); iterator.hasNext();)
+		{
+			FixWrapper fix = iterator.next();
+			this.addFix(fix);
+		}
+		
+		// re-instate the interpolate status
+	  parentTrack.setInterpolatePoints(oldInterpolateState);
 	}
 
 }

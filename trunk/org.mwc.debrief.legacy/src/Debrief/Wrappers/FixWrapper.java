@@ -248,8 +248,11 @@ import java.io.Serializable;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.junit.Test;
+
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.Track.TrackSegment;
+import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
@@ -278,7 +281,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   // member variables
   ////////////////////////////////////////
 
-  /**
+  public static final String INTERPOLATED_FIX = "INTERPOLATED";
+
+	/**
    * sort out the version id (recommended to serialisable bits)
    */
   private static final long serialVersionUID = 1L;
@@ -402,9 +407,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   {
   	FixWrapper res = null;
 		
-		// what's the separation
-		WorldVector sep = next.getLocation().subtract(previous.getLocation());
-		
 		// and the time different?
 		long timeDiffMicros = next.getTime().getMicros() - previous.getTime().getMicros();
 		
@@ -413,13 +415,30 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		
 		// sort out the proportion
 		double proportion = (double)thisDelta / (double)timeDiffMicros;
+
+		// LOCATION
+		// what's the separation
+		WorldVector sep = next.getLocation().subtract(previous.getLocation());
+		
+		// do the calcs
+		double dLat = next.getLocation().getLat() - previous.getLocation().getLat();
+		double dLong = next.getLocation().getLong() - previous.getLocation().getLong();
+		double dDepth = next.getLocation().getDepth() - previous.getLocation().getDepth();
+		
+		// sort out the proportions
+		dLat *= proportion;
+		dLong *= proportion;
+		dDepth *= proportion;
 		
 		// and apply it (for both range and depth)
-		WorldVector newSep = new WorldVector(sep.getBearing(), sep.getRange() * proportion, sep.getDepth() * proportion);
+//		WorldVector newSep = new WorldVector(sep.getBearing(), sep.getRange() * proportion, sep.getDepth() * proportion);
 		
 		// cool, sort out the new location
-		WorldLocation newLoc = new WorldLocation(previous.getLocation().add(newSep));
+		WorldLocation newLoc = new WorldLocation(previous.getLocation().getLat() + dLat,
+				previous.getLocation().getLong() + dLong,
+				previous.getDepth() + dDepth);
 		
+		// COURSE + SPEED
 		// calculate the course and speed as being the MLA of the unit
 		double crse = sep.getBearing();
 		final double sepYds = Conversions.Degs2Yds(sep.getRange());
@@ -439,7 +458,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		res.setTrackWrapper(previous.getTrackWrapper());
 		
 		// don't forget to indicate it's interpolated
-		res.setLabel("INTERPOLATED");
+		res.setLabel(INTERPOLATED_FIX);
   	
   	return res;
   }
@@ -981,6 +1000,64 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
       editableTesterSupport.testParams(ed, this);
       ed = null;
     }
+    
+  	
+  	/**
+  	 * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)}
+  	 * .
+  	 */
+  	@Test
+  	public void testInterpolate()
+  	{
+  		FixWrapper fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 3); 
+  		FixWrapper fw2 = TrackWrapper_Test.createFix(200, 2, 1, 2, 3); 
+  		FixWrapper fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
+  		assertEquals("right time", 150, fw3.getTime().getDate().getTime());
+  		assertEquals("right lat", 1.5, fw3.getLocation().getLat(),0001);
+  		assertEquals("right lat", 1, fw3.getLocation().getLong(), 0.0001);
+
+  		fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 3); 
+  		fw2 = TrackWrapper_Test.createFix(200, 2, 2, 2, 3); 
+  		fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
+  		assertEquals("right time", 150, fw3.getTime().getDate().getTime());
+  		assertEquals("right lat", 1.5, fw3.getLocation().getLat(),0001);
+  		assertEquals("right lat", 1.5, fw3.getLocation().getLong(), 0.0001);
+
+  		fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 3); 
+  		fw2 = TrackWrapper_Test.createFix(200, 2, 1, 2, 3); 
+  		fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(140));
+  		assertEquals("right time", 140, fw3.getTime().getDate().getTime());
+  		assertEquals("right lat", 1.4, fw3.getLocation().getLat(),0001);
+  		assertEquals("right lat", 1, fw3.getLocation().getLong(), 0.0001);
+
+  		fw1 = TrackWrapper_Test.createFix(100, 1, 21, 2, 3); 
+  		fw2 = TrackWrapper_Test.createFix(200, 2, 21, 2, 3); 
+  		fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(140));
+  		assertEquals("right time", 140, fw3.getTime().getDate().getTime());
+  		assertEquals("right lat", 1.4, fw3.getLocation().getLat(),0001);
+  		assertEquals("right lat", 21, fw3.getLocation().getLong(), 0.0001);
+
+  		fw1 = TrackWrapper_Test.createFix(100, 41, 21, 2, 3); 
+  		fw2 = TrackWrapper_Test.createFix(200, 42, 21, 2, 3); 
+  		fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(140));
+  		assertEquals("right time", 140, fw3.getTime().getDate().getTime());
+  		assertEquals("right lat", 41.4, fw3.getLocation().getLat(),0001);
+  		assertEquals("right lat", 21, fw3.getLocation().getLong(), 0.0001);
+
+  		fw1 = TrackWrapper_Test.createFix(100, 60,30,0, 31,0,0, 2, 3); 
+  		fw2 = TrackWrapper_Test.createFix(200, 60,15,0, 31,30,0, 2, 3); 
+  		fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
+  		
+  		System.out.println(fw1.getLocation() + ": " + fw1.getLocation().getLat() + ", " + fw1.getLocation().getLong());
+  		System.out.println(fw2.getLocation() + ": " + fw2.getLocation().getLat() + ", " + fw2.getLocation().getLong());
+  		System.out.println(fw3.getLocation() + ": " + fw3.getLocation().getLat() + ", " + fw3.getLocation().getLong());
+  		
+  		
+  		assertEquals("right time", 150, fw3.getTime().getDate().getTime());
+  		assertEquals("right long", 31.25, fw3.getLocation().getLong(), 0.0001);
+  		assertEquals("right lat", 60.375, fw3.getLocation().getLat(),0.001);
+  	}
+    
   }
 
   private static class SplitTrack implements SubjectAction
