@@ -814,8 +814,7 @@ public class RightClickSupport
 			super.addContext(CorePlugin.CMAP_CONTEXT);
 		}
 
-		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
+		private IStatus doIt(Object theValue)
 		{
 			IStatus res = Status.OK_STATUS;
 			for (int cnt = 0; cnt < _subjects.length; cnt++)
@@ -823,7 +822,13 @@ public class RightClickSupport
 				Editable thisSubject = _subjects[cnt];
 				try
 				{
-					_setter.invoke(thisSubject, new Object[] { _newValue });
+					_setter.invoke(thisSubject, new Object[] { theValue });
+
+
+					// and tell everybody  (we only need to do this if the previous call works,
+					// if an exception is thrown we needn't worry about the update
+					fireUpdate();
+					
 				} catch (InvocationTargetException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Setter call failed:"
@@ -842,62 +847,41 @@ public class RightClickSupport
 					res = null;
 				}
 			}
-
-			// and tell everybody
-			fireUpdate();
 			return res;
+			
+		}
+		
+		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
+				throws ExecutionException
+		{
+			return doIt(_newValue);
 		}
 
 		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			IStatus res = Status.OK_STATUS;
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
-			{
-				Editable thisSubject = _subjects[cnt];
-				try
-				{
-					_setter.invoke(thisSubject, new Object[] { _newValue });
-				} catch (Exception e)
-				{
-					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
-							+ thisSubject.getName(), e);
-					res = null;
-				}
-			}
-
-			// and tell everybody
-			fireUpdate();
-
-			return res;
+			return doIt(_newValue);
 		}
 
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			IStatus res = Status.OK_STATUS;
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
-			{
-				Editable thisSubject = _subjects[cnt];
-				try
-				{
-					_setter.invoke(thisSubject, new Object[] { _oldValue });
-				} catch (Exception e)
-				{
-					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
-							+ thisSubject.getName(), e);
-					res = null;
-				}
-			}
-			// and tell everybody
-			fireUpdate();
-
-			return res;
+			return doIt(_oldValue);
 		}
 
 		private void fireUpdate()
 		{
-			_layers.fireModified(_parentLayer);
+			// hmm, the method may have actually changed the data, we need to find out if it 
+			// needs an extend
+			if(_setter.isAnnotationPresent(FireExtended.class))
+			{
+				_layers.fireExtended(null, _parentLayer);
+			}
+			else
+			{
+				// hey, let's do a redraw aswell...
+				_layers.fireModified(_parentLayer);
+			}
 		}
 
 	}
