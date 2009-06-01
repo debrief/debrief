@@ -436,6 +436,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 	{
 		Vector<FixWrapper> newItems = new Vector<FixWrapper>();
 		boolean oldInterpolateState = parentTrack.getInterpolatePoints();
+		FixWrapper lastPositionStored = null;
 		
 		// switch on interpolation
 		parentTrack.setInterpolatePoints(true);
@@ -450,6 +451,24 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 			{
 				FixWrapper newF = (FixWrapper) matches[0];
 				
+				// aah, if we're a relative track we have to use the course from the last interpolated point,
+				// not the last point in the track, duh
+				if(this.getPlotRelative())
+				{
+					if(lastPositionStored != null)
+					{
+						// start off with the course
+						WorldVector offset = newF.getLocation().subtract(lastPositionStored.getLocation());
+						newF.getFix().setCourse(offset.getBearing());
+						
+						// and now the speed
+						double distYds = new WorldDistance(offset.getRange(), WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+						double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) /1000000d;
+						double spdYps = distYds / timeSecs;
+						newF.getFix().setSpeed(spdYps);						
+					}
+				}
+				
 				// do we correct the name?
 				if(newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
 				{
@@ -457,8 +476,13 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 					newF.resetName();
 				}
 				
+				// add to our working list
 				newItems.add(newF);
+
+				// remember the last position - we;re going to be calculating future courses and speeds from it
+				lastPositionStored = newF;
 			}
+			
 		}
 		
 		// ditch our positions
