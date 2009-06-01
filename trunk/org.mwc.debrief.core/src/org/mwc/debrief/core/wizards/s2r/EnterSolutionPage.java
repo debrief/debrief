@@ -54,7 +54,7 @@ public class EnterSolutionPage extends CoreEditableWizardPage
   Text secondNameText;
   protected EnterSolutionPage(ISelection selection) {
 		super(selection, NAME, "Set solution",
-				"This page lets you enter and initial solution", "images/grid_wizard.gif", false);
+				"This page lets you enter an initial solution", "images/grid_wizard.gif", false);
 		
 		_myWrapper = new SolutionDataItem();
   }
