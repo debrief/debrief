@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <!--<!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN">-->
 <!DOCTYPE book PUBLIC "-//OASIS//DTD DocBook XML V4.1.2//EN" "../../contribs/docbook-xml-4.5/docbookx.dtd">
 <?xml-stylesheet href="file:///C:/docbook/docbook-xsl-1.44/html/docbook.xsl" type="text/xsl"?>
@@ -1171,7 +1171,8 @@ Naval Undersea Warfare Center (NUWC)
                     works well in conjunction with the Zoom in button, since this does not take the
                     mouse out of "zoom in" mode -- therefore you can zoom in on areas, click zoom
                     out a couple of times, then zoom in again, all with the minimum of mouse clicks.
-                    The wheel-mouse may also be used to zoom out as described above in <emphasis>Toggle Buttons</emphasis>
+                    The wheel-mouse may also be used to zoom out as described above in
+                      <emphasis>Toggle Buttons</emphasis>
                   </para>
                 </listitem>
               </varlistentry>
@@ -1225,7 +1226,7 @@ Naval Undersea Warfare Center (NUWC)
               </screenshot>
             </figure></para>
         </sect2>
-        <sect2  id="undo_btn">
+        <sect2 id="undo_btn">
           <title>Undo</title>
           <para>
             <application>Debrief</application> contains an unending list of undo-able operations,
@@ -1377,7 +1378,8 @@ Naval Undersea Warfare Center (NUWC)
             >plot</glossterm>. </para>
           <para>These items are contained in two menus; <guilabel>Chart Features</guilabel> and
               <guilabel>Drawing</guilabel>. In <application>Debrief</application>, hover the mouse
-            over them to see what type of item they create. <figure id="chart_features_demo" float="0">
+            over them to see what type of item they create. <figure id="chart_features_demo"
+              float="0">
               <title>Chart features menu</title>
               <screenshot>
                 <mediaobject>
@@ -1538,7 +1540,8 @@ Naval Undersea Warfare Center (NUWC)
               <secondary>Introduction</secondary>
             </indexterm>low-resolution coastline datafile. Whilst it does cover the whole globe, it
             does so at a low resolution, so is only useful for an overview. The vectored chart data
-            discussed later provides a much lower resolution of data. <figure id="coastline_demo" float="0">
+            discussed later provides a much lower resolution of data. <figure id="coastline_demo"
+              float="0">
               <title>Sample of default coastline data.</title>
               <screenshot>
                 <mediaobject>
@@ -1694,8 +1697,8 @@ Naval Undersea Warfare Center (NUWC)
             (called a Path) are added to a Shape which are the connected up to create a Polygon. The
             points in the path may be typed in, double-clicked, or dragged to produce the correct
             polygon. </para>
-          <para>When a new polygon is created, its editor panel will open as shown below: <figure id="polygon_demo"
-              float="0">
+          <para>When a new polygon is created, its editor panel will open as shown below: <figure
+              id="polygon_demo" float="0">
               <title>Initial view of polygon</title>
               <screenshot>
                 <mediaobject>
@@ -2110,7 +2113,8 @@ Naval Undersea Warfare Center (NUWC)
             <tip id="interp_data">
               <para>In Autumn 2005 the Interpolate Points property was added to tracks. When ticked,
                 Debrief interpolates positions between actual data points. The highlight cursor
-                changes appearance when on an interpolated data point.<figure id="interpolate_demo" float="0">
+                changes appearance when on an interpolated data point.<figure id="interpolate_demo"
+                  float="0">
                   <title>Display of an interpolated point</title>
                   <screenshot>
                     <mediaobject>
@@ -2130,7 +2134,8 @@ Naval Undersea Warfare Center (NUWC)
           <title>The Time Controller</title>
           <para>Time is managed within Debrief through the Time Controller. This view displays the
             current serial time, allows control of that time, and provides access to a series of
-            time-related functions in <application>Debrief</application>.<figure id="time_controller_demo" float="0">
+            time-related functions in <application>Debrief</application>.<figure
+              id="time_controller_demo" float="0">
               <title>Time Controller View</title>
               <screenshot>
                 <mediaobject>
@@ -2568,7 +2573,8 @@ Naval Undersea Warfare Center (NUWC)
             and load the data-file named <filename>sen_tracks.xml</filename>. This is a datafile
             produced using <glossterm linkend="g_asset">ASSET</glossterm>, a simulator under
             development at PlanetMayo. </para>
-          <para>Once the tracks are loaded, you will see the view as below: <figure id="tracks_loaded_demo" float="0">
+          <para>Once the tracks are loaded, you will see the view as below: <figure
+              id="tracks_loaded_demo" float="0">
               <title>View with tracks loaded</title>
               <screenshot>
                 <mediaobject>
@@ -2668,7 +2674,8 @@ Naval Undersea Warfare Center (NUWC)
             participant as it moves forward through an exercise serial. </para>
           <para>Now, to return to the original view, select <guilabel>Surface Look</guilabel> from
             the drop-down list. Next rotate the heading to 270 degrees, take the depth down to -010,
-            and zoom in to view the exercise from the stern of the submarine. <figure id="adjusted_3d_demo" float="0">
+            and zoom in to view the exercise from the stern of the submarine. <figure
+              id="adjusted_3d_demo" float="0">
               <title>Adjusted 3-d view</title>
               <screenshot>
                 <mediaobject>
@@ -2984,12 +2991,12 @@ Naval Undersea Warfare Center (NUWC)
             >12:34.00</computeroutput>). Some forms of analysis conducted with Debrief rely on the
             use of relative times, such as a weapon firing where T-Zero is the time of fire, as
             described in <xref linkend="z_zero_times"/>. To show these relative times on the lower
-            axis of the time-variable plot, select <guilabel
-              >RelativeTimes</guilabel> from the time-variable plot property window. Once this mode
-            is selected, times will be shown relative to the last time-zero value set. By default,
-            the times are shown in a normal <computeroutput>HH:mm:ss</computeroutput> format, but 
-            the <guilabel>DateTickUnits</guilabel> drop-down list contains a number of display
-            formats which specifically support presentation of elapsed times. </para>
+            axis of the time-variable plot, select <guilabel>RelativeTimes</guilabel> from the
+            time-variable plot property window. Once this mode is selected, times will be shown
+            relative to the last time-zero value set. By default, the times are shown in a normal
+              <computeroutput>HH:mm:ss</computeroutput> format, but the <guilabel
+            >DateTickUnits</guilabel> drop-down list contains a number of display formats which
+            specifically support presentation of elapsed times. </para>
         </sect2>
       </sect1>
       <!--  Track/time toolbox                                           -->
@@ -3362,7 +3369,8 @@ Naval Undersea Warfare Center (NUWC)
             </indexterm> can either be attached to a text label, or used to highlight a current
             vessel location when stepping through tracks. </para>
           <para>Twenty-two Symbols are provided in 3 sizes. When the 2 smaller sizes are shown, any
-            internal characters (as used in the sonar buoys) are not plotted. <figure id="debrief_symbols" float="0">
+            internal characters (as used in the sonar buoys) are not plotted. <figure
+              id="debrief_symbols" float="0">
               <title>Symbols provided by <application>Debrief</application>
               </title>
               <mediaobject>
@@ -3576,7 +3584,8 @@ Naval Undersea Warfare Center (NUWC)
               <secondary>Configuring Debrief</secondary>
             </indexterm>the <guibutton>VPF Data storage</guibutton> tab of the <guibutton
               >Preferences</guibutton> dialog from the <guimenu>Window</guimenu> menu. Indicate the
-            four data-file locations using the file-browser buttons.<figure id="VPF_Prefs_Demo" float="0">
+            four data-file locations using the file-browser buttons.<figure id="VPF_Prefs_Demo"
+              float="0">
               <title>VPF preferences</title>
               <screenshot>
                 <mediaobject>
@@ -3643,8 +3652,8 @@ Naval Undersea Warfare Center (NUWC)
           <para>Click on the VPF layer to open it up, showing which VPF databases are currently
             loaded. In this example you can see that I have the VMap Level 0 (vmaplv0) data together
             with some Digital Nautical Chart (DNC) data. Each layer shows how many items are on that
-            layer, and the empty check box shows that each layer is not currently visible. <figure id="chart_layers_Demo"
-              float="0">
+            layer, and the empty check box shows that each layer is not currently visible. <figure
+              id="chart_layers_Demo" float="0">
               <title>Layers within Chart Features</title>
               <screenshot>
                 <mediaobject>
@@ -3658,7 +3667,8 @@ Naval Undersea Warfare Center (NUWC)
               >vmaplv0</guilabel> database by clicking on the expand folder symbol. You will see the
             list of VMap themes listed. Later on, feel free to open them up and view the data they
             contain, but for now you will concentrate on the coastlines. The order of the themes may
-            be different on your machine, this is of no concern. <figure id="list_of_vpf_layers" float="0">
+            be different on your machine, this is of no concern. <figure id="list_of_vpf_layers"
+              float="0">
               <title>List of VPF layers</title>
               <screenshot>
                 <mediaobject>
@@ -3692,7 +3702,7 @@ Naval Undersea Warfare Center (NUWC)
               >vmaplv0</guilabel> layer to make that too visible. </para>
           <para>Nothing has yet appeared on the plot, but that is because you are not current over
             any coastline. Now zoom out 6 times until the plot looks like that below: <figure
-            id="first_coastline_demo"  float="0">
+              id="first_coastline_demo" float="0">
               <title>First coastline</title>
               <screenshot>
                 <mediaobject>
@@ -3985,7 +3995,8 @@ Naval Undersea Warfare Center (NUWC)
               <secondary>Configuring Debrief</secondary>
             </indexterm>the <guibutton>ETOPO Data storage</guibutton> tab of the <guibutton
               >Preferences</guibutton> dialog from the <guimenu>Window</guimenu> menu. Indicate the
-            location of your ETOPO.RAW datafile using the file-browser button.<figure id="vpf_prefs" float="0">
+            location of your ETOPO.RAW datafile using the file-browser button.<figure id="vpf_prefs"
+              float="0">
               <title>VPF preferences</title>
               <screenshot>
                 <mediaobject>
@@ -4350,14 +4361,14 @@ Naval Undersea Warfare Center (NUWC)
           <para>When Sensor Contact data is being plotted for a Sensor using relative coordinates,
             Debrief reflects a Sensor Offset distance for that sensor. The sensor offset distance
             denotes the horizontal distance between the centre of the centre and the attack datum of
-            the host platform (+ve forwards, -ve backwards - so towed array data would be -ve).  The
+            the host platform (+ve forwards, -ve backwards - so towed array data would be -ve). The
             location of the start of the sensor contact bearing line is calculated using the current
             value of course for the host platform and the sensor offset value.</para>
           <para>Note, it is not possible to define the sensor offset value in the REP file, it may
-            only be defined from the Properties Window of Debrief NG.  The value is stored safely
+            only be defined from the Properties Window of Debrief NG. The value is stored safely
             when the Debrief plot is saved, however.</para>
           <para>When examining a Sensor in the properties view, you will see that in addition to
-            Sensor Offset, there is a 'Worm in the hole' parameter.   This is a 'placeholder' for a
+            Sensor Offset, there is a 'Worm in the hole' parameter. This is a 'placeholder' for a
             pending feature whereby start of the sensor bearing line is located at the Sensor Offset
             distance back along the host platform track, instead of in a straight line behind the
             host.</para>
@@ -4374,11 +4385,10 @@ Naval Undersea Warfare Center (NUWC)
             <screen>
               <markup>;SENSOR2: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H BBB.B CCC.C FFF.F RRRR yy..yy xx..xx
  ;; date, ownship name, symbology, sensor lat/long (or the single word NULL), bearing (degs)  [or the single word NULL], ambigous bearing (degs) [or the single word NULL], frequency(Hz) [or the single word NULL],  range(yds) [or the single word NULL], sensor name, label (to end of line)</markup>
-            </screen>
-            </para>
+            </screen></para>
           <para>As you can see, unlike other Debrief line formats, this format allows for NULL
             fields. Where the sensor latitude and longitude values are replaced by the single word
-            NULL, Debrief plots this sensor contact using a relative origin.  NULL values may also be 
+            NULL, Debrief plots this sensor contact using a relative origin. NULL values may also be
             provided for the ambiguous sensor bearing and/or detection frequency. </para>
         </sect2>
         <sect2 id="rel_sensor_data">
@@ -4428,18 +4438,19 @@ Naval Undersea Warfare Center (NUWC)
       </sect1>
     </chapter>
     <chapter id="tma_data">
-      <title>TMA solution data</title>
+      <title>Management TMA and TUA solutions</title>
       <sect1 id="more_tma_data">
-        <title>Introduction to TMA data</title>
+        <title>TUA data</title>
         <sect2 id="tma_intro">
           <title>Introduction</title>
           <para>
             <glossterm linkend="g_tma_solution">TMA</glossterm> algorithms are used to produce an
             estimate of range by analysing a sequences of sensor contacts which only contain bearing
             (and optionally range). The output of the algorithm is typically a series of estimated
-            target locations optional estimates for course, speed and depth. Uncertainty in bearing
-            and range may be indicated by representing the target location as an ellipse. </para>
-          <para>TMA contact data is always related to one of the currently loaded tracks, and may be
+            target locations with optional estimates for course, speed and depth. Uncertainty in
+            bearing and range may be indicated by representing the target location as an ellipsoidal
+            Target Uncertainty Area (TUA). </para>
+          <para>TUA contact data is always related to one of the currently loaded tracks, and may be
             represented either as an absolute location (at the centre of the ellipse) or as a range
             and bearing from the nearest point on that loaded track. The strategy for use of
             absolute versus relative data is described earlier in <xref
@@ -4447,9 +4458,9 @@ Naval Undersea Warfare Center (NUWC)
           </para>
         </sect2>
         <sect2 id="pre_tma_data">
-          <title>Preparing TMA Data</title>
-          <para> Sensor data is loaded into Debrief in REP files, just like any other Debrief data.
-            The line format is: <screen>
+          <title>Preparing TUA Data</title>
+          <para> TUA data is loaded into Debrief in REP files, just like any other Debrief data. The
+            line format is: <screen>
               <markup>
 ;TMA_POS: YYMMDD HHMMSS.SSS AAAAAA @@ DD MM SS.SS H DDD MM SS.SS H 
 TT...TT OOO.O  XXXX YYYY  CCC SSS DDD xx.xx 
@@ -4464,7 +4475,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
  minima (yds), course, speed, depth (m), label string
               </markup>
             </screen><note>
-              <para>There are two annotation format to represent TMA solutions (TMA_POS and TMA_RB).
+              <para>There are two annotation format to represent TUA solutions (TMA_POS and TMA_RB).
                 TMA_POS is used to define a TMA solution at a particular location, and TMA_RB is
                 used to define a TMA solution at a specific range and bearing from the current
                 ownship location at that specific DTG. Where a solution ellipse is not known the
@@ -4477,38 +4488,46 @@ track name, ellipse orientation (deg from north),  maxima (yds),
           <para> When (as described above) Debrief plots data using a range and bearing, it follows
             the following procedure: <itemizedlist>
               <listitem>
-                <para>The first time the TMA solution is plotted, it examines its parent track to
-                  find the vessel position nearest to (or greater than) the TMA solution DTG.</para>
+                <para>The first time the TUA solution is plotted, it examines its parent track to
+                  find the vessel position nearest to (or greater than) the TUA solution DTG.</para>
               </listitem>
               <listitem>
-                <para>The TMA solution then calculates the position of its centre relative to this
+                <para>The TUA solution then calculates the position of its centre relative to this
                   origin</para>
               </listitem>
             </itemizedlist></para>
         </sect2>
         <sect2 id="analysing_tma_data">
-          <title>Analysing TMA data</title>
-          <para>When first loaded, TMA data is not <indexterm>
+          <title>Analysing TUA data</title>
+          <para>When first loaded, TUA data is not <indexterm>
               <primary>TMA Data</primary>
               <secondary>Analysing</secondary>
-            </indexterm> made visible, since with any reasonable volume of TMA data the plot quickly
-            becomes illegible. TMA data is switched on and off individually by accessing the whole
-            TMA track, via it&apos;s Track, from the Layer Manager. </para>
+            </indexterm> made visible, since with any reasonable volume of TUA data the plot quickly
+            becomes illegible. TUA data is switched on and off individually by accessing the whole
+            TUA track, via it&apos;s Track, from the Layer Manager. </para>
           <para>It is once in <glossterm linkend="g_snail_trail">snail trail</glossterm> mode that
-            TMA data is most easily analysed. When in snail mode the Snail display mode performs the
+            TUA data is most easily analysed. When in snail mode the Snail display mode performs the
             following processing: <itemizedlist>
               <listitem>
                 <para>For each Track being plotted, the display mode looks to see if it contains any
-                  TMA data.</para>
+                  TUA data.</para>
               </listitem>
               <listitem>
-                <para>It then examines each list of TMA data to see if it&apos;s visible If it is
-                  visible, it plots the current TMA solution (nearest to the <glossterm
-                    linkend="g_tote">Tote</glossterm> time), followed by the TMA solution as
+                <para>It then examines each list of TUA data to see if it&apos;s visible If it is
+                  visible, it plots the current TUA solution (nearest to the <glossterm
+                    linkend="g_tote">Tote</glossterm> time), followed by the TUA solution as
                   disappearing solutions running back through the length indicated in the
                   TrailLength parameter in the properties window. </para>
               </listitem>
             </itemizedlist></para>
+        </sect2>
+      </sect1>
+      <sect1 id="tma_support">
+        <title>TMA Management</title>
+        <sect2>
+          <title>Introduction</title>
+          <para>In addition to being able to display TUAs from third-party TMA implementations,
+            Debrief can be used to </para>
         </sect2>
       </sect1>
     </chapter>
@@ -4536,7 +4555,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
         <para>The <application>Debrief</application> web-site, found at <ulink
             url="http://www.debrief.info">http://www.debrief.info</ulink> provides an introduction
           to <application>Debrief</application>, together with access to this tutorial and a
-            <emphasis>way-in</emphasis> to getting started with Debrief. <figure id="Debrief_Home_Page" float="0">
+            <emphasis>way-in</emphasis> to getting started with Debrief. <figure
+            id="Debrief_Home_Page" float="0">
             <title>Debrief home page</title>
             <screenshot>
               <mediaobject>
@@ -5087,7 +5107,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
   <!-- ********************************************************************** -->
   <part id="reference_guide">
     <title>Reference Guide</title>
-    <partintro id="ref_guide_intro" >
+    <partintro id="ref_guide_intro">
       <para>If the tutorial hasn&apos;t provided you with all of the answers you need, just have a
         look at the pages here in the Reference Guide.</para>
     </partintro>
@@ -5660,7 +5680,8 @@ course, speed, depth (m), label string
                   </itemizedlist></para>
               </listitem>
             </itemizedlist></para>
-          <para>The XML structure adopted within Debrief is as follows: <figure id="debrief_xml" float="0">
+          <para>The XML structure adopted within Debrief is as follows: <figure id="debrief_xml"
+              float="0">
               <title>XML File structure in Debrief</title>
               <mediaobject>
                 <imageobject>
