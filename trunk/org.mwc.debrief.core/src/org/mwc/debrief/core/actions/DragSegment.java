@@ -148,7 +148,7 @@ public class DragSegment extends DragFeature
 		{
 			_dragModes = new Vector<Action>();
 			org.mwc.debrief.core.actions.DragSegment.DragMode translate = new DragMode(
-					"Whole", "Translate whole track");
+					"Translate", "Translate whole track");
 			org.mwc.debrief.core.actions.DragSegment.DragMode rotate = new RotateDragMode();
 			org.mwc.debrief.core.actions.DragSegment.DragMode shear = new ShearDragMode();
 			org.mwc.debrief.core.actions.DragSegment.DragMode stretch = new StretchDragMode();
