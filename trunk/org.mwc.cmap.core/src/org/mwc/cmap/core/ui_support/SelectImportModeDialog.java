@@ -106,6 +106,9 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
    * 
    * @param shell the dialog window
    */
+  /**
+   * @param shell
+   */
   private void createContents(final Shell shell) {
     shell.setLayout(new GridLayout(1, true));
 
@@ -122,13 +125,11 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
 
     radios[0] = new Button(shell, SWT.RADIO);
     radios[0].setText("Dead Reckoning (DR) - positions are calculated using recorded course and speed");
-//    radios[0].setBounds(10, 5, 75, 30);
     radios[0].setData(ImportReplay.IMPORT_AS_DR);
     radios[0].addSelectionListener(this);
 
     radios[1] = new Button(shell, SWT.RADIO);
     radios[1].setText("Over The Ground (OTG) - where positions are plotted according to the recorded location");
- //   radios[1].setBounds(10, 30, 75, 30);
     radios[1].setData(ImportReplay.IMPORT_AS_ATG);
     radios[1].addSelectionListener(this);
     radios[1].setSelection(true);
