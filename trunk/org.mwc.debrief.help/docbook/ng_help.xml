@@ -2153,6 +2153,17 @@ Naval Undersea Warfare Center (NUWC)
                             </mediaobject>
                         </screenshot></para>
                 </sect2>
+                <sect2>
+                    <title>Combining track sections</title>
+                    <para>On occasion, once a series of track segments have been built up (or
+                        created using the Generate TMA wizard) you may with to combine them in order
+                        to make their management easier.  If you wish to keep them as individual
+                        entities instead of merging them into a single new track segment, you may
+                        Combine the track segments.  Performing this operation puts the segments
+                        into a single parent track whilst retaining them within this as single
+                        entities.  This is particularly relevant for TMA Track Segments, for which
+                        you may wish to refine your estimates of course/speed.</para>
+                </sect2>
             </sect1>
         </chapter>
         <chapter id="analysing_data">
@@ -5012,6 +5023,13 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <para>The workflow for creating and manipulating TMA segments is covered in the
                             <emphasis>Managing TMA Solutions</emphasis> cheat sheet in the Debrief
                         online help.</para>
+                </sect2>
+                <sect2 id="GeneratingTracks">
+                    <title>Generating track segments</title>
+                    <para>Debrief allows you to generate a segment of track data from a block of
+                        sensor data - replicating the process conducted on warships.  Data to
+                        support the operation is collected via a wizard, as described in the above
+                        cheat sheet.</para>
                 </sect2>
                 <sect2 id="DraggingTracks">
                     <title>Dragging tracks</title>
