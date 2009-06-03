@@ -5066,7 +5066,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         the track sections longitudinally and transversely.  In the following
                         diagram the lower-right track segment is being dragged inline with the
                         upper-left track segment.  Place the circle/cross hair over the end point of
-                        the fixed track to line the tracks.<screenshot>
+                        the fixed track to align the tracks in both dimensions.<screenshot>
                             <mediaobject>
                                 <imageobject>
                                     <imagedata fileref="figures/DragHighlight.png" width="100%"/>
@@ -5077,8 +5077,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         ends of the track - so the operation is started by dragging one end of the
                         track (once the 'selected' hover highlight is shown). In addition to the
                         specific operations performed at the ends of the target track, all modes
-                        support picking up and dragging the track when it is picked up at its
-                        centre.</para>
+                        support picking up and dragging (translating) the track when it is picked up
+                        at its centre.</para>
                 </sect2>
                 <sect2>
                     <title>Combining tracks</title>
