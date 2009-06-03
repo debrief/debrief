@@ -136,7 +136,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     
 
     final Button rememberBtn = new Button(shell, SWT.CHECK);
-    rememberBtn.setText("Automatically used this mode next time");
+    rememberBtn.setText("Automatically use this mode next time");
     rememberBtn.addSelectionListener(new SelectionListener(){
 		
 			public void widgetSelected(SelectionEvent e)
