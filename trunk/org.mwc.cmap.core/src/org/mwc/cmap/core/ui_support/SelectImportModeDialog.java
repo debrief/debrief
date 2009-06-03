@@ -127,7 +127,7 @@ public class SelectImportModeDialog extends Dialog implements SelectionListener 
     radios[0].addSelectionListener(this);
 
     radios[1] = new Button(shell, SWT.RADIO);
-    radios[1].setText("Across The Ground (ATG) - where positions are plotted according to the recorded location");
+    radios[1].setText("Over The Ground (OTG) - where positions are plotted according to the recorded location");
  //   radios[1].setBounds(10, 30, 75, 30);
     radios[1].setData(ImportReplay.IMPORT_AS_ATG);
     radios[1].addSelectionListener(this);
