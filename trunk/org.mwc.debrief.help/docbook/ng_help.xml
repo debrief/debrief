@@ -1138,8 +1138,15 @@ Naval Undersea Warfare Center (NUWC)
                         To switch from one mode to the other, delete the track then re-import
                         providing the relevant answer to the above dialog.</para>
                     <para>It is possible to direct Debrief to always import using the indicated mode
-                        - by clicking on the Automatically use this mode next time.  Once set to
-                        'automatic', you can switch back to manual selection by </para>
+                        - by clicking on the Automatically use this mode next time. Once set to
+                        'automatic', you can switch back to manual selection using the selections in
+                        the CMAP Preferences dialog:<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/ImportModePreference.png"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
                 </sect2>
             </sect1>
             <sect1 id="moving_around">
@@ -2096,15 +2103,55 @@ Naval Undersea Warfare Center (NUWC)
                         and generally smooth the data. The <link linkend="SingleSidedChanges">2009
                             Single-Sided Reconstruction</link> extensions added functionality to
                         Debrief to perform elementary track operations, including smoothing and
-                        removal of jumps.</para>
+                        removal of jumps. One approach to avoiding the jumps commonly associated
+                        with data from inertial navigation systems is to <link
+                            linkend="import_modes">load the data in DR mode</link>. The alternative
+                        is to move the track before/after the jump to line up the two sections.<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/TrackWithJump.png"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
                 </sect2>
                 <sect2>
                     <title>Splitting track sections</title>
-                    <para>asdf</para>
+                    <para>Before a jump can be removed from a track, the track must be split. To
+                        split a track, first decide where the split should be made, and right-click
+                        on the point where the split should happen (either on the plot or in the
+                        layer manager). The popup menu will provide options to split the track
+                        immediately before or after the indicated point.<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/SplitTrackMenu.png"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
+                    <para>On completion you'll see a visible split in the track, and the track
+                        represented as two segments in the layer manager.<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/TrackAfterSplit.png"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot>The track segments are named according to the DTG of their
+                        start point.  The two track segments can now be manipulated separately
+                        (dragged) using the 'drag track segment' tool as <link
+                            linkend="DraggingTracks">described later</link>.</para>
                 </sect2>
                 <sect2>
                     <title>Joining track sections</title>
-                    <para>asf</para>
+                    <para>Once track segments have been <link linkend="DraggingTracks"
+                        >manipulated</link>, they can be rejoined. To rejoin tracks, select them
+                        both/all in the layer manager (using the <guilabel>Control</guilabel> key as
+                        appropriate). Then right-click and select Merge Tracks as shown below.
+                        Note, you can select which track becomes the 'host'.  <screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/MergeTracks.png"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
                 </sect2>
             </sect1>
         </chapter>
@@ -4966,7 +5013,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             <emphasis>Managing TMA Solutions</emphasis> cheat sheet in the Debrief
                         online help.</para>
                 </sect2>
-                <sect2>
+                <sect2 id="DraggingTracks">
                     <title>Dragging tracks</title>
                     <para>Once TMA segments are present on the Debrief plot they are manipulated
                         using the <guibutton>Drag Track Segment</guibutton> toolbar button <guiicon>
@@ -5007,7 +5054,25 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                                         and speed</para>
                                 </listitem>
                             </varlistentry>
-                        </variablelist></para>
+                        </variablelist><note>
+                            <para>Note, only the Translate and Rotate operations are available for
+                                all track sections. Stretch and Shear are only available for TMA
+                                Segments.</para>
+                        </note>  When in Translate or Rotate mode, the drag-highlight is extended
+                        beyond the first/last point in the track to assist with alignment.  A
+                        target-circle is also plotted on this extended stalk.  This target is
+                        plotted at a distance equal to the distance back to the end-but-one point.
+                        Thus, if you have equi-spaced track data this target can be used to align
+                        the track sections longitudinally and transversely.  In the following
+                        diagram the lower-right track segment is being dragged inline with the
+                        upper-left track segment.  Place the circle/cross hair over the end point of
+                        the fixed track to line the tracks.<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/DragHighlight.png" width="100%"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
                     <para>Note, when the plot is in one of these modes, the operations apply to the
                         ends of the track - so the operation is started by dragging one end of the
                         track (once the 'selected' hover highlight is shown). In addition to the
