@@ -341,7 +341,7 @@ public class ImportReplay extends PlainImporterBase
 	 * 
 	 */
 	public final static String IMPORT_AS_DR = "DR_IMPORT";
-	public final static String IMPORT_AS_ATG = "ATG_IMPORT";
+	public final static String IMPORT_AS_OTG = "OTG_IMPORT";
 	public final static String ASK_THE_AUDIENCE = "ASK_AUDIENCE";
 
 	/**
@@ -532,7 +532,7 @@ public class ImportReplay extends PlainImporterBase
 					
 					TrackSegment initialLayer = null;
 					
-					if (importMode.equals(ImportReplay.IMPORT_AS_ATG))
+					if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
 					{
 						initialLayer = new TrackSegment();
 						initialLayer.setPlotRelative(false);

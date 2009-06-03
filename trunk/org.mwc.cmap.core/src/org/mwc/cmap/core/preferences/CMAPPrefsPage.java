@@ -86,8 +86,8 @@ public class CMAPPrefsPage extends FieldEditorPreferencePage implements
 			_trackModeTags = new String[3][2];
 			_trackModeTags[0][0] = "DR Track";
 			_trackModeTags[0][1] =  ImportReplay.IMPORT_AS_DR;
-			_trackModeTags[1][0] = "ATG Track";
-			_trackModeTags[1][1] = ImportReplay.IMPORT_AS_ATG;
+			_trackModeTags[1][0] = "OTG Track";
+			_trackModeTags[1][1] = ImportReplay.IMPORT_AS_OTG;
 			_trackModeTags[2][0] = "Ask user";
 			_trackModeTags[2][1] = ImportReplay.ASK_THE_AUDIENCE;
 		}
