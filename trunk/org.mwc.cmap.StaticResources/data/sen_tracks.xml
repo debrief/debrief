@@ -1,0 +1,885 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<plot Created="Tue May 26 11:57:59 BST 2009" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Thu May 21 09:50:01 BST 2009"/>
+<session>
+<layers>
+<track InterpolatePoints="false" LineThickness="2" Name="New_SSK" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<colour Value="BLUE"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<sensor LineThickness="1" Name="New_SSK_BB" TrackName="New_SSK" Visible="true" WormInHole="false">
+<colour Value="PURPLE"/>
+<Offset Units="yds" Value="0.000"/>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-85.000" Dtg="700103 030525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<Range Units="yds" Value="29927.000"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-85.000" Dtg="700103 030625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<Range Units="yds" Value="29623.000"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-85.000" Dtg="700103 030725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<Range Units="yds" Value="29277.000"/>
+</sensor_contact>
+<sensor_contact AmbiguousBearing="0.000" Bearing="-85.000" Dtg="700103 030825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<Range Units="yds" Value="28874.000"/>
+</sensor_contact>
+</sensor>
+<TrackSegment Name="Positions" PlotRelative="false" Visible="true">
+<fix Course="243.100" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2831889" Long="52.0640194"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 013525" Label="0135" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2816833" Long="52.0607028"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 013625" Label="0136" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2801778" Long="52.0573861"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 013725" Label="0137" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2786694" Long="52.0540722"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 013825" Label="0138" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2771639" Long="52.0507556"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 013925" Label="0139" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2756583" Long="52.0474389"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014025" Label="0140" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2741528" Long="52.0441222"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014125" Label="0141" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2726444" Long="52.0408056"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014225" Label="0142" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2711389" Long="52.0374917"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014325" Label="0143" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2696333" Long="52.0341750"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014425" Label="0144" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2681250" Long="52.0308583"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014525" Label="0145" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2666194" Long="52.0275417"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014625" Label="0146" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2651139" Long="52.0242278"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014725" Label="0147" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2636056" Long="52.0209111"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014825" Label="0148" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2621000" Long="52.0175944"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 014925" Label="0149" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2605944" Long="52.0142806"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015025" Label="0150" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2590861" Long="52.0109639"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015125" Label="0151" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2575806" Long="52.0076472"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015225" Label="0152" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2560750" Long="52.0043333"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015325" Label="0153" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2545667" Long="52.0010167"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015425" Label="0154" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2530611" Long="51.9977000"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015525" Label="0155" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2515556" Long="51.9943861"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015625" Label="0156" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2500500" Long="51.9910694"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015725" Label="0157" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2485417" Long="51.9877556"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015825" Label="0158" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2470361" Long="51.9844389"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 015925" Label="0159" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2455306" Long="51.9811250"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020025" Label="0200" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2440222" Long="51.9778083"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020125" Label="0201" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2425167" Long="51.9744944"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020225" Label="0202" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2410111" Long="51.9711778"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020325" Label="0203" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2395028" Long="51.9678639"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020425" Label="0204" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2379972" Long="51.9645472"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020525" Label="0205" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2364917" Long="51.9612333"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020625" Label="0206" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2349833" Long="51.9579194"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020725" Label="0207" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2334778" Long="51.9546028"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020825" Label="0208" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2319722" Long="51.9512889"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 020925" Label="0209" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2304639" Long="51.9479722"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021025" Label="0210" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2289583" Long="51.9446583"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021125" Label="0211" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2274528" Long="51.9413444"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021225" Label="0212" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2259444" Long="51.9380306"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021325" Label="0213" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2244389" Long="51.9347139"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021425" Label="0214" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2229333" Long="51.9314000"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021525" Label="0215" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2214250" Long="51.9280861"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021625" Label="0216" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2199194" Long="51.9247694"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021725" Label="0217" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2184139" Long="51.9214556"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021825" Label="0218" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2169056" Long="51.9181417"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 021925" Label="0219" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2154000" Long="51.9148278"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022025" Label="0220" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2138944" Long="51.9115139"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022125" Label="0221" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2123861" Long="51.9081972"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022225" Label="0222" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2108806" Long="51.9048833"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022325" Label="0223" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2093750" Long="51.9015694"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022425" Label="0224" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2078667" Long="51.8982556"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022525" Label="0225" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2063611" Long="51.8949417"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022625" Label="0226" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2048556" Long="51.8916278"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022725" Label="0227" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2033472" Long="51.8883139"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022825" Label="0228" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2018417" Long="51.8850000"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 022925" Label="0229" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2003361" Long="51.8816861"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 023025" Label="0230" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.1988278" Long="51.8783722"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 023125" Label="0231" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.1973222" Long="51.8750583"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 023225" Label="0232" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.1958167" Long="51.8717444"/>
+</centre>
+</fix>
+<fix Course="289.600" Dtg="700103 023325" Label="0233" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.1956111" Long="51.8681417"/>
+</centre>
+</fix>
+<fix Course="336.000" Dtg="700103 023425" Label="0234" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.1978056" Long="51.8654944"/>
+</centre>
+</fix>
+<fix Course="22.500" Dtg="700103 023525" Label="0235" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2010444" Long="51.8654472"/>
+</centre>
+</fix>
+<fix Course="9.600" Dtg="700103 023625" Label="0236" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2042944" Long="51.8661722"/>
+</centre>
+</fix>
+<fix Course="5.300" Dtg="700103 023725" Label="0237" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2076083" Long="51.8665111"/>
+</centre>
+</fix>
+<fix Course="3.100" Dtg="700103 023825" Label="0238" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2109361" Long="51.8667139"/>
+</centre>
+</fix>
+<fix Course="316.700" Dtg="700103 023925" Label="0239" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2139806" Long="51.8654750"/>
+</centre>
+</fix>
+<fix Course="270.200" Dtg="700103 024025" Label="0240" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2152611" Long="51.8621667"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024125" Label="0241" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="40.000" Lat="26.2144472" Long="51.8585917"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024225" Label="0242" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2140611" Long="51.8572444"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024325" Label="0243" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2137222" Long="51.8560667"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024425" Label="0244" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2133806" Long="51.8548861"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024525" Label="0245" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2130417" Long="51.8537083"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024625" Label="0246" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2127000" Long="51.8525278"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024725" Label="0247" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2123611" Long="51.8513500"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024825" Label="0248" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2120194" Long="51.8501694"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 024925" Label="0249" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2116806" Long="51.8489917"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025025" Label="0250" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2113389" Long="51.8478139"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025125" Label="0251" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2110000" Long="51.8466333"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025225" Label="0252" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2106583" Long="51.8454556"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025325" Label="0253" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2103194" Long="51.8442750"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025425" Label="0254" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2099778" Long="51.8430972"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025525" Label="0255" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2096389" Long="51.8419194"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025625" Label="0256" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2092972" Long="51.8407389"/>
+</centre>
+</fix>
+<fix Course="252.200" Dtg="700103 025725" Label="0257" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2089583" Long="51.8395611"/>
+</centre>
+</fix>
+<fix Course="246.100" Dtg="700103 025825" Label="0258" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2085389" Long="51.8384250"/>
+</centre>
+</fix>
+<fix Course="243.100" Dtg="700103 025925" Label="0259" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2080361" Long="51.8373194"/>
+</centre>
+</fix>
+<fix Course="227.600" Dtg="700103 030025" Label="0300" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2074111" Long="51.8363111"/>
+</centre>
+</fix>
+<fix Course="212.200" Dtg="700103 030125" Label="0301" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2065639" Long="51.8355222"/>
+</centre>
+</fix>
+<fix Course="196.700" Dtg="700103 030225" Label="0302" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2055611" Long="51.8350194"/>
+</centre>
+</fix>
+<fix Course="181.200" Dtg="700103 030325" Label="0303" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2044667" Long="51.8348361"/>
+</centre>
+</fix>
+<fix Course="165.700" Dtg="700103 030425" Label="0304" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2033722" Long="51.8349722"/>
+</centre>
+</fix>
+<fix Course="150.200" Dtg="700103 030525" Label="0305" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2023528" Long="51.8354306"/>
+</centre>
+</fix>
+<fix Course="167.300" Dtg="700103 030625" Label="0306" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.2012250" Long="51.8359167"/>
+</centre>
+</fix>
+<fix Course="185.800" Dtg="700103 030725" Label="0307" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="4.800" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1999194" Long="51.8360000"/>
+</centre>
+</fix>
+<fix Course="205.900" Dtg="700103 030825" Label="0308" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.200" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1985528" Long="51.8355583"/>
+</centre>
+</fix>
+<fix Course="227.600" Dtg="700103 030925" Label="0309" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="5.600" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1973278" Long="51.8345333"/>
+</centre>
+</fix>
+<fix Course="250.800" Dtg="700103 031025" Label="0310" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1964889" Long="51.8329556"/>
+</centre>
+</fix>
+<fix Course="266.900" Dtg="700103 031125" Label="0311" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1962417" Long="51.8310222"/>
+</centre>
+</fix>
+<fix Course="271.600" Dtg="700103 031225" Label="0312" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="6.800" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1962833" Long="51.8289417"/>
+</centre>
+</fix>
+<fix Course="273.300" Dtg="700103 031325" Label="0313" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.200" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1963917" Long="51.8267333"/>
+</centre>
+</fix>
+<fix Course="272.900" Dtg="700103 031425" Label="0314" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="7.600" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1964889" Long="51.8243972"/>
+</centre>
+</fix>
+<fix Course="272.500" Dtg="700103 031525" Label="0315" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1965806" Long="51.8219389"/>
+</centre>
+</fix>
+<fix Course="272.100" Dtg="700103 031625" Label="0316" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1966611" Long="51.8193472"/>
+</centre>
+</fix>
+<fix Course="271.700" Dtg="700103 031725" Label="0317" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="8.800" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1967278" Long="51.8166250"/>
+</centre>
+</fix>
+<fix Course="271.200" Dtg="700103 031825" Label="0318" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.300" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1967778" Long="51.8137639"/>
+</centre>
+</fix>
+<fix Course="270.700" Dtg="700103 031925" Label="0319" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.700" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1968111" Long="51.8107667"/>
+</centre>
+</fix>
+<fix Course="270.200" Dtg="700103 032025" Label="0320" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.200" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1968194" Long="51.8076139"/>
+</centre>
+</fix>
+<fix Course="269.700" Dtg="700103 032125" Label="0321" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.700" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1968111" Long="51.8043056"/>
+</centre>
+</fix>
+<fix Course="269.200" Dtg="700103 032225" Label="0322" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.300" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1967694" Long="51.8008333"/>
+</centre>
+</fix>
+<fix Course="268.600" Dtg="700103 032325" Label="0323" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.800" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1966944" Long="51.7971861"/>
+</centre>
+</fix>
+<fix Course="268.000" Dtg="700103 032425" Label="0324" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1965806" Long="51.7933528"/>
+</centre>
+</fix>
+<fix Course="267.300" Dtg="700103 032525" Label="0325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="13.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1964167" Long="51.7893389"/>
+</centre>
+</fix>
+<fix Course="266.600" Dtg="700103 032625" Label="0326" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="13.700" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1962028" Long="51.7851250"/>
+</centre>
+</fix>
+<fix Course="265.900" Dtg="700103 032725" Label="0327" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="14.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1959222" Long="51.7806972"/>
+</centre>
+</fix>
+<fix Course="265.100" Dtg="700103 032825" Label="0328" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1955778" Long="51.7760861"/>
+</centre>
+</fix>
+<fix Course="264.200" Dtg="700103 032925" Label="0329" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1951583" Long="51.7714667"/>
+</centre>
+</fix>
+<fix Course="263.300" Dtg="700103 033025" Label="0330" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1946722" Long="51.7668556"/>
+</centre>
+</fix>
+<fix Course="262.300" Dtg="700103 033125" Label="0331" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1941167" Long="51.7622528"/>
+</centre>
+</fix>
+<fix Course="261.200" Dtg="700103 033225" Label="0332" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1934806" Long="51.7576639"/>
+</centre>
+</fix>
+<fix Course="260.000" Dtg="700103 033325" Label="0333" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1927611" Long="51.7530889"/>
+</centre>
+</fix>
+<fix Course="258.700" Dtg="700103 033425" Label="0334" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1919472" Long="51.7485361"/>
+</centre>
+</fix>
+<fix Course="257.300" Dtg="700103 033525" Label="0335" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1910306" Long="51.7440056"/>
+</centre>
+</fix>
+<fix Course="255.700" Dtg="700103 033625" Label="0336" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1899972" Long="51.7395083"/>
+</centre>
+</fix>
+<fix Course="253.800" Dtg="700103 033725" Label="0337" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1888361" Long="51.7350472"/>
+</centre>
+</fix>
+<fix Course="251.800" Dtg="700103 033825" Label="0338" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1875333" Long="51.7306389"/>
+</centre>
+</fix>
+<fix Course="249.400" Dtg="700103 033925" Label="0339" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1860667" Long="51.7262917"/>
+</centre>
+</fix>
+<fix Course="246.600" Dtg="700103 034025" Label="0340" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1844139" Long="51.7220306"/>
+</centre>
+</fix>
+<fix Course="243.400" Dtg="700103 034125" Label="0341" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1825472" Long="51.7178778"/>
+</centre>
+</fix>
+<fix Course="239.500" Dtg="700103 034225" Label="0342" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1804361" Long="51.7138778"/>
+</centre>
+</fix>
+<fix Course="234.800" Dtg="700103 034325" Label="0343" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1780361" Long="51.7100806"/>
+</centre>
+</fix>
+<fix Course="231.000" Dtg="700103 034425" Label="0344" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1754278" Long="51.7064806"/>
+</centre>
+</fix>
+<fix Course="224.600" Dtg="700103 034525" Label="0345" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1724833" Long="51.7032083"/>
+</centre>
+</fix>
+<fix Course="215.700" Dtg="700103 034625" Label="0346" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1691361" Long="51.7004694"/>
+</centre>
+</fix>
+<fix Course="204.000" Dtg="700103 034725" Label="0347" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1653778" Long="51.6985083"/>
+</centre>
+</fix>
+<fix Course="189.100" Dtg="700103 034825" Label="0348" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="15.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1613083" Long="51.6976361"/>
+</centre>
+</fix>
+<fix Course="172.200" Dtg="700103 034925" Label="0349" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="14.300" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1574111" Long="51.6980861"/>
+</centre>
+</fix>
+<fix Course="155.200" Dtg="700103 035025" Label="0350" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="13.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1539806" Long="51.6996806"/>
+</centre>
+</fix>
+<fix Course="140.700" Dtg="700103 035125" Label="0351" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.900" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1511944" Long="51.7021000"/>
+</centre>
+</fix>
+<fix Course="130.500" Dtg="700103 035225" Label="0352" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.200" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1489889" Long="51.7049389"/>
+</centre>
+</fix>
+<fix Course="124.200" Dtg="700103 035325" Label="0353" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.600" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1471972" Long="51.7078889"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 035425" Label="0354" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1457083" Long="51.7108583"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 035525" Label="0355" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1443028" Long="51.7136778"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 035625" Label="0356" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.000" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1429611" Long="51.7163528"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 035725" Label="0357" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1416861" Long="51.7189000"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 035825" Label="0358" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1404056" Long="51.7214528"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 035925" Label="0359" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1391222" Long="51.7240056"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040025" Label="0400" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1378417" Long="51.7265611"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040125" Label="0401" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1365611" Long="51.7291139"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040225" Label="0402" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1352806" Long="51.7316694"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040325" Label="0403" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1340028" Long="51.7342222"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040425" Label="0404" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1327222" Long="51.7367778"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040525" Label="0405" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1314417" Long="51.7393306"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040625" Label="0406" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1301639" Long="51.7418861"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040725" Label="0407" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1288833" Long="51.7444389"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040825" Label="0408" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1276056" Long="51.7469944"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 040925" Label="0409" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1263250" Long="51.7495500"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 041025" Label="0410" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1250472" Long="51.7521028"/>
+</centre>
+</fix>
+<fix Course="119.100" Dtg="700103 041125" Label="0411" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1237667" Long="51.7546583"/>
+</centre>
+</fix>
+<fix Course="119.100" Dtg="700103 041225" Label="0412" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="9.900" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1224361" Long="51.7573333"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 041325" Label="0413" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.400" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1210361" Long="51.7601361"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 041425" Label="0414" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="10.900" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1195639" Long="51.7630833"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 041525" Label="0415" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.500" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1180194" Long="51.7661806"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 041625" Label="0416" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.100" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1163917" Long="51.7694222"/>
+</centre>
+</fix>
+<fix Course="119.200" Dtg="700103 041725" Label="0417" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.700" SymbolShowing="false" Visible="true">
+<centre>
+<shortLocation Depth="15.000" Lat="26.1146806" Long="51.7728389"/>
+</centre>
+</fix>
+</TrackSegment>
+</track>
+</layers>
+<projection Border="1.100" Relative="false" Type="Flat">
+<tl>
+<shortLocation Depth="40.000" Lat="26.2831889" Long="51.5619776"/>
+</tl>
+<br>
+<shortLocation Depth="15.000" Lat="26.1146806" Long="52.0640194"/>
+</br>
+</projection>
+<gui>
+<tote>
+<primary Name="New_SSK"/>
+</tote>
+<component Type="Stepper">
+<property Name="VectorStretch" Value="1.000"/>
+<property Name="SmallStep" Value="1.0 minutes"/>
+<property Name="LinkPositions" Value="true"/>
+<property Name="Arcs" Value="180"/>
+<property Name="FadePoints" Value="true"/>
+<property Name="CurrentTime" Value="700103 013425"/>
+<property Name="NumRings" Value="3"/>
+<property Name="PointSize" Value="5"/>
+<property Name="PlotTrackName" Value="false"/>
+<property Name="LargeStep" Value="10.0 minutes"/>
+<property Name="AutoStepInterval" Value="1.0 seconds"/>
+<property Name="SpokeSeparation" Value="45"/>
+<property Name="Radius" Value="3000.000"/>
+<property Name="TrailLength" Value="15.0 minutes"/>
+<property Name="Cursor" Value="Normal"/>
+<property Name="Highlighter" Value="Default Highlight"/>
+<property Name="DateFormat" Value="ddHHmm"/>
+</component>
+<Background>
+<colour Value="BLACK"/>
+</Background>
+</gui>
+</session>
+</plot>
