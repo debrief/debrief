@@ -53,6 +53,10 @@
             name="Sensor data"
             parentCategory="org.mwc.debrief.help.cheats"/>
       <category
+            id="org.mwc.debrief.help.cheat_s2r"
+            name="S2R Operations"
+            parentCategory="org.mwc.debrief.help.cheats"/>
+      <category
             id="org.mwc.debrief.help.cheat_tma"
             name="TMA data"
             parentCategory="org.mwc.debrief.help.cheats"/>
@@ -197,6 +201,13 @@
             contentFile="cheat_sheets/trackRecon/MergeTracks.xml"
             id="org.mwc.debrief.help.trackRecon.MergeTracks"
             name="Merging two or more tracks in Debrief"/>            
+
+      <!-- and the S2R bits -->
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
+            contentFile="cheat_sheets/S2R/GroomingTracks.xml"
+            id="org.mwc.debrief.help.s2r.grooming"
+            name="Grooming ownship position tracks"/>            
 
 </extension>
    <extension
