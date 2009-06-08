@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.xyplot.feature"
       label="org.mwc.cmap.xyplot.feature"
-      version="1.0.11">
+      version="1.0.12">
 
    <description>
       [1.0.11] Update to JDK1.6

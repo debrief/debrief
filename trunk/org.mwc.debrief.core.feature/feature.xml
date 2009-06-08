@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.78">
+      version="1.0.79">
 
    <description>
       [1.0.78] Introduce concept of sensor offsets

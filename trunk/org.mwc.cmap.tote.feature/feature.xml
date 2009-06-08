@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.10">
+      version="1.0.11">
 
    <description>
       [1.0.10] Update to JDK1.6
