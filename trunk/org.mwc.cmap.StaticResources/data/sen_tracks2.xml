@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Fri May 01 13:28:38 BST 2009" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Thu Apr 30 15:58:20 BST 2009"/>
+<plot Created="Fri May 01 16:46:25 BST 2009" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Fri May 01 16:11:56 BST 2009"/>
 <session>
 <layers>
-<track InterpolatePoints="false" LineThickness="2" Name="PreFrigate" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" Name="Frigate" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+<SegmentList>
+<TrackSegment>
 <fix Course="149.300" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4728894" Long="51.3579817"/>
@@ -56,10 +58,8 @@
 <shortLocation Depth="0.000" Lat="26.4471005" Long="51.3751064"/>
 </centre>
 </fix>
-</track>
-<track InterpolatePoints="false" LineThickness="2" Name="PreFrigate2" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
-<colour Value="BLUE"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
+</TrackSegment>
+<TrackSegment>
 <fix Course="149.300" Dtg="700103 014425" Label="0144" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4457912" Long="51.4091279"/>
@@ -100,10 +100,6 @@
 <shortLocation Depth="0.000" Lat="26.4257357" Long="51.4224365"/>
 </centre>
 </fix>
-</track>
-<track InterpolatePoints="false" LineThickness="2" Name="Frigate" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
-<colour Value="BLUE"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <fix Course="149.300" Dtg="700103 015225" Label="0152" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="true" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4025639" Long="51.3988167"/>
@@ -834,11 +830,13 @@
 <shortLocation Depth="0.000" Lat="26.1017556" Long="51.7986139"/>
 </centre>
 </fix>
+</TrackSegment>
+</SegmentList>
 </track>
 <track InterpolatePoints="false" LineThickness="2" Name="New_SSK" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<sensor LineThickness="1" Name="New_SSK_BB" TrackName="New_SSK" Visible="false" WormInHole="false">
+<sensor LineThickness="1" Name="New_SSK_BB" TrackName="New_SSK" Visible="true" WormInHole="false">
 <colour Value="RED"/>
 <Offset Units="yds" Value="0.000"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="-85.000" Dtg="700103 030525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
@@ -1638,6 +1636,7 @@
 </centre>
 </sensor_contact>
 </sensor>
+<TrackSegment>
 <fix Course="243.100" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="40.000" Lat="26.2831889" Long="52.0640194"/>
@@ -2458,6 +2457,7 @@
 <shortLocation Depth="15.000" Lat="26.1146806" Long="51.7728389"/>
 </centre>
 </fix>
+</TrackSegment>
 </track>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
 <scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="50000" ScaleStep="10000" Visible="true">
@@ -2474,7 +2474,9 @@
 </br>
 </projection>
 <gui>
-<tote/>
+<tote>
+<primary Name="New_SSK"/>
+</tote>
 <component Type="Stepper">
 <property Name="VectorStretch" Value="1.000"/>
 <property Name="SmallStep" Value="1.0 minutes"/>

@@ -14,7 +14,7 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.debrief.core,
  org.mwc.asset.sample_data,
  org.mwc.cmap.legacy,
- org.eclipse.draw2d;bundle-version="3.4.2"
+ org.eclipse.draw2d
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.asset.core,
  org.mwc.asset.core.property_support

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?pde version="3.5"?>
+<?pde version="3.4"?>
 
-<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="Spring 2009" useFeatures="true">
+<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="true">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/DebriefNGlogo.gif"/>
@@ -55,9 +55,8 @@
       <feature id="org.mwc.debrief.data_feed.feature" version="1.0.1"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.22"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.7"/>
-      <feature id="org.eclipse.rcp" version="3.5.0.v20090307-9RA-FqhFstOCxSdfkxdojLKc"/>
-      <feature id="org.eclipse.platform" version="3.5.0.v20090307-9hD9G-fFtGaZkweci5eapjKEjB6VIxVh7"/>
+      <feature id="org.eclipse.rcp" version="3.4.100.r341_v20080814-989JESIEdAciFYfkZZsBfSwQ2341"/>
+      <feature id="org.eclipse.platform" version="3.4.1.r341_v20080731-9I96EiDElYevwz-p1bP5z-NlAaP7vtX6Utotqsu"/>
    </features>
-
 
 </product>
