@@ -215,5 +215,4 @@ Export-Package:
    MWC.GUI.Properties,
    MWC.GUI",
  Debrief.Wrappers.Track
-Require-Bundle: org.mwc.cmap.legacy,
- org.junit4
+Require-Bundle: org.mwc.cmap.legacy

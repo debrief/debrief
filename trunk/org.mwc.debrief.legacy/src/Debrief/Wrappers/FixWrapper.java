@@ -248,8 +248,6 @@ import java.io.Serializable;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import org.junit.Test;
-
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
@@ -1006,7 +1004,6 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   	 * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)}
   	 * .
   	 */
-  	@Test
   	public void testInterpolate()
   	{
   		FixWrapper fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 3); 

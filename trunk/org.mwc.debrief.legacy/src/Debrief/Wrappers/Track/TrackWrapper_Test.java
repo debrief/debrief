@@ -3,16 +3,11 @@
  */
 package Debrief.Wrappers.Track;
 
-import static org.junit.Assert.assertEquals;
 
 import java.awt.Color;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
 
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
@@ -38,7 +33,7 @@ import MWC.TacticalData.Fix;
  * @author Administrator
  * 
  */
-public class TrackWrapper_Test
+public class TrackWrapper_Test  extends junit.framework.TestCase
 {
 
 	private static final String TRACK_NAME = "test track";
@@ -56,7 +51,6 @@ public class TrackWrapper_Test
 	/**
 	 * @throws java.lang.Exception
 	 */
-	@Before
 	public void setUp() throws Exception
 	{
 		_tw = new TrackWrapper();
@@ -74,7 +68,6 @@ public class TrackWrapper_Test
 	/**
 	 * @throws java.lang.Exception
 	 */
-	@After
 	public void tearDown() throws Exception
 	{
 	}
@@ -82,7 +75,6 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getName()}.
 	 */
-	@Test
 	public void testGetName()
 	{
 		assertEquals("correct name", TRACK_NAME, _tw.getName());
@@ -91,7 +83,6 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getBounds()}.
 	 */
-	@Test
 	public void testGetBounds()
 	{
 		WorldArea correctBounds = new WorldArea(new WorldLocation(1, 1, 0),
@@ -99,7 +90,7 @@ public class TrackWrapper_Test
 		assertEquals("wrong bounds returned", correctBounds, _tw.getBounds());
 	}
 
-	@Test
+	
 	public void testDecimate()
 	{
 		TrackSegment ts1 = new TrackSegment();
@@ -156,7 +147,7 @@ public class TrackWrapper_Test
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)}
 	 * .
 	 */
-	@Test
+	
 	public void testAdd()
 	{
 		assertEquals("start condition", 6, this.trackLength());
@@ -181,7 +172,7 @@ public class TrackWrapper_Test
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#addFix(Debrief.Wrappers.FixWrapper)}.
 	 */
-	@Test
+	
 	public void testAddFix()
 	{
 		assertEquals("start condition", 6, this.trackLength());
@@ -196,7 +187,7 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#fixMoved()}.
 	 */
-	@Test
+	
 	public void testFixMoved()
 	{
 		// now something else
@@ -229,7 +220,7 @@ public class TrackWrapper_Test
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#append(MWC.GUI.Layer)}
 	 * .
 	 */
-	@Test
+	
 	public void testAppend()
 	{
 		TrackWrapper tw2 = new TrackWrapper();
@@ -249,7 +240,7 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#contiguousElements()}.
 	 */
-	@Test
+	
 	public void testContiguousElements()
 	{
 		assertEquals("have initial items", 6, trackLength());
@@ -279,7 +270,7 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#elements()}.
 	 */
-	@Test
+	
 	public void testElements()
 	{
 		Enumeration<Editable> list = _tw.elements();
@@ -316,7 +307,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#filterListTo(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	@Test
+	
 	public void testFilterListTo()
 	{
 		assertEquals("start off with them all visible", 6, countVisibleItems());
@@ -327,7 +318,7 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getEndDTG()}.
 	 */
-	@Test
+	
 	public void testGetEndDTG()
 	{
 		HiResDate dt = _tw.getEndDTG();
@@ -339,7 +330,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#getItemsBetween(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	@Test
+	
 	public void testGetItemsBetween()
 	{
 		assertEquals("found the items", 2, _tw.getItemsBetween(
@@ -355,7 +346,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#getNearestTo(MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	@Test
+	
 	public void testGetNearestTo()
 	{
 		Watchable[] res = _tw.getNearestTo(new HiResDate(300000));
@@ -382,7 +373,7 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getPositions()}.
 	 */
-	@Test
+	
 	public void testGetPositions()
 	{
 		Enumeration<Editable> list = _tw.getPositions();
@@ -399,7 +390,7 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getStartDTG()}.
 	 */
-	@Test
+	
 	public void testGetStartDTG()
 	{
 		HiResDate dt = _tw.getStartDTG();
@@ -411,7 +402,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#getUnfilteredItems(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	@Test
+	
 	public void testGetUnfilteredItems()
 	{
 		assertEquals("found right num ", 3, _tw.getUnfilteredItems(
@@ -421,7 +412,7 @@ public class TrackWrapper_Test
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#numFixes()}.
 	 */
-	@Test
+	
 	public void testNumFixes()
 	{
 		assertEquals("have correct num", 6, _tw.numFixes());
@@ -432,7 +423,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#rangeFrom(MWC.GenericData.WorldLocation)}
 	 * .
 	 */
-	@Test
+	
 	public void testRangeFromWorldLocation()
 	{
 		WorldLocation wl = new WorldLocation(4, 1, 0);
@@ -444,7 +435,7 @@ public class TrackWrapper_Test
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#removeElement(MWC.GUI.Editable)}.
 	 */
-	@Test
+	
 	public void testRemoveElement()
 	{
 		assertEquals("all there", 6, _tw.numFixes());
@@ -459,7 +450,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#shift(MWC.GenericData.WorldLocation, MWC.GenericData.WorldVector)}
 	 * .
 	 */
-	@Test
+	
 	public void testShiftWorldLocationWorldVector()
 	{
 	}
@@ -468,7 +459,7 @@ public class TrackWrapper_Test
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#shift(MWC.GenericData.WorldVector)}.
 	 */
-	@Test
+	
 	public void testShiftWorldVector()
 	{
 	}
@@ -478,7 +469,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#shiftTrack(java.util.Enumeration, MWC.GenericData.WorldVector)}
 	 * .
 	 */
-	@Test
+	
 	public void testShiftTrack()
 	{
 	}
@@ -488,7 +479,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#visibleBetween(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	@Test
+	
 	public void testVisibleBetween()
 	{
 		assertEquals("is vis", false, _tw.visibleBetween(new HiResDate(700000),
@@ -502,7 +493,7 @@ public class TrackWrapper_Test
 	/**
 	 * .
 	 */
-	@Test
+	
 	public void testTMASegment()
 	{
 		// //////////////////////////////////
@@ -617,7 +608,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
 	 * .
 	 */
-	@Test
+	
 	public void testFixAsVector()
 	{
 		TrackSegment ts = new TrackSegment();
@@ -644,7 +635,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
 	 * .
 	 */
-	@Test
+	
 	public void testSplitTrack1()
 	{
 		Vector<TrackSegment> segs = _tw.splitTrack(fw1, true);
@@ -730,7 +721,7 @@ public class TrackWrapper_Test
 	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
 	 * .
 	 */
-	@Test
+	
 	public void testSplitTrack2()
 	{
 		Vector<TrackSegment> segs = _tw.splitTrack(fw1, false);
@@ -740,7 +731,7 @@ public class TrackWrapper_Test
 
 	}
 
-	@Test
+	
 	public void testTrackMerge1()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -774,7 +765,7 @@ public class TrackWrapper_Test
 		assertEquals("fix has new parent", "tw3", fw1.getTrackWrapper().getName());
 	}
 
-	@Test
+	
 	public void testTrackStartEnd()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -808,7 +799,7 @@ public class TrackWrapper_Test
 		assertEquals("fix has new parent", "tw3", fw1.getTrackWrapper().getName());
 	}
 
-	@Test
+	
 	public void testTrackMergeAllSegments()
 	{
 		TrackSegment ts1 = new TrackSegment();
@@ -858,7 +849,7 @@ public class TrackWrapper_Test
 
 	}
 
-	@Test
+	
 	public void testTrackMerge2()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -894,7 +885,7 @@ public class TrackWrapper_Test
 
 	}
 
-	@Test
+	
 	public void testTrackMerge3()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -941,7 +932,7 @@ public class TrackWrapper_Test
 
 	// ////////////
 
-	@Test
+	
 	public void testTrackGroup1()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -990,7 +981,7 @@ public class TrackWrapper_Test
 		assertEquals("track got ditched", 1, theLayers.size());
 	}
 
-	@Test
+	
 	public void testTrackGroupOrder()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -1101,7 +1092,7 @@ public class TrackWrapper_Test
 	/**
 	 * .
 	 */
-	@Test
+	
 	public void testTMASegmentRotate()
 	{
 		
@@ -1144,7 +1135,7 @@ public class TrackWrapper_Test
 	/**
 	 * .
 	 */
-	@Test
+	
 	public void testTMASegmentStretch()
 	{
 		FixWrapper f1 = createFix(0, 1, 1, 270, 12);
