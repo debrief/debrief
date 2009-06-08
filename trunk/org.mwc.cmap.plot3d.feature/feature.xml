@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.plot3d.feature"
       label="org.mwc.cmap.plot3d.feature"
-      version="1.0.10"
+      version="1.0.11"
       provider-name="MWC">
 
    <description url="http://www.example.com/description">

@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.plotviewer.feature"
       label="org.mwc.cmap.plotviewer.feature"
-      version="1.0.23">
+      version="1.0.24">
 
    <description>
       [1.0.23] Prevent null-pointer exception when closing
