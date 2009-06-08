@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.overview.feature"
       label="org.mwc.cmap.overview.feature"
-      version="1.0.6"
+      version="1.0.7"
       provider-name="MWC">
 
    <description>

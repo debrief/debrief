@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Narrative Viewer Plug-in
 Bundle-SymbolicName: org.mwc.cmap.NarrativeViewer;singleton:=true
-Bundle-Version: 1.0.10
+Bundle-Version: 1.0.11
 Bundle-Vendor: borlander@gmail.com
 Require-Bundle: org.eclipse.core.runtime,
  org.eclipse.ui,
