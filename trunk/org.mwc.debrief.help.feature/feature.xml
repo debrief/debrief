@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.help.feature"
       label="org.mwc.debrief.help.feature"
-      version="1.0.22">
+      version="1.0.23">
 
    <description>
       [1.0.22] Include sensor offset details
