@@ -11,7 +11,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Xms40m -Xmx256m  -Xbootclasspath/a:\jre\lib\ext\j3daudio.jar;jre\lib\ext\j3dcore.jar;jre\lib\ext\j3dutils.jar;jre\lib\ext\vecmath.jar</vmArgs>
+      <vmArgs>-Xms128m -Xmx512m  -Xbootclasspath/a:\jre\lib\ext\j3daudio.jar;jre\lib\ext\j3dcore.jar;jre\lib\ext\j3dutils.jar;jre\lib\ext\vecmath.jar</vmArgs>
       <vmArgsWin>-Djava.library.path=.;</vmArgsWin>
    </launcherArgs>
 
