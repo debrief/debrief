@@ -4,6 +4,12 @@
 		style="css/intro.css" name="Sample Extension" path="firststeps/@">
 		<group style-id="content-group"
 			id="orgmwcdebriefcore-introLink-group">
+			<link label="First steps for Debrief"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/intro.html#intro_welcome"
+				style-id="content-link">
+				<text>Welcome to Debrief, it's background and it's history</text>
+			</link>
 			<link style-id="content-link" label="A Debrief walkthrough"
 				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial"
 				id="debrief-tutorial">
@@ -11,11 +17,10 @@
 					Let Debrief itself lead you through your first session
 				</text>
 			</link>
-			<link label="First steps for Debrief"
-				id="debrief-welcome"
-   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/intro.html#intro_welcome"
-				style-id="content-link">
-				<text>Welcome to Debrief, it's background and it's history</text>
+			<link style-id="content-link" label="Grooming ownship data"
+				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.s2r.grooming"
+				id="debrief-viewS2R">
+				<text>Work through tidying a platform track</text>
 			</link>
 		</group>
 	</extensionContent>

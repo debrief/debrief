@@ -16,6 +16,13 @@
 					Learn how to find and open the Debrief error log
 				</text>
 			</link>
+			<link style-id="content-link" label="Debrief support for single sided reconstruction"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/GroomingTrackData.html"
+				id="debrief-viewS2R">
+				<text>
+					Learn how Debrief supports grooming track data and creating TMA solutions
+				</text>
+			</link>
 			<link style-id="content-link" label="Reporting a problem with Debrief"
 				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/debrief_feedback.html&amp;embedTarget=page-content"
 				id="debrief-feedback">
