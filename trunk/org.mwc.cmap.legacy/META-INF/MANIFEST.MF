@@ -861,4 +861,3 @@ Export-Package:
  vrml.field;uses:="vrml,com.sun.j3d.loaders.vrml97.impl",
  vrml.node;uses:="vrml,com.sun.j3d.loaders.vrml97.impl"
 Require-Bundle: org.junit;visibility:=reexport
-Bundle-RequiredExecutionEnvironment: JavaSE-1.6
