@@ -197,13 +197,11 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 				_myScenario.step();
 			}
 
-			@Override
 			public void stop(Object origin, boolean fireUpdate)
 			{
 				_myScenario.pause();
 			}
 
-			@Override
 			public void restart(Object origin, boolean fireUpdate)
 			{
 				_myScenario.restart();

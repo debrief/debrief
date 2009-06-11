@@ -441,7 +441,6 @@ public class ASSETPlotEditor extends EditorPart implements
 
 	}
 
-	@Override
 	public void selectPlottable(Plottable shape, Layer layer)
 	{
 		// ignore it, we don't need to see it here.
