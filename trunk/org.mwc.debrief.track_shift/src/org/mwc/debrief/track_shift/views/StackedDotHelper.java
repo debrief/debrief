@@ -10,22 +10,23 @@ import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.swt.widgets.Composite;
+import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GUI.Editable;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Plottable;
+import MWC.GUI.JFreeChart.ColouredDataItem;
 import MWC.GenericData.HiResDate;
 
 public final class StackedDotHelper
@@ -133,15 +134,16 @@ public final class StackedDotHelper
 
 	/**
 	 * ok, our track has been dragged, calculate the new series of offsets
+	 * @param linePlot 
+	 * @param dotPlot 
 	 * @param onlyVis 
 	 * @param holder 
 	 * @param logger 
 	 * 
 	 * @param currentOffset
 	 *          how far the current track has been dragged
-	 * @return the set of data items to plot
 	 */
-	public TimeSeriesCollection getUpdatedSeries(TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
+	public void updateSeries(XYPlot dotPlot, XYPlot linePlot, TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
 	{
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
@@ -149,22 +151,24 @@ public final class StackedDotHelper
 
 		// did it work?
 		if (_secondaryTrack == null)
-			return null;
+			return ;
 
 		if (_primaryDoublets == null)
-			return null;
+			return ;
 
 		// ok - the tracks have moved. better update the doublets
 		updateDoublets(onlyVis);
 
 		// create the collection of series
-		final TimeSeriesCollection theTimeSeries = new TimeSeriesCollection();
+		final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
+		final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
 
 		// produce a dataset for each track
-		final TimeSeries primarySeries = new TimeSeries(_primaryTrack
+		final TimeSeries errorValues = new TimeSeries(_primaryTrack
 				.getName());
-		final TimeSeries secondarySeries = new TimeSeries(
-				_secondaryTrack.getName());
+		
+		final TimeSeries measuredValues = new TimeSeries("Measured");
+		final TimeSeries calculatedValues = new TimeSeries("Calculated");
 
 		// ok, run through the points on the primary track
 		Iterator<Doublet> iter = _primaryDoublets.iterator();
@@ -173,19 +177,31 @@ public final class StackedDotHelper
 			final Doublet thisD = iter.next();
 
 			final Color thisColor = thisD.getColor();
-			final double thisValue = thisD.calculateError(null, null);
+			final double measuredBearing = thisD.getMeasuredBearing();
+			final double calculatedBearing = thisD.getCalculatedBearing(null,null);
+			final double thisError = thisD.calculateError(measuredBearing, calculatedBearing);
 			final HiResDate currentTime = thisD.getDTG();
 
 			// create a new, correctly coloured data item
 			// HI-RES NOT DONE - should provide FixedMicrosecond structure
-			final ColouredDataItem newItem = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()), thisValue,
+			final ColouredDataItem newError = new ColouredDataItem(
+					new FixedMillisecond(currentTime.getDate().getTime()), thisError,
 					thisColor, false, null);
+
+			final ColouredDataItem mBearing = new ColouredDataItem(
+					new FixedMillisecond(currentTime.getDate().getTime()), measuredBearing,
+					thisColor, false, null);
+
+			final ColouredDataItem cBearing = new ColouredDataItem(
+					new FixedMillisecond(currentTime.getDate().getTime()), calculatedBearing,
+					thisColor, true, null);
 
 			try
 			{
-				// and add it to the series
-				primarySeries.add(newItem);
+				// and add them to the series			
+				errorValues.add(newError);
+				measuredValues.add(mBearing);
+				calculatedValues.add(cBearing);
 			}
 			catch (final SeriesException e)
 			{
@@ -202,42 +218,14 @@ public final class StackedDotHelper
 
 		}
 
-		// ok, run through the points on the primary track
-		iter = _secondaryDoublets.iterator();
-		while (iter.hasNext())
-		{
-			final Doublet thisD = iter.next();
-
-			final Color thisColor = thisD.getColor();
-			final double thisValue = thisD.calculateError(null, null);
-			final HiResDate currentTime = thisD.getDTG();
-
-			// create a new, correctly coloured data item
-			// HI-RES NOT DONE - should have FixedMicrosecond structure
-			final ColouredDataItem newItem = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()), thisValue,
-					thisColor, false, null);
-
-			try
-			{
-				// and add it to the series
-				secondarySeries.add(newItem);
-			}
-			catch (final SeriesException e)
-			{
-				CorePlugin
-						.logError(
-								IStatus.WARNING,
-								"Multiple fixes at same DTG when producing stacked dots - prob ignored",
-								null);
-			}
-		}
-
 		// ok, add these new series
-		theTimeSeries.addSeries(primarySeries);
-		theTimeSeries.addSeries(secondarySeries);
+		errorSeries.addSeries(errorValues);
+		
+		actualSeries.addSeries(measuredValues);
+		actualSeries.addSeries(calculatedValues);
 
-		return theTimeSeries;
+		dotPlot.setDataset(errorSeries);
+		linePlot.setDataset(actualSeries);
 	}
 
 	/**

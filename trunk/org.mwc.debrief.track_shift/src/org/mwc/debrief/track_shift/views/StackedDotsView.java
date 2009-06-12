@@ -2,7 +2,9 @@ package org.mwc.debrief.track_shift.views;
 
 import java.awt.BorderLayout;
 import java.awt.Frame;
+import java.text.SimpleDateFormat;
 import java.util.Iterator;
+import java.util.TimeZone;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
@@ -20,12 +22,11 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
-import org.jfree.chart.axis.ValueAxis;
-import org.jfree.chart.labels.XYToolTipGenerator;
+import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.Range;
-import org.jfree.data.time.TimeSeriesCollection;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -34,13 +35,12 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
-import MWC.GUI.JFreeChart.DateAxisEditor;
-import MWC.GUI.JFreeChart.DatedToolTipGenerator;
-import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
+import MWC.GUI.JFreeChart.DatedToolTipGenerator;
+import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.Layers.DataListener;
 
 /**
@@ -55,9 +55,15 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 	private PartMonitor _myPartMonitor;
 
 	/**
-	 * the plot we're plotting to plot
+	 * the errors we're plotting
 	 */
-	XYPlot _myPlot;
+	XYPlot _dotPlot;
+
+	/**
+	 * and the actual values
+	 * 
+	 */
+	XYPlot _linePlot;
 
 	/**
 	 * legacy helper class
@@ -114,6 +120,8 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 	private Vector<Action> _customActions;
 
+	private Action _autoResize;
+
 	/**
 	 * The constructor.
 	 */
@@ -126,16 +134,21 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		makeActions();
 	}
 
-
 	private void contributeToActionBars()
 	{
 		final IActionBars bars = getViewSite().getActionBars();
 		fillLocalPullDown(bars.getMenuManager());
-		 fillLocalToolBar(bars.getToolBarManager());
+		fillLocalToolBar(bars.getToolBarManager());
 	}
 
 	private void fillLocalToolBar(IToolBarManager toolBarManager)
 	{
+		// fit to window
+		toolBarManager.add(_autoResize);
+
+		// and a separator
+		toolBarManager.add(new Separator());
+
 		Vector<Action> actions = DragSegment.getDragModes();
 		for (Iterator<Action> iterator = actions.iterator(); iterator.hasNext();)
 		{
@@ -143,7 +156,6 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 			toolBarManager.add(action);
 		}
 	}
-
 
 	/**
 	 * This is a callback that will allow us to create the viewer and initialize
@@ -181,38 +193,51 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 	{
 
 		// first create the x (time) axis
+		SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
+		_df.setTimeZone(TimeZone.getTimeZone("GMT"));
+
 		final DateAxis xAxis = new DateAxis("");
+		xAxis.setDateFormatOverride(_df);
 
-		xAxis.setStandardTickUnits(DateAxisEditor
-				.createStandardDateTickUnitsAsTickUnits());
-
-		// now the y axis, inverting it if applicable
-		final ValueAxis yAxis = new NumberAxis("Error (degs)");
+		// xAxis.setStandardTickUnits(DateAxisEditor
+		// .createStandardDateTickUnitsAsTickUnits());
 
 		// create the special stepper plot
-		_myPlot = new XYPlot();
-		_myPlot.setDomainAxis(xAxis);
-		_myPlot.setRangeAxis(yAxis);
-		
-		_myPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-		_myPlot.setOrientation(PlotOrientation.HORIZONTAL);
-		
-		// create the bit to create custom tooltips
-		final XYToolTipGenerator tooltipGenerator = new DatedToolTipGenerator();
+		_dotPlot = new XYPlot();
+		_dotPlot.setRangeAxis(new NumberAxis("Error (degs)"));
+		_dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
+		_dotPlot.setRenderer(new ColourStandardXYItemRenderer(
+				new DatedToolTipGenerator(), null, _dotPlot));
 
-		// and the bit to plot individual points in discrete colours
-		_myPlot.setRenderer(new ColourStandardXYItemRenderer(tooltipGenerator, null, _myPlot));
+		_linePlot = new XYPlot();
+		_linePlot.setRangeAxis(new NumberAxis("Absolute (degs)"));
+		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
+		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
+				new DatedToolTipGenerator(), null, _linePlot);
+		lineRend.setSeriesShapesVisible(1, false);
+		_linePlot.setRenderer(lineRend);
+
+		// set the y axes to autocalculate
+		_dotPlot.getRangeAxis().setAutoRange(true);
+		_linePlot.getRangeAxis().setAutoRange(true);
+
+		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(xAxis);
+		combined.add(_linePlot);
+		combined.add(_dotPlot);
+		combined.setOrientation(PlotOrientation.HORIZONTAL);
+
 		// put the plot into a chart
-		_myChart = new NewFormattedJFreeChart("Bearing error", null, _myPlot, false);
+		_myChart = new NewFormattedJFreeChart("Bearing error", null, combined,
+				false);
+
 		_myChart.setShowSymbols(true);
 		// shrink the title
 		_myChart.setTitleFont(_myChart.getTitleFont().deriveFont(8));
-		_myChart.setTitle("Bearing Error");
-		
+		_myChart.setTitle("Bearing");
 
 		final ChartPanel plotHolder = new ChartPanel(_myChart);
 		plotHolder.setMouseZoomable(true, true);
-		plotHolder.setDisplayToolTips(false);
+		plotHolder.setDisplayToolTips(true);
 
 		// and insert into the panel
 		plotControl.add(plotHolder, BorderLayout.CENTER);
@@ -227,7 +252,7 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		System.out.println("disposing of stacked dots");
 		// get parent to ditch itself
 		super.dispose();
-		
+
 		// ditch the actions
 		_customActions.removeAllElements();
 
@@ -278,6 +303,26 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 	private void makeActions()
 	{
+
+		_autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+				boolean val = _autoResize.isChecked();
+				// ok - redraw the plot we may have changed the axis centreing
+				_linePlot.getRangeAxis().setAutoRange(val);
+				_linePlot.getDomainAxis().setAutoRange(val);
+				_dotPlot.getRangeAxis().setAutoRange(val);
+				_dotPlot.getDomainAxis().setAutoRange(val);
+			}
+		};
+		_autoResize.setChecked(true);
+		_autoResize.setToolTipText("Keep plot sized to show all data");
+		_autoResize.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/fit_to_size.png"));
+
 		_centreYAxis = new Action("Center Y axis on origin", IAction.AS_CHECK_BOX)
 		{
 			@Override
@@ -296,7 +341,7 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 		// get an error logger
 		final ErrorLogger logger = this;
-		
+
 		_onlyVisible = new Action("Only draw dots for visible data points",
 				IAction.AS_CHECK_BOX)
 		{
@@ -305,13 +350,14 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 			public void run()
 			{
 				super.run();
-				
+
 				// set the title, so there's something useful in there
 				_myChart.setTitle("Bearing Error");
-				
+
 				// we need to get a fresh set of data pairs - the number may have
 				// changed
-				_myHelper.initialise(_theTrackDataListener, true, _onlyVisible.isChecked(), _holder, logger);
+				_myHelper.initialise(_theTrackDataListener, true, _onlyVisible
+						.isChecked(), _holder, logger);
 
 				// and a new plot please
 				updateStackedDots();
@@ -364,28 +410,27 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 	void updateStackedDots()
 	{
 
-		// get the current set of data to plot
-		final TimeSeriesCollection newData = _myHelper
-				.getUpdatedSeries(_theTrackDataListener, _onlyVisible.isChecked(), _holder, this);
-
-		if (_centreYAxis.isChecked())
+		if (_autoResize.isChecked())
 		{
-			// set the y axis to autocalculate
-			_myPlot.getRangeAxis().setAutoRange(true);
+			_dotPlot.getRangeAxis().setAutoRange(true);
+			_dotPlot.getDomainAxis().setAutoRange(true);
+			_linePlot.getRangeAxis().setAutoRange(true);
+			_linePlot.getDomainAxis().setAutoRange(true);
 		}
 
-		// store the new data (letting it autocalcualte)
-		_myPlot.setDataset(newData);
+		// update the current datasets
+		_myHelper.updateSeries(_dotPlot, _linePlot, _theTrackDataListener,
+				_onlyVisible.isChecked(), _holder, this);
 
 		// we will only centre the y-axis if the user hasn't performed a zoom
 		// operation
 		if (_centreYAxis.isChecked())
 		{
 			// do a quick fudge to make sure zero is in the centre
-			final Range rng = _myPlot.getRangeAxis().getRange();
+			final Range rng = _dotPlot.getRangeAxis().getRange();
 			final double maxVal = Math.max(Math.abs(rng.getLowerBound()), Math
 					.abs(rng.getUpperBound()));
-			_myPlot.getRangeAxis().setRange(-maxVal, maxVal);
+			_dotPlot.getRangeAxis().setRange(-maxVal, maxVal);
 		}
 	}
 
@@ -398,21 +443,29 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 				.getPartService());
 
 		final ErrorLogger logger = this;
-		
+
 		_myPartMonitor.addPartListener(TrackManager.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						// cool, remember about it.
-						_theTrackDataListener = (TrackManager) part;
-						
-						// set the title, so there's something useful in there
-						_myChart.setTitle("Bearing Error");
+						// is it a new one?
+						if (part != _theTrackDataListener)
+						{
+							// cool, remember about it.
+							_theTrackDataListener = (TrackManager) part;
 
-						// ok - fire off the event for the new tracks
-						_myHelper.initialise(_theTrackDataListener, false, _onlyVisible.isChecked(), _holder, logger);
+							// set the title, so there's something useful in there
+							_myChart.setTitle("Bearing Error");
+
+							// ok - fire off the event for the new tracks
+							_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
+									.isChecked(), _holder, logger);
+							
+							// just in case we're ready to start plotting, go for it!
+							updateStackedDots();
+						}
 
 					}
 				});
@@ -434,9 +487,6 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						// ok - let's start off with a clean plot
-						_myPlot.setDataset(null);
-
 						// cool, remember about it.
 						final TrackDataProvider dataP = (TrackDataProvider) part;
 
@@ -455,18 +505,20 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 						// is this the one we're already listening to?
 						if (_myTrackDataProvider != dataP)
 						{
+							// ok - let's start off with a clean plot
+							_dotPlot.setDataset(null);
+
 							// nope, better stop listening then
 							if (_myTrackDataProvider != null)
 								_myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
+
+							// ok, start listening to it anyway
+							_myTrackDataProvider = dataP;
+							_myTrackDataProvider.addTrackShiftListener(_myShiftListener);
+
+							// hey - fire a dot update
+							updateStackedDots();
 						}
-
-						// ok, start listening to it anyway
-						_myTrackDataProvider = dataP;
-						_myTrackDataProvider.addTrackShiftListener(_myShiftListener);
-
-						// hey - fire a dot update
-						updateStackedDots();
-
 					}
 				});
 
@@ -510,7 +562,8 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 								public void dataReformatted(Layers theData, Layer changedLayer)
 								{
-									_myHelper.initialise(_theTrackDataListener, false, _onlyVisible.isChecked(), _holder, logger);
+									_myHelper.initialise(_theTrackDataListener, false,
+											_onlyVisible.isChecked(), _holder, logger);
 									updateStackedDots();
 								}
 							};

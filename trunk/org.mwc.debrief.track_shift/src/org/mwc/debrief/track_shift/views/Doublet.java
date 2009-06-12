@@ -45,7 +45,25 @@ public final class Doublet
 	 *          if the target track has been dragged
 	 * @return
 	 */
-	public double calculateError(final WorldVector sensorOffset,
+	public double calculateError(double measuredBearing, double calcBearing)
+	{
+		double theError = measuredBearing - calcBearing;
+
+		while (theError > 180)
+			theError -= 360.0;
+
+		while (theError < -180)
+			theError += 360.0;
+
+		return theError;
+	}
+	
+	public double getMeasuredBearing()
+	{
+		return _sensor.getBearing();
+	}
+
+	public double getCalculatedBearing(final WorldVector sensorOffset,
 			final WorldVector targetOffset)
 	{
 		// copy our locations
@@ -61,22 +79,12 @@ public final class Doublet
 		// calculate the current bearing
 		final WorldVector error = _workingTargetLocation
 				.subtract(_workingSensorLocation);
-		double thisError = error.getBearing();
-		thisError = Conversions.Rads2Degs(thisError);
-
-		// and calculate the bearing error
-		final double measuredBearing = _sensor.getBearing();
-		thisError = measuredBearing - thisError;
-
-		while (thisError > 180)
-			thisError -= 360.0;
-
-		while (thisError < -180)
-			thisError += 360.0;
-
-		return thisError;
+		double calcBearing = error.getBearing();
+		calcBearing = Conversions.Rads2Degs(calcBearing);
+		
+		return calcBearing;
 	}
-
+	
 	/**
 	 * get the colour of this sensor fix
 	 */
