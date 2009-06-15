@@ -82,6 +82,9 @@ public final class Doublet
 		double calcBearing = error.getBearing();
 		calcBearing = Conversions.Rads2Degs(calcBearing);
 		
+		if(calcBearing < 0)
+			calcBearing += 360;
+		
 		return calcBearing;
 	}
 	
