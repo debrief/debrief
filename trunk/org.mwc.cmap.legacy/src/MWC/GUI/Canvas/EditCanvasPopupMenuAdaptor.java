@@ -64,10 +64,13 @@ package MWC.GUI.Canvas;
 //
 
 
-import MWC.GUI.Tools.Chart.*;
-import MWC.GUI.*;
-import MWC.GUI.Properties.*;
-import java.io.*;
+import java.io.Serializable;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Tools.Chart.RightClickEdit;
 
 public class EditCanvasPopupMenuAdaptor extends RightClickEdit.BaseMenuCreator implements Serializable
 {

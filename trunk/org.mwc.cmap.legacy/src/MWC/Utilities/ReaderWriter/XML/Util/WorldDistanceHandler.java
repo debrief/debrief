@@ -10,10 +10,11 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import MWC.GenericData.WorldDistance;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
+
+import MWC.GenericData.WorldDistance;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 abstract public class WorldDistanceHandler extends MWCXMLReader

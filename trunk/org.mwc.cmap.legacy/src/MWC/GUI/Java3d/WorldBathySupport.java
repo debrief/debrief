@@ -7,21 +7,30 @@
  */
 package MWC.GUI.Java3d;
 
-import MWC.GUI.ETOPO.BathyProvider;
-import MWC.GenericData.WorldLocation;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldDistance;
+import java.awt.Color;
 
-import javax.media.j3d.*;
-import javax.vecmath.Point3d;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.LineArray;
+import javax.media.j3d.Material;
+import javax.media.j3d.PolygonAttributes;
+import javax.media.j3d.QuadArray;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Switch;
+import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
 import javax.vecmath.Point3f;
 
 import org.j3d.geom.GeometryData;
 import org.j3d.geom.GeometryGenerator;
 import org.j3d.geom.terrain.ElevationGridGenerator;
 
-import java.awt.*;
+import MWC.GUI.ETOPO.BathyProvider;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 
 /**********************************************************************
  * class providing support utilities for creating bathy data in 3-d

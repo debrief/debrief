@@ -39,8 +39,8 @@ package MWC.GUI.Tools.Chart.Swing;
 // Initial revision
 //
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Chart.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Tools.Chart.CursorPosition;
 
 public class SwingCursorPosition extends CursorPosition
 {

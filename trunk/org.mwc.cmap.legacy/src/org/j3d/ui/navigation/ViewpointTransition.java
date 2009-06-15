@@ -16,10 +16,12 @@ package org.j3d.ui.navigation;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.media.j3d.View;
 import javax.swing.Timer;
-
-import javax.media.j3d.*;
-import javax.vecmath.*;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
 // Application specific imports
 // none

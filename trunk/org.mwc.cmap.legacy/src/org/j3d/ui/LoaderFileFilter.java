@@ -11,9 +11,9 @@ package org.j3d.ui;
 
 // Standard imports
 import java.io.File;
+
 import javax.swing.filechooser.FileFilter;
 
-// Application specific imports
 import org.j3d.util.device.FileLoaderDescriptor;
 
 /**

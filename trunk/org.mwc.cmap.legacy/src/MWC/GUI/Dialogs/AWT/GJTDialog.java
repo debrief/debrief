@@ -1,7 +1,11 @@
 package MWC.GUI.Dialogs.AWT;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Point;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class GJTDialog extends Dialog {
 	/**

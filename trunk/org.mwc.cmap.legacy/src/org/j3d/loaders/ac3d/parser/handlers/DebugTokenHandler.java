@@ -12,8 +12,9 @@
 
 package org.j3d.loaders.ac3d.parser.handlers;
 
-import org.j3d.loaders.ac3d.models.*;
-import org.j3d.loaders.ac3d.parser.exceptions.*;
+import org.j3d.loaders.ac3d.models.Ac3dMaterial;
+import org.j3d.loaders.ac3d.models.Ac3dObject;
+import org.j3d.loaders.ac3d.parser.exceptions.AC3DParseException;
 
 
 /**

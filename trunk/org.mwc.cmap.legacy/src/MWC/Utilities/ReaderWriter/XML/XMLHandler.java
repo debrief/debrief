@@ -6,13 +6,17 @@
 
 package MWC.Utilities.ReaderWriter.XML;
 
-import org.xml.sax.*;
-
 import java.io.CharArrayWriter;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.TimeZone;
 import java.util.Vector;
+
+import org.xml.sax.AttributeList;
+import org.xml.sax.DocumentHandler;
+import org.xml.sax.HandlerBase;
+import org.xml.sax.Parser;
+import org.xml.sax.SAXException;
 
 /**
  * @author IAN MAYO

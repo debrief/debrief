@@ -112,16 +112,18 @@ package MWC.GUI.Chart.Painters;
 //
 
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GUI.Plottable;
-import MWC.GUI.Properties.*;
-import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
+import MWC.GUI.Properties.DiagonalLocationPropertyEditor;
+import MWC.GUI.Properties.UnitsPropertyEditor;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Class to plot a scale onto a plot

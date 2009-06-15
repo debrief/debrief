@@ -66,8 +66,10 @@ package MWC.GUI.Swing;
 // Initial revision
 //
 
-import javax.swing.*;
-import MWC.GUI.*;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+
+import MWC.GUI.StatusBar;
 
 /**
  * Class providing Swing implementation of StatusBar.

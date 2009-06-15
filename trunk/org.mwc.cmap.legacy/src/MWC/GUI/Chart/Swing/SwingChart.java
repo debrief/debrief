@@ -94,19 +94,28 @@
 
 package MWC.GUI.Chart.Swing;
 
-import MWC.GUI.*;
-import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GUI.Canvas.Swing.SwingCanvas;
-import MWC.GenericData.WorldArea;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
 import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
+
+import javax.swing.ImageIcon;
+
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GUI.Canvas.Swing.SwingCanvas;
+import MWC.GenericData.WorldArea;
 
 
 /**

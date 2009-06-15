@@ -129,14 +129,25 @@ package MWC.GUI.Chart.Painters;
 // Initial revision
 //
 
-import java.awt.*;
-import java.beans.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.Serializable;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.*;
-import MWC.GUI.Coast.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Coast.CoastSegment;
+import MWC.GUI.Coast.Coastline;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Errors.Trace;
 
 public class CoastPainter implements Runnable, Serializable, Plottable

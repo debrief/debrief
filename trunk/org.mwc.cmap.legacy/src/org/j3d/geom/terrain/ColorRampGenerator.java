@@ -13,7 +13,6 @@ package org.j3d.geom.terrain;
 import javax.vecmath.Color3f;
 import javax.vecmath.Color4f;
 
-// Application specific imports
 import org.j3d.geom.GeometryData;
 import org.j3d.geom.InvalidArraySizeException;
 import org.j3d.util.interpolator.ColorInterpolator;

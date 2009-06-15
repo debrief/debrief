@@ -1,6 +1,6 @@
 package MWC.GUI.JFreeChart;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.Serializable;
 
 import org.jfree.data.time.FixedMillisecond;

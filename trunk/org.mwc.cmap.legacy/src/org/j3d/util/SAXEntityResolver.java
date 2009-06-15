@@ -10,8 +10,8 @@
 package org.j3d.util;
 
 // Standard imports
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;

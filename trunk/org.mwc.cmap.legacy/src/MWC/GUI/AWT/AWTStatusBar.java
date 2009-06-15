@@ -58,11 +58,19 @@
 // Initial revision
 //
 
-import java.awt.*;
-import MWC.GUI.*;
-import MWC.GUI.Properties.UnitsPropertyEditor;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Insets;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.Rectangle;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 
-import java.beans.*;
+import MWC.GUI.Editable;
+import MWC.GUI.StatusBar;
+import MWC.GUI.Properties.UnitsPropertyEditor;
 
 public class AWTStatusBar extends Panel implements StatusBar
 {

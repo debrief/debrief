@@ -141,9 +141,9 @@
 
 package MWC.GenericData;
 
-import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
-
 import java.io.Serializable;
+
+import MWC.Algorithms.EarthModels.CompletelyFlatEarth;
 
 
 /**

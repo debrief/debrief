@@ -205,16 +205,12 @@
 
 package MWC.GUI.Canvas.Swing;
 
-import MWC.Algorithms.PlainProjection;
-import MWC.Algorithms.Projections.FlatProjection;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GUI.Properties.BoundedInteger;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
@@ -224,6 +220,15 @@ import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.Algorithms.Projections.FlatProjection;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GUI.Properties.BoundedInteger;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 
 /**

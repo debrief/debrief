@@ -75,14 +75,18 @@ package MWC.GUI.Properties.Swing;
 // Initial revision
 //
 
-import MWC.GenericData.HiResDate;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import MWC.GUI.Dialogs.DialogFactory;
-
-import javax.swing.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
+
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import MWC.GUI.Dialogs.DialogFactory;
+import MWC.GenericData.HiResDate;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public class SwingDatePropertyEditor extends
   MWC.GUI.Properties.DatePropertyEditor implements java.awt.event.FocusListener

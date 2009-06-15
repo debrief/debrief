@@ -21,7 +21,6 @@ import java.awt.event.MouseEvent;
 
 import javax.media.j3d.Canvas3D;
 
-// Application specific imports
 import org.j3d.util.ImageLoader;
 
 /**

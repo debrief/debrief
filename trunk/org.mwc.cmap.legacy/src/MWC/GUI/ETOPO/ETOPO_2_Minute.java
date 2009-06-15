@@ -10,12 +10,16 @@
  */
 package MWC.GUI.ETOPO;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Chart.Painters.SpatialRasterPainter;
 import MWC.GUI.Properties.LineWidthPropertyEditor;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public final class ETOPO_2_Minute extends SpatialRasterPainter
 {

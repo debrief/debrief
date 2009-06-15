@@ -1,6 +1,7 @@
 package MWC.GUI.Swing;
 
-import javax.swing.*;
+import javax.swing.JTextArea;
+import javax.swing.LookAndFeel;
 
 /**
  * Created by IntelliJ IDEA.

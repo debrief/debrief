@@ -87,14 +87,20 @@
 
 package MWC.GUI.Shapes;
 
-import java.awt.*;
-import java.beans.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Collection;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Properties.SteppingBoundedInteger;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * Class representing a cart-wheel type shape - drawn with inner and outer radiuses, with

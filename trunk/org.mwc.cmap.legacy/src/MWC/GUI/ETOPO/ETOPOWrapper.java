@@ -8,12 +8,20 @@
  */
 package MWC.GUI.ETOPO;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.geom.Dimension2D;
 import java.awt.image.MemoryImageSource;
 
-import MWC.GUI.*;
-import MWC.GUI.Chart.Painters.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Chart.Painters.ETOPOPainter;
+import MWC.GUI.Chart.Painters.SpatialRasterPainter;
 import MWC.GenericData.WorldLocation;
 
 import com.bbn.openmap.layer.etopo.ETOPOLayer;

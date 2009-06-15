@@ -77,9 +77,9 @@
 
 package MWC.GUI.Dialogs.Swing;
 
-import java.io.*;
-import javax.swing.*;
-//import javax.swing.filechooser.*;
+import java.io.File;
+
+import javax.swing.JFileChooser;
 
 /** AWT implementation of getting a file
  */

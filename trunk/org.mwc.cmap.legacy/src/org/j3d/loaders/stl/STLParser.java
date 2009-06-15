@@ -11,10 +11,10 @@
 
 package org.j3d.loaders.stl;
 
-import java.net.URL;
 import java.awt.Component;
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.net.URL;
 
 /**
  * Abstract base class for parsing STL (stereolithography) files. Subclasses

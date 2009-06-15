@@ -76,14 +76,22 @@
 
 package MWC.GUI.Shapes;
 
-import java.awt.*;
-import java.beans.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Properties.Swing.SwingWorldPathPropertyEditor;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldPath;
+import MWC.GenericData.WorldVector;
 
 public class PolygonShape extends PlainShape implements Serializable, Editable, DraggableItem, HasDraggableComponents
 {

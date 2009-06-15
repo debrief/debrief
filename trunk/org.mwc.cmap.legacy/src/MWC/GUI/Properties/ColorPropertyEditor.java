@@ -72,7 +72,7 @@ package MWC.GUI.Properties;
 // Initial revision
 //
 
-import java.awt.*;
+import java.awt.Color;
 import java.beans.PropertyEditorSupport;
 import java.util.Enumeration;
 import java.util.Vector;

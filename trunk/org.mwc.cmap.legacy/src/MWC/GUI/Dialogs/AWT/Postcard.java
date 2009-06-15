@@ -1,6 +1,8 @@
 package MWC.GUI.Dialogs.AWT;
 
-import java.awt.*;
+import java.awt.Image;
+import java.awt.Insets;
+import java.awt.Panel;
 
 public class Postcard extends Panel {
 	/**

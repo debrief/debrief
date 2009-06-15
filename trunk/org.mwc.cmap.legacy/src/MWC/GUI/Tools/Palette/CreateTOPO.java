@@ -65,7 +65,9 @@ package MWC.GUI.Tools.Palette;
 
 import java.io.File;
 
-import MWC.GUI.*;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.ETOPO.ETOPO_2_Minute;
 

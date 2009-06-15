@@ -15,19 +15,17 @@ package org.j3d.texture;
 // Standard imports
 import java.awt.Image;
 import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
 import java.awt.image.ImageProducer;
-import java.net.URL;
 import java.io.File;
-import java.io.IOException;
 import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.net.URL;
 
 import javax.media.j3d.ImageComponent;
 import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.Texture;
 
-import java.awt.image.DataBuffer;
-
-// Application specific imports
 import org.j3d.util.ImageUtils;
 
 /**

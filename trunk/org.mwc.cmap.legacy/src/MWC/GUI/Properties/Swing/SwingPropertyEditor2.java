@@ -244,22 +244,22 @@
 
 package MWC.GUI.Properties.Swing;
 
-import MWC.GUI.Layer;
-import MWC.GUI.Properties.BoundedInteger;
-import MWC.GUI.Properties.PlainPropertyEditor;
-import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Properties.SteppingBoundedInteger;
-import MWC.GUI.Swing.MultiLineLabel;
-
-import javax.swing.*;
-import javax.swing.event.CellEditorListener;
-import javax.swing.table.JTableHeader;
-import javax.swing.table.TableCellEditor;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumnModel;
-import javax.swing.text.JTextComponent;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dialog;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.awt.SystemColor;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 import java.beans.PropertyEditor;
@@ -268,6 +268,32 @@ import java.util.Enumeration;
 import java.util.EventObject;
 import java.util.Hashtable;
 import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
+import javax.swing.event.CellEditorListener;
+import javax.swing.table.JTableHeader;
+import javax.swing.table.TableCellEditor;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import javax.swing.text.JTextComponent;
+
+import MWC.GUI.Layer;
+import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.PlainPropertyEditor;
+import MWC.GUI.Properties.PropertiesPanel;
+import MWC.GUI.Properties.SteppingBoundedInteger;
+import MWC.GUI.Swing.MultiLineLabel;
 
 /**
  * Swing implementation of a property editor. note that setRowHeight in initForm

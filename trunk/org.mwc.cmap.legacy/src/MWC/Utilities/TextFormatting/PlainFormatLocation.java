@@ -5,7 +5,7 @@
 
 package MWC.Utilities.TextFormatting;
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldLocation;
 
 /** class defining how to produce a text string from
  * a location

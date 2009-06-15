@@ -68,11 +68,15 @@
 //
 package MWC.GUI.Canvas;
 
-import MWC.GUI.*;
+import java.awt.Point;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.TextLabel;
 import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
 
 /**
  * simple implementation of tooltip handler.  Provides support

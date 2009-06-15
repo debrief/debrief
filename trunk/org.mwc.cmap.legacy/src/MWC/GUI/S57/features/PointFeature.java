@@ -3,12 +3,17 @@
  */
 package MWC.GUI.S57.features;
 
-import java.awt.*;
-import java.beans.*;
-import java.text.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.util.Iterator;
+import java.util.Vector;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GenericData.WorldLocation;
 
 public class PointFeature extends S57Feature

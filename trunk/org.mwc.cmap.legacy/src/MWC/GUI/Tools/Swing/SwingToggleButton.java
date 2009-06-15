@@ -60,13 +60,17 @@
 package MWC.GUI.Tools.Swing;
 
 
-import MWC.GUI.Tool;
-
-import javax.swing.*;
-import javax.swing.border.CompoundBorder;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+
+import javax.swing.BorderFactory;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JCheckBox;
+import javax.swing.border.CompoundBorder;
+
+import MWC.GUI.Tool;
 
 /** extension of Swing button, to create one which implements one
  * of our Debrief tools

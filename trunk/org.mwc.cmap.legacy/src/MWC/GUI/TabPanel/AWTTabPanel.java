@@ -5,13 +5,13 @@ package MWC.GUI.TabPanel;
  Source code usage restricted as defined in Connect! Widgets License Agreement
 */
 
-import java.awt.*;
-import java.util.Vector;
-import java.lang.Boolean;
-import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
-import java.beans.VetoableChangeListener;
+import java.awt.Component;
+import java.awt.Dimension;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.util.Vector;
 
 
 //	01/29/97	RKM	Integrated Tim's changes to preserve the current index

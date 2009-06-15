@@ -108,16 +108,18 @@
 //
 package MWC.GUI.Canvas;
 
-import MWC.Algorithms.PlainProjection;
-import MWC.GUI.Canvas.Metafile.WMF;
-import MWC.GUI.Canvas.Metafile.WMFGraphics;
-import MWC.GUI.CanvasType;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Canvas.Metafile.WMF;
+import MWC.GUI.Canvas.Metafile.WMFGraphics;
 
 public class MetafileCanvas implements CanvasType
 {

@@ -89,10 +89,14 @@
 package MWC.GUI.Chart.AWT;
                 
 import java.awt.Component;
-import java.awt.event.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.io.Serializable;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
 import MWC.GUI.Canvas.AWT.AWTCanvas;
 
 

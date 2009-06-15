@@ -57,9 +57,11 @@ package MWC.GUI.Tools.AWT;
 
 
 
-import java.awt.*;
-import java.awt.event.*;
-import MWC.GUI.*;
+import java.awt.Button;
+import java.awt.Dimension;
+import java.awt.event.ActionListener;
+
+import MWC.GUI.Tool;
 
 /** extension of AWT button, to create one which implements one
  * of our Debrief tools

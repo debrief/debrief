@@ -63,17 +63,17 @@ package MWC.GUI.Chart.Painters;
 // Initial revision
 //
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.Serializable;
+import java.util.Enumeration;
+
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
-
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.Serializable;
-import java.util.Enumeration;
 
 public class RightClickEditGridPainterAdaptor extends RightClickEdit.BaseMenuCreator implements Serializable
 {

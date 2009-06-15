@@ -8,15 +8,59 @@
  */
 package MWC.GUI.Java3d;
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.util.Enumeration;
+
+import javax.media.j3d.AmbientLight;
+import javax.media.j3d.Appearance;
+import javax.media.j3d.Background;
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Canvas3D;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.DirectionalLight;
+import javax.media.j3d.Geometry;
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.GraphicsConfigTemplate3D;
+import javax.media.j3d.Group;
+import javax.media.j3d.LineArray;
+import javax.media.j3d.LineAttributes;
+import javax.media.j3d.Material;
+import javax.media.j3d.Node;
+import javax.media.j3d.PolygonAttributes;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Switch;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3f;
+
+import org.j3d.geom.overlay.LabelOverlay;
+
 import MWC.GUI.BaseLayer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Chart.Painters.SpatialRasterPainter;
 import MWC.GUI.ETOPO.BathyProvider;
 import MWC.GUI.Java3d.Tactical.Participant3D;
 import MWC.GUI.Java3d.Tactical.WorldMember;
-import MWC.GUI.Plottable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+
 import com.sun.j3d.utils.behaviors.mouse.MouseTranslate;
 import com.sun.j3d.utils.behaviors.mouse.MouseZoom;
 import com.sun.j3d.utils.geometry.Box;
@@ -26,18 +70,6 @@ import com.sun.j3d.utils.geometry.Sphere;
 import com.sun.j3d.utils.picking.PickResult;
 import com.sun.j3d.utils.picking.PickTool;
 import com.sun.j3d.utils.universe.SimpleUniverse;
-import org.j3d.geom.overlay.LabelOverlay;
-
-import javax.media.j3d.*;
-import javax.swing.*;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3f;
-import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.beans.PropertyChangeEvent;
-import java.util.Enumeration;
 
 public class World extends BranchGroup implements PickSelectBehaviour.SelectionListener,
   java.beans.PropertyChangeListener

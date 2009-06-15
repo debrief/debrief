@@ -8,13 +8,13 @@
  */
 package MWC.GUI.Java3d;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.TimeIntervalPropertyEditor;
 import MWC.GenericData.Duration;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 
 /**
  * set of options for how to present 3D plot

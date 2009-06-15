@@ -22,7 +22,8 @@
 
 package MWC.GUI.S57.support;
 
-import java.io.*;
+import java.io.EOFException;
+import java.io.IOException;
 
 /**
  * The InputReader is an interface that isolates the data file source

@@ -86,7 +86,8 @@ package MWC.Utilities.ReaderWriter;
 
 
 
-import MWC.GUI.*;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 
 
 

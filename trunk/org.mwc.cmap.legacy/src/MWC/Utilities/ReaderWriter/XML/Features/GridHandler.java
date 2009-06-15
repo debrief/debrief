@@ -9,11 +9,13 @@ package MWC.Utilities.ReaderWriter.XML.Features;
  * @version 1.0
  */
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GenericData.WorldDistance;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
 

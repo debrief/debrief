@@ -66,14 +66,23 @@ package MWC.GUI.Tools.Chart;
 // Initial revision
 //
 
-import MWC.GUI.*;
+import java.awt.Cursor;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.io.Serializable;
+import java.util.Enumeration;
+
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Moveable;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
+import MWC.GUI.Rubberband;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Action;
 import MWC.GUI.Tools.PlainDragTool;
 import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
-import java.io.Serializable;
-import java.util.Enumeration;
 
 public class MoveableDragger extends PlainDragTool implements Serializable,
   PlainChart.ChartCursorMovedListener

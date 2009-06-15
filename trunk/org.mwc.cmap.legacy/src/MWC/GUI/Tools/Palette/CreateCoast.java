@@ -46,7 +46,7 @@
 package MWC.GUI.Tools.Palette;
 
 import MWC.GUI.Chart.Painters.CoastPainter;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
 
 public class CreateCoast extends PlainCreate
 {

@@ -8,11 +8,11 @@
  */
 package MWC.GUI.Java3d;
 
+import javax.vecmath.Point3d;
+
 import MWC.Algorithms.Projections.FlatProjection;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-
-import javax.vecmath.Point3d;
 
 public class DoubleProjection extends FlatProjection{
 

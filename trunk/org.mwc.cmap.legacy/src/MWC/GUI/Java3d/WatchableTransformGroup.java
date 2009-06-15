@@ -8,8 +8,8 @@
  */
 package MWC.GUI.Java3d;
 
-import javax.media.j3d.TransformGroup;
 import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
 import javax.vecmath.Matrix3f;
 
 public class WatchableTransformGroup extends TransformGroup {

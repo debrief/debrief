@@ -9,7 +9,9 @@ package MWC.GenericData;
  * @version 1.0
  */
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
 public final class WorldPath implements java.io.Serializable
 {

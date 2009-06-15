@@ -55,12 +55,12 @@ package MWC.GUI.VPF;
 //
 
 
+import java.util.Enumeration;
+import java.util.Iterator;
+
 import MWC.GUI.Editable;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
-
-import java.util.Enumeration;
-import java.util.Iterator;
 
 
 /**

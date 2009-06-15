@@ -10,9 +10,10 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import org.xml.sax.*;
-import org.w3c.dom.*;
-import MWC.Utilities.ReaderWriter.XML.*;
+import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class ShortLocationHandler extends MWCXMLReader
 {

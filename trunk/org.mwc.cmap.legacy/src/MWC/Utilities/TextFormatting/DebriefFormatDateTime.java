@@ -5,11 +5,15 @@
 
 package MWC.Utilities.TextFormatting;
 
-import MWC.GenericData.HiResDate;
-
-import java.text.*;
+import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import MWC.GenericData.HiResDate;
 
 public class DebriefFormatDateTime
 {

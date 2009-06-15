@@ -8,18 +8,29 @@
  */
 package MWC.GUI.Chart.Painters;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Image;
+import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.geom.Dimension2D;
 import java.awt.image.MemoryImageSource;
 import java.beans.PropertyEditorSupport;
-import java.util.*;
+import java.util.Iterator;
+import java.util.StringTokenizer;
+import java.util.TreeSet;
 
 import javax.swing.JButton;
 
-import MWC.GUI.*;
-import MWC.GUI.ETOPO.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
+import MWC.GUI.ETOPO.BathyProvider;
+import MWC.GUI.ETOPO.Conrec;
 import MWC.GUI.Properties.BoundedInteger;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * interface which indicates that this class is capable of providing an integer value

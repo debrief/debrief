@@ -29,12 +29,17 @@ package MWC.GUI.Java3d;
  * redistribute the Software for such purposes.
  */
 
-import java.awt.*;
-import java.awt.event.*;
-import java.util.*;
-import javax.media.j3d.*;
-import javax.vecmath.*;
-import com.sun.j3d.utils.behaviors.mouse.*;
+import java.awt.AWTEvent;
+import java.awt.event.MouseEvent;
+import java.util.Enumeration;
+
+import javax.media.j3d.TransformGroup;
+import javax.media.j3d.WakeupCriterion;
+import javax.media.j3d.WakeupOnAWTEvent;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+
+import com.sun.j3d.utils.behaviors.mouse.MouseBehavior;
 
 /**
  * MouseRotateY is a Java3D behavior object that lets users control the 

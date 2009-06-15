@@ -12,8 +12,10 @@
 
 package org.j3d.loaders.ac3d.parser;
 
-import java.io.*;
-import org.j3d.loaders.ac3d.parser.exceptions.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+
+import org.j3d.loaders.ac3d.parser.exceptions.IncompatibleTokenHandlerException;
 
 
 /**

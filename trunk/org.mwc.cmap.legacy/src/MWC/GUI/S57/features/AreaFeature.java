@@ -1,7 +1,9 @@
 package MWC.GUI.S57.features;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.util.Iterator;
+import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GenericData.WorldLocation;

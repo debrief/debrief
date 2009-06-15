@@ -176,12 +176,18 @@
 
 package MWC.GUI;
 
-import java.beans.*;
-import java.io.*;
-import java.util.*;
+import java.beans.BeanDescriptor;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
 
 import MWC.GUI.Layer.BackgroundLayer;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Plain implementation of layer manager. In addition to managing a set of

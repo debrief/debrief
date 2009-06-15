@@ -40,15 +40,19 @@ package MWC.GUI.Properties.Swing;
 //
 
 
-import MWC.GenericData.WorldSpeed;
-
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DecimalFormat;
+
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import MWC.GenericData.WorldSpeed;
 
 public class SwingWorldSpeedPropertyEditor extends
   MWC.GUI.Properties.WorldSpeedPropertyEditor implements FocusListener, ActionListener

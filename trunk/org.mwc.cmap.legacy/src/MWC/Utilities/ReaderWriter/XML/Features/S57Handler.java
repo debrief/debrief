@@ -11,10 +11,12 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import java.io.File;
 
-import org.w3c.dom.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
 
 import MWC.GUI.S57.S57Layer;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class S57Handler extends MWCXMLReader implements LayerHandler.exporter
 {

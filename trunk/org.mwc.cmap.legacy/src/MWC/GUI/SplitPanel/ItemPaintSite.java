@@ -26,7 +26,9 @@
 package MWC.GUI.SplitPanel;
 
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Insets;
 
 /**
  * This interface is implemented where ItemPainters can be provided with more

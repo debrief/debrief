@@ -84,7 +84,8 @@
 
 package MWC.GUI.Tools;
 
-import MWC.GUI.*;
+import MWC.GUI.Tool;
+import MWC.GUI.ToolParent;
 
 
 /** a GUI-independent tool implementation, mostly for commands

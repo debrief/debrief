@@ -32,8 +32,12 @@
 package MWC.Utilities.ReaderWriter;
 
 
-import java.io.*;
-import javax.swing.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.Reader;
+
+import javax.swing.JFrame;
+import javax.swing.ProgressMonitor;
 
 public class ReaderMonitor extends BufferedReader
 {

@@ -45,7 +45,7 @@
 
 package MWC.GUI.Properties;
 
-import java.beans.*;
+import java.beans.PropertyEditorSupport;
 
 
 public class LongEditor extends PropertyEditorSupport

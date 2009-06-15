@@ -9,10 +9,11 @@ package MWC.Utilities.ReaderWriter.XML.Features;
  * @version 1.0
  */
 
+import org.w3c.dom.Element;
+
 import MWC.GUI.Editable;
 import MWC.GUI.VPF.FeaturePainter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import org.w3c.dom.Element;
 
 abstract public class VPFCoverageHandler extends MWCXMLReader
 {

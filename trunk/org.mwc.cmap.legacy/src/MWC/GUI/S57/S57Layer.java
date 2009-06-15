@@ -26,12 +26,18 @@ package MWC.GUI.S57;
 // Revision 1.1  2007/04/27 09:20:28  ian.mayo
 // initial import
 
-import java.awt.*;
-import java.beans.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.File;
+import java.io.Serializable;
 import java.util.Enumeration;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.S57.features.S57Feature;
 import MWC.GenericData.WorldArea;

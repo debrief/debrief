@@ -6,8 +6,13 @@ package MWC.GUI.Shapes;
 // You may study, use, modify, and distribute it for non-commercial purposes.
 // For any commercial use, see http://www.davidflanagan.com/javaexamples
 
-import java.awt.*;
-import java.util.*;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.util.StringTokenizer;
 
 /**
  * A custom component that displays multiple lines of text with specified

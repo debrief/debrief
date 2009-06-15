@@ -16,10 +16,8 @@ package org.j3d.device.input;
 import javax.media.j3d.InputDevice;
 import javax.media.j3d.Sensor;
 import javax.media.j3d.Transform3D;
-
 import javax.vecmath.Vector3f;
 
-// Application specific imports
 import org.j3d.util.interpolator.Interpolator;
 import org.j3d.util.interpolator.PositionInterpolator;
 import org.j3d.util.interpolator.ScalarInterpolator;

@@ -61,15 +61,20 @@ package MWC.GUI.VPF;
 //
 
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import com.bbn.openmap.layer.vpf.*;
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Hashtable;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+
+import com.bbn.openmap.layer.vpf.CoverageAttributeTable;
+import com.bbn.openmap.layer.vpf.CoverageTable;
+import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
+import com.bbn.openmap.layer.vpf.VPFFeatureGraphicWarehouse;
+import com.bbn.openmap.layer.vpf.VPFGraphicWarehouse;
 
 
 public class CoverageLayer extends MWC.GUI.BaseLayer

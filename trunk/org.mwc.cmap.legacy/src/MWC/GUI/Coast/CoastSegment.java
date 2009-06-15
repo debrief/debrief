@@ -1,10 +1,13 @@
 package MWC.GUI.Coast;
 
-import java.util.*;
-import java.io.*;
+import java.io.Serializable;
+import java.util.Vector;
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /** Represents a single section of coastline.*/
 public class CoastSegment extends Vector<WorldLocation> implements Plottable, Serializable

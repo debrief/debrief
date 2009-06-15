@@ -47,7 +47,9 @@ package MWC.GUI.SplitPanel;
 // Initial revision
 //
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Panel;
 
 public class ThreeWayPanel extends SplitPanel
 {

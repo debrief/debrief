@@ -77,12 +77,18 @@ package MWC.GUI.Tools.Chart;
 // Initial revision
 //
 
-import MWC.GUI.Tools.*;
-import java.awt.*;
-import MWC.Algorithms.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import java.io.*;
+import java.awt.Point;
+import java.io.Serializable;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Rubberband;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainDragTool;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class Pan extends PlainDragTool implements Serializable
 {

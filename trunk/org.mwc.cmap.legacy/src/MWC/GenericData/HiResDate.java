@@ -1,7 +1,7 @@
 package MWC.GenericData;
 
-import java.util.Date;
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by IntelliJ IDEA. User: ian.mayo Date: 23-Nov-2004 Time: 10:52:54 To

@@ -9,12 +9,14 @@ package MWC.Utilities.ReaderWriter.XML.Features;
  * @version 1.0
  */
 
-import org.w3c.dom.*;
-import MWC.Utilities.ReaderWriter.XML.*;
-import MWC.Utilities.ReaderWriter.XML.Util.*;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.GUI.Tools.Palette.CreateTOPO;
-import MWC.GUI.Layers;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 public class ETOPOHandler extends MWCXMLReader
 {

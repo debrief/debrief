@@ -9,10 +9,11 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import MWC.GenericData.*;
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+import java.util.Iterator;
 
-import java.util.*;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldPath;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 abstract public class WorldPathHandler extends MWCXMLReader {
 

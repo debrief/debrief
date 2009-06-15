@@ -10,8 +10,6 @@
 package org.j3d.geom;
 
 // Standard imports
-import javax.media.j3d.*;
-
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -19,6 +17,12 @@ import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 
+import javax.media.j3d.Appearance;
+import javax.media.j3d.ImageComponent2D;
+import javax.media.j3d.Raster;
+import javax.media.j3d.RenderingAttributes;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.TransparencyAttributes;
 import javax.vecmath.Point3f;
 
 // Application specific imports

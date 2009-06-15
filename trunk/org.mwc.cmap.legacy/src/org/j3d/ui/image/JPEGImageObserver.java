@@ -15,12 +15,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import com.sun.image.codec.jpeg.JPEGCodec;
-import com.sun.image.codec.jpeg.JPEGImageEncoder;
-import com.sun.image.codec.jpeg.JPEGEncodeParam;
-
-// Application specific imports
 import org.j3d.ui.CapturedImageObserver;
+
+import com.sun.image.codec.jpeg.JPEGCodec;
+import com.sun.image.codec.jpeg.JPEGEncodeParam;
+import com.sun.image.codec.jpeg.JPEGImageEncoder;
 
 /**
  * A one-shot image observer that turns the image into a JPEG image.

@@ -55,10 +55,12 @@ package MWC.GUI.Tools.Chart;
 // Initial revision
 //
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public class HitTester
 {

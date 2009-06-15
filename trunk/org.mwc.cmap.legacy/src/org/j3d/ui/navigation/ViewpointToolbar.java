@@ -13,8 +13,6 @@
 package org.j3d.ui.navigation;
 
 // Standard imports
-import  javax.swing.*;
-
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.GridLayout;
@@ -24,7 +22,12 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 
-// Application specific imports
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+
 import org.j3d.util.ImageLoader;
 
 /**

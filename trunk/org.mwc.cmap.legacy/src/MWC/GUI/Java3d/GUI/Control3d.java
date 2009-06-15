@@ -8,19 +8,31 @@
  */
 package MWC.GUI.Java3d.GUI;
 
-import MWC.GUI.Java3d.WatchableTransformGroup;
-import MWC.GUI.Java3d.DoubleProjection;
-import MWC.GUI.Properties.Swing.SwingBoundedIntegerEditor;
-import MWC.GUI.Properties.BoundedInteger;
-import MWC.GUI.Tools.Swing.RepeaterButton;
-
-import javax.swing.*;
-import javax.swing.event.ChangeEvent;
-import javax.media.j3d.Transform3D;
-import javax.vecmath.*;
-import java.awt.*;
-import java.awt.event.ActionListener;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.media.j3d.Transform3D;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSeparator;
+import javax.swing.event.ChangeEvent;
+import javax.vecmath.Matrix4d;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
+
+import MWC.GUI.Java3d.DoubleProjection;
+import MWC.GUI.Java3d.WatchableTransformGroup;
+import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.Swing.SwingBoundedIntegerEditor;
+import MWC.GUI.Tools.Swing.RepeaterButton;
 
 
 /** Control3D is a component which allows the display and editing of the current view on the 3d World

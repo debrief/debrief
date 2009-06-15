@@ -11,7 +11,8 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 
 import org.w3c.dom.Element;
 
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.LayerHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 
 

@@ -68,7 +68,9 @@
 
 package MWC.Utilities.Errors;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
 
 /** Class to allow the output of stack traces to file, instead of the command line
  *

@@ -12,11 +12,18 @@
 
 package org.j3d.loaders.ac3d.parser.handlers;
 
-import java.io.*;
-import java.util.*;
-import org.j3d.loaders.ac3d.models.*;
-import org.j3d.loaders.ac3d.parser.*;
-import org.j3d.loaders.ac3d.parser.exceptions.*;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.util.Stack;
+import java.util.Vector;
+
+import org.j3d.loaders.ac3d.models.Ac3dMaterial;
+import org.j3d.loaders.ac3d.models.Ac3dObject;
+import org.j3d.loaders.ac3d.models.Ac3dSurface;
+import org.j3d.loaders.ac3d.parser.LineTokenizer;
+import org.j3d.loaders.ac3d.parser.TokenHandler;
+import org.j3d.loaders.ac3d.parser.exceptions.AC3DParseException;
+import org.j3d.loaders.ac3d.parser.exceptions.InvalidTokenOrderingException;
 
 
 /**

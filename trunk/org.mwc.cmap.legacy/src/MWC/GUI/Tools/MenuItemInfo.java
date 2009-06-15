@@ -59,9 +59,9 @@
 
 package MWC.GUI.Tools;
 
-import MWC.GUI.*;
-
 import java.awt.MenuShortcut;
+
+import MWC.GUI.Tool;
 
 /**
  * description of information necessary to put an item on

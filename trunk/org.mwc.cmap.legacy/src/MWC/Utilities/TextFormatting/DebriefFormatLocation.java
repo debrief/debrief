@@ -5,9 +5,9 @@
 
 package MWC.Utilities.TextFormatting;
 
-import MWC.GenericData.WorldLocation;
-
 import java.text.DecimalFormat;
+
+import MWC.GenericData.WorldLocation;
 
 public class DebriefFormatLocation
   {

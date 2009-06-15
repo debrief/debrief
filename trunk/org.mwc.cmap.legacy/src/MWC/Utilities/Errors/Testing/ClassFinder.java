@@ -1,9 +1,9 @@
 package MWC.Utilities.Errors.Testing;
 
-import java.util.*;
-
-import java.io.*;
-//import jcf.*;
+import java.io.File;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Find all the files underneath a directory that are class files, compute their

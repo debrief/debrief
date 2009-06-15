@@ -10,18 +10,21 @@
 package org.j3d.util.device;
 
 // Standard imports
-import java.util.*;
-
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Properties;
+import java.util.StringTokenizer;
 
 import javax.media.j3d.AudioDevice;
 import javax.media.j3d.InputDevice;
 
-import com.sun.j3d.loaders.Loader;
-
-// Application specific imports
 import org.j3d.util.ErrorHandler;
+
+import com.sun.j3d.loaders.Loader;
 
 /**
  * A generalised device manager class for loading system resources related

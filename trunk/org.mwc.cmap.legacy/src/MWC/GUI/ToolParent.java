@@ -55,7 +55,7 @@ package MWC.GUI;
 // Revision 1.1  1999-07-07 11:10:10+01  administrator
 // Initial revision
 //
-import MWC.GUI.Tools.*;
+import MWC.GUI.Tools.Action;
 
 /** interface of methods to be provided by a
  * parent of a tool, mostly providing functionality

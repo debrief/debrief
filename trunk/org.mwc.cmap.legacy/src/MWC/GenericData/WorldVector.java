@@ -96,11 +96,11 @@
 
 package MWC.GenericData;
 
+import java.io.Serializable;
+
+import junit.framework.TestCase;
 import MWC.Algorithms.Conversions;
 import MWC.Algorithms.EarthModels.FlatEarth;
-import junit.framework.TestCase;
-
-import java.io.Serializable;
 
 /**
  * class which represents a vector offset in 3 dimensions

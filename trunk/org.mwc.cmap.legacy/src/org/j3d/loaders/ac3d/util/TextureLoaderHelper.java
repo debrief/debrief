@@ -12,13 +12,21 @@
 
 package org.j3d.loaders.ac3d.util;
 
-import java.io.*;
-import java.net.*;
-import java.awt.*;
-import java.awt.image.*;
-import java.security.*;
-import javax.media.j3d.*;
-import com.sun.j3d.utils.image.*;
+import java.awt.Image;
+import java.awt.Toolkit;
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBufferInt;
+import java.awt.image.ImageObserver;
+import java.awt.image.PixelGrabber;
+import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+
+import javax.media.j3d.Texture2D;
+
+import com.sun.j3d.utils.image.TextureLoader;
 
 
 /**

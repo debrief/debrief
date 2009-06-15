@@ -8,22 +8,53 @@
  */
 package MWC.GUI.Java3d;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.GraphicsConfiguration;
+import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Map;
 
-import javax.media.j3d.*;
-import javax.swing.*;
-import javax.vecmath.*;
+import javax.media.j3d.Canvas3D;
+import javax.media.j3d.GraphicsConfigTemplate3D;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSplitPane;
+import javax.vecmath.Matrix3d;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layers;
+import MWC.GUI.StepperListener;
+import MWC.GUI.ToolParent;
 import MWC.GUI.ETOPO.BathyProvider;
 import MWC.GUI.Java3d.GUI.Control3d;
 import MWC.GUI.Java3d.Tactical.Participant3D;
-import MWC.GUI.Java3d.j3d.*;
+import MWC.GUI.Java3d.j3d.ViewpointData;
+import MWC.GUI.Java3d.j3d.ViewpointManager;
+import MWC.GUI.Java3d.j3d.ViewpointToolbar;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Action;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 import com.sun.j3d.utils.universe.SimpleUniverse;
 

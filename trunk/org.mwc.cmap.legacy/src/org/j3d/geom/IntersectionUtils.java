@@ -10,8 +10,15 @@
 package org.j3d.geom;
 
 // Standard imports
-import javax.media.j3d.*;
-
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.IndexedGeometryArray;
+import javax.media.j3d.IndexedQuadArray;
+import javax.media.j3d.IndexedTriangleArray;
+import javax.media.j3d.QuadArray;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TriangleArray;
+import javax.media.j3d.TriangleFanArray;
+import javax.media.j3d.TriangleStripArray;
 import javax.vecmath.Point3d;
 import javax.vecmath.Vector3d;
 

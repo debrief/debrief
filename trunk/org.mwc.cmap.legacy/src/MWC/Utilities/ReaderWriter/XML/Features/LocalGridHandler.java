@@ -1,10 +1,11 @@
 package MWC.Utilities.ReaderWriter.XML.Features;
 
+import org.w3c.dom.Element;
+
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.LocalGridPainter;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.ReaderWriter.XML.Util.LocationHandler;
-import org.w3c.dom.Element;
 
 /**
  * Created by IntelliJ IDEA.

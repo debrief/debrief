@@ -13,14 +13,16 @@
 package org.j3d.ui.navigation;
 
 // Standard imports
-import  javax.swing.*;
-
 import java.awt.GridLayout;
 import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-// Application specific imports
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JPanel;
+import javax.swing.JToggleButton;
+
 import org.j3d.util.ImageLoader;
 
 /**

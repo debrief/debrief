@@ -12,7 +12,6 @@ package org.j3d.ui;
 // Standard imports
 import javax.swing.JLabel;
 
-// Application specific imports
 import org.j3d.util.device.DeviceDescriptor;
 
 /**

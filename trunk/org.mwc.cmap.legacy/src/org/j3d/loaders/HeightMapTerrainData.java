@@ -13,10 +13,8 @@ package org.j3d.loaders;
 import java.awt.Rectangle;
 
 import javax.media.j3d.Texture;
-
 import javax.vecmath.Point2d;
 
-// Application specific imports
 import org.j3d.terrain.TerrainData;
 
 /**

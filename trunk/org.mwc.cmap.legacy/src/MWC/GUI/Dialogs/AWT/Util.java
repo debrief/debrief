@@ -1,6 +1,11 @@
 package MWC.GUI.Dialogs.AWT;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
 
 public class Util {
     public static void waitForImage(Component component, 

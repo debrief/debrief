@@ -1,8 +1,9 @@
 package MWC.GUI.Swing.Spinner;
 
 /* All import statements... */
-import javax.swing.JComponent;
 import java.util.EventObject;
+
+import javax.swing.JComponent;
 
 
 

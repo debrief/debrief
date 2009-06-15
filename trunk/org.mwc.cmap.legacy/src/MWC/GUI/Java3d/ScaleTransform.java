@@ -8,8 +8,10 @@
  */
 package MWC.GUI.Java3d;
 
-import javax.media.j3d.*;
-import javax.vecmath.*;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.vecmath.Matrix3f;
+import javax.vecmath.Vector3f;
 
 public class ScaleTransform extends TransformGroup implements WatchableTransformGroup.TransformListener
 {

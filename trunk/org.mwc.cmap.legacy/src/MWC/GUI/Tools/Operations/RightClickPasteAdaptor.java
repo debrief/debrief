@@ -1,9 +1,5 @@
 package MWC.GUI.Tools.Operations;
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Tools.Chart.RightClickEdit;
-
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
@@ -13,6 +9,15 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GUI.PlottableSelection;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.Chart.RightClickEdit;
 
 public class RightClickPasteAdaptor implements RightClickEdit.PlottableMenuCreator
 {

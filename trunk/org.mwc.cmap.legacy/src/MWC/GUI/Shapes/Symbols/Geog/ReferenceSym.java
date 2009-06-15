@@ -51,13 +51,13 @@
 
 package MWC.GUI.Shapes.Symbols.Geog;
 
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 
 public class ReferenceSym extends PlainSymbol
 {

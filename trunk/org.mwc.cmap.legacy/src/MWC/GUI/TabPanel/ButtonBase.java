@@ -1,19 +1,26 @@
 package MWC.GUI.TabPanel;
 
 
-import java.awt.*;
-import java.applet.*;
-import java.awt.event.KeyEvent;
-import java.awt.event.FocusEvent;
-import java.awt.event.MouseEvent;
+import java.applet.Applet;
+import java.applet.AppletContext;
+import java.awt.AWTEventMulticaster;
+import java.awt.Canvas;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
+import java.awt.MediaTracker;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.net.URL;
-import java.beans.PropertyVetoException;
-import java.beans.PropertyChangeListener;
-import java.beans.VetoableChangeListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 import java.beans.PropertyChangeEvent;
-import java.lang.IllegalArgumentException;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyVetoException;
+import java.beans.VetoableChangeListener;
+import java.net.URL;
 
 //	05/30/97	LAB	Updated to support Java 1.1
 //	06/24/97	LAB	Made the button behave like a button. i.e. When you press the

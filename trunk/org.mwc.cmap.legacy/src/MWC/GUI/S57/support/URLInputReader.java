@@ -22,8 +22,9 @@
 
 package MWC.GUI.S57.support;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.net.URL;
+
 import com.bbn.openmap.util.Debug;
 
 /**

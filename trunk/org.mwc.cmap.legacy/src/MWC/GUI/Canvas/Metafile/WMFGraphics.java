@@ -90,7 +90,6 @@ import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.image.ImageObserver;
 import java.awt.image.PixelGrabber;
-//import java.text.AttributedCharacterIterator;
 
 import MWC.GUI.Canvas.CanvasAdaptor;
 

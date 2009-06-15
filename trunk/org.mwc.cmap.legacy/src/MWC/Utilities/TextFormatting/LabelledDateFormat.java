@@ -5,8 +5,9 @@
 
 package MWC.Utilities.TextFormatting;
 
-import java.text.*;
-import java.util.*;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 
 public class LabelledDateFormat 
 {

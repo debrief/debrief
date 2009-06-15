@@ -11,8 +11,11 @@ package org.j3d.loaders.vterrain;
 
 // Standard imports
 import java.io.BufferedInputStream;
-import java.io.InputStream;
 import java.io.IOException;
+import java.io.InputStream;
+
+import com.sun.j3d.loaders.IncorrectFormatException;
+import com.sun.j3d.loaders.ParsingErrorException;
 
 /**
  * A low-level parser for the VTerrain's Project  BT file format.

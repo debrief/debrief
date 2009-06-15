@@ -6,11 +6,12 @@
 
 package MWC.GUI.Canvas;
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
-
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Image;
 import java.awt.image.ImageObserver;
+
+import MWC.GUI.CanvasType;
+import MWC.GenericData.WorldLocation;
 
 /**
  * 

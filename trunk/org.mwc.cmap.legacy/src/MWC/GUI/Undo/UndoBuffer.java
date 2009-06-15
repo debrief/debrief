@@ -63,9 +63,10 @@ package MWC.GUI.Undo;
 // Initial revision
 //
 
-import MWC.GUI.Tools.*;
+import java.util.Observable;
+import java.util.Vector;
 
-import java.util.*;
+import MWC.GUI.Tools.Action;
 
 public class UndoBuffer extends Observable
 {

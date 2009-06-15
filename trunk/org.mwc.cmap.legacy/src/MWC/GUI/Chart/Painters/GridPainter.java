@@ -141,13 +141,21 @@ package MWC.GUI.Chart.Painters;
 // Initial revision
 //
 
-import java.awt.*;
-import java.beans.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.text.DecimalFormat;
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class GridPainter implements Plottable, Serializable
 {

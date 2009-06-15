@@ -63,8 +63,10 @@
 package MWC.GUI.Tools.Chart;
 
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 
 public class Repaint extends PlainTool 

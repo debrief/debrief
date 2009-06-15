@@ -48,7 +48,6 @@ import java.awt.Rectangle;
 
 import javax.media.j3d.Texture;
 
-// Application specific imports
 import org.j3d.ui.navigation.HeightDataSource;
 
 /**

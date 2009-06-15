@@ -22,12 +22,12 @@
 
 package MWC.GUI.S57;
 
+import java.util.Iterator;
+import java.util.Vector;
+
 import com.bbn.openmap.layer.vpf.MutableInt;
 import com.bbn.openmap.util.Debug;
 import com.bbn.openmap.util.PropUtils;
-
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * Information from the DDR defining one field. Note that just because

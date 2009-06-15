@@ -57,10 +57,14 @@ package MWC.GUI.Properties.Swing;
 // further introduction of SWING components
 //
 
-import javax.swing.*;
-import java.beans.*;
-import MWC.GUI.*;
-import MWC.GUI.Properties.*;
+import java.beans.Customizer;
+import java.beans.PropertyChangeListener;
+
+import javax.swing.JPanel;
+
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Properties.PropertiesPanel;
 
 abstract public class SwingCustomEditor extends JPanel implements Customizer
 {

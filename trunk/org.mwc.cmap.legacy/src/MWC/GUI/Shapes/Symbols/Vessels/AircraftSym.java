@@ -33,9 +33,9 @@
 
 package MWC.GUI.Shapes.Symbols.Vessels;
 
-import MWC.GUI.Shapes.Symbols.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Shapes.Symbols.PlainSymbol;
+import MWC.GenericData.WorldLocation;
 
 public class AircraftSym extends PlainSymbol {
 

@@ -1,9 +1,22 @@
 package MWC.GUI.Properties.AWT;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.Checkbox;
+import java.awt.CheckboxGroup;
+import java.awt.Dialog;
+import java.awt.Frame;
+import java.awt.GridLayout;
+import java.awt.Label;
+import java.awt.Panel;
+import java.awt.TextField;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
 import MWC.GenericData.WorldLocation;
-import MWC.Utilities.TextFormatting.*;
+import MWC.Utilities.TextFormatting.BriefFormatLocation;
 
 public class AWTWorldLocationEditor extends Dialog implements ActionListener
 {

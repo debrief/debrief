@@ -86,13 +86,15 @@
 //
 package MWC.GUI.Dialogs;
 
+import java.awt.Dimension;
+import java.awt.Frame;
+import java.awt.Toolkit;
+
+import javax.swing.JOptionPane;
+
 import MWC.GUI.Dialogs.AWT.AWTFile;
 import MWC.GUI.Dialogs.AWT.MessageDialog;
 import MWC.GUI.Dialogs.Swing.SwingFile;
-
-import java.awt.*;
-
-import javax.swing.JOptionPane;
 
 public class DialogFactory
 {

@@ -22,12 +22,20 @@ package MWC.GUI.Properties.Swing;
 //
 
 
-import MWC.GenericData.WorldDistance;
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
+import java.text.DecimalFormat;
+import java.text.ParseException;
 
-import javax.swing.*;
-import java.awt.event.*;
-import java.awt.*;
-import java.text.*;
+import javax.swing.JComboBox;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import MWC.GenericData.WorldDistance;
 
 public class SwingDistanceWithUnitsPropertyEditor extends
           MWC.GUI.Properties.DistanceWithUnitsPropertyEditor implements FocusListener, ActionListener

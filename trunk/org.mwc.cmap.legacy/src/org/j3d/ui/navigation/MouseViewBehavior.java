@@ -13,12 +13,16 @@
 package org.j3d.ui.navigation;
 
 // Standard imports
-import javax.media.j3d.*;
-
 import java.awt.AWTEvent;
 import java.awt.event.MouseEvent;
 import java.util.Enumeration;
 
+import javax.media.j3d.Behavior;
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.TransformGroup;
+import javax.media.j3d.View;
+import javax.media.j3d.WakeupOnAWTEvent;
 import javax.vecmath.Point3d;
 
 // Application specific imports

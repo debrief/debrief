@@ -8,12 +8,12 @@
  */
 package MWC.GUI.Java3d;
 
-import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.StepperListener;
-import MWC.GUI.ETOPO.BathyProvider;
-
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelListener;
+
+import MWC.GUI.StepperListener;
+import MWC.GUI.ETOPO.BathyProvider;
+import MWC.GUI.Properties.PropertiesPanel;
 
 abstract public class MouseWheelWorldHolder extends WorldHolder
 {

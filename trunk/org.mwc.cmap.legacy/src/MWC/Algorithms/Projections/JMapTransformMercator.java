@@ -1,9 +1,12 @@
 package MWC.Algorithms.Projections;
 
-import java.awt.*;
-import java.lang.Math;
-import MWC.GenericData.*;
-import MWC.Algorithms.*;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Rectangle;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public class JMapTransformMercator extends PlainProjection
 {

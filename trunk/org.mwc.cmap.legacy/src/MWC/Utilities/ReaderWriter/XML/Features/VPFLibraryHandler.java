@@ -12,7 +12,9 @@ package MWC.Utilities.ReaderWriter.XML.Features;
 import org.w3c.dom.Element;
 
 import MWC.GUI.Editable;
-import MWC.GUI.VPF.*;
+import MWC.GUI.VPF.CoverageLayer;
+import MWC.GUI.VPF.DebriefFeatureWarehouse;
+import MWC.GUI.VPF.FeaturePainter;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 import com.bbn.openmap.layer.vpf.LibrarySelectionTable;

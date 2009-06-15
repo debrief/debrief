@@ -12,7 +12,6 @@ package org.j3d.ui;
 import java.awt.GraphicsConfiguration;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
-
 import java.util.Iterator;
 import java.util.LinkedList;
 
@@ -21,7 +20,6 @@ import javax.media.j3d.GraphicsContext3D;
 import javax.media.j3d.ImageComponent;
 import javax.media.j3d.ImageComponent2D;
 import javax.media.j3d.Raster;
-
 import javax.vecmath.Point3f;
 
 /**

@@ -8,23 +8,41 @@
  */
 package MWC.GUI.Java3d.Tactical;
 
-import MWC.GUI.Java3d.*;
-import MWC.GUI.Shapes.PlainShape;
-import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldLocation;
-import com.sun.j3d.utils.geometry.Text2D;
-
-import javax.media.j3d.*;
-import javax.vecmath.Color3f;
-import javax.vecmath.Point3d;
-import javax.vecmath.Vector3d;
-import javax.vecmath.Vector3f;
-import java.awt.*;
+import java.awt.Font;
 import java.awt.geom.Point2D;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
+
+import javax.media.j3d.Appearance;
+import javax.media.j3d.Billboard;
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.ColoringAttributes;
+import javax.media.j3d.Group;
+import javax.media.j3d.LineArray;
+import javax.media.j3d.LineAttributes;
+import javax.media.j3d.Node;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.Switch;
+import javax.media.j3d.Transform3D;
+import javax.media.j3d.TransformGroup;
+import javax.vecmath.Color3f;
+import javax.vecmath.Point3d;
+import javax.vecmath.Vector3d;
+import javax.vecmath.Vector3f;
+
+import MWC.GUI.Java3d.ColorChangeText2D;
+import MWC.GUI.Java3d.ScaleTransform;
+import MWC.GUI.Java3d.WatchableTransformGroup;
+import MWC.GUI.Java3d.World;
+import MWC.GUI.Java3d.WorldPlottingOptions;
+import MWC.GUI.Shapes.PlainShape;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldLocation;
+
+import com.sun.j3d.utils.geometry.Text2D;
 
 abstract public class Label3D extends BranchGroup implements java.beans.PropertyChangeListener, WorldMember
 {

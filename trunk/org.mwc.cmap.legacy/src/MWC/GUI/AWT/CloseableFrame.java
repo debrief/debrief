@@ -1,7 +1,9 @@
 package MWC.GUI.AWT;
 
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.AWTEvent;
+import java.awt.Color;
+import java.awt.Frame;
+import java.awt.event.WindowEvent;
 
 public class CloseableFrame extends Frame
 {

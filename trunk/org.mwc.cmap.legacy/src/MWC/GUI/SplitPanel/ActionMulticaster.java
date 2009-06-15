@@ -28,8 +28,8 @@ package MWC.GUI.SplitPanel;
 
 
 //import java.util.*;
-import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 /**
  * 

@@ -10,8 +10,12 @@
 package org.j3d.geom;
 
 // Standard imports
-import javax.media.j3d.*;
-
+import javax.media.j3d.Appearance;
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.Group;
+import javax.media.j3d.Material;
+import javax.media.j3d.Shape3D;
+import javax.media.j3d.TriangleStripArray;
 import javax.vecmath.Color3f;
 
 // Application specific imports

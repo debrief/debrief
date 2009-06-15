@@ -11,12 +11,10 @@ package org.j3d.terrain;
 
 // Standard imports
 import javax.media.j3d.Transform3D;
-
 import javax.vecmath.Matrix3f;
 import javax.vecmath.Tuple3f;
 import javax.vecmath.Vector3f;
 
-// Application specific imports
 import org.j3d.ui.navigation.FrameUpdateListener;
 import org.j3d.ui.navigation.HeightMapGeometry;
 

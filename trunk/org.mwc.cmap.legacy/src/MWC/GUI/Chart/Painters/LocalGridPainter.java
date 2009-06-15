@@ -1,15 +1,17 @@
 package MWC.GUI.Chart.Painters;
 
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-
-import java.awt.*;
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 
 /**
  * Created by IntelliJ IDEA. User: Ian.Mayo Date: 19-Oct-2004 Time: 08:59:54 To

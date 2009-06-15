@@ -1,11 +1,15 @@
 package MWC.GUI.S57.features;
 
-import java.awt.*;
-import java.beans.*;
-import java.util.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.util.Iterator;
+import java.util.Vector;
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GenericData.WorldLocation;
 
 public class LineFeature extends S57Feature
 {

@@ -1,10 +1,15 @@
 package MWC.GUI.RubberBanding;
 
-import MWC.GUI.Rubberband;
-
-import java.awt.*;
+import java.awt.Choice;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
+import MWC.GUI.Rubberband;
 
 class RubberbandTestPanel extends RubberbandPanel
 {

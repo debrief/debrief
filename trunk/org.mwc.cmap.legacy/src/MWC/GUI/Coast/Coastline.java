@@ -1,11 +1,5 @@
 package MWC.GUI.Coast;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GUI.Plottable;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -13,6 +7,12 @@ import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.StringTokenizer;
 import java.util.Vector;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Represents a single section of coastline.

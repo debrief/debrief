@@ -11,14 +11,13 @@ package org.j3d.geom.particle;
 
 import java.util.Map;
 
-import javax.media.j3d.Shape3D;
-import javax.media.j3d.OrientedShape3D;
-
-import javax.media.j3d.GeometryUpdater;
-import javax.media.j3d.GeometryArray;
 import javax.media.j3d.Appearance;
 import javax.media.j3d.Geometry;
+import javax.media.j3d.GeometryArray;
+import javax.media.j3d.GeometryUpdater;
 import javax.media.j3d.Node;
+import javax.media.j3d.OrientedShape3D;
+import javax.media.j3d.Shape3D;
 
 /**
  * Abstract ParticleSystem for handling ByRef GeometryArrays.

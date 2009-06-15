@@ -1,8 +1,10 @@
 package MWC.GUI.RubberBanding;
 
-import java.awt.*;
-import MWC.GUI.*;
-import java.io.*;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.io.Serializable;
+
+import MWC.GUI.Rubberband;
 
 
 public class RubberbandLine extends Rubberband  implements Serializable{

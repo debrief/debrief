@@ -10,9 +10,10 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
+import org.xml.sax.Attributes;
+
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
-import org.xml.sax.Attributes;
 
 abstract public class TimeRangeHandler extends MWCXMLReader
 {

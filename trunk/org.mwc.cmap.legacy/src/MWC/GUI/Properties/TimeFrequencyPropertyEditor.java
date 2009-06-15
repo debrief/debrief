@@ -49,10 +49,10 @@
 
 package MWC.GUI.Properties;
 
+import java.beans.PropertyEditorSupport;
+
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
-
-import java.beans.PropertyEditorSupport;
 
 /**
  * class to provide list of time frequencies, together with ALL value

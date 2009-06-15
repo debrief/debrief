@@ -1,9 +1,16 @@
 package org.j3d.geom.overlay;
 
-import javax.media.j3d.*;
-import java.awt.*;
-import java.awt.image.*;
-import java.awt.event.*;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Insets;
+import java.awt.Rectangle;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.image.BufferedImage;
+
+import javax.media.j3d.BoundingSphere;
+import javax.media.j3d.BranchGroup;
+import javax.media.j3d.Canvas3D;
 import javax.swing.event.EventListenerList;
 
 /**

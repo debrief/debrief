@@ -120,11 +120,12 @@
 
 package MWC.GUI;
 
-import MWC.GenericData.*;
-import MWC.Algorithms.PlainProjection;
-
-import java.awt.*;
+import java.awt.Image;
 import java.awt.image.ImageObserver;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * interface for canvases to implement for plotting commands

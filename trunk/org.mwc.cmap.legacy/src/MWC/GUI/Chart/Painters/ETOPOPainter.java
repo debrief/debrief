@@ -8,17 +8,23 @@
 */
 package MWC.GUI.Chart.Painters;
 
-import MWC.GUI.*;
-import MWC.GUI.ETOPO.ETOPOWrapper;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.beans.PropertyEditorSupport;
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
+import MWC.GUI.ETOPO.ETOPOWrapper;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public class ETOPOPainter extends BaseLayer implements Layer.BackgroundLayer
 {

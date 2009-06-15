@@ -1,15 +1,19 @@
 package MWC.GUI.Tools.Operations;
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Tools.Chart.RightClickEdit;
-import MWC.GUI.Undo.UndoBuffer;
-
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.ClipboardOwner;
 import java.awt.datatransfer.Transferable;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlottableSelection;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.Chart.RightClickEdit;
+import MWC.GUI.Undo.UndoBuffer;
 
 public class RightClickCutCopyAdaptor implements RightClickEdit.PlottableMenuCreator
 {

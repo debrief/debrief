@@ -39,7 +39,9 @@ package MWC.GUI;
 // Initial revision
 //
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public interface Moveable
 {

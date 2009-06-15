@@ -36,8 +36,8 @@ package MWC.GUI.Tools.Chart.AWT;
 // changed names
 //
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Chart.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Tools.Chart.CursorPosition;
 
 public class AWTCursorPosition extends CursorPosition
 {

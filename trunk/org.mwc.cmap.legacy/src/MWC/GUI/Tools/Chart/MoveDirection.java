@@ -37,9 +37,13 @@ package MWC.GUI.Tools.Chart;
 
 
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.*;
-import MWC.GenericData.*;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /** tool to instruct a particular chart to do a resize to fit all
  * of the current data

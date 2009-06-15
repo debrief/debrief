@@ -61,7 +61,10 @@ import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
 
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 
 /**
  * class to provide general (non file-type specific) for importing a whole file.

@@ -12,10 +12,21 @@
 
 package org.j3d.loaders.ac3d;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
-import com.sun.j3d.loaders.*;
-import org.j3d.loaders.ac3d.parser.*;
+
+import org.j3d.loaders.ac3d.parser.Ac3dParser;
+
+import com.sun.j3d.loaders.IncorrectFormatException;
+import com.sun.j3d.loaders.Loader;
+import com.sun.j3d.loaders.ParsingErrorException;
+import com.sun.j3d.loaders.Scene;
 
 
 /**

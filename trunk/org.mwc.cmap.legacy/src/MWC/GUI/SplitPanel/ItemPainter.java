@@ -26,9 +26,9 @@
 package MWC.GUI.SplitPanel;
 
 
-import java.awt.Rectangle;
-import java.awt.Graphics;
 import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Rectangle;
 
 /**
  * The ItemPainter interface defines a single item painter for non-edit painting.

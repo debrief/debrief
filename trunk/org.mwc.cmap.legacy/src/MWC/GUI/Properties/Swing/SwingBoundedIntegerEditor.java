@@ -81,9 +81,16 @@ package MWC.GUI.Properties.Swing;
 // Initial revision
 //
 
+import java.awt.BorderLayout;
+import java.awt.Dimension;
+import java.awt.Graphics;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+
 import MWC.GUI.Properties.BoundedInteger;
-import javax.swing.*;
-import java.awt.*;
 
 public class SwingBoundedIntegerEditor extends
     MWC.GUI.Properties.BoundedIntegerEditor implements javax.swing.event.ChangeListener

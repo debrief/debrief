@@ -11,9 +11,8 @@ package org.j3d.geom;
 
 // Standard imports
 import javax.media.j3d.Appearance;
-import javax.media.j3d.Shape3D;
 import javax.media.j3d.QuadArray;
-
+import javax.media.j3d.Shape3D;
 import javax.vecmath.Vector3f;
 
 // Application specific imports

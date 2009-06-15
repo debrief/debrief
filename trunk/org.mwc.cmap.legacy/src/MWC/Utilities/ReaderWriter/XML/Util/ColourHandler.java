@@ -9,8 +9,9 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 import org.xml.sax.Attributes;
+
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 abstract public class ColourHandler extends MWCXMLReader

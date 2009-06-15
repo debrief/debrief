@@ -60,7 +60,8 @@
 
 import MWC.GUI.CanvasType;
 
-import com.bbn.openmap.layer.vpf.*;
+import com.bbn.openmap.layer.vpf.CoverageAttributeTable;
+import com.bbn.openmap.layer.vpf.LibrarySelectionTable;
 
 public class LibraryLayer extends MWC.GUI.BaseLayer
 {

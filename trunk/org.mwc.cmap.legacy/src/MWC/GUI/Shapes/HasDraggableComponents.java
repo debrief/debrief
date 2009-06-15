@@ -2,8 +2,11 @@ package MWC.GUI.Shapes;
 
 import java.awt.Point;
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * marker interface for objects that can be dragged on-screen

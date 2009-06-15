@@ -57,8 +57,9 @@
 package MWC.GUI.Dialogs.AWT;
 
 
-import java.awt.*;
-import java.io.*;
+import java.awt.FileDialog;
+import java.awt.Frame;
+import java.io.File;
 
 /** AWT implementation of getting a file
  */

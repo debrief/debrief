@@ -13,6 +13,7 @@ package org.j3d.geom.overlay;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Rectangle;
+
 import javax.media.j3d.BranchGroup;
 import javax.media.j3d.Canvas3D;
 

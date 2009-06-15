@@ -93,12 +93,12 @@
 package MWC.Utilities.ReaderWriter;
 
 
-import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
-
 import java.io.File;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 
 /**
  * Factory for the types of file which may be imported into Debrief,

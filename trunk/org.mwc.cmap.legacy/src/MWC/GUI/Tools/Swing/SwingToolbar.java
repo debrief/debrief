@@ -76,11 +76,20 @@
 
 package MWC.GUI.Tools.Swing;
 
-import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.util.Dictionary;
+import java.util.Hashtable;
 
-import java.awt.event.*;
-import java.util.*;
-import MWC.GUI.*;
+import javax.swing.AbstractButton;
+import javax.swing.ButtonGroup;
+import javax.swing.ImageIcon;
+import javax.swing.JComponent;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+
+import MWC.GUI.Tool;
+import MWC.GUI.Toolbar;
 
 /** implementation of toolbar using Swing controls
  * Swing*/

@@ -2,12 +2,13 @@ package MWC.GUI.Dialogs;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 
 /**
 Works with a JMenu to manipulate most recently used items.  This works to

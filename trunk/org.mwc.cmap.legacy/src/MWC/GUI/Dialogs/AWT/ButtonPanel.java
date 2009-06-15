@@ -1,6 +1,9 @@
 package MWC.GUI.Dialogs.AWT;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Button;
+import java.awt.FlowLayout;
+import java.awt.Panel;
 
 public class ButtonPanel extends Panel {
     /**

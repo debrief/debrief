@@ -49,7 +49,7 @@
 
 package MWC.GUI.Properties;
 
-import java.beans.*;
+import java.beans.PropertyEditorSupport;
 
 abstract public class AbstractPropertyEditor extends PropertyEditorSupport
 {

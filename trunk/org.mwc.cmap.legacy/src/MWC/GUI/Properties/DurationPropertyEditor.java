@@ -50,11 +50,11 @@ package MWC.GUI.Properties;
 // Revision 1.0  2001-07-17 08:43:51+01  administrator
 // Initial revision
 //
-import java.beans.*;
-import MWC.GenericData.Duration;
+import java.awt.Component;
+import java.beans.PropertyEditorSupport;
+import java.text.DecimalFormat;
 
-import java.awt.*;
-import java.text.*;
+import MWC.GenericData.Duration;
 
 /** abstract class providing core functionality necessary for editing a distance
  * value where units are provided (the return value is in minutes)

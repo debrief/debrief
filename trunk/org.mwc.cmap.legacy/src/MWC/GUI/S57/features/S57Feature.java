@@ -3,8 +3,10 @@
  */
 package MWC.GUI.S57.features;
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Plottable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 public abstract class S57Feature implements Plottable
 {

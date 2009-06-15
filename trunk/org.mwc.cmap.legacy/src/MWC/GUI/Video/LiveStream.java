@@ -31,13 +31,23 @@
 
 package MWC.GUI.Video;
 
-import java.awt.*;
+import java.awt.AWTException;
+import java.awt.Dimension;
+import java.awt.Rectangle;
+import java.awt.Robot;
 import java.awt.image.BufferedImage;
-import javax.media.*;
-import javax.media.format.*;
-import javax.media.protocol.*;
 import java.io.IOException;
 import java.util.StringTokenizer;
+
+import javax.media.Buffer;
+import javax.media.Control;
+import javax.media.Format;
+import javax.media.MediaLocator;
+import javax.media.format.RGBFormat;
+import javax.media.format.VideoFormat;
+import javax.media.protocol.BufferTransferHandler;
+import javax.media.protocol.ContentDescriptor;
+import javax.media.protocol.PushBufferStream;
 
 public class LiveStream implements PushBufferStream, Runnable {
 

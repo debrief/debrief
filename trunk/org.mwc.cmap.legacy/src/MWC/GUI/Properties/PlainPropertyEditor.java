@@ -216,17 +216,27 @@
 package MWC.GUI.Properties;
 
 
-import MWC.GUI.*;
-import MWC.GUI.Tools.Action;
-import MWC.GUI.Undo.UndoBuffer;
-
-import java.awt.*;
-import java.beans.*;
+import java.awt.Component;
+import java.beans.BeanInfo;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyDescriptor;
+import java.beans.PropertyEditor;
+import java.beans.PropertyEditorManager;
 import java.lang.reflect.Method;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
+
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.PlainChart;
+import MWC.GUI.ToolParent;
+import MWC.GUI.hasPropertyListeners;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Undo.UndoBuffer;
 
 /**
  * Class defining GUI-independent part of property editing.

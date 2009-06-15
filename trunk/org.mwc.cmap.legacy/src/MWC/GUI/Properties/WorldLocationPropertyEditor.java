@@ -57,11 +57,13 @@ package MWC.GUI.Properties;
 // Initial revision
 //
 
-import java.beans.*;
-import MWC.GenericData.*;
-import MWC.GUI.*;
-import java.awt.*;
-import java.awt.event.*;
+import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyEditorSupport;
+
+import MWC.GUI.PlainChart;
+import MWC.GenericData.WorldLocation;
 
 abstract public class WorldLocationPropertyEditor extends 
            PropertyEditorSupport implements ActionListener, 

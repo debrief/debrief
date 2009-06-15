@@ -1,6 +1,10 @@
 package MWC.GUI.AWT;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.GridLayout;
+import java.awt.Insets;
 
 // Grid Layout which allows components of differrent sizes
 public class GridLayout2 extends GridLayout 

@@ -57,7 +57,8 @@ package MWC.Utilities.TextFormatting;
 // Initial revision
 //
 
-import java.text.*;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 
 public class GeneralFormat
 {

@@ -8,7 +8,9 @@ package MWC.Utilities.ReaderWriter.XML;
 
 import java.io.InputStream;
 
-import org.xml.sax.*;
+import org.xml.sax.AttributeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.Parser;
 
 import MWC.GUI.Plottable;
 

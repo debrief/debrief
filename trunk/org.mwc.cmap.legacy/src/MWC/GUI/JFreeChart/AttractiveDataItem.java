@@ -1,6 +1,6 @@
 package MWC.GUI.JFreeChart;
 
-import java.awt.*;
+import java.awt.Color;
 
 /**
  * Created by IntelliJ IDEA.

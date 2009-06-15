@@ -127,7 +127,9 @@
 
 package MWC.GUI;
 
-import java.beans.*;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 
 /**

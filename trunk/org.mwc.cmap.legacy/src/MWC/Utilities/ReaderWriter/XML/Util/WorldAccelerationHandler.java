@@ -24,7 +24,7 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  */
 
 
-import MWC.GenericData.*;
+import MWC.GenericData.WorldAcceleration;
 
 
 abstract public class WorldAccelerationHandler extends BaseDataHandler

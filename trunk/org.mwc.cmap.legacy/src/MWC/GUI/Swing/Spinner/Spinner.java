@@ -2,11 +2,12 @@ package MWC.GUI.Swing.Spinner;
 
 /* All import statements... */
 import java.awt.Dimension;
-import java.awt.Insets;
-import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
+
 import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JScrollBar;

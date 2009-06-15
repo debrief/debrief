@@ -20,10 +20,10 @@
 package MWC.Utilities.Timer;
 
 import java.awt.event.ActionEvent;
-import java.beans.PropertyChangeSupport;
 import java.beans.PropertyChangeListener;
-import java.util.Vector;
+import java.beans.PropertyChangeSupport;
 import java.util.Enumeration;
+import java.util.Vector;
 
 /** The Timer JavaBean is a nonvisual component that sends an ActionEvent
 * to the registered TimerListeners every "delay" property milliseconds.

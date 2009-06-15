@@ -125,13 +125,20 @@
 package MWC.GUI.Shapes;
 
 
-import java.awt.*;
-import java.beans.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Vector;
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class LineShape extends PlainShape implements Serializable, Editable, HasDraggableComponents
 {

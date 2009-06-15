@@ -51,9 +51,11 @@ package MWC.GUI.Tools.Chart;
 // Initial revision
 //
 
-import MWC.GUI.*;
-import MWC.GenericData.*;
-import java.io.*;
+import java.io.Serializable;
+
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GenericData.WorldLocation;
 
 abstract public class CursorPosition implements PlainChart.ChartCursorMovedListener, Serializable
 {

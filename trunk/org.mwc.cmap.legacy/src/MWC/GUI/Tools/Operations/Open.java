@@ -51,9 +51,11 @@ package MWC.GUI.Tools.Operations;
 //
 
 
-import MWC.GUI.Tools.*;
-import MWC.GUI.*;
-import java.io.*;
+import java.io.File;
+
+import MWC.GUI.ToolParent;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 
 abstract public class Open extends PlainTool

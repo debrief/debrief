@@ -5,10 +5,13 @@
 
 package MWC.Algorithms.Projections;
 
-import MWC.GenericData.*;
-import MWC.Algorithms.*;
 import java.awt.Point;
-import java.io.*;
+import java.io.Serializable;
+
+import MWC.Algorithms.PlainProjection;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 
 /** flat earth projection

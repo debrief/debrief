@@ -6,16 +6,16 @@
 package MWC.Algorithms;
 
 
-import MWC.GUI.Editable;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
-
-import java.awt.*;
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
+
+import MWC.GUI.Editable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * interface describing how to transform from

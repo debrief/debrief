@@ -46,9 +46,15 @@
 
 package MWC.GUI;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.Point;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.io.Serializable;
 
 abstract public class Rubberband implements MouseListener, MouseMotionListener, Serializable
 {

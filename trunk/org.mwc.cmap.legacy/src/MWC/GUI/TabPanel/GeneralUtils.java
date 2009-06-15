@@ -2,7 +2,6 @@ package MWC.GUI.TabPanel;
 
 
 
-import java.lang.IllegalArgumentException;
 
 //???RKM??? I would have called this Util.java, but for the bug in the project manager
 

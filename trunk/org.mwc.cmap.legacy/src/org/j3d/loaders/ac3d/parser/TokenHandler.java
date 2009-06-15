@@ -12,7 +12,9 @@
 
 package org.j3d.loaders.ac3d.parser;
 
-import java.lang.reflect.*;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
 import org.j3d.loaders.ac3d.parser.handlers.ConsoleOutputHandler;
 
 

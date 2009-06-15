@@ -10,11 +10,11 @@ package MWC.GUI.Properties;
 //
 //
 
-import MWC.GenericData.WorldSpeed;
-
-import java.awt.*;
+import java.awt.Component;
 import java.beans.PropertyEditorSupport;
 import java.text.DecimalFormat;
+
+import MWC.GenericData.WorldSpeed;
 
 /**
  * abstract class providing core functionality necessary for editing a distance

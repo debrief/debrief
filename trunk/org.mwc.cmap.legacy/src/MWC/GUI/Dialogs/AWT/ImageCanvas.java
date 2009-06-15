@@ -1,6 +1,9 @@
 package MWC.GUI.Dialogs.AWT;
 
-import java.awt.*;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.Image;
 
 public class ImageCanvas extends Component {
     /**

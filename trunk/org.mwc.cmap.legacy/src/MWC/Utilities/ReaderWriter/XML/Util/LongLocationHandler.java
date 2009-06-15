@@ -10,9 +10,9 @@ package MWC.Utilities.ReaderWriter.XML.Util;
  * @version 1.0
  */
 
-import org.xml.sax.*;
+import org.xml.sax.Attributes;
 
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
 
 
 abstract public class LongLocationHandler extends MWCXMLReader

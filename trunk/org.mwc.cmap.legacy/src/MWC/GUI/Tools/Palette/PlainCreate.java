@@ -66,9 +66,14 @@
 
 package MWC.GUI.Tools.Palette;
 
-import MWC.GUI.*;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.PropertiesPanel;
-import MWC.GUI.Tools.*;
+import MWC.GUI.Tools.Action;
+import MWC.GUI.Tools.PlainTool;
 
 abstract public class PlainCreate extends PlainTool
 {

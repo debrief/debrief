@@ -1,13 +1,20 @@
 package MWC.GUI.S57;
 
-import java.awt.*;
+import java.awt.Color;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
 import MWC.GUI.Editable;
-import MWC.GUI.S57.features.*;
+import MWC.GUI.S57.features.AreaFeature;
+import MWC.GUI.S57.features.LineFeature;
+import MWC.GUI.S57.features.PointFeature;
+import MWC.GUI.S57.features.S57Feature;
 import MWC.GUI.S57.features.PointFeature.PointPainter;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 import com.bbn.openmap.layer.vpf.MutableInt;
 import com.bbn.openmap.util.Debug;

@@ -14,7 +14,7 @@
 package MWC.GUI.Java3d.j3d;
 
 // Standard imports
-import  javax.media.j3d.Transform3D;
+import javax.media.j3d.Transform3D;
 
 // Application specific imports
 // none

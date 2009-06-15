@@ -44,10 +44,13 @@ package MWC.GUI.VPF;
 
 
 import java.awt.Color;
-import java.beans.*;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Plottable;
 
 public class FeaturePainter implements Plottable, Serializable
 {

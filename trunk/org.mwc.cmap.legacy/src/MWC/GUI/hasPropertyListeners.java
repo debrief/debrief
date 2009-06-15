@@ -35,7 +35,7 @@ package MWC.GUI;
 // Revision 1.1  1999-10-12 15:37:07+01  ian_mayo
 // Initial revision
 //
-import java.beans.*;
+import java.beans.PropertyChangeListener;
 
 public interface hasPropertyListeners
 {

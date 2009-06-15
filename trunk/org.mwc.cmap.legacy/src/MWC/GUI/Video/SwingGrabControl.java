@@ -59,15 +59,37 @@
 //
 package MWC.GUI.Video;
 
-import javax.media.*;
-import javax.media.format.RGBFormat;
-import javax.media.protocol.DataSource;
-import javax.media.protocol.FileTypeDescriptor;
-import javax.swing.*;
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.Graphics;
+import java.awt.GridLayout;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.util.Enumeration;
 import java.util.Vector;
+
+import javax.media.CaptureDeviceInfo;
+import javax.media.CaptureDeviceManager;
+import javax.media.DataSink;
+import javax.media.Format;
+import javax.media.Manager;
+import javax.media.MediaLocator;
+import javax.media.PlugInManager;
+import javax.media.Processor;
+import javax.media.ProcessorModel;
+import javax.media.format.RGBFormat;
+import javax.media.protocol.DataSource;
+import javax.media.protocol.FileTypeDescriptor;
+import javax.swing.JButton;
+import javax.swing.JComponent;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 public class SwingGrabControl extends JPanel
 {

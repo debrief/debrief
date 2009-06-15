@@ -76,8 +76,10 @@
 // Initial revision
 //
 
-import MWC.GenericData.*;
-import MWC.Algorithms.*;
+import MWC.Algorithms.Conversions;
+import MWC.Algorithms.EarthModel;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class FlatEarth implements EarthModel
 {

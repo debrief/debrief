@@ -42,8 +42,8 @@ package MWC.GUI.Properties;
 // Initial revision
 //
 
-import java.beans.*;
-import java.awt.*;
+import java.awt.Font;
+import java.beans.PropertyEditorSupport;
 
 public class FontPropertyEditor extends PropertyEditorSupport
 {

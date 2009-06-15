@@ -65,7 +65,9 @@ package MWC.Algorithms.Editors;
 
 import java.awt.Point;
 
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
 

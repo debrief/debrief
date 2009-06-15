@@ -90,12 +90,14 @@
 
 package MWC.TacticalData;
 
+import java.io.Serializable;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
+
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldArea;
-
-import java.io.Serializable;
-import java.util.*;
 
 public class Track implements Serializable {
 	/**

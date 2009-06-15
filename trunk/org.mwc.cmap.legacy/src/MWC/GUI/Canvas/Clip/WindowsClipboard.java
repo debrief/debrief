@@ -6,13 +6,14 @@
 
 package MWC.GUI.Canvas.Clip;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.Algorithms.PlainProjection;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Image;
 import java.awt.image.ImageObserver;
 
-import MWC.GenericData.*;
+import MWC.Algorithms.PlainProjection;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Canvas.CanvasAdaptor;
+import MWC.GenericData.WorldLocation;
 
 /**
  *

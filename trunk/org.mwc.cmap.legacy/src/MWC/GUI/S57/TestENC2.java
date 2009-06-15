@@ -30,13 +30,15 @@
 
 package MWC.GUI.S57;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Iterator;
+import java.util.Vector;
+
 import MWC.GenericData.WorldLocation;
 
 import com.bbn.openmap.layer.vpf.MutableInt;
 import com.bbn.openmap.util.Debug;
-
-import java.io.*;
-import java.util.*;
 
 /**
  * Class that uses the DDF* classes to read an 8211 file and print out the

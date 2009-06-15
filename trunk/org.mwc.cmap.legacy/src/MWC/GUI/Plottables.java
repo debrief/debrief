@@ -135,16 +135,20 @@
 
 package MWC.GUI;
 
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
+import junit.framework.Assert;
 import MWC.GUI.Chart.Painters.Grid4WPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-
-import java.io.Serializable;
-import java.util.*;
-
-import junit.framework.Assert;
 
 /**
  * a list of Plottables

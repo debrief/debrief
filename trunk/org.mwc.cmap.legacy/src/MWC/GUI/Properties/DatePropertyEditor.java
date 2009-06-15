@@ -84,15 +84,16 @@ package MWC.GUI.Properties;
 // Initial revision
 //
 
-import MWC.GenericData.HiResDate;
-
-import java.awt.*;
+import java.awt.Panel;
+import java.awt.TextField;
 import java.beans.PropertyEditorSupport;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
+
+import MWC.GenericData.HiResDate;
 
 abstract public class DatePropertyEditor extends
   PropertyEditorSupport

@@ -147,16 +147,21 @@
 
 package MWC.GUI.Shapes;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Point;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.StringTokenizer;
+import java.util.Vector;
 
 import javax.swing.JLabel;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.LocationPropertyEditor;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * This class represents a line of text located in geographic coordinates. The

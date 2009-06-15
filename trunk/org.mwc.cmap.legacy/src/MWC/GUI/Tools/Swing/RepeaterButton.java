@@ -8,12 +8,17 @@
 */
 package MWC.GUI.Tools.Swing;
 
-import javax.swing.*;
-import java.awt.event.ActionListener;
+import java.awt.Insets;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.*;
+
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.Timer;
+import javax.swing.event.EventListenerList;
 
 /** repeat button code, taken from KIWI library
  *
