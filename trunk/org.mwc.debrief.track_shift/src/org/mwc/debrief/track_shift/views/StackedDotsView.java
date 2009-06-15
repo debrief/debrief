@@ -19,6 +19,8 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.axis.AxisLocation;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
@@ -26,7 +28,9 @@ import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
+import org.jfree.chart.title.LegendTitle;
 import org.jfree.data.Range;
+import org.jfree.ui.RectangleEdge;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
@@ -40,7 +44,6 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DatedToolTipGenerator;
-import MWC.GUI.JFreeChart.NewFormattedJFreeChart;
 import MWC.GUI.Layers.DataListener;
 
 /**
@@ -112,7 +115,7 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 	Composite _holder;
 
-	NewFormattedJFreeChart _myChart;
+	JFreeChart _myChart;
 
 	private Action _keepRange;
 
@@ -227,14 +230,12 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		combined.setOrientation(PlotOrientation.HORIZONTAL);
 
 		// put the plot into a chart
-		_myChart = new NewFormattedJFreeChart("Bearing error", null, combined,
-				false);
-
-		_myChart.setShowSymbols(true);
-		// shrink the title
-		_myChart.setTitleFont(_myChart.getTitleFont().deriveFont(8));
-		_myChart.setTitle("Bearing");
-
+		_myChart = new JFreeChart("Bearing error", null, combined,
+				true);
+		
+		LegendItemSource[] sources = {_linePlot};
+		_myChart.getLegend().setSources(sources);
+		
 		final ChartPanel plotHolder = new ChartPanel(_myChart);
 		plotHolder.setMouseZoomable(true, true);
 		plotHolder.setDisplayToolTips(true);

@@ -316,6 +316,9 @@ public final class StackedDotHelper
 			logger.logError(IStatus.INFO, "There must be sensor data available", null);
 			return;
 		}
+		
+		// must have worked, hooray
+		logger.logError(IStatus.INFO,"Bearing error", null);
 
 		// ok, get the positions
 		updateDoublets(onlyVis);

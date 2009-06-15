@@ -852,6 +852,7 @@ Export-Package:
  org.jfree.chart.labels,
  org.jfree.chart.plot,
  org.jfree.chart.renderer.xy,
+ org.jfree.chart.title,
  org.jfree.data,
  org.jfree.data.general,
  org.jfree.data.time,
