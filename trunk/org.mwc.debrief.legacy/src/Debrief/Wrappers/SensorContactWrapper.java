@@ -434,7 +434,7 @@ public final class SensorContactWrapper extends
 			if (_range == null)
 			{
 				// just use the maximum dimension of the plot
-				rangeToUse = Math.max(outerEnvelope.getWidth(),outerEnvelope.getHeight());
+				rangeToUse = 4 * Math.max(outerEnvelope.getWidth(),outerEnvelope.getHeight());
 			}
 			else
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
