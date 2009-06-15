@@ -441,18 +441,6 @@ public class RightClickSupport
 				try
 				{
 					_method.invoke(thisSubject, new Object[0]);
-
-					// hmm, the method may have actually changed the data, we need to find out if it 
-					// needs an extend
-					if(_method.isAnnotationPresent(FireExtended.class))
-					{
-						_theLayers.fireExtended(null, _topLayer);
-					}
-					else
-					{
-						// hey, let's do a redraw aswell...
-						_theLayers.fireModified(_topLayer);
-					}
 					
 				} catch (IllegalArgumentException e)
 				{
@@ -468,6 +456,19 @@ public class RightClickSupport
 							"whilst firing method from right-click", e);
 				}
 			}
+
+			// hmm, the method may have actually changed the data, we need to find out if it 
+			// needs an extend
+			if(_method.isAnnotationPresent(FireExtended.class))
+			{
+				_theLayers.fireExtended(null, _topLayer);
+			}
+			else
+			{
+				// hey, let's do a redraw aswell...
+				_theLayers.fireModified(_topLayer);
+			}
+			
 		}
 	}
 
@@ -823,12 +824,6 @@ public class RightClickSupport
 				try
 				{
 					_setter.invoke(thisSubject, new Object[] { theValue });
-
-
-					// and tell everybody  (we only need to do this if the previous call works,
-					// if an exception is thrown we needn't worry about the update
-					fireUpdate();
-					
 				} catch (InvocationTargetException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Setter call failed:"
@@ -847,6 +842,11 @@ public class RightClickSupport
 					res = null;
 				}
 			}
+
+			// and tell everybody  (we only need to do this if the previous call works,
+			// if an exception is thrown we needn't worry about the update
+			fireUpdate();
+
 			return res;
 			
 		}
@@ -924,9 +924,7 @@ public class RightClickSupport
 				try
 				{
 					_action.execute(thisSubject);
-					
-					// fire an update
-					_layers.fireModified(_parentLayer);
+
 				} catch (IllegalArgumentException e)
 				{
 					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
@@ -950,8 +948,6 @@ public class RightClickSupport
 				try
 				{
 					_action.execute(thisSubject);
-					// fire an update
-					_layers.fireModified(_parentLayer);
 				} catch (Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
@@ -976,8 +972,6 @@ public class RightClickSupport
 				try
 				{
 					_action.undo(thisSubject);
-					// fire an update
-					_layers.fireModified(_parentLayer);
 				} catch (Exception e)
 				{
 					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
