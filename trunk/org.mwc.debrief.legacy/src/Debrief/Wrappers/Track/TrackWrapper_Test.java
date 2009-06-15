@@ -494,19 +494,20 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * .
 	 */
 	
-	public void testTMASegment()
+	public void testTMASplit()
 	{
 		// //////////////////////////////////
 		// start off building from a track
 		// //////////////////////////////////
 		TrackWrapper tw = new TrackWrapper();
 
-		FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
-		FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
-		tw.addFix(f1);
-		tw.addFix(f2);
+		tw.addFix(createFix(100000, 1, 1, 4, 12));
+		tw.addFix(createFix(200000, 2, 3, 4, 12));
 		tw.addFix(createFix(300000, 3, 3, 4, 12));
 		tw.addFix(createFix(400000, 4, 6, 4, 12));
+		tw.addFix(createFix(500000, 4, 6, 4, 12));
+		tw.addFix(createFix(600000, 4, 6, 4, 12));
+		tw.addFix(createFix(700000, 4, 6, 4, 12));
 
 		WorldVector offset = new WorldVector(12, 12, 0);
 		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
@@ -527,10 +528,13 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		sw.add(createSensorItem(tw, sw, 120000));
 		sw.add(createSensorItem(tw, sw, 130000));
 		sw.add(createSensorItem(tw, sw, 140000));
+		sw.add(createSensorItem(tw, sw, 150000));
+		sw.add(createSensorItem(tw, sw, 160000));
+		sw.add(createSensorItem(tw, sw, 170000));
 		seg = new TMASegment(sw, offset, speed, course, null);
 
 		// check the create worked
-		assertEquals("enough points created", 4, seg.size());
+		assertEquals("enough points created", 7, seg.size());
 
 		// check the before
 		firstFix = (FixWrapper) seg.getData().iterator().next();
@@ -541,56 +545,31 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 				.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
 
-		seg.setCourse(35);
-		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
-
-		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
-		assertEquals("correct speed after", 15, seg.getSpeed().getValueIn(
-				WorldSpeed.Kts), 0.001);
-		assertEquals("correct course after", 35, MWC.Algorithms.Conversions
-				.Rads2Degs(firstFix.getCourse()), 0.001);
-		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
-
-		// ///////////////////////////////////////////
-		// lastly, build from a set of sensor observations
-		// ///////////////////////////////////////////
-		SensorContactWrapper[] items = new SensorContactWrapper[5];
-		items[0] = createSensorItem(tw, sw, 110000);
-		items[1] = createSensorItem(tw, sw, 120000);
-		items[2] = createSensorItem(tw, sw, 130000);
-		items[3] = createSensorItem(tw, sw, 140000);
-		items[4] = createSensorItem(tw, sw, 150000);
-
-		// sort out the host
-		for (int i = 0; i < items.length; i++)
-		{
-			SensorContactWrapper sensorContactWrapper = items[i];
-			sensorContactWrapper.setSensor(sw);
-		}
+		// ok, now do the split
+		TrackWrapper segW = new TrackWrapper();
+		segW.setName("TMA");
+		segW.add(seg);
 		
-		seg = new TMASegment(items, offset, speed, course, null);
+		// get hold of an item in the segment
+		Enumeration<Editable> enumer = seg.elements();
+		enumer.nextElement();
+		enumer.nextElement();
+		FixWrapper fw = (FixWrapper) enumer.nextElement();
+		assertNotNull("Found a fix", fw);
+		
+		// do the split
+		Vector<TrackSegment> segs = segW.splitTrack(fw, false);
 
-		// check the create worked
-		assertEquals("enough points created", 5, seg.size());
-
-		// check the before
-		firstFix = (FixWrapper) seg.getData().iterator().next();
-		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
-		assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
-				WorldSpeed.Kts), 0.001);
-		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
-				.Rads2Degs(firstFix.getCourse()), 0.001);
-		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-
-		seg.setCourse(35);
-		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
-
-		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
-		assertEquals("correct speed after", 15, seg.getSpeed().getValueIn(
-				WorldSpeed.Kts), 0.001);
-		assertEquals("correct course after", 35, MWC.Algorithms.Conversions
-				.Rads2Degs(firstFix.getCourse()), 0.001);
-		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+		// check we have enough segments
+		assertEquals("now two segments", 2, segs.size());
+		assertEquals("first is of correct length", 3, segs.firstElement().size());
+		assertEquals("first is of correct length", 4, segs.lastElement().size());
+		
+		// check they're of the correct type
+		TrackSegment seg1 = segs.firstElement();
+		TrackSegment seg2 = segs.lastElement();
+		assertTrue(" is a tma segment", seg1 instanceof TMASegment);
+		assertTrue(" is a tma segment", seg2 instanceof TMASegment);
 
 	}
 
@@ -728,7 +707,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("now two segments", 2, segs.size());
 		assertEquals("first is of correct length", 3, segs.firstElement().size());
 		assertEquals("first is of correct length", 3, segs.lastElement().size());
-
 	}
 
 	
@@ -1170,6 +1148,110 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
 		assertEquals("on new course", 385, ts.getCourse(), 1);
 		assertEquals("at original speed", 120, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
+	}
+
+	/**
+	 * .
+	 */
+	
+	public void testTMASegment()
+	{
+		// //////////////////////////////////
+		// start off building from a track
+		// //////////////////////////////////
+		TrackWrapper tw = new TrackWrapper();
+	
+		FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
+		FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
+		tw.addFix(f1);
+		tw.addFix(f2);
+		tw.addFix(createFix(300000, 3, 3, 4, 12));
+		tw.addFix(createFix(400000, 4, 6, 4, 12));
+	
+		WorldVector offset = new WorldVector(12, 12, 0);
+		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+		double course = 33;
+	
+		// ok, create the segment
+		TMASegment seg = null;
+	
+		// check the before
+		FixWrapper firstFix = null;
+	
+		// ////////////////////////
+		// NOW FROM A SENSOR WRAPPER
+		// /////////////////////////
+		SensorWrapper sw = new SensorWrapper("some sensor");
+		sw.setHost(tw);
+		sw.add(createSensorItem(tw, sw, 110000));
+		sw.add(createSensorItem(tw, sw, 120000));
+		sw.add(createSensorItem(tw, sw, 130000));
+		sw.add(createSensorItem(tw, sw, 140000));
+		seg = new TMASegment(sw, offset, speed, course, null);
+	
+		// check the create worked
+		assertEquals("enough points created", 4, seg.size());
+	
+		// check the before
+		firstFix = (FixWrapper) seg.getData().iterator().next();
+		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+		assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
+		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
+				.Rads2Degs(firstFix.getCourse()), 0.001);
+		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+	
+		seg.setCourse(35);
+		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+	
+		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
+		assertEquals("correct speed after", 15, seg.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
+		assertEquals("correct course after", 35, MWC.Algorithms.Conversions
+				.Rads2Degs(firstFix.getCourse()), 0.001);
+		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+	
+		// ///////////////////////////////////////////
+		// lastly, build from a set of sensor observations
+		// ///////////////////////////////////////////
+		SensorContactWrapper[] items = new SensorContactWrapper[5];
+		items[0] = createSensorItem(tw, sw, 110000);
+		items[1] = createSensorItem(tw, sw, 120000);
+		items[2] = createSensorItem(tw, sw, 130000);
+		items[3] = createSensorItem(tw, sw, 140000);
+		items[4] = createSensorItem(tw, sw, 150000);
+	
+		// sort out the host
+		for (int i = 0; i < items.length; i++)
+		{
+			SensorContactWrapper sensorContactWrapper = items[i];
+			sensorContactWrapper.setSensor(sw);
+		}
+		
+		seg = new TMASegment(items, offset, speed, course, null);
+	
+		// check the create worked
+		assertEquals("enough points created", 5, seg.size());
+	
+		// check the before
+		firstFix = (FixWrapper) seg.getData().iterator().next();
+		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+		assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
+		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
+				.Rads2Degs(firstFix.getCourse()), 0.001);
+		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+	
+		seg.setCourse(35);
+		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
+	
+		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
+		assertEquals("correct speed after", 15, seg.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
+		assertEquals("correct course after", 35, MWC.Algorithms.Conversions
+				.Rads2Degs(firstFix.getCourse()), 0.001);
+		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
+	
 	}
 
 }

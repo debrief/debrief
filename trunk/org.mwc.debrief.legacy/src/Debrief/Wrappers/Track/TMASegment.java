@@ -6,6 +6,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.SortedSet;
 
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
@@ -64,7 +65,6 @@ public class TMASegment extends TrackSegment
 			{
 				PropertyDescriptor[] res =
 				{
-						expertProp("Visible", "whether this layer is visible", FORMAT),
 						expertProp("Course", "Course of this TMA Solution", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
 						expertProp("HostName",
@@ -318,6 +318,24 @@ public class TMASegment extends TrackSegment
 		createPointsFrom(sw);
 	}
 
+	public TMASegment(TMASegment relevantSegment, SortedSet<Editable> theItems,
+			WorldVector theOffset)
+	{
+		// start off with the obvious bits
+		this(relevantSegment._courseDegs, relevantSegment._speed, theOffset, relevantSegment._theLayers);
+		
+		// now the other bits
+		this._referenceTrack = relevantSegment._referenceTrack;
+		this._hostName = relevantSegment._hostName;
+		
+		// lastly, insert the fixes
+		getData().addAll(theItems);
+
+		// now sort out the name
+		sortOutDate();
+		
+	}
+
 	private Fix createFix(long thisT)
 	{
 		Fix fix = new Fix(new HiResDate(thisT), new WorldLocation(0, 0, 0),
@@ -420,7 +438,7 @@ public class TMASegment extends TrackSegment
 		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
 	}
 
-	protected WorldLocation getHostLocation()
+	public WorldLocation getHostLocation()
 	{
 		WorldLocation res = null;
 

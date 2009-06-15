@@ -23,6 +23,7 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
+import Debrief.Wrappers.Track.TMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
 import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
@@ -3175,7 +3176,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 		else
 		{
-			// ok, find which segment cotains our data
+			// ok, find which segment contains our data
 			final Enumeration<Editable> segments = _thePositions.elements();
 			while (segments.hasMoreElements())
 			{
@@ -3188,24 +3189,62 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
+		// hmm, if we're splitting after the point, we need to move along the bus by one
+		if(!splitBeforePoint)
+		{
+			Collection<Editable> items = relevantSegment.getData();
+			Iterator<Editable> theI = items.iterator();
+			Editable previous = null;
+			while (theI.hasNext())
+			{
+				Editable thisE = (Editable) theI.next();
+
+				// have we chosen to remember the previous item?
+				if(previous != null)
+				{
+					// yes, this must be the one we're after
+					splitPoint = (FixWrapper) thisE;
+					break;
+				}
+					
+				// is this the one we're looking for?
+				if(thisE == splitPoint)
+				{
+					// yup, remember it - we want to use the next value
+					previous = (FixWrapper) thisE;
+				}
+			}
+		}
+		
 		// yup, do our first split
 		final SortedSet<Editable> p1 = relevantSegment.headSet(splitPoint);
 		final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPoint);
 
-		// put the lists back into plottable layers
-		final TrackSegment ts1 = new TrackSegment(p1);
-		final TrackSegment ts2 = new TrackSegment(p2);
-
-		// were we splitting before or after?
-		if (splitBeforePoint)
+		// get our results ready
+		final TrackSegment ts1, ts2;
+		
+		// aaah, just sort out if we are splitting a TMA segment, in which case we want to create two
+		// tma segments, not track segments
+		if(relevantSegment instanceof TMASegment)
 		{
-			// cool, that's the normal behaviour of tail set.
+			TMASegment theTMA = (TMASegment) relevantSegment;
+			
+			// aah, sort out if we are splitting before or after.
+			
+			// find out the offset at the split point, so we can initiate it for the second part of the track
+			WorldLocation refTrackLoc =theTMA.getReferenceTrack().getNearestTo(splitPoint.getDateTimeGroup())[0].getLocation(); 
+			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
+			
+			// put the lists back into plottable layers
+			ts1 = new TMASegment(theTMA, p1, theTMA.getOffset());
+			ts2 = new TMASegment(theTMA, p2, secondOffset);			
+			
 		}
 		else
 		{
-			// bugger, better move fix from second set to first
-			ts2.removeElement(splitPoint);
-			ts1.addFix(splitPoint);
+			// put the lists back into plottable layers
+			ts1 = new TrackSegment(p1);
+			ts2 = new TrackSegment(p2);			
 		}
 
 		// now clear the positions
