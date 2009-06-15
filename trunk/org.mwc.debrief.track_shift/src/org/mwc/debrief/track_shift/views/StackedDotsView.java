@@ -211,7 +211,8 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 				new DatedToolTipGenerator(), null, _dotPlot));
 
 		_linePlot = new XYPlot();
-		_linePlot.setRangeAxis(new NumberAxis("Absolute (degs)"));
+		NumberAxis absBrgAxis = new NumberAxis("Absolute (degs)");
+		_linePlot.setRangeAxis(absBrgAxis);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
 				new DatedToolTipGenerator(), null, _linePlot);
