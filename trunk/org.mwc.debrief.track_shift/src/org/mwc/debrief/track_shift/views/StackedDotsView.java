@@ -340,7 +340,7 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 			}
 		};
 		_showLinePlot.setChecked(true);
-		_showLinePlot.setToolTipText("Show the line plot");
+		_showLinePlot.setToolTipText("Show the actuals plot");
 		_showLinePlot.setImageDescriptor(Activator
 				.getImageDescriptor("icons/stacked_lines.png"));		
 
