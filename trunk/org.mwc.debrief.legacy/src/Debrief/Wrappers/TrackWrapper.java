@@ -6,6 +6,7 @@
 package Debrief.Wrappers;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
@@ -2612,31 +2613,78 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// and draw the track label
 			if (_theLabel.getVisible())
 			{
-
+				
 				// still, we only plot the track label if we have plotted any
 				// points
 				if (plotted_anything)
 				{
-
-					// check that we have found a location for the lable
-					if (_theLabel.getLocation() != null)
+					// just see if we have multiple segments. if we do,
+					// name them individually
+					if (this._thePositions.size() <= 1)
 					{
 
-						// check that we have set the name for the label
-						if (_theLabel.getString() == null)
+						// check that we have found a location for the lable
+						if (_theLabel.getLocation() != null)
 						{
-							_theLabel.setString(getName());
+							
+							// is the first track a DR track?
+							TrackSegment t1 = (TrackSegment) _thePositions.first();
+							if(t1.getPlotRelative())
+							{
+								_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
+							}
+							else
+							{
+								if(_theLabel.getFont().isItalic())
+								  _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+							}
+							
+
+							// check that we have set the name for the label
+							if (_theLabel.getString() == null)
+							{
+								_theLabel.setString(getName());
+							}
+
+							if (_theLabel.getColor() == null)
+							{
+								_theLabel.setColor(getColor());
+							}
+
+							// and paint it
+							_theLabel.paint(dest);
+						}// if the label has a location
+					}
+					else
+					{
+						// we've got multiple segments, name them
+						Enumeration<Editable> posis = _thePositions.elements();
+						while(posis.hasMoreElements())
+						{
+							TrackSegment thisE = (TrackSegment) posis.nextElement();
+							
+							// is the first track a DR track?
+							if(thisE.getPlotRelative())
+							{
+								_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
+							}
+							else
+							{
+								if(_theLabel.getFont().isItalic())
+								  _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+							}
+
+							
+							WorldLocation theLoc = thisE.getTrackStart();
+							String oldTxt = _theLabel.getString();
+							_theLabel.setString(thisE.getName());
+							_theLabel.setLocation(theLoc);
+							_theLabel.paint(dest);
+							_theLabel.setString(oldTxt);
+							
 						}
 
-						if (_theLabel.getColor() == null)
-						{
-							_theLabel.setColor(getColor());
-						}
-
-						// and paint it
-						_theLabel.paint(dest);
-
-					} // if the label has a location
+					} // whether there's only one track
 				}
 			} // if the label is visible
 
@@ -3189,8 +3237,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
-		// hmm, if we're splitting after the point, we need to move along the bus by one
-		if(!splitBeforePoint)
+		// hmm, if we're splitting after the point, we need to move along the bus by
+		// one
+		if (!splitBeforePoint)
 		{
 			Collection<Editable> items = relevantSegment.getData();
 			Iterator<Editable> theI = items.iterator();
@@ -3200,51 +3249,54 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				Editable thisE = (Editable) theI.next();
 
 				// have we chosen to remember the previous item?
-				if(previous != null)
+				if (previous != null)
 				{
 					// yes, this must be the one we're after
 					splitPoint = (FixWrapper) thisE;
 					break;
 				}
-					
+
 				// is this the one we're looking for?
-				if(thisE == splitPoint)
+				if (thisE == splitPoint)
 				{
 					// yup, remember it - we want to use the next value
 					previous = (FixWrapper) thisE;
 				}
 			}
 		}
-		
+
 		// yup, do our first split
 		final SortedSet<Editable> p1 = relevantSegment.headSet(splitPoint);
 		final SortedSet<Editable> p2 = relevantSegment.tailSet(splitPoint);
 
 		// get our results ready
 		final TrackSegment ts1, ts2;
-		
-		// aaah, just sort out if we are splitting a TMA segment, in which case we want to create two
+
+		// aaah, just sort out if we are splitting a TMA segment, in which case we
+		// want to create two
 		// tma segments, not track segments
-		if(relevantSegment instanceof TMASegment)
+		if (relevantSegment instanceof TMASegment)
 		{
 			TMASegment theTMA = (TMASegment) relevantSegment;
-			
+
 			// aah, sort out if we are splitting before or after.
-			
-			// find out the offset at the split point, so we can initiate it for the second part of the track
-			WorldLocation refTrackLoc =theTMA.getReferenceTrack().getNearestTo(splitPoint.getDateTimeGroup())[0].getLocation(); 
+
+			// find out the offset at the split point, so we can initiate it for the
+			// second part of the track
+			WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(
+					splitPoint.getDateTimeGroup())[0].getLocation();
 			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
-			
+
 			// put the lists back into plottable layers
 			ts1 = new TMASegment(theTMA, p1, theTMA.getOffset());
-			ts2 = new TMASegment(theTMA, p2, secondOffset);			
-			
+			ts2 = new TMASegment(theTMA, p2, secondOffset);
+
 		}
 		else
 		{
 			// put the lists back into plottable layers
 			ts1 = new TrackSegment(p1);
-			ts2 = new TrackSegment(p2);			
+			ts2 = new TrackSegment(p2);
 		}
 
 		// now clear the positions

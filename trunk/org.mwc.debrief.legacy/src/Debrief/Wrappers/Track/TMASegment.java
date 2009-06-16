@@ -513,6 +513,9 @@ public class TMASegment extends TrackSegment
 		Point lastPoint = null;
 		WorldLocation tmaLastLoc = null;
 		long tmaLastDTG = 0;
+		
+		// try to create a dotted line
+		dest.setLineStyle(CanvasType.DOTTED);
 
 		// remember the ends, so we can plot a point 1/2 way along them
 		WorldLocation firstEnd = null;
