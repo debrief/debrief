@@ -66,6 +66,7 @@ public class TMASegment extends TrackSegment
 				PropertyDescriptor[] res =
 				{
 						expertProp("Course", "Course of this TMA Solution", SOLUTION),
+						expertProp("BaseFrequency", "The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
 						expertProp("HostName",
 								"Name of the track from which range/bearing measured", OFFSET),
@@ -118,6 +119,11 @@ public class TMASegment extends TrackSegment
 	 * 
 	 */
 	private WorldVector _offset;
+	
+	/** the base frequency (f0) for this tma segment
+	 * 
+	 */
+	private double _baseFreq = 0;
 
 	/**
 	 * name of the watchable list we're going to use as our origin
@@ -437,6 +443,18 @@ public class TMASegment extends TrackSegment
 	{
 		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
 	}
+	
+
+	public double getBaseFrequency()
+	{
+		return _baseFreq;
+	}
+
+	public void setBaseFrequency(double baseFrequency)
+	{
+		_baseFreq = baseFrequency;
+	}
+
 
 	public WorldLocation getHostLocation()
 	{

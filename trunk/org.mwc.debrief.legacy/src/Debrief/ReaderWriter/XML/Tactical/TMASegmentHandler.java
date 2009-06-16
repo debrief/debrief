@@ -26,12 +26,15 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 	public static final String SPEED= "Speed";
 	public static final String HOST="HostTrack";
 	public static final String OFFSET="Offset";
+	public static final String BASE_FREQ="BaseFrequency";
+	
 
 	private double _courseDegs = 0d;
 	protected WorldSpeed _speed;
 	protected String _host;
 	protected WorldVector _offset;
 	private final Layers _theLayers;
+	protected double _baseFrequency;
 	
 	public TMASegmentHandler(Layers theLayers)
 	{
@@ -46,6 +49,14 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 			public void setValue(String name, double val)
 			{
 				_courseDegs = val;
+			}
+		});
+		addAttributeHandler(new HandleDoubleAttribute(BASE_FREQ)
+		{
+			@Override
+			public void setValue(String name, double val)
+			{
+				_baseFrequency = val;
 			}
 		});
 		addAttributeHandler(new HandleAttribute(HOST)
@@ -82,6 +93,7 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 	protected TrackSegment createTrack()
 	{
 		TMASegment res = new TMASegment(_courseDegs, _speed, _offset, _theLayers);
+		res.setBaseFrequency(_baseFrequency);
 		res.setHostName(_host);
 		return res;
 	}
@@ -96,6 +108,7 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 		// sort out the remaining attributes
 		segE.setAttribute(COURSE_DEGS, writeThis(seg.getCourse()));
 		segE.setAttribute(HOST, seg.getReferenceTrack().getName());
+		segE.setAttribute(BASE_FREQ, writeThis( seg.getBaseFrequency()));
 		
 		WorldSpeedHandler.exportSpeed(SPEED, seg.getSpeed(), segE, doc);
 		WorldVectorHandler.exportVector(OFFSET, seg.getOffset(), segE, doc);
