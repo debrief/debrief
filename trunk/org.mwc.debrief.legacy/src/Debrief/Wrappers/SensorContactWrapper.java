@@ -433,8 +433,11 @@ public final class SensorContactWrapper extends
 			// do we have the range?
 			if (_range == null)
 			{
+				WorldArea totalArea = new WorldArea(outerEnvelope);
+				totalArea.extend(_calculatedOrigin);
+				
 				// just use the maximum dimension of the plot
-				rangeToUse = 4 * Math.max(outerEnvelope.getWidth(),outerEnvelope.getHeight());
+				rangeToUse = 2* Math.max(totalArea.getWidth(),totalArea.getHeight());
 			}
 			else
 				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
