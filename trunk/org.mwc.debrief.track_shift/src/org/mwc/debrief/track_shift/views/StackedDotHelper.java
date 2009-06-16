@@ -143,7 +143,7 @@ public final class StackedDotHelper
 	 * @param currentOffset
 	 *          how far the current track has been dragged
 	 */
-	public void updateSeries(XYPlot dotPlot, XYPlot linePlot, TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
+	public void updateFrequencyData(XYPlot dotPlot, XYPlot linePlot, TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
 	{
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
