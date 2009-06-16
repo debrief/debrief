@@ -143,11 +143,12 @@ public final class StackedDotHelper
 	 * @param currentOffset
 	 *          how far the current track has been dragged
 	 */
-	public void updateFrequencyData(XYPlot dotPlot, XYPlot linePlot, TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
+	public void updateBearingData(XYPlot dotPlot, XYPlot linePlot, 
+			TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
 	{
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
-			initialise(tracks, false, onlyVis, holder, logger);
+			initialise(tracks, false, onlyVis, holder, logger, "Bearing");
 
 		// did it work?
 		if (_secondaryTrack == null)
@@ -236,7 +237,8 @@ public final class StackedDotHelper
 	 * @param onlyVis 
 	 * @param holder
 	 */
-	void initialise(TrackManager tracks, boolean showError, boolean onlyVis, Composite holder, ErrorLogger logger)
+	void initialise(TrackManager tracks, boolean showError, boolean onlyVis,
+			Composite holder, ErrorLogger logger, String dataType)
 	{
 
 		// have we been created?
@@ -318,7 +320,7 @@ public final class StackedDotHelper
 		}
 		
 		// must have worked, hooray
-		logger.logError(IStatus.INFO,"Bearing error", null);
+		logger.logError(IStatus.INFO,dataType + " error", null);
 
 		// ok, get the positions
 		updateDoublets(onlyVis);
@@ -354,6 +356,102 @@ public final class StackedDotHelper
 			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis);
 			_secondaryDoublets = getDoublets(_secondaryTrack, _primaryTrack, onlyVis);
 		}
+	}
+
+	/**
+	 * ok, our track has been dragged, calculate the new series of offsets
+	 * @param linePlot 
+	 * @param dotPlot 
+	 * @param onlyVis 
+	 * @param holder 
+	 * @param logger 
+	 * 
+	 * @param currentOffset
+	 *          how far the current track has been dragged
+	 */
+	public void updateFrequencyData(XYPlot dotPlot, XYPlot linePlot, TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
+	{
+		// ok, find the track wrappers
+		if (_secondaryTrack == null)
+			initialise(tracks, false, onlyVis, holder, logger, "Frequency");
+	
+		// did it work?
+		if (_secondaryTrack == null)
+			return ;
+	
+		if (_primaryDoublets == null)
+			return ;
+	
+		// ok - the tracks have moved. better update the doublets
+		updateDoublets(onlyVis);
+	
+		// create the collection of series
+		final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
+		final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
+	
+		// produce a dataset for each track
+		final TimeSeries errorValues = new TimeSeries(_primaryTrack
+				.getName());
+		
+		final TimeSeries measuredValues = new TimeSeries("Measured");
+		final TimeSeries calculatedValues = new TimeSeries("Calculated");
+	
+		// ok, run through the points on the primary track
+		Iterator<Doublet> iter = _primaryDoublets.iterator();
+		while (iter.hasNext())
+		{
+			final Doublet thisD = iter.next();
+	
+			final Color thisColor = thisD.getColor();
+			final double measuredBearing =  70d +  thisD.getMeasuredBearing() / 100;
+			final double calculatedBearing = 70d + thisD.getCalculatedBearing(null,null) / 100;
+			final double thisError = thisD.calculateError(measuredBearing, calculatedBearing);
+			final HiResDate currentTime = thisD.getDTG();
+	
+			// create a new, correctly coloured data item
+			// HI-RES NOT DONE - should provide FixedMicrosecond structure
+			final ColouredDataItem newError = new ColouredDataItem(
+					new FixedMillisecond(currentTime.getDate().getTime()), thisError,
+					thisColor, false, null);
+	
+			final ColouredDataItem mBearing = new ColouredDataItem(
+					new FixedMillisecond(currentTime.getDate().getTime()), measuredBearing,
+					thisColor, false, null);
+	
+			final ColouredDataItem cBearing = new ColouredDataItem(
+					new FixedMillisecond(currentTime.getDate().getTime()), calculatedBearing,
+					thisColor, true, null);
+	
+			try
+			{
+				// and add them to the series			
+				errorValues.add(newError);
+				measuredValues.add(mBearing);
+				calculatedValues.add(cBearing);
+			}
+			catch (final SeriesException e)
+			{
+				// hack: we shouldn't be allowing this exception. Look at why we're
+				// getting the same
+				// time period being entered twice for this track.
+	
+				// Stop catching the error, load Dave W's holistic approach plot file,
+				// and check the track/fix which is causing the problem.
+	
+				// e.printStackTrace(); //To change body of catch statement use File |
+				// Settings | File Templates.
+			}
+	
+		}
+	
+		// ok, add these new series
+		errorSeries.addSeries(errorValues);
+		
+		actualSeries.addSeries(measuredValues);
+		actualSeries.addSeries(calculatedValues);
+	
+		dotPlot.setDataset(errorSeries);
+		linePlot.setDataset(actualSeries);
 	}
 
 }

@@ -12,6 +12,18 @@
             id="org.mwc.debrief.track_shift.views.StackedDotsView">
       </view>         
    </extension>
+   <extension
+         point="org.eclipse.ui.views">
+      <view
+            name="Frequency Residuals"
+            icon="icons/stacked_dots.png"
+            category="org.mwc.cmap.plotViewer.CMAP"
+            class="org.mwc.debrief.track_shift.views.FreqResidualsView"
+            id="org.mwc.debrief.track_shift.views.FrequencyResidualsView">
+      </view>         
+   </extension>
+
+
 	<extension point = "org.eclipse.ui.actionSets">    
 	<actionSet id="org.mwc.debrief.track_shift" label="Debrief Track Shifting">
 

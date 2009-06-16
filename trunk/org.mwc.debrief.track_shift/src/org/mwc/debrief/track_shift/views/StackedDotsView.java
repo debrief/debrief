@@ -15,7 +15,7 @@ public class StackedDotsView extends BaseStackedDotsView
 	protected void updateData()
 	{
 		// update the current datasets
-		_myHelper.updateFrequencyData(_dotPlot, _linePlot, _theTrackDataListener,
+		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
 				_onlyVisible.isChecked(), _holder, this);		
 	}
 }
