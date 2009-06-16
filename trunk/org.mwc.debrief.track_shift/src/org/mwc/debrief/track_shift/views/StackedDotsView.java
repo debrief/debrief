@@ -35,6 +35,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
+import org.mwc.debrief.track_shift.Activator;
 
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.ErrorLogger;
@@ -86,13 +87,12 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 	 * is always in the centre
 	 */
 	private Action _centreYAxis;
-	/**
-	 * set of buttons for choice of drag modes
+	
+	/** buttons for which plots to show
 	 * 
 	 */
-	private Action _keepCourse;
-
-	private Action _keepSpeed;
+	private Action _showLinePlot;
+	private Action _showDotPlot;
 
 	/**
 	 * flag indicating whether we should only show stacked dots for visible fixes
@@ -115,13 +115,11 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 	JFreeChart _myChart;
 
-	private Action _keepRange;
-
-	private Action _translate;
-
 	private Vector<Action> _customActions;
 
 	private Action _autoResize;
+
+	private CombinedDomainXYPlot _combined;
 
 	/**
 	 * The constructor.
@@ -146,6 +144,8 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 	{
 		// fit to window
 		toolBarManager.add(_autoResize);
+		toolBarManager.add(_showLinePlot);
+		toolBarManager.add(_showDotPlot);
 
 		// and a separator
 		toolBarManager.add(new Separator());
@@ -223,13 +223,13 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		_dotPlot.getRangeAxis().setAutoRange(true);
 		_linePlot.getRangeAxis().setAutoRange(true);
 
-		CombinedDomainXYPlot combined = new CombinedDomainXYPlot(xAxis);
-		combined.add(_linePlot);
-		combined.add(_dotPlot);
-		combined.setOrientation(PlotOrientation.HORIZONTAL);
+		 _combined = new CombinedDomainXYPlot(xAxis);
+		 _combined.add(_linePlot);
+		 _combined.add(_dotPlot);
+		 _combined.setOrientation(PlotOrientation.HORIZONTAL);
 
 		// put the plot into a chart
-		_myChart = new JFreeChart("Bearing error", null, combined,
+		_myChart = new JFreeChart("Bearing error", null, _combined,
 				true);
 		
 		LegendItemSource[] sources = {_linePlot};
@@ -279,28 +279,6 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 
 	}
 
-	public int getDragMode()
-	{
-		int res = 0;
-		if (_translate.isChecked())
-		{
-			res = 1;
-		}
-		else if (_keepCourse.isChecked())
-		{
-			res = 2;
-		}
-		else if (_keepSpeed.isChecked())
-		{
-			res = 3;
-		}
-		else if (_keepRange.isChecked())
-		{
-			res = 4;
-		}
-		return res;
-	}
-
 	private void makeActions()
 	{
 
@@ -338,6 +316,60 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		_centreYAxis.setToolTipText("Keep Y origin in centre of axis");
 		_centreYAxis.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/follow_selection.gif"));
+		
+		_showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+				if(_showLinePlot.isChecked())
+				{
+					_combined.remove(_linePlot);
+					_combined.remove(_dotPlot);
+					
+					_combined.add(_linePlot);
+					if(_showDotPlot.isChecked())
+						_combined.add(_dotPlot);
+				}
+				else
+				{
+					if(_combined.getSubplots().size() > 1)
+ 					  _combined.remove(_linePlot);
+				}
+			}
+		};
+		_showLinePlot.setChecked(true);
+		_showLinePlot.setToolTipText("Show the line plot");
+		_showLinePlot.setImageDescriptor(Activator
+				.getImageDescriptor("icons/stacked_lines.png"));		
+
+		_showDotPlot = new Action("Error plot", IAction.AS_CHECK_BOX)
+		{
+			@Override
+			public void run()
+			{
+				super.run();
+				if(_showDotPlot.isChecked())
+				{
+					_combined.remove(_linePlot);
+					_combined.remove(_dotPlot);
+					
+					if(_showLinePlot.isChecked())
+						_combined.add(_linePlot);
+					_combined.add(_dotPlot);
+				}
+				else
+				{
+					if(_combined.getSubplots().size() > 1)
+  					_combined.remove(_dotPlot);
+				}
+			}
+		};
+		_showDotPlot.setChecked(true);
+		_showDotPlot.setToolTipText("Show the error plot");
+		_showDotPlot.setImageDescriptor(Activator
+				.getImageDescriptor("icons/stacked_dots.png"));		
 
 		// get an error logger
 		final ErrorLogger logger = this;
@@ -369,21 +401,6 @@ public class StackedDotsView extends ViewPart implements ErrorLogger
 		_onlyVisible.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/follow_selection.gif"));
 
-		_translate = new Action("[]", IAction.AS_RADIO_BUTTON)
-		{
-		};
-		_keepCourse = new Action("Crse", IAction.AS_RADIO_BUTTON)
-		{
-		};
-		_keepSpeed = new Action("Sped", IAction.AS_RADIO_BUTTON)
-		{
-		};
-		_keepRange = new Action("Rng", IAction.AS_RADIO_BUTTON)
-		{
-		};
-
-		// and initialise one of them
-		_translate.setChecked(true);
 
 	}
 
