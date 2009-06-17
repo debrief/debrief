@@ -5,7 +5,10 @@ package org.mwc.debrief.track_shift.views;
 
 import java.awt.Color;
 
+import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
@@ -15,8 +18,10 @@ public final class Doublet
 {
 	private final SensorContactWrapper _sensor;
 
-	private final WorldLocation _targetLocation;
+	private final FixWrapper _fix;
 
+	private final TrackSegment _parent;
+	
 	// ////////////////////////////////////////////////
 	// working variables to help us along.
 	// ////////////////////////////////////////////////
@@ -30,11 +35,12 @@ public final class Doublet
 	// constructor
 	// ////////////////////////////////////////////////
 	Doublet(final SensorContactWrapper sensor,
-			final WorldLocation targetLocation)
+			final FixWrapper fix, TrackSegment parent)
 	{
 		_sensor = sensor;
-		_targetLocation = targetLocation;
-	}
+		_fix = fix;
+		_parent = parent;
+		}
 
 	/**
 	 * ok find what the current bearing error is for this track
@@ -68,7 +74,7 @@ public final class Doublet
 	{
 		// copy our locations
 		_workingSensorLocation.copy(_sensor.getCalculatedOrigin(null));
-		_workingTargetLocation.copy(_targetLocation);
+		_workingTargetLocation.copy(_fix.getLocation());
 
 		// apply the offsets
 		if (sensorOffset != null)
@@ -88,6 +94,27 @@ public final class Doublet
 		return calcBearing;
 	}
 	
+	/** get the base frequency of this track participant, if it has one
+	 * 
+	 * @return
+	 */
+	public double getBaseFrequency()
+	{
+		double res = 0d;
+		if(_parent instanceof TMASegment)
+		{
+			TMASegment tma = (TMASegment) _parent;
+			res = tma.getBaseFrequency();
+		}
+		
+		return res;
+	}
+	
+	
+	public double getMeasuredFrequency()
+	{
+		return _sensor.getFrequency();
+	}
 	/**
 	 * get the colour of this sensor fix
 	 */
@@ -107,5 +134,23 @@ public final class Doublet
 	public HiResDate getDTG()
 	{
 		return _sensor.getDTG();
+	}
+
+	/** calculate the corrected frequency (take out ownship doppler)
+	 * 
+	 * @return
+	 */
+	public double getCorrectedFrequency()
+	{
+		return 65 + _fix.getCourse() / 10;
+	}
+
+	/** calculate what the frequency of the target should be (base freq plus both dopplers)
+	 * 
+	 * @return
+	 */
+	public double getPredictedFrequency()
+	{
+		return 65 - Math.sin(_fix.getCourse())  * 6;
 	}
 }
