@@ -70,6 +70,7 @@ public class CorePlugin extends AbstractUIPlugin
 	public static final String OVERVIEW_PLOT = "org.mwc.cmap.overview.views.ChartOverview";
 
 	public static final String STACKED_DOTS = "org.mwc.debrief.track_shift.views.StackedDotsView";
+	public static final String FREQ_RESIDUALS = "org.mwc.debrief.track_shift.views.FrequencyResidualsView";
 
 	public static final String POLYGON_EDITOR = "org.mwc.cmap.core.editor_views.PolygonEditorView";
 
