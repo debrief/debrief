@@ -34,6 +34,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 				"topLeft");
 		midLeft.addView(CorePlugin.TOTE);
 		midLeft.addPlaceholder(CorePlugin.STACKED_DOTS);
+		midLeft.addPlaceholder(CorePlugin.FREQ_RESIDUALS);
 		midLeft.addView(CorePlugin.OVERVIEW_PLOT);
 		midLeft.addPlaceholder(CorePlugin.POLYGON_EDITOR);		
 		
@@ -60,6 +61,7 @@ public class DebriefPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(CorePlugin.TIME_CONTROLLER);
 		layout.addShowViewShortcut(CorePlugin.TOTE);
 		layout.addShowViewShortcut(CorePlugin.STACKED_DOTS);
+		layout.addShowViewShortcut(CorePlugin.FREQ_RESIDUALS);
 		layout.addShowViewShortcut(CorePlugin.OVERVIEW_PLOT);
 		// layout.addShowViewShortcut(CorePlugin.PLOT_3d); -- don't show shortcut for 3d, we only open
 		// it via action (so we can populate it)  

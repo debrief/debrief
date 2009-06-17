@@ -5,10 +5,10 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Stacked Dots"
+            name="BearingResiduals"
             icon="icons/stacked_dots.png"
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.debrief.track_shift.views.StackedDotsView"
+            class="org.mwc.debrief.track_shift.views.BearingResidualsView"
             id="org.mwc.debrief.track_shift.views.StackedDotsView">
       </view>         
    </extension>
@@ -18,7 +18,7 @@
             name="Frequency Residuals"
             icon="icons/stacked_dots.png"
             category="org.mwc.cmap.plotViewer.CMAP"
-            class="org.mwc.debrief.track_shift.views.FreqResidualsView"
+            class="org.mwc.debrief.track_shift.views.FrequencyResidualsView"
             id="org.mwc.debrief.track_shift.views.FrequencyResidualsView">
       </view>         
    </extension>
