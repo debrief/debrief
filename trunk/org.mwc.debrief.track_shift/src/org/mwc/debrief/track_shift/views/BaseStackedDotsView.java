@@ -222,7 +222,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 				new DatedToolTipGenerator(), null, _linePlot);
 		lineRend.setSeriesShapesVisible(1, false);
 		_linePlot.setRenderer(lineRend);
-
+		
 		// set the y axes to autocalculate
 		_dotPlot.getRangeAxis().setAutoRange(true);
 		_linePlot.getRangeAxis().setAutoRange(true);

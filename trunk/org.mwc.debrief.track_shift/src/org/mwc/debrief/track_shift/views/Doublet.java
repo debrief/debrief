@@ -18,9 +18,10 @@ public final class Doublet
 {
 	private final SensorContactWrapper _sensor;
 
-	private final FixWrapper _fix;
+	private final FixWrapper _targetFix;
+	private final FixWrapper _hostFix;
 
-	private final TrackSegment _parent;
+	private final TrackSegment _targetTrack;
 	
 	// ////////////////////////////////////////////////
 	// working variables to help us along.
@@ -35,13 +36,24 @@ public final class Doublet
 	// constructor
 	// ////////////////////////////////////////////////
 	Doublet(final SensorContactWrapper sensor,
-			final FixWrapper fix, TrackSegment parent)
+			final FixWrapper targetFix, TrackSegment parent, final FixWrapper hostFix)
 	{
 		_sensor = sensor;
-		_fix = fix;
-		_parent = parent;
+		_targetFix = targetFix;
+		_targetTrack = parent;
+		_hostFix = hostFix;
 		}
 
+	public FixWrapper getHost()
+	{
+		return _hostFix;
+	}
+	
+	public FixWrapper getTarget()
+	{
+		return _targetFix;
+	}
+	
 	/**
 	 * ok find what the current bearing error is for this track
 	 * 
@@ -74,7 +86,7 @@ public final class Doublet
 	{
 		// copy our locations
 		_workingSensorLocation.copy(_sensor.getCalculatedOrigin(null));
-		_workingTargetLocation.copy(_fix.getLocation());
+		_workingTargetLocation.copy(_targetFix.getLocation());
 
 		// apply the offsets
 		if (sensorOffset != null)
@@ -101,9 +113,9 @@ public final class Doublet
 	public double getBaseFrequency()
 	{
 		double res = 0d;
-		if(_parent instanceof TMASegment)
+		if(_targetTrack instanceof TMASegment)
 		{
-			TMASegment tma = (TMASegment) _parent;
+			TMASegment tma = (TMASegment) _targetTrack;
 			res = tma.getBaseFrequency();
 		}
 		
@@ -142,7 +154,7 @@ public final class Doublet
 	 */
 	public double getCorrectedFrequency()
 	{
-		return 65 + _fix.getCourse() / 10;
+		return 65 + _hostFix.getCourse() / 10;
 	}
 
 	/** calculate what the frequency of the target should be (base freq plus both dopplers)
@@ -151,6 +163,6 @@ public final class Doublet
 	 */
 	public double getPredictedFrequency()
 	{
-		return 65 - Math.sin(_fix.getCourse())  * 6;
+		return 65 - Math.sin(_targetFix.getCourse())  * 6;
 	}
 }

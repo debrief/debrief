@@ -57,8 +57,8 @@ public final class StackedDotHelper
 	// MEMBER METHODS
 	// ////////////////////////////////////////////////
 
-
-	/** sort out data of interest 
+	/**
+	 * sort out data of interest
 	 * 
 	 */
 	private Vector<Doublet> getDoublets(final TrackWrapper sensorHost,
@@ -83,32 +83,36 @@ public final class StackedDotHelper
 						TrackSegment targetParent = null;
 						// right, get the track segment and fix nearest to this DTG
 						Enumeration<Editable> trkData = targetTrack.elements();
-						while(trkData.hasMoreElements())
+						while (trkData.hasMoreElements())
 						{
 							Editable thisI = trkData.nextElement();
-							if(thisI instanceof TrackSegment)
+							if (thisI instanceof TrackSegment)
 							{
 								TrackSegment ts = (TrackSegment) thisI;
-								TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts.startDTG(), ts.endDTG());
-								if(validPeriod.contains(scw.getDTG()))
+								TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts
+										.startDTG(), ts.endDTG());
+								if (validPeriod.contains(scw.getDTG()))
 								{
 									// sorted. here we go
 									targetParent = ts;
-									
+
 									// and the child element
-									FixWrapper index = new FixWrapper(new Fix(scw.getDTG(), new WorldLocation(0,0,0), 0.0, 0.0));
+									FixWrapper index = new FixWrapper(new Fix(scw.getDTG(),
+											new WorldLocation(0, 0, 0), 0.0, 0.0));
 									SortedSet<Editable> items = ts.tailSet(index);
 									targetFix = (FixWrapper) items.first();
 								}
 							}
 						}
-						
-						if (targetFix != null)
-						{
-							// ok. found match. store it
-							final Doublet thisDub = new Doublet(scw, targetFix, targetParent);
-							res.add(thisDub);
-						}
+
+						// have a go at the host position
+						FixWrapper hostFix = (FixWrapper) sensorHost.getNearestTo(scw
+								.getDTG())[0];
+
+						// store our data
+						final Doublet thisDub = new Doublet(scw, targetFix, targetParent,
+								hostFix);
+						res.add(thisDub);
 					} // if cut is visible
 				} // loop through cuts
 			} // if sensor is visible
@@ -155,6 +159,7 @@ public final class StackedDotHelper
 
 		final TimeSeries measuredValues = new TimeSeries("Measured");
 		final TimeSeries calculatedValues = new TimeSeries("Calculated");
+		final TimeSeries osCourseValues = new TimeSeries("Course");
 
 		// ok, run through the points on the primary track
 		Iterator<Doublet> iter = _primaryDoublets.iterator();
@@ -162,33 +167,48 @@ public final class StackedDotHelper
 		{
 			final Doublet thisD = iter.next();
 
-			final Color thisColor = thisD.getColor();
-			final double measuredBearing = thisD.getMeasuredBearing();
-			final double calculatedBearing = thisD.getCalculatedBearing(null, null);
-			final double thisError = thisD.calculateError(measuredBearing,
-					calculatedBearing);
-			final HiResDate currentTime = thisD.getDTG();
-
-			// create a new, correctly coloured data item
-			// HI-RES NOT DONE - should provide FixedMicrosecond structure
-			final ColouredDataItem newError = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()), thisError,
-					thisColor, false, null);
-
-			final ColouredDataItem mBearing = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()),
-					measuredBearing, thisColor, false, null);
-
-			final ColouredDataItem cBearing = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()),
-					calculatedBearing, thisColor, true, null);
-
 			try
 			{
+
+				// obvious stuff first (stuff that doesn't need the tgt data)
+				final Color thisColor = thisD.getColor();
+				final double measuredBearing = thisD.getMeasuredBearing();
+				final double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(thisD
+						.getHost().getCourse());
+				final HiResDate currentTime = thisD.getDTG();
+				final Color hostColor = thisD.getHost().getColor();
+
+				final ColouredDataItem mBearing = new ColouredDataItem(
+						new FixedMillisecond(currentTime.getDate().getTime()),
+						measuredBearing, thisColor, false, null);
+
+				final ColouredDataItem crseBearing = new ColouredDataItem(
+						new FixedMillisecond(currentTime.getDate().getTime()),
+						ownshipCourse, hostColor, true	, null);
+				
 				// and add them to the series
-				errorValues.add(newError);
 				measuredValues.add(mBearing);
-				calculatedValues.add(cBearing);
+				osCourseValues.add(crseBearing);
+
+				// do we have target data?
+				if (thisD.getTarget() != null)
+				{
+					final double calculatedBearing = thisD.getCalculatedBearing(null,
+							null);
+					final double thisError = thisD.calculateError(measuredBearing,
+							calculatedBearing);
+					final ColouredDataItem newError = new ColouredDataItem(
+							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
+							thisColor, false, null);
+
+					final ColouredDataItem cBearing = new ColouredDataItem(
+							new FixedMillisecond(currentTime.getDate().getTime()),
+							calculatedBearing, thisColor, true, null);
+
+					errorValues.add(newError);
+					calculatedValues.add(cBearing);
+				}
+
 			}
 			catch (final SeriesException e)
 			{
@@ -210,6 +230,7 @@ public final class StackedDotHelper
 
 		actualSeries.addSeries(measuredValues);
 		actualSeries.addSeries(calculatedValues);
+		actualSeries.addSeries(osCourseValues);
 
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);
@@ -387,47 +408,47 @@ public final class StackedDotHelper
 		while (iter.hasNext())
 		{
 			final Doublet thisD = iter.next();
-
-			final Color thisColor = thisD.getColor();
-			final double measuredFreq = thisD.getMeasuredFrequency();
-			final double correctedFreq = thisD.getCorrectedFrequency();
-			final double predictedFreq = thisD.getPredictedFrequency();
-			final double baseFreq = thisD.getBaseFrequency();
-			final double thisError = thisD.calculateError(measuredFreq,
-					predictedFreq);
-			final HiResDate currentTime = thisD.getDTG();
-
-			// create a new, correctly coloured data item
-			// HI-RES NOT DONE - should provide FixedMicrosecond structure
-			final ColouredDataItem eFreq = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()), thisError,
-					thisColor, false, null);
-
-			final ColouredDataItem mFreq = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()),
-					measuredFreq, thisColor, false, null);
-
-			final ColouredDataItem corrFreq = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()),
-					correctedFreq, thisColor, false, null);
-
-			final ColouredDataItem bFreq = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()),
-					baseFreq, thisColor, true, null);
-
-			final ColouredDataItem pFreq = new ColouredDataItem(
-					new FixedMillisecond(currentTime.getDate().getTime()),
-					predictedFreq, thisColor, false, null);
-			
 			try
 			{
-				// and add them to the series
-				errorValues.add(eFreq);
+
+				final Color thisColor = thisD.getColor();
+				final double measuredFreq = thisD.getMeasuredFrequency();
+				final double correctedFreq = thisD.getCorrectedFrequency();
+				final HiResDate currentTime = thisD.getDTG();
+
+				final ColouredDataItem mFreq = new ColouredDataItem(
+						new FixedMillisecond(currentTime.getDate().getTime()),
+						measuredFreq, thisColor, false, null);
+
+				final ColouredDataItem corrFreq = new ColouredDataItem(
+						new FixedMillisecond(currentTime.getDate().getTime()),
+						correctedFreq, thisColor, false, null);
 				measuredValues.add(mFreq);
-				baseValues.add(bFreq);
 				correctedValues.add(corrFreq);
-				predictedValues.add(pFreq);				
-				
+
+				// do we have target data?
+				if (thisD.getTarget() != null)
+				{
+					final double predictedFreq = thisD.getPredictedFrequency();
+					final double thisError = thisD.calculateError(measuredFreq,
+							predictedFreq);
+					final double baseFreq = thisD.getBaseFrequency();
+
+					final ColouredDataItem eFreq = new ColouredDataItem(
+							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
+							thisColor, false, null);
+					final ColouredDataItem bFreq = new ColouredDataItem(
+							new FixedMillisecond(currentTime.getDate().getTime()), baseFreq,
+							thisColor, true, null);
+
+					final ColouredDataItem pFreq = new ColouredDataItem(
+							new FixedMillisecond(currentTime.getDate().getTime()),
+							predictedFreq, thisColor, false, null);
+					errorValues.add(eFreq);
+					baseValues.add(bFreq);
+					predictedValues.add(pFreq);
+				}
+
 			}
 			catch (final SeriesException e)
 			{
