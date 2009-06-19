@@ -19,7 +19,8 @@ import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 
 abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper implements MWC.GUI.Layer,
   SnailDrawTacticalContact.HostedList

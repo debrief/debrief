@@ -145,7 +145,9 @@ import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.Griddable;
 import MWC.GUI.Plottable;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -159,7 +161,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
 		MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
-		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe
+		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe, TimeStampedDataItem
 {
 	/**
 	 * 
@@ -272,7 +274,6 @@ public final class SensorContactWrapper extends
 	 * @param label
 	 * @param style
 	 * @param sensorName
-	 *          TODO
 	 * @param sensorName
 	 */
 	public SensorContactWrapper(final String trackName, final HiResDate dtg,
@@ -485,7 +486,7 @@ public final class SensorContactWrapper extends
 	{
 		return _DTG;
 	}
-
+	
 	/**
 	 * set the time
 	 */
@@ -1132,8 +1133,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * the definition of what is editable about this object
 	 */
-	public static final class SensorContactInfo extends
-			MWC.GUI.Editable.EditorType
+	public static final class SensorContactInfo extends Griddable		
 	{
 
 		/**
@@ -1147,6 +1147,28 @@ public final class SensorContactWrapper extends
 			super(data, data.getName(), "Sensor");
 		}
 
+		@Override
+		public PropertyDescriptor[] getGriddablePropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+						prop("Label", "the label for this data item"),
+						prop("Visible", "whether this sensor contact data is visible"),
+						prop("Frequency", "the frequency measurement for this data item",
+								OPTIONAL),
+						prop("Bearing", "bearing to centre of solution", SPATIAL)
+				};
+
+				return res;
+
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}		
 		/**
 		 * The things about these Layers which are editable. We don't really use
 		 * this list, since we have our own custom editor anyway
@@ -1236,6 +1258,7 @@ public final class SensorContactWrapper extends
 					new DitchAmbiguousBearing(false, "Keep starboard bearing") };
 			return res;
 		}
+
 
 	}
 

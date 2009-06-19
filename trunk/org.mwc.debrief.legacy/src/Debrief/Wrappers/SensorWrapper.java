@@ -145,13 +145,19 @@
 
 package Debrief.Wrappers;
 
-import java.beans.*;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 
 import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
-import MWC.GenericData.*;
+import MWC.GUI.GriddableSeriesMarker;
+import MWC.GUI.TimeStampedDataItem;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 
-public class SensorWrapper extends TacticalDataWrapper
+public class SensorWrapper extends TacticalDataWrapper implements GriddableSeriesMarker 
 {
 
 	// //////////////////////////////////////
@@ -265,6 +271,7 @@ public class SensorWrapper extends TacticalDataWrapper
 		return _myEditor;
 	}
 
+	
 	/**
 	 * add
 	 * 
@@ -502,7 +509,7 @@ public class SensorWrapper extends TacticalDataWrapper
 	/**
 	 * the definition of what is editable about this object
 	 */
-	public final class SensorInfo extends MWC.GUI.Editable.EditorType
+	public final class SensorInfo extends Editable.EditorType
 	{
 
 		/**
@@ -516,6 +523,10 @@ public class SensorWrapper extends TacticalDataWrapper
 			super(data, data.getName(), "Sensor");
 		}
 
+		
+
+
+		
 		/**
 		 * The things about these Layers which are editable. We don't really use
 		 * this list, since we have our own custom editor anyway
@@ -868,4 +879,37 @@ public class SensorWrapper extends TacticalDataWrapper
 		ts.testValues();
 	}
 
+	@Override
+	public Editable getSampleGriddable()
+	{
+		return this.elements().nextElement();
+	}
+	
+
+	@Override
+	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	{
+		if (false == item instanceof SensorContactWrapper) {
+			throw new IllegalArgumentException("I am expecting the Observation's, don't know how to copy " + item);
+		}
+		SensorContactWrapper template = (SensorContactWrapper) item;
+		SensorContactWrapper result = new SensorContactWrapper();
+		result.setAmbiguousBearing(template.getAmbiguousBearing());
+		result.setBearing(template.getBearing());
+		result.setColor(template.getColor());
+		result.setDTG(template.getDTG());
+		result.setFrequency(template.getFrequency());
+		result.setHasAmbiguousBearing(template.getHasAmbiguousBearing());
+		result.setHasFrequency(template.getHasFrequency());
+		result.setLabel(template.getLabel());
+		result.setLabelLocation(template.getLabelLocation());
+		result.setLabelVisible(template.getLabelVisible());
+		result.setLineStyle(template.getLineStyle());
+		result.setOrigin(template.getOrigin());
+		result.setPutLabelAt(template.getPutLabelAt());
+		result.setRange(template.getRange());
+		result.setSensor(template.getSensor());
+		return result;
+	}
+	
 }

@@ -713,6 +713,4 @@ public final class TMAWrapper  extends TacticalDataWrapper
     ts.testDuplicates();
     ts.testValues();
   }
-
-
 }

@@ -270,6 +270,11 @@ public class DebriefProperty implements IPropertyDescriptor
 		}
 		return res;
 	}
+	
+	public EditorHelper getHelper()
+	{
+		return _myHelper;
+	}
 
 	public boolean isCompatibleWith(IPropertyDescriptor anotherProperty)
 	{
@@ -284,7 +289,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		return res;
 	}
 
-	private Object getRawValue()
+	public Object getRawValue()
 	{
 
 		Object res = null;
