@@ -1,0 +1,22 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: %pluginName
+Bundle-SymbolicName: org.mwc.cmap.grideditor;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Vendor: %pluginProvider
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ActivationPolicy: lazy
+Bundle-ClassPath: .,
+ lib/flanagan.jar,
+ lib/jcommon-1.0.16.jar,
+ lib/jfreechart-1.0.13-swt.jar,
+ lib/jfreechart-1.0.13.jar
+Require-Bundle: 
+ org.eclipse.jface;bundle-version="3.4.1",
+ org.eclipse.ui;bundle-version="3.4.1",
+ org.eclipse.core.runtime;bundle-version="3.4.0",
+ com.ibm.icu;bundle-version="3.8.1",
+ org.mwc.cmap.core;bundle-version="1.0.66",
+ org.mwc.cmap.legacy;bundle-version="1.0.47",
+ org.eclipse.ui.views;bundle-version="3.4.0"
+Bundle-Activator: org.mwc.cmap.grideditor.GridEditorPlugin

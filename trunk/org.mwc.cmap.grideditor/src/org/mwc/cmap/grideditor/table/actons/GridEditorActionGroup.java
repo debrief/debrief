@@ -1,0 +1,107 @@
+package org.mwc.cmap.grideditor.table.actons;
+
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.actions.ActionContext;
+import org.eclipse.ui.actions.ActionGroup;
+import org.mwc.cmap.grideditor.GridEditorActionContext;
+import org.mwc.cmap.grideditor.GridEditorView;
+import org.mwc.cmap.grideditor.table.GridEditorTable;
+
+
+public class GridEditorActionGroup extends ActionGroup {
+
+	private final GridEditorView myView;
+
+	private boolean myActionsInitialized;
+
+	private InsertRowAction myInsertRowAction;
+
+	private DeleteRowAction myDeleteRowAction;
+
+	private TrackSelectionAction myTrackSelectionAction;
+
+	private InterpolateAction myInterpolateAction;
+
+	public GridEditorActionGroup(GridEditorView view, GridEditorActionContext context) {
+		myView = view;
+		super.setContext(context);
+		getContext().setListener(new GridEditorActionContext.Listener() {
+
+			@Override
+			public void tableInputChanged() {
+				myView.refreshUndoContext();
+				contextChanged();
+			}
+
+			@Override
+			public void selectionChanged() {
+				contextChanged();
+			}
+
+			@Override
+			public void chartInputChanged() {
+				contextChanged();
+			}
+		});
+	}
+
+	@Override
+	public void setContext(ActionContext context) {
+		throw new UnsupportedOperationException("I am managing my context myself");
+	}
+
+	@Override
+	public GridEditorActionContext getContext() {
+		return (GridEditorActionContext) super.getContext();
+	}
+
+	@Override
+	public void fillActionBars(IActionBars actionBars) {
+		initActions();
+		IToolBarManager toolbar = actionBars.getToolBarManager();
+		toolbar.add(myInsertRowAction);
+		toolbar.add(myDeleteRowAction);
+		toolbar.add(myInterpolateAction);
+		toolbar.add(new Separator());
+		toolbar.add(myTrackSelectionAction);
+	}
+
+	@Override
+	public void fillContextMenu(IMenuManager menu) {
+		initActions();
+		menu.add(myInsertRowAction);
+		menu.add(myDeleteRowAction);
+		menu.add(myInterpolateAction);
+		menu.add(new Separator());
+		menu.add(myTrackSelectionAction);
+	}
+
+	private void initActions() {
+		if (myActionsInitialized) {
+			return;
+		}
+		if (myView.getUI() == null) {
+			return;
+		}
+		GridEditorTable tableUI = myView.getUI().getTable();
+		myTrackSelectionAction = new TrackSelectionAction(tableUI);
+		myInsertRowAction = new InsertRowAction();
+		myDeleteRowAction = new DeleteRowAction();
+		myInterpolateAction = new InterpolateAction();
+		myActionsInitialized = true;
+	}
+
+	private void contextChanged() {
+		if (!myActionsInitialized){
+			return;
+		}
+		myTrackSelectionAction.refreshWithTableUI();
+		GridEditorActionContext contextImpl = getContext();
+		myInsertRowAction.refreshWithActionContext(contextImpl);
+		myDeleteRowAction.refreshWithActionContext(contextImpl);
+		myInterpolateAction.refreshWithActionContext(contextImpl);
+	}
+}
