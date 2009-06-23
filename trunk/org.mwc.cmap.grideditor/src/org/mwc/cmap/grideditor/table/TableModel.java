@@ -263,11 +263,6 @@ public class TableModel {
 
 	private static class RowSelectorColumn extends ColumnBase {
 
-		/**
-		 * Row selector is a fake empty column that allows to select rows
-		 */
-		public static final int SELECTOR_COLUMN_INDEX = 0;
-
 		private final TableViewerColumn myEmptyColumn;
 
 		private final LabelProvider myLabelProvider;
