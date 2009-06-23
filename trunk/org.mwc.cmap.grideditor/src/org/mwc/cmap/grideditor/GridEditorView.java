@@ -165,15 +165,20 @@ public class GridEditorView extends ViewPart
 		public void deleteItem(TimeStampedDataItem subject)
 		{
 			// TODO Auto-generated method stub
-
+			throw new RuntimeException("NOT YET IMPLEMENTED!");
 		}
-
+		
 		@Override
 		public void fireModified(TimeStampedDataItem subject)
 		{
-			// TODO Auto-generated method stub
 
-		}
+			if(_item.getEditable() instanceof PlainWrapper)
+			{
+				PlainWrapper pw = (PlainWrapper) _item.getEditable();
+				// ok, inform any listeners
+				pw.getSupport().firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null, subject);
+			}
+ 		}
 
 		@Override
 		public GriddableItemDescriptor[] getAttributes()
@@ -238,6 +243,7 @@ public class GridEditorView extends ViewPart
 		public void insertItem(TimeStampedDataItem subject)
 		{
 			// TODO Auto-generated method stub
+			throw new RuntimeException("NOT YET IMPLEMENTED!");
 
 		}
 
@@ -245,7 +251,7 @@ public class GridEditorView extends ViewPart
 		public void insertItemAt(TimeStampedDataItem subject, int index)
 		{
 			// TODO Auto-generated method stub
-
+			throw new RuntimeException("NOT YET IMPLEMENTED!");
 		}
 
 		@Override
