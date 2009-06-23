@@ -54,8 +54,9 @@
       <feature id="org.mwc.debrief.feature" version="1.0.79"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.23"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.8"/>
-      <feature id="org.eclipse.platform" version="3.5.0.v20090526-9fEdG1HFtGcZmCVWq9ZOYoxFeqNQuz035sD"/>
-      <feature id="org.eclipse.rcp" version="3.5.0.v20090519-9SA0FwxFv6x-s3B8qJVUn33"/>
+      <feature id="org.mwc.cmap.grideditor.feature" version="1.0.0.qualifier"/>
+      <feature id="org.eclipse.platform" version="3.5.0.v20090423-9hD9G1HFtGfZq3hr3z-N27lx_0OoTX1vOJV"/>
+      <feature id="org.eclipse.rcp" version="3.5.0.v20090423-9VA4FwxFu8XMLVz0Ldz-I7VAU"/>
    </features>
 
 
