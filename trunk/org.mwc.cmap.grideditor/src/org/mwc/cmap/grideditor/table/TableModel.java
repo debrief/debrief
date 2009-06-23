@@ -279,7 +279,7 @@ public class TableModel {
 
 				@Override
 				public String getText(Object element) {
-					return "a";
+					return "";
 				}
 			};
 		}
