@@ -2,6 +2,8 @@ package Debrief.Wrappers.Track;
 
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
 import java.util.Iterator;
@@ -12,6 +14,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottables;
+import MWC.GUI.SupportsPropertyListeners;
 
 public class TrackWrapper_Support
 {
@@ -22,9 +25,50 @@ public class TrackWrapper_Support
 	 * @author ian.mayo
 	 */
 	abstract public static class BaseItemLayer extends Plottables implements
-			Layer
+			Layer, SupportsPropertyListeners
 	{
 
+		/** property support
+		 * 
+		 */
+		private PropertyChangeSupport _pSupport = new PropertyChangeSupport(this);
+
+		@Override
+		public void addPropertyChangeListener(PropertyChangeListener listener)
+		{
+			_pSupport.addPropertyChangeListener(listener);
+		}
+
+		@Override
+		public void addPropertyChangeListener(String property,
+				PropertyChangeListener listener)
+		{
+			_pSupport.addPropertyChangeListener(property, listener);
+		}
+		
+		
+		
+
+		@Override
+		public void firePropertyChange(String propertyChanged, Object oldValue,
+				Object newValue)
+		{
+			_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
+		}
+
+		@Override
+		public void removePropertyChangeListener(PropertyChangeListener listener)
+		{
+			_pSupport.removePropertyChangeListener(listener);
+		}
+
+		@Override
+		public void removePropertyChangeListener(String property,
+				PropertyChangeListener listener)
+		{
+			_pSupport.removePropertyChangeListener(property, listener);
+		}
+		
 		/**
 		 * class containing editable details of a track
 		 */

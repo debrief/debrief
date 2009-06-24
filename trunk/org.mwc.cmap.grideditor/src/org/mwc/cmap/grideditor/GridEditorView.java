@@ -30,10 +30,9 @@ import MWC.GUI.Editable;
 import MWC.GUI.Griddable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
-import MWC.GUI.PlainWrapper;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Editable.EditorType;
-
 
 public class GridEditorView extends ViewPart
 {
@@ -154,9 +153,9 @@ public class GridEditorView extends ViewPart
 		@Override
 		public void addPropertyChangeListener(PropertyChangeListener listener)
 		{
-			if(_item.getEditable() instanceof PlainWrapper)
+			if (_item.getEditable() instanceof SupportsPropertyListeners)
 			{
-				PlainWrapper pw = (PlainWrapper) _item.getEditable();
+				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item.getEditable();
 				pw.addPropertyChangeListener(listener);
 			}
 		}
@@ -167,53 +166,62 @@ public class GridEditorView extends ViewPart
 			// TODO Auto-generated method stub
 			throw new RuntimeException("NOT YET IMPLEMENTED!");
 		}
-		
+
 		@Override
 		public void fireModified(TimeStampedDataItem subject)
 		{
+//			modified event isn't working for position data. find out why!
 
-			if(_item.getEditable() instanceof PlainWrapper)
+			if (_item.getEditable() instanceof SupportsPropertyListeners)
 			{
-				PlainWrapper pw = (PlainWrapper) _item.getEditable();
+				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item.getEditable();
 				// ok, inform any listeners
-				pw.getSupport().firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null, subject);
+				pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED,
+						null, subject);
 			}
- 		}
+		}
+
+		private GriddableItemDescriptor[] _myAttributes;
 
 		@Override
 		public GriddableItemDescriptor[] getAttributes()
 		{
-			Vector<GriddableItemDescriptor> items = new Vector<GriddableItemDescriptor>();
-			GriddableSeriesMarker series = (GriddableSeriesMarker) _item.getEditable();
-			
-			Editable sampleItem = series.getSampleGriddable();
-			EditorType info = sampleItem.getInfo();
-			if(info instanceof Griddable)
+			if (_myAttributes == null)
 			{
-				IPropertyDescriptor[] props = _item.getGriddablePropertyDescriptors();
+				Vector<GriddableItemDescriptor> items = new Vector<GriddableItemDescriptor>();
+				GriddableSeriesMarker series = (GriddableSeriesMarker) _item
+						.getEditable();
 
-				// wrap them
-				for (int i = 0; i < props.length; i++)
+				Editable sampleItem = series.getSampleGriddable();
+				EditorType info = sampleItem.getInfo();
+				if (info instanceof Griddable)
 				{
-					DebriefProperty desc = (DebriefProperty) props[i];
-					
-					Object dataObject = desc.getRawValue();
-					Class<?> dataClass = dataObject.getClass();
-					
-					GriddableItemDescriptor gd = new GriddableItemDescriptor(desc.getDisplayName(),
-							desc.getDisplayName(), dataClass, desc.getHelper());
-					items.add(gd);
+					IPropertyDescriptor[] props = _item.getGriddablePropertyDescriptors();
+
+					// wrap them
+					for (int i = 0; i < props.length; i++)
+					{
+						DebriefProperty desc = (DebriefProperty) props[i];
+
+						Object dataObject = desc.getRawValue();
+						Class<?> dataClass = dataObject.getClass();
+
+						GriddableItemDescriptor gd = new GriddableItemDescriptor(desc
+								.getDisplayName(), desc.getDisplayName(), dataClass, desc
+								.getHelper());
+						items.add(gd);
+					}
+				}
+
+				if (items.size() > 0)
+				{
+					_myAttributes = items.toArray(new GriddableItemDescriptor[]
+					{ null });
 				}
 			}
-
-			GriddableItemDescriptor[] res = null;
-			if(items.size() > 0)
-			{
-				res =items.toArray(new GriddableItemDescriptor[]{null}); 
-			}
-			return res;
+			return _myAttributes;
 		}
-		
+
 		@Override
 		public List<TimeStampedDataItem> getItems()
 		{
@@ -261,13 +269,12 @@ public class GridEditorView extends ViewPart
 			return gs.makeCopy(item);
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public void removePropertyChangeListener(PropertyChangeListener listener)
 		{
-			if(_item.getEditable() instanceof PlainWrapper)
+			if (_item.getEditable() instanceof SupportsPropertyListeners)
 			{
-				PlainWrapper pw = (PlainWrapper) _item.getEditable();
+				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item.getEditable();
 				pw.removePropertyChangeListener(listener);
 			}
 		}

@@ -23,7 +23,7 @@ public abstract class AbstractViewerAction extends Action {
 
 	public final void refreshWithActionContext(GridEditorActionContext actionContext) {
 		myUndoSupport = actionContext.getUndoSupport();
-		myOperation = createUndoableOperation(actionContext);
+		myOperation =  createUndoableOperation(actionContext);
 		updateActionAppearance(myOperation);
 	}
 

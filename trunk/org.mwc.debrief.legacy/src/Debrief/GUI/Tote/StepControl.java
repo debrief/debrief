@@ -222,6 +222,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.StepperListener;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
@@ -815,7 +816,7 @@ abstract public class StepControl implements Editable,
     // start listening out for property changes
     if (participant instanceof MWC.GUI.PlainWrapper)
     {
-      final MWC.GUI.PlainWrapper val = (MWC.GUI.PlainWrapper) participant;
+      final SupportsPropertyListeners val = (SupportsPropertyListeners) participant;
       val.addPropertyChangeListener(Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, this);
     }
 
@@ -831,7 +832,7 @@ abstract public class StepControl implements Editable,
     // stop listening out for property changes
     if (participant instanceof MWC.GUI.PlainWrapper)
     {
-      final MWC.GUI.PlainWrapper val = (MWC.GUI.PlainWrapper) participant;
+      final SupportsPropertyListeners val = (SupportsPropertyListeners) participant;
       val.removePropertyChangeListener(Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, this);
     }
     // recalculate the start and end times

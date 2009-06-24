@@ -149,7 +149,7 @@ import MWC.GenericData.WorldArea;
  * create/fill which shows/describes the raw data
  */
 abstract public class PlainWrapper implements Plottable, Serializable,
-        Exportable
+        Exportable, SupportsPropertyListeners
 {
 
     // ///////////////////////////////////////////////////////////
@@ -224,7 +224,10 @@ abstract public class PlainWrapper implements Plottable, Serializable,
 
         return _pSupport;
     }
-
+    
+    /* (non-Javadoc)
+		 * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
+		 */
     public void addPropertyChangeListener(String property,
             java.beans.PropertyChangeListener listener)
     {
@@ -232,11 +235,16 @@ abstract public class PlainWrapper implements Plottable, Serializable,
         getSupport().addPropertyChangeListener(property, listener);
     }
 
-    /**
-     * add this listener which wants to hear about all changes
-     * 
-     * @deprecated use the per-property listener interface instead
-     */
+    @Override
+		public void firePropertyChange(String propertyChanged, Object oldValue,
+				Object newValue)
+		{
+    	_pSupport.firePropertyChange(propertyChanged, oldValue, newValue);
+		}
+
+		/* (non-Javadoc)
+		 * @see MWC.GUI.SupportsPropertyListeners#addPropertyChangeListener(java.beans.PropertyChangeListener)
+		 */
     public void addPropertyChangeListener(
             java.beans.PropertyChangeListener listener)
     {
@@ -244,17 +252,18 @@ abstract public class PlainWrapper implements Plottable, Serializable,
         getSupport().addPropertyChangeListener(listener);
     }
 
-    /**
-     * remove this listener which wants to hear about all changes
-     * 
-     * @deprecated use the per-property listener interface instead
-     */
+    /* (non-Javadoc)
+		 * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.beans.PropertyChangeListener)
+		 */
     public void removePropertyChangeListener(
             java.beans.PropertyChangeListener listener)
     {
         getSupport().removePropertyChangeListener(listener);
     }
 
+    /* (non-Javadoc)
+		 * @see MWC.GUI.SupportsPropertyListeners#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
+		 */
     public void removePropertyChangeListener(String property,
             java.beans.PropertyChangeListener listener)
     {

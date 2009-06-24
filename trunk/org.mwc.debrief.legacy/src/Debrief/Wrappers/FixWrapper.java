@@ -255,8 +255,10 @@ import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.Griddable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -272,7 +274,8 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
 public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
         Watchable,
         DynamicPlottable,
-        CanvasType.MultiLineTooltipProvider
+        CanvasType.MultiLineTooltipProvider,
+        TimeStampedDataItem
 {
 
   ////////////////////////////////////////
@@ -700,6 +703,34 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   {
     return _theFix.getCourse();
   }
+ 
+  /** change the course
+   * 
+   */
+  public void setCourse(double val)
+  {
+  	_theFix.setCourse(val);
+  }
+ 
+  /** return the course (in radians)
+   */
+  public final double getCourseDegs()
+  {
+    return MWC.Algorithms.Conversions.Rads2Degs(_theFix.getCourse());
+  }
+ 
+  /** change the course
+   * 
+   */
+  public void setCourseDegs(double val)
+  {
+  	_theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(val));
+  }
+   
+  public void setSpeed(double val)
+  {
+  	_theFix.setSpeed(val);
+  }
 
   /** return the speed (in knots)
    */
@@ -831,7 +862,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   //////////////////////////////////////////////////////
   // bean info for this class
   /////////////////////////////////////////////////////
-  public final class fixInfo extends Editable.EditorType
+  public final class fixInfo extends Griddable
   {
 
     public fixInfo(final FixWrapper data,
@@ -846,6 +877,31 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
       return getTrackWrapper().getName() + ":" + super.getName() ;
     }
 
+		@Override
+		public PropertyDescriptor[] getGriddablePropertyDescriptors()
+		{
+			try
+			{
+				final PropertyDescriptor[] res =
+				{
+						prop("Label", "the label for this data item"),
+						prop("Visible", "whether this position is visible"),
+						prop("FixLocation", "the location for this position",
+								OPTIONAL),
+						prop("CourseDegs", "current course of this platform (degs)", SPATIAL),
+						prop("Speed", "current speed of this vehicle", SPATIAL)
+				};
+
+				return res;
+
+			}
+			catch (IntrospectionException e)
+			{
+				return super.getPropertyDescriptors();
+			}
+		}		
+    
+    
     public final BeanInfo[] getAdditionalBeanInfo()
     {
       final BeanInfo[] res = {getTrackWrapper().getInfo()};
@@ -1113,4 +1169,16 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     testMe tm = new testMe("scrap");
     tm.testMyParams();
   }
+
+	@Override
+	public HiResDate getDTG()
+	{
+		return _theFix.getTime();
+	}
+
+	@Override
+	public void setDTG(HiResDate date)
+	{
+		_theFix.setTime(date);
+	}
 }

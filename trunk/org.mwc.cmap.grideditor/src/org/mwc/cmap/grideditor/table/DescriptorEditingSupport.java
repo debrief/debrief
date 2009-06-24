@@ -59,7 +59,8 @@ public class DescriptorEditingSupport extends EditingSupport {
 			if (traverseSubject == null) {
 				traverseSubject = cellEditor.getControl();
 			}
-			traverseSubject.addTraverseListener(new CellEditorTraverseHandler(myTabTraverseTarget, element));
+			if(traverseSubject != null)
+				traverseSubject.addTraverseListener(new CellEditorTraverseHandler(myTabTraverseTarget, element));
 		}
 		myNeedCastValueToStringForCellEditor = cellEditor instanceof TextCellEditor;
 		return cellEditor;

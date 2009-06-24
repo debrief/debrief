@@ -128,6 +128,19 @@ public class Fix implements java.io.Serializable
   //////////////////////////////////////////////////
   // member functions
   //////////////////////////////////////////////////
+
+  /** create deep clone of ourselves
+   * 
+   */
+  public Fix makeCopy()
+  {
+  	Fix newFix = new Fix();
+  	newFix._theCourse = _theCourse;
+  	newFix._theSpeed = _theSpeed;
+  	newFix._theLocation = new WorldLocation(_theLocation);
+  	newFix._theTime = new HiResDate(_theTime);
+  	return newFix;
+  }
   
   /**
    * get the current vessel speed (yps)

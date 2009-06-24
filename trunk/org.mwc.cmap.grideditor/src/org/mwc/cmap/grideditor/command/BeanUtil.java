@@ -2,7 +2,6 @@ package org.mwc.cmap.grideditor.command;
 
 import java.lang.reflect.Method;
 
-import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 
 import MWC.GUI.TimeStampedDataItem;
@@ -173,6 +172,14 @@ public class BeanUtil
 				{
 				}
 			}
+			if (descriptor.getType() == Boolean.class)
+				try
+				{
+					setter = item.getClass().getMethod(setterName, boolean.class);
+				}
+				catch (NoSuchMethodException e)
+				{
+				}
 		}
 
 		if (setter == null)

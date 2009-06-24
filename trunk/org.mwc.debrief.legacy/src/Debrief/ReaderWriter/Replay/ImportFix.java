@@ -131,7 +131,7 @@ import java.util.TimeZone;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.Algorithms.Conversions;
-import MWC.GUI.PlainWrapper;
+import MWC.GUI.SupportsPropertyListeners;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
@@ -500,7 +500,7 @@ public final class ImportFix implements PlainLineImporter
       Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
 
       // create the wrapper for this annotation
-      PlainWrapper thisWrapper = new FixWrapper(res.theFix);
+      SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
 
       TrackWrapper parentTrack = new TrackWrapper();
       parentTrack.setName(theTrack);
@@ -699,7 +699,7 @@ public final class ImportFix implements PlainLineImporter
       Color thisColor = ImportReplay.replayColorFor(res.theSymbology);
 
       // create the wrapper for this annotation
-      PlainWrapper thisWrapper = new FixWrapper(res.theFix);
+      SupportsPropertyListeners thisWrapper = new FixWrapper(res.theFix);
 
       TrackWrapper parentTrack = new TrackWrapper();
       parentTrack.setName(theTrack);

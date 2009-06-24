@@ -31,14 +31,23 @@ public class DoubleHelper extends EditorHelper
 	{
 		Object res;
 
-		try
+		// just do a quick check that it needs converting
+		if (value instanceof Double)
 		{
-			res = Double.valueOf((String) value);
+			res = value;
 		}
-		catch (NumberFormatException e)
+		else
 		{
-			res = _previousValue;
+			try
+			{
+				res = Double.valueOf((String) value);
+			}
+			catch (NumberFormatException e)
+			{
+				res = _previousValue;
+			}
 		}
+
 		return res;
 	}
 

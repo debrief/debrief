@@ -1,5 +1,6 @@
 package Debrief.Wrappers.Track;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
@@ -15,14 +16,17 @@ import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
@@ -31,7 +35,7 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * @author Administrator
  * 
  */
-public class TrackSegment extends BaseItemLayer implements DraggableItem
+public class TrackSegment extends BaseItemLayer implements DraggableItem,  GriddableSeriesMarker 
 {
 
 	/**
@@ -497,6 +501,39 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem
 		
 		// re-instate the interpolate status
 	  parentTrack.setInterpolatePoints(oldInterpolateState);
+	}
+
+	@Override
+	public Editable getSampleGriddable()
+	{
+		HiResDate theTime = new HiResDate(10000000);
+		WorldLocation theLocation = new WorldLocation(1,1,1);
+		double courseRads = 3;
+		double speedKts = 5;
+		Fix newFix = new Fix(theTime, theLocation, courseRads, speedKts);
+		FixWrapper res = new FixWrapper(newFix );
+		return res;
+	}
+
+	@Override
+	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+	{
+		if (false == item instanceof FixWrapper) {
+			throw new IllegalArgumentException("I am expecting a position, don't know how to copy " + item);
+		}
+		FixWrapper template = (FixWrapper) item;
+		FixWrapper result = new FixWrapper(template.getFix().makeCopy());
+		result.setLabel(template.getLabel());
+		result.setLabelShowing(template.getLabelShowing());
+		result.setLineShowing(template.getLineShowing());
+		result.setSymbolShowing(template.getSymbolShowing());
+		result.setLabelLocation(template.getLabelLocation());
+		
+		Color col = template.getActualColor();
+		if(col != null)
+			result.setColor(col);
+		
+		return result;
 	}
 
 }
