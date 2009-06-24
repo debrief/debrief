@@ -48,7 +48,10 @@ public abstract class DataPointsDragTracker implements ChartMouseListenerExtensi
 			Rectangle clientArea = myChartPanel.getClientArea();
 			int screenX = event.getTrigger().getX() - clientArea.x;
 			int screenY = event.getTrigger().getY() - clientArea.y;
-			Point2D point2d = new Point2D.Double(screenX, screenY);
+			
+			// deliberately switch axes for following line, now that we've switched the axes to put time
+			// down the LH side.
+			Point2D point2d = new Point2D.Double(screenY, screenX);
 			XYPlot xyplot = myChartPanel.getChart().getXYPlot();
 			ChartRenderingInfo renderingInfo = myChartPanel.getChartRenderingInfo();
 			Rectangle2D dataArea = renderingInfo.getPlotInfo().getDataArea();
@@ -132,6 +135,7 @@ public abstract class DataPointsDragTracker implements ChartMouseListenerExtensi
 			return myDraggedItem;
 		}
 
+		@SuppressWarnings("unused")
 		public XYItemEntity getDraggedEntity() {
 			return myDraggedEntity;
 		}
