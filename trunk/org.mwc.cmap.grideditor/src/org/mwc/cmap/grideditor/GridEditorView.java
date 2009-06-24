@@ -5,6 +5,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
@@ -20,6 +21,7 @@ import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.views.properties.IPropertyDescriptor;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.grideditor.table.actons.GridEditorActionGroup;
@@ -140,6 +142,14 @@ public class GridEditorView extends ViewPart
 		return res;
 	}
 
+	/**
+	 * class that makes one of our tactical wrapper objects look like a griddable
+	 * series We aren't aaplying this functionality directly to the wrapper data
+	 * objects, since it introduces Eclipse-related objects
+	 * 
+	 * @author Ian Mayo
+	 * 
+	 */
 	protected class GriddableWrapper implements GriddableSeries
 	{
 		final EditableWrapper _item;
@@ -149,13 +159,13 @@ public class GridEditorView extends ViewPart
 			_item = item;
 		}
 
-		@SuppressWarnings("deprecation")
 		@Override
 		public void addPropertyChangeListener(PropertyChangeListener listener)
 		{
 			if (_item.getEditable() instanceof SupportsPropertyListeners)
 			{
-				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item.getEditable();
+				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+						.getEditable();
 				pw.addPropertyChangeListener(listener);
 			}
 		}
@@ -163,22 +173,48 @@ public class GridEditorView extends ViewPart
 		@Override
 		public void deleteItem(TimeStampedDataItem subject)
 		{
-			// TODO Auto-generated method stub
-			throw new RuntimeException("NOT YET IMPLEMENTED!");
+			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
+			gs.removeElement((Editable) subject);
+
+			// tell everybody something's changed
+			fireExtended(PROPERTY_DELETED, subject);
 		}
 
 		@Override
 		public void fireModified(TimeStampedDataItem subject)
 		{
-//			modified event isn't working for position data. find out why!
-
 			if (_item.getEditable() instanceof SupportsPropertyListeners)
 			{
-				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item.getEditable();
+				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+						.getEditable();
 				// ok, inform any listeners
-				pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED,
-						null, subject);
+				pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null, subject);
 			}
+			else
+				CorePlugin.logError(Status.ERROR,
+						"Item in grid doesn't let us watch it's properties", null);
+
+			// also tell the layers object that we've changed
+			_item.getLayers().fireModified(_item.getTopLevelLayer());
+		}
+
+		/**
+		 * broadcast the fact that something in this layer has changed
+		 * 
+		 * @param propertyName
+		 * @param subject
+		 * 
+		 */
+		public void fireExtended(String propertyName, TimeStampedDataItem subject)
+		{
+			// start off with a plain modified event (to inform ourselves)
+			SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+					.getEditable();
+			// ok, inform any listeners
+			pw.firePropertyChange(propertyName, null, subject);
+
+			// now tell the world.
+			_item.getLayers().fireExtended(null, _item.getTopLevelLayer());
 		}
 
 		private GriddableItemDescriptor[] _myAttributes;
@@ -250,16 +286,19 @@ public class GridEditorView extends ViewPart
 		@Override
 		public void insertItem(TimeStampedDataItem subject)
 		{
-			// TODO Auto-generated method stub
-			throw new RuntimeException("NOT YET IMPLEMENTED!");
+			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
+			gs.add((Editable) subject);
 
+			// tell everybody something's changed
+			fireExtended(GriddableSeries.PROPERTY_ADDED, subject);
 		}
 
 		@Override
 		public void insertItemAt(TimeStampedDataItem subject, int index)
 		{
-			// TODO Auto-generated method stub
-			throw new RuntimeException("NOT YET IMPLEMENTED!");
+			// we don't need to worry about the order of the item,
+			// since they're chronologically ordered anyway
+			insertItem(subject);
 		}
 
 		@Override
@@ -274,7 +313,8 @@ public class GridEditorView extends ViewPart
 		{
 			if (_item.getEditable() instanceof SupportsPropertyListeners)
 			{
-				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item.getEditable();
+				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+						.getEditable();
 				pw.removePropertyChangeListener(listener);
 			}
 		}

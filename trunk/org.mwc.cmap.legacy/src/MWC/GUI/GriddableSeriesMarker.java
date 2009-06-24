@@ -22,4 +22,12 @@ public interface GriddableSeriesMarker
 	 *           if item is not applicable to this series
 	 */
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item);
+
+  public void removeElement(final MWC.GUI.Editable plottable);
+
+  /** insert the item into our dataset
+   * 
+   * @param subject
+   */
+	public void add(Editable subject);
 }
