@@ -271,7 +271,7 @@ public class GridEditorView extends ViewPart
 				while (enumer.hasMoreElements())
 				{
 					Editable ed = enumer.nextElement();
-					list.add((TimeStampedDataItem) ed);
+					list.add(0,(TimeStampedDataItem) ed);
 				}
 			}
 			return list;

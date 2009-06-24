@@ -5,6 +5,7 @@ import java.awt.Color;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYDataset;
@@ -24,6 +25,7 @@ public class ChartBuilder {
 		XYDataset data = myManager.getXYDataSet();
 		XYLineAndShapeRenderer renderer = new RendererWithDynamicFeedback();
 		XYPlot xyplot = new XYPlot(data, xAxis, yAxis, renderer);
+		xyplot.setOrientation(PlotOrientation.HORIZONTAL);
 		xyplot.setBackgroundPaint(Color.lightGray);
 		xyplot.setDomainGridlinePaint(Color.white);
 		xyplot.setRangeGridlinePaint(Color.white);
