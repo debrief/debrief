@@ -138,7 +138,7 @@ public class Fix implements java.io.Serializable
   	newFix._theCourse = _theCourse;
   	newFix._theSpeed = _theSpeed;
   	newFix._theLocation = new WorldLocation(_theLocation);
-  	newFix._theTime = new HiResDate(_theTime);
+  	newFix._theTime = new HiResDate(_theTime.getDate().getTime()+1);
   	return newFix;
   }
   

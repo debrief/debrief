@@ -114,7 +114,10 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,  Gridd
 	@Override
 	public void add(final Editable item)
 	{
-		System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO TRACK SEGMENT");
+		if(item instanceof FixWrapper)
+			addFix((FixWrapper) item);
+		else
+			System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO TRACK SEGMENT");
 	}
 
 	public void addFix(final FixWrapper fix)
@@ -523,7 +526,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,  Gridd
 		}
 		FixWrapper template = (FixWrapper) item;
 		FixWrapper result = new FixWrapper(template.getFix().makeCopy());
-		result.setLabel(template.getLabel());
 		result.setLabelShowing(template.getLabelShowing());
 		result.setLineShowing(template.getLineShowing());
 		result.setSymbolShowing(template.getSymbolShowing());
