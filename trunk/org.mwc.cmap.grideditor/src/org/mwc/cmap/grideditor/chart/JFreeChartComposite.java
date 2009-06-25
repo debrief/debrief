@@ -20,9 +20,10 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.swt.SWTUtils;
 import org.mwc.cmap.grideditor.GridEditorActionContext;
+import org.mwc.cmap.grideditor.table.GridEditorTable;
 
-
-public class JFreeChartComposite extends FixedChartComposite {
+public class JFreeChartComposite extends FixedChartComposite
+{
 
 	private final GridEditorActionContext myActionContext;
 
@@ -30,28 +31,40 @@ public class JFreeChartComposite extends FixedChartComposite {
 
 	private ChartDataManager myInput;
 
-	public JFreeChartComposite(Composite parent, GridEditorActionContext actionContext) {
+	private final GridEditorTable _dataGrid;
+
+	public JFreeChartComposite(Composite parent,
+			GridEditorActionContext actionContext, GridEditorTable dataGrid)
+	{
 		super(parent, SWT.BORDER);
 		myActionContext = actionContext;
+		_dataGrid = dataGrid;
 	}
-	
-	public GridEditorActionContext getActionContext() {
+
+	public GridEditorActionContext getActionContext()
+	{
 		return myActionContext;
 	}
 
 	@Override
-	public void addChartMouseListener(ChartMouseListener listener) {
+	public void addChartMouseListener(ChartMouseListener listener)
+	{
 		super.addChartMouseListener(listener);
-		if (listener instanceof ChartMouseListenerExtension) {
-			if (myListenerExtensions == null) {
+		if (listener instanceof ChartMouseListenerExtension)
+		{
+			if (myListenerExtensions == null)
+			{
 				myListenerExtensions = new EventListenerList();
 			}
-			myListenerExtensions.add(ChartMouseListenerExtension.class, (ChartMouseListenerExtension) listener);
+			myListenerExtensions.add(ChartMouseListenerExtension.class,
+					(ChartMouseListenerExtension) listener);
 		}
 	}
 
-	public void setInput(ChartDataManager input) {
-		if (myInput != null) {
+	public void setInput(ChartDataManager input)
+	{
+		if (myInput != null)
+		{
 			myInput.detach(this);
 			myInput = null;
 		}
@@ -66,16 +79,23 @@ public class JFreeChartComposite extends FixedChartComposite {
 	}
 
 	@Override
-	public void mouseUp(MouseEvent event) {
-		Object[] listeners = myListenerExtensions.getListeners(ChartMouseListenerExtension.class);
-		if (listeners.length != 0) {
+	public void mouseUp(MouseEvent event)
+	{
+		Object[] listeners = myListenerExtensions
+				.getListeners(ChartMouseListenerExtension.class);
+		if (listeners.length != 0)
+		{
 			// pass mouse down event if some ChartMouseListener are listening
 			java.awt.event.MouseEvent awtEvent = SWTUtils.toAwtMouseEvent(event);
-			ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), awtEvent, null);
-			for (int i = listeners.length - 1; i >= 0; i -= 1) {
-				((ChartMouseListenerExtension) listeners[i]).chartMouseReleased(chartEvent);
+			ChartMouseEvent chartEvent = new ChartMouseEvent(getChart(), awtEvent,
+					null);
+			for (int i = listeners.length - 1; i >= 0; i -= 1)
+			{
+				((ChartMouseListenerExtension) listeners[i])
+						.chartMouseReleased(chartEvent);
 			}
-			if (awtEvent.isConsumed()) {
+			if (awtEvent.isConsumed())
+			{
 				forgetZoomPoints();
 				return;
 			}
@@ -84,7 +104,8 @@ public class JFreeChartComposite extends FixedChartComposite {
 	}
 
 	@Override
-	public void mouseDoubleClick(MouseEvent event) {
+	public void mouseDoubleClick(MouseEvent event)
+	{
 		Rectangle scaledDataArea = getScreenDataArea(event.x, event.y);
 		if (scaledDataArea == null)
 			return;
@@ -93,45 +114,72 @@ public class JFreeChartComposite extends FixedChartComposite {
 		x = (int) ((event.x - getClientArea().x));
 		y = (int) ((event.y - getClientArea().y));
 
-		if (this.getChartRenderingInfo() != null) {
-			EntityCollection entities = this.getChartRenderingInfo().getEntityCollection();
-			if (entities != null) {
-				System.err.println("Searching for : x: " + x + ", y: " + y);
-				for (Object next : entities.getEntities()) {
+		if (this.getChartRenderingInfo() != null)
+		{
+			EntityCollection entities = this.getChartRenderingInfo()
+					.getEntityCollection();
+			if (entities != null)
+			{
+				for (Object next : entities.getEntities())
+				{
 					ChartEntity nextEntity = (ChartEntity) next;
-					if (false == nextEntity instanceof XYItemEntity) {
+					if (false == nextEntity instanceof XYItemEntity)
+					{
 						continue;
 					}
 					XYItemEntity xyEntity = (XYItemEntity) nextEntity;
-					System.err.println("nextEntity: " + nextEntity);
 					@SuppressWarnings("unchecked")
-					Comparable seriesKey = xyEntity.getDataset().getSeriesKey(xyEntity.getSeriesIndex());
-					BackedChartItem backedChartItem = null;
-					if (xyEntity.getDataset() instanceof XYSeriesCollection) {
-						XYSeries series = ((XYSeriesCollection) xyEntity.getDataset()).getSeries(seriesKey);
+					Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
+							xyEntity.getSeriesIndex());
+					BackedChartItem backedChartItem;
+					if (xyEntity.getDataset() instanceof XYSeriesCollection)
+					{
+						XYSeries series = ((XYSeriesCollection) xyEntity.getDataset())
+								.getSeries(seriesKey);
 						XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
-						System.err.println("nextItem: " + dataItem);
-						if (dataItem instanceof BackedChartItem) {
+						if (dataItem instanceof BackedChartItem)
+						{
 							backedChartItem = (BackedChartItem) dataItem;
 						}
-					} else if (xyEntity.getDataset() instanceof TimeSeriesCollection) {
-						TimeSeries series = ((TimeSeriesCollection) xyEntity.getDataset()).getSeries(seriesKey);
-						TimeSeriesDataItem dataItem = series.getDataItem(xyEntity.getItem());
-						System.err.println("nextItem: period: " + dataItem.getPeriod() + ", value: " + dataItem.getValue());
-						if (dataItem instanceof BackedChartItem) {
+					}
+					else if (xyEntity.getDataset() instanceof TimeSeriesCollection)
+					{
+						TimeSeries series = ((TimeSeriesCollection) xyEntity.getDataset())
+								.getSeries(seriesKey);
+						TimeSeriesDataItem dataItem = series
+								.getDataItem(xyEntity.getItem());
+						if (dataItem instanceof BackedChartItem)
+						{
 							backedChartItem = (BackedChartItem) dataItem;
 						}
 					}
 
-					if (backedChartItem != null) {
-						System.err.println("\tdomainItem: " + backedChartItem.getDomainItem());
-					}
+					if (nextEntity.getArea().contains(x, y))
+					{
+						TimeSeriesCollection theDataset = (TimeSeriesCollection) xyEntity
+								.getDataset();
+						TimeSeries theSeries = theDataset.getSeries(xyEntity
+								.getSeriesIndex());
+						int theIndex = xyEntity.getItem();
 
-					System.err.println("area:" + nextEntity.getArea());
-					System.err.println("area-bounds:" + nextEntity.getArea().getBounds());
-					System.err.println("contains :" + nextEntity.getArea().contains(x, y));
-					if (nextEntity.getArea().contains(x, y)) {
-						System.err.println("FOUND!");
+						// the items are in reverse order. reverse the index
+						theIndex = theSeries.getItemCount() - (theIndex + 1);
+
+						// clear the selection, as long as ctrl isn't selected
+						if ((event.stateMask & SWT.CTRL) == 0)
+						{
+							_dataGrid.getTableViewer().getTable().deselectAll();
+						}
+
+						// try to select it
+						_dataGrid.getTableViewer().getTable().select(theIndex);
+
+						// and make sure it's visible
+						_dataGrid.getTableViewer().getTable().showSelection();
+						
+						// and tell the action buttons what's happened
+						_dataGrid.getActionContext().setSelection(_dataGrid.getTableViewer().getSelection());
+
 						break;
 					}
 				}

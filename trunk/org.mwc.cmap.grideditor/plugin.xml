@@ -7,7 +7,7 @@
       <view
             name="Grid Editor"
             icon="icons/chart.png"
-            category="com.pml.GridHarness"
+            category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.grideditor.GridEditorView"
             id="com.pml.grid.editor">
       </view>

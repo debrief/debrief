@@ -43,7 +43,7 @@ public class GridEditorUI extends Composite {
 		mySashForm = new SashForm(this, SWT.VERTICAL);
 
 		myTable = new GridEditorTable(mySashForm, actionGroup);
-		myChart = new JFreeChartComposite(mySashForm, actionGroup.getContext());
+		myChart = new JFreeChartComposite(mySashForm, actionGroup.getContext(), myTable);
 
 		myTable.setColumnHeaderSelectionListener(new SelectionAdapter() {
 

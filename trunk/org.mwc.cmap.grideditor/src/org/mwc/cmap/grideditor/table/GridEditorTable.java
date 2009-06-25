@@ -95,6 +95,11 @@ public class GridEditorTable extends Composite {
 	public TableViewer getTableViewer() {
 		return myTableViewer;
 	}
+	
+	public GridEditorActionContext getActionContext()
+	{
+		return myActionContext;
+	}
 
 	public TableModel getTableModel() {
 		return myTableModel;
