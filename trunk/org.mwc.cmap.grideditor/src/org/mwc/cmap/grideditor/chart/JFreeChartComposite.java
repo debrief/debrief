@@ -127,43 +127,56 @@ public class JFreeChartComposite extends FixedChartComposite
 					{
 						continue;
 					}
-					XYItemEntity xyEntity = (XYItemEntity) nextEntity;
-					@SuppressWarnings("unchecked")
-					Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
-							xyEntity.getSeriesIndex());
-					BackedChartItem backedChartItem;
-					if (xyEntity.getDataset() instanceof XYSeriesCollection)
-					{
-						XYSeries series = ((XYSeriesCollection) xyEntity.getDataset())
-								.getSeries(seriesKey);
-						XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
-						if (dataItem instanceof BackedChartItem)
-						{
-							backedChartItem = (BackedChartItem) dataItem;
-						}
-					}
-					else if (xyEntity.getDataset() instanceof TimeSeriesCollection)
-					{
-						TimeSeries series = ((TimeSeriesCollection) xyEntity.getDataset())
-								.getSeries(seriesKey);
-						TimeSeriesDataItem dataItem = series
-								.getDataItem(xyEntity.getItem());
-						if (dataItem instanceof BackedChartItem)
-						{
-							backedChartItem = (BackedChartItem) dataItem;
-						}
-					}
 
 					if (nextEntity.getArea().contains(x, y))
 					{
-						TimeSeriesCollection theDataset = (TimeSeriesCollection) xyEntity
-								.getDataset();
-						TimeSeries theSeries = theDataset.getSeries(xyEntity
-								.getSeriesIndex());
-						int theIndex = xyEntity.getItem();
+						// sort out it's details
+						XYItemEntity xyEntity = (XYItemEntity) nextEntity;
+						@SuppressWarnings("unchecked")
+						Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
+								xyEntity.getSeriesIndex());
+						int theIndex = 0;
+						BackedChartItem backedChartItem;
+						if (xyEntity.getDataset() instanceof XYSeriesCollection)
+						{
+							XYSeriesCollection theDataset = (XYSeriesCollection) xyEntity
+									.getDataset();
 
-						// the items are in reverse order. reverse the index
-						theIndex = theSeries.getItemCount() - (theIndex + 1);
+							XYSeries theSeries = theDataset.getSeries(xyEntity
+									.getSeriesIndex());
+
+							theIndex = xyEntity.getItem();
+
+//							XYSeries series = ((XYSeriesCollection) xyEntity.getDataset())
+//									.getSeries(seriesKey);
+//							XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
+//							if (dataItem instanceof BackedChartItem)
+//							{
+//								backedChartItem = (BackedChartItem) dataItem;
+//							}
+						}
+						else if (xyEntity.getDataset() instanceof TimeSeriesCollection)
+						{
+							TimeSeriesCollection theDataset = (TimeSeriesCollection) xyEntity
+									.getDataset();
+							TimeSeries theSeries = theDataset.getSeries(xyEntity
+									.getSeriesIndex());
+							theIndex = xyEntity.getItem();
+							int itemCount = theSeries.getItemCount();
+							// the items are in reverse order. reverse the index
+							theIndex = itemCount - (theIndex + 1);
+
+							// TimeSeries series = ((TimeSeriesCollection)
+							// xyEntity.getDataset())
+							// .getSeries(seriesKey);
+							// TimeSeriesDataItem dataItem = series
+							// .getDataItem(xyEntity.getItem());
+							// if (dataItem instanceof BackedChartItem)
+							// {
+							// backedChartItem = (BackedChartItem) dataItem;
+							// }
+						}
+
 
 						// clear the selection, as long as ctrl isn't selected
 						if ((event.stateMask & SWT.CTRL) != 0)
@@ -172,7 +185,7 @@ public class JFreeChartComposite extends FixedChartComposite
 						}
 						else if ((event.stateMask & SWT.SHIFT) != 0)
 						{
-							// shift is selected, so we want to extend the selection 
+							// shift is selected, so we want to extend the selection
 						}
 						else
 						{
