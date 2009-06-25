@@ -857,6 +857,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	{
 		return _lineShowing;
 	}
+	
+	public void setLocation(WorldLocation val)
+	{
+		_theFix.setLocation(val);
+	}
   
 
   //////////////////////////////////////////////////////
