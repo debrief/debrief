@@ -65,7 +65,7 @@ public class LocationChartAccess implements IAdapterFactory {
 					@Override
 					protected void dragCompleted(BackedChartItem item, double finalX, double finalY) {
 						OperationEnvironment environment = new OperationEnvironment(undoSupport.getUndoContext(), getInput(), item.getDomainItem(), getDescriptor());
-						WorldLocation location = new WorldLocation(finalY, finalX,0);
+						WorldLocation location = new WorldLocation(finalX, finalY,0);
 						SetDescriptorValueOperation setLocation = new SetDescriptorValueOperation(environment, location);
 						try {
 							undoSupport.getOperationHistory().execute(setLocation, null, null);
