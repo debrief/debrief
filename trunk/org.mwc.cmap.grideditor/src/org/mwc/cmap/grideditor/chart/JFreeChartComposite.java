@@ -166,8 +166,17 @@ public class JFreeChartComposite extends FixedChartComposite
 						theIndex = theSeries.getItemCount() - (theIndex + 1);
 
 						// clear the selection, as long as ctrl isn't selected
-						if ((event.stateMask & SWT.CTRL) == 0)
+						if ((event.stateMask & SWT.CTRL) != 0)
 						{
+							// control is selected, so we don't want to clear the selection
+						}
+						else if ((event.stateMask & SWT.SHIFT) != 0)
+						{
+							// shift is selected, so we want to extend the selection 
+						}
+						else
+						{
+							// we're not extending the selection, clear it,
 							_dataGrid.getTableViewer().getTable().deselectAll();
 						}
 
@@ -176,9 +185,10 @@ public class JFreeChartComposite extends FixedChartComposite
 
 						// and make sure it's visible
 						_dataGrid.getTableViewer().getTable().showSelection();
-						
+
 						// and tell the action buttons what's happened
-						_dataGrid.getActionContext().setSelection(_dataGrid.getTableViewer().getSelection());
+						_dataGrid.getActionContext().setSelection(
+								_dataGrid.getTableViewer().getSelection());
 
 						break;
 					}
