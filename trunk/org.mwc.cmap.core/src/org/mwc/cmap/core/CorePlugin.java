@@ -16,6 +16,7 @@ import org.eclipse.core.commands.operations.OperationHistoryFactory;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.IPreferenceStore;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -37,6 +38,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
+import org.mwc.cmap.gridharness.data.base60.SexagesimalSupport;
 import org.osgi.framework.BundleContext;
 
 import Debrief.GUI.Frames.Application;
@@ -53,6 +56,8 @@ import MWC.GenericData.WorldLocation;
  */
 public class CorePlugin extends AbstractUIPlugin
 {
+
+	public static final String PLUGIN_ID = "org.mwc.cmap.core";
 
 	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
 
@@ -74,6 +79,12 @@ public class CorePlugin extends AbstractUIPlugin
 
 	public static final String POLYGON_EDITOR = "org.mwc.cmap.core.editor_views.PolygonEditorView";
 
+	/** support for lat/long editor in grid editor
+	 * 
+	 */
+	static final String PREF_BASE60_FORMAT_NO_SECONDS = PLUGIN_ID + ".base60-no-seconds";
+	
+	
 	// The shared instance.
 	private static CorePlugin plugin;
 
@@ -525,6 +536,13 @@ public class CorePlugin extends AbstractUIPlugin
 			logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
 		}
 		return res;
+	}
+
+
+	public SexagesimalFormat getLocationFormat() {
+		IPreferenceStore preferenceStore = getPreferenceStore();
+		boolean noSeconds = preferenceStore.getBoolean(PREF_BASE60_FORMAT_NO_SECONDS);
+		return noSeconds ? SexagesimalSupport._DD_MM_MMM : SexagesimalSupport._DD_MM_SS_SSS;
 	}
 
 

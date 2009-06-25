@@ -4,11 +4,12 @@ import org.eclipse.jface.viewers.CellEditor;
 import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditorHelper;
-import org.mwc.cmap.gridharness.Activator;
-import org.mwc.cmap.gridharness.data.WorldLocation;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
+
+import MWC.GenericData.WorldLocation;
 
 
 public class WorldLocationHelper extends EditorHelper {
@@ -29,10 +30,10 @@ public class WorldLocationHelper extends EditorHelper {
 
 			@Override
 			public String getText(Object element) {
-				SexagesimalFormat format = Activator.getDefault().getLocationFormat();
+				SexagesimalFormat format = CorePlugin.getDefault().getLocationFormat();
 				WorldLocation location = (WorldLocation) element;
-				Sexagesimal latitude = format.parseDouble(location.getLatitude());
-				Sexagesimal longitude = format.parseDouble(location.getLongitude());
+				Sexagesimal latitude = format.parseDouble(location.getLat());
+				Sexagesimal longitude = format.parseDouble(location.getLong());
 				return format.format(latitude, false) + " " + format.format(longitude, true);
 			}
 		};

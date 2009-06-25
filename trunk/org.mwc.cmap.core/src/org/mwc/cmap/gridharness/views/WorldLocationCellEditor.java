@@ -15,10 +15,11 @@ import org.eclipse.swt.events.VerifyEvent;
 import org.eclipse.swt.layout.RowLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
-import org.mwc.cmap.gridharness.Activator;
-import org.mwc.cmap.gridharness.data.WorldLocation;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.gridharness.data.base60.Sexagesimal;
 import org.mwc.cmap.gridharness.data.base60.SexagesimalFormat;
+
+import MWC.GenericData.WorldLocation;
 
 
 public class WorldLocationCellEditor extends CellEditor implements MultiControlCellEditor {
@@ -111,15 +112,15 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 			return null;
 		}
 
-		WorldLocation location = new WorldLocation(latitude.getCombinedDegrees(), longitude.getCombinedDegrees());
+		WorldLocation location = new WorldLocation(latitude.getCombinedDegrees(), longitude.getCombinedDegrees(),0);
 		return location;
 	}
 
 	@Override
 	protected void doSetValue(Object value) {
 		WorldLocation location = (WorldLocation) value;
-		Sexagesimal latitude = getFormat().parseDouble(location.getLatitude());
-		Sexagesimal longitude = getFormat().parseDouble(location.getLongitude());
+		Sexagesimal latitude = getFormat().parseDouble(location.getLat());
+		Sexagesimal longitude = getFormat().parseDouble(location.getLong());
 
 		myLatitude.setValue(getFormat().format(latitude, false));
 		myLongitude.setValue(getFormat().format(longitude, true));
@@ -127,7 +128,7 @@ public class WorldLocationCellEditor extends CellEditor implements MultiControlC
 
 	private SexagesimalFormat getFormat() {
 		//intentionally reevaluated each time
-		return Activator.getDefault().getLocationFormat();
+		return CorePlugin.getDefault().getLocationFormat();
 	}
 
 	private static class IgnoreTabsMaskFormatter extends MaskFormatter {

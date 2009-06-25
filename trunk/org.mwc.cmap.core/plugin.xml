@@ -94,6 +94,19 @@
      <initializer class="org.mwc.cmap.core.preferences.CoastlineSourcePreferenceInitializer"/>
   </extension>  
   
+	<extension point="org.eclipse.core.runtime.preferences">
+	 	<initializer class="org.mwc.cmap.gridharness.PreferenceInitializer"/>
+	 </extension>
+	 
+   <extension point="org.eclipse.ui.preferencePages">
+      <page
+            name="Formatting"
+            class="org.mwc.cmap.gridharness.LocationFormatPreferencePage"
+           category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+            id="org.mwc.cmap.gridharness.preferences.format">
+      </page>
+   </extension>  
+  
   <extension
         point="org.eclipse.ui.newWizards">
      <category

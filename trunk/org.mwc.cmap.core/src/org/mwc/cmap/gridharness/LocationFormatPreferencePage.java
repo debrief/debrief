@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.mwc.cmap.core.CorePlugin;
 
 public class LocationFormatPreferencePage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
@@ -17,7 +18,7 @@ public class LocationFormatPreferencePage extends FieldEditorPreferencePage impl
 
 	public LocationFormatPreferencePage() {
 		super(GRID);
-		setPreferenceStore(Activator.getDefault().getPreferenceStore());
+		setPreferenceStore(CorePlugin.getDefault().getPreferenceStore());
 	}
 
 	@Override

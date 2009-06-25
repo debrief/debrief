@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
-import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.swt.widgets.Composite;
@@ -26,7 +26,9 @@ import org.mwc.cmap.core.property_support.DebriefProperty;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.grideditor.table.actons.GridEditorActionGroup;
 import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
+import org.mwc.cmap.gridharness.data.GriddableItemDescriptorExtension;
 import org.mwc.cmap.gridharness.data.GriddableSeries;
+import org.mwc.cmap.gridharness.views.WorldLocationHelper;
 
 import MWC.GUI.Editable;
 import MWC.GUI.Griddable;
@@ -35,112 +37,10 @@ import MWC.GUI.Layer;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Editable.EditorType;
+import MWC.GenericData.WorldLocation;
 
 public class GridEditorView extends ViewPart
 {
-
-	private ISelectionListener mySelectionListener;
-
-	private GridEditorActionGroup myActions;
-
-	private GridEditorUI myUI;
-
-	private GridEditorUndoSupport myUndoSupport;
-
-	private UndoActionHandler myUndoAction;
-
-	private RedoActionHandler myRedoAction;
-
-	@Override
-	public void createPartControl(Composite parent)
-	{
-		GridEditorActionContext actionContext = new GridEditorActionContext(
-				myUndoSupport);
-		myActions = new GridEditorActionGroup(this, actionContext);
-		myUI = new GridEditorUI(parent, myActions);
-		ISelectionService selectionService = getSite().getWorkbenchWindow()
-				.getSelectionService();
-		handleWorkspaceSelectionChanged(selectionService.getSelection());
-
-		IActionBars actionBars = getViewSite().getActionBars();
-		myActions.fillActionBars(actionBars);
-		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
-		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
-	}
-
-	@Override
-	public void init(IViewSite site) throws PartInitException
-	{
-		super.init(site);
-		ISelectionService selectionService = site.getWorkbenchWindow()
-				.getSelectionService();
-		selectionService.addSelectionListener(getSelectionListener());
-
-		initUndoSupport();
-	}
-
-	@Override
-	public void dispose()
-	{
-		getSite().getWorkbenchWindow().getSelectionService()
-				.removeSelectionListener(getSelectionListener());
-		super.dispose();
-	}
-
-	@Override
-	public void setFocus()
-	{
-		myUI.forceTableFocus();
-	}
-
-	public GridEditorUI getUI()
-	{
-		return myUI;
-	}
-
-	private void handleWorkspaceSelectionChanged(ISelection actualSelection)
-	{
-		if (myUI.isDisposed())
-		{
-			return;
-		}
-		GriddableSeries input = extractGriddableSeries(actualSelection);
-
-		if (input != null)
-		{
-			myUI.inputSeriesChanged(input);
-		}
-	}
-
-	private GriddableSeries extractGriddableSeries(ISelection selection)
-	{
-		GriddableSeries res = null;
-
-		if (false == selection instanceof IStructuredSelection)
-		{
-			return null;
-		}
-		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-		if (structuredSelection.isEmpty())
-		{
-			return null;
-		}
-		Object firstElement = structuredSelection.getFirstElement();
-
-		// right, see if this is a series object already. if it is, we've got our
-		// data. if it isn't, see
-		// if it's a candidate for editing and collate a series of elements
-		if (firstElement instanceof EditableWrapper)
-		{
-			EditableWrapper wrapped = (EditableWrapper) firstElement;
-			if (wrapped.getEditableValue() instanceof GriddableSeriesMarker)
-			{
-				res = new GriddableWrapper(wrapped);
-			}
-		}
-
-		return res;
-	}
 
 	/**
 	 * class that makes one of our tactical wrapper objects look like a griddable
@@ -152,7 +52,17 @@ public class GridEditorView extends ViewPart
 	 */
 	protected class GriddableWrapper implements GriddableSeries
 	{
+		/**
+		 * the thing we're wrapping
+		 * 
+		 */
 		final EditableWrapper _item;
+
+		/**
+		 * a cached set of attributes - we have to get them quite frequently
+		 * 
+		 */
+		private GriddableItemDescriptor[] _myAttributes;
 
 		public GriddableWrapper(EditableWrapper item)
 		{
@@ -180,24 +90,6 @@ public class GridEditorView extends ViewPart
 			fireExtended(PROPERTY_DELETED, subject);
 		}
 
-		@Override
-		public void fireModified(TimeStampedDataItem subject)
-		{
-			if (_item.getEditable() instanceof SupportsPropertyListeners)
-			{
-				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
-						.getEditable();
-				// ok, inform any listeners
-				pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null, subject);
-			}
-			else
-				CorePlugin.logError(Status.ERROR,
-						"Item in grid doesn't let us watch it's properties", null);
-
-			// also tell the layers object that we've changed
-			_item.getLayers().fireModified(_item.getTopLevelLayer());
-		}
-
 		/**
 		 * broadcast the fact that something in this layer has changed
 		 * 
@@ -217,7 +109,23 @@ public class GridEditorView extends ViewPart
 			_item.getLayers().fireExtended(null, _item.getTopLevelLayer());
 		}
 
-		private GriddableItemDescriptor[] _myAttributes;
+		@Override
+		public void fireModified(TimeStampedDataItem subject)
+		{
+			if (_item.getEditable() instanceof SupportsPropertyListeners)
+			{
+				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
+						.getEditable();
+				// ok, inform any listeners
+				pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null, subject);
+			}
+			else
+				CorePlugin.logError(IStatus.ERROR,
+						"Item in grid doesn't let us watch it's properties", null);
+
+			// also tell the layers object that we've changed
+			_item.getLayers().fireModified(_item.getTopLevelLayer());
+		}
 
 		@Override
 		public GriddableItemDescriptor[] getAttributes()
@@ -241,10 +149,25 @@ public class GridEditorView extends ViewPart
 
 						Object dataObject = desc.getRawValue();
 						Class<?> dataClass = dataObject.getClass();
+						GriddableItemDescriptor gd;
 
-						GriddableItemDescriptor gd = new GriddableItemDescriptor(desc
-								.getDisplayName(), desc.getDisplayName(), dataClass, desc
-								.getHelper());
+						// aah, is this a 'special' class?
+						if (dataClass == WorldLocation.class)
+						{
+							WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
+							WorldLocation sample = new WorldLocation(1,1,1);
+							String sampleLocationText = worldLocationHelper.getLabelFor(sample).getText(sample);
+							
+							gd = new GriddableItemDescriptorExtension("Location", "Location",
+									WorldLocation.class, new WorldLocationHelper(), 
+									sampleLocationText);
+						}
+						else
+						{
+							gd = new GriddableItemDescriptor(desc.getDisplayName(), desc
+									.getDisplayName(), dataClass, desc.getHelper());
+						}
+
 						items.add(gd);
 					}
 				}
@@ -271,7 +194,7 @@ public class GridEditorView extends ViewPart
 				while (enumer.hasMoreElements())
 				{
 					Editable ed = enumer.nextElement();
-					list.add(0,(TimeStampedDataItem) ed);
+					list.add(0, (TimeStampedDataItem) ed);
 				}
 			}
 			return list;
@@ -321,6 +244,73 @@ public class GridEditorView extends ViewPart
 
 	}
 
+	private ISelectionListener mySelectionListener;
+
+	private GridEditorActionGroup myActions;
+
+	private GridEditorUI myUI;
+
+	private GridEditorUndoSupport myUndoSupport;
+
+	private UndoActionHandler myUndoAction;
+
+	private RedoActionHandler myRedoAction;
+
+	@Override
+	public void createPartControl(Composite parent)
+	{
+		GridEditorActionContext actionContext = new GridEditorActionContext(
+				myUndoSupport);
+		myActions = new GridEditorActionGroup(this, actionContext);
+		myUI = new GridEditorUI(parent, myActions);
+		ISelectionService selectionService = getSite().getWorkbenchWindow()
+				.getSelectionService();
+		handleWorkspaceSelectionChanged(selectionService.getSelection());
+
+		IActionBars actionBars = getViewSite().getActionBars();
+		myActions.fillActionBars(actionBars);
+		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
+		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
+	}
+
+	@Override
+	public void dispose()
+	{
+		getSite().getWorkbenchWindow().getSelectionService()
+				.removeSelectionListener(getSelectionListener());
+		super.dispose();
+	}
+
+	private GriddableSeries extractGriddableSeries(ISelection selection)
+	{
+		GriddableSeries res = null;
+
+		if (false == selection instanceof IStructuredSelection)
+		{
+			return null;
+		}
+		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
+		if (structuredSelection.isEmpty())
+		{
+			return null;
+		}
+		Object firstElement = structuredSelection.getFirstElement();
+
+		// right, see if this is a series object already. if it is, we've got our
+		// data. if it isn't, see
+		// if it's a candidate for editing and collate a series of elements
+		if (firstElement instanceof EditableWrapper)
+		{
+			EditableWrapper wrapped = (EditableWrapper) firstElement;
+			if (wrapped.getEditableValue() instanceof GriddableSeriesMarker)
+			{
+				res = new GriddableWrapper(wrapped);
+			}
+		}
+
+		return res;
+	}
+
 	private ISelectionListener getSelectionListener()
 	{
 		if (mySelectionListener == null)
@@ -341,6 +331,47 @@ public class GridEditorView extends ViewPart
 			};
 		}
 		return mySelectionListener;
+	}
+
+	public GridEditorUI getUI()
+	{
+		return myUI;
+	}
+
+	private void handleWorkspaceSelectionChanged(ISelection actualSelection)
+	{
+		if (myUI.isDisposed())
+		{
+			return;
+		}
+		GriddableSeries input = extractGriddableSeries(actualSelection);
+
+		if (input != null)
+		{
+			myUI.inputSeriesChanged(input);
+		}
+	}
+
+	@Override
+	public void init(IViewSite site) throws PartInitException
+	{
+		super.init(site);
+		ISelectionService selectionService = site.getWorkbenchWindow()
+				.getSelectionService();
+		selectionService.addSelectionListener(getSelectionListener());
+
+		initUndoSupport();
+	}
+
+	private void initUndoSupport()
+	{
+		myUndoSupport = new GridEditorUndoSupport(PlatformUI.getWorkbench()
+				.getOperationSupport().getOperationHistory());
+		// set up action handlers that operate on the current context
+		myUndoAction = new UndoActionHandler(this.getSite(), myUndoSupport
+				.getUndoContext());
+		myRedoAction = new RedoActionHandler(this.getSite(), myUndoSupport
+				.getUndoContext());
 	}
 
 	public void refreshUndoContext()
@@ -366,15 +397,10 @@ public class GridEditorView extends ViewPart
 		actionBars.updateActionBars();
 	}
 
-	private void initUndoSupport()
+	@Override
+	public void setFocus()
 	{
-		myUndoSupport = new GridEditorUndoSupport(PlatformUI.getWorkbench()
-				.getOperationSupport().getOperationHistory());
-		// set up action handlers that operate on the current context
-		myUndoAction = new UndoActionHandler(this.getSite(), myUndoSupport
-				.getUndoContext());
-		myRedoAction = new RedoActionHandler(this.getSite(), myUndoSupport
-				.getUndoContext());
+		myUI.forceTableFocus();
 	}
 
 }

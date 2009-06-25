@@ -52,7 +52,7 @@ public class LocationChartAccess implements IAdapterFactory {
 		private DataPointsDragTracker myDragTracker;
 
 		public Longitude2LatitudeChartManager(GriddableItemDescriptor descriptor) {
-			super(descriptor, createLongitudeAccessor(descriptor), createLatitudeAccessor(descriptor));
+			super(descriptor, createLatitudeAccessor(descriptor), createLongitudeAccessor(descriptor));
 		}
 
 		@Override
