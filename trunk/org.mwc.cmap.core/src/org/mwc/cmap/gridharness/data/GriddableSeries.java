@@ -55,6 +55,8 @@ public interface GriddableSeries {
 	public GriddableItemDescriptor[] getAttributes(); // the columns to use
 
 	public List<TimeStampedDataItem> getItems(); // the items to be edited
+	
+	public void setOnlyShowVisibleItems(final boolean val);	
 
 	public void fireModified(TimeStampedDataItem subject); // indicate that a row has been changed
 

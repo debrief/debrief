@@ -25,6 +25,8 @@ public class GridEditorActionGroup extends ActionGroup {
 
 	private InterpolateAction myInterpolateAction;
 
+	private OnlyShowVisibleAction myShowVisItemsAction;
+
 	public GridEditorActionGroup(GridEditorView view, GridEditorActionContext context) {
 		myView = view;
 		super.setContext(context);
@@ -66,6 +68,7 @@ public class GridEditorActionGroup extends ActionGroup {
 		toolbar.add(myDeleteRowAction);
 		toolbar.add(myInterpolateAction);
 		toolbar.add(new Separator());
+		toolbar.add(myShowVisItemsAction);
 		toolbar.add(myTrackSelectionAction);
 	}
 
@@ -76,6 +79,7 @@ public class GridEditorActionGroup extends ActionGroup {
 		menu.add(myDeleteRowAction);
 		menu.add(myInterpolateAction);
 		menu.add(new Separator());
+		menu.add(myShowVisItemsAction);
 		menu.add(myTrackSelectionAction);
 	}
 
@@ -88,6 +92,7 @@ public class GridEditorActionGroup extends ActionGroup {
 		}
 		GridEditorTable tableUI = myView.getUI().getTable();
 		myTrackSelectionAction = new TrackSelectionAction(tableUI);
+		myShowVisItemsAction = new OnlyShowVisibleAction(tableUI);
 		myInsertRowAction = new InsertRowAction();
 		myDeleteRowAction = new DeleteRowAction();
 		myInterpolateAction = new InterpolateAction();
@@ -99,6 +104,7 @@ public class GridEditorActionGroup extends ActionGroup {
 			return;
 		}
 		myTrackSelectionAction.refreshWithTableUI();
+		myShowVisItemsAction.refreshWithTableUI();
 		GridEditorActionContext contextImpl = getContext();
 		myInsertRowAction.refreshWithActionContext(contextImpl);
 		myDeleteRowAction.refreshWithActionContext(contextImpl);

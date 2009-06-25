@@ -141,4 +141,11 @@ public class ObservationList implements GriddableSeries {
 		return res;
 	}
 
+	@Override
+	public void setOnlyShowVisibleItems(boolean val)
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
 }

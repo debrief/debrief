@@ -34,6 +34,7 @@ import MWC.GUI.Editable;
 import MWC.GUI.Griddable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Editable.EditorType;
@@ -58,11 +59,23 @@ public class GridEditorView extends ViewPart
 		 */
 		final EditableWrapper _item;
 
+		private boolean _onlyVisItems = false;
+
 		/**
 		 * a cached set of attributes - we have to get them quite frequently
 		 * 
 		 */
 		private GriddableItemDescriptor[] _myAttributes;
+
+		public boolean isOnlyShowVisibleItems()
+		{
+			return _onlyVisItems;
+		}
+
+		public void setOnlyShowVisibleItems(boolean onlyVisItems)
+		{
+			_onlyVisItems = onlyVisItems;
+		}
 
 		public GriddableWrapper(EditableWrapper item)
 		{
@@ -155,11 +168,12 @@ public class GridEditorView extends ViewPart
 						if (dataClass == WorldLocation.class)
 						{
 							WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
-							WorldLocation sample = new WorldLocation(1,1,1);
-							String sampleLocationText = worldLocationHelper.getLabelFor(sample).getText(sample);
-							
+							WorldLocation sample = new WorldLocation(1, 1, 1);
+							String sampleLocationText = worldLocationHelper.getLabelFor(
+									sample).getText(sample);
+
 							gd = new GriddableItemDescriptorExtension("Location", "Location",
-									WorldLocation.class, new WorldLocationHelper(), 
+									WorldLocation.class, new WorldLocationHelper(),
 									sampleLocationText);
 						}
 						else
@@ -194,7 +208,24 @@ public class GridEditorView extends ViewPart
 				while (enumer.hasMoreElements())
 				{
 					Editable ed = enumer.nextElement();
-					list.add(0, (TimeStampedDataItem) ed);
+
+					if (_onlyVisItems)
+					{
+						// right, this should be a plottable - just check
+						if (ed instanceof Plottable)
+						{
+							Plottable pl = (Plottable) ed;
+							if (pl.getVisible())
+							{
+								list.add(0, (TimeStampedDataItem) ed);
+							}
+						}
+					}
+					else
+					{
+						// just show all of them
+						list.add(0, (TimeStampedDataItem) ed);
+					}
 				}
 			}
 			return list;

@@ -31,6 +31,8 @@ public class GridEditorTable extends Composite {
 	private SelectionListener myColumnHeaderSelectionListener;
 
 	private boolean myIsTrackingSelection = true;
+	
+	private boolean myOnlyShowVisiblePoints = true;
 
 	public GridEditorTable(Composite parent, GridEditorActionGroup actionGroup) {
 		super(parent, SWT.NONE);
@@ -80,11 +82,27 @@ public class GridEditorTable extends Composite {
 		return myIsTrackingSelection;
 	}
 
+	public boolean isOnlyShowVisible()
+	{
+		return myOnlyShowVisiblePoints;
+	}
+	
+	public void setOnlyShowVisible(boolean val)
+	{
+		myOnlyShowVisiblePoints = val;
+		
+		// ok, do an update of the data
+		setInput((GriddableSeries) myTableViewer.getInput());
+	}
+	
 	public void setColumnHeaderSelectionListener(SelectionListener listener) {
 		myColumnHeaderSelectionListener = listener;
 	}
 
 	public void setInput(GriddableSeries series) {
+		
+		series.setOnlyShowVisibleItems(myOnlyShowVisiblePoints);
+		
 		myTableModel.setInputSeries(series);
 		//the set of columns was probably changed 
 		refreshTableColumns();

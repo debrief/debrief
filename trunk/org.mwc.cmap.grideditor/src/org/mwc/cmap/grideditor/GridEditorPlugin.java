@@ -27,7 +27,6 @@ public class GridEditorPlugin extends AbstractUIPlugin {
 	public static final String IMG_INTERPOLATE_GEAR_WHEEL = "icons/interpolate2.png";
 
 	public static final String IMG_LOCKED = "icons/locked.png";
-
 	public static final String IMG_UNLOCKED = "icons/unlocked.png";
 
 	private static GridEditorPlugin ourInstance;
