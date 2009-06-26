@@ -36,7 +36,9 @@ public class JFreeChartComposite extends FixedChartComposite
 	public JFreeChartComposite(Composite parent,
 			GridEditorActionContext actionContext, GridEditorTable dataGrid)
 	{
-		super(parent, SWT.BORDER);
+		// next: double-buffer the chart, so when we switch back to Debrief from another app we don't have 
+		// to wait for it to get redrawn
+		super(parent, SWT.BORDER, null, true);
 		myActionContext = actionContext;
 		_dataGrid = dataGrid;
 	}
