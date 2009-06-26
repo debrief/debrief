@@ -14,7 +14,6 @@ import org.jfree.chart.entity.EntityCollection;
 import org.jfree.chart.entity.XYItemEntity;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.experimental.swt.SWTUtils;
 import org.mwc.cmap.grideditor.GridEditorActionContext;
@@ -132,21 +131,13 @@ public class JFreeChartComposite extends FixedChartComposite
 					{
 						// sort out it's details
 						XYItemEntity xyEntity = (XYItemEntity) nextEntity;
-						@SuppressWarnings("unchecked")
-						Comparable seriesKey = xyEntity.getDataset().getSeriesKey(
-								xyEntity.getSeriesIndex());
 						int theIndex = 0;
-						BackedChartItem backedChartItem;
 						if (xyEntity.getDataset() instanceof XYSeriesCollection)
 						{
-							XYSeriesCollection theDataset = (XYSeriesCollection) xyEntity
-									.getDataset();
-
-							XYSeries theSeries = theDataset.getSeries(xyEntity
-									.getSeriesIndex());
-
 							theIndex = xyEntity.getItem();
 
+
+//							BackedChartItem backedChartItem;
 //							XYSeries series = ((XYSeriesCollection) xyEntity.getDataset())
 //									.getSeries(seriesKey);
 //							XYDataItem dataItem = series.getDataItem(xyEntity.getItem());
