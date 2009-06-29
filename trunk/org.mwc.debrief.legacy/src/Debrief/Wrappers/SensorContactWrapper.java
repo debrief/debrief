@@ -1158,7 +1158,8 @@ public final class SensorContactWrapper extends
 						prop("Visible", "whether this sensor contact data is visible"),
 						prop("Frequency", "the frequency measurement for this data item",
 								OPTIONAL),
-						prop("Bearing", "bearing to centre of solution", SPATIAL)
+						prop("Bearing", "bearing to target", SPATIAL),
+						prop("AmbiguousBearing", "ambiguous bearing to target", SPATIAL),
 				};
 
 				return res;
