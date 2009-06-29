@@ -217,6 +217,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 		_linePlot = new XYPlot();
 		NumberAxis absBrgAxis = new NumberAxis("Absolute ("+getUnits()+")");
 		_linePlot.setRangeAxis(absBrgAxis);
+		absBrgAxis.setAutoRangeIncludesZero(false);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
 				new DatedToolTipGenerator(), null, _linePlot);
