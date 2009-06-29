@@ -214,6 +214,7 @@ import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.*;
+import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.CanvasType.PaintListener;
@@ -513,6 +514,7 @@ public class SnailPainter extends TotePainter implements Editable
 								|| (thisPlottable instanceof SensorWrapper)
 								|| (thisPlottable instanceof SensorContactWrapper)
 								|| (thisPlottable instanceof TMAWrapper)
+								|| (thisPlottable instanceof TrackSegment)
 								|| (thisPlottable instanceof TMAContactWrapper))
 						{
 							// leave it, it's track related
