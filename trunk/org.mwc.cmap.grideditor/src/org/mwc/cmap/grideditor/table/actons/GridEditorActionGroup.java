@@ -1,15 +1,23 @@
 package org.mwc.cmap.grideditor.table.actons;
 
+import java.util.Iterator;
+
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.actions.ActionContext;
 import org.eclipse.ui.actions.ActionGroup;
+import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.grideditor.GridEditorActionContext;
 import org.mwc.cmap.grideditor.GridEditorView;
+import org.mwc.cmap.grideditor.GridEditorView.GriddableWrapper;
 import org.mwc.cmap.grideditor.table.GridEditorTable;
 
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 
 public class GridEditorActionGroup extends ActionGroup {
 
@@ -27,7 +35,8 @@ public class GridEditorActionGroup extends ActionGroup {
 
 	private OnlyShowVisibleAction myShowVisItemsAction;
 
-	public GridEditorActionGroup(GridEditorView view, GridEditorActionContext context) {
+	public GridEditorActionGroup(GridEditorView view,
+			GridEditorActionContext context) {
 		myView = view;
 		super.setContext(context);
 		getContext().setListener(new GridEditorActionContext.Listener() {
@@ -52,7 +61,8 @@ public class GridEditorActionGroup extends ActionGroup {
 
 	@Override
 	public void setContext(ActionContext context) {
-		throw new UnsupportedOperationException("I am managing my context myself");
+		throw new UnsupportedOperationException(
+				"I am managing my context myself");
 	}
 
 	@Override
@@ -81,6 +91,35 @@ public class GridEditorActionGroup extends ActionGroup {
 		menu.add(new Separator());
 		menu.add(myShowVisItemsAction);
 		menu.add(myTrackSelectionAction);
+		menu.add(new Separator());
+
+		// right, find the selection
+		StructuredSelection sel = (StructuredSelection) myView.getUI()
+				.getTable().getTableViewer().getSelection();
+
+		// do we have something?
+		if (sel.size() > 0) {
+			
+			// create an array of the items being edited
+			Editable[] items = new Editable[sel.size()];
+			int index = 0;
+			@SuppressWarnings("unchecked")
+			Iterator iter = sel.iterator();
+			while(iter.hasNext())
+			{
+				items[index++] = (Editable) iter.next();
+			}
+			
+			// collate the other metadata
+			GriddableWrapper wrapper = (GriddableWrapper) myView.getUI().getTable().getTableViewer().getInput();
+			Layer[] topLayers = new Layer[]{wrapper.getWrapper().getTopLevelLayer()};
+			Layer[] parentLayers = new Layer[]{wrapper.getWrapper().getTopLevelLayer()};
+			Layers theLayers = wrapper.getWrapper().getLayers();
+			
+			// create a drop-down menu for this item
+			RightClickSupport.getDropdownListFor(menu, items, topLayers,
+					parentLayers, theLayers, true);
+		}
 	}
 
 	private void initActions() {
@@ -100,7 +139,7 @@ public class GridEditorActionGroup extends ActionGroup {
 	}
 
 	private void contextChanged() {
-		if (!myActionsInitialized){
+		if (!myActionsInitialized) {
 			return;
 		}
 		myTrackSelectionAction.refreshWithTableUI();

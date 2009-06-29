@@ -43,17 +43,19 @@ import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Editable.EditorType;
 import MWC.GenericData.WorldLocation;
 
-public class GridEditorView extends ViewPart {
+public class GridEditorView extends ViewPart
+{
 
 	/**
-	 * class that makes one of our tactical wrapper objects look like a
-	 * griddable series We aren't aaplying this functionality directly to the
-	 * wrapper data objects, since it introduces Eclipse-related objects
+	 * class that makes one of our tactical wrapper objects look like a griddable
+	 * series We aren't aaplying this functionality directly to the wrapper data
+	 * objects, since it introduces Eclipse-related objects
 	 * 
 	 * @author Ian Mayo
 	 * 
 	 */
-	protected static class GriddableWrapper implements GriddableSeries {
+	public static class GriddableWrapper implements GriddableSeries
+	{
 		/**
 		 * the thing we're wrapping
 		 * 
@@ -70,21 +72,26 @@ public class GridEditorView extends ViewPart {
 		 */
 		private GriddableItemDescriptor[] _myAttributes;
 
-		public boolean isOnlyShowVisibleItems() {
+		public boolean isOnlyShowVisibleItems()
+		{
 			return _onlyVisItems;
 		}
 
-		public void setOnlyShowVisibleItems(boolean onlyVisItems) {
+		public void setOnlyShowVisibleItems(boolean onlyVisItems)
+		{
 			_onlyVisItems = onlyVisItems;
 		}
 
-		public GriddableWrapper(EditableWrapper item) {
+		public GriddableWrapper(EditableWrapper item)
+		{
 			_item = item;
 		}
 
 		@Override
-		public void addPropertyChangeListener(PropertyChangeListener listener) {
-			if (_item.getEditable() instanceof SupportsPropertyListeners) {
+		public void addPropertyChangeListener(PropertyChangeListener listener)
+		{
+			if (_item.getEditable() instanceof SupportsPropertyListeners)
+			{
 				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 						.getEditable();
 				pw.addPropertyChangeListener(listener);
@@ -92,9 +99,9 @@ public class GridEditorView extends ViewPart {
 		}
 
 		@Override
-		public void deleteItem(TimeStampedDataItem subject) {
-			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item
-					.getEditable();
+		public void deleteItem(TimeStampedDataItem subject)
+		{
+			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
 			gs.removeElement((Editable) subject);
 
 			// tell everybody something's changed
@@ -108,8 +115,8 @@ public class GridEditorView extends ViewPart {
 		 * @param subject
 		 * 
 		 */
-		public void fireExtended(String propertyName,
-				TimeStampedDataItem subject) {
+		public void fireExtended(String propertyName, TimeStampedDataItem subject)
+		{
 			// start off with a plain modified event (to inform ourselves)
 			SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 					.getEditable();
@@ -121,28 +128,31 @@ public class GridEditorView extends ViewPart {
 		}
 
 		@Override
-		public void fireModified(TimeStampedDataItem subject) {
-			if (_item.getEditable() instanceof SupportsPropertyListeners) {
+		public void fireModified(TimeStampedDataItem subject)
+		{
+			if (_item.getEditable() instanceof SupportsPropertyListeners)
+			{
 				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 						.getEditable();
 				// ok, inform any listeners
-				pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null,
-						subject);
-			} else
+				pw.firePropertyChange(GriddableSeries.PROPERTY_CHANGED, null, subject);
+			}
+			else
 				CorePlugin.logError(IStatus.ERROR,
-						"Item in grid doesn't let us watch it's properties",
-						null);
+						"Item in grid doesn't let us watch it's properties", null);
 
 			// also tell the layers object that we've changed
 			cachedFireModified(_item.getLayers(), _item.getTopLevelLayer());
 			// _item.getLayers().fireModified(_item.getTopLevelLayer());
 		}
 
-		private void cachedFireModified(final Layers layers,
-				final Layer topLayer) {
+		private void cachedFireModified(final Layers layers, final Layer topLayer)
+		{
 			// create the runnable
-			Runnable runme = new Runnable() {
-				public void run() {
+			Runnable runme = new Runnable()
+			{
+				public void run()
+				{
 					layers.fireModified(topLayer);
 				}
 			};
@@ -153,20 +163,23 @@ public class GridEditorView extends ViewPart {
 		}
 
 		@Override
-		public GriddableItemDescriptor[] getAttributes() {
-			if (_myAttributes == null) {
+		public GriddableItemDescriptor[] getAttributes()
+		{
+			if (_myAttributes == null)
+			{
 				Vector<GriddableItemDescriptor> items = new Vector<GriddableItemDescriptor>();
 				GriddableSeriesMarker series = (GriddableSeriesMarker) _item
 						.getEditable();
 
 				Editable sampleItem = series.getSampleGriddable();
 				EditorType info = sampleItem.getInfo();
-				if (info instanceof Griddable) {
-					IPropertyDescriptor[] props = _item
-							.getGriddablePropertyDescriptors();
+				if (info instanceof Griddable)
+				{
+					IPropertyDescriptor[] props = _item.getGriddablePropertyDescriptors();
 
 					// wrap them
-					for (int i = 0; i < props.length; i++) {
+					for (int i = 0; i < props.length; i++)
+					{
 						DebriefProperty desc = (DebriefProperty) props[i];
 
 						Object dataObject = desc.getRawValue();
@@ -174,55 +187,64 @@ public class GridEditorView extends ViewPart {
 						GriddableItemDescriptor gd;
 
 						// aah, is this a 'special' class?
-						if (dataClass == WorldLocation.class) {
+						if (dataClass == WorldLocation.class)
+						{
 							WorldLocationHelper worldLocationHelper = new WorldLocationHelper();
 							WorldLocation sample = new WorldLocation(1, 1, 1);
-							String sampleLocationText = worldLocationHelper
-									.getLabelFor(sample).getText(sample);
+							String sampleLocationText = worldLocationHelper.getLabelFor(
+									sample).getText(sample);
 
-							gd = new GriddableItemDescriptorExtension(
-									"Location", "Location",
-									WorldLocation.class,
-									new WorldLocationHelper(),
+							gd = new GriddableItemDescriptorExtension("Location", "Location",
+									WorldLocation.class, new WorldLocationHelper(),
 									sampleLocationText);
-						} else {
-							gd = new GriddableItemDescriptor(desc
-									.getDisplayName(), desc.getDisplayName(),
-									dataClass, desc.getHelper());
+						}
+						else
+						{
+							gd = new GriddableItemDescriptor(desc.getDisplayName(), desc
+									.getDisplayName(), dataClass, desc.getHelper());
 						}
 
 						items.add(gd);
 					}
 				}
 
-				if (items.size() > 0) {
-					_myAttributes = items
-							.toArray(new GriddableItemDescriptor[] { null });
+				if (items.size() > 0)
+				{
+					_myAttributes = items.toArray(new GriddableItemDescriptor[]
+					{ null });
 				}
 			}
 			return _myAttributes;
 		}
 
 		@Override
-		public List<TimeStampedDataItem> getItems() {
+		public List<TimeStampedDataItem> getItems()
+		{
 			List<TimeStampedDataItem> list = null;
 			Editable obj = _item.getEditable();
-			if (obj instanceof Layer) {
+			if (obj instanceof Layer)
+			{
 				list = new Vector<TimeStampedDataItem>();
 				Layer layer = (Layer) obj;
 				Enumeration<Editable> enumer = layer.elements();
-				while (enumer.hasMoreElements()) {
+				while (enumer.hasMoreElements())
+				{
 					Editable ed = enumer.nextElement();
 
-					if (_onlyVisItems) {
+					if (_onlyVisItems)
+					{
 						// right, this should be a plottable - just check
-						if (ed instanceof Plottable) {
+						if (ed instanceof Plottable)
+						{
 							Plottable pl = (Plottable) ed;
-							if (pl.getVisible()) {
+							if (pl.getVisible())
+							{
 								list.add(0, (TimeStampedDataItem) ed);
 							}
 						}
-					} else {
+					}
+					else
+					{
 						// just show all of them
 						list.add(0, (TimeStampedDataItem) ed);
 					}
@@ -232,14 +254,25 @@ public class GridEditorView extends ViewPart {
 		}
 
 		@Override
-		public String getName() {
+		public String getName()
+		{
 			return _item.getEditable().getName();
 		}
 
+		/**
+		 * return the thing being edited
+		 * 
+		 * @return
+		 */
+		public EditableWrapper getWrapper()
+		{
+			return _item;
+		}
+
 		@Override
-		public void insertItem(TimeStampedDataItem subject) {
-			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item
-					.getEditable();
+		public void insertItem(TimeStampedDataItem subject)
+		{
+			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
 			gs.add((Editable) subject);
 
 			// tell everybody something's changed
@@ -247,39 +280,47 @@ public class GridEditorView extends ViewPart {
 		}
 
 		@Override
-		public void insertItemAt(TimeStampedDataItem subject, int index) {
+		public void insertItemAt(TimeStampedDataItem subject, int index)
+		{
 			// we don't need to worry about the order of the item,
 			// since they're chronologically ordered anyway
 			insertItem(subject);
 		}
 
 		@Override
-		public TimeStampedDataItem makeCopy(TimeStampedDataItem item) {
-			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item
-					.getEditable();
+		public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
+		{
+			GriddableSeriesMarker gs = (GriddableSeriesMarker) _item.getEditable();
 			return gs.makeCopy(item);
 		}
 
 		@Override
-		public void removePropertyChangeListener(PropertyChangeListener listener) {
-			if (_item.getEditable() instanceof SupportsPropertyListeners) {
+		public void removePropertyChangeListener(PropertyChangeListener listener)
+		{
+			if (_item.getEditable() instanceof SupportsPropertyListeners)
+			{
 				SupportsPropertyListeners pw = (SupportsPropertyListeners) _item
 						.getEditable();
 				pw.removePropertyChangeListener(listener);
 			}
 		}
 
-		private static class EventStack {
+		private static class EventStack
+		{
 
-			public EventStack(int delay) {
+			public EventStack(int delay)
+			{
 				this.delay = delay;
-				if (delay <= 0) {
+				if (delay <= 0)
+				{
 					throw new RuntimeException("Delay has to be positive");
 				}
 			}
 
-			public void addEvent(Runnable event) {
-				if (event == null) {
+			public void addEvent(Runnable event)
+			{
+				if (event == null)
+				{
 					throw new RuntimeException("Event cannot be null");
 				}
 				getEventRunner().setNextEvent(event);
@@ -291,8 +332,10 @@ public class GridEditorView extends ViewPart {
 
 			private DelayedEventRunner eventRunner = null;
 
-			private DelayedEventRunner getEventRunner() {
-				if (eventRunner == null) {
+			private DelayedEventRunner getEventRunner()
+			{
+				if (eventRunner == null)
+				{
 					eventRunner = new DelayedEventRunner(delay);
 					eventRunner.start();
 				}
@@ -301,18 +344,21 @@ public class GridEditorView extends ViewPart {
 
 		}
 
-		static private class DelayedEventRunner extends Thread {
+		static private class DelayedEventRunner extends Thread
+		{
 
 			private final int delay;
 			private Runnable nextEvent = null;
 			private Long eventReceivedTime = null;
 
-			public DelayedEventRunner(int delay) {
+			public DelayedEventRunner(int delay)
+			{
 				this.delay = delay;
 				setDaemon(true);
 			}
 
-			synchronized public void setNextEvent(Runnable runnable) {
+			synchronized public void setNextEvent(Runnable runnable)
+			{
 				// store the time we received this
 				eventReceivedTime = new Date().getTime();
 
@@ -320,10 +366,14 @@ public class GridEditorView extends ViewPart {
 				nextEvent = runnable;
 			}
 
-			public void run() {
-				while (true) {
-					synchronized (this) {
-						if (nextEvent != null) {
+			public void run()
+			{
+				while (true)
+				{
+					synchronized (this)
+					{
+						if (nextEvent != null)
+						{
 							boolean isDelayUp = false;
 
 							final long currentTime = new Date().getTime();
@@ -334,17 +384,21 @@ public class GridEditorView extends ViewPart {
 							// have we passed the required waiting time?
 							isDelayUp = elapsedTime > delay;
 
-							if (isDelayUp) {
+							if (isDelayUp)
+							{
 								Display.getDefault().asyncExec(nextEvent);
 								// and clear the queue
 								nextEvent = null;
-							}	
+							}
 						}
 					}
 
-					try {
+					try
+					{
 						Thread.sleep(10);
-					} catch (InterruptedException e) {
+					}
+					catch (InterruptedException e)
+					{
 						// we can not do anything about it, let's ignore
 					}
 				}
@@ -367,7 +421,8 @@ public class GridEditorView extends ViewPart {
 	private RedoActionHandler myRedoAction;
 
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent)
+	{
 		GridEditorActionContext actionContext = new GridEditorActionContext(
 				myUndoSupport);
 		myActions = new GridEditorActionGroup(this, actionContext);
@@ -378,27 +433,29 @@ public class GridEditorView extends ViewPart {
 
 		IActionBars actionBars = getViewSite().getActionBars();
 		myActions.fillActionBars(actionBars);
-		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
-				myUndoAction);
-		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(),
-				myRedoAction);
+		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
+		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
 	}
 
 	@Override
-	public void dispose() {
+	public void dispose()
+	{
 		getSite().getWorkbenchWindow().getSelectionService()
 				.removeSelectionListener(getSelectionListener());
 		super.dispose();
 	}
 
-	private GriddableSeries extractGriddableSeries(ISelection selection) {
-		GriddableSeries res = null;
+	private GriddableWrapper extractGriddableSeries(ISelection selection)
+	{
+		GriddableWrapper res = null;
 
-		if (false == selection instanceof IStructuredSelection) {
+		if (false == selection instanceof IStructuredSelection)
+		{
 			return null;
 		}
 		IStructuredSelection structuredSelection = (IStructuredSelection) selection;
-		if (structuredSelection.isEmpty()) {
+		if (structuredSelection.isEmpty())
+		{
 			return null;
 		}
 		Object firstElement = structuredSelection.getFirstElement();
@@ -407,9 +464,11 @@ public class GridEditorView extends ViewPart {
 		// our
 		// data. if it isn't, see
 		// if it's a candidate for editing and collate a series of elements
-		if (firstElement instanceof EditableWrapper) {
+		if (firstElement instanceof EditableWrapper)
+		{
 			EditableWrapper wrapped = (EditableWrapper) firstElement;
-			if (wrapped.getEditableValue() instanceof GriddableSeriesMarker) {
+			if (wrapped.getEditableValue() instanceof GriddableSeriesMarker)
+			{
 				res = new GriddableWrapper(wrapped);
 			}
 		}
@@ -417,14 +476,18 @@ public class GridEditorView extends ViewPart {
 		return res;
 	}
 
-	private ISelectionListener getSelectionListener() {
-		if (mySelectionListener == null) {
-			mySelectionListener = new ISelectionListener() {
+	private ISelectionListener getSelectionListener()
+	{
+		if (mySelectionListener == null)
+		{
+			mySelectionListener = new ISelectionListener()
+			{
 
 				@Override
-				public void selectionChanged(IWorkbenchPart part,
-						ISelection selection) {
-					if (part == GridEditorView.this) {
+				public void selectionChanged(IWorkbenchPart part, ISelection selection)
+				{
+					if (part == GridEditorView.this)
+					{
 						// ignore, we are going to handle our own selection
 						// ourselves
 						return;
@@ -436,23 +499,48 @@ public class GridEditorView extends ViewPart {
 		return mySelectionListener;
 	}
 
-	public GridEditorUI getUI() {
+	public GridEditorUI getUI()
+	{
 		return myUI;
 	}
 
-	private void handleWorkspaceSelectionChanged(ISelection actualSelection) {
-		if (myUI.isDisposed()) {
+	private void handleWorkspaceSelectionChanged(ISelection actualSelection)
+	{
+		if (myUI.isDisposed())
+		{
 			return;
 		}
-		GriddableSeries input = extractGriddableSeries(actualSelection);
+		GriddableWrapper input = extractGriddableSeries(actualSelection);
 
-		if (input != null) {
-			myUI.inputSeriesChanged(input);
+		if (input != null)
+		{
+
+			// yes, but what are we currently looking at?
+			GriddableWrapper existingInput = (GriddableWrapper) myUI.getTable()
+					.getTableViewer().getInput();
+
+			// see if we're currently looking at something
+			EditableWrapper editable = null;
+			if (existingInput != null)
+			{
+				editable = existingInput.getWrapper();
+			}
+
+			// are they the same?
+			if (input.getWrapper() == editable)
+			{
+				// ignore, we're already looking at it
+			}
+			else
+			{
+				myUI.inputSeriesChanged(input);
+			}
 		}
 	}
 
 	@Override
-	public void init(IViewSite site) throws PartInitException {
+	public void init(IViewSite site) throws PartInitException
+	{
 		super.init(site);
 		ISelectionService selectionService = site.getWorkbenchWindow()
 				.getSelectionService();
@@ -461,7 +549,8 @@ public class GridEditorView extends ViewPart {
 		initUndoSupport();
 	}
 
-	private void initUndoSupport() {
+	private void initUndoSupport()
+	{
 		myUndoSupport = new GridEditorUndoSupport(PlatformUI.getWorkbench()
 				.getOperationSupport().getOperationHistory());
 		// set up action handlers that operate on the current context
@@ -471,12 +560,15 @@ public class GridEditorView extends ViewPart {
 				.getUndoContext());
 	}
 
-	public void refreshUndoContext() {
-		if (myUndoAction != null) {
+	public void refreshUndoContext()
+	{
+		if (myUndoAction != null)
+		{
 			myUndoAction.dispose();
 			myUndoAction = null;
 		}
-		if (myRedoAction != null) {
+		if (myRedoAction != null)
+		{
 			myRedoAction.dispose();
 			myRedoAction = null;
 		}
@@ -486,15 +578,14 @@ public class GridEditorView extends ViewPart {
 		myRedoAction = new RedoActionHandler(this.getSite(), myUndoSupport
 				.getUndoContext());
 		IActionBars actionBars = getViewSite().getActionBars();
-		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(),
-				myUndoAction);
-		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(),
-				myRedoAction);
+		actionBars.setGlobalActionHandler(ActionFactory.UNDO.getId(), myUndoAction);
+		actionBars.setGlobalActionHandler(ActionFactory.REDO.getId(), myRedoAction);
 		actionBars.updateActionBars();
 	}
 
 	@Override
-	public void setFocus() {
+	public void setFocus()
+	{
 		myUI.forceTableFocus();
 	}
 

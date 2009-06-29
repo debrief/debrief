@@ -96,6 +96,7 @@ public class GridEditorUI extends Composite {
 		boolean shown = showChart(tableColumn);
 		myChart.setVisible(shown);
 		refreshSashForm();
+		myChart.forceRedraw();
 	}
 
 	private void refreshSashForm() {
