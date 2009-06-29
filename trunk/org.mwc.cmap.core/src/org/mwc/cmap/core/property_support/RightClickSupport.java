@@ -30,6 +30,7 @@ import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Editable.EditorType;
@@ -38,8 +39,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
-public class RightClickSupport
-{
+public class RightClickSupport {
 
 	private static final String MULTIPLE_ITEMS_STR = "Multiple items";
 	/**
@@ -51,11 +51,10 @@ public class RightClickSupport
 	 * add a right-click generator item to the list we manage
 	 * 
 	 * @param generator
-	 *          the generator to add...
+	 *            the generator to add...
 	 */
 	public static void addRightClickGenerator(
-			RightClickContextItemGenerator generator)
-	{
+			RightClickContextItemGenerator generator) {
 		if (_additionalRightClickItems == null)
 			_additionalRightClickItems = new Vector<RightClickContextItemGenerator>(
 					1, 1);
@@ -65,22 +64,21 @@ public class RightClickSupport
 
 	/**
 	 * @param manager
-	 *          where we add our items to
+	 *            where we add our items to
 	 * @param editables
-	 *          the selected items
+	 *            the selected items
 	 * @param topLevelLayers
-	 *          the top-level layers that contain our elements (it's these that
-	 *          get updated)
+	 *            the top-level layers that contain our elements (it's these
+	 *            that get updated)
 	 * @param parentLayers
-	 *          the immediate parents of our items
+	 *            the immediate parents of our items
 	 * @param theLayers
-	 *          the overall layers object
+	 *            the overall layers object
 	 * @param hideClipboardOperations
 	 */
 	static public void getDropdownListFor(IMenuManager manager,
 			Editable[] editables, Layer[] topLevelLayers, Layer[] parentLayers,
-			final Layers theLayers, boolean hideClipboardOperations)
-	{
+			final Layers theLayers, boolean hideClipboardOperations) {
 
 		// sort out the top level layer, if we have one
 		Layer theTopLayer = null;
@@ -89,29 +87,24 @@ public class RightClickSupport
 				theTopLayer = topLevelLayers[0];
 
 		// and now the edit-able bits
-		if (editables.length > 0)
-		{
+		if (editables.length > 0) {
 			// first the parameters
 			MenuManager subMenu = null;
 			PropertyDescriptor[] commonProps = getCommonPropertiesFor(editables);
-			for (int i = 0; i < commonProps.length; i++)
-			{
+			for (int i = 0; i < commonProps.length; i++) {
 				PropertyDescriptor thisP = commonProps[i];
 
 				// start off with the booleans
-				if (supportsBooleanEditor(thisP))
-				{
+				if (supportsBooleanEditor(thisP)) {
 					// generate boolean editors in the sub-menu
 					subMenu = generateBooleanEditorFor(manager, subMenu, thisP,
 							editables, theLayers, theTopLayer);
-				} else
-				{
+				} else {
 					// now the drop-down lists
-					if (supportsListEditor(thisP))
-					{
+					if (supportsListEditor(thisP)) {
 						// generate boolean editors in the sub-menu
-						subMenu = generateListEditorFor(manager, subMenu, thisP, editables,
-								theLayers, theTopLayer);
+						subMenu = generateListEditorFor(manager, subMenu,
+								thisP, editables, theLayers, theTopLayer);
 					}
 				}
 
@@ -120,17 +113,16 @@ public class RightClickSupport
 			// hmm, have a go at methods for this item
 			// ok, try the methods
 			MethodDescriptor[] meths = getCommonMethodsFor(editables);
-			if (meths != null)
-			{
-				for (int i = 0; i < meths.length; i++)
-				{
+			if (meths != null) {
+				for (int i = 0; i < meths.length; i++) {
 					final Layer myTopLayer = theTopLayer;
 
 					final MethodDescriptor thisMethD = meths[i];
 
 					// create button for this method
-					Action doThisAction = new SubjectMethod(thisMethD.getDisplayName(),
-							editables, thisMethD.getMethod(), myTopLayer, theLayers);
+					Action doThisAction = new SubjectMethod(thisMethD
+							.getDisplayName(), editables,
+							thisMethD.getMethod(), myTopLayer, theLayers);
 
 					// ok - add to the list.
 					manager.add(doThisAction);
@@ -139,15 +131,13 @@ public class RightClickSupport
 
 			// hmm, now do the same for the undoable methods
 			MWC.GUI.Tools.SubjectAction[] actions = getUndoableActionsFor(editables);
-			if (actions != null)
-			{
-				for (int i = 0; i < actions.length; i++)
-				{
+			if (actions != null) {
+				for (int i = 0; i < actions.length; i++) {
 					final MWC.GUI.Tools.SubjectAction thisMethD = actions[i];
 
 					// create button for this method
 					IAction doThisAction = generateUndoableActionFor(thisMethD,
-					editables, theLayers, theTopLayer);
+							editables, theLayers, theTopLayer);
 
 					// ok - add to the list.
 					manager.add(doThisAction);
@@ -158,18 +148,17 @@ public class RightClickSupport
 
 		Clipboard theClipboard = CorePlugin.getDefault().getClipboard();
 
-		// see if we're still looking at the parent element (we only show clipboard
+		// see if we're still looking at the parent element (we only show
+		// clipboard
 		// operations for item clicked on)
-		if (!hideClipboardOperations)
-		{
+		if (!hideClipboardOperations) {
 			// hey, also see if we're going to do a cut/paste
 			RightClickCutCopyAdaptor.getDropdownListFor(manager, editables,
 					topLevelLayers, parentLayers, theLayers, theClipboard);
 
 			// what about paste?
 			Editable selectedItem = null;
-			if (editables.length == 1)
-			{
+			if (editables.length == 1) {
 				selectedItem = editables[0];
 			}
 			RightClickPasteAdaptor.getDropdownListFor(manager, selectedItem,
@@ -179,11 +168,9 @@ public class RightClickSupport
 		}
 
 		// hmm, do we have any right-click generators?
-		if (_additionalRightClickItems != null)
-		{
+		if (_additionalRightClickItems != null) {
 			for (Iterator<RightClickContextItemGenerator> thisItem = _additionalRightClickItems
-					.iterator(); thisItem.hasNext();)
-			{
+					.iterator(); thisItem.hasNext();) {
 				RightClickContextItemGenerator thisGen = (RightClickContextItemGenerator) thisItem
 						.next();
 				thisGen.generate(manager, theLayers, topLevelLayers, editables);
@@ -192,38 +179,34 @@ public class RightClickSupport
 	}
 
 	/** have a look at the supplied editors, find which properties are common */
-	protected static MethodDescriptor[] getCommonMethodsFor(Editable[] editables)
-	{
+	protected static MethodDescriptor[] getCommonMethodsFor(Editable[] editables) {
 		MethodDescriptor[] res = null;
 		MethodDescriptor[] demo = new MethodDescriptor[] {};
 
 		// right, get the first set of properties
-		if (editables.length > 0)
-		{
+		if (editables.length > 0) {
 			Editable first = editables[0];
 			res = first.getInfo().getMethodDescriptors();
 
 			// only continue if there are any methods to compare against
-			if (res != null)
-			{
+			if (res != null) {
 				// right, are there any more?
-				if (editables.length > 1)
-				{
+				if (editables.length > 1) {
 					// pass through the others, finding the common ground
-					for (int cnt = 1; cnt < editables.length; cnt++)
-					{
+					for (int cnt = 1; cnt < editables.length; cnt++) {
 						Editable thisE = editables[cnt];
 
 						// get its props
 						EditorType thisEditor = thisE.getInfo();
 
 						// do we have an editor?
-						if (thisEditor != null)
-						{
-							MethodDescriptor[] newSet = thisEditor.getMethodDescriptors();
+						if (thisEditor != null) {
+							MethodDescriptor[] newSet = thisEditor
+									.getMethodDescriptors();
 
 							// find the common ones
-							res = (MethodDescriptor[]) getIntersectionFor(res, newSet, demo);
+							res = (MethodDescriptor[]) getIntersectionFor(res,
+									newSet, demo);
 						}
 					}
 				}
@@ -232,40 +215,37 @@ public class RightClickSupport
 
 		return res;
 	}
-	
+
 	/** have a look at the supplied editors, find which properties are common */
-	protected static MWC.GUI.Tools.SubjectAction[] getUndoableActionsFor(Editable[] editables)
-	{
+	protected static MWC.GUI.Tools.SubjectAction[] getUndoableActionsFor(
+			Editable[] editables) {
 		MWC.GUI.Tools.SubjectAction[] res = null;
 		MWC.GUI.Tools.SubjectAction[] demo = new MWC.GUI.Tools.SubjectAction[] {};
 
 		// right, get the first set of properties
-		if (editables.length > 0)
-		{
+		if (editables.length > 0) {
 			Editable first = editables[0];
 			res = first.getInfo().getUndoableActions();
 
 			// only continue if there are any methods to compare against
-			if (res != null)
-			{
+			if (res != null) {
 				// right, are there any more?
-				if (editables.length > 1)
-				{
+				if (editables.length > 1) {
 					// pass through the others, finding the common ground
-					for (int cnt = 1; cnt < editables.length; cnt++)
-					{
+					for (int cnt = 1; cnt < editables.length; cnt++) {
 						Editable thisE = editables[cnt];
 
 						// get its props
 						EditorType thisEditor = thisE.getInfo();
 
 						// do we have an editor?
-						if (thisEditor != null)
-						{
-							MWC.GUI.Tools.SubjectAction[] newSet = thisEditor.getUndoableActions();
+						if (thisEditor != null) {
+							MWC.GUI.Tools.SubjectAction[] newSet = thisEditor
+									.getUndoableActions();
 
 							// find the common ones
-							res = (MWC.GUI.Tools.SubjectAction[]) getIntersectionFor(res, newSet, demo);
+							res = (MWC.GUI.Tools.SubjectAction[]) getIntersectionFor(
+									res, newSet, demo);
 						}
 					}
 				}
@@ -276,18 +256,14 @@ public class RightClickSupport
 
 	private static MWC.GUI.Tools.SubjectAction[] getIntersectionFor(
 			MWC.GUI.Tools.SubjectAction[] a, MWC.GUI.Tools.SubjectAction[] b,
-			MWC.GUI.Tools.SubjectAction[] demo)
-	{
+			MWC.GUI.Tools.SubjectAction[] demo) {
 		Vector<MWC.GUI.Tools.SubjectAction> res = new Vector<MWC.GUI.Tools.SubjectAction>();
 
-		for (int cnta = 0; cnta < a.length; cnta++)
-		{
+		for (int cnta = 0; cnta < a.length; cnta++) {
 			MWC.GUI.Tools.SubjectAction thisP = a[cnta];
-			for (int cntb = 0; cntb < b.length; cntb++)
-			{
+			for (int cntb = 0; cntb < b.length; cntb++) {
 				MWC.GUI.Tools.SubjectAction thatP = b[cntb];
-				if (thisP.toString().equals(thatP.toString()))
-				{
+				if (thisP.toString().equals(thatP.toString())) {
 					res.add(thisP);
 				}
 			}
@@ -297,37 +273,33 @@ public class RightClickSupport
 
 	/** have a look at the supplied editors, find which properties are common */
 	protected static PropertyDescriptor[] getCommonPropertiesFor(
-			Editable[] editables)
-	{
+			Editable[] editables) {
 		PropertyDescriptor[] res = null;
 		PropertyDescriptor[] demo = new PropertyDescriptor[] {};
 		// right, get the first set of properties
-		if (editables.length > 0)
-		{
+		if (editables.length > 0) {
 			Editable first = editables[0];
 			res = first.getInfo().getPropertyDescriptors();
 
 			// only continue if there are any property descriptors
-			if (res != null)
-			{
+			if (res != null) {
 				// right, are there any more?
-				if (editables.length > 1)
-				{
+				if (editables.length > 1) {
 					// pass through the others, finding the common ground
-					for (int cnt = 1; cnt < editables.length; cnt++)
-					{
+					for (int cnt = 1; cnt < editables.length; cnt++) {
 						Editable thisE = editables[cnt];
 
 						// get its props
 						EditorType thisEditor = thisE.getInfo();
 
 						// do we have an editor?
-						if (thisEditor != null)
-						{
-							PropertyDescriptor[] newSet = thisEditor.getPropertyDescriptors();
+						if (thisEditor != null) {
+							PropertyDescriptor[] newSet = thisEditor
+									.getPropertyDescriptors();
 
 							// find the common ones
-							res = (PropertyDescriptor[]) getIntersectionFor(res, newSet, demo);
+							res = (PropertyDescriptor[]) getIntersectionFor(
+									res, newSet, demo);
 						}
 					}
 				}
@@ -341,24 +313,20 @@ public class RightClickSupport
 	 * have a look at the two arrays, and find the common elements (brute force)
 	 * 
 	 * @param a
-	 *          first array
+	 *            first array
 	 * @param b
-	 *          second array
+	 *            second array
 	 * @return the common elements
 	 */
-	protected static MethodDescriptor[] getIntersectionFor(MethodDescriptor[] a,
-			MethodDescriptor[] b, MethodDescriptor[] demo)
-	{
+	protected static MethodDescriptor[] getIntersectionFor(
+			MethodDescriptor[] a, MethodDescriptor[] b, MethodDescriptor[] demo) {
 		Vector<MethodDescriptor> res = new Vector<MethodDescriptor>();
 
-		for (int cnta = 0; cnta < a.length; cnta++)
-		{
+		for (int cnta = 0; cnta < a.length; cnta++) {
 			MethodDescriptor thisP = a[cnta];
-			for (int cntb = 0; cntb < b.length; cntb++)
-			{
+			for (int cntb = 0; cntb < b.length; cntb++) {
 				MethodDescriptor thatP = b[cntb];
-				if (thisP.getDisplayName().equals(thatP.getDisplayName()))
-				{
+				if (thisP.getDisplayName().equals(thatP.getDisplayName())) {
 					res.add(thisP);
 				}
 			}
@@ -370,24 +338,21 @@ public class RightClickSupport
 	 * have a look at the two arrays, and find the common elements (brute force)
 	 * 
 	 * @param a
-	 *          first array
+	 *            first array
 	 * @param b
-	 *          second array
+	 *            second array
 	 * @return the common elements
 	 */
 	protected static PropertyDescriptor[] getIntersectionFor(
-			PropertyDescriptor[] a, PropertyDescriptor[] b, PropertyDescriptor[] demo)
-	{
+			PropertyDescriptor[] a, PropertyDescriptor[] b,
+			PropertyDescriptor[] demo) {
 		Vector<PropertyDescriptor> res = new Vector<PropertyDescriptor>();
 
-		for (int cnta = 0; cnta < a.length; cnta++)
-		{
+		for (int cnta = 0; cnta < a.length; cnta++) {
 			PropertyDescriptor thisP = a[cnta];
-			for (int cntb = 0; cntb < b.length; cntb++)
-			{
+			for (int cntb = 0; cntb < b.length; cntb++) {
 				PropertyDescriptor thatP = b[cntb];
-				if (thisP.equals(thatP))
-				{
+				if (thisP.equals(thatP)) {
 					res.add(thisP);
 				}
 			}
@@ -396,13 +361,12 @@ public class RightClickSupport
 	}
 
 	/**
-	 * embedded class that encapsulates the information we need to fire an action.
-	 * It was really only refactored to aid debugging.
+	 * embedded class that encapsulates the information we need to fire an
+	 * action. It was really only refactored to aid debugging.
 	 * 
 	 * @author ian.mayo
 	 */
-	private static class SubjectMethod extends Action
-	{
+	private static class SubjectMethod extends Action {
 		private Editable[] _subjects;
 
 		private Method _method;
@@ -413,19 +377,18 @@ public class RightClickSupport
 
 		/**
 		 * @param title
-		 *          what to call the action
+		 *            what to call the action
 		 * @param subject
-		 *          the thing we're operating upon
+		 *            the thing we're operating upon
 		 * @param method
-		 *          what we're going to run
+		 *            what we're going to run
 		 * @param topLayer
-		 *          the layer to update after the action is complete
+		 *            the layer to update after the action is complete
 		 * @param theLayers
-		 *          the host for the target layer
+		 *            the host for the target layer
 		 */
 		public SubjectMethod(String title, Editable[] subject, Method method,
-				Layer topLayer, Layers theLayers)
-		{
+				Layer topLayer, Layers theLayers) {
 			super(title);
 			_subjects = subject;
 			_method = method;
@@ -433,42 +396,34 @@ public class RightClickSupport
 			_theLayers = theLayers;
 		}
 
-		public void run()
-		{
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
-			{
+		public void run() {
+			for (int cnt = 0; cnt < _subjects.length; cnt++) {
 				Editable thisSubject = _subjects[cnt];
-				try
-				{
+				try {
 					_method.invoke(thisSubject, new Object[0]);
-					
-				} catch (IllegalArgumentException e)
-				{
+
+				} catch (IllegalArgumentException e) {
 					CorePlugin.logError(Status.ERROR,
 							"whilst firing method from right-click", e);
-				} catch (IllegalAccessException e)
-				{
+				} catch (IllegalAccessException e) {
 					CorePlugin.logError(Status.ERROR,
 							"whilst firing method from right-click", e);
-				} catch (InvocationTargetException e)
-				{
+				} catch (InvocationTargetException e) {
 					CorePlugin.logError(Status.ERROR,
 							"whilst firing method from right-click", e);
 				}
 			}
 
-			// hmm, the method may have actually changed the data, we need to find out if it 
+			// hmm, the method may have actually changed the data, we need to
+			// find out if it
 			// needs an extend
-			if(_method.isAnnotationPresent(FireExtended.class))
-			{
+			if (_method.isAnnotationPresent(FireExtended.class)) {
 				_theLayers.fireExtended(null, _topLayer);
-			}
-			else
-			{
+			} else {
 				// hey, let's do a redraw aswell...
 				_theLayers.fireModified(_topLayer);
 			}
-			
+
 		}
 	}
 
@@ -479,8 +434,7 @@ public class RightClickSupport
 	 * @return yes/no
 	 */
 	@SuppressWarnings("unchecked")
-	static private boolean supportsBooleanEditor(PropertyDescriptor thisP)
-	{
+	static private boolean supportsBooleanEditor(PropertyDescriptor thisP) {
 		final boolean res;
 
 		// get the prop type
@@ -488,11 +442,9 @@ public class RightClickSupport
 		Class boolClass = Boolean.class;
 
 		// is it boolean?
-		if ((thisType == boolClass) || (thisType.equals(boolean.class)))
-		{
+		if ((thisType == boolClass) || (thisType.equals(boolean.class))) {
 			res = true;
-		} else
-		{
+		} else {
 			res = false;
 		}
 
@@ -506,8 +458,7 @@ public class RightClickSupport
 	 * @return yes/no
 	 */
 	@SuppressWarnings("unchecked")
-	static private boolean supportsListEditor(PropertyDescriptor thisP)
-	{
+	static private boolean supportsListEditor(PropertyDescriptor thisP) {
 		boolean res = false;
 
 		// find out the type of the editor
@@ -519,31 +470,26 @@ public class RightClickSupport
 
 		PropertyEditor pe = null;
 		// try to create an editor for this class
-		try
-		{
+		try {
 			if (c != null)
 				pe = (PropertyEditor) c.newInstance();
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
 
 		// did it work?
-		if (pe == null)
-		{
+		if (pe == null) {
 			// try to find an editor for this through our manager
 			pe = PropertyEditorManager.findEditor(cl);
 		}
 
 		// have we managed to create an editor?
-		if (pe != null)
-		{
+		if (pe != null) {
 			// retrieve the tags
 			String[] tags = pe.getTags();
 
 			// are there any tags for this class?
-			if (tags != null)
-			{
+			if (tags != null) {
 				res = true;
 			}
 		}
@@ -554,37 +500,31 @@ public class RightClickSupport
 	static private MenuManager generateBooleanEditorFor(
 			final IMenuManager manager, MenuManager subMenu,
 			final PropertyDescriptor thisP, final Editable[] editables,
-			final Layers theLayers, final Layer topLevelLayer)
-	{
+			final Layers theLayers, final Layer topLevelLayer) {
 
 		boolean currentVal = false;
 		final Method getter = thisP.getReadMethod();
 		final Method setter = thisP.getWriteMethod();
-		try
-		{
+		try {
 			final Boolean valNow = (Boolean) getter.invoke(editables[0],
 					(Object[]) null);
 			currentVal = valNow.booleanValue();
-		} catch (Exception e)
-		{
-			CorePlugin.logError(Status.ERROR, "Failed to retrieve old value for:"
-					+ editables[0].getName(), e);
+		} catch (Exception e) {
+			CorePlugin.logError(Status.ERROR,
+					"Failed to retrieve old value for:"
+							+ editables[0].getName(), e);
 		}
 
 		IAction changeThis = new Action(thisP.getDisplayName(),
-				IAction.AS_CHECK_BOX)
-		{
-			public void run()
-			{
-				try
-				{
-					ListPropertyAction la = new ListPropertyAction(
-							thisP.getDisplayName(), editables, getter, setter, new Boolean(
-									isChecked()), theLayers, topLevelLayer);
+				IAction.AS_CHECK_BOX) {
+			public void run() {
+				try {
+					ListPropertyAction la = new ListPropertyAction(thisP
+							.getDisplayName(), editables, getter, setter,
+							new Boolean(isChecked()), theLayers, topLevelLayer);
 
 					CorePlugin.run(la);
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					CorePlugin.logError(IStatus.INFO,
 							"While executing boolean editor for:" + thisP, e);
 				}
@@ -594,8 +534,7 @@ public class RightClickSupport
 		changeThis.setToolTipText(thisP.getShortDescription());
 
 		// is our sub-menu already created?
-		if (subMenu == null)
-		{
+		if (subMenu == null) {
 			String nameStr;
 			if (editables.length > 1)
 				nameStr = MULTIPLE_ITEMS_STR;
@@ -612,38 +551,34 @@ public class RightClickSupport
 	}
 
 	static private IAction generateUndoableActionFor(
-			final MWC.GUI.Tools.SubjectAction theAction, final Editable[] editables,
-			final Layers theLayers, final Layer topLevelLayer)
-	{
+			final MWC.GUI.Tools.SubjectAction theAction,
+			final Editable[] editables, final Layers theLayers,
+			final Layer topLevelLayer) {
 
 		IAction changeThis = new Action(theAction.toString(),
-				IAction.AS_PUSH_BUTTON)
-		{
-			public void run()
-			{
-				try
-				{
-					AbstractOperation la = new UndoableAction(
-							theAction.toString(), editables, theAction, theLayers, topLevelLayer);
+				IAction.AS_PUSH_BUTTON) {
+			public void run() {
+				try {
+					AbstractOperation la = new UndoableAction(theAction
+							.toString(), editables, theAction, theLayers,
+							topLevelLayer);
 
 					CorePlugin.run(la);
-				} catch (Exception e)
-				{
+				} catch (Exception e) {
 					CorePlugin.logError(IStatus.INFO,
-							"While executing undoable operations for for:" + theAction.toString(), e);
+							"While executing undoable operations for for:"
+									+ theAction.toString(), e);
 				}
 			}
 		};
 		return changeThis;
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
 	static private MenuManager generateListEditorFor(IMenuManager manager,
 			MenuManager subMenu, final PropertyDescriptor thisP,
 			final Editable[] editables, final Layers theLayers,
-			final Layer topLevelLayer)
-	{
+			final Layer topLevelLayer) {
 
 		// find out the type of the editor
 		Method m = thisP.getReadMethod();
@@ -654,18 +589,15 @@ public class RightClickSupport
 
 		PropertyEditor pe = null;
 		// try to create an editor for this class
-		try
-		{
+		try {
 			if (c != null)
 				pe = (PropertyEditor) c.newInstance();
-		} catch (Exception e)
-		{
+		} catch (Exception e) {
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
 
 		// did it work?
-		if (pe == null)
-		{
+		if (pe == null) {
 			// try to find an editor for this through our manager
 			pe = PropertyEditorManager.findEditor(cl);
 		}
@@ -674,8 +606,7 @@ public class RightClickSupport
 		String[] tags = pe.getTags();
 
 		// are there any tags for this class?
-		if (tags != null)
-		{
+		if (tags != null) {
 			// create a drop-down list
 			MenuManager thisChoice = new MenuManager(thisP.getDisplayName());
 
@@ -684,11 +615,9 @@ public class RightClickSupport
 
 			// get the current value
 			Object val = null;
-			try
-			{
+			try {
 				val = getter.invoke(editables[0], (Object[]) null);
-			} catch (Exception e)
-			{
+			} catch (Exception e) {
 				MWC.Utilities.Errors.Trace.trace(e);
 			}
 			pe.setValue(val);
@@ -697,40 +626,35 @@ public class RightClickSupport
 			String currentValue = pe.getAsText();
 
 			// and now a drop-down item for each options
-			for (int j = 0; j < tags.length; j++)
-			{
+			for (int j = 0; j < tags.length; j++) {
 				final String thisTag = tags[j];
 				pe.setAsText(thisTag);
 				final Object thisValue = pe.getValue();
 
 				// create the item
-				IAction thisA = new Action(thisTag, IAction.AS_RADIO_BUTTON)
-				{
-					public void run()
-					{
-						try
-						{
+				IAction thisA = new Action(thisTag, IAction.AS_RADIO_BUTTON) {
+					public void run() {
+						try {
 							Method setter = thisP.getWriteMethod();
 
 							// ok, place the change in the action
-							ListPropertyAction la = new ListPropertyAction(thisP
-									.getDisplayName(), editables, getter, setter, thisValue,
-									theLayers, topLevelLayer);
+							ListPropertyAction la = new ListPropertyAction(
+									thisP.getDisplayName(), editables, getter,
+									setter, thisValue, theLayers, topLevelLayer);
 
 							// and add it to the history
 							CorePlugin.run(la);
-						} catch (Exception e)
-						{
+						} catch (Exception e) {
 							CorePlugin.logError(IStatus.INFO,
-									"While executing select editor for:" + thisP, e);
+									"While executing select editor for:"
+											+ thisP, e);
 						}
 					};
 
 				};
 
 				// is this the current one?
-				if (thisTag.equals(currentValue))
-				{
+				if (thisTag.equals(currentValue)) {
 					thisA.setChecked(true);
 				}
 
@@ -740,8 +664,7 @@ public class RightClickSupport
 			}
 
 			// is our sub-menu already created?
-			if (subMenu == null)
-			{
+			if (subMenu == null) {
 				String nameStr;
 				if (editables.length > 1)
 					nameStr = MULTIPLE_ITEMS_STR;
@@ -760,13 +683,12 @@ public class RightClickSupport
 	}
 
 	/**
-	 * template provide by support units that want to add items to the right-click
-	 * menu when something is selected
+	 * template provide by support units that want to add items to the
+	 * right-click menu when something is selected
 	 * 
 	 * @author ian.mayo
 	 */
-	public static interface RightClickContextItemGenerator
-	{
+	public static interface RightClickContextItemGenerator {
 		public void generate(IMenuManager parent, Layers theLayers,
 				Layer[] parentLayers, Editable[] subjects);
 	}
@@ -776,8 +698,7 @@ public class RightClickSupport
 	 * 
 	 * @author ian.mayo
 	 */
-	private static class ListPropertyAction extends AbstractOperation
-	{
+	private static class ListPropertyAction extends AbstractOperation {
 		private Object _oldValue;
 
 		private final Method _setter;
@@ -791,9 +712,9 @@ public class RightClickSupport
 		private final Object _newValue;
 
 		public ListPropertyAction(final String propertyName,
-				final Editable[] editable, final Method getter, final Method setter,
-				final Object newValue, final Layers layers, final Layer parentLayer)
-		{
+				final Editable[] editable, final Method getter,
+				final Method setter, final Object newValue,
+				final Layers layers, final Layer parentLayer) {
 			super(propertyName + " for multiple items");
 
 			_setter = setter;
@@ -802,83 +723,77 @@ public class RightClickSupport
 			_subjects = editable;
 			_newValue = newValue;
 
-			try
-			{
+			try {
 				_oldValue = getter.invoke(editable[0], (Object[]) null);
-			} catch (Exception e)
-			{
-				CorePlugin.logError(Status.ERROR, "Failed to retrieve old value for:"
-						+ "Multiple items starting with:" + _subjects[0].getName(), e);
+			} catch (Exception e) {
+				CorePlugin.logError(Status.ERROR,
+						"Failed to retrieve old value for:"
+								+ "Multiple items starting with:"
+								+ _subjects[0].getName(), e);
 			}
 
 			// put in the global context, for some reason
 			super.addContext(CorePlugin.CMAP_CONTEXT);
 		}
 
-		private IStatus doIt(Object theValue)
-		{
+		private IStatus doIt(Object theValue) {
 			IStatus res = Status.OK_STATUS;
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
-			{
+			for (int cnt = 0; cnt < _subjects.length; cnt++) {
 				Editable thisSubject = _subjects[cnt];
-				try
-				{
+				try {
 					_setter.invoke(thisSubject, new Object[] { theValue });
-				} catch (InvocationTargetException e)
-				{
+				} catch (InvocationTargetException e) {
 					CorePlugin.logError(Status.ERROR, "Setter call failed:"
 							+ thisSubject.getName() + " Error was:"
-							+ e.getTargetException().getMessage(), e.getTargetException());
+							+ e.getTargetException().getMessage(), e
+							.getTargetException());
 					res = null;
-				} catch (IllegalArgumentException e)
-				{
-					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
-							+ thisSubject.getName(), e);
+				} catch (IllegalArgumentException e) {
+					CorePlugin
+							.logError(Status.ERROR, "Wrong parameters pass to:"
+									+ thisSubject.getName(), e);
 					res = null;
-				} catch (IllegalAccessException e)
-				{
-					CorePlugin.logError(Status.ERROR, "Illegal access problem for:"
-							+ thisSubject.getName(), e);
+				} catch (IllegalAccessException e) {
+					CorePlugin.logError(Status.ERROR,
+							"Illegal access problem for:"
+									+ thisSubject.getName(), e);
 					res = null;
 				}
 			}
 
-			// and tell everybody  (we only need to do this if the previous call works,
+			// and tell everybody (we only need to do this if the previous call
+			// works,
 			// if an exception is thrown we needn't worry about the update
 			fireUpdate();
 
 			return res;
-			
+
 		}
-		
+
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+				throws ExecutionException {
 			return doIt(_newValue);
 		}
 
 		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+				throws ExecutionException {
 			return doIt(_newValue);
 		}
 
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+				throws ExecutionException {
 			return doIt(_oldValue);
 		}
 
-		private void fireUpdate()
-		{
-			// hmm, the method may have actually changed the data, we need to find out if it 
+		private void fireUpdate() {
+			// hmm, the method may have actually changed the data, we need to
+			// find out if it
 			// needs an extend
-			if(_setter.isAnnotationPresent(FireExtended.class))
-			{
+			if (_setter.isAnnotationPresent(FireExtended.class)) {
 				_layers.fireExtended(null, _parentLayer);
-			}
-			else
-			{
+			} else if (_setter.isAnnotationPresent(FireReformatted.class)) {
+				_layers.fireReformatted(_parentLayer);
+			} else {
 				// hey, let's do a redraw aswell...
 				_layers.fireModified(_parentLayer);
 			}
@@ -891,8 +806,7 @@ public class RightClickSupport
 	 * 
 	 * @author ian.mayo
 	 */
-	public static class UndoableAction extends AbstractOperation
-	{
+	public static class UndoableAction extends AbstractOperation {
 		private final SubjectAction _action;
 
 		private final Layers _layers;
@@ -903,8 +817,7 @@ public class RightClickSupport
 
 		public UndoableAction(final String propertyName,
 				final Editable[] editable, final SubjectAction action,
-				final Layers layers, final Layer parentLayer)
-		{
+				final Layers layers, final Layer parentLayer) {
 			super(propertyName + " for multiple items");
 			_layers = layers;
 			_action = action;
@@ -915,20 +828,17 @@ public class RightClickSupport
 		}
 
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+				throws ExecutionException {
 			IStatus res = Status.OK_STATUS;
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
-			{
+			for (int cnt = 0; cnt < _subjects.length; cnt++) {
 				Editable thisSubject = _subjects[cnt];
-				try
-				{
+				try {
 					_action.execute(thisSubject);
 
-				} catch (IllegalArgumentException e)
-				{
-					CorePlugin.logError(Status.ERROR, "Wrong parameters pass to:"
-							+ thisSubject.getName(), e);
+				} catch (IllegalArgumentException e) {
+					CorePlugin
+							.logError(Status.ERROR, "Wrong parameters pass to:"
+									+ thisSubject.getName(), e);
 					res = null;
 				}
 			}
@@ -939,19 +849,16 @@ public class RightClickSupport
 		}
 
 		public IStatus redo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+				throws ExecutionException {
 			IStatus res = Status.OK_STATUS;
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
-			{
+			for (int cnt = 0; cnt < _subjects.length; cnt++) {
 				Editable thisSubject = _subjects[cnt];
-				try
-				{
+				try {
 					_action.execute(thisSubject);
-				} catch (Exception e)
-				{
-					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
-							+ thisSubject.getName(), e);
+				} catch (Exception e) {
+					CorePlugin.logError(Status.ERROR,
+							"Failed to set new value for:"
+									+ thisSubject.getName(), e);
 					res = null;
 				}
 			}
@@ -963,19 +870,16 @@ public class RightClickSupport
 		}
 
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
-				throws ExecutionException
-		{
+				throws ExecutionException {
 			IStatus res = Status.OK_STATUS;
-			for (int cnt = 0; cnt < _subjects.length; cnt++)
-			{
+			for (int cnt = 0; cnt < _subjects.length; cnt++) {
 				Editable thisSubject = _subjects[cnt];
-				try
-				{
+				try {
 					_action.undo(thisSubject);
-				} catch (Exception e)
-				{
-					CorePlugin.logError(Status.ERROR, "Failed to set new value for:"
-							+ thisSubject.getName(), e);
+				} catch (Exception e) {
+					CorePlugin.logError(Status.ERROR,
+							"Failed to set new value for:"
+									+ thisSubject.getName(), e);
 					res = null;
 				}
 			}
@@ -985,30 +889,24 @@ public class RightClickSupport
 			return res;
 		}
 
-		private void fireUpdate()
-		{
-			_layers.fireExtended(null,_parentLayer);
+		private void fireUpdate() {
+			_layers.fireExtended(null, _parentLayer);
 		}
 
 	}
 
-
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
+	static public final class testMe extends junit.framework.TestCase {
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public testMe(final String val)
-		{
+		public testMe(final String val) {
 			super(val);
 		}
 
-		public final void testIntersection()
-		{
-			try
-			{
+		public final void testIntersection() {
+			try {
 				PropertyDescriptor[] demo = new PropertyDescriptor[] {};
 				PropertyDescriptor[] pa = new PropertyDescriptor[] {
 						new PropertyDescriptor("Color", FixWrapper.class),
@@ -1021,10 +919,12 @@ public class RightClickSupport
 						new PropertyDescriptor("Font", FixWrapper.class),
 						new PropertyDescriptor("Label", FixWrapper.class),
 						new PropertyDescriptor("LabelShowing", FixWrapper.class),
-						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
+						new PropertyDescriptor("SymbolShowing",
+								FixWrapper.class), };
 				PropertyDescriptor[] pc = new PropertyDescriptor[] {
 						new PropertyDescriptor("LabelShowing", FixWrapper.class),
-						new PropertyDescriptor("SymbolShowing", FixWrapper.class), };
+						new PropertyDescriptor("SymbolShowing",
+								FixWrapper.class), };
 				PropertyDescriptor[] pd = new PropertyDescriptor[] {};
 
 				PropertyDescriptor[] res = (PropertyDescriptor[]) getIntersectionFor(
@@ -1040,15 +940,13 @@ public class RightClickSupport
 				res = (PropertyDescriptor[]) getIntersectionFor(pd, pa, demo);
 				assertNotNull("failed to find intersection", res);
 				assertEquals("Failed to find correct num", 0, res.length);
-			} catch (IntrospectionException e)
-			{
+			} catch (IntrospectionException e) {
 				e.printStackTrace();
 				assertTrue("threw some error", false);
 			}
 		}
 
-		public final void testPropMgt()
-		{
+		public final void testPropMgt() {
 			Editable itemOne = new FixWrapper(new Fix(new HiResDate(122333),
 					new WorldLocation(1, 2, 3), 12, 14));
 			Editable itemTwo = new FixWrapper(new Fix(new HiResDate(122334),

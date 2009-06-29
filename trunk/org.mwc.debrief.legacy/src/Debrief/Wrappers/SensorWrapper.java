@@ -547,7 +547,9 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 								"the forward/backward offset of this sensor from the attack datum"),
 						prop(
 								"WormInHole",
-								"whether the origin of this sensor is offset in straight line, or back along the host track") };
+								"whether the origin of this sensor is offset in straight line, or back along the host track"),
+						longProp("VisibleFrequency", "How frequently to display sensor cuts",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
 
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
@@ -556,6 +558,7 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 			}
 			catch (IntrospectionException e)
 			{
+				e.printStackTrace();
 				return super.getPropertyDescriptors();
 			}
 		}
