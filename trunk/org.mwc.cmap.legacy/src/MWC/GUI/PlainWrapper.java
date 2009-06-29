@@ -306,6 +306,7 @@ abstract public class PlainWrapper implements Plottable, Serializable,
     /**
      * specify is this object is visible
      */
+    @FireReformatted
     final public void setVisible(boolean val)
     {
         // is this a different value?
