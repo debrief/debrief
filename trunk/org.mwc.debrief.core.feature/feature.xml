@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.79">
+      version="1.0.80">
 
    <description>
-      [1.0.78] Introduce concept of sensor offsets
+      [1.0.80] Fix for reading in sensor data
+[1.0.78] Introduce concept of sensor offsets
 [1.0.77] Explicitly indicate which types of xml file get edited
 by Debrief
 [1.0.76] Force inclusion of sdk plugin (to allow classic updates)

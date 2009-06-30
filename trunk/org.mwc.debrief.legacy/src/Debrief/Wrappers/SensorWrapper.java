@@ -157,7 +157,8 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
-public class SensorWrapper extends TacticalDataWrapper implements GriddableSeriesMarker 
+public class SensorWrapper extends TacticalDataWrapper implements
+		GriddableSeriesMarker
 {
 
 	// //////////////////////////////////////
@@ -249,7 +250,14 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 
 					if (fw.getRange() != null)
 					{
-						res.extend(fw.getFarEnd(null));
+						WorldLocation farEnd = fw.getFarEnd(null);
+						if (farEnd != null)
+						{
+							if (res == null)
+								res = new WorldArea(farEnd, farEnd);
+							else
+								res.extend(fw.getFarEnd(null));
+						}
 					}
 				}
 			}
@@ -271,7 +279,6 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 		return _myEditor;
 	}
 
-	
 	/**
 	 * add
 	 * 
@@ -523,10 +530,6 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 			super(data, data.getName(), "Sensor");
 		}
 
-		
-
-
-		
 		/**
 		 * The things about these Layers which are editable. We don't really use
 		 * this list, since we have our own custom editor anyway
@@ -548,8 +551,9 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 						prop(
 								"WormInHole",
 								"whether the origin of this sensor is offset in straight line, or back along the host track"),
-						longProp("VisibleFrequency", "How frequently to display sensor cuts",
-								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)};
+						longProp("VisibleFrequency",
+								"How frequently to display sensor cuts",
+								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class) };
 
 				res[2]
 						.setPropertyEditorClass(MWC.GUI.Properties.LineWidthPropertyEditor.class);
@@ -887,13 +891,14 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 	{
 		return this.elements().nextElement();
 	}
-	
 
 	@Override
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
 	{
-		if (false == item instanceof SensorContactWrapper) {
-			throw new IllegalArgumentException("I am expecting the Observation's, don't know how to copy " + item);
+		if (false == item instanceof SensorContactWrapper)
+		{
+			throw new IllegalArgumentException(
+					"I am expecting the Observation's, don't know how to copy " + item);
 		}
 		SensorContactWrapper template = (SensorContactWrapper) item;
 		SensorContactWrapper result = new SensorContactWrapper();
@@ -914,5 +919,5 @@ public class SensorWrapper extends TacticalDataWrapper implements GriddableSerie
 		result.setSensor(template.getSensor());
 		return result;
 	}
-	
+
 }

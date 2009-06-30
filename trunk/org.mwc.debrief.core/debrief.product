@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" useFeatures="true" includeLaunchers="true">
+<product name="DebriefNG" uid="DebriefNG" id="org.mwc.debrief.core.Debrief" application="org.eclipse.ui.ide.workbench" version="3.0.0" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.debrief.core/icons/DebriefNGlogo.gif"/>
@@ -31,17 +31,22 @@
       </win>
    </launcher>
 
+
    <vm>
       <linux>java-6-sun-1.6.0.03</linux>
       <macos>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5</macos>
       <windows>jre1.6.0_06</windows>
    </vm>
 
+
    <plugins>
    </plugins>
 
    <features>
+      <feature id="org.eclipse.rcp" version="3.5.0.v20090519-9SA0FwxFv6x089WEf-TWh11"/>
+      <feature id="org.eclipse.platform" version="3.5.0.v20090611a-9gEeG1HFtQcmRThO4O3aR_fqSMvJR2sJ"/>
       <feature id="org.mwc.cmap.feature" version="1.0.75"/>
+      <feature id="org.mwc.cmap.grideditor.feature" version="1.0.0.qualifier"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.17"/>
       <feature id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.11"/>
       <feature id="org.mwc.cmap.overview.feature" version="1.0.7"/>
@@ -54,9 +59,6 @@
       <feature id="org.mwc.debrief.feature" version="1.0.79"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.23"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.8"/>
-      <feature id="org.mwc.cmap.grideditor.feature" version="1.0.0.qualifier"/>
-      <feature id="org.eclipse.platform" version="3.5.0.v20090423-9hD9G1HFtGfZq3hr3z-N27lx_0OoTX1vOJV"/>
-      <feature id="org.eclipse.rcp" version="3.5.0.v20090423-9VA4FwxFu8XMLVz0Ldz-I7VAU"/>
    </features>
 
 
