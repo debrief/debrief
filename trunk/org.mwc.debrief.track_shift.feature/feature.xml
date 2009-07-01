@@ -663,10 +663,6 @@ Ty Coon, President of Vice
 That&apos;s all there is to it!
    </license>
 
-   <url>
-      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
-   </url>
-
    <plugin
          id="org.mwc.debrief.track_shift"
          download-size="0"

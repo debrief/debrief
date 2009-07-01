@@ -539,11 +539,6 @@ necessary.  Here is a sample; alter the names:
 
 That&apos;s all there is to it!
    </license>
-
-   <url>
-      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
-   </url>
-
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>

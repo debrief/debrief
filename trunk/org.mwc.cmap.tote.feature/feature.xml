@@ -2,10 +2,11 @@
 <feature
       id="org.mwc.cmap.tote.feature"
       label="org.mwc.cmap.tote.feature"
-      version="1.0.11">
+      version="1.0.15">
 
    <description>
-      [1.0.10] Update to JDK1.6
+      [1.0.12] Subtle grammar change to action button
+[1.0.10] Update to JDK1.6
 [1.0.9] Add help link
 [1.0.8] Amend online update location
 [1.0.7] Fix minor auto-generate problem
@@ -524,10 +525,6 @@ necessary.  Here is a sample; alter the names:
 
 That&apos;s all there is to it!
    </license>
-
-   <url>
-      <update label="TD Subs site" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
-   </url>
 
    <requires>
       <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>

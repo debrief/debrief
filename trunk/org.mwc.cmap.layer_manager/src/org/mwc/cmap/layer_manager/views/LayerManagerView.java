@@ -855,7 +855,7 @@ public class LayerManagerView extends ViewPart
 				}
 			}
 		};
-		_createLayer.setText("Create layer");
+		_createLayer.setText("Create new layer");
 		_createLayer.setToolTipText("Create a new top-level layer");
 		_createLayer.setImageDescriptor(Layer_managerPlugin
 				.getImageDescriptor("icons/new_layer.gif"));

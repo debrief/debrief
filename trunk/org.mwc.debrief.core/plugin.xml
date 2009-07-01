@@ -417,21 +417,6 @@
            description="Debrief Maritime Analysis Software"
            name="DebriefNG">
         <property
-              name="aboutImage"
-              value="icons/DebriefNGlogo.gif"/>
-        <property
-              name="windowImages"
-              value="icons/icon.gif"/>
-        <property
-              name="startupForegroundColor"
-              value="000000"/>
-        <property
-              name="startupProgressRect"
-              value="0,0,0,0"/>
-        <property
-              name="startupMessageRect"
-              value="0,0,0,0"/>
-        <property
               name="appName"
               value="DebriefNG">
         </property>
@@ -447,7 +432,27 @@
             value="product:icons/debrief_icon.gif"/>
       <property
             name="introBrandingImageText"
-            value="Debrief, from the Maritime Warfare Centre"/>        
+            value="Debrief, from the Maritime Warfare Centre"/>
+      <property
+            name="aboutImage"
+            value="icons/DebriefNGlogo.gif">
+      </property>
+      <property
+            name="windowImages"
+            value="icons/icon.gif">
+      </property>
+      <property
+            name="startupForegroundColor"
+            value="000000">
+      </property>
+      <property
+            name="startupMessageRect"
+            value="0,0,0,0">
+      </property>
+      <property
+            name="startupProgressRect"
+            value="0,0,0,0">
+      </property>        
      </product>
      </extension>
 

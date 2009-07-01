@@ -24,9 +24,6 @@
    <feature url="features/org.mwc.cmap.TimeController.feature_1.0.25.jar" id="org.mwc.cmap.TimeController.feature" version="1.0.25">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.tote.feature_1.0.11.jar" id="org.mwc.cmap.tote.feature" version="1.0.11">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.xyplot.feature_1.0.12.jar" id="org.mwc.cmap.xyplot.feature" version="1.0.12">
       <category name="cmap_features"/>
    </feature>
@@ -37,6 +34,9 @@
       <category name="cmap_features"/>
    </feature>
    <feature url="features/org.mwc.debrief.feature_1.0.80.jar" id="org.mwc.debrief.feature" version="1.0.80">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.cmap.tote.feature_1.0.12.jar" id="org.mwc.cmap.tote.feature" version="1.0.12">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

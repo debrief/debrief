@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.mwc.cmap.grideditor.feature"
-      label="Feature"
-      version="1.0.0.qualifier">
+      label="org.mwc.cmap.grideditor.feature"
+      version="1.0.1"
+      provider-name="MWC">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]

@@ -397,7 +397,7 @@ public class ToteView extends ViewPart
 		// let the parent do its bits
 		super.init(site, memento);
 
-		_showUnits = new Action("Show units column", Action.AS_CHECK_BOX)
+		_showUnits = new Action("Show calc units column.", Action.AS_CHECK_BOX)
 		{
 			public void run()
 			{
@@ -469,7 +469,7 @@ public class ToteView extends ViewPart
 		// -------------------------------------------------------
 		// put watchables on the tote
 		// -------------------------------------------------------
-		_autoGenerate = new Action("Auto-populate Tote", Action.AS_PUSH_BUTTON)
+		_autoGenerate = new Action("Auto-populate tote", Action.AS_PUSH_BUTTON)
 		{
 			public void run()
 			{
@@ -479,7 +479,7 @@ public class ToteView extends ViewPart
 		// -------------------------------------------------------
 		// put watchables on the tote
 		// -------------------------------------------------------
-		_autoGenerateJustTracks = new Action("Auto-populate Tote (tracks only)",
+		_autoGenerateJustTracks = new Action("Auto-populate tote (tracks only)",
 				Action.AS_PUSH_BUTTON)
 		{
 			public void run()
