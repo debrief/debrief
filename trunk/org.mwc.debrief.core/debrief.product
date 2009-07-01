@@ -11,7 +11,6 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgsWin>-Xbootclasspath/a:\jre\lib\ext\j3daudio.jar;jre\lib\ext\j3dcore.jar;jre\lib\ext\j3dutils.jar;jre\lib\ext\vecmath.jar</vmArgsWin>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
@@ -47,17 +46,17 @@
       <feature id="org.mwc.cmap.grideditor.feature" version="1.0.1"/>
       <feature id="org.mwc.cmap.layer_manager.feature" version="1.0.20"/>
       <feature id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.11"/>
-      <feature id="org.mwc.cmap.overview.feature" version="1.0.7"/>
       <feature id="org.mwc.cmap.plot3d.feature" version="1.0.11"/>
       <feature id="org.mwc.cmap.plotviewer.feature" version="1.0.24"/>
       <feature id="org.mwc.cmap.static_resources.feature" version="1.0.5"/>
       <feature id="org.mwc.cmap.TimeController.feature" version="1.0.25"/>
       <feature id="org.mwc.cmap.tote.feature" version="1.0.15"/>
       <feature id="org.mwc.cmap.xyplot.feature" version="1.0.12"/>
-      <feature id="org.mwc.debrief.feature" version="1.0.80"/>
       <feature id="org.mwc.debrief.help.feature" version="1.0.23"/>
       <feature id="org.mwc.debrief.track_shift.feature" version="1.0.8"/>
       <feature id="org.eclipse.equinox.p2.user.ui" version="1.1.0.v20090605-1440-7u6Fb3FbPbJP5MjJjZgifk"/>
+      <feature id="org.mwc.cmap.overview.feature" version="1.0.8"/>
+      <feature id="org.mwc.debrief.feature" version="1.0.81"/>
    </features>
 
 

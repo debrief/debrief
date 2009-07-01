@@ -2490,9 +2490,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							long timeDelta = thisTime - tmaLastDTG;
 							double speedKts = fw.getSpeed();
 							double courseRads = fw.getCourse();
+							double depthM = fw.getDepth();
 							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
 									courseRads);
 							tmaLastLoc.addToMe(thisVec);
+							
+							// use the value of depth as read in from the file
+							tmaLastLoc.setDepth(depthM);
 							lastLocation = tmaLastLoc;
 						}
 						tmaLastDTG = thisTime;
