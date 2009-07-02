@@ -663,6 +663,17 @@ Ty Coon, President of Vice
 That&apos;s all there is to it!
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.cmap.plotViewer"/>
+      <import plugin="org.mwc.cmap.xyplot"/>
+      <import plugin="org.mwc.debrief.core" version="1.0.60" match="greaterOrEqual"/>
+   </requires>
+
    <plugin
          id="org.mwc.debrief.track_shift"
          download-size="0"

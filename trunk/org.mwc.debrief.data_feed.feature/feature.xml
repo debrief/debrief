@@ -659,6 +659,9 @@ That&apos;s all there is to it!
    <requires>
       <import plugin="org.mwc.cmap.legacy"/>
       <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.mwc.cmap.core"/>
    </requires>
 
    <plugin
