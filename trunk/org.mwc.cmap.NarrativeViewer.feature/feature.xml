@@ -666,6 +666,13 @@ Ty Coon, President of Vice
 That&apos;s all there is to it!
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.cmap.legacy"/>
+   </requires>
+
    <plugin
          id="org.mwc.cmap.NarrativeViewer"
          download-size="0"

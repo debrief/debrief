@@ -539,12 +539,12 @@ necessary.  Here is a sample; alter the names:
 
 That&apos;s all there is to it!
    </license>
+
    <requires>
       <import plugin="org.eclipse.ui"/>
       <import plugin="org.eclipse.core.runtime"/>
       <import plugin="org.mwc.cmap.legacy"/>
       <import plugin="org.mwc.cmap.core"/>
-      <import plugin="org.mwc.debrief.legacy"/>
       <import plugin="org.eclipse.core.resources"/>
       <import plugin="org.eclipse.ui.ide"/>
       <import plugin="org.eclipse.ui.views"/>

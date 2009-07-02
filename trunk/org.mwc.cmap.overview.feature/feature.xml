@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.cmap.overview.feature"
       label="org.mwc.cmap.overview.feature"
-      version="1.0.7"
+      version="1.0.8"
       provider-name="MWC">
 
    <description>
@@ -662,6 +662,13 @@ That&apos;s all there is to it!
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.ui"/>
+      <import plugin="org.eclipse.core.runtime"/>
+      <import plugin="org.mwc.cmap.core"/>
+      <import plugin="org.mwc.cmap.legacy"/>
+      <import plugin="org.mwc.cmap.plotViewer"/>
+   </requires>
 
    <plugin
          id="org.mwc.cmap.overview"
