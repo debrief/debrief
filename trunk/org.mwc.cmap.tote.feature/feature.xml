@@ -532,6 +532,8 @@ That&apos;s all there is to it!
       <import plugin="org.mwc.cmap.core" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.mwc.cmap.legacy" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.mwc.debrief.legacy" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.mwc.debrief.core"/>
+      <import plugin="org.eclipse.ui.views"/>
    </requires>
 
    <plugin

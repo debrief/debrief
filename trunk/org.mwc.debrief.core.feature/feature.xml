@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.feature"
       label="org.mwc.debrief.feature"
-      version="1.0.81">
+      version="1.0.82">
 
    <description>
       [1.0.81] Fix how depth shown for DR data
@@ -606,20 +606,28 @@ That&apos;s all there is to it!
    </license>
 
    <requires>
-      <import plugin="org.eclipse.core.resources" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.filesystem"/>
-      <import plugin="org.eclipse.ui" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.ui.views" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.update.core" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.update.ui" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.expressions" version="0.0.0" match="greaterOrEqual"/>
-      <import plugin="org.eclipse.core.runtime" version="3.1.0" match="compatible"/>
       <import plugin="org.mwc.cmap.core" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.mwc.cmap.plotViewer" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.mwc.cmap.legacy" version="0.0.0" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.resources" version="0.0.0" match="greaterOrEqual"/>
       <import plugin="org.eclipse.ui.cheatsheets"/>
-      <import plugin="org.mwc.debrief.legacy"/>
+      <import plugin="org.eclipse.core.runtime" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.core.filesystem" version="1.0.0" match="compatible"/>
+      <import plugin="org.eclipse.help" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.ui" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.jface.text" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.p2.engine" version="1.0.100" match="compatible"/>
+      <import plugin="org.eclipse.equinox.p2.metadata" version="1.0.0" match="compatible"/>
+      <import plugin="org.eclipse.equinox.p2.core" version="1.0.100" match="compatible"/>
+      <import plugin="com.ibm.icu"/>
+      <import plugin="org.eclipse.core.runtime" version="3.5.0" match="compatible"/>
+      <import plugin="org.eclipse.core.expressions" version="3.4.100" match="compatible"/>
+      <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.eclipse.equinox.common" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.osgi" version="3.2.0" match="compatible"/>
+      <import plugin="org.eclipse.ui.intro"/>
+      <import plugin="org.eclipse.platform"/>
+      <import plugin="org.eclipse.ui.intro.universal"/>
    </requires>
 
    <plugin
