@@ -3,9 +3,6 @@
    <feature url="features/org.mwc.cmap.feature_1.0.75.jar" id="org.mwc.cmap.feature" version="1.0.75">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.layer_manager.feature_1.0.17.jar" id="org.mwc.cmap.layer_manager.feature" version="1.0.17">
-      <category name="cmap_features"/>
-   </feature>
    <feature url="features/org.mwc.cmap.NarrativeViewer.feature_1.0.11.jar" id="org.mwc.cmap.NarrativeViewer.feature" version="1.0.11">
       <category name="cmap_features"/>
    </feature>
@@ -36,7 +33,13 @@
    <feature url="features/org.mwc.debrief.feature_1.0.80.jar" id="org.mwc.debrief.feature" version="1.0.80">
       <category name="cmap_features"/>
    </feature>
-   <feature url="features/org.mwc.cmap.tote.feature_1.0.12.jar" id="org.mwc.cmap.tote.feature" version="1.0.12">
+   <feature url="features/org.mwc.cmap.grideditor.feature_1.0.1.jar" id="org.mwc.cmap.grideditor.feature" version="1.0.1">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.cmap.layer_manager.feature_1.0.20.jar" id="org.mwc.cmap.layer_manager.feature" version="1.0.20">
+      <category name="cmap_features"/>
+   </feature>
+   <feature url="features/org.mwc.cmap.tote.feature_1.0.15.jar" id="org.mwc.cmap.tote.feature" version="1.0.15">
       <category name="cmap_features"/>
    </feature>
    <category-def name="cmap_features" label="CMAP">

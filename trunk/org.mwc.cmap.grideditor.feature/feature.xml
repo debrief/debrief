@@ -17,6 +17,16 @@
       [Enter License Description here.]
    </license>
 
+   <requires>
+      <import plugin="org.eclipse.jface" version="3.4.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui" version="3.4.1" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.core.runtime" version="3.4.0" match="greaterOrEqual"/>
+      <import plugin="com.ibm.icu" version="3.8.1" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.core" version="1.0.66" match="greaterOrEqual"/>
+      <import plugin="org.mwc.cmap.legacy" version="1.0.47" match="greaterOrEqual"/>
+      <import plugin="org.eclipse.ui.views" version="3.4.0" match="greaterOrEqual"/>
+   </requires>
+
    <plugin
          id="org.mwc.cmap.grideditor"
          download-size="0"
