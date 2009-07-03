@@ -43,6 +43,14 @@
 				<available type="dir" file="${distDir}" />
 			</and>
 		</condition>
+		
+			<!-- here's how to do it in a way that allows wildcards...
+				<pathconvert property="cmap_present" setonempty="false" pathsep="/">
+					<path>
+						<fileset dir="${distDir}/features/" includes="org.mwc.cmap.combined.feature_1.0.*/**" />
+					</path>
+				</pathconvert> -->
+		
 		<condition property="eclipse_present">
 			<and>
 				<!-- first Debrief   -->
