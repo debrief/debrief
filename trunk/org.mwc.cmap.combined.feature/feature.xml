@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.mwc.cmap.combined.feature"
-      label="Feature"
-      version="1.0.0.qualifier">
+      label="Combined Maritime Analysis Platform plugins"
+      version="1.0.6"
+      provider-name="MWC">
 
    <description url="http://www.example.com/description">
-      [Enter Feature Description here.]
+      Plugins common to MWC Analysis Applications
    </description>
 
    <copyright url="http://www.example.com/copyright">
@@ -15,6 +16,10 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
+
+   <url>
+      <update label="local installer" url="file://C:/dev/cmap4/org.mwc.cmap.installer"/>
+   </url>
 
    <requires>
       <import plugin="org.mwc.debrief.legacy"/>

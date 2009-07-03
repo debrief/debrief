@@ -8,7 +8,9 @@
 
 	<!-- and the zip support filenames -->
 	<property name="zipName" value="update.zip" />
+	<property name="miniZipName" value="install_mini.zip" />
 	<property name="zipDest" value="${deployDir}/${zipName}" />
+	<property name="miniZipDest" value="${deployDir}/${miniZipName}" />
 	<!--	<property name="zipPath" value="/Volumes/Untitled/"/> -->
 	<!--	<property name="zipPath" value="/media/cdrom0"/> -->
 	<property name="zipPath" value="e:/" />
@@ -129,9 +131,13 @@
 	<target name="zipTheData" description="create the zip file for exporting">
 		<echo message="ditching old update zip" />
 		<delete file="${zipDest}" />
+		<delete file="${miniZipDest}" />
 		<echo message="creating new update zip" />
 		<zip destFile="${zipDest}" whenempty="fail" duplicate="fail">
 			<fileset dir="../org.mwc.cmap.installer" excludes="**/*.static*.*, *build.xml,*.aip,.svn,unpack.xml,setup.nsi,statcvs_template,jre, ng_installer_settings-cache" />
+		</zip>
+		<zip destFile="${miniZipDest}" whenempty="fail" duplicate="fail">
+			<fileset dir="${deployDir}/DebriefNG" excludes="**/jre" />
 		</zip>
 	</target>
 
