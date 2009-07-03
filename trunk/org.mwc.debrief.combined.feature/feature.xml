@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="org.mwc.debrief.combined.feature"
-      label="Debrief-specific features"
-      version="1.0.0.qualifier">
+      label="Debrief-specific plugins"
+      version="1.0.2">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -15,6 +15,10 @@
    <license url="http://www.example.com/license">
       [Enter License Description here.]
    </license>
+
+   <url>
+      <update label="local installer" url="file://C:/dev/cmap4/org.mwc.cmap.installer"/>
+   </url>
 
    <plugin
          id="org.mwc.debrief.core"
