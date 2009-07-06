@@ -25,7 +25,7 @@ import MWC.GUI.Layers;
 /**
  * @author ian.mayo
  */
-public class MergeTracks implements RightClickContextItemGenerator
+public class GenerateJoiningSegment implements RightClickContextItemGenerator
 {
 
 	/**
@@ -42,18 +42,23 @@ public class MergeTracks implements RightClickContextItemGenerator
 		// we're only going to work with two or more items
 		if (subjects.length > 1)
 		{
+			// track the parents
+			Layer firstParent = parentLayers[0];
+			
 			// are they tracks, or track segments
 			for (int i = 0; i < subjects.length; i++)
 			{
 				boolean goForIt = false;
 				Editable thisE = subjects[i];
-				if (thisE instanceof TrackWrapper)
-				{
-					goForIt = true;					
-				}
-				else if (thisE instanceof TrackSegment)
+				if (thisE instanceof TrackSegment)
 				{
 					goForIt = true;
+				}
+				
+				// track the parent layer
+				if(parentLayers[i] != firstParent)
+				{
+					goForIt = false;
 				}
 				
 				if(goForIt)
@@ -62,7 +67,7 @@ public class MergeTracks implements RightClickContextItemGenerator
 				}
 				else
 				{
-					CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
+					CorePlugin.logError(Status.INFO, "Not allowing join, there's a non-compliant entry", null);
 					// may as well drop out - this item wasn't compliant
 					continue;
 				}
@@ -72,28 +77,20 @@ public class MergeTracks implements RightClickContextItemGenerator
 		// ok, is it worth going for?
 		if (validItems >= 2)
 		{
-
-			// right,stick in a separator
-			parent.add(new Separator());
-
-			for (int i = 0; i < subjects.length; i++)
-			{
-				final Editable editable = subjects[i];
-				final String title = "Merge tracks into " + editable.getName();
-				// create this operation
-				Action doMerge = new Action(title){
-					public void run()
-					{
-						IUndoableOperation theAction = new MergeTracksOperation(title, editable, theLayers, parentLayers, subjects);
-							
-						CorePlugin.run(theAction );
-					}};
-				parent.add(doMerge);
-			}
+			final String title = "Generate joining segment";
+			// create this operation
+			Action doMerge = new Action(title){
+				public void run()
+				{
+					IUndoableOperation theAction = new JoinTracksOperation(title, subjects, theLayers, parentLayers, subjects);
+						
+					CorePlugin.run(theAction );
+				}};
+			parent.add(doMerge);
 		}
 	}
 
-	private static class MergeTracksOperation extends CMAPOperation
+	private static class JoinTracksOperation extends CMAPOperation
 	{
 
 		/**
@@ -102,14 +99,14 @@ public class MergeTracks implements RightClickContextItemGenerator
 		private final Layers _layers;
 		private final Layer[] _parents;
 		private final Editable[] _subjects;
-		private Editable _target;
+		private Editable[] _target;
 
 
-		public MergeTracksOperation(String title, Editable editable, Layers theLayers, Layer[] parentLayers,
+		public JoinTracksOperation(String title, Editable[] subjects2, Layers theLayers, Layer[] parentLayers,
 				Editable[] subjects)
 		{
 			super(title);
-			_target = editable;
+			_target = subjects2;
 			_layers = theLayers;
 			_parents = parentLayers;
 			_subjects = subjects;
@@ -118,10 +115,10 @@ public class MergeTracks implements RightClickContextItemGenerator
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
-			if(res == IStatus.OK)
-				fireModified();
-			return new Status(res, null, "Merge successful", null);
+//			int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
+//			if(res == IStatus.OK)
+//				fireModified();
+			return new Status(IStatus.OK, null, "Merge successful", null);
 		}
 
 		
