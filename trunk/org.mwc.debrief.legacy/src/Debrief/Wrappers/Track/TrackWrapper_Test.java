@@ -1216,9 +1216,9 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		// ///////////////////////////////////////////
 		SensorContactWrapper[] items = new SensorContactWrapper[5];
 		items[0] = createSensorItem(tw, sw, 110000);
-		items[1] = createSensorItem(tw, sw, 120000);
-		items[2] = createSensorItem(tw, sw, 130000);
-		items[3] = createSensorItem(tw, sw, 140000);
+		items[1] = createSensorItem(tw, sw, 115000);
+		items[2] = createSensorItem(tw, sw, 119000);
+		items[3] = createSensorItem(tw, sw, 141000);
 		items[4] = createSensorItem(tw, sw, 150000);
 	
 		// sort out the host
@@ -1233,15 +1233,26 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		// check the create worked
 		assertEquals("enough points created", 5, seg.size());
 	
+		Iterator<Editable> someIt = seg.getData().iterator();
 		// check the before
-		firstFix = (FixWrapper) seg.getData().iterator().next();
+		firstFix = (FixWrapper) someIt.next();
 		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
 		assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
 				WorldSpeed.Kts), 0.001);
 		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
 				.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-	
+		
+		// check the next dtg
+		firstFix = (FixWrapper) someIt.next();
+		assertEquals("check dtg produced", 115000, firstFix.getDTG().getDate().getTime(), 0.001);
+		firstFix = (FixWrapper) someIt.next();
+		assertEquals("check dtg produced", 119000, firstFix.getDTG().getDate().getTime(), 0.001);
+		firstFix = (FixWrapper) someIt.next();
+		assertEquals("check dtg produced", 141000, firstFix.getDTG().getDate().getTime(), 0.001);
+		firstFix = (FixWrapper) someIt.next();
+		assertEquals("check dtg produced", 150000, firstFix.getDTG().getDate().getTime(), 0.001);
+		
 		seg.setCourse(35);
 		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
 	
