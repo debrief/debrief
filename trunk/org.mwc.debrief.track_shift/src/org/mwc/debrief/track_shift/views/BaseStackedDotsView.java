@@ -48,7 +48,8 @@ import MWC.GUI.Layers.DataListener;
 /**
  */
 
-abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogger
+abstract public class BaseStackedDotsView extends ViewPart implements
+		ErrorLogger
 {
 
 	/**
@@ -87,8 +88,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 	 * is always in the centre
 	 */
 	private Action _centreYAxis;
-	
-	/** buttons for which plots to show
+
+	/**
+	 * buttons for which plots to show
 	 * 
 	 */
 	private Action _showLinePlot;
@@ -134,9 +136,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 	}
 
 	abstract protected String getUnits();
+
 	abstract protected String getType();
+
 	abstract protected void updateData();
-	
+
 	private void contributeToActionBars()
 	{
 		final IActionBars bars = getViewSite().getActionBars();
@@ -209,13 +213,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 
 		// create the special stepper plot
 		_dotPlot = new XYPlot();
-		_dotPlot.setRangeAxis(new NumberAxis("Error ("+getUnits()+")"));
+		_dotPlot.setRangeAxis(new NumberAxis("Error (" + getUnits() + ")"));
 		_dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		_dotPlot.setRenderer(new ColourStandardXYItemRenderer(
 				new DatedToolTipGenerator(), null, _dotPlot));
 
 		_linePlot = new XYPlot();
-		NumberAxis absBrgAxis = new NumberAxis("Absolute ("+getUnits()+")");
+		NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
 		_linePlot.setRangeAxis(absBrgAxis);
 		absBrgAxis.setAutoRangeIncludesZero(false);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
@@ -223,23 +227,23 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 				new DatedToolTipGenerator(), null, _linePlot);
 		lineRend.setSeriesShapesVisible(1, false);
 		_linePlot.setRenderer(lineRend);
-		
+
 		// set the y axes to autocalculate
 		_dotPlot.getRangeAxis().setAutoRange(true);
 		_linePlot.getRangeAxis().setAutoRange(true);
 
-		 _combined = new CombinedDomainXYPlot(xAxis);
-		 _combined.add(_linePlot);
-		 _combined.add(_dotPlot);
-		 _combined.setOrientation(PlotOrientation.HORIZONTAL);
+		_combined = new CombinedDomainXYPlot(xAxis);
+		_combined.add(_linePlot);
+		_combined.add(_dotPlot);
+		_combined.setOrientation(PlotOrientation.HORIZONTAL);
 
 		// put the plot into a chart
-		_myChart = new JFreeChart(getType() + " error", null, _combined,
-				true);
-		
-		LegendItemSource[] sources = {_linePlot};
+		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
+
+		LegendItemSource[] sources =
+		{ _linePlot };
 		_myChart.getLegend().setSources(sources);
-		
+
 		final ChartPanel plotHolder = new ChartPanel(_myChart);
 		plotHolder.setMouseZoomable(true, true);
 		plotHolder.setDisplayToolTips(true);
@@ -321,33 +325,33 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 		_centreYAxis.setToolTipText("Keep Y origin in centre of axis");
 		_centreYAxis.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/follow_selection.gif"));
-		
+
 		_showLinePlot = new Action("Actuals plot", IAction.AS_CHECK_BOX)
 		{
 			@Override
 			public void run()
 			{
 				super.run();
-				if(_showLinePlot.isChecked())
+				if (_showLinePlot.isChecked())
 				{
 					_combined.remove(_linePlot);
 					_combined.remove(_dotPlot);
-					
+
 					_combined.add(_linePlot);
-					if(_showDotPlot.isChecked())
+					if (_showDotPlot.isChecked())
 						_combined.add(_dotPlot);
 				}
 				else
 				{
-					if(_combined.getSubplots().size() > 1)
- 					  _combined.remove(_linePlot);
+					if (_combined.getSubplots().size() > 1)
+						_combined.remove(_linePlot);
 				}
 			}
 		};
 		_showLinePlot.setChecked(true);
 		_showLinePlot.setToolTipText("Show the actuals plot");
 		_showLinePlot.setImageDescriptor(Activator
-				.getImageDescriptor("icons/stacked_lines.png"));		
+				.getImageDescriptor("icons/stacked_lines.png"));
 
 		_showDotPlot = new Action("Error plot", IAction.AS_CHECK_BOX)
 		{
@@ -355,26 +359,26 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 			public void run()
 			{
 				super.run();
-				if(_showDotPlot.isChecked())
+				if (_showDotPlot.isChecked())
 				{
 					_combined.remove(_linePlot);
 					_combined.remove(_dotPlot);
-					
-					if(_showLinePlot.isChecked())
+
+					if (_showLinePlot.isChecked())
 						_combined.add(_linePlot);
 					_combined.add(_dotPlot);
 				}
 				else
 				{
-					if(_combined.getSubplots().size() > 1)
-  					_combined.remove(_dotPlot);
+					if (_combined.getSubplots().size() > 1)
+						_combined.remove(_dotPlot);
 				}
 			}
 		};
 		_showDotPlot.setChecked(true);
 		_showDotPlot.setToolTipText("Show the error plot");
 		_showDotPlot.setImageDescriptor(Activator
-				.getImageDescriptor("icons/stacked_dots.png"));		
+				.getImageDescriptor("icons/stacked_dots.png"));
 
 		// get an error logger
 		final ErrorLogger logger = this;
@@ -389,7 +393,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 				super.run();
 
 				// set the title, so there's something useful in there
-				_myChart.setTitle(getType() +  " Error");
+				_myChart.setTitle(getType() + " Error");
 
 				// we need to get a fresh set of data pairs - the number may have
 				// changed
@@ -405,7 +409,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
 		_onlyVisible.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/follow_selection.gif"));
-
 
 	}
 
@@ -434,10 +437,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 
 		if (_autoResize.isChecked())
 		{
-			_dotPlot.getRangeAxis().setAutoRange(true);
-			_dotPlot.getDomainAxis().setAutoRange(true);
-			_linePlot.getRangeAxis().setAutoRange(true);
-			_linePlot.getDomainAxis().setAutoRange(true);
+			if (_showDotPlot.isChecked())
+			{
+				_dotPlot.getRangeAxis().setAutoRange(true);
+				_dotPlot.getDomainAxis().setAutoRange(true);
+			}
+			if (_showLinePlot.isChecked())
+			{
+				_linePlot.getRangeAxis().setAutoRange(true);
+				_linePlot.getDomainAxis().setAutoRange(true);
+			}
 		}
 
 		// update the current datasets
@@ -447,11 +456,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 		// operation
 		if (_centreYAxis.isChecked())
 		{
-			// do a quick fudge to make sure zero is in the centre
-			final Range rng = _dotPlot.getRangeAxis().getRange();
-			final double maxVal = Math.max(Math.abs(rng.getLowerBound()), Math
-					.abs(rng.getUpperBound()));
-			_dotPlot.getRangeAxis().setRange(-maxVal, maxVal);
+			if (_showDotPlot.isChecked())
+			{
+				// do a quick fudge to make sure zero is in the centre
+				final Range rng = _dotPlot.getRangeAxis().getRange();
+				final double maxVal = Math.max(Math.abs(rng.getLowerBound()), Math
+						.abs(rng.getUpperBound()));
+				_dotPlot.getRangeAxis().setRange(-maxVal, maxVal);
+			}
 		}
 	}
 
@@ -483,7 +495,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements ErrorLogge
 							// ok - fire off the event for the new tracks
 							_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
 									.isChecked(), _holder, logger, getType());
-							
+
 							// just in case we're ready to start plotting, go for it!
 							updateStackedDots();
 						}
