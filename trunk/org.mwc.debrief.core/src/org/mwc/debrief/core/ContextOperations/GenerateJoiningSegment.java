@@ -37,57 +37,43 @@ public class GenerateJoiningSegment implements RightClickContextItemGenerator
 	public void generate(final IMenuManager parent, final Layers theLayers,
 			final Layer[] parentLayers, final Editable[] subjects)
 	{
-		int validItems = 0;
-		
 		// we're only going to work with two or more items
 		if (subjects.length > 1)
 		{
 			// track the parents
 			Layer firstParent = parentLayers[0];
-			
-			// are they tracks, or track segments
-			for (int i = 0; i < subjects.length; i++)
+
+			// is it a track?
+			if (firstParent instanceof TrackWrapper)
 			{
-				boolean goForIt = false;
-				Editable thisE = subjects[i];
-				if (thisE instanceof TrackSegment)
+				final TrackWrapper parentTrack = (TrackWrapper) firstParent;
+
+				if (parentLayers[1] == parentLayers[0])
 				{
-					goForIt = true;
-				}
-				
-				// track the parent layer
-				if(parentLayers[i] != firstParent)
-				{
-					goForIt = false;
-				}
-				
-				if(goForIt)
-				{
-					validItems++;
-				}
-				else
-				{
-					CorePlugin.logError(Status.INFO, "Not allowing join, there's a non-compliant entry", null);
-					// may as well drop out - this item wasn't compliant
-					continue;
+					// ok, is it worth going for?
+					if ((subjects[0] instanceof TrackSegment)
+							&& (subjects[1] instanceof TrackSegment))
+					{
+						final String title = "Generate infill segment";
+						// create this operation
+						Action doMerge = new Action(title)
+						{
+							public void run()
+							{
+								IUndoableOperation theAction = new JoinTracksOperation(title,
+										(TrackSegment) subjects[0], (TrackSegment) subjects[1],
+										theLayers, parentTrack);
+
+								CorePlugin.run(theAction);
+							}
+						};
+						parent.add(new Separator());
+						parent.add(doMerge);
+					}
 				}
 			}
 		}
 
-		// ok, is it worth going for?
-		if (validItems >= 2)
-		{
-			final String title = "Generate joining segment";
-			// create this operation
-			Action doMerge = new Action(title){
-				public void run()
-				{
-					IUndoableOperation theAction = new JoinTracksOperation(title, subjects, theLayers, parentLayers, subjects);
-						
-					CorePlugin.run(theAction );
-				}};
-			parent.add(doMerge);
-		}
 	}
 
 	private static class JoinTracksOperation extends CMAPOperation
@@ -97,32 +83,44 @@ public class GenerateJoiningSegment implements RightClickContextItemGenerator
 		 * the parent to update on completion
 		 */
 		private final Layers _layers;
-		private final Layer[] _parents;
-		private final Editable[] _subjects;
-		private Editable[] _target;
+		private final Layer _parentTrack;
+		private final TrackSegment _trackOne;
+		private final TrackSegment _trackTwo;
+		private TrackSegment _infill;
 
-
-		public JoinTracksOperation(String title, Editable[] subjects2, Layers theLayers, Layer[] parentLayers,
-				Editable[] subjects)
+		public JoinTracksOperation(String title, TrackSegment trackOne,
+				TrackSegment trackTwo, Layers theLayers, Layer parentTrack)
 		{
 			super(title);
-			_target = subjects2;
+			_trackOne = trackOne;
+			_trackTwo = trackTwo;
 			_layers = theLayers;
-			_parents = parentLayers;
-			_subjects = subjects;
+			_parentTrack = parentTrack;
 		}
 
 		public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-//			int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
-//			if(res == IStatus.OK)
-//				fireModified();
-			return new Status(IStatus.OK, null, "Merge successful", null);
+
+			// now do the more detailed checks
+			if (_trackOne.endDTG().greaterThan(_trackTwo.startDTG()))
+			{
+				// fail, they overlap
+				CorePlugin.showMessage("Generate infill segment", "Sorry, this operation cannot be performed for overlapping track sections\nPlease delete overlapping data points and try again");
+				return new Status(IStatus.ERROR, null, "Overlapping data points", null);
+			}
+
+			// cool, go for it
+			// generate the new track segment
+			_infill = new TrackSegment(_trackOne, _trackTwo);
+
+			// add the track segment to the parent track
+			_parentTrack.add(_infill);
+
+			fireModified();
+			return new Status(IStatus.OK, null, "generate infill successful", null);
 		}
 
-		
-		
 		@Override
 		public boolean canRedo()
 		{
@@ -132,9 +130,9 @@ public class GenerateJoiningSegment implements RightClickContextItemGenerator
 		@Override
 		public boolean canUndo()
 		{
-			return false;
+			return true;
 		}
-		
+
 		private void fireModified()
 		{
 			_layers.fireExtended();
@@ -144,8 +142,14 @@ public class GenerateJoiningSegment implements RightClickContextItemGenerator
 		public IStatus undo(IProgressMonitor monitor, IAdaptable info)
 				throws ExecutionException
 		{
-			CorePlugin.logError(Status.INFO, "Undo not permitted for merge operation", null);
-			return null;
+			// right, just delete our new track segment
+			_parentTrack.removeElement(_infill);
+			
+			// cool, tell everyone
+			fireModified();
+			
+			// register success
+			return new Status(IStatus.OK, null, "ditch infill successful", null);
 		}
 	}
 }

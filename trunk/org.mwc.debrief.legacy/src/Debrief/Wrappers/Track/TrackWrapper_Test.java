@@ -91,6 +91,32 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	}
 
 	
+	public void testGenInfill()
+	{
+		TrackSegment ts1 = new TrackSegment();
+		TrackSegment ts2 = new TrackSegment();
+		
+		ts1.addFix(createFix( 1000,1,0,5d,1,0,00d,135,12 ));
+		ts1.addFix(createFix( 2000,1,0,4d,1,0,01d,135,12 ));
+		ts1.addFix(createFix( 3000,1,0,3d,1,0,02d,135,12 ));
+		ts1.addFix(createFix( 4000,1,0,2d,1,0,03d,135,12 ));
+
+		ts2.addFix(createFix( 8000,1,0,0d,1,0,07d,90,12 ));
+		ts2.addFix(createFix( 9000,1,0,0d,1,0,08d,90,12 ));
+		ts2.addFix(createFix(10000,1,0,0d,1,0,09d,90,12 ));
+		ts2.addFix(createFix(11000,1,0,0d,1,0,10d,90,12 ));
+		ts2.addFix(createFix(12000,1,0,0d,1,0,11d,90,12 ));
+		ts2.addFix(createFix(13000,1,0,0d,1,0,12d,90,12 ));
+		
+		// try the function
+		TrackSegment infill = new TrackSegment(ts1, ts2);
+		
+		// check there are the correct number of items
+		assertEquals("wrong num entries", 3, infill.size());
+		
+		
+	}
+	
 	public void testDecimate()
 	{
 		TrackSegment ts1 = new TrackSegment();

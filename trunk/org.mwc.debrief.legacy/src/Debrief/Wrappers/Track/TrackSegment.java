@@ -28,6 +28,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
+import flanagan.interpolation.CubicSpline;
 
 /**
  * a single collection of track points
@@ -35,7 +36,8 @@ import MWC.Utilities.TextFormatting.FormatRNDateTime;
  * @author Administrator
  * 
  */
-public class TrackSegment extends BaseItemLayer implements DraggableItem,  GriddableSeriesMarker 
+public class TrackSegment extends BaseItemLayer implements DraggableItem,
+		GriddableSeriesMarker
 {
 
 	/**
@@ -111,10 +113,145 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,  Gridd
 		sortOutDate();
 	}
 
+	/**
+	 * create an infill track segment between the two supplied tracks
+	 * 
+	 * @param trackOne
+	 * @param trackTwo
+	 */
+	public TrackSegment(TrackSegment trackOne, TrackSegment trackTwo)
+	{
+		// ahh, sort out the lengths
+//		int oneAvailable = trackOne.size();
+//		int twoAvailable = trackTwo.size();
+
+		// now the num to use
+		int oneUse = 2; // Math.max(2, oneAvailable / 3);
+		int twoUse = 2; // Math.max(2, twoAvailable / 3);
+
+		// generate the data for the splines
+		FixWrapper[] oneElements = getLastElementsFrom(trackOne, oneUse);
+		FixWrapper[] twoElements = getFirstElementsFrom(trackTwo, twoUse);
+		FixWrapper[] allElements = new FixWrapper[oneUse + twoUse];
+		System.arraycopy(oneElements, 0, allElements, 0, oneUse);
+		System.arraycopy(twoElements, 0, allElements, oneUse, twoUse);
+
+		// generate the location spline
+		double[] times = new double[allElements.length];
+		double[] lats = new double[allElements.length];
+		double[] longs = new double[allElements.length];
+		double[] depths = new double[allElements.length];
+		double[] courses = new double[allElements.length];
+		double[] speeds = new double[allElements.length];
+		for (int i = 0; i < allElements.length; i++)
+		{
+			FixWrapper fw = allElements[i];
+			times[i] = fw.getDTG().getDate().getTime();
+			lats[i] = fw.getLocation().getLat();
+			longs[i] = fw.getLocation().getLong();
+			depths[i] = fw.getLocation().getDepth();
+			courses[i] = fw.getCourse();
+			speeds[i] = fw.getSpeed();
+		}
+		
+		CubicSpline latSpline = new CubicSpline(times, lats);
+		CubicSpline longSpline = new CubicSpline(times, longs);
+		CubicSpline depthSpline = new CubicSpline(times, depths);
+		CubicSpline courseSpline = new CubicSpline(times, courses);
+		CubicSpline speedSpline = new CubicSpline(times, speeds);
+
+		// what's the interval?
+		long tDelta = getTimeDelta(trackTwo);
+		long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
+		long tEnd = trackTwo.startDTG().getDate().getTime();
+
+		// get going then!
+		for(long tNow = tStart;tNow < tEnd; tNow += tDelta)
+		{
+			double thisLat = latSpline.interpolate(tNow);
+			double thisLong = longSpline.interpolate(tNow);
+			double thisDepth = depthSpline.interpolate(tNow);
+			double thisCourse = courseSpline.interpolate(tNow);
+			double thisSpeed = speedSpline.interpolate(tNow);
+			
+			Fix newFix = new Fix(new HiResDate(tNow), new WorldLocation(thisLat, thisLong, thisDepth), thisCourse, thisSpeed);
+			FixWrapper fw = new FixWrapper(newFix);
+			this.addFix(fw);
+		}
+		
+	}
+
+
+	/**
+	 * get the first 'n' elements from this segment
+	 * 
+	 * @param trackOne
+	 *          the segment to get the data from
+	 * @param oneUse
+	 *          how many elements to use
+	 * @return the subset
+	 */
+	private FixWrapper[] getFirstElementsFrom(TrackSegment trackTwo, int twoUse)
+	{
+		FixWrapper[] res = new FixWrapper[twoUse];
+
+		Enumeration<Editable> items = trackTwo.elements();
+		for (int i = 0; i < twoUse; i++)
+		{
+			res[i] = (FixWrapper) items.nextElement();
+		}
+
+		return res;
+	}
+
+	/**
+	 * get the last 'n' elements from this segment
+	 * 
+	 * @param trackOne
+	 *          the segment to get the data from
+	 * @param oneUse
+	 *          how many elements to use
+	 * @return the subset
+	 */
+	private FixWrapper[] getLastElementsFrom(TrackSegment trackOne, int oneUse)
+	{
+		FixWrapper[] res = new FixWrapper[oneUse];
+		int theLen = trackOne.size();
+		int firstIndex = theLen - oneUse;
+
+		Enumeration<Editable> items = trackOne.elements();
+		for (int i = 0; i < trackOne.size(); i++)
+		{
+			FixWrapper thisItem = (FixWrapper) items.nextElement();
+			if (i >= firstIndex)
+				res[i - firstIndex] = thisItem;
+		}
+
+		return res;
+	}
+
+	/**
+	 * find the time between the first two entries in this track
+	 * 
+	 * @param segment
+	 *          the segment we're looking at
+	 * @return
+	 */
+	private static final long getTimeDelta(TrackSegment segment)
+	{
+		Enumeration<Editable> someIt = segment.elements();
+		FixWrapper first = (FixWrapper) someIt.nextElement();
+		FixWrapper second = (FixWrapper) someIt.nextElement();
+
+		long timeDelta = (second.getDateTimeGroup().getDate().getTime() - first
+				.getDateTimeGroup().getDate().getTime());
+		return timeDelta;
+	}
+
 	@Override
 	public void add(final Editable item)
 	{
-		if(item instanceof FixWrapper)
+		if (item instanceof FixWrapper)
 			addFix((FixWrapper) item);
 		else
 			System.err.println("SHOULD NOT BE ADDING NORMAL ITEM TO TRACK SEGMENT");
@@ -339,7 +476,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,  Gridd
 			fix.setTrackWrapper(_myTrack);
 		}
 	}
-	
+
 	public void shift(final WorldVector vector)
 	{
 		// add this vector to all my points.
@@ -435,7 +572,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,  Gridd
 		return _vecTempLastVector;
 	}
 
-	/** switch the sample rate of this track to the supplied frequency
+	/**
+	 * switch the sample rate of this track to the supplied frequency
 	 * 
 	 * @param theVal
 	 */
@@ -444,85 +582,93 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,  Gridd
 		Vector<FixWrapper> newItems = new Vector<FixWrapper>();
 		boolean oldInterpolateState = parentTrack.getInterpolatePoints();
 		FixWrapper lastPositionStored = null;
-		
+
 		// switch on interpolation
 		parentTrack.setInterpolatePoints(true);
-		
+
 		// right - sort out what time period we're working through
-		for(long tNow = startDTG().getMicros(); tNow <= endDTG().getMicros(); tNow += theVal.getMicros())
+		for (long tNow = startDTG().getMicros(); tNow <= endDTG().getMicros(); tNow += theVal
+				.getMicros())
 		{
-			
+
 			// store the new position
-			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0,tNow));
-			if(matches.length > 0)
+			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
+			if (matches.length > 0)
 			{
 				FixWrapper newF = (FixWrapper) matches[0];
-				
-				// aah, if we're a relative track we have to use the course from the last interpolated point,
+
+				// aah, if we're a relative track we have to use the course from the
+				// last interpolated point,
 				// not the last point in the track, duh
-				if(this.getPlotRelative())
+				if (this.getPlotRelative())
 				{
-					if(lastPositionStored != null)
+					if (lastPositionStored != null)
 					{
 						// start off with the course
-						WorldVector offset = newF.getLocation().subtract(lastPositionStored.getLocation());
+						WorldVector offset = newF.getLocation().subtract(
+								lastPositionStored.getLocation());
 						newF.getFix().setCourse(offset.getBearing());
-						
+
 						// and now the speed
-						double distYds = new WorldDistance(offset.getRange(), WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
-						double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) /1000000d;
+						double distYds = new WorldDistance(offset.getRange(),
+								WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+						double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
 						double spdYps = distYds / timeSecs;
-						newF.getFix().setSpeed(spdYps);						
+						newF.getFix().setSpeed(spdYps);
 					}
 				}
-				
+
 				// do we correct the name?
-				if(newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
+				if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
 				{
 					// reset the name
 					newF.resetName();
 				}
-				
+
 				// add to our working list
 				newItems.add(newF);
 
-				// remember the last position - we;re going to be calculating future courses and speeds from it
+				// remember the last position - we;re going to be calculating future
+				// courses and speeds from it
 				lastPositionStored = newF;
 			}
-			
+
 		}
-		
+
 		// ditch our positions
 		this.removeAllElements();
-		
+
 		// store the new positions
-		for (Iterator<FixWrapper> iterator = newItems.iterator(); iterator.hasNext();)
+		for (Iterator<FixWrapper> iterator = newItems.iterator(); iterator
+				.hasNext();)
 		{
 			FixWrapper fix = iterator.next();
 			this.addFix(fix);
 		}
-		
+
 		// re-instate the interpolate status
-	  parentTrack.setInterpolatePoints(oldInterpolateState);
+		parentTrack.setInterpolatePoints(oldInterpolateState);
 	}
 
 	@Override
 	public Editable getSampleGriddable()
 	{
 		HiResDate theTime = new HiResDate(10000000);
-		WorldLocation theLocation = new WorldLocation(1,1,1);
+		WorldLocation theLocation = new WorldLocation(1, 1, 1);
 		double courseRads = 3;
 		double speedKts = 5;
 		Fix newFix = new Fix(theTime, theLocation, courseRads, speedKts);
-		FixWrapper res = new FixWrapper(newFix );
+		FixWrapper res = new FixWrapper(newFix);
 		return res;
 	}
 
 	@Override
 	public TimeStampedDataItem makeCopy(TimeStampedDataItem item)
 	{
-		if (false == item instanceof FixWrapper) {
-			throw new IllegalArgumentException("I am expecting a position, don't know how to copy " + item);
+		if (false == item instanceof FixWrapper)
+		{
+			throw new IllegalArgumentException(
+					"I am expecting a position, don't know how to copy " + item);
 		}
 		FixWrapper template = (FixWrapper) item;
 		FixWrapper result = new FixWrapper(template.getFix().makeCopy());
@@ -530,11 +676,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,  Gridd
 		result.setLineShowing(template.getLineShowing());
 		result.setSymbolShowing(template.getSymbolShowing());
 		result.setLabelLocation(template.getLabelLocation());
-		
+
 		Color col = template.getActualColor();
-		if(col != null)
+		if (col != null)
 			result.setColor(col);
-		
+
 		return result;
 	}
 
