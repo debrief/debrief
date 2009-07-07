@@ -263,7 +263,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		super.dispose();
 
 		// ditch the actions
-		_customActions.removeAllElements();
+		if(_customActions != null)
+			_customActions.removeAllElements();
 
 		// are we listening to any layers?
 		if (_ourLayersSubject != null)

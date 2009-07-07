@@ -5,6 +5,7 @@ import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -121,13 +122,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	public TrackSegment(TrackSegment trackOne, TrackSegment trackTwo)
 	{
-		// ahh, sort out the lengths
-//		int oneAvailable = trackOne.size();
-//		int twoAvailable = trackTwo.size();
+		// sort out our name
+		String name = "infill_"
+			+ FormatRNDateTime.toShortString(new Date().getTime());
+		this.setName(name);
 
 		// now the num to use
-		int oneUse = 2; // Math.max(2, oneAvailable / 3);
-		int twoUse = 2; // Math.max(2, twoAvailable / 3);
+		int oneUse = 2; 
+		int twoUse = 2; 
 
 		// generate the data for the splines
 		FixWrapper[] oneElements = getLastElementsFrom(trackOne, oneUse);
@@ -176,9 +178,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			
 			Fix newFix = new Fix(new HiResDate(tNow), new WorldLocation(thisLat, thisLong, thisDepth), thisCourse, thisSpeed);
 			FixWrapper fw = new FixWrapper(newFix);
+			fw.setSymbolShowing(true);
 			this.addFix(fw);
-		}
-		
+		}		
 	}
 
 
