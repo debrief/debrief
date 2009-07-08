@@ -704,8 +704,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     return _theFix.getCourse();
   }
  
-  /** change the course
+  /** set the course for this observation
    * 
+   * @param val the course (rads)
    */
   public void setCourse(double val)
   {

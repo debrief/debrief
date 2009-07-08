@@ -26,6 +26,7 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
@@ -122,14 +123,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 */
 	public TrackSegment(TrackSegment trackOne, TrackSegment trackTwo)
 	{
-		// sort out our name
-		String name = "infill_"
-			+ FormatRNDateTime.toShortString(new Date().getTime());
-		this.setName(name);
+		// remember if it's DR or OTG
+		boolean isDR = trackOne.getPlotRelative();
+
+		this.setPlotRelative(isDR);
 
 		// now the num to use
-		int oneUse = 2; 
-		int twoUse = 2; 
+		int oneUse = 2;
+		int twoUse = 2;
 
 		// generate the data for the splines
 		FixWrapper[] oneElements = getLastElementsFrom(trackOne, oneUse);
@@ -143,8 +144,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		double[] lats = new double[allElements.length];
 		double[] longs = new double[allElements.length];
 		double[] depths = new double[allElements.length];
-		double[] courses = new double[allElements.length];
-		double[] speeds = new double[allElements.length];
+		double[] coursesRads = new double[allElements.length];
+		double[] speedsKts = new double[allElements.length];
 		for (int i = 0; i < allElements.length; i++)
 		{
 			FixWrapper fw = allElements[i];
@@ -152,37 +153,94 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			lats[i] = fw.getLocation().getLat();
 			longs[i] = fw.getLocation().getLong();
 			depths[i] = fw.getLocation().getDepth();
-			courses[i] = fw.getCourse();
-			speeds[i] = fw.getSpeed();
+			coursesRads[i] = fw.getCourse();
+			speedsKts[i] = fw.getSpeed();
 		}
-		
+
 		CubicSpline latSpline = new CubicSpline(times, lats);
 		CubicSpline longSpline = new CubicSpline(times, longs);
 		CubicSpline depthSpline = new CubicSpline(times, depths);
-		CubicSpline courseSpline = new CubicSpline(times, courses);
-		CubicSpline speedSpline = new CubicSpline(times, speeds);
+		CubicSpline courseRadsSpline = new CubicSpline(times, coursesRads);
+		CubicSpline speedKtsSpline = new CubicSpline(times, speedsKts);
 
 		// what's the interval?
 		long tDelta = getTimeDelta(trackTwo);
 		long tStart = trackOne.endDTG().getDate().getTime() + tDelta;
 		long tEnd = trackTwo.startDTG().getDate().getTime();
 
+		// remember the last point on the first track, in case we're generating a
+		// relative solution
+		FixWrapper origin = oneElements[oneElements.length - 1];
+		boolean first = true;
+
 		// get going then!
-		for(long tNow = tStart;tNow < tEnd; tNow += tDelta)
+		for (long tNow = tStart; tNow < tEnd; tNow += tDelta)
 		{
 			double thisLat = latSpline.interpolate(tNow);
 			double thisLong = longSpline.interpolate(tNow);
 			double thisDepth = depthSpline.interpolate(tNow);
-			double thisCourse = courseSpline.interpolate(tNow);
-			double thisSpeed = speedSpline.interpolate(tNow);
-			
-			Fix newFix = new Fix(new HiResDate(tNow), new WorldLocation(thisLat, thisLong, thisDepth), thisCourse, thisSpeed);
+			double thisCourseRads = courseRadsSpline.interpolate(tNow);
+			double thisSpeedKts = speedKtsSpline.interpolate(tNow);
+
+			// create the new location
+			WorldLocation newLocation = new WorldLocation(thisLat, thisLong,
+					thisDepth);
+
+			Fix newFix = null;
+
+			// now, if this is a DR track, we won't be using the interpolated values,
+			// we'll be generating the values to put the vessel on the correct track
+			if (isDR)
+			{
+				WorldVector offset = newLocation.subtract(origin.getLocation());
+				double timeSecs = (tNow - origin.getTime().getDate().getTime()) / 1000;
+				// start off with the course
+				thisCourseRads = offset.getBearing();
+
+				// and now the speed
+				double distYds = new WorldDistance(offset.getRange(),
+						WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+				double spdYps = distYds / timeSecs;
+				thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
+
+				if (first)
+				{
+					// we don't edit the origin, it's from another track
+					first = false;
+				}
+				else
+				{
+					// over-write the course and speed of the previous entry
+					origin.setSpeed(thisSpeedKts);
+					origin.setCourse(thisCourseRads);
+				}
+
+				// convert the speed
+				WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
+				newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
+						theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
+			}
+			else
+			{
+				// OTG track
+				WorldSpeed theSpeed = new WorldSpeed(thisSpeedKts, WorldSpeed.Kts);
+				newFix = new Fix(new HiResDate(tNow), newLocation, thisCourseRads,
+						theSpeed.getValueIn(WorldSpeed.ft_sec) / 3);
+			}
+
 			FixWrapper fw = new FixWrapper(newFix);
 			fw.setSymbolShowing(true);
 			this.addFix(fw);
-		}		
-	}
 
+			// move along the bus, please (used if we're doing a DR Track).
+			origin = fw;
+		}
+
+		// sort out our name
+		String name = "infill_"
+				+ FormatRNDateTime.toShortString(new Date().getTime());
+		this.setName(name);
+	}
 
 	/**
 	 * get the first 'n' elements from this segment
@@ -270,10 +328,41 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		fix.setTrackWrapper(_myTrack);
 	}
 
+	/** add the elements in the indicated layer to us.
+	 * 
+	 */
 	public void append(final Layer other)
 	{
-		// ok, pass through and add the items
+		// get the other track's elements
 		final Enumeration<Editable> enumer = other.elements();
+
+		// have a look and see if we're a DR track
+		if (this.getPlotRelative())
+		{
+			// right, we've got to make sure our last point is correctly pointing to the first point of this new track
+			//   - sort it out
+			FixWrapper first = (FixWrapper) enumer.nextElement();
+			FixWrapper myLast = (FixWrapper) this.last();
+			WorldVector offset = first.getLocation().subtract(myLast.getLocation());
+			
+			double courseRads = offset.getBearing();
+			double timeSecs = (first.getTime().getDate().getTime() - myLast.getTime().getDate().getTime()) / 1000;
+			// start off with the course
+
+			// and now the speed
+			double distYds = new WorldDistance(offset.getRange(),
+					WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+			double spdYps = distYds / timeSecs;
+			double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
+			
+			myLast.setCourse(courseRads);
+			myLast.setSpeed(thisSpeedKts);
+			
+			// and add this one
+			addFix(first);
+		}
+
+		// ok, pass through and add the remaining items
 		while (enumer.hasMoreElements())
 		{
 			final FixWrapper pl = (FixWrapper) enumer.nextElement();

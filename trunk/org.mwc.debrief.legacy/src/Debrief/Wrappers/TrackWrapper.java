@@ -2422,6 +2422,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			boolean locatedTrack = false;
 			WorldLocation lastLocation = null;
+			FixWrapper lastFix = null;
 
 			// just check if we are drawing anything at all
 			if ((!_linkPositions) && (!_showPositions))
@@ -2488,9 +2489,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						{
 							// calculate a new vector
 							long timeDelta = thisTime - tmaLastDTG;
-							double speedKts = fw.getSpeed();
-							double courseRads = fw.getCourse();
-							double depthM = fw.getDepth();
+							double speedKts = lastFix.getSpeed();
+							double courseRads = lastFix.getCourse();
+							double depthM = lastFix.getDepth();
 							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
 									courseRads);
 							tmaLastLoc.addToMe(thisVec);
@@ -2498,7 +2499,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// use the value of depth as read in from the file
 							tmaLastLoc.setDepth(depthM);
 							lastLocation = tmaLastLoc;
+							
 						}
+						lastFix = fw;
 						tmaLastDTG = thisTime;
 
 						// dump the location into the fix

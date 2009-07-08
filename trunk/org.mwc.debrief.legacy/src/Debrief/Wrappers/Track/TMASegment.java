@@ -778,11 +778,13 @@ public class TMASegment extends TrackSegment
 
 		WorldSpeed newSpeed = new WorldSpeed(spdKts, WorldSpeed.Kts);
 		this.setSpeed(newSpeed);
-		this.setCourse(newCourse);
-		
+
 		// tidy the course
 		while(newCourse < 0)
 			newCourse += 360;
+
+		this.setCourse(newCourse);
+		
 
 		// tell the segment it's being stretched
 		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts "
