@@ -727,9 +727,13 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
   	_theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(val));
   }
    
+  /** set the speed of this participant (in knots)
+   * 
+   * @param val the speed (knots)
+   */
   public void setSpeed(double val)
   {
-  	_theFix.setSpeed(val);
+  	_theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(val));
   }
 
   /** return the speed (in knots)
