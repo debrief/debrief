@@ -2419,6 +2419,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// java.awt.Point lastP = null;
 			Color lastCol = null;
+			int lineStyle = CanvasType.SOLID;
 
 			boolean locatedTrack = false;
 			WorldLocation lastLocation = null;
@@ -2442,6 +2443,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (segments.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
+				lineStyle = seg.getLineStyle(); 
+
 
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
 				// MODE
@@ -2464,7 +2467,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					{
 						// nope. Don't join it to the last position.
 						// ok, if we've built up a polygon, we need to write it now
-						paintTrack(dest, lastCol);
+						paintTrack(dest, lastCol, lineStyle);
 					}
 
 					// Note: we're carrying on working with this position even if it isn't
@@ -2548,9 +2551,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							// do we know the previous colour
 							if (lastCol == null)
 							{
-								lastCol = thisCol;
+								lastCol = thisCol;								
 							}
-
+							
 							// is this to be joined to the previous one?
 							if (fw.getLineShowing())
 							{
@@ -2563,7 +2566,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 									_myPts[_ptCtr++] = thisP.y;
 
 									// yup, better get rid of the previous polygon
-									paintTrack(dest, lastCol);
+									paintTrack(dest, lastCol, lineStyle);
 								}
 
 								// add our position to the list - we'll output the
@@ -2577,7 +2580,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								// nope, output however much line we've got so far -
 								// since this
 								// line won't be joined to future points
-								paintTrack(dest, thisCol);
+								paintTrack(dest, thisCol, lineStyle);
 
 								// start off the next line
 								_myPts[_ptCtr++] = thisP.x;
@@ -2605,7 +2608,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				}
 
 				// ok, just see if we have any pending polylines to paint
-				paintTrack(dest, lastCol);
+				paintTrack(dest, lastCol, lineStyle);
 
 			}
 
@@ -2704,15 +2707,19 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param dest
 	 *          - where we're painting to
 	 * @param thisCol
+	 * @param lineStyle 
 	 */
-	private void paintTrack(final CanvasType dest, final Color thisCol)
+	private void paintTrack(final CanvasType dest, final Color thisCol, int lineStyle)
 	{
 		if (_ptCtr > 0)
 		{
 			dest.setColor(thisCol);
+			dest.setLineStyle(lineStyle);
 			final int[] poly = new int[_ptCtr];
 			System.arraycopy(_myPts, 0, poly, 0, _ptCtr);
 			dest.drawPolyline(poly);
+			
+			dest.setLineStyle(CanvasType.SOLID);
 
 			// and reset the counter
 			_ptCtr = 0;

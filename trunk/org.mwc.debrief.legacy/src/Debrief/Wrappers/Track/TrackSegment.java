@@ -21,6 +21,7 @@ import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
@@ -65,7 +66,11 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ expertProp("Visible", "whether this layer is visible", FORMAT), };
+				{ 
+						expertProp("Visible", "whether this layer is visible", FORMAT),
+						expertProp("LineStyle", "how to plot this line", FORMAT),
+						};
+				res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
 				return res;
 			}
 			catch (final IntrospectionException e)
@@ -96,6 +101,29 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	private WorldVector _vecTempLastVector = null;
 
 	protected long _vecTempLastDTG = -2;
+	
+	/** how to plot this line
+	 * 
+	 */
+	private int _lineStyle = CanvasType.SOLID;
+
+	/** how this line is plotted
+	 * 
+	 * @return
+	 */
+	public int getLineStyle()
+	{
+		return _lineStyle;
+	}
+
+	/** specify how this line is to be plotted
+	 * 
+	 * @param lineStyle
+	 */
+	public void setLineStyle(int lineStyle)
+	{
+		_lineStyle = lineStyle;
+	}
 
 	public TrackSegment()
 	{
@@ -240,6 +268,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		String name = "infill_"
 				+ FormatRNDateTime.toShortString(new Date().getTime());
 		this.setName(name);
+		
+		// also make it dotted, since it's artificially generated
+		this.setLineStyle(CanvasType.DOTTED);
 	}
 
 	/**
@@ -319,15 +350,22 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	public void addFix(final FixWrapper fix)
 	{
-		super.add(fix);
-
+		// remember the fix
+		this.addFixSilent(fix);
+		
 		// override the name, just in case this point is earlier
 		sortOutDate();
+	}
+
+	public void addFixSilent(final FixWrapper fix)
+	{
+		super.add(fix);
 
 		// tell it about our daddy
 		fix.setTrackWrapper(_myTrack);
 	}
 
+	
 	/** add the elements in the indicated layer to us.
 	 * 
 	 */

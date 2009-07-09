@@ -18,18 +18,22 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;
+import MWC.GUI.Properties.LineStylePropertyEditor;
 
 abstract public class CoreTrackSegmentHandler extends
 		MWC.Utilities.ReaderWriter.XML.MWCXMLReader
 {
 	public static final String VISIBLE = "Visible";
 	public static final String NAME = "Name";
+	public static final String LINE_STYLE = "LineStyle";
 
 	private Vector<FixWrapper> _fixes;
 	private boolean _visible;
 	private String _name;
+	private int _lineStyle = CanvasType.SOLID;
 
 	public CoreTrackSegmentHandler(String name)
 	{
@@ -43,6 +47,17 @@ abstract public class CoreTrackSegmentHandler extends
 			public void setValue(String name, boolean val)
 			{
 				_visible = val;
+			}
+		});
+		addAttributeHandler(new HandleAttribute(LINE_STYLE)
+		{
+			@Override
+			public void setValue(String name, String val)
+			{
+				LineStylePropertyEditor lp = new LineStylePropertyEditor();
+				lp.setAsText(val);
+				Integer iVal =(Integer) lp.getValue(); 
+				_lineStyle = iVal.intValue();
 			}
 		});
 		addAttributeHandler(new HandleAttribute(NAME)
@@ -78,11 +93,12 @@ abstract public class CoreTrackSegmentHandler extends
 		TrackSegment segment = createTrack();
 		segment.setVisible(_visible);
 		segment.setName(_name);
+		segment.setLineStyle(_lineStyle);
 		// give it the fixes
 		for (Iterator<FixWrapper> iterator = _fixes.iterator(); iterator.hasNext();)
 		{
 			FixWrapper fix = (FixWrapper) iterator.next();
-			segment.addFix(fix);
+			segment.addFixSilent(fix);
 		}
 		addSegment(segment);
 		segment = null;
@@ -93,9 +109,13 @@ abstract public class CoreTrackSegmentHandler extends
 	{
 		final Element segE = doc.createElement(segmentName);
 
+		LineStylePropertyEditor ls = new LineStylePropertyEditor();
+		ls.setValue(seg.getLineStyle());
+		
 		// sort out the attributes
 		segE.setAttribute(VISIBLE, writeThis(seg.getVisible()));
 		segE.setAttribute(NAME, seg.getName());
+		segE.setAttribute(LINE_STYLE, ls.getAsText());
 
 		// insert the fixes
 		final Collection<Editable> pts = seg.getData();

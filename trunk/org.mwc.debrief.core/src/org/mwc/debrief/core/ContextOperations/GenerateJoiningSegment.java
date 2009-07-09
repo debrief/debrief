@@ -113,7 +113,7 @@ public class GenerateJoiningSegment implements RightClickContextItemGenerator
 			// cool, go for it
 			// generate the new track segment
 			_infill = new TrackSegment(_trackOne, _trackTwo);
-
+			
 			// add the track segment to the parent track
 			_parentTrack.add(_infill);
 
