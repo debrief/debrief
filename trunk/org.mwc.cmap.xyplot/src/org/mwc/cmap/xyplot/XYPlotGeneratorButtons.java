@@ -38,6 +38,7 @@ import Debrief.Tools.Tote.Calculations.depthCalc;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import Debrief.Tools.Tote.Calculations.relBearingCalc;
 import Debrief.Tools.Tote.Calculations.speedCalc;
+import Debrief.Wrappers.TacticalDataWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
@@ -236,8 +237,16 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			// is this one we can watch?
 			if (thisE instanceof WatchableList)
 			{
-				// cool, go for it
-				candidates.add(thisE);
+				// aaah, is this a sensorwrapper or tmawrapper?
+				if (thisE instanceof TacticalDataWrapper)
+				{
+					duffItemFound = true;
+				}
+				else
+				{
+					// cool, go for it
+					candidates.add(thisE);
+				}
 			}
 			else
 				duffItemFound = true;
