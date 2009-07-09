@@ -2597,7 +2597,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 						}
 
-						if (_showPositions)
+						if (_showPositions && fw.getVisible())
 						{
 							fw.paintMe(dest, lastLocation);
 						}
