@@ -758,6 +758,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
     return _theFix.getTime();
   }
 
+  public void setDepth(double val)
+  {
+  	_theFix.getLocation().setDepth(val);
+  }
+  
   /** set the current location of the fix
    */
   public final void setFixLocation(final WorldLocation val)
@@ -895,6 +900,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				final PropertyDescriptor[] res =
 				{
 						prop("Label", "the label for this data item"),
+						prop("Depth", "depth of this position"),
 						prop("Visible", "whether this position is visible"),
 						prop("FixLocation", "the location for this position",
 								OPTIONAL),
