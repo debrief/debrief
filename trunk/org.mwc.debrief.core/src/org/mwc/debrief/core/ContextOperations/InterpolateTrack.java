@@ -51,13 +51,13 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 		// ok, is it worth going for?
 		if (goForIt)
 		{
-			final String title = "Interpolate tracks";
+			final String title = "Resample position data";
 
 			// right,stick in a separator
 			parent.add(new Separator());
 
 			// and the new drop-down list of interpolation frequencies
-			MenuManager newMenu = new MenuManager("Interpolate tracks");
+			MenuManager newMenu = new MenuManager(title);
 			parent.add(newMenu);
 
 			// ok, loop through the time steps, creating an
