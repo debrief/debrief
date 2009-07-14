@@ -89,7 +89,7 @@ public class FishingVesselSym extends PlainSymbol {
 
   public String getType()
   {
-    return "Fishing Vessel";
+    return "Fishing_Vessel";
   }
 
 }
