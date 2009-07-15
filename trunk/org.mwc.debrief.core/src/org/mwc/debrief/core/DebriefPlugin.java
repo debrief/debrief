@@ -16,7 +16,6 @@ import org.mwc.debrief.core.ContextOperations.GenerateJoiningSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTrack;
 import org.mwc.debrief.core.ContextOperations.GroupTracks;
-import org.mwc.debrief.core.ContextOperations.InterpolateTrack;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
 import org.osgi.framework.BundleContext;
 
@@ -149,7 +148,6 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 		// also provide someps extra functionality to the right-click editor
 		RightClickSupport.addRightClickGenerator(new GenerateTrack());
-		RightClickSupport.addRightClickGenerator(new InterpolateTrack());
 		RightClickSupport.addRightClickGenerator(new MergeTracks());
 		RightClickSupport.addRightClickGenerator(new GenerateJoiningSegment());
 		RightClickSupport.addRightClickGenerator(new GroupTracks());
