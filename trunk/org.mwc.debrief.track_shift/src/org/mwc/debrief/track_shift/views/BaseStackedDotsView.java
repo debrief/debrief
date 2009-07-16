@@ -1,6 +1,7 @@
 package org.mwc.debrief.track_shift.views;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Frame;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
@@ -198,6 +199,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * 
 	 * @return the chart, in it's own panel
 	 */
+	@SuppressWarnings("deprecation")
 	private void createStackedPlot(Frame plotControl)
 	{
 
@@ -218,6 +220,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_dotPlot.setRenderer(new ColourStandardXYItemRenderer(
 				new DatedToolTipGenerator(), null, _dotPlot));
 
+		
 		_linePlot = new XYPlot();
 		NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
 		_linePlot.setRangeAxis(absBrgAxis);
@@ -226,6 +229,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
 				new DatedToolTipGenerator(), null, _linePlot);
 		lineRend.setSeriesShapesVisible(1, false);
+		lineRend.setPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
 
 		// set the y axes to autocalculate
