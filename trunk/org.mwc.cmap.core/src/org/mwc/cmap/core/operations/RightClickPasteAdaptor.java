@@ -1,17 +1,24 @@
 package org.mwc.cmap.core.operations;
 
-import java.io.*;
-
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.swt.dnd.Clipboard;
-import org.eclipse.ui.*;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
 
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 
 public class RightClickPasteAdaptor
 {
@@ -116,7 +123,7 @@ public class RightClickPasteAdaptor
 		{
 			// remember stuff
 			// try to take a fresh clone of the data item
-			_data = cloneThese(items);
+			_data = items;
 			_myClipboard = clipboard;
 			_theDestination = theDestination;
 			_theLayers = theLayers;
@@ -134,40 +141,28 @@ public class RightClickPasteAdaptor
 		{
 			AbstractOperation myOperation = new AbstractOperation(getText())
 			{
-				Editable[] _theSubjects;
-
 				public IStatus execute(IProgressMonitor monitor, IAdaptable info)
 						throws ExecutionException
 				{
-					// copy in the new data
-					EditableTransfer transfer = EditableTransfer.getInstance();
-					_theSubjects = (Editable[]) _myClipboard.getContents(transfer);
-
-					// paste the new data in it's Destination
-					for (int i = 0; i < _theSubjects.length; i++)
-					{
-						Editable editable = _theSubjects[i];
-						_theDestination.add(editable);
-					}
-
-					// inform the listeners
-					_theLayers.fireExtended();
-
-					return Status.OK_STATUS;
+					// and let redo do the rest
+					return redo(monitor, info);
 				}
 
 				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 						throws ExecutionException
 				{
 					// paste the new data in it's Destination
-					for (int i = 0; i < _theSubjects.length; i++)
+					for (int i = 0; i < _data.length; i++)
 					{
-						Editable editable = _theSubjects[i];
+						Editable editable = _data[i];
 						_theDestination.add(editable);
 					}
 
 					// inform the listeners
 					_theLayers.fireExtended();
+
+					// now clear the clipboard
+					_myClipboard.clearContents();
 
 					return Status.OK_STATUS;
 				}
@@ -176,14 +171,18 @@ public class RightClickPasteAdaptor
 						throws ExecutionException
 				{
 					// paste the new data in it's Destination
-					for (int i = 0; i < _theSubjects.length; i++)
+					for (int i = 0; i < _data.length; i++)
 					{
-						Editable editable = _theSubjects[i];
+						Editable editable = _data[i];
 						_theDestination.removeElement(editable);
 					}
 
 					// inform the listeners
 					_theLayers.fireExtended();
+					
+					// put the contents back in the clipbard
+					EditableTransfer transfer = EditableTransfer.getInstance();
+					_myClipboard.setContents(_data,new Transfer[]{transfer});
 					
 					return Status.OK_STATUS;
 				}
@@ -208,66 +207,6 @@ public class RightClickPasteAdaptor
 	// ////////////////////////////////////////////
 	// clone items, using "Serializable" interface
 	// ///////////////////////////////////////////////
-
-	/**
-	 * create duplicates of this series of items
-	 */
-	static public Editable[] cloneThese(Editable[] items)
-	{
-		Editable[] res = new Editable[items.length];
-		for (int i = 0; i < items.length; i++)
-		{
-			Editable thisOne = items[i];
-			res[i] = cloneThis(thisOne);
-		}
-		return res;
-	}
-
-	/**
-	 * duplicate this item
-	 * 
-	 * @param item
-	 * @return
-	 */
-	static public Editable cloneThis(Editable item)
-	{
-		Editable res = null;
-		try
-		{
-			java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
-			java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
-			oos.writeObject(item);
-			// get closure
-			oos.close();
-			bas.close();
-
-			// now get the item
-			byte[] bt = bas.toByteArray();
-
-			// and read it back in as a new item
-			java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
-
-			// create the reader
-			java.io.ObjectInputStream iis = new ObjectInputStream(bis);
-
-			// and read it in
-			Object oj = iis.readObject();
-
-			// get more closure
-			bis.close();
-			iis.close();
-
-			if (oj instanceof Editable)
-			{
-				res = (Editable) oj;
-			}
-		}
-		catch (Exception e)
-		{
-			MWC.Utilities.Errors.Trace.trace(e);
-		}
-		return res;
-	}
 
 	public static class PasteLayer extends PasteItem
 	{
@@ -325,6 +264,9 @@ public class RightClickPasteAdaptor
 					}
 					// inform the listeners
 					_theLayers.fireExtended();
+					
+					// now clear the clipboard
+					_myClipboard.clearContents();
 
 					return Status.OK_STATUS;
 				}
@@ -332,33 +274,7 @@ public class RightClickPasteAdaptor
 				public IStatus redo(IProgressMonitor monitor, IAdaptable info)
 						throws ExecutionException
 				{
-					for (int i = 0; i < _data.length; i++)
-					{
-						Editable thisItem = _data[i];
-						
-						// copy in the new data
-						// do we have a destination layer?
-						if (_theDestination != null)
-						{
-							// extract the layer
-							Layer newLayer = (Layer) thisItem;
-
-							// add it to the target layer
-							_theDestination.add(newLayer);
-						}
-						else
-						{
-							// extract the layer
-							Layer newLayer = (Layer) thisItem;
-
-							// add it to the top level
-							_theLayers.addThisLayer(newLayer);
-						}
-					}
-					// inform the listeners
-					_theLayers.fireExtended();
-
-					return Status.OK_STATUS;
+					return execute(monitor,info);
 				}
 
 				public IStatus undo(IProgressMonitor monitor, IAdaptable info)
@@ -383,6 +299,10 @@ public class RightClickPasteAdaptor
 						}
 					}
 					
+					// put the contents back in the clipbard
+					EditableTransfer transfer = EditableTransfer.getInstance();
+					_myClipboard.setContents(_data,new Transfer[]{transfer});
+
 					return Status.OK_STATUS;
 				}
 			};

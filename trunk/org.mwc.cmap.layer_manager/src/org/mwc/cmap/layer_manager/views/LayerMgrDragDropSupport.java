@@ -1,17 +1,37 @@
 package org.mwc.cmap.layer_manager.views;
 
-import java.io.*;
-import java.util.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.dnd.*;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.StructuredViewer;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DragSourceEvent;
+import org.eclipse.swt.dnd.DragSourceListener;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.widgets.TreeItem;
-import org.mwc.cmap.core.operations.RightClickPasteAdaptor;
+import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor;
 import org.mwc.cmap.core.operations.RightClickCutCopyAdaptor.EditableTransfer;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 
-import Debrief.Wrappers.*;
-import MWC.GUI.*;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.NarrativeWrapper;
+import Debrief.Wrappers.TacticalDataWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Chart.Painters.ETOPOPainter;
 import MWC.TacticalData.NarrativeEntry;
 
@@ -421,7 +441,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 
 				// ok, we need to add a new instance of the dragee (so we can support
 				// multiple instances)
-				Editable newDragee = (Editable) RightClickPasteAdaptor.cloneThis(dragee);
+				Editable newDragee = (Editable) RightClickCutCopyAdaptor.cloneThis(dragee);
 
 				// also add it to the plottable layer target
 				BaseLayer dest = (BaseLayer) destination.getEditable();

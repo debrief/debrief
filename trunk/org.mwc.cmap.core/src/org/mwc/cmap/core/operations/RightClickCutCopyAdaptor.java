@@ -142,12 +142,14 @@ public class RightClickCutCopyAdaptor
 
 		protected String[] getTypeNames()
 		{
-			return new String[] { MYTYPENAME };
+			return new String[]
+			{ MYTYPENAME };
 		}
 
 		protected int[] getTypeIds()
 		{
-			return new int[] { MYTYPEID };
+			return new int[]
+			{ MYTYPEID };
 		}
 	}
 
@@ -189,8 +191,12 @@ public class RightClickCutCopyAdaptor
 					updateLayers);
 
 			// now the copy action
-			copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
-					updateLayers);
+			// hey, it it cloneable?
+//			if (editables[0] instanceof Cloneable)
+//			{
+				copier = new CopyItem(editables, _clipboard, parentLayers, theLayers,
+						updateLayers);
+//			}
 
 			// create the menu items
 
@@ -263,8 +269,9 @@ public class RightClickCutCopyAdaptor
 			{
 				// copy in the new data
 				EditableTransfer transfer = EditableTransfer.getInstance();
-				_myClipboard.setContents(new Object[] { _oldContents },
-						new Transfer[] { transfer });
+				_myClipboard.setContents(new Object[]
+				{ _oldContents }, new Transfer[]
+				{ transfer });
 			}
 			// and forget what we're holding
 			_oldContents = null;
@@ -360,8 +367,9 @@ public class RightClickCutCopyAdaptor
 
 					// copy in the new data
 					EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(new Object[] { _data },
-							new Transfer[] { transfer });
+					_myClipboard.setContents(new Object[]
+					{ _data }, new Transfer[]
+					{ transfer });
 
 					for (int i = 0; i < _data.length; i++)
 					{
@@ -425,11 +433,15 @@ public class RightClickCutCopyAdaptor
 	// ///////////////////////////////////////////////
 	public static class CopyItem extends CutItem
 	{
+		private final String _originalName;
+		
 		public CopyItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
 				Layers theLayers, Layer[] updateLayer)
 		{
-			super(data, clipboard, theParent, theLayers, updateLayer);
+			super(cloneThese(data), clipboard, theParent, theLayers, updateLayer);
 
+			_originalName = data[0].getName();
+			
 			super.setText(toString());
 			super.setImageDescriptor(PlatformUI.getWorkbench().getSharedImages()
 					.getImageDescriptor(ISharedImages.IMG_TOOL_COPY));
@@ -442,7 +454,7 @@ public class RightClickCutCopyAdaptor
 			if (_data.length > 1)
 				res += _data.length + " selected items";
 			else
-				res += _data[0].getName();
+				res += _originalName;
 			return res;
 		}
 
@@ -497,8 +509,9 @@ public class RightClickCutCopyAdaptor
 
 					// copy in the new data
 					EditableTransfer transfer = EditableTransfer.getInstance();
-					_myClipboard.setContents(new Object[] { _data },
-							new Transfer[] { transfer });
+					_myClipboard.setContents(new Object[]
+					{ _data }, new Transfer[]
+					{ transfer });
 				}
 			};
 			// put in the global context, for some reason
@@ -518,9 +531,78 @@ public class RightClickCutCopyAdaptor
 
 			// copy in the new data
 			EditableTransfer transfer = EditableTransfer.getInstance();
-			_myClipboard.setContents(new Object[] { _data },
-					new Transfer[] { transfer });
+			_myClipboard.setContents(new Object[]
+			{ _data }, new Transfer[]
+			{ transfer });
 		}
+	}
+
+	/**
+	 * create duplicates of this series of items
+	 */
+	static public Editable[] cloneThese(Editable[] items)
+	{
+		Editable[] res = new Editable[items.length];
+		for (int i = 0; i < items.length; i++)
+		{
+			Editable thisOne = items[i];
+			Editable clonedItem = cloneThis(thisOne);
+			res[i] = clonedItem;
+
+			// see if we can rename it
+			if (clonedItem instanceof Layer)
+			{
+				Layer thisL = (Layer) clonedItem;
+				thisL.setName("Copy of " + clonedItem.getName());
+			}
+		}
+		return res;
+	}
+
+	/**
+	 * duplicate this item
+	 * 
+	 * @param item
+	 * @return
+	 */
+	static public Editable cloneThis(Editable item)
+	{
+		Editable res = null;
+		try
+		{
+			java.io.ByteArrayOutputStream bas = new ByteArrayOutputStream();
+			java.io.ObjectOutputStream oos = new ObjectOutputStream(bas);
+			oos.writeObject(item);
+			// get closure
+			oos.close();
+			bas.close();
+
+			// now get the item
+			byte[] bt = bas.toByteArray();
+
+			// and read it back in as a new item
+			java.io.ByteArrayInputStream bis = new ByteArrayInputStream(bt);
+
+			// create the reader
+			java.io.ObjectInputStream iis = new ObjectInputStream(bis);
+
+			// and read it in
+			Object oj = iis.readObject();
+
+			// get more closure
+			bis.close();
+			iis.close();
+
+			if (oj instanceof Editable)
+			{
+				res = (Editable) oj;
+			}
+		}
+		catch (Exception e)
+		{
+			MWC.Utilities.Errors.Trace.trace(e);
+		}
+		return res;
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -688,9 +770,10 @@ public class RightClickCutCopyAdaptor
 			Layers updateLayers = new Layers();
 			updateLayers.addThisLayer(tw);
 			final Clipboard clipboard = new Clipboard(Display.getDefault());
-			Layer[] parentLayer = new Layer[] { tw };
-			CutItem ci = new CutItem(new Editable[] { fw2 }, clipboard, parentLayer,
-					updateLayers, parentLayer);
+			Layer[] parentLayer = new Layer[]
+			{ tw };
+			CutItem ci = new CutItem(new Editable[]
+			{ fw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			// check our item's in there
 			assertTrue("item there before op", isPositionThere(tw, fw2));
 			assertTrue("item there before op", isPositionThere(tw, fw3));
@@ -704,9 +787,10 @@ public class RightClickCutCopyAdaptor
 			assertTrue("item back again after op", isPositionThere(tw, fw2));
 
 			// now let's try two items
-			parentLayer = new Layer[] { tw, tw };
-			CutItem c2 = new CutItem(new Editable[] { fw2, fw4 }, clipboard,
-					parentLayer, updateLayers, parentLayer);
+			parentLayer = new Layer[]
+			{ tw, tw };
+			CutItem c2 = new CutItem(new Editable[]
+			{ fw2, fw4 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isPositionThere(tw, fw2));
 			assertTrue("item there before op", isPositionThere(tw, fw3));
 			assertTrue("item there before op", isPositionThere(tw, fw4));
@@ -722,9 +806,10 @@ public class RightClickCutCopyAdaptor
 			assertTrue("item back again after op", isPositionThere(tw, fw4));
 
 			// right, now let's try to delete a sensor item
-			parentLayer = new Layer[] { swa };
-			CutItem c3 = new CutItem(new Editable[] { scwa1 }, clipboard,
-					parentLayer, updateLayers, parentLayer);
+			parentLayer = new Layer[]
+			{ swa };
+			CutItem c3 = new CutItem(new Editable[]
+			{ scwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scwa2));
 			assertTrue("item there before op", isSensorThere(tw, scwa3));
@@ -737,9 +822,10 @@ public class RightClickCutCopyAdaptor
 			assertTrue("item back again after op", isSensorThere(tw, scwa2));
 			assertTrue("item back again after op", isSensorThere(tw, scwa3));
 			// now let's try two items
-			parentLayer = new Layer[] { swa, swa };
-			c3 = new CutItem(new Editable[] { scwa1, scwa2 }, clipboard, parentLayer,
-					updateLayers, parentLayer);
+			parentLayer = new Layer[]
+			{ swa, swa };
+			c3 = new CutItem(new Editable[]
+			{ scwa1, scwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scwa2));
 			assertTrue("item there before op", isSensorThere(tw, scwa3));
@@ -752,9 +838,10 @@ public class RightClickCutCopyAdaptor
 			assertTrue("item back again after op", isSensorThere(tw, scwa2));
 			assertTrue("item back again after op", isSensorThere(tw, scwa3));
 			// now let's try two items in different layers
-			parentLayer = new Layer[] { swa, sw };
-			c3 = new CutItem(new Editable[] { scwa1, scw2 }, clipboard, parentLayer,
-					updateLayers, parentLayer);
+			parentLayer = new Layer[]
+			{ swa, sw };
+			c3 = new CutItem(new Editable[]
+			{ scwa1, scw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isSensorThere(tw, scwa1));
 			assertTrue("item there before op", isSensorThere(tw, scw2));
 			assertTrue("item there before op", isSensorThere(tw, scwa3));
@@ -771,9 +858,10 @@ public class RightClickCutCopyAdaptor
 			// now for TMA!
 
 			// right, now let's try to delete a sensor item
-			parentLayer = new Layer[] { mwa };
-			c3 = new CutItem(new Editable[] { tcwa1 }, clipboard, parentLayer,
-					updateLayers, parentLayer);
+			parentLayer = new Layer[]
+			{ mwa };
+			c3 = new CutItem(new Editable[]
+			{ tcwa1 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
 			assertTrue("item there before op", isContactThere(tw, tcwa3));
@@ -786,9 +874,10 @@ public class RightClickCutCopyAdaptor
 			assertTrue("item back again after op", isContactThere(tw, tcwa2));
 			assertTrue("item back again after op", isContactThere(tw, tcwa3));
 			// now let's try two items
-			parentLayer = new Layer[] { mwa, mwa };
-			c3 = new CutItem(new Editable[] { tcwa1, tcwa2 }, clipboard, parentLayer,
-					updateLayers, parentLayer);
+			parentLayer = new Layer[]
+			{ mwa, mwa };
+			c3 = new CutItem(new Editable[]
+			{ tcwa1, tcwa2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcwa2));
 			assertTrue("item there before op", isContactThere(tw, tcwa3));
@@ -801,9 +890,10 @@ public class RightClickCutCopyAdaptor
 			assertTrue("item back again after op", isContactThere(tw, tcwa2));
 			assertTrue("item back again after op", isContactThere(tw, tcwa3));
 			// now let's try two items in different layers
-			parentLayer = new Layer[] { mwa, mw };
-			c3 = new CutItem(new Editable[] { tcwa1, tcw2 }, clipboard, parentLayer,
-					updateLayers, parentLayer);
+			parentLayer = new Layer[]
+			{ mwa, mw };
+			c3 = new CutItem(new Editable[]
+			{ tcwa1, tcw2 }, clipboard, parentLayer, updateLayers, parentLayer);
 			assertTrue("item there before op", isContactThere(tw, tcwa1));
 			assertTrue("item there before op", isContactThere(tw, tcw2));
 			assertTrue("item there before op", isContactThere(tw, tcwa3));
