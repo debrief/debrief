@@ -765,7 +765,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 						expertLongProp("SymbolFrequency", "the symbol frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("DataFrequency", "the data sample rate",
+						expertLongProp("ResamplePositionsAt", "the data sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)
 
 				};
@@ -1902,7 +1902,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * 
 	 * @return frequency to use
 	 */
-	public final HiResDate getDataFrequency()
+	public final HiResDate getResamplePositionsAt()
 	{
 		return this._lastDataFrequency;
 	}
@@ -2929,7 +2929,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 *          frequency to use
 	 */
 	@FireExtended
-	public final void setDataFrequency(final HiResDate theVal)
+	public final void setResamplePositionsAt(final HiResDate theVal)
 	{
 		this._lastDataFrequency = theVal;
 

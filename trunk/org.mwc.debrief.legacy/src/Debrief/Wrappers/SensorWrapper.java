@@ -158,7 +158,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 
 public class SensorWrapper extends TacticalDataWrapper implements
-		GriddableSeriesMarker
+		GriddableSeriesMarker, Cloneable
 {
 
 	// //////////////////////////////////////

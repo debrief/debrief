@@ -153,14 +153,14 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("has all fixes", 15, tw.numFixes());
 
 		// GO FOR ULTIMATE DECIMATION
-		tw.setDataFrequency(new HiResDate(4  * 1000000l));
+		tw.setResamplePositionsAt(new HiResDate(4  * 1000000l));
 		
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());		
 		assertEquals("has all fixes", 8, tw.numFixes());
 
 		// GO FOR ULTIMATE DECIMATION
-		tw.setDataFrequency(new HiResDate(500000l));
+		tw.setResamplePositionsAt(new HiResDate(500000l));
 		
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
