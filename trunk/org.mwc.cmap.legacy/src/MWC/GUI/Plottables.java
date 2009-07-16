@@ -194,8 +194,13 @@ public class Plottables implements Plottable, Serializable, PlottablesType
 	 * 
 	 * @author ian.mayo
 	 */
-	public static class CompareEditables implements Comparator<Editable>
+	public static class CompareEditables implements Comparator<Editable>, Serializable
 	{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
 		@SuppressWarnings("unchecked")
 		public int compare(Editable p1, Editable p2)
 		{

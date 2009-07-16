@@ -6,13 +6,20 @@
  */
 package MWC.GenericData;
 
+import java.io.Serializable;
+
 
 /**
  * class which represents a speed as a value plus a set of units
  */
-final public class WorldSpeed
+final public class WorldSpeed implements Serializable
 {
-  /////////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////////////
   // member variables
   /////////////////////////////////////////////////////////////////
 
