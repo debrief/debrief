@@ -1,41 +1,41 @@
 instructions.configure=\
-addRepository(type:0,location:file${#58}/D:/build/repository/,name:Debrief Local Installer);\
-addRepository(type:1,location:file${#58}/D:/build/repository/,name:Debrief Local Installer);
+addRepository(type:0,location:file${#58}////Needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/repository/,name:Debrief Local Installer);\
+addRepository(type:1,location:file${#58}////Needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/repository/,name:Debrief Local Installer);\
 
-units.1.id=debrief.category
+units.1.id=debrief.platform.category
 units.1.version=1.0.0
 units.1.provides.1.namespace=org.eclipse.equinox.p2.iu
-units.1.provides.1.name=debrief.category
+units.1.provides.1.name=debrief.platform.category
 units.1.provides.1.version=1.0.0
 units.1.properties.1.name=org.eclipse.equinox.p2.type.category
 units.1.properties.1.value=true
 units.1.properties.2.name=org.eclipse.equinox.p2.name
-units.1.properties.2.value=Debrief NG
+units.1.properties.2.value=Platform
 
 units.1.requires.1.namespace=org.eclipse.equinox.p2.iu
-units.1.requires.1.name=org.mwc.cmap.combined.feature.feature.group
-units.1.requires.1.range=[1.0.0,2.0.0)
+units.1.requires.1.name=DebriefNG
+units.1.requires.1.range=0.0.0
 
 units.1.requires.2.namespace=org.eclipse.equinox.p2.iu
-units.1.requires.2.name=org.mwc.debrief.combined.feature.feature.group
-units.1.requires.2.range=[1.0.0,2.0.0)
+units.1.requires.2.name=org.eclipse.help.feature.group
+units.1.requires.2.range=0.0.0
 
 units.1.requires.3.namespace=org.eclipse.equinox.p2.iu
-units.1.requires.3.name=DebriefNG
-units.1.requires.3.range=[3.0.0,4.0.0)
+units.1.requires.3.name=org.eclipse.platform.feature.group
+units.1.requires.3.range=0.0.0
 
 units.1.requires.4.namespace=org.eclipse.equinox.p2.iu
-units.1.requires.4.name=org.eclipse.help.feature.group
+units.1.requires.4.name=org.eclipse.rcp.feature.group
 units.1.requires.4.range=0.0.0
 
 units.1.requires.5.namespace=org.eclipse.equinox.p2.iu
-units.1.requires.5.name=org.eclipse.platform.feature.group
+units.1.requires.5.name=org.eclipse.equinox.p2.user.ui.feature.group
 units.1.requires.5.range=0.0.0
 
 units.1.requires.6.namespace=org.eclipse.equinox.p2.iu
-units.1.requires.6.name=org.eclipse.rcp.feature.group
+units.1.requires.6.name=org.mwc.cmap.combined.feature.feature.group
 units.1.requires.6.range=0.0.0
 
 units.1.requires.7.namespace=org.eclipse.equinox.p2.iu
-units.1.requires.7.name=org.eclipse.equinox.p2.user.ui.feature.group
+units.1.requires.7.name=org.mwc.debrief.combined.feature.feature.group
 units.1.requires.7.range=0.0.0
