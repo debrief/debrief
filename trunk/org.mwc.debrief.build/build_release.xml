@@ -16,6 +16,10 @@
 
 	<target name="clean">
 		<delete dir="${buildDirectory}" />
+		<delete dir="${buildDirectory}/../DebriefNG" />
+		<delete dir="${buildDirectory}/../Repository" />
+			<delete file="${buildDirectory}/../DebriefNG.Zip" />
+			<delete file="${buildDirectory}/../Repository.Zip" />
 	</target>
 
 	<target name="init">
