@@ -1,6 +1,7 @@
 instructions.configure=\
-addRepository(type:0,location:file${#58}////Needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/repository/,name:Debrief Local Installer);\
-addRepository(type:1,location:file${#58}////Needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/repository/,name:Debrief Local Installer);\
+
+addRepository(type:0,location:file${#58}////Needles/MWC%20File%20Structure/Operational%20Analysis/Collaborative/Applications/Debrief/repository/,name:Debrief Local Installer);\
+addRepository(type:1,location:file${#58}////Needles/MWC%20File%20tructure/Operational%20Analysis/Collaborative/Applications/Debrief/repository/,name:Debrief Local Installer);\
 
 units.1.id=debrief.platform.category
 units.1.version=1.0.0
