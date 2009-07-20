@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="org.mwc.cmap.installer" default="upload_online_updaters" basedir=".">
+	<property name="releaseDir" value="W://Operational Analysis/Collaborative/Applications/Debrief" description="the destination for the zip file" />
+	<property name="updateUploadDir" value="${releaseDir}/Repository" description="the destination for the updates" />
+	<target name="upload_online_updaters" description="upload updated files to td submarines directory">
+		<property name="tmpDir" value="D:\TEMP\ng_unpack" />
+		<echo message="emptying tmp dir" />
+		<delete dir="${tmpDir}">
+		</delete>
+
+		<echo message="unpacking updater" />
+		<mkdir dir="${tmpDir}" />
+		<unzip src="${srcDir}/Repository.zip" dest="${tmpDir}">
+		</unzip>
+
+		<echo message="uploading updater" />
+		<copy todir="${updateUploadDir}" preservelastmodified="yes">
+			<fileset dir="${tmpDir}" />
+		</copy>
+
+		<echo message="clear the temp directory again" />
+		<!--  <delete file="${tmpDir}\*.*"></delete> -->
+	</target>
+
+</project>
