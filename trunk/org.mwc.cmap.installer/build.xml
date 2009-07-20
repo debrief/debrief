@@ -7,7 +7,7 @@
 	<property name="advancedInstallerPath" value="C:\Program Files\Caphyon\Advanced Installer 6.4" />
 
 	<!-- and the zip support filenames -->
-	<property name="zipName" value="update.zip" />
+	<property name="zipName" value="Repository.zip" />
 	<property name="miniZipName" value="install_mini.zip" />
 	<property name="zipDest" value="${deployDir}/${zipName}" />
 	<property name="miniZipDest" value="${deployDir}/${miniZipName}" />
@@ -17,13 +17,6 @@
 
 
 	<target name="clean" description="clear the output directory" depends="">
-	</target>
-
-	<target name="delete_temp_files" description="clear the output directory" depends="">
-		<delete dir="${deployDir}" excludes="DebriefNG,DebriefNG/**, .project" />
-		
-		<!-- also delete the cache from the installer directory -->
-		<delete dir="../org.mwc.cmap.installer/ng_installer_settings-cache" />
 	</target>
 
 	<target name="check_the_dist" description="checking all files there" depends="">
@@ -43,14 +36,14 @@
 				<available type="dir" file="${distDir}" />
 			</and>
 		</condition>
-		
-			<!-- here's how to do it in a way that allows wildcards...
+
+		<!-- here's how to do it in a way that allows wildcards...
 				<pathconvert property="cmap_present" setonempty="false" pathsep="/">
 					<path>
 						<fileset dir="${distDir}/features/" includes="org.mwc.cmap.combined.feature_1.0.*/**" />
 					</path>
 				</pathconvert> -->
-		
+
 		<condition property="eclipse_present">
 			<and>
 				<!-- first Debrief   -->
@@ -80,11 +73,9 @@
 			<and>
 				<!-- first the plugins -->
 				<available type="dir" file="${distDir}\plugins\org.mwc.cmap.legacy_1.0.47" />
-				<!-- now the features -->
-				<available type="dir" file="${distDir}\features\org.mwc.cmap.feature_1.0.75" />
-				<available type="dir" file="${distDir}\features\org.mwc.cmap.layer_manager.feature_1.0.20" />
-				<available type="dir" file="${distDir}\features\org.mwc.cmap.overview.feature_1.0.8" />
-				<available type="dir" file="${distDir}\features\org.mwc.cmap.plot3d.feature_1.0.11" />
+				<!-- now the features  -->
+				<available type="dir" file="${distDir}\features\org.mwc.cmap.combined.feature_1.0.10" />
+				<available type="dir" file="${distDir}\features\org.mwc.debrief.combined.feature_1.0.3" />
 			</and>
 		</condition>
 
@@ -97,8 +88,8 @@
 
 	<target name="build_installer" description="do installer" if="do.installer" depends="">
 		<!-- check everything's in the dist -->
-		<echo message="checking the dist" />
-		<antcall target="check_the_dist" />
+<!--		<echo message="checking the dist" />
+		<antcall target="check_the_dist" /> -->
 
 		<echo message="deleting the old installer" />
 		<delete file="${deployDir}\InstallDebrief.exe">
@@ -125,10 +116,11 @@
 	<target name="copyUpdateToZip" description="copy updates to zipDrv" if="zip.drivePresent" depends="">
 		<echo message="zip drive found" />
 
-		<antcall target="zipTheData" />
+		<!--	<antcall target="zipTheData" />	 -->
 
-		<echo message="ditching old zip from zip drive" />
+		<echo message="deleting the old update" />
 		<delete file="${zipPath}/${zipName}" />
+		
 		<echo message="copying new zip to zip drive" />
 		<copy file="${zipDest}" todir="${zipPath}" />
 		<!--  don't bother copying the unpack code.  we haven't got it in linux, and it's waiting already on the LAN	    
@@ -136,7 +128,7 @@
 		<copy file="unpack.xml" todir="h:/" /> -->
 	</target>
 
-	<target name="zipTheData" description="create the zip file for exporting">
+	<!-- <target name="zipTheData" description="create the zip file for exporting">
 		<echo message="ditching old update zip" />
 		<delete file="${zipDest}" />
 		<delete file="${miniZipDest}" />
@@ -147,7 +139,7 @@
 		<zip destFile="${miniZipDest}" whenempty="fail" duplicate="fail">
 			<fileset dir="${deployDir}/DebriefNG" excludes="**/jre" />
 		</zip>
-	</target>
+	</target> -->
 
 
 	<target name="createLinuxDist" description="copy updates to zipDrv" if="do.linux">
@@ -209,18 +201,12 @@
 			<equals arg1="y" arg2="${do.linux.answer}" />
 		</condition>
 
-		<!-- clean the target dist -->
-		<antcall target="delete_temp_files" />
-
 		<!-- do the linux dist -->
 		<antcall target="createLinuxDist" />
 
 		<!-- upload the modified features to the internet -->
 		<antcall target="upload_to_internet" />
 
-		<antcall target="zipTheData" />
-
-		
 		<!-- copy the bits to the zip drive -->
 		<antcall target="prepareUpdateToZip" />
 
