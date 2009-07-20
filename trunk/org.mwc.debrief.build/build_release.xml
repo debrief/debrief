@@ -54,7 +54,27 @@
 		</copy>
 	</target>
 
+	<target name="move_dist">
+		<move todir="${buildDirectory}/../">
+			<fileset dir="${buildDirectory}/tmp/" includes="**" />
+		</move>
+		<move todir="${buildDirectory}/../Repository">
+			<fileset dir="${buildDirectory}/repository/" includes="**" />
+		</move>
+	</target>
+
+	<target name="zip_dist">
+
+		<zip destFile="${buildDirectory}/../DebriefNG.zip" whenempty="fail" duplicate="fail">
+			<fileset dir="${buildDirectory}/../DebriefNG" />
+		</zip>
+		<zip destFile="${buildDirectory}/../Repository.zip" whenempty="fail" duplicate="fail">
+			<fileset dir="${buildDirectory}/../Repository" />
+		</zip>
+	</target>
+
+
 	<!--This target defines the run-order of the targets-->
-	<target name="build" depends="clean, init, pde-build, copy-jre" />
+	<target name="build" depends="clean, init, pde-build, copy-jre, move_dist, zip_dist" />
 
 </project>
