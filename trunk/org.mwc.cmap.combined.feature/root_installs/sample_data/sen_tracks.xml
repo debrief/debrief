@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Fri Jul 03 15:02:53 BST 2009" Name="Debrief Plot">
+<plot Created="Tue Jul 21 14:43:55 BST 2009" Name="Debrief Plot">
 <details Text="Saved with Debrief version dated Thu Jul 02 10:32:36 BST 2009"/>
 <session>
 <layers>
 <track InterpolatePoints="false" LineThickness="2" Name="Frigate" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="false">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
-<TrackSegment Name="Positions" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix Course="149.300" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="0.000" Lat="26.4728894" Long="51.3579817"/>
@@ -829,7 +829,7 @@
 </fix>
 </TrackSegment>
 </track>
-<track InterpolatePoints="false" LineThickness="2" Name="New_SSK" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
+<track InterpolatePoints="false" LineThickness="2" Name="New_SSK" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="false">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <sensor LineThickness="1" Name="New_SSK_BB" TrackName="New_SSK" Visible="false" WormInHole="false">
@@ -1520,515 +1520,515 @@
 <shortLocation Depth="0.000" Lat="26.1968111" Long="51.8043056"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-90.000" Dtg="700103 032125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-90.000" Dtg="700103 032125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="20793.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-91.000" Dtg="700103 032225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-91.000" Dtg="700103 032225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="20064.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1967694" Long="51.8008333"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-91.000" Dtg="700103 032225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-91.000" Dtg="700103 032225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="20064.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="19319.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1966944" Long="51.7971861"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="19319.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="18555.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1965806" Long="51.7933528"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-92.000" Dtg="700103 032425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="18555.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-93.000" Dtg="700103 032525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-93.000" Dtg="700103 032525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="17774.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1964167" Long="51.7893389"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-93.000" Dtg="700103 032525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-93.000" Dtg="700103 032525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="17774.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="16973.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1962028" Long="51.7851250"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="16973.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="16151.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1959222" Long="51.7806972"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-94.000" Dtg="700103 032725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="16151.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-95.000" Dtg="700103 032825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-95.000" Dtg="700103 032825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="15312.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1955778" Long="51.7760861"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-95.000" Dtg="700103 032825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-95.000" Dtg="700103 032825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="15312.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-96.000" Dtg="700103 032925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-96.000" Dtg="700103 032925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="14475.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1951583" Long="51.7714667"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-96.000" Dtg="700103 032925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-96.000" Dtg="700103 032925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="14475.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-97.000" Dtg="700103 033025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-97.000" Dtg="700103 033025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="13642.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1946722" Long="51.7668556"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-97.000" Dtg="700103 033025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-97.000" Dtg="700103 033025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="13642.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-98.000" Dtg="700103 033125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-98.000" Dtg="700103 033125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="12814.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1941167" Long="51.7622528"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-98.000" Dtg="700103 033125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-98.000" Dtg="700103 033125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="12814.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-99.000" Dtg="700103 033225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-99.000" Dtg="700103 033225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="11990.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1934806" Long="51.7576639"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-99.000" Dtg="700103 033225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-99.000" Dtg="700103 033225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="11990.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-101.000" Dtg="700103 033325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-101.000" Dtg="700103 033325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="11172.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1927611" Long="51.7530889"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-101.000" Dtg="700103 033325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-101.000" Dtg="700103 033325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="11172.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-102.000" Dtg="700103 033425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-102.000" Dtg="700103 033425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="10360.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1919472" Long="51.7485361"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-102.000" Dtg="700103 033425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-102.000" Dtg="700103 033425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="10360.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-104.000" Dtg="700103 033525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-104.000" Dtg="700103 033525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="9555.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1910306" Long="51.7440056"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-104.000" Dtg="700103 033525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-104.000" Dtg="700103 033525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="9555.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-106.000" Dtg="700103 033625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-106.000" Dtg="700103 033625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="8759.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1899972" Long="51.7395083"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-106.000" Dtg="700103 033625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-106.000" Dtg="700103 033625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="8759.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-108.000" Dtg="700103 033725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-108.000" Dtg="700103 033725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="7972.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1888361" Long="51.7350472"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-108.000" Dtg="700103 033725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-108.000" Dtg="700103 033725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="7972.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-110.000" Dtg="700103 033825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-110.000" Dtg="700103 033825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="7198.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1875333" Long="51.7306389"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-110.000" Dtg="700103 033825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-110.000" Dtg="700103 033825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="7198.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-113.000" Dtg="700103 033925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-113.000" Dtg="700103 033925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="6437.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1860667" Long="51.7262917"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-113.000" Dtg="700103 033925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-113.000" Dtg="700103 033925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="6437.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-116.000" Dtg="700103 034025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.000" Dtg="700103 034025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="5692.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1844139" Long="51.7220306"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-116.000" Dtg="700103 034025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-116.000" Dtg="700103 034025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="5692.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-120.000" Dtg="700103 034125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-120.000" Dtg="700103 034125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="4969.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1825472" Long="51.7178778"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-120.000" Dtg="700103 034125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-120.000" Dtg="700103 034125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="4969.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-125.000" Dtg="700103 034225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-125.000" Dtg="700103 034225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="4272.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1804361" Long="51.7138778"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-125.000" Dtg="700103 034225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-125.000" Dtg="700103 034225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="4272.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-130.000" Dtg="700103 034325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-130.000" Dtg="700103 034325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="3608.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1780361" Long="51.7100806"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-130.000" Dtg="700103 034325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-130.000" Dtg="700103 034325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="3608.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-138.000" Dtg="700103 034425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-138.000" Dtg="700103 034425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2992.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1754278" Long="51.7064806"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-138.000" Dtg="700103 034425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-138.000" Dtg="700103 034425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2992.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-148.000" Dtg="700103 034525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-148.000" Dtg="700103 034525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2440.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1724833" Long="51.7032083"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-148.000" Dtg="700103 034525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-148.000" Dtg="700103 034525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2440.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-161.000" Dtg="700103 034625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-161.000" Dtg="700103 034625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1974.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1691361" Long="51.7004694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-161.000" Dtg="700103 034625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-161.000" Dtg="700103 034625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1974.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-178.000" Dtg="700103 034725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-178.000" Dtg="700103 034725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1617.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1653778" Long="51.6985083"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="-178.000" Dtg="700103 034725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="-178.000" Dtg="700103 034725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1617.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="162.000" Dtg="700103 034825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="162.000" Dtg="700103 034825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1379.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1613083" Long="51.6976361"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="162.000" Dtg="700103 034825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="162.000" Dtg="700103 034825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1379.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="145.000" Dtg="700103 034925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="145.000" Dtg="700103 034925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1260.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1574111" Long="51.6980861"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="145.000" Dtg="700103 034925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="145.000" Dtg="700103 034925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1260.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="132.000" Dtg="700103 035025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="132.000" Dtg="700103 035025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1211.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1539806" Long="51.6996806"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="132.000" Dtg="700103 035025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="132.000" Dtg="700103 035025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1211.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="124.000" Dtg="700103 035125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="124.000" Dtg="700103 035125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1192.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1511944" Long="51.7021000"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="124.000" Dtg="700103 035125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="124.000" Dtg="700103 035125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1192.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="120.000" Dtg="700103 035225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="120.000" Dtg="700103 035225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1191.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1489889" Long="51.7049389"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="120.000" Dtg="700103 035225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="120.000" Dtg="700103 035225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1191.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1208.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1471972" Long="51.7078889"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1208.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1242.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1457083" Long="51.7108583"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1242.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1295.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1443028" Long="51.7136778"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1295.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1366.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1429611" Long="51.7163528"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1366.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1453.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1416861" Long="51.7189000"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1453.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1539.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1404056" Long="51.7214528"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1539.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1625.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1391222" Long="51.7240056"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 035925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1625.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1711.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1378417" Long="51.7265611"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1711.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1797.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1365611" Long="51.7291139"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1797.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1883.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1352806" Long="51.7316694"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1883.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="1969.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1340028" Long="51.7342222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="1969.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2055.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1327222" Long="51.7367778"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2055.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2141.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1314417" Long="51.7393306"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2141.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2227.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1301639" Long="51.7418861"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2227.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2313.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1288833" Long="51.7444389"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2313.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2399.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1276056" Long="51.7469944"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040825" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2399.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2485.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1263250" Long="51.7495500"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 040925" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2485.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2571.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1250472" Long="51.7521028"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041025" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2571.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2657.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1237667" Long="51.7546583"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041125" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2657.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2729.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1224361" Long="51.7573333"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041225" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2729.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2784.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1210361" Long="51.7601361"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041325" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2784.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2821.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1195639" Long="51.7630833"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041425" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2821.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2840.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1180194" Long="51.7661806"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041525" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2840.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2839.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1163917" Long="51.7694222"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041625" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2839.000"/>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="End" Visible="false">
 <Range Units="yds" Value="2818.000"/>
 <centre>
 <shortLocation Depth="0.000" Lat="26.1146806" Long="51.7728389"/>
 </centre>
 </sensor_contact>
-<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="true">
+<sensor_contact AmbiguousBearing="0.000" Bearing="119.000" Dtg="700103 041725" Frequency="0.000" HasAmbiguousBearing="false" HasFrequency="false" Label=" some message" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false">
 <Range Units="yds" Value="2818.000"/>
 </sensor_contact>
 </sensor>
-<TrackSegment Name="030134.25" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="false">
 <fix Course="243.100" Dtg="700103 013425" Label="0134" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="12.000" SymbolShowing="false" Visible="true">
 <centre>
 <shortLocation Depth="40.000" Lat="26.2831889" Long="52.0640194"/>
@@ -2851,7 +2851,7 @@
 </fix>
 </TrackSegment>
 </track>
-<layer LineThickness="0" Name="Chart Features" Visible="true">
+<layer LineThickness="0" Name="Chart Features" Visible="false">
 <scale AutoMode="true" DisplayUnits="yd" Location="BottomRight" Name="World Default" ScaleMax="15000" ScaleStep="5000" Visible="true">
 <colour Value="DARK_GREY"/>
 </scale>
@@ -2859,364 +2859,364 @@
 <track InterpolatePoints="false" LineThickness="2" Name="TMA_1337" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
 <colour Value="PURPLE"/>
 <font Bold="false" Family="Sans Serif" Italic="true" Size="9"/>
-<TMASegment BaseFrequency="0.000" CourseDegs="119.502" HostTrack="New_SSK" Name="Positions" Visible="true">
+<TMASegment BaseFrequency="0.000" CourseDegs="119.502" HostTrack="New_SSK" LineStyle="Solid" Name="Positions" Visible="true">
 <fix Course="119.502" Dtg="700103 031925" Label="0319" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1995187" Long="51.6064437"/>
+<shortLocation Depth="15.000" Lat="26.2085859" Long="51.6318540"/>
 </centre>
 </fix>
 <fix Course="119.502" Dtg="700103 032025" Label="0320" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1978835" Long="51.6096645"/>
+<shortLocation Depth="15.000" Lat="26.2069507" Long="51.6350751"/>
 </centre>
 </fix>
 <fix Course="119.502" Dtg="700103 032125" Label="0321" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1962483" Long="51.6128854"/>
+<shortLocation Depth="15.000" Lat="26.2053155" Long="51.6382962"/>
 </centre>
 </fix>
 <fix Course="119.502" Dtg="700103 032225" Label="0322" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1946131" Long="51.6161062"/>
+<shortLocation Depth="15.000" Lat="26.2036802" Long="51.6415173"/>
 </centre>
 </fix>
 <fix Course="119.502" Dtg="700103 032325" Label="0323" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1929779" Long="51.6193269"/>
+<shortLocation Depth="15.000" Lat="26.2020450" Long="51.6447383"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 032425" Label="0324" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 032425" Label="0324" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1913427" Long="51.6225477"/>
+<shortLocation Depth="15.000" Lat="26.2004098" Long="51.6479592"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 032525" Label="0325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 032525" Label="0325" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1897075" Long="51.6257683"/>
+<shortLocation Depth="15.000" Lat="26.1987746" Long="51.6511802"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 032625" Label="0326" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 032625" Label="0326" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1880723" Long="51.6289889"/>
+<shortLocation Depth="15.000" Lat="26.1971394" Long="51.6544010"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 032725" Label="0327" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 032725" Label="0327" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1864371" Long="51.6322095"/>
+<shortLocation Depth="15.000" Lat="26.1955041" Long="51.6576219"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 032825" Label="0328" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 032825" Label="0328" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1848019" Long="51.6354300"/>
+<shortLocation Depth="15.000" Lat="26.1938689" Long="51.6608426"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 032925" Label="0329" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 032925" Label="0329" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1831667" Long="51.6386505"/>
+<shortLocation Depth="15.000" Lat="26.1922337" Long="51.6640634"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033025" Label="0330" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033025" Label="0330" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1815315" Long="51.6418709"/>
+<shortLocation Depth="15.000" Lat="26.1905985" Long="51.6672841"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033125" Label="0331" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033125" Label="0331" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1798963" Long="51.6450913"/>
+<shortLocation Depth="15.000" Lat="26.1889633" Long="51.6705047"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033225" Label="0332" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033225" Label="0332" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1782611" Long="51.6483117"/>
+<shortLocation Depth="15.000" Lat="26.1873280" Long="51.6737253"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033325" Label="0333" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033325" Label="0333" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1766259" Long="51.6515320"/>
+<shortLocation Depth="15.000" Lat="26.1856928" Long="51.6769459"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033425" Label="0334" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033425" Label="0334" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1749907" Long="51.6547522"/>
+<shortLocation Depth="15.000" Lat="26.1840576" Long="51.6801664"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033525" Label="0335" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033525" Label="0335" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1733555" Long="51.6579725"/>
+<shortLocation Depth="15.000" Lat="26.1824224" Long="51.6833869"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033625" Label="0336" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033625" Label="0336" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1717203" Long="51.6611926"/>
+<shortLocation Depth="15.000" Lat="26.1807872" Long="51.6866073"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033725" Label="0337" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033725" Label="0337" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1700851" Long="51.6644127"/>
+<shortLocation Depth="15.000" Lat="26.1791519" Long="51.6898277"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033825" Label="0338" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033825" Label="0338" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1684499" Long="51.6676328"/>
+<shortLocation Depth="15.000" Lat="26.1775167" Long="51.6930480"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 033925" Label="0339" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 033925" Label="0339" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1668147" Long="51.6708528"/>
+<shortLocation Depth="15.000" Lat="26.1758815" Long="51.6962683"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034025" Label="0340" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034025" Label="0340" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1651795" Long="51.6740728"/>
+<shortLocation Depth="15.000" Lat="26.1742463" Long="51.6994885"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034125" Label="0341" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034125" Label="0341" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1635443" Long="51.6772928"/>
+<shortLocation Depth="15.000" Lat="26.1726111" Long="51.7027087"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034225" Label="0342" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034225" Label="0342" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1619091" Long="51.6805127"/>
+<shortLocation Depth="15.000" Lat="26.1709758" Long="51.7059289"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034325" Label="0343" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034325" Label="0343" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1602739" Long="51.6837325"/>
+<shortLocation Depth="15.000" Lat="26.1693406" Long="51.7091490"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034425" Label="0344" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034425" Label="0344" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1586387" Long="51.6869523"/>
+<shortLocation Depth="15.000" Lat="26.1677054" Long="51.7123690"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034525" Label="0345" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034525" Label="0345" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1570035" Long="51.6901721"/>
+<shortLocation Depth="15.000" Lat="26.1660702" Long="51.7155891"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034625" Label="0346" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034625" Label="0346" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1553683" Long="51.6933918"/>
+<shortLocation Depth="15.000" Lat="26.1644350" Long="51.7188090"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034725" Label="0347" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034725" Label="0347" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1537331" Long="51.6966115"/>
+<shortLocation Depth="15.000" Lat="26.1627997" Long="51.7220290"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034825" Label="0348" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034825" Label="0348" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1520979" Long="51.6998311"/>
+<shortLocation Depth="15.000" Lat="26.1611645" Long="51.7252488"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 034925" Label="0349" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 034925" Label="0349" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1504627" Long="51.7030507"/>
+<shortLocation Depth="15.000" Lat="26.1595293" Long="51.7284687"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035025" Label="0350" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035025" Label="0350" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1488275" Long="51.7062702"/>
+<shortLocation Depth="15.000" Lat="26.1578941" Long="51.7316885"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035125" Label="0351" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035125" Label="0351" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1471923" Long="51.7094897"/>
+<shortLocation Depth="15.000" Lat="26.1562588" Long="51.7349082"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035225" Label="0352" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035225" Label="0352" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1455571" Long="51.7127091"/>
+<shortLocation Depth="15.000" Lat="26.1546236" Long="51.7381279"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035325" Label="0353" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035325" Label="0353" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1439219" Long="51.7159285"/>
+<shortLocation Depth="15.000" Lat="26.1529884" Long="51.7413476"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035425" Label="0354" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035425" Label="0354" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1422867" Long="51.7191479"/>
+<shortLocation Depth="15.000" Lat="26.1513532" Long="51.7445672"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035525" Label="0355" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035525" Label="0355" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1406515" Long="51.7223672"/>
+<shortLocation Depth="15.000" Lat="26.1497180" Long="51.7477867"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035625" Label="0356" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035625" Label="0356" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1390163" Long="51.7255864"/>
+<shortLocation Depth="15.000" Lat="26.1480827" Long="51.7510062"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035725" Label="0357" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035725" Label="0357" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1373811" Long="51.7288057"/>
+<shortLocation Depth="15.000" Lat="26.1464475" Long="51.7542257"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035825" Label="0358" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035825" Label="0358" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1357459" Long="51.7320248"/>
+<shortLocation Depth="15.000" Lat="26.1448123" Long="51.7574452"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 035925" Label="0359" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 035925" Label="0359" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1341107" Long="51.7352440"/>
+<shortLocation Depth="15.000" Lat="26.1431771" Long="51.7606645"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040025" Label="0400" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040025" Label="0400" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1324755" Long="51.7384630"/>
+<shortLocation Depth="15.000" Lat="26.1415419" Long="51.7638839"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040125" Label="0401" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040125" Label="0401" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1308403" Long="51.7416821"/>
+<shortLocation Depth="15.000" Lat="26.1399066" Long="51.7671032"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040225" Label="0402" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040225" Label="0402" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1292052" Long="51.7449011"/>
+<shortLocation Depth="15.000" Lat="26.1382714" Long="51.7703224"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040325" Label="0403" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040325" Label="0403" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1275700" Long="51.7481200"/>
+<shortLocation Depth="15.000" Lat="26.1366362" Long="51.7735416"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040425" Label="0404" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040425" Label="0404" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1259348" Long="51.7513389"/>
+<shortLocation Depth="15.000" Lat="26.1350010" Long="51.7767608"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040525" Label="0405" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040525" Label="0405" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1242996" Long="51.7545578"/>
+<shortLocation Depth="15.000" Lat="26.1333658" Long="51.7799799"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040625" Label="0406" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040625" Label="0406" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1226644" Long="51.7577766"/>
+<shortLocation Depth="15.000" Lat="26.1317305" Long="51.7831990"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040725" Label="0407" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040725" Label="0407" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1210292" Long="51.7609954"/>
+<shortLocation Depth="15.000" Lat="26.1300953" Long="51.7864180"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040825" Label="0408" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040825" Label="0408" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1193940" Long="51.7642141"/>
+<shortLocation Depth="15.000" Lat="26.1284601" Long="51.7896370"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 040925" Label="0409" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 040925" Label="0409" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1177588" Long="51.7674328"/>
+<shortLocation Depth="15.000" Lat="26.1268249" Long="51.7928559"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041025" Label="0410" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041025" Label="0410" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1161236" Long="51.7706514"/>
+<shortLocation Depth="15.000" Lat="26.1251897" Long="51.7960748"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041125" Label="0411" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041125" Label="0411" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1144884" Long="51.7738700"/>
+<shortLocation Depth="15.000" Lat="26.1235544" Long="51.7992936"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041225" Label="0412" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041225" Label="0412" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1128532" Long="51.7770885"/>
+<shortLocation Depth="15.000" Lat="26.1219192" Long="51.8025124"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041325" Label="0413" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041325" Label="0413" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1112180" Long="51.7803070"/>
+<shortLocation Depth="15.000" Lat="26.1202840" Long="51.8057312"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041425" Label="0414" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041425" Label="0414" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1095828" Long="51.7835255"/>
+<shortLocation Depth="15.000" Lat="26.1186488" Long="51.8089499"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041525" Label="0415" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041525" Label="0415" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1079476" Long="51.7867439"/>
+<shortLocation Depth="15.000" Lat="26.1170136" Long="51.8121686"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041625" Label="0416" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041625" Label="0416" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1063124" Long="51.7899622"/>
+<shortLocation Depth="15.000" Lat="26.1153783" Long="51.8153872"/>
 </centre>
 </fix>
-<fix Course="119.502" Dtg="700103 041725" Label="0417" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="true">
+<fix Course="119.502" Dtg="700103 041725" Label="0417" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="11.954" SymbolShowing="true" Visible="false">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="15.000" Lat="26.1046772" Long="51.7931806"/>
+<shortLocation Depth="15.000" Lat="26.1137431" Long="51.8186057"/>
 </centre>
 </fix>
 <Speed Units="kts" Value="11.954"/>
-<Offset BearingDegs="-89.154">
-<Range Units="degs" Value="0.183"/>
+<Offset BearingDegs="-85.805">
+<Range Units="degs" Value="0.161"/>
 </Offset>
 </TMASegment>
 </track>

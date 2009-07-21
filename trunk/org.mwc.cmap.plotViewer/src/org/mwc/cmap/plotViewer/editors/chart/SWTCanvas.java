@@ -188,6 +188,9 @@ public class SWTCanvas extends SWTCanvasAdapter
 				// System.out.println("loc is:" + e);
 				// _tooltip.setBounds(e.x, e.y, 200,50);
 				// _tooltip.setVisible(true);
+				
+				// clear the existing tooltip
+				_myCanvas.setToolTipText(null);
 
 				if (tip != null)
 				{

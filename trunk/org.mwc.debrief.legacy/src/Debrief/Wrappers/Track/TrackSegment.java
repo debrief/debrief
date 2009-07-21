@@ -66,10 +66,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			try
 			{
 				final PropertyDescriptor[] res =
-				{ 
-						expertProp("Visible", "whether this layer is visible", FORMAT),
-						expertProp("LineStyle", "how to plot this line", FORMAT),
-						};
+				{ expertProp("Visible", "whether this layer is visible", FORMAT),
+						expertProp("LineStyle", "how to plot this line", FORMAT), };
 				res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
 				return res;
 			}
@@ -101,13 +99,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	private WorldVector _vecTempLastVector = null;
 
 	protected long _vecTempLastDTG = -2;
-	
-	/** how to plot this line
+
+	/**
+	 * how to plot this line
 	 * 
 	 */
 	private int _lineStyle = CanvasType.SOLID;
 
-	/** how this line is plotted
+	/**
+	 * how this line is plotted
 	 * 
 	 * @return
 	 */
@@ -116,7 +116,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		return _lineStyle;
 	}
 
-	/** specify how this line is to be plotted
+	/**
+	 * specify how this line is to be plotted
 	 * 
 	 * @param lineStyle
 	 */
@@ -268,7 +269,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		String name = "infill_"
 				+ FormatRNDateTime.toShortString(new Date().getTime());
 		this.setName(name);
-		
+
 		// also make it dotted, since it's artificially generated
 		this.setLineStyle(CanvasType.DOTTED);
 	}
@@ -352,7 +353,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	{
 		// remember the fix
 		this.addFixSilent(fix);
-		
+
 		// override the name, just in case this point is earlier
 		sortOutDate();
 	}
@@ -365,8 +366,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		fix.setTrackWrapper(_myTrack);
 	}
 
-	
-	/** add the elements in the indicated layer to us.
+	/**
+	 * add the elements in the indicated layer to us.
 	 * 
 	 */
 	public void append(final Layer other)
@@ -377,25 +378,27 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		// have a look and see if we're a DR track
 		if (this.getPlotRelative())
 		{
-			// right, we've got to make sure our last point is correctly pointing to the first point of this new track
-			//   - sort it out
+			// right, we've got to make sure our last point is correctly pointing to
+			// the first point of this new track
+			// - sort it out
 			FixWrapper first = (FixWrapper) enumer.nextElement();
 			FixWrapper myLast = (FixWrapper) this.last();
 			WorldVector offset = first.getLocation().subtract(myLast.getLocation());
-			
+
 			double courseRads = offset.getBearing();
-			double timeSecs = (first.getTime().getDate().getTime() - myLast.getTime().getDate().getTime()) / 1000;
+			double timeSecs = (first.getTime().getDate().getTime() - myLast.getTime()
+					.getDate().getTime()) / 1000;
 			// start off with the course
 
 			// and now the speed
-			double distYds = new WorldDistance(offset.getRange(),
-					WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+			double distYds = new WorldDistance(offset.getRange(), WorldDistance.DEGS)
+					.getValueIn(WorldDistance.YARDS);
 			double spdYps = distYds / timeSecs;
 			double thisSpeedKts = MWC.Algorithms.Conversions.Yps2Kts(spdYps);
-			
+
 			myLast.setCourse(courseRads);
 			myLast.setSpeed(thisSpeedKts);
-			
+
 			// and add this one
 			addFix(first);
 		}
@@ -534,19 +537,40 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	}
 
+	private Vector<FixWrapper> getVisiblePoints()
+	{
+		Vector<FixWrapper> res = new Vector<FixWrapper>();
+
+		Enumeration<Editable> items = this.elements();
+		while (items.hasMoreElements())
+		{
+			FixWrapper next = (FixWrapper) items.nextElement();
+			if (next.getVisible())
+				res.add(next);
+		}
+
+		return res;
+	}
+
 	@Override
 	public double rangeFrom(final WorldLocation other)
 	{
-		final FixWrapper first = (FixWrapper) this.first();
-		final FixWrapper last = (FixWrapper) this.last();
-		final WorldArea area = new WorldArea(first.getFixLocation(), last
-				.getFixLocation());
-		final WorldLocation centrePt = area.getCentre();
-		final double centre = centrePt.rangeFrom(other);
-		final double oneEnd = first.rangeFrom(other);
-		final double otherEnd = last.rangeFrom(other);
-		double res = Math.min(centre, oneEnd);
-		res = Math.min(res, otherEnd);
+		double res = Plottable.INVALID_RANGE;
+		final Vector<FixWrapper> visPoints = getVisiblePoints();
+
+		if (visPoints.size() > 0)
+		{
+			final FixWrapper first = visPoints.firstElement();
+			final FixWrapper last = visPoints.lastElement();
+			final WorldArea area = new WorldArea(first.getFixLocation(), last
+					.getFixLocation());
+			final WorldLocation centrePt = area.getCentre();
+			final double centre = centrePt.rangeFrom(other);
+			final double oneEnd = first.rangeFrom(other);
+			final double otherEnd = last.rangeFrom(other);
+			res = Math.min(centre, oneEnd);
+			res = Math.min(res, otherEnd);
+		}
 		return res;
 	}
 
