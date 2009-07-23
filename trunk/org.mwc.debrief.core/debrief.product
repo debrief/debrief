@@ -33,7 +33,7 @@
 
    <vm>
       <linux>java-6-sun-1.6.0.03</linux>
-      <macos>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5</macos>
+      <macos>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</macos>
       <windows>jre1.6.0_06</windows>
    </vm>
 
