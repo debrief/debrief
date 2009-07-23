@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Generate a target track">
+   <intro>
+      <description>
+         This cheat sheet is going to work through creating a segment of target track from bearing data.  The target track is going to represent a period of straight-line motion, and can be interpreted as a Manual TMA Solution
+      </description>
+   </intro>
+   <item
+         title="Decide on sensor data to use">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Generate the TMA segment">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         href="/org.mwc.debrief.help/html/legacy/analysing_data.html#assigning_tracks"
+         title="Put the tracks on the tote">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         href="/org.mwc.debrief.help/html/legacy/formatting_data.html#track_shifting"
+         title="Drag the track segment">
+      <description>
+         <b>You now must manipulate the track segment to minimise the bearing and frequency residuals</b>
+      </description>
+      <subitem
+            label="Review bearing residuals.  When you enter drag-track mode, the view Bearing Residuals view is opened for you - so you can track the current residual errors."
+            skip="true">
+       </subitem>
+      <subitem
+            label="Review frequency residuals.  If you do have frequency data available, open the Frequency Residuals view to track the difference between measured and predicted frequency (taking ownship and target doppler into account)."
+            skip="true">
+         <command
+               required="false"
+               serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.debrief.track_shift.views.FrequencyResidualsView)"/>
+      </subitem>
+   </item>
+</cheatsheet>

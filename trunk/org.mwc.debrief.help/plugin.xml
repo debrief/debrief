@@ -205,10 +205,32 @@
       <!-- and the S2R bits -->
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
-            contentFile="cheat_sheets/S2R/GroomingTracks.xml"
-            id="org.mwc.debrief.help.s2r.grooming"
-            name="Grooming ownship position tracks"/>            
-
+            composite="false"
+            contentFile="$nl$/cheat_sheets/S2R/GroomingTracks.xml"
+            id="org.mwc.debrief.help.cheatsheet.s2r.grooming"
+            name="Grooming track data">
+      </cheatsheet>
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
+            composite="false"
+            contentFile="$nl$/cheat_sheets/S2R/GenerateTargetTrack.xml"
+            id="org.mwc.debrief.help.cheatsheet.s2r.genTarget"
+            name="Generate a target track">
+      </cheatsheet>
+      <cheatsheet
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
+            composite="false"
+            contentFile="$nl$/cheat_sheets/S2R/CombineTargetTracks.xml"
+            id="org.mwc.debrief.help.cheatsheet.s2r.combine"
+            name="Combining sections of target track">
+      </cheatsheet>
+      <cheatsheet
+            category="org.mwc.debrief.help.cheat_s2r"
+            composite="true"
+            contentFile="$nl$/cheat_sheets/S2R/GettingStartedComposite.xml"
+            id="org.mwc.debrief.help.cheatsheet.s2r.composite"
+            name="Single Sided Reconstruction in Debrief">
+      </cheatsheet>   
 </extension>
    <extension
          point="org.eclipse.help.contexts">

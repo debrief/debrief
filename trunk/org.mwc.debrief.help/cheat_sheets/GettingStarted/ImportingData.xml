@@ -10,8 +10,10 @@
 	<item title="View sample data">
 		<description>In the Navigator, expand the folder that contains your existing Debrief files (either REP or XML).  REP files are flagged with a Debrief icon. </description>
 	</item>
-	<item title="Drag in some tracks">
-		<description>Drag one or more tracks from your Navigator onto the plot.  The plot and any associated views will promptly update.  When REP files are dragged in, you may be asked whether you wish to import the data in Over The Ground (OTG) or Dead Reckoning (DR) mode.</description>
+	<item
+       href="/org.mwc.debrief.help/html/legacy/import_range_data.html#import_modes"
+       title="Drag in some tracks">
+		<description>Drag one or more tracks from your Navigator onto the plot.  The plot and any associated views will promptly update.  When REP files are dragged in, you may be asked whether you wish to import the data in Over The Ground (OTG) or Dead Reckoning (DR) mode. See help link (?) above for more detail.</description>
 	</item>
 	<item title="Done">
 		<description>There you are, your track data is now on the plot.  Note, tracks can't only be dragged from the Navigator. If you arrange your windows correctly you can drag tracks in directly from Windows Explorer.</description>

@@ -128,6 +128,9 @@ TUTORIALS
 				<link label="Getting started with Debrief NG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial" id="cheat_started">
 					<text>Configure Debrief NG and load your first data </text>
 				</link>
+				<link label="Single sided reconstruction with Debrief NG" url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.cheatsheet.s2r.composite" id="cheat_started">
+					<text>Tidy ownship track and generate target track</text>
+				</link>
 			</group>
 			<group id="overview-links" label="Introductory tasks">
 				<text>Before you start generating and viewing plots in Debrief you have to generate a Project </text>

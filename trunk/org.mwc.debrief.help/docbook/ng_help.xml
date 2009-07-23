@@ -1184,6 +1184,16 @@ Naval Undersea Warfare Center (NUWC)
                             <varlistentry>
                                 <term>
                                     <guiicon>
+                                        <inlinegraphic fileref="figures/SelectSegment.png"
+                                            align="center"/>
+                                    </guiicon>Drag Track Segment</term>
+                                <listitem>
+                                    <para>This setting lets you drag a single segment of track, and is of particular relevance when
+                                        <link linkend="track_shifting">manipulating track segments</link> in Single Sided Reconstruction</para>
+                                </listitem>
+                            </varlistentry>                            <varlistentry>
+                                <term>
+                                    <guiicon>
                                         <inlinegraphic fileref="figures/DragComponent.png"
                                             align="center"/>
                                     </guiicon>Drag Component </term>
@@ -1441,10 +1451,10 @@ Naval Undersea Warfare Center (NUWC)
                                 David Gong at <link linkend="nuwc_address">NUWC</link>. </para>
                         </note>
                     </para>
-                    <para>Debrief NG provides two modes of track shifting - moving individual points
-                        in a track to correct a potentially erroneous data point, or moving whole
+                    <para>Debrief NG provides three modes of track shifting - moving individual track segments, moving individual points
+                        in a track to correct a potentially erroneous data point, moving whole
                         tracks to overcome navigational system inaccuracies - such as during a
-                        plot-lock or tie-in. See the two modes above in <xref
+                        plot-lock or tie-in. See the three modes above in <xref
                             linkend="toggle_buttons"/>.</para>
                     <para>A Stacked Dots view is used to show bearing-errors when the track-shift is
                         being conducted to line up one or two sets of <link linkend="sensor_data"
@@ -1453,7 +1463,9 @@ Naval Undersea Warfare Center (NUWC)
                         the point on the opposing track nearest to that time. Each time the track is
                         shifted (dragged) <application>Debrief</application> calculates the error
                         between the sensor bearing and the current measured bearing, showing these
-                        in a plot (bearing error against time). </para>
+                        in a plot (bearing error against time). Note, that a Sensor Offset measurement
+                        is applied to the sensor bearing line where there sensor datum is offset from the
+                        attack datum of the platform.</para>
                     <para>
                         <application>Debrief</application> displays a symbol for each visible sensor
                         data, with the symbol being plotted the same colour as the sensor data. When
@@ -1467,6 +1479,9 @@ Naval Undersea Warfare Center (NUWC)
                         in on a particular area (by dragging an area downward and to the right) of
                         the time-variable plot for detailed analysis, dragging the mouse up and to
                         the left to clear the zoom. </para>
+                    <para>Note the four modes of drag supported by the bearing error view.  For the non-translate
+                    operations you are still able to perform a translate by picking up the track segment at its
+                    mid-way mark.  </para>
                     <figure float="0" id="stacked_dots_view">
                         <title>Stacked Dots View</title>
                         <screenshot>
@@ -2114,7 +2129,7 @@ Naval Undersea Warfare Center (NUWC)
                             </mediaobject>
                         </screenshot></para>
                 </sect2>
-                <sect2>
+                <sect2 id="SplitTrackSections">
                     <title>Splitting track sections</title>
                     <para>Before a jump can be removed from a track, the track must be split. To
                         split a track, first decide where the split should be made, and right-click
@@ -2139,7 +2154,7 @@ Naval Undersea Warfare Center (NUWC)
                         (dragged) using the 'drag track segment' tool as <link
                             linkend="DraggingTracks">described later</link>.</para>
                 </sect2>
-                <sect2>
+                <sect2 id="JoinTrackSections">
                     <title>Joining track sections</title>
                     <para>Once track segments have been <link linkend="DraggingTracks"
                         >manipulated</link>, they can be rejoined. To rejoin tracks, select them
@@ -2153,7 +2168,7 @@ Naval Undersea Warfare Center (NUWC)
                             </mediaobject>
                         </screenshot></para>
                 </sect2>
-                <sect2>
+                <sect2 id="CombineTrackSections">
                     <title>Combining track sections</title>
                     <para>On occasion, once a series of track segments have been built up (or
                         created using the Generate TMA wizard) you may with to combine them in order
@@ -5021,7 +5036,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         which the course and speed of the whole track (solution) are editable via
                         the Properties Window. </para>
                     <para>The workflow for creating and manipulating TMA segments is covered in the
-                            <emphasis>Managing TMA Solutions</emphasis> cheat sheet in the Debrief
+                        <emphasis>Single Sided Reconstruction in Debrief</emphasis> cheat sheet in the Debrief
                         online help.</para>
                 </sect2>
                 <sect2 id="GeneratingTracks">

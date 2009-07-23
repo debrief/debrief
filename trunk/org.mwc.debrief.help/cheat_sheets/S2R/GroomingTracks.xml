@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet title="Grooming track data">
-	<intro>
+	<intro
+         href="/org.mwc.debrief.help/html/legacy/GroomingTrackData.html">
 		<description>This cheat-sheet will lead you through grooming some dodgy track data. </description>
 	</intro>
 	<item
@@ -29,7 +30,8 @@
 	<item title="Plots loaded">
 		<description>There you are, your track data is now on the plot. In this (fictional) example, you have your blue ownship track shown to the South. Unfortunately this track has a period of missing data.  You've obtained this track section from another source, but its got an offset applied</description>
 	</item>
-	<item title="Get in the ballpark">
+	<item
+         title="Get in the ballpark">
 		<description>We'll start off by moving this rogue track segment down to the right region. To do this, click on the 'Drag whole feature' toolbar button: it's a cursor arrow with a rectangle to its top-right. Now move your hand-shaped cursor over the 'rogue' green track. You'll see your hand turn green as it passes over something that can be dragged.  When its green over the rogue track, click the mouse and drag it down near the remainder of the track (Hint, put it just below the 'g' of the blue track title.  Trust me, I know where it's going to go...).</description>
 	</item>	
 	<item title="Fit to window">

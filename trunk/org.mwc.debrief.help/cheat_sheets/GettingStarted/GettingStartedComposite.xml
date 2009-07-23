@@ -1,33 +1,67 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<compositeCheatsheet xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../compositeContentFile.xsd" name="Getting some data into Debrief NG">
-	<taskGroup name="Getting started with Debrief NG">
-		<taskGroup name="Defining your workspace" kind="sequence">
-			<task kind="cheatsheet" name="Generating a project">
-				<intro>Right, we'll start off by creating a Project that will contain our work</intro>
-				<onCompletion>You've now created a project into which you can store your Debrief data</onCompletion>
-				<param name="id" value="org.mwc.debrief.help.started.generate_project"/>
-				<param name="showIntro" value="true"/>
-			</task>
-			<task kind="cheatsheet" name="Finding your data">
-				<intro>If you already have one or more folders containing Debrief data, you can add them to your Debrief NG project (or load sample data that was installed within Debrief NG)</intro>
-				<onCompletion>You can now repeat this process to create links to your other Debrief data directories.</onCompletion>
-				<param name="id" value="org.mwc.debrief.help.started.existing_data"/>
-			</task>
-			<intro>In comparison with prior versions of Debrief, Debrief NG introduces the concept of a Workspace - a central repository for your assorted analysis-related documents.  Within this workspace your work is grouped into individual projects: thus you can quickly switch between concurrent analysis tasks.  Debrief's provision of projects alows you to quickly drag and drop Debrief data-files and plots.</intro>
-			<onCompletion>Right, Debrief now knows where to find your data.  In the next series of steps you will load and examine some data.</onCompletion>
-		</taskGroup>
-		<taskGroup name="Viewing some data" kind="sequence">
-			<task kind="cheatsheet" name="Creating a new plot">
-				<intro>We will now use Debrief's New Plot wizard to create a plot ready for import of data-files.</intro>
-				<onCompletion>Note that we didn't have to use the wizard steps, we could have inserted chart features into our Plot by hand using the Chart Features menu.  </onCompletion>
-				<param name="id" value="org.mwc.debrief.help.started.create_plot"/>
-			</task>
-			<task kind="cheatsheet" name="Importing some existing data">
-				<intro>Debrief NG stores it's user data in collections named projects.</intro>
-				<param name="id" value="org.mwc.debrief.help.started.loading_data"/>
-			</task>
-			<intro>This series of steps will guide you through creating then populating a new Debrief plot.</intro>
-		</taskGroup>
-		<intro>This series of cheatsheets will guide you through creating your Debrief working environment, customising it according to your preferred file locations, and loading some analysis data.</intro>
-	</taskGroup>
+<compositeCheatsheet name="Getting some data into Debrief NG">
+   <taskGroup name="Getting started with Debrief NG" skip="false">
+      <intro>
+         This series of cheatsheets will guide you through creating your Debrief working environment, customising it according to your preferred file locations, and loading some analysis data.
+      </intro>
+      <taskGroup kind="sequence" name="Defining your workspace" skip="false">
+         <intro>
+            In comparison with prior versions of Debrief, Debrief NG introduces the concept of a Workspace - a central repository for your assorted analysis-related documents.  Within this workspace your work is grouped into individual projects: thus you can quickly switch between concurrent analysis tasks.  Debrief&apos;s provision of projects alows you to quickly drag and drop Debrief data-files and plots.
+         </intro>
+         <onCompletion>
+            Right, Debrief now knows where to find your data.  In the next series of steps you will load and examine some data.
+         </onCompletion>
+         <task kind="cheatsheet" name="Generating a project" skip="false">
+            <intro>
+               Right, we&apos;ll start off by creating a Project that will contain our work
+            </intro>
+            <onCompletion>
+               You&apos;ve now created a project into which you can store your Debrief data
+            </onCompletion>
+            <param name="id" value="org.mwc.debrief.help.started.generate_project">
+            </param>
+            <param name="showIntro" value="true">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Finding your data" skip="false">
+            <intro>
+               If you already have one or more folders containing Debrief data, you can add them to your Debrief NG project (or load sample data that was installed within Debrief NG)
+            </intro>
+            <onCompletion>
+               You can now repeat this process to create links to your other Debrief data directories.
+            </onCompletion>
+            <param name="id" value="org.mwc.debrief.help.started.existing_data">
+            </param>
+         </task>
+      </taskGroup>
+      <taskGroup kind="sequence" name="Viewing some data" skip="false">
+         <intro>
+            This series of steps will guide you through creating then populating a new Debrief plot.
+         </intro>
+         <task kind="cheatsheet" name="Creating a new plot" skip="false">
+            <intro>
+               We will now use Debrief&apos;s New Plot wizard to create a plot ready for import of data-files.
+            </intro>
+            <onCompletion>
+               Note that we didn&apos;t have to use the wizard steps, we could have inserted chart features into our Plot by hand using the Chart Features menu.
+            </onCompletion>
+            <param name="id" value="org.mwc.debrief.help.started.create_plot">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Importing some existing data" skip="false">
+            <intro>
+               Debrief NG stores it&apos;s user data in collections named projects.
+            </intro>
+            <param name="id" value="org.mwc.debrief.help.started.loading_data">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Learn more about the UI" skip="false">
+            <intro>
+               Here you&apos;ll learn more about the Debrief user interface
+            </intro>
+            <param name="path" value="ViewHelpForUI.xml">
+            </param>
+         </task>
+      </taskGroup>
+   </taskGroup>
 </compositeCheatsheet>

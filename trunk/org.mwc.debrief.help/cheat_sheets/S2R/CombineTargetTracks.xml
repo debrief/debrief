@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Combining sections of target track">
+   <intro>
+      <description>
+         Now that you have one or more segments of target track generated, this cheat-sheet is going to cover how to combine the segments, and how to fill in the gaps between the segments.
+      </description>
+   </intro>
+   <item
+         title="Item">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+</cheatsheet>
