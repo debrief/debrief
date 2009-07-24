@@ -11,54 +11,30 @@ package Debrief.ReaderWriter.XML.Tactical;
 
 import org.w3c.dom.Element;
 
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layers;
-import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldVectorHandler;
 
-abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
+abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 {
-	private static final String TMA_SEGMENT = "TMASegment";
-	public static final String COURSE_DEGS = "CourseDegs";
-	public static final String SPEED= "Speed";
+	private static final String TMA_SEGMENT = "RelativeTMASegment";
 	public static final String HOST="HostTrack";
-	public static final String OFFSET="Offset";
-	public static final String BASE_FREQ="BaseFrequency";
-	
+	public static final String OFFSET="Offset";	
 
-	private double _courseDegs = 0d;
-	protected WorldSpeed _speed;
 	protected String _host;
 	protected WorldVector _offset;
 	private final Layers _theLayers;
-	protected double _baseFrequency;
 	
-	public TMASegmentHandler(Layers theLayers)
+	public RelativeTMASegmentHandler(Layers theLayers)
 	{
 		// inform our parent what type of class we are
-		super(TMA_SEGMENT);
+		super(theLayers, TMA_SEGMENT);
 
 		_theLayers = theLayers;
 		
-		addAttributeHandler(new HandleDoubleAttribute(COURSE_DEGS)
-		{
-			@Override
-			public void setValue(String name, double val)
-			{
-				_courseDegs = val;
-			}
-		});
-		addAttributeHandler(new HandleDoubleAttribute(BASE_FREQ)
-		{
-			@Override
-			public void setValue(String name, double val)
-			{
-				_baseFrequency = val;
-			}
-		});
 		addAttributeHandler(new HandleAttribute(HOST)
 		{
 			@Override
@@ -68,13 +44,6 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 			}
 		});
 		
-		addHandler(new WorldSpeedHandler(SPEED){
-			@Override
-			public void setSpeed(WorldSpeed res)
-			{
-				_speed = res;
-			}
-		});
 		addHandler(new WorldVectorHandler(OFFSET){
 		
 			@Override
@@ -92,7 +61,7 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 	@Override
 	protected TrackSegment createTrack()
 	{
-		TMASegment res = new TMASegment(_courseDegs, _speed, _offset, _theLayers);
+		RelativeTMASegment res = new RelativeTMASegment(_courseDegs, _speed, _offset, _theLayers);
 		res.setBaseFrequency(_baseFrequency);
 		res.setHostName(_host);
 		return res;
@@ -100,19 +69,18 @@ abstract public class TMASegmentHandler extends CoreTrackSegmentHandler
 
 
 	public static void exportThisTMASegment(org.w3c.dom.Document doc, Element trk,
-			TMASegment seg)
+			RelativeTMASegment seg)
 	{
 		
 		final Element segE = CoreTrackSegmentHandler.exportThisSegment(doc, seg, TMA_SEGMENT);
+	
+		// export the start bits
+		CoreTMASegmentHandler.exportThisTMASegment(doc, seg, segE);
 
 		// sort out the remaining attributes
-		segE.setAttribute(COURSE_DEGS, writeThis(seg.getCourse()));
-		segE.setAttribute(HOST, seg.getReferenceTrack().getName());
-		segE.setAttribute(BASE_FREQ, writeThis( seg.getBaseFrequency()));
-		
+		segE.setAttribute(HOST, seg.getReferenceTrack().getName());		
 		WorldSpeedHandler.exportSpeed(SPEED, seg.getSpeed(), segE, doc);
-		WorldVectorHandler.exportVector(OFFSET, seg.getOffset(), segE, doc);
-		
+	
 		trk.appendChild(segE);
 		
 	}

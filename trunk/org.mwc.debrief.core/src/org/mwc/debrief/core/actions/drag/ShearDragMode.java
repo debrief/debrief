@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldLocation;
@@ -21,7 +21,7 @@ public class ShearDragMode extends RotateDragMode
 		private WorldLocation _lastLoc;
 
 		public ShearOperation(WorldLocation cursorLoc, WorldLocation origin,
-				TMASegment segment)
+				CoreTMASegment segment)
 		{
 			super(cursorLoc, origin, segment);
 		}
@@ -31,7 +31,7 @@ public class ShearDragMode extends RotateDragMode
 			// find out where the cursor currently is
 			workingLoc.addToMe(vector);
 			
-			TMASegment seg = (TMASegment) _segment;
+			CoreTMASegment seg = (CoreTMASegment) _segment;
 		
 			// undo the previous turn
 			if (_lastLoc != null)
@@ -62,13 +62,13 @@ public class ShearDragMode extends RotateDragMode
 	protected DraggableItem getEndOperation(WorldLocation cursorLoc,
 			TrackSegment seg, FixWrapper subject)
 	{
-		return new ShearOperation(cursorLoc, subject.getFixLocation(), (TMASegment) seg);
+		return new ShearOperation(cursorLoc, subject.getFixLocation(), (CoreTMASegment) seg);
 	}
 	
 	@Override
 	protected boolean isAcceptable(TrackSegment seg)
 	{
-		return (seg instanceof TMASegment);
+		return (seg instanceof CoreTMASegment);
 	}		
 	
 }

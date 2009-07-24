@@ -28,7 +28,7 @@ abstract public class SegmentListHandler extends MWC.Utilities.ReaderWriter.XML.
     // inform our parent what type of class we are
     super(SEGMENT_LIST);
 
-    addHandler(new TMASegmentHandler(theLayers)
+    addHandler(new RelativeTMASegmentHandler(theLayers)
     {
       public void addSegment(TrackSegment segment)
       {

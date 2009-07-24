@@ -24,7 +24,7 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
 import Debrief.Wrappers.Track.TrackWrapper_Support.FixSetter;
@@ -3289,9 +3289,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// aaah, just sort out if we are splitting a TMA segment, in which case we
 		// want to create two
 		// tma segments, not track segments
-		if (relevantSegment instanceof TMASegment)
+		if (relevantSegment instanceof RelativeTMASegment)
 		{
-			TMASegment theTMA = (TMASegment) relevantSegment;
+			RelativeTMASegment theTMA = (RelativeTMASegment) relevantSegment;
 
 			// aah, sort out if we are splitting before or after.
 
@@ -3302,8 +3302,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
 
 			// put the lists back into plottable layers
-			ts1 = new TMASegment(theTMA, p1, theTMA.getOffset());
-			ts2 = new TMASegment(theTMA, p2, secondOffset);
+			ts1 = new RelativeTMASegment(theTMA, p1, theTMA.getOffset());
+			ts2 = new RelativeTMASegment(theTMA, p2, secondOffset);
 
 		}
 		else

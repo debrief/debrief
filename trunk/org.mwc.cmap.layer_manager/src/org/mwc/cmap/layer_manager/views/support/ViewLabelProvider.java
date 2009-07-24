@@ -3,20 +3,31 @@
  */
 package org.mwc.cmap.layer_manager.views.support;
 
-import java.util.*;
+import java.util.Iterator;
+import java.util.Vector;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
-import org.eclipse.ui.*;
+import org.eclipse.ui.ISharedImages;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 
-import Debrief.Wrappers.*;
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TrackWrapper;
+import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
-import MWC.GUI.*;
-import MWC.GUI.Chart.Painters.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
+import MWC.GUI.Chart.Painters.CoastPainter;
+import MWC.GUI.Chart.Painters.GridPainter;
+import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
 
 public class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
@@ -111,7 +122,7 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 				imageKey = "SensorFit.png";
 			else if (editable instanceof SensorContactWrapper)
 				imageKey = "active16.png";
-			else if (editable instanceof TMASegment)
+			else if (editable instanceof CoreTMASegment)
 				imageKey = "tmasegment.png";
 			else if (editable instanceof TrackSegment)
 				imageKey = "tracksegment.gif";

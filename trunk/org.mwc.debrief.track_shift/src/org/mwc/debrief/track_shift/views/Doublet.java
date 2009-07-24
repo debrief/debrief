@@ -7,7 +7,8 @@ import java.awt.Color;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
@@ -113,9 +114,9 @@ public final class Doublet
 	public double getBaseFrequency()
 	{
 		double res = 0d;
-		if(_targetTrack instanceof TMASegment)
+		if(_targetTrack instanceof CoreTMASegment)
 		{
-			TMASegment tma = (TMASegment) _targetTrack;
+			CoreTMASegment tma = (CoreTMASegment) _targetTrack;
 			res = tma.getBaseFrequency();
 		}
 		

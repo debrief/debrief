@@ -540,7 +540,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		double course = 33;
 
 		// ok, create the segment
-		TMASegment seg = null;
+		CoreTMASegment seg = null;
 
 		// check the before
 		FixWrapper firstFix = null;
@@ -557,7 +557,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		sw.add(createSensorItem(tw, sw, 150000));
 		sw.add(createSensorItem(tw, sw, 160000));
 		sw.add(createSensorItem(tw, sw, 170000));
-		seg = new TMASegment(sw, offset, speed, course, null);
+		seg = new RelativeTMASegment(sw, offset, speed, course, null);
 
 		// check the create worked
 		assertEquals("enough points created", 7, seg.size());
@@ -594,8 +594,8 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		// check they're of the correct type
 		TrackSegment seg1 = segs.firstElement();
 		TrackSegment seg2 = segs.lastElement();
-		assertTrue(" is a tma segment", seg1 instanceof TMASegment);
-		assertTrue(" is a tma segment", seg2 instanceof TMASegment);
+		assertTrue(" is a tma segment", seg1 instanceof RelativeTMASegment);
+		assertTrue(" is a tma segment", seg2 instanceof RelativeTMASegment);
 
 	}
 
@@ -1104,7 +1104,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
 		FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
 		WorldVector vector = new WorldVector(0, 1, 0);
-		TMASegment ts = new TMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
+		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
 			private static final long serialVersionUID = 1L;
 			public WorldLocation getHostLocation()
 			{
@@ -1145,7 +1145,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		FixWrapper f1 = createFix(0, 1, 1, 270, 12);
 		FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
 		WorldVector vector = new WorldVector(0, 1, 0);
-		TMASegment ts = new TMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
+		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
 			private static final long serialVersionUID = 1L;
 			public WorldLocation getHostLocation()
 			{
@@ -1199,7 +1199,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		double course = 33;
 	
 		// ok, create the segment
-		TMASegment seg = null;
+		CoreTMASegment seg = null;
 	
 		// check the before
 		FixWrapper firstFix = null;
@@ -1213,7 +1213,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		sw.add(createSensorItem(tw, sw, 120000));
 		sw.add(createSensorItem(tw, sw, 130000));
 		sw.add(createSensorItem(tw, sw, 140000));
-		seg = new TMASegment(sw, offset, speed, course, null);
+		seg = new RelativeTMASegment(sw, offset, speed, course, null);
 	
 		// check the create worked
 		assertEquals("enough points created", 4, seg.size());
@@ -1254,7 +1254,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 			sensorContactWrapper.setSensor(sw);
 		}
 		
-		seg = new TMASegment(items, offset, speed, course, null);
+		seg = new RelativeTMASegment(items, offset, speed, course, null);
 	
 		// check the create worked
 		assertEquals("enough points created", 5, seg.size());

@@ -29,7 +29,7 @@ import org.mwc.debrief.core.wizards.s2r.EnterSolutionPage.SolutionDataItem;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
@@ -95,7 +95,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 				throws ExecutionException
 		{
 			// create it, then
-			TrackSegment seg = new TMASegment(_items, _offset, _speed, _courseDegs, _layers);
+			TrackSegment seg = new RelativeTMASegment(_items, _offset, _speed, _courseDegs, _layers);
 
 			// now wrap it
 			_newTrack = new TrackWrapper();

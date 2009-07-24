@@ -5,7 +5,7 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.Track.TMASegment;
+import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldLocation;
@@ -20,14 +20,14 @@ public class StretchDragMode extends RotateDragMode
 		private Double lastRange;
 
 		public StretchOperation(WorldLocation cursorLoc, WorldLocation origin,
-				TMASegment segment)
+				CoreTMASegment segment)
 		{
 			super(cursorLoc, origin, segment);
 		}
 
 		public void shift(WorldVector vector)
 		{
-			TMASegment seg = (TMASegment) _segment;
+			CoreTMASegment seg = (CoreTMASegment) _segment;
 			
 			// find out where the cursor currently is
 			workingLoc.addToMe(vector);
@@ -69,13 +69,13 @@ public class StretchDragMode extends RotateDragMode
 	protected DraggableItem getEndOperation(WorldLocation cursorLoc,
 			TrackSegment seg, FixWrapper subject)
 	{
-		return new StretchOperation(cursorLoc, subject.getFixLocation(), (TMASegment) seg);
+		return new StretchOperation(cursorLoc, subject.getFixLocation(), (CoreTMASegment) seg);
 	}
 
 	@Override
 	protected boolean isAcceptable(TrackSegment seg)
 	{
-		return (seg instanceof TMASegment);
+		return (seg instanceof CoreTMASegment);
 	}		
 	
 	

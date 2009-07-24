@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.core"
    name="Debrief Core"
-   version="1.0.63"
+   version="1.0.64"
    provider-name="MWC"
    class="org.mwc.debrief.core.DebriefPlugin">
 
@@ -336,6 +336,15 @@
                icon="icons/line.gif"
                id="org.mwc.debrief.core.creators.shapes.InsertLine"
                label="&amp;Line"
+               menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
+               style="push"
+               toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
+
+         <action
+               class="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
+               icon="icons/line.gif"
+               id="org.mwc.debrief.core.creators.chartFeatures.InsertLine"
+               label="&amp;Track Segment"
                menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
