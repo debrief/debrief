@@ -25,15 +25,18 @@ import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**
  * @author ian.mayo
  */
-public class InsertTrackSegment extends CoreInsertChartFeature {
+public class InsertTrackSegment extends CoreInsertChartFeature
+{
 
 	private static final String NEW_LAYER_COMMAND = "[New Track...]";
 
-	public InsertTrackSegment() {
+	public InsertTrackSegment()
+	{
 		// tell the parent we produce a top-level layer
 		super(false);
 	}
@@ -45,7 +48,8 @@ public class InsertTrackSegment extends CoreInsertChartFeature {
 	 * @param theChart
 	 * @return
 	 */
-	protected Plottable getPlottable(PlainChart theChart) {
+	protected Plottable getPlottable(PlainChart theChart)
+	{
 
 		// right, what's the area we're looking at
 		WorldArea wa = theChart.getDataArea();
@@ -53,18 +57,46 @@ public class InsertTrackSegment extends CoreInsertChartFeature {
 		// get centre of area (at zero depth)
 		WorldLocation centre = wa.getCentreAtSurface();
 
-		AbsoluteTMASegment seg = new AbsoluteTMASegment(45, new WorldSpeed(10, WorldSpeed.Kts), 
-				centre,
-				new HiResDate(100000), new HiResDate(300000));
+		HiResDate startD = null, endD = null;
+		AbsoluteTMASegment res = null;
 
-		return seg;
+		// create input box dialog
+		InputDialog inp = new InputDialog(Display.getCurrent().getActiveShell(),
+				"New track", "What is the start time?", "yyMMdd HHmmss", null);
+
+		// did he cancel?
+		if (inp.open() == InputDialog.OK)
+		{
+			// get the results
+			String txt = inp.getValue();
+			startD = DebriefFormatDateTime.parseThis(txt);
+		}
+
+		inp = new InputDialog(Display.getCurrent().getActiveShell(), "New track",
+				"And what is the emd time?", "yyMMdd HHmmss", null);
+		// did he cancel?
+		if (inp.open() == InputDialog.OK)
+		{
+			// get the results
+			String txt = inp.getValue();
+			endD = DebriefFormatDateTime.parseThis(txt);
+		}
+
+		if ((startD != null) && (endD != null))
+		{
+			res = new AbsoluteTMASegment(45, new WorldSpeed(10, WorldSpeed.Kts),
+					centre, startD, endD);
+		}
+		
+		return res;
 
 	}
 
 	/**
 	 * @return
 	 */
-	protected String getLayerName() {
+	protected String getLayerName()
+	{
 		String res = null;
 
 		// ok, get the non-track layers for the current plot
@@ -93,27 +125,31 @@ public class InsertTrackSegment extends CoreInsertChartFeature {
 		int selection = list.open();
 
 		// did user say yes?
-		if (selection != ListDialog.CANCEL) {
+		if (selection != ListDialog.CANCEL)
+		{
 			// yup, store it's name
 			Object[] val = list.getResult();
 			res = val[0].toString();
 
 			// hmm, is it our add layer command?
-			if (res == NEW_LAYER_COMMAND) {
+			if (res == NEW_LAYER_COMMAND)
+			{
 				// better create one. Ask the user
 
 				// create input box dialog
-				InputDialog inp = new InputDialog(Display.getCurrent()
-						.getActiveShell(), "New track",
+				InputDialog inp = new InputDialog(
+						Display.getCurrent().getActiveShell(), "New track",
 						"Enter name for new track", "name here...", null);
 
 				// did he cancel?
-				if (inp.open() == InputDialog.OK) {
+				if (inp.open() == InputDialog.OK)
+				{
 					// get the results
 					String txt = inp.getValue();
 
 					// check there's something there
-					if (txt.length() > 0) {
+					if (txt.length() > 0)
+					{
 						res = txt;
 						// create new track
 						TrackWrapper tw = new TrackWrapper();
@@ -121,10 +157,14 @@ public class InsertTrackSegment extends CoreInsertChartFeature {
 
 						// add to layers object
 						theLayers.addThisLayer(tw);
-					} else {
+					}
+					else
+					{
 						res = null;
 					}
-				} else {
+				}
+				else
+				{
 					res = null;
 				}
 			}
@@ -137,22 +177,26 @@ public class InsertTrackSegment extends CoreInsertChartFeature {
 	 * find the list of tracks
 	 * 
 	 * @param theLayers
-	 *            the list to search through
+	 *          the list to search through
 	 * @return Tracks
 	 */
-	private String[] trimmedTracks(Layers theLayers) {
+	private String[] trimmedTracks(Layers theLayers)
+	{
 		Vector<String> res = new Vector<String>(0, 1);
 		Enumeration<Editable> enumer = theLayers.elements();
-		while (enumer.hasMoreElements()) {
+		while (enumer.hasMoreElements())
+		{
 			Layer thisLayer = (Layer) enumer.nextElement();
-			if (thisLayer instanceof TrackWrapper) {
+			if (thisLayer instanceof TrackWrapper)
+			{
 				res.add(thisLayer.getName());
 			}
 		}
 
 		res.add(NEW_LAYER_COMMAND);
 
-		String[] sampleArray = new String[] { "aa" };
+		String[] sampleArray = new String[]
+		{ "aa" };
 		return res.toArray(sampleArray);
 	}
 

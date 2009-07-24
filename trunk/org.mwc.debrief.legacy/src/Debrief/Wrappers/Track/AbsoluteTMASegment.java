@@ -2,8 +2,10 @@ package Debrief.Wrappers.Track;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.SortedSet;
 
 import Debrief.Wrappers.FixWrapper;
+import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
@@ -18,6 +20,7 @@ import MWC.GenericData.WorldVector;
  */
 public class AbsoluteTMASegment extends CoreTMASegment
 {
+
 	/**
 	 * class containing editable details of a track
 	 */
@@ -25,6 +28,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	{
 
 		private final static String SOLUTION = "Solution";
+
 		/**
 		 * constructor for this editor, takes the actual track as a parameter
 		 * 
@@ -47,8 +51,12 @@ public class AbsoluteTMASegment extends CoreTMASegment
 			{
 				PropertyDescriptor[] res =
 				{
+						expertProp("Time_Start", "Start time for this TMA Solution",
+								SOLUTION),
+						expertProp("TimeEnd", "End time for this TMA Solution", SOLUTION),
 						expertProp("Course", "Course of this TMA Solution", SOLUTION),
-						expertProp("BaseFrequency", "The base frequency of this TMA segment", SOLUTION),
+						expertProp("BaseFrequency",
+								"The base frequency of this TMA segment", SOLUTION),
 						expertProp("Speed", "Speed of this TMA Solution", SOLUTION) };
 				mine = res;
 			}
@@ -67,13 +75,44 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		}
 	}
 
+	protected HiResDate _startTime;
+
+	protected HiResDate _endTime;
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
 
 	private WorldLocation _origin;
-	
+
+	/**
+	 * copy contructor - build ourselves from the provided data
+	 * 
+	 * @param theTMA
+	 * @param p1
+	 * @param location
+	 * @param startTime
+	 * @param endTime
+	 */
+	public AbsoluteTMASegment(AbsoluteTMASegment relevantSegment,
+			SortedSet<Editable> theItems, WorldLocation location,
+			HiResDate startTime, HiResDate endTime)
+	{
+		// start off with the obvious bits
+		super(relevantSegment._courseDegs, relevantSegment._speed);
+		_origin = relevantSegment._origin;
+		_startTime = startTime;
+		_endTime = endTime;
+
+		// lastly, insert the fixes
+		getData().addAll(theItems);
+
+		// now sort out the name
+		sortOutDate();
+
+	}
+
 	/**
 	 * base constructor - sorts out the obvious
 	 * 
@@ -86,36 +125,60 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	{
 		super(courseDegs, speed);
 		_origin = origin;
-		
-		createDataFrom(startTime, endTime);
+		_startTime = startTime;
+		_endTime = endTime;
+
+		// do we have time limits?
+		if (startTime != null)
+		{
+			createDataFrom(startTime, endTime);
+		}
+		else
+		{
+			// leave them empty
+		}
+
+		// now sort out the name
+		sortOutDate();
 	}
 
-
-
-
-	/** create a track for the indicated time period
+	/**
+	 * create a track for the indicated time period
 	 * 
 	 * @param startTime
 	 * @param endTime
 	 */
-	private void createDataFrom(HiResDate startTime, HiResDate endTime) {
+	private void createDataFrom(HiResDate startTime, HiResDate endTime)
+	{
+		// ditch any existing data
+		this.removeAllElements();
+		
+		// and stick some fresh ones in		
 		long tStart = startTime.getDate().getTime();
-		long tEnd  = endTime.getDate().getTime();
+		long tEnd = endTime.getDate().getTime();
 		long interval = 60 * 1000;
-		for(long tNow = tStart;tNow <= tEnd; tNow += interval)
+		for (long tNow = tStart; tNow <= tEnd; tNow += interval)
 		{
 			FixWrapper newFix = createFixAt(tNow);
+			newFix.setSymbolShowing(true);
 			this.addFix(newFix);
 		}
 	}
-
-
-
 
 	@Override
 	public EditorType getInfo()
 	{
 		return new TMASegmentInfo(this);
+	}
+
+	public HiResDate getTime_Start()
+	{
+		return _startTime;
+	}
+
+	public HiResDate getTimeEnd()
+	{
+		return _endTime;
 	}
 
 	/**
@@ -128,7 +191,6 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	{
 		return _origin;
 	}
-
 
 	@Override
 	public void rotate(double brg, final WorldLocation origin)
@@ -175,6 +237,21 @@ public class AbsoluteTMASegment extends CoreTMASegment
 
 	}
 
+	public void setTime_Start(HiResDate timeStart)
+	{
+		_startTime = timeStart;
+		
+		// and update our data
+		createDataFrom(_startTime, _endTime);
+	}
+
+	public void setTimeEnd(HiResDate timeEnd)
+	{
+		_endTime = timeEnd;
+
+		// and update our data
+		createDataFrom(_startTime, _endTime);
+	}
 
 	@Override
 	public void shear(WorldLocation cursor, final WorldLocation origin)
@@ -223,15 +300,16 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		this.setSpeed(newSpeed);
 
 		// tidy the course
-		while(newCourse < 0)
+		while (newCourse < 0)
 			newCourse += 360;
 
 		this.setCourse(newCourse);
-		
 
 		// tell the segment it's being stretched
 		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts "
 				+ (int) newCourse + "\u00B0]";
+		
+	    super.firePropertyChange("Course", newCourse, newCourse);
 
 	}
 
@@ -239,9 +317,9 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	public void shift(WorldVector vector)
 	{
 		// really, we just need to add this vector to our orign
-//		WorldLocation tmpOrigin = new WorldLocation(getTrackStart());
-//		tmpOrigin.addToMe(_offset);
-//		tmpOrigin.addToMe(vector);
+		// WorldLocation tmpOrigin = new WorldLocation(getTrackStart());
+		// tmpOrigin.addToMe(_offset);
+		// tmpOrigin.addToMe(vector);
 
 		_origin.addToMe(vector);
 		// = tmpOrigin.subtract(getTrackStart());
@@ -258,6 +336,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 	 * @param origin
 	 *          origin of stretch, probably one end of the track
 	 */
+	@Override
 	public void stretch(double rngDegs, final WorldLocation origin)
 	{
 		// make it always +ve, we'll just overwrite ourselves anyway

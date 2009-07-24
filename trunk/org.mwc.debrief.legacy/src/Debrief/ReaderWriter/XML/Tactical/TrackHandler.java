@@ -18,6 +18,7 @@ import org.xml.sax.Attributes;
 
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
@@ -132,7 +133,12 @@ public final class TrackHandler extends
 		if (segment instanceof RelativeTMASegment) {
 			RelativeTMASegmentHandler.exportThisTMASegment(doc, trk,
 					(RelativeTMASegment) segment);
-		} else
+		} else if (segment instanceof AbsoluteTMASegment) {
+			AbsoluteTMASegmentHandler.exportThisTMASegment(doc, trk,
+					(AbsoluteTMASegment) segment);
+		}
+		else
+
 			TrackSegmentHandler.exportThisSegment(doc, trk,
 					(TrackSegment) segment);
 	}
@@ -159,6 +165,12 @@ public final class TrackHandler extends
 		});
 
 		addHandler(new RelativeTMASegmentHandler(_theLayers) {
+			public void addSegment(TrackSegment segment) {
+				addThis(segment);
+			}
+		});
+
+		addHandler(new AbsoluteTMASegmentHandler(_theLayers) {
 			public void addSegment(TrackSegment segment) {
 				addThis(segment);
 			}

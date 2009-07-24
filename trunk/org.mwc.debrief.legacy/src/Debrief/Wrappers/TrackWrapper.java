@@ -24,6 +24,7 @@ import java.util.Vector;
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
+import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
@@ -2443,16 +2444,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (segments.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
-				lineStyle = seg.getLineStyle(); 
+				lineStyle = seg.getLineStyle();
 
-
-				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN RELATIVE
+				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
+				// RELATIVE
 				// MODE
 				boolean isRelative = seg.getPlotRelative();
 				WorldLocation tmaLastLoc = null;
 				long tmaLastDTG = 0;
 
-				// if it's not a relative track, and it's not visible, we don't need to
+				// if it's not a relative track, and it's not visible, we don't
+				// need to
 				// work with ut
 				if (!getVisible() && !isRelative)
 					continue;
@@ -2466,13 +2468,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					if (!fw.getVisible())
 					{
 						// nope. Don't join it to the last position.
-						// ok, if we've built up a polygon, we need to write it now
+						// ok, if we've built up a polygon, we need to write it
+						// now
 						paintTrack(dest, lastCol, lineStyle);
 					}
 
-					// Note: we're carrying on working with this position even if it isn't
+					// Note: we're carrying on working with this position even
+					// if it isn't
 					// visible,
-					// since we need to use non-visible positions to build up a DR track.
+					// since we need to use non-visible positions to build up a
+					// DR track.
 
 					// ok, so we have plotted something
 					plotted_anything = true;
@@ -2498,11 +2503,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
 									courseRads);
 							tmaLastLoc.addToMe(thisVec);
-							
+
 							// use the value of depth as read in from the file
 							tmaLastLoc.setDepth(depthM);
 							lastLocation = tmaLastLoc;
-							
+
 						}
 						lastFix = fw;
 						tmaLastDTG = thisTime;
@@ -2517,7 +2522,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						lastLocation = fw.getLocation();
 					}
 
-					// ok, we only do this writing to screen if the actual position is
+					// ok, we only do this writing to screen if the actual
+					// position is
 					// visible
 					if (getVisible())
 					{
@@ -2544,32 +2550,37 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						// are we
 						if (_linkPositions)
 						{
-							// right, just check if we're a different colour to the
+							// right, just check if we're a different colour to
+							// the
 							// previous one
 							final Color thisCol = fw.getColor();
 
 							// do we know the previous colour
 							if (lastCol == null)
 							{
-								lastCol = thisCol;								
+								lastCol = thisCol;
 							}
-							
+
 							// is this to be joined to the previous one?
 							if (fw.getLineShowing())
 							{
-								// so, grow the the polyline, unless we've got a colour
+								// so, grow the the polyline, unless we've got a
+								// colour
 								// change...
 								if (thisCol != lastCol)
 								{
-									// add our position to the list - so it finishes on us
+									// add our position to the list - so it
+									// finishes on us
 									_myPts[_ptCtr++] = thisP.x;
 									_myPts[_ptCtr++] = thisP.y;
 
-									// yup, better get rid of the previous polygon
+									// yup, better get rid of the previous
+									// polygon
 									paintTrack(dest, lastCol, lineStyle);
 								}
 
-								// add our position to the list - we'll output the
+								// add our position to the list - we'll output
+								// the
 								// polyline at the end
 								_myPts[_ptCtr++] = thisP.x;
 								_myPts[_ptCtr++] = thisP.y;
@@ -2577,7 +2588,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 							else
 							{
 
-								// nope, output however much line we've got so far -
+								// nope, output however much line we've got so
+								// far -
 								// since this
 								// line won't be joined to future points
 								paintTrack(dest, thisCol, lineStyle);
@@ -2623,7 +2635,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// and draw the track label
 			if (_theLabel.getVisible())
 			{
-				
+
 				// still, we only plot the track label if we have plotted any
 				// points
 				if (plotted_anything)
@@ -2636,19 +2648,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						// check that we have found a location for the lable
 						if (_theLabel.getLocation() != null)
 						{
-							
+
 							// is the first track a DR track?
 							TrackSegment t1 = (TrackSegment) _thePositions.first();
-							if(t1.getPlotRelative())
+							if (t1.getPlotRelative())
 							{
 								_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
 							}
 							else
 							{
-								if(_theLabel.getFont().isItalic())
-								  _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+								if (_theLabel.getFont().isItalic())
+									_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
 							}
-							
 
 							// check that we have set the name for the label
 							if (_theLabel.getString() == null)
@@ -2669,29 +2680,28 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					{
 						// we've got multiple segments, name them
 						Enumeration<Editable> posis = _thePositions.elements();
-						while(posis.hasMoreElements())
+						while (posis.hasMoreElements())
 						{
 							TrackSegment thisE = (TrackSegment) posis.nextElement();
-							
+
 							// is the first track a DR track?
-							if(thisE.getPlotRelative())
+							if (thisE.getPlotRelative())
 							{
 								_theLabel.setFont(_theLabel.getFont().deriveFont(Font.ITALIC));
 							}
 							else
 							{
-								if(_theLabel.getFont().isItalic())
-								  _theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
+								if (_theLabel.getFont().isItalic())
+									_theLabel.setFont(_theLabel.getFont().deriveFont(Font.PLAIN));
 							}
 
-							
 							WorldLocation theLoc = thisE.getTrackStart();
 							String oldTxt = _theLabel.getString();
 							_theLabel.setString(thisE.getName());
 							_theLabel.setLocation(theLoc);
 							_theLabel.paint(dest);
 							_theLabel.setString(oldTxt);
-							
+
 						}
 
 					} // whether there's only one track
@@ -2707,9 +2717,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param dest
 	 *          - where we're painting to
 	 * @param thisCol
-	 * @param lineStyle 
+	 * @param lineStyle
 	 */
-	private void paintTrack(final CanvasType dest, final Color thisCol, int lineStyle)
+	private void paintTrack(final CanvasType dest, final Color thisCol,
+			int lineStyle)
 	{
 		if (_ptCtr > 0)
 		{
@@ -2718,7 +2729,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final int[] poly = new int[_ptCtr];
 			System.arraycopy(_myPts, 0, poly, 0, _ptCtr);
 			dest.drawPolyline(poly);
-			
+
 			dest.setLineStyle(CanvasType.SOLID);
 
 			// and reset the counter
@@ -3118,7 +3129,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	{
 		feature.addToMe(vector);
 
-		// right, one of our fixes has moved. get the sensors to update themselves
+		// right, one of our fixes has moved. get the sensors to update
+		// themselves
 		fixMoved();
 	}
 
@@ -3251,7 +3263,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
-		// hmm, if we're splitting after the point, we need to move along the bus by
+		// hmm, if we're splitting after the point, we need to move along the
+		// bus by
 		// one
 		if (!splitBeforePoint)
 		{
@@ -3286,7 +3299,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		// get our results ready
 		final TrackSegment ts1, ts2;
 
-		// aaah, just sort out if we are splitting a TMA segment, in which case we
+		// aaah, just sort out if we are splitting a TMA segment, in which case
+		// we
 		// want to create two
 		// tma segments, not track segments
 		if (relevantSegment instanceof RelativeTMASegment)
@@ -3295,7 +3309,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 			// aah, sort out if we are splitting before or after.
 
-			// find out the offset at the split point, so we can initiate it for the
+			// find out the offset at the split point, so we can initiate it for
+			// the
 			// second part of the track
 			WorldLocation refTrackLoc = theTMA.getReferenceTrack().getNearestTo(
 					splitPoint.getDateTimeGroup())[0].getLocation();
@@ -3304,6 +3319,26 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// put the lists back into plottable layers
 			ts1 = new RelativeTMASegment(theTMA, p1, theTMA.getOffset());
 			ts2 = new RelativeTMASegment(theTMA, p2, secondOffset);
+
+		}
+		else if (relevantSegment instanceof AbsoluteTMASegment)
+		{
+			AbsoluteTMASegment theTMA = (AbsoluteTMASegment) relevantSegment;
+
+			// aah, sort out if we are splitting before or after.
+
+			// find out the offset at the split point, so we can initiate it for
+			// the
+			// second part of the track
+			Watchable[] matches = this.getNearestTo(splitPoint.getDateTimeGroup());
+			WorldLocation origin = matches[0].getLocation();
+
+			FixWrapper t1Start = (FixWrapper) p1.first();
+
+			// put the lists back into plottable layers
+			ts1 = new AbsoluteTMASegment(theTMA, p1, t1Start.getLocation(), null,
+					null);
+			ts2 = new AbsoluteTMASegment(theTMA, p2, origin, null, null);
 
 		}
 		else
