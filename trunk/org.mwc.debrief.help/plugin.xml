@@ -225,7 +225,7 @@
             name="Combining sections of target track">
       </cheatsheet>
       <cheatsheet
-            category="org.mwc.debrief.help.cheat_s2r"
+            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
             composite="true"
             contentFile="$nl$/cheat_sheets/S2R/GettingStartedComposite.xml"
             id="org.mwc.debrief.help.cheatsheet.s2r.composite"
