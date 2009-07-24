@@ -1291,4 +1291,81 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	
 	}
 
+	/**
+	 * .
+	 */
+	
+	public void testTMASplit2()
+	{
+		// //////////////////////////////////
+		// start off building from a track
+		// //////////////////////////////////
+		TrackWrapper tw = new TrackWrapper();
+	
+		tw.addFix(createFix(100000, 1, 1, 4, 12));
+		tw.addFix(createFix(200000, 2, 3, 4, 12));
+		tw.addFix(createFix(300000, 3, 3, 4, 12));
+		tw.addFix(createFix(400000, 4, 6, 4, 12));
+		tw.addFix(createFix(500000, 4, 6, 4, 12));
+		tw.addFix(createFix(600000, 4, 6, 4, 12));
+		tw.addFix(createFix(700000, 4, 6, 4, 12));
+	
+		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
+		double course = 33;
+	
+		// ok, create the segment
+		CoreTMASegment seg = null;
+	
+		// check the before
+		FixWrapper firstFix = null;
+	
+		// ////////////////////////
+		// NOW AN ABSOLUTE ONE
+		// /////////////////////////
+		WorldLocation origin = new WorldLocation(12,12,12);
+		HiResDate startTime = new HiResDate(11 * 60 * 1000);
+		HiResDate endTime = new HiResDate(17 * 60 * 1000);
+		seg = new AbsoluteTMASegment(course, speed, origin, startTime, 
+				endTime);
+	
+		// check the create worked
+		assertEquals("enough points created", 7, seg.size());
+	
+		// check the before
+		firstFix = (FixWrapper) seg.getData().iterator().next();
+		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
+		assertEquals("correct speed before", 5, seg.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
+		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
+				.Rads2Degs(firstFix.getCourse()), 0.001);
+		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
+	
+		// ok, now do the split
+		TrackWrapper segW = new TrackWrapper();
+		segW.setName("TMA");
+		segW.add(seg);
+		
+		// get hold of an item in the segment
+		Enumeration<Editable> enumer = seg.elements();
+		enumer.nextElement();
+		enumer.nextElement();
+		FixWrapper fw = (FixWrapper) enumer.nextElement();
+		assertNotNull("Found a fix", fw);
+		
+		// do the split
+		Vector<TrackSegment> segs = segW.splitTrack(fw, false);
+	
+		// check we have enough segments
+		assertEquals("now two segments", 2, segs.size());
+		assertEquals("first is of correct length", 3, segs.firstElement().size());
+		assertEquals("first is of correct length", 4, segs.lastElement().size());
+		
+		// check they're of the correct type
+		TrackSegment seg1 = segs.firstElement();
+		TrackSegment seg2 = segs.lastElement();
+		assertTrue(" is a tma segment", seg1 instanceof AbsoluteTMASegment);
+		assertTrue(" is a tma segment", seg2 instanceof AbsoluteTMASegment);
+	
+	}
+
 }
