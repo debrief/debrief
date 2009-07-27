@@ -22,38 +22,38 @@ public final class Doublet
 	private final FixWrapper _hostFix;
 
 	private final TrackSegment _targetTrack;
-	
+
 	// ////////////////////////////////////////////////
 	// working variables to help us along.
 	// ////////////////////////////////////////////////
-	private final WorldLocation _workingSensorLocation = new WorldLocation(
-			0.0, 0.0, 0.0);
+	private final WorldLocation _workingSensorLocation = new WorldLocation(0.0,
+			0.0, 0.0);
 
-	private final WorldLocation _workingTargetLocation = new WorldLocation(
-			0.0, 0.0, 0.0);
+	private final WorldLocation _workingTargetLocation = new WorldLocation(0.0,
+			0.0, 0.0);
 
 	// ////////////////////////////////////////////////
 	// constructor
 	// ////////////////////////////////////////////////
-	Doublet(final SensorContactWrapper sensor,
-			final FixWrapper targetFix, TrackSegment parent, final FixWrapper hostFix)
+	Doublet(final SensorContactWrapper sensor, final FixWrapper targetFix,
+			TrackSegment parent, final FixWrapper hostFix)
 	{
 		_sensor = sensor;
 		_targetFix = targetFix;
 		_targetTrack = parent;
 		_hostFix = hostFix;
-		}
+	}
 
 	public FixWrapper getHost()
 	{
 		return _hostFix;
 	}
-	
+
 	public FixWrapper getTarget()
 	{
 		return _targetFix;
 	}
-	
+
 	/**
 	 * ok find what the current bearing error is for this track
 	 * 
@@ -75,7 +75,7 @@ public final class Doublet
 
 		return theError;
 	}
-	
+
 	public double getMeasuredBearing()
 	{
 		return _sensor.getBearing();
@@ -99,34 +99,35 @@ public final class Doublet
 				.subtract(_workingSensorLocation);
 		double calcBearing = error.getBearing();
 		calcBearing = Conversions.Rads2Degs(calcBearing);
-		
-		if(calcBearing < 0)
+
+		if (calcBearing < 0)
 			calcBearing += 360;
-		
+
 		return calcBearing;
 	}
-	
-	/** get the base frequency of this track participant, if it has one
+
+	/**
+	 * get the base frequency of this track participant, if it has one
 	 * 
 	 * @return
 	 */
 	public double getBaseFrequency()
 	{
 		double res = 0d;
-		if(_targetTrack instanceof CoreTMASegment)
+		if (_targetTrack instanceof CoreTMASegment)
 		{
 			CoreTMASegment tma = (CoreTMASegment) _targetTrack;
 			res = tma.getBaseFrequency();
 		}
-		
+
 		return res;
 	}
-	
-	
+
 	public double getMeasuredFrequency()
 	{
 		return _sensor.getFrequency();
 	}
+
 	/**
 	 * get the colour of this sensor fix
 	 */
@@ -148,21 +149,94 @@ public final class Doublet
 		return _sensor.getDTG();
 	}
 
-	/** calculate the corrected frequency (take out ownship doppler)
+	/**
+	 * calculate the corrected frequency (take out ownship doppler)
 	 * 
 	 * @return
 	 */
 	public double getCorrectedFrequency()
 	{
-		return 65 + _hostFix.getCourse() / 10;
+		double correctedFreq = 0;
+
+		final double theBearingDegs = getCalculatedBearing(null, null);
+		final double theBearingRads = MWC.Algorithms.Conversions
+				.Degs2Rads(theBearingDegs);
+		final double myCourseRads = _hostFix.getCourse();
+
+		final double mySpeedKts = _hostFix.getSpeed();
+		correctedFreq = calcCorrectedFreq(theBearingRads, myCourseRads, mySpeedKts,
+				_sensor.getFrequency());
+
+		return correctedFreq;
 	}
 
-	/** calculate what the frequency of the target should be (base freq plus both dopplers)
+	private static double calcCorrectedFreq(final double theBearingRads,
+			final double myCourseRads, final double mySpeedKts,
+			final double observedFreq)
+	{
+		double correctedFreq;
+		final double speedOfSoundKts = 2951;
+		double relBearingRads = theBearingRads - myCourseRads;
+
+		final double ownSpeedAlongKts = Math.abs(Math.cos(relBearingRads) * mySpeedKts);
+		
+		// put rel brg into +/- 180 domain
+		while (relBearingRads > Math.PI)
+			relBearingRads -= (2 * Math.PI);
+		while (relBearingRads < -(Math.PI))
+			relBearingRads += (2 * Math.PI);
+
+		double dopplerOffset = (ownSpeedAlongKts * observedFreq) / speedOfSoundKts;
+
+		if (Math.abs(relBearingRads) < (Math.PI / 2))
+			dopplerOffset = -dopplerOffset;
+
+		correctedFreq = observedFreq + dopplerOffset;
+		return correctedFreq;
+	}
+
+	/**
+	 * calculate what the frequency of the target should be (base freq plus both
+	 * dopplers)
 	 * 
 	 * @return
 	 */
 	public double getPredictedFrequency()
 	{
-		return 65 - Math.sin(_targetFix.getCourse())  * 6;
+		return 65 - Math.sin(_targetFix.getCourse()) * 6;
+	}
+
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	// testing for this class
+	// ////////////////////////////////////////////////////////////////////////////////////////////////
+	static public final class testCalc extends junit.framework.TestCase
+	{
+
+		private double convertAndTest(double myCrseDegs, double bearingDegs,
+				double mySpeedKts, double observedFreq)
+		{
+			double myCrseRads = MWC.Algorithms.Conversions.Degs2Rads(myCrseDegs);
+			double bearingRads = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
+			return calcCorrectedFreq(bearingRads, myCrseRads, mySpeedKts,
+					observedFreq);
+		}
+
+		public void testCorrected()
+		{
+			double res = convertAndTest(320, 28, 8, 300);
+			assertEquals("right freq", 299.711, res, 0.1);
+
+			res = convertAndTest(320, 328, 8, 300);
+			assertEquals("right freq", 299.207, res, 0.1);
+
+			res = convertAndTest(320, 158, 8, 300);
+			assertEquals("right freq", 300.77, res, 0.01);
+
+			res = convertAndTest(320, 158, 9, 300);
+			assertEquals("right freq", 300.87, res, 0.01);
+
+			res = convertAndTest(150, 158, 9, 300);
+			assertEquals("right freq", 299.09, res, 0.01);
+		}
 	}
 }
