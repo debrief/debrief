@@ -350,7 +350,8 @@ public final class SwingApplication extends Application
 
     // we have to go through the panels in the main bit,
     // and return the one which is visible
-    for (int i = 0; i < len; i++)
+//    for (int i = 0; i < len; i++)
+      for (int i = 0; i < len;)
     {
       final Component cp = lst[i];
       final JInternalFrame jf = (JInternalFrame) cp;
