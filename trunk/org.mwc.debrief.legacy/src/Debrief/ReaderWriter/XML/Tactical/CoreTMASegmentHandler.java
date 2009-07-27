@@ -12,13 +12,9 @@ package Debrief.ReaderWriter.XML.Tactical;
 import org.w3c.dom.Element;
 
 import Debrief.Wrappers.Track.CoreTMASegment;
-import Debrief.Wrappers.Track.RelativeTMASegment;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldSpeed;
-import MWC.GenericData.WorldVector;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
-import MWC.Utilities.ReaderWriter.XML.Util.WorldVectorHandler;
 
 abstract public class CoreTMASegmentHandler extends CoreTrackSegmentHandler
 {

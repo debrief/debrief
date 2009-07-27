@@ -403,6 +403,7 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 					 */
 					private static final long serialVersionUID = 1L;
 
+					@SuppressWarnings("unused")
 					public String getTickLabel(double currentTickValue)
 					{
 						long time = (long) currentTickValue;
