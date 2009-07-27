@@ -13,5 +13,6 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.plotViewer,
  org.mwc.cmap.xyplot,
  org.mwc.debrief.core;bundle-version="1.0.60"
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
