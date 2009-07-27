@@ -453,15 +453,28 @@ public final class SensorContactWrapper extends
 	/**
 	 * return the coordinates of the end of hte line
 	 */
-	private final WorldLocation getAmbiguousFarEnd()
+	private final WorldLocation getAmbiguousFarEnd(WorldArea outerEnvelope)
 	{
 		WorldLocation res = null;
 
 		if (_calculatedOrigin != null)
 		{
+			double rangeToUse = 0;
+
+			// do we have the range?
+			if (_range == null)
+			{
+				WorldArea totalArea = new WorldArea(outerEnvelope);
+				totalArea.extend(_calculatedOrigin);
+				
+				// just use the maximum dimension of the plot
+				rangeToUse = 2* Math.max(totalArea.getWidth(),totalArea.getHeight());
+			}
+			else
+				rangeToUse = _range.getValueIn(WorldDistance.DEGS);
+			
 			// also do the far end
-			res = _calculatedOrigin.add(new WorldVector(_bearingAmbig, _range
-					.getValueIn(WorldDistance.DEGS), 0d));
+			res = _calculatedOrigin.add(new WorldVector(_bearingAmbig, rangeToUse, 0d));
 		}
 
 		return res;
@@ -608,7 +621,8 @@ public final class SensorContactWrapper extends
 		// do we have an ambiguous bearing
 		if (this.getHasAmbiguousBearing())
 		{
-			final WorldLocation theOtherFarEnd = getAmbiguousFarEnd();
+			final WorldLocation theOtherFarEnd = getAmbiguousFarEnd(dest.getProjection()
+					.getDataArea());
 			final Point otherFarEnd = dest.toScreen(theOtherFarEnd);
 			// draw the line
 			dest.drawLine(pt.x, pt.y, otherFarEnd.x, otherFarEnd.y);
