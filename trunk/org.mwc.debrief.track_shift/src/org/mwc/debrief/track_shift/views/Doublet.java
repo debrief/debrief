@@ -8,6 +8,7 @@ import java.awt.Color;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
+import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
@@ -164,22 +165,25 @@ public final class Doublet
 		final double myCourseRads = _hostFix.getCourse();
 
 		final double mySpeedKts = _hostFix.getSpeed();
-		correctedFreq = calcCorrectedFreq(theBearingRads, myCourseRads, mySpeedKts,
-				_sensor.getFrequency());
+		double observedFreq = _sensor.getFrequency();
+		final double dopplerComponent = calcDopplerComponent(theBearingRads,
+				myCourseRads, mySpeedKts, observedFreq);
+
+		correctedFreq = observedFreq + dopplerComponent;
 
 		return correctedFreq;
 	}
 
-	private static double calcCorrectedFreq(final double theBearingRads,
+	private static double calcDopplerComponent(final double theBearingRads,
 			final double myCourseRads, final double mySpeedKts,
 			final double observedFreq)
 	{
-		double correctedFreq;
 		final double speedOfSoundKts = 2951;
 		double relBearingRads = theBearingRads - myCourseRads;
 
-		final double ownSpeedAlongKts = Math.abs(Math.cos(relBearingRads) * mySpeedKts);
-		
+		final double ownSpeedAlongKts = Math.abs(Math.cos(relBearingRads)
+				* mySpeedKts);
+
 		// put rel brg into +/- 180 domain
 		while (relBearingRads > Math.PI)
 			relBearingRads -= (2 * Math.PI);
@@ -190,9 +194,7 @@ public final class Doublet
 
 		if (Math.abs(relBearingRads) < (Math.PI / 2))
 			dopplerOffset = -dopplerOffset;
-
-		correctedFreq = observedFreq + dopplerOffset;
-		return correctedFreq;
+		return dopplerOffset;
 	}
 
 	/**
@@ -203,7 +205,30 @@ public final class Doublet
 	 */
 	public double getPredictedFrequency()
 	{
-		return 65 - Math.sin(_targetFix.getCourse()) * 6;
+		double predictedFreq = 0;
+
+		if (_targetTrack instanceof RelativeTMASegment)
+		{
+			RelativeTMASegment rt = (RelativeTMASegment) _targetTrack;
+			final double theBearingDegs = getCalculatedBearing(null, null);
+			final double theBearingRads = MWC.Algorithms.Conversions
+					.Degs2Rads(theBearingDegs);
+			final double myCourseRads = _hostFix.getCourse();
+
+			final double mySpeedKts = _hostFix.getSpeed();
+			double baseFreq = rt.getBaseFrequency();
+			final double myDopplerComponent = calcDopplerComponent(theBearingRads,
+					myCourseRads, mySpeedKts, baseFreq);
+
+			final double hisCourseRads = _targetFix.getCourse();
+			final double hisSpeedKts = _targetFix.getSpeed();
+
+			final double hisDopplerComponent = calcDopplerComponent(Math.PI
+					+ theBearingRads, hisCourseRads, hisSpeedKts, baseFreq);
+
+			predictedFreq = baseFreq + myDopplerComponent + hisDopplerComponent;
+		}
+		return predictedFreq;
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
@@ -217,26 +242,26 @@ public final class Doublet
 		{
 			double myCrseRads = MWC.Algorithms.Conversions.Degs2Rads(myCrseDegs);
 			double bearingRads = MWC.Algorithms.Conversions.Degs2Rads(bearingDegs);
-			return calcCorrectedFreq(bearingRads, myCrseRads, mySpeedKts,
+			return calcDopplerComponent(bearingRads, myCrseRads, mySpeedKts,
 					observedFreq);
 		}
 
 		public void testCorrected()
 		{
 			double res = convertAndTest(320, 28, 8, 300);
-			assertEquals("right freq", 299.711, res, 0.1);
+			assertEquals("right freq", -0.304, res, 0.1);
 
 			res = convertAndTest(320, 328, 8, 300);
-			assertEquals("right freq", 299.207, res, 0.1);
+			assertEquals("right freq", -0.805, res, 0.1);
 
 			res = convertAndTest(320, 158, 8, 300);
-			assertEquals("right freq", 300.77, res, 0.01);
+			assertEquals("right freq", 0.7734, res, 0.01);
 
 			res = convertAndTest(320, 158, 9, 300);
-			assertEquals("right freq", 300.87, res, 0.01);
+			assertEquals("right freq", 0.870, res, 0.01);
 
 			res = convertAndTest(150, 158, 9, 300);
-			assertEquals("right freq", 299.09, res, 0.01);
+			assertEquals("right freq", -0.906, res, 0.01);
 		}
 	}
 }
