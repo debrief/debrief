@@ -17,11 +17,6 @@
 					Let Debrief itself lead you through your first session
 				</text>
 			</link>
-			<link style-id="content-link" label="Grooming ownship data"
-				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.s2r.grooming"
-				id="debrief-viewS2R">
-				<text>Work through tidying a platform track</text>
-			</link>
 		</group>
 	</extensionContent>
 </introContent>

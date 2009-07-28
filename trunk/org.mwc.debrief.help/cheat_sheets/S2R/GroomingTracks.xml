@@ -55,6 +55,12 @@
     </description>
  </item>
  <item
+       title="Check what just happened">
+    <description>
+       Now you&apos;ll see that the track has been split into two.  But, also observe that we&apos;ve still just got the two tracks shown in the Layer Manager. But, if you expand the <b>Track:Frigate</b> track using the arrow to its left, you&apos;ll see that it has a child named <b>Track segments (2)</b>.
+    </description>
+ </item>
+ <item
        title="Align last section">
     <description>
        Next, select <b>Drag Track Segment</b> from the toolbar,  it&apos;s an arrow cursor with a picture of a track-segment to it&apos;s top-right.  When you select <b>Drag Track Segment</b>, the Bearing Residuals window opens.  It isn&apos;t of relevance to our tidying of this single track - but it would allow us to elect to rotate a track segment instead of just dragging it..  Now, move the hand-cursor over first point of the lower segment of track - it will be labelled with <b>030337.25</b>.  When it turns green, start dragging the track upwards and leftwards over the dangling end of the other track segment.  Whilst the track is being dragged, you&apos;ll see that extension legs are plotted on each end of the track, with a marker circle plotted at the distance along the extension equal to the distance from the end point to the first point on the track.  You can now fine-tune your drag operation to put the &apos;target&apos; over the last point on the blue track.
@@ -69,25 +75,19 @@
  <item
        title="Fix other jump">
     <description>
-       Just one jump left.  The earlier portion of the track is being treated as the <b>master</b> section that we&apos;re more confident in.  Since that&apos;s the portion we want to keep, click on the last item in that portion, and select <b>Split track after 0325</b>.
-    </description>
- </item>
- <item
-       title="Fix other jumps">
-    <description>
-       There are two other jumps further up the track.  We&apos;ll work our way backwards up through them, preserving the start of the blue track at each step.  Start off by splitting the track at the north-end of the larger of the two jump (split track before 0327), drag it onto the dodgy point at the end of the good track section, and combine the track sections again.  Lastly split the track after the remaining jump, (split track before 0326), and move it onto the valid track data.
+       There are two other jumps further up the track.  We&apos;ll work our way backwards up through them, preserving the start of the blue track at each step.  Start off by splitting the track at the north-end of the larger of the two jump (split track before 0327), drag it onto the dodgy point at the end of the good track section, and combine the track sections again.  Lastly split the track after the remaining jump, (split track before 0326),  move it onto the valid track data, and recombine them.
     </description>
  </item>
  <item
        title="Add third party data">
     <description>
-       There&apos;s also a period of data missing from the track - so you&apos;ve found this data from another souce - and stored it in the file named <b>third_party_track.rep</b>.
+       Don&apos;t forget the period of data missing from the track. Cleverly, you&apos;ve found this data from another source and stored it in the file named <b>third_party_track.rep</b>.
 Drag in this file of 3rd party data, again selecting OTG during the import.   You&apos;ll see it appear quite a long way north of the main track, since it has been measured from a different datum.
     </description>
  </item>
 	<item
          title="Get in the ballpark">
-		<description>We&apos;ll start off by moving the third party track segment down to the right region. To do this, click on the &apos;Drag whole feature&apos; toolbar button: it&apos;s a cursor arrow with a rectangle to its top-right. Now move your hand-shaped cursor over the &apos;rogue&apos; green track. You&apos;ll see your hand turn green as it passes over something that can be dragged.  When its green over the rogue track, click the mouse and drag it down near the remainder of the track (Hint, put it just below the &apos;g&apos; of the blue track title.  Trust me, I know where it&apos;s going to go...).</description>
+		<description>We&apos;ll start off by moving the third party track segment down to the right region. To do this, click on the &apos;Drag whole feature&apos; toolbar button: it&apos;s a cursor arrow with a rectangle to its top-right. Now move your hand-shaped cursor over the &apos;rogue&apos; green track. You&apos;ll see your hand-shaped cursor turn green as it passes over something that can be dragged.  When its green over the rogue track, click the mouse and drag it down near the start of the blue track (Hint, put it just below the &apos;g&apos; of the blue track title.  Trust me, I know where it&apos;s going to go...).</description>
 	</item>	
 	<item title="Fit to window">
 		<description>Now click on the 'Fit to Window' toolbar button, it's the green diagonal arrows. The plot will now zoom in and you'll see the data in more detail</description>
@@ -99,12 +99,6 @@ Drag in this file of 3rd party data, again selecting OTG during the import.   Yo
        title="Split the blue track">
     <description>
        The &apos;jump&apos; in the data where the ficticious recording went down should now be visible.  Right-click on the point at the North-end of the jump (the earlier point), and select <b>Split track after 0143</b>.
-    </description>
- </item>
- <item
-       title="Check what just happened">
-    <description>
-       Now you&apos;ll see that the track has been split into two.  But, also observe that we&apos;ve still just got the two tracks shown in the Layer Manager. But, if you expand the <b>Track:Frigate</b> track using the arrow to its left, you&apos;ll see that it has a child named <b>Track segments (2)</b>.
     </description>
  </item>
  <item
@@ -122,7 +116,7 @@ Drag in this file of 3rd party data, again selecting OTG during the import.   Yo
  <item
        title="Join track segments">
     <description>
-       Now that our tracks are lined up, we can group them together into one. Do this by selecting both tracks in the Layer Manager (use the control key to select multiple items).  Then right-click on one of them and select <b>Group tracks into Frigate</b>.  The segments will all now turn blue.
+       Now that our tracks are lined up, we can group them together into one. Do this by selecting both tracks in the Layer Manager (use the control key to select multiple items).  Then right-click on one of them and select <b>Combine tracks into Frigate</b>.  The segments will all now turn blue, and only the <b>Track:Frigate</b> will be shown in the Layer Manager. But, expanding this item shows <b>Track segments (3 items)</b>.  Right-click on this and select <b>Merge all track segments</b>.
     </description>
  </item>
 </cheatsheet>

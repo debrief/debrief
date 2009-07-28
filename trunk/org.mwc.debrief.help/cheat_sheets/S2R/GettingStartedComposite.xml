@@ -12,27 +12,19 @@
       <onCompletion>
          <b>Conclusion</b>
       </onCompletion>
-      <taskGroup kind="sequence" name="Working with ownship data" skip="false">
+      <task kind="cheatsheet" name="Tidying the ownship track" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>Frequently, before you can start work on producing the red track, you must perform some grooming of the ownship track.</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            In that task, you fixed some jumps in the ownship track, and filled in a period of missing data. You won&apos;t need the current plot for the next stage of the tutorial, so you can close it (by clicking in the &apos;x&apos; in its title tab) - and no, you won&apos;t need to save changes.
          </onCompletion>
-         <task kind="cheatsheet" name="Tidying the ownship track" skip="false">
-            <intro>
-               <b>Introduction</b>
-            </intro>
-            <onCompletion>
-               <b>Conclusion</b>
-            </onCompletion>
-            <param name="path" value="GroomingTracks.xml">
-            </param>
-         </task>
-      </taskGroup>
+         <param name="path" value="GroomingTracks.xml">
+         </param>
+      </task>
       <taskGroup kind="sequence" name="Working with target tracks" skip="false">
          <intro>
-            <b>Introduction</b>
+            Now it&apos;s time to start building the target track
          </intro>
          <onCompletion>
             <b>Conclusion</b>

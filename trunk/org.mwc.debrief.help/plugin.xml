@@ -198,7 +198,7 @@
             name="Analysing narrative data in Debrief"/>            
       <cheatsheet
             category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.trackRecon"
-            contentFile="cheat_sheets/trackRecon/MergeTracks.xml"
+            contentFile="cheat_sheets/S2R/CombineTargetTracks.xml"
             id="org.mwc.debrief.help.trackRecon.MergeTracks"
             name="Merging two or more tracks in Debrief"/>            
 

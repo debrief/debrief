@@ -7,22 +7,64 @@
       </description>
    </intro>
    <item
-         title="Decide on sensor data to use">
+         title="Load datafiles">
       <description>
-         <b>Body</b>
+         We&apos;re using new datafiles for this step, so double-click on <b>nonsuch.rep</b> in the Navigator to load ownship track (and select DR mode when asked).  Perform a Fit to Window once loaded to have a look at the track. Next, drag in <b>sensor.dsf</b>.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ResourceNavigator)"/>
+   </item>
+   <item
+         title="Make sensor data visible">
+      <description>
+         To keep the plot tidy, sensor data is not shown by default when loaded.  Expand <b>Track:NONSUCH</b>, then click to select on <b>Sensor:Sensor_A (52 items)</b>. Once the Sensor A sensor data is selected, click on the tick icon in the toolbar at top of the Layer Manager view, to make the sensor data visible.
+      </description>
+   </item>
+   <item
+         title="Resolve ambiguity">
+      <description>
+         You&apos;ll now see the sensor data appear.  You&apos;ll see one bearing fan heading off to the WNW, and the other off towards NNE.  Intelligence tells us (well, Ian H tells us) that the actual contact is off to the NW.  If we open the Time Controller view and drag the time slider back and forth we&apos;ll see the current position highlight moving from top-right to bottom left. Thus, the NW block of sensor data is to the Starboard of the track.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.cmap.TimeController.views.TimeController)"/>
+   </item>
+   <item
+         title="Drop ambiguous data">
+      <description>
+         Now, using the Layer Manager, expand the <b>SENSOR_A</b> dataset and select all of the child items (select the top one, scroll to the bottom of the list, then select the bottom one whilst holding down the shift-key).  Now, right click on one of the entries and select <b>Keep starboard bearings</b>.  The port bearings will dissappear.
+      </description>
+   </item>
+   <item
+         title="Decide on contact period">
+      <description>
+         The capable analyst will be able to recognise a couple of periods of steady bearing rate that lend themselves to being the basis of TMA solutions.  The first one we&apos;re going to use is the first dozen or so sensor cuts.  We can see that after a period of about 6 cuts there&apos;s another steady period - we&apos;ll use that for a solution a little later.
+      </description>
+   </item>
+   <item
+         title="Highlight contacts">
+      <description>
+         We&apos;re going to chance the color of the contacts to use for our first solution.  Double-click somewhere along the bearing line for the last data point in first period of steady bearing data - it will be highlighted in the Layer Manager.  By my (unqualified eye), the last data point is the one at <b>090722 04417</b>.  Click on that to select it.  Next scroll back up to the start of the sensor data, hold down the &lt;shift&gt; key and click on the first entry.  This period of sensor data is now selected.  Before creating a TMA segment based on it we&apos;re going to highlight it in a unique color. So, right-click anywhere on it, and select <b>Multiple items/Color/Orange</b>.
       </description>
    </item>
    <item
          title="Generate the TMA segment">
       <description>
-         <b>Body</b>
+         Next, with the set of data still selected (or reselect it if you&apos;ve lost the selection) we&apos;re going to create a solution based upon it.  When we generate a TMA segment based on sensor data, Debrief creates a track segment of steady course/speed data points, with one data-point at the time of each sensor cut used to generate the segment.  Let&apos;s get on with it.  Now, right click on the selected sensor data and select <b>Generate TMA solution from selected cuts</b>.
+      </description>
+   </item>
+   <item
+         title="Follow the generate TMA wizard">
+      <description>
+         Once the TMA wizard opens, it will invite you to enter an initial range and bearing to the contact.  Enter 1 nautical mile (nm) for the solution, and leave the bearing unaltered (since it&apos;s using the bearing from our first sensor cut).  Then click <b>Next</b>.  The wizard will then invite you to enter an initial solution. Based on our understanding of the sensor fan and a complete guess, enter 220 for the course and 6 knots for the speed, then press <b>Finish</b>.  You will see a red track appear, labelled with &lt;TMA_</b> and the current time.   The solutions have times to make it easier for you to manage them.
       </description>
    </item>
    <item
          href="/org.mwc.debrief.help/html/legacy/analysing_data.html#assigning_tracks"
          title="Put the tracks on the tote">
       <description>
-         <b>Body</b>
+         Debrief can hold many more than
       </description>
    </item>
    <item
