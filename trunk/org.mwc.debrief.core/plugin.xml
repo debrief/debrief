@@ -340,14 +340,14 @@
                style="push"
                toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
 
-         <action
+    <!--     <action
                class="org.mwc.debrief.core.creators.chartFeatures.InsertTrackSegment"
                icon="icons/track_segment.gif"
                id="org.mwc.debrief.core.creators.chartFeatures.InsertLine"
                label="&amp;Track Segment"
                menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
                style="push"
-               toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>
+               toolbarPath="org.mwc.debrief.core.EditorShapes/shapes"/>  -->
                                                                            
          <action
                class="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
