@@ -57,21 +57,29 @@
    <item
          title="Follow the generate TMA wizard">
       <description>
-         Once the TMA wizard opens, it will invite you to enter an initial range and bearing to the contact.  Enter 1 nautical mile (nm) for the solution, and leave the bearing unaltered (since it&apos;s using the bearing from our first sensor cut).  Then click <b>Next</b>.  The wizard will then invite you to enter an initial solution. Based on our understanding of the sensor fan and a complete guess, enter 220 for the course and 6 knots for the speed, then press <b>Finish</b>.  You will see a red track appear, labelled with &lt;TMA_</b> and the current time.   The solutions have times to make it easier for you to manage them.
+         Once the TMA wizard opens, it will invite you to enter an initial range and bearing to the contact.  Enter 1 nautical mile (nm) for the solution, and leave the bearing unaltered (since it&apos;s using the bearing from our first sensor cut).  Then click <b>Next</b>.  The wizard will then invite you to enter an initial solution. Based on our understanding of the sensor fan and a complete guess, enter 220 for the course and 6 knots for the speed, then press <b>Finish</b>.  You will see a red track appear, labelled with <b>TMA_</b> and the current time.   The solutions have times to make it easier for you to manage them.
       </description>
    </item>
    <item
          href="/org.mwc.debrief.help/html/legacy/analysing_data.html#assigning_tracks"
          title="Put the tracks on the tote">
       <description>
-         Debrief can hold many more than
+         To view residuals, we must indicate to Debrief which is the ownship and which is the target.  Debrief can hold many more than two tracks, so we must inform it which two tracks we want to compare with each other. So, in the Layer Manager, first select the <b>Track:NONSUCH</b> item, then click on the <b>1</b>  (primary) in the Layer Manager toolbar.  Next, click on the <b>Track_xxxx</b> item and select <b>2</b> (secondary) button in the Layer Manager toolbar.  If you switch to the <b>Track Tote</b> view (shortcut provided below) you&apos;ll now see it contains our primary and secondary tracks - and we&apos;ve successfully indicated who we want to view in the residuals plot.
       </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.cmap.tote.views.ToteView)"/>
    </item>
    <item
          href="/org.mwc.debrief.help/html/legacy/formatting_data.html#track_shifting"
          title="Drag the track segment">
       <description>
-         <b>You now must manipulate the track segment to minimise the bearing and frequency residuals</b>
+         You may  now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment<b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
+In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
+         You may  now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment<b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
+In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
+         You may must manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment<b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
+In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
       </description>
       <subitem
             label="Review bearing residuals.  When you enter drag-track mode, the view Bearing Residuals view is opened for you - so you can track the current residual errors."
