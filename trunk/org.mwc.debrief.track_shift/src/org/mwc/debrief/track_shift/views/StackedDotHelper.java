@@ -105,14 +105,19 @@ public final class StackedDotHelper
 							}
 						}
 
-						// have a go at the host position
-						FixWrapper hostFix = (FixWrapper) sensorHost.getNearestTo(scw
-								.getDTG())[0];
+						// just check that we were able to get target data
+						if (targetFix != null)
+						{
 
-						// store our data
-						final Doublet thisDub = new Doublet(scw, targetFix, targetParent,
-								hostFix);
-						res.add(thisDub);
+							// have a go at the host position
+							FixWrapper hostFix = (FixWrapper) sensorHost.getNearestTo(scw
+									.getDTG())[0];
+
+							// store our data
+							final Doublet thisDub = new Doublet(scw, targetFix, targetParent,
+									hostFix);
+							res.add(thisDub);
+						} // if we find a match
 					} // if cut is visible
 				} // loop through cuts
 			} // if sensor is visible
@@ -184,8 +189,8 @@ public final class StackedDotHelper
 
 				final ColouredDataItem crseBearing = new ColouredDataItem(
 						new FixedMillisecond(currentTime.getDate().getTime()),
-						ownshipCourse, hostColor, true	, null);
-				
+						ownshipCourse, hostColor, true, null);
+
 				// and add them to the series
 				measuredValues.add(mBearing);
 				osCourseValues.add(crseBearing);
