@@ -74,13 +74,9 @@
          href="/org.mwc.debrief.help/html/legacy/formatting_data.html#track_shifting"
          title="Drag the track segment">
       <description>
-         You may  now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment<b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
+         You may now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment</b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
 In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
-         You may  now manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment<b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
-In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
-         You may must manipulate the track segment to minimise the bearing and frequency residuals. Start by clicking on <b>Drag Track Segment<b> on the Debrief toolbar. As you do, the <b>Bearing Residuals</b> view will be brought to the front.  You can expand this view by dragging it&apos;s sides, or to make it much larger you can pick it up by clicking and dragging the <b>Bearing Residuals</b> tab above it, and dragging it to another monitor.  
-In this view are the 4 drag operation buttons, that control how you drag the track. The cursor hand will go green when over a valid hot-spot: either end of the track.  Regardless of the selected drag mode you can translate a track by clicking on the hotspot at its mid-point.
-      </description>
+     </description>
       <subitem
             label="Review bearing residuals.  When you enter drag-track mode, the view Bearing Residuals view is opened for you - so you can track the current residual errors."
             skip="true">
@@ -92,5 +88,18 @@ In this view are the 4 drag operation buttons, that control how you drag the tra
                required="false"
                serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.mwc.debrief.track_shift.views.FrequencyResidualsView)"/>
       </subitem>
+   </item>
+   <item
+         title="Generate second TMA segment">
+      <description>
+         Once you&apos;re happy with the first solution it&apos;s time to move on.   It would appear from the sensor data that the turn is covered by about 13 cuts before a further straight line section of data.
+So, now click on the first sensor cut of the second steady set of bearings - that cut will be highlighted in the <b>Layer Manager</b>. Now scroll down to the end of the data and shift-click the last sensor cut.  We&apos;ve now selected the cuts to be used for the second track segment.  Right click on one of the selected items and select <b>Multiple items/Color/Green</b>.  The cuts will turn green.  Now right-click again on the cuts and click on <b>Generate TMA solution from selected cuts</b>, and complete the wizard once again.
+      </description>
+   </item>
+   <item
+         title="Refine second solution">
+      <description>
+         Now, find the new solution in the Layer Manager and set it as the secondary track.  You&apos;ll also have to switch to the track-tote and remove the existing secondary track.  Do this by right-clicking anywhere in the secondary track&apos;s column of data and selecting <b>Remove this track</b>.  Once the new solution is marked as secondary you are able to start dragging/refining this solution.
+      </description>
    </item>
 </cheatsheet>
