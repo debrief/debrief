@@ -32,8 +32,7 @@ import MWC.GenericData.TimePeriod;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 
-public final class StackedDotHelper
-{
+public final class StackedDotHelper {
 	/**
 	 * the track being dragged
 	 */
@@ -62,60 +61,55 @@ public final class StackedDotHelper
 	 * 
 	 */
 	private Vector<Doublet> getDoublets(final TrackWrapper sensorHost,
-			final TrackWrapper targetTrack, boolean onlyVis)
-	{
+			final TrackWrapper targetTrack, boolean onlyVis) {
 		final Vector<Doublet> res = new Vector<Doublet>(0, 1);
 
 		// loop through our sensor data
 		Enumeration<SensorWrapper> sensors = sensorHost.getSensors();
-		while (sensors.hasMoreElements())
-		{
+		while (sensors.hasMoreElements()) {
 			SensorWrapper wrapper = sensors.nextElement();
-			if (!onlyVis || (onlyVis && wrapper.getVisible()))
-			{
+			if (!onlyVis || (onlyVis && wrapper.getVisible())) {
 				Enumeration<Editable> cuts = wrapper.elements();
-				while (cuts.hasMoreElements())
-				{
-					SensorContactWrapper scw = (SensorContactWrapper) cuts.nextElement();
-					if (!onlyVis || (onlyVis && scw.getVisible()))
-					{
+				while (cuts.hasMoreElements()) {
+					SensorContactWrapper scw = (SensorContactWrapper) cuts
+							.nextElement();
+					if (!onlyVis || (onlyVis && scw.getVisible())) {
 						FixWrapper targetFix = null;
 						TrackSegment targetParent = null;
-						// right, get the track segment and fix nearest to this DTG
+						// right, get the track segment and fix nearest to this
+						// DTG
 						Enumeration<Editable> trkData = targetTrack.elements();
-						while (trkData.hasMoreElements())
-						{
+						while (trkData.hasMoreElements()) {
 							Editable thisI = trkData.nextElement();
-							if (thisI instanceof TrackSegment)
-							{
+							if (thisI instanceof TrackSegment) {
 								TrackSegment ts = (TrackSegment) thisI;
-								TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts
-										.startDTG(), ts.endDTG());
-								if (validPeriod.contains(scw.getDTG()))
-								{
+								TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(
+										ts.startDTG(), ts.endDTG());
+								if (validPeriod.contains(scw.getDTG())) {
 									// sorted. here we go
 									targetParent = ts;
 
 									// and the child element
-									FixWrapper index = new FixWrapper(new Fix(scw.getDTG(),
-											new WorldLocation(0, 0, 0), 0.0, 0.0));
-									SortedSet<Editable> items = ts.tailSet(index);
+									FixWrapper index = new FixWrapper(new Fix(
+											scw.getDTG(), new WorldLocation(0,
+													0, 0), 0.0, 0.0));
+									SortedSet<Editable> items = ts
+											.tailSet(index);
 									targetFix = (FixWrapper) items.first();
 								}
 							}
 						}
 
 						// just check that we were able to get target data
-						if (targetFix != null)
-						{
+						if (targetFix != null) {
 
 							// have a go at the host position
-							FixWrapper hostFix = (FixWrapper) sensorHost.getNearestTo(scw
-									.getDTG())[0];
+							FixWrapper hostFix = (FixWrapper) sensorHost
+									.getNearestTo(scw.getDTG())[0];
 
 							// store our data
-							final Doublet thisDub = new Doublet(scw, targetFix, targetParent,
-									hostFix);
+							final Doublet thisDub = new Doublet(scw, targetFix,
+									targetParent, hostFix);
 							res.add(thisDub);
 						} // if we find a match
 					} // if cut is visible
@@ -132,15 +126,16 @@ public final class StackedDotHelper
 	 * @param linePlot
 	 * @param dotPlot
 	 * @param onlyVis
+	 * @param showCourse
 	 * @param holder
 	 * @param logger
 	 * 
 	 * @param currentOffset
-	 *          how far the current track has been dragged
+	 *            how far the current track has been dragged
 	 */
 	public void updateBearingData(XYPlot dotPlot, XYPlot linePlot,
-			TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
-	{
+			TrackManager tracks, boolean onlyVis, boolean showCourse,
+			Composite holder, ErrorLogger logger) {
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
 			initialise(tracks, false, onlyVis, holder, logger, "Bearing");
@@ -164,22 +159,21 @@ public final class StackedDotHelper
 
 		final TimeSeries measuredValues = new TimeSeries("Measured");
 		final TimeSeries calculatedValues = new TimeSeries("Calculated");
+
 		final TimeSeries osCourseValues = new TimeSeries("Course");
 
 		// ok, run through the points on the primary track
 		Iterator<Doublet> iter = _primaryDoublets.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()) {
 			final Doublet thisD = iter.next();
 
-			try
-			{
+			try {
 
 				// obvious stuff first (stuff that doesn't need the tgt data)
 				final Color thisColor = thisD.getColor();
 				final double measuredBearing = thisD.getMeasuredBearing();
-				final double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(thisD
-						.getHost().getCourse());
+				final double ownshipCourse = MWC.Algorithms.Conversions
+						.Rads2Degs(thisD.getHost().getCourse());
 				final HiResDate currentTime = thisD.getDTG();
 				final Color hostColor = thisD.getHost().getColor();
 
@@ -196,35 +190,37 @@ public final class StackedDotHelper
 				osCourseValues.add(crseBearing);
 
 				// do we have target data?
-				if (thisD.getTarget() != null)
-				{
-					final double calculatedBearing = thisD.getCalculatedBearing(null,
-							null);
-					final double thisError = thisD.calculateError(measuredBearing,
-							calculatedBearing);
+				if (thisD.getTarget() != null) {
+					final double calculatedBearing = thisD
+							.getCalculatedBearing(null, null);
+					final double thisError = thisD.calculateError(
+							measuredBearing, calculatedBearing);
 					final ColouredDataItem newError = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
-							thisColor, false, null);
+							new FixedMillisecond(currentTime.getDate()
+									.getTime()), thisError, thisColor, false,
+							null);
 
 					final ColouredDataItem cBearing = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()),
-							calculatedBearing, thisColor, true, null);
+							new FixedMillisecond(currentTime.getDate()
+									.getTime()), calculatedBearing, thisColor,
+							true, null);
 
 					errorValues.add(newError);
 					calculatedValues.add(cBearing);
 				}
 
-			}
-			catch (final SeriesException e)
-			{
-				// hack: we shouldn't be allowing this exception. Look at why we're
+			} catch (final SeriesException e) {
+				// hack: we shouldn't be allowing this exception. Look at why
+				// we're
 				// getting the same
 				// time period being entered twice for this track.
 
-				// Stop catching the error, load Dave W's holistic approach plot file,
+				// Stop catching the error, load Dave W's holistic approach plot
+				// file,
 				// and check the track/fix which is causing the problem.
 
-				// e.printStackTrace(); //To change body of catch statement use File |
+				// e.printStackTrace(); //To change body of catch statement use
+				// File |
 				// Settings | File Templates.
 			}
 
@@ -235,7 +231,9 @@ public final class StackedDotHelper
 
 		actualSeries.addSeries(measuredValues);
 		actualSeries.addSeries(calculatedValues);
-		actualSeries.addSeries(osCourseValues);
+		if (showCourse) {
+			actualSeries.addSeries(osCourseValues);
+		}
 
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);
@@ -250,8 +248,7 @@ public final class StackedDotHelper
 	 * @param holder
 	 */
 	void initialise(TrackManager tracks, boolean showError, boolean onlyVis,
-			Composite holder, ErrorLogger logger, String dataType)
-	{
+			Composite holder, ErrorLogger logger, String dataType) {
 
 		// have we been created?
 		if (holder == null)
@@ -265,8 +262,7 @@ public final class StackedDotHelper
 		_primaryTrack = null;
 
 		// do we have some data?
-		if (tracks == null)
-		{
+		if (tracks == null) {
 			// output error message
 			logger.logError(IStatus.INFO, "Please open a Debrief plot", null);
 			// showMessage("Sorry, a Debrief plot must be selected", showError);
@@ -275,21 +271,16 @@ public final class StackedDotHelper
 
 		// check we have a primary track
 		final WatchableList priTrk = tracks.getPrimaryTrack();
-		if (priTrk == null)
-		{
+		if (priTrk == null) {
 			logger.logError(IStatus.INFO,
 					"A primary track must be placed on the Tote", null);
 			return;
-		}
-		else
-		{
-			if (!(priTrk instanceof TrackWrapper))
-			{
+		} else {
+			if (!(priTrk instanceof TrackWrapper)) {
 				logger.logError(IStatus.INFO,
 						"The primary track must be a vehicle track", null);
 				return;
-			}
-			else
+			} else
 				_primaryTrack = (TrackWrapper) priTrk;
 		}
 
@@ -297,16 +288,14 @@ public final class StackedDotHelper
 		final WatchableList[] secs = tracks.getSecondaryTracks();
 
 		// any?
-		if ((secs == null) || (secs.length == 0))
-		{
+		if ((secs == null) || (secs.length == 0)) {
 			logger.logError(IStatus.INFO,
 					"A secondary track must be present on the tote", null);
 			return;
 		}
 
 		// too many?
-		if (secs.length > 1)
-		{
+		if (secs.length > 1) {
 			logger.logError(IStatus.INFO,
 					"Only 1 secondary track may be on the tote", null);
 			return;
@@ -314,21 +303,17 @@ public final class StackedDotHelper
 
 		// correct sort?
 		final WatchableList secTrk = secs[0];
-		if (!(secTrk instanceof TrackWrapper))
-		{
+		if (!(secTrk instanceof TrackWrapper)) {
 			logger.logError(IStatus.INFO,
 					"The secondary track must be a vehicle track", null);
 			return;
-		}
-		else
-		{
+		} else {
 			_secondaryTrack = (TrackWrapper) secTrk;
 		}
 
-		if (_primaryTrack.getSensors() == null)
-		{
-			logger
-					.logError(IStatus.INFO, "There must be sensor data available", null);
+		if (_primaryTrack.getSensors() == null) {
+			logger.logError(IStatus.INFO,
+					"There must be sensor data available", null);
 			return;
 		}
 
@@ -343,8 +328,7 @@ public final class StackedDotHelper
 	/**
 	 * clear our data, all is finished
 	 */
-	public void reset()
-	{
+	public void reset() {
 		if (_primaryDoublets != null)
 			_primaryDoublets.removeAllElements();
 		_primaryDoublets = null;
@@ -356,14 +340,13 @@ public final class StackedDotHelper
 	 * go through the tracks, finding the relevant position on the other track.
 	 * 
 	 */
-	private void updateDoublets(boolean onlyVis)
-	{
+	private void updateDoublets(boolean onlyVis) {
 		// ok - we're now there
 		// so, do we have primary and secondary tracks?
-		if (_primaryTrack != null && _secondaryTrack != null)
-		{
+		if (_primaryTrack != null && _secondaryTrack != null) {
 			// cool sort out the list of sensor locations for these tracks
-			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis);
+			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack,
+					onlyVis);
 		}
 	}
 
@@ -377,11 +360,11 @@ public final class StackedDotHelper
 	 * @param logger
 	 * 
 	 * @param currentOffset
-	 *          how far the current track has been dragged
+	 *            how far the current track has been dragged
 	 */
 	public void updateFrequencyData(XYPlot dotPlot, XYPlot linePlot,
-			TrackManager tracks, boolean onlyVis, Composite holder, ErrorLogger logger)
-	{
+			TrackManager tracks, boolean onlyVis, Composite holder,
+			ErrorLogger logger) {
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
 			initialise(tracks, false, onlyVis, holder, logger, "Frequency");
@@ -410,11 +393,9 @@ public final class StackedDotHelper
 
 		// ok, run through the points on the primary track
 		Iterator<Doublet> iter = _primaryDoublets.iterator();
-		while (iter.hasNext())
-		{
+		while (iter.hasNext()) {
 			final Doublet thisD = iter.next();
-			try
-			{
+			try {
 
 				final Color thisColor = thisD.getColor();
 				final double measuredFreq = thisD.getMeasuredFrequency();
@@ -432,39 +413,42 @@ public final class StackedDotHelper
 				correctedValues.add(corrFreq);
 
 				// do we have target data?
-				if (thisD.getTarget() != null)
-				{
+				if (thisD.getTarget() != null) {
 					final double predictedFreq = thisD.getPredictedFrequency();
 					final double thisError = thisD.calculateError(measuredFreq,
 							predictedFreq);
 					final double baseFreq = thisD.getBaseFrequency();
 
 					final ColouredDataItem eFreq = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
-							thisColor, false, null);
+							new FixedMillisecond(currentTime.getDate()
+									.getTime()), thisError, thisColor, false,
+							null);
 					final ColouredDataItem bFreq = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()), baseFreq,
-							thisColor, true, null);
+							new FixedMillisecond(currentTime.getDate()
+									.getTime()), baseFreq, thisColor, true,
+							null);
 
 					final ColouredDataItem pFreq = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()),
-							predictedFreq, thisColor, false, null);
+							new FixedMillisecond(currentTime.getDate()
+									.getTime()), predictedFreq, thisColor,
+							false, null);
 					errorValues.add(eFreq);
 					baseValues.add(bFreq);
 					predictedValues.add(pFreq);
 				}
 
-			}
-			catch (final SeriesException e)
-			{
-				// hack: we shouldn't be allowing this exception. Look at why we're
+			} catch (final SeriesException e) {
+				// hack: we shouldn't be allowing this exception. Look at why
+				// we're
 				// getting the same
 				// time period being entered twice for this track.
 
-				// Stop catching the error, load Dave W's holistic approach plot file,
+				// Stop catching the error, load Dave W's holistic approach plot
+				// file,
 				// and check the track/fix which is causing the problem.
 
-				// e.printStackTrace(); //To change body of catch statement use File |
+				// e.printStackTrace(); //To change body of catch statement use
+				// File |
 				// Settings | File Templates.
 			}
 

@@ -150,7 +150,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		fillLocalToolBar(bars.getToolBarManager());
 	}
 
-	private void fillLocalToolBar(IToolBarManager toolBarManager)
+	protected void fillLocalToolBar(IToolBarManager toolBarManager)
 	{
 		// fit to window
 		toolBarManager.add(_autoResize);
@@ -298,7 +298,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	}
 
-	private void makeActions()
+	protected void makeActions()
 	{
 
 		_autoResize = new Action("Auto resize", IAction.AS_CHECK_BOX)
