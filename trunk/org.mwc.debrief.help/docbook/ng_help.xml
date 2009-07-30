@@ -2218,6 +2218,59 @@ Naval Undersea Warfare Center (NUWC)
                         a single parent track whilst retaining them within this as single entities.
                         This is particularly relevant for TMA Track Segments, for which you may wish
                         to refine your estimates of course/speed.</para>
+                    <para>In addition to combining periods of track, Debrief is able to generate
+                        sections of track to join existing sections.  It performs this using a
+                        series of Cubic Spline calculations. The Splines cover Lat, Long, Depth,
+                        Course and Speed. In this way, the infill segment introduces track points
+                        that provide a smooth transition in the above attributes from one track to
+                        the other. The time interval used for the data points in the infill section
+                        is taken from the time interval between the first two points of the second
+                        segment.  On the plot, the infill segment is shown as a dotted line, to
+                        indicate that it's series of purely calculated positions, and not based on
+                        any observed measurements.</para>
+                </sect2>
+            </sect1>
+            <sect1 id="GridEditor">
+                <title>Using the Grid Editor</title>
+                <sect2 id="GridIntro">
+                    <title>Introduction</title>
+                    <para>Another feature introduced alongside the <link
+                            linkend="SingleSidedChanges">2009 Single-Sided Reconstruction</link>
+                        extensions is the Grid Editor.  This is a tabular editor with an associated
+                        xy plot that allows bulk editing of data points, together with data
+                        smoothing operations.<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/GridOverview.png"/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
+                </sect2>
+                <sect2 id="UseOfGrid">
+                    <title>Use of Grid Editor</title>
+                    <para>The Grid Editor tracks the current selection in the Layer Manager. Thus,
+                        when you select something capable of being edited in a grid in the Layer
+                        Manager (such as a set of positions or sensor cuts) then it is shown in the
+                        Layer Manager.  <note>
+                            <para>If this becomes inconvenient you can stop the Grid Editor from
+                                tracking the Layer Manager selection by clearing the <guilabel>Track
+                                    Selection</guilabel> lock icon.</para>
+                        </note></para>
+                    <para>When a set of data is first loaded into the Grid Editor it is shown as a
+                        plain table. Click into any cell to edit it's data.  Buttons in the Grid
+                        Editor toolbar allow you to insert or delete a row.  But, the Grid Editor
+                        becomes significantly more capable when you focus on a single attribute.  Do
+                        this by clicking on the title label for a field (such as depth, bearing,
+                        etc).  </para>
+                    <para>When you focus the grid editor on a single field it shows an xy plot of
+                        that field.  This plot can be used to highlight/remove/fix outliers and for
+                        general data smoothing operations.   Drag points in the graph in order to
+                        smooth them, or for Debrief to take on the smoothing for you, select a
+                        series of rows either side of the dodgy items then select the
+                            <emphasis>interpolate</emphasis> calculator icon to smooth the
+                        unselected rows.</para>
+                    <para>See the <emphasis>Use of Grid Editor</emphasis> cheat sheet for more
+                        guidance on these operations.</para>
                 </sect2>
             </sect1>
         </chapter>

@@ -21,9 +21,10 @@ Please see the associated help page for a discussion of the track merge operatio
       </description>
    </item>
    <item
+         href="/org.mwc.debrief.help/html/legacy/GroomingTrackData.html#CombineTrackSections"
          title="Provide infill positions">
       <description>
-         Debrief is now able to provide a track section between the two existing track segments.  To do this, open the <b>Track:TMA_xxxx</b> track, and then the <b>Track segments (2 items)</b> item.  Inside you&apos;ll see the two new segments.  Select both of them, and right-click on one of them - you&apos;ll be able to select <b>Generate infill segment</b>.  You&apos;ll see a new segment appear both in the layer manager and the plot.
+         Debrief is now able to provide a track section between the two existing track segments.  To do this, open the <b>Track:TMA_xxxx</b> track, and then the <b>Track segments (2 items)</b> item.  Inside you&apos;ll see the two new segments.  Select both of them, and right-click on one of them - you&apos;ll be able to select <b>Generate infill segment</b>.  You&apos;ll see a new segment appear both in the layer manager and the plot.  Notice that the infill segment is shown as a dotted line - to indicate that this track segment is not based on any evidence, it&apos;s just been calculated to join the tracks either side.
       </description>
    </item>
    <item

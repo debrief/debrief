@@ -69,6 +69,13 @@
       </description>
    </item>
    <item
+         skip="true"
+         title="Recognise track data">
+      <description>
+         If you expand the new track in the <b>Layer Manager</b> you&apos;ll see the <b>Positions</b> child item.  Notice that the icon for this item shows a straight-line section of data with an associated (but tiny) compass rose).  The equivalent object for <b>Track:NONSUCH</b> shows a non straight-line set of positions.  Also, note that on the plot, the name of the TMA segment is shown in italics, to denote that it&apos;s not based on actual position recordings.
+      </description>
+   </item>
+   <item
          href="/org.mwc.debrief.help/html/legacy/analysing_data.html#assigning_tracks"
          title="Put the tracks on the tote">
       <description>
