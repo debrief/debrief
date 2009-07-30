@@ -2132,6 +2132,38 @@ Naval Undersea Warfare Center (NUWC)
                             </mediaobject>
                         </screenshot></para>
                 </sect2>
+                <sect2 id="ResamplingData">
+                    <title>Resampling track and sensor data</title>
+                    <para>On occasion the data loaded into Debrief is of the wrong frequency:<variablelist>
+                            <varlistentry>
+                                <term>Too dense</term>
+                                <listitem>
+                                    <para>a track may have data items at a frequency higher than
+                                        that necessary for the current analysis, resulting in slower
+                                        than necessary Debrief performance.  Alternately, a period
+                                        of sensor data may be too dense, obscuring the underlying
+                                        patterns in the data (such as a bearing fan)</para>
+                                </listitem>
+                            </varlistentry>
+                            <varlistentry>
+                                <term>Too sparse</term>
+                                <listitem>
+                                    <para>During track reconstruction, it may emerge that the sensor
+                                        data is of much higher frequency than the position data.
+                                        After reconstruction, when stepping through a track in time
+                                        the positions may <emphasis>jump</emphasis> to the specified
+                                        time - indicating the positions are too sparse. Resolve this
+                                        by either resampling the positions or by directing the track
+                                        to use interpolated points.   </para>
+                                </listitem>
+                            </varlistentry>
+                        </variablelist>Problems associated with data density are handled differently
+                        between tracks and blocks of sensor data.  Tracks are resampled using the
+                            <guilabel>ResamplePositionsAt</guilabel> property - which adds or
+                        removes position observations as necessary.  Sensor data is resampled using
+                        the <guilabel>VisibleFrequency</guilabel> property - though note that this
+                        does not add or remove points, it merely changes their visibility.</para>
+                </sect2>
                 <sect2 id="SplitTrackSections">
                     <title>Splitting track sections</title>
                     <para>Before a jump can be removed from a track, the track must be split. To
@@ -2170,6 +2202,11 @@ Naval Undersea Warfare Center (NUWC)
                                 </imageobject>
                             </mediaobject>
                         </screenshot></para>
+                    <para>The Debrief merge algorithm is not able to handle overlapping tracks,
+                        since it cannot resolve which overlapping segment to favour. This is a task
+                        best undertaken by the analyst.  So, Debrief will produce a warning when the
+                        analyst tries to merge overlapping tracks. When it does, just delete one or
+                        more overlapping points and trigger the operation again.</para>
                 </sect2>
                 <sect2 id="CombineTrackSections">
                     <title>Combining track sections</title>
@@ -4936,9 +4973,9 @@ Naval Undersea Warfare Center (NUWC)
                 <sect2 id="manage_ambiguous">
                     <title>Managing ambiguous data</title>
                     <para>Whilst hull-mounted sensor typically produce a single bearing to their
-                        contact, towed-arrays typically produce ambiguous bearings.  They are aware
+                        contact, towed-arrays typically produce ambiguous bearings. They are aware
                         of the relative bearing to the contact, but are now aware of whether it is
-                        to the Port or Starboard of the host platform.  </para>
+                        to the Port or Starboard of the host platform. </para>
                     <para>The Debrief sensor format (DSF) handles ambiguous data by allowing two
                         bearings to be read in, and once that block of sensor data is made visible
                         Debrief plots both sensor bearings.</para>
@@ -4946,9 +4983,9 @@ Naval Undersea Warfare Center (NUWC)
                         analysis, the analyst must decide which is the actual bearing (to be kept),
                         and which is the ambiguous bearing (to be removed).</para>
                     <para>Once a decision has been made on which of the two bearings to keep, open
-                        that block of sensor data in the Layer Manager.  Then, select the relevant
+                        that block of sensor data in the Layer Manager. Then, select the relevant
                         sensor cuts (using &lt;shift> and &lt;control> as necessary to
-                        multi-select).  Once selected, right-click on one of the items and select
+                        multi-select). Once selected, right-click on one of the items and select
                             <guimenuitem>Keep port bearing</guimenuitem> or <guimenuitem>Keep
                             starboard bearing</guimenuitem>.</para>
                 </sect2>
@@ -5111,8 +5148,10 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             </varlistentry>
                         </variablelist><note>
                             <para>Note, only the Translate and Rotate operations are available for
-                                all track sections. Stretch and Shear are only available for TMA
-                                Segments.</para>
+                                all track sections. Only the Stretch and Shear operations are
+                                suitable for application to straight-line TMA Segments Thus, the
+                                hand cursor will only turn green over straight-line TMA Segment hot
+                                spots.</para>
                         </note> When in Translate or Rotate mode, the drag-highlight is extended
                         beyond the first/last point in the track to assist with alignment. A
                         target-circle is also plotted on this extended stalk. This target is plotted

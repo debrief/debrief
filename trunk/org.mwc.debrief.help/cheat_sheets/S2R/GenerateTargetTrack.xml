@@ -22,6 +22,14 @@
       </description>
    </item>
    <item
+         href="/org.mwc.debrief.help/html/legacy/GroomingTrackData.html#ResamplingData"
+         skip="true"
+         title="Reduce data density">
+      <description>
+         Whilst it isn&apos;t necessary for this exercise, Debrief does allow you to reduce the density of the sensor data.  If you right-click on <b>Sensor:SENSOR_A</b>, then navigate down into the <b>SENSOR_A</b> sub-menu you will see a <b>Visible Frequency</b> option. Using one of these options will pass through sensor data and hide sensor observations between the specified frequency.  The sensor cuts remain available, and can be made visible again by
+      </description>
+   </item>
+   <item
          title="Resolve ambiguity">
       <description>
          You&apos;ll now see the sensor data appear.  You&apos;ll see one bearing fan heading off to the WNW, and the other off towards NNE.  Intelligence tells us (well, Ian H tells us) that the actual contact is off to the NW.  If we open the Time Controller view and drag the time slider back and forth we&apos;ll see the current position highlight moving from top-right to bottom left. Thus, the NW block of sensor data is to the Starboard of the track.

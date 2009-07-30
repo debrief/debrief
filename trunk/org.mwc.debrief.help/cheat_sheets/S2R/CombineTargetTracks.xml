@@ -27,6 +27,7 @@ Please see the associated help page for a discussion of the track merge operatio
       </description>
    </item>
    <item
+         href="/org.mwc.debrief.help/html/legacy/GroomingTrackData.html#JoinTrackSections"
          title="Merge tracks">
       <description>
          You can continue to keep your target track represented as 3 or more track segments for as long as you like.  But, when you need to export the data for presentation or subsequent analysis then you need to merge them.  To do this, select the parent item for the track segments (<b>Track segments (3 items)</b>), right-click on it and select <b>Merge all track segments</b>.  The tracks will merge.  Note, alternatively you could have selected different track segments to merge by selecting them individually at the next level down.
