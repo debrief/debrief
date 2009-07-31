@@ -228,7 +228,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
 				new DatedToolTipGenerator(), null, _linePlot);
-		lineRend.setSeriesShapesVisible(1, false);
 		lineRend.setPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
 

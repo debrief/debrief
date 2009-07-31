@@ -408,7 +408,10 @@ public final class StackedDotHelper {
 
 				final ColouredDataItem corrFreq = new ColouredDataItem(
 						new FixedMillisecond(currentTime.getDate().getTime()),
-						correctedFreq, thisColor, false, null);
+						correctedFreq, thisColor, true, null);
+//				final ColouredDataItem corrFreq = new ColouredDataItem(
+//						new FixedMillisecond(currentTime.getDate().getTime()),
+//						correctedFreq, thisColor, false, null);
 				measuredValues.add(mFreq);
 				correctedValues.add(corrFreq);
 
@@ -447,7 +450,7 @@ public final class StackedDotHelper {
 				// file,
 				// and check the track/fix which is causing the problem.
 
-				// e.printStackTrace(); //To change body of catch statement use
+				 e.printStackTrace(); //To change body of catch statement use
 				// File |
 				// Settings | File Templates.
 			}

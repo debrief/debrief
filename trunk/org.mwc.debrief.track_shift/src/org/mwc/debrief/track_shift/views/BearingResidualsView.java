@@ -3,6 +3,7 @@ package org.mwc.debrief.track_shift.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
+import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.mwc.cmap.core.CorePlugin;
 
 public class BearingResidualsView extends BaseStackedDotsView
@@ -55,6 +56,11 @@ public class BearingResidualsView extends BaseStackedDotsView
 	{
 		// update the current datasets
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
-				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this);		
+				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this);	
+		
+		// hide the line for the course dataset
+		DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot.getRenderer();
+		lineRend.setSeriesShapesVisible(1, false);
+		
 	}
 }
