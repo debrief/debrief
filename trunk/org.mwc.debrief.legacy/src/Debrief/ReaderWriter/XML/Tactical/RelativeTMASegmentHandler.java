@@ -79,7 +79,6 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 
 		// sort out the remaining attributes
 		segE.setAttribute(HOST, seg.getReferenceTrack().getName());		
-		WorldSpeedHandler.exportSpeed(SPEED, seg.getSpeed(), segE, doc);
 	
 		trk.appendChild(segE);
 		
