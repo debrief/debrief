@@ -15,7 +15,6 @@ import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Layers;
 import MWC.GenericData.WorldVector;
-import MWC.Utilities.ReaderWriter.XML.Util.WorldSpeedHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldVectorHandler;
 
 abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
