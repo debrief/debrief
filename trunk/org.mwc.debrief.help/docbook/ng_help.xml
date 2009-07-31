@@ -1369,6 +1369,10 @@ Naval Undersea Warfare Center (NUWC)
                         or changing the current perspective. If something doesn't undo, then the
                         changes are we've missed it. Please report the oversight using the procedure
                         in <xref linkend="debrief_bugs"/>and we'll correct it.</para>
+                    <para>Each open Debrief plot has it's own undo buffer - so if the undo button
+                        appears disabled you must first make sure you've clicked on the plot it
+                        relates to.  Whilst you may have made the edit via the Layer Manager, you
+                        must still click on the plot before conducting an undo operation.</para>
                 </sect2>
                 <sect2 id="format_the_plot">
                     <title>Formatting the plot</title>
@@ -2140,8 +2144,8 @@ Naval Undersea Warfare Center (NUWC)
                                 <listitem>
                                     <para>a track may have data items at a frequency higher than
                                         that necessary for the current analysis, resulting in slower
-                                        than necessary Debrief performance.  Alternately, a period
-                                        of sensor data may be too dense, obscuring the underlying
+                                        than necessary Debrief performance. Alternately, a period of
+                                        sensor data may be too dense, obscuring the underlying
                                         patterns in the data (such as a bearing fan)</para>
                                 </listitem>
                             </varlistentry>
@@ -2154,13 +2158,13 @@ Naval Undersea Warfare Center (NUWC)
                                         the positions may <emphasis>jump</emphasis> to the specified
                                         time - indicating the positions are too sparse. Resolve this
                                         by either resampling the positions or by directing the track
-                                        to use interpolated points.   </para>
+                                        to use interpolated points. </para>
                                 </listitem>
                             </varlistentry>
                         </variablelist>Problems associated with data density are handled differently
-                        between tracks and blocks of sensor data.  Tracks are resampled using the
+                        between tracks and blocks of sensor data. Tracks are resampled using the
                             <guilabel>ResamplePositionsAt</guilabel> property - which adds or
-                        removes position observations as necessary.  Sensor data is resampled using
+                        removes position observations as necessary. Sensor data is resampled using
                         the <guilabel>VisibleFrequency</guilabel> property - though note that this
                         does not add or remove points, it merely changes their visibility.</para>
                 </sect2>
@@ -2204,7 +2208,7 @@ Naval Undersea Warfare Center (NUWC)
                         </screenshot></para>
                     <para>The Debrief merge algorithm is not able to handle overlapping tracks,
                         since it cannot resolve which overlapping segment to favour. This is a task
-                        best undertaken by the analyst.  So, Debrief will produce a warning when the
+                        best undertaken by the analyst. So, Debrief will produce a warning when the
                         analyst tries to merge overlapping tracks. When it does, just delete one or
                         more overlapping points and trigger the operation again.</para>
                 </sect2>
@@ -2219,15 +2223,15 @@ Naval Undersea Warfare Center (NUWC)
                         This is particularly relevant for TMA Track Segments, for which you may wish
                         to refine your estimates of course/speed.</para>
                     <para>In addition to combining periods of track, Debrief is able to generate
-                        sections of track to join existing sections.  It performs this using a
-                        series of Cubic Spline calculations. The Splines cover Lat, Long, Depth,
-                        Course and Speed. In this way, the infill segment introduces track points
-                        that provide a smooth transition in the above attributes from one track to
-                        the other. The time interval used for the data points in the infill section
-                        is taken from the time interval between the first two points of the second
-                        segment.  On the plot, the infill segment is shown as a dotted line, to
-                        indicate that it's series of purely calculated positions, and not based on
-                        any observed measurements.</para>
+                        sections of track to join existing sections. It performs this using a series
+                        of Cubic Spline calculations. The Splines cover Lat, Long, Depth, Course and
+                        Speed. In this way, the infill segment introduces track points that provide
+                        a smooth transition in the above attributes from one track to the other. The
+                        time interval used for the data points in the infill section is taken from
+                        the time interval between the first two points of the second segment. On the
+                        plot, the infill segment is shown as a dotted line, to indicate that it's
+                        series of purely calculated positions, and not based on any observed
+                        measurements.</para>
                 </sect2>
             </sect1>
             <sect1 id="GridEditor">
@@ -2236,7 +2240,7 @@ Naval Undersea Warfare Center (NUWC)
                     <title>Introduction</title>
                     <para>Another feature introduced alongside the <link
                             linkend="SingleSidedChanges">2009 Single-Sided Reconstruction</link>
-                        extensions is the Grid Editor.  This is a tabular editor with an associated
+                        extensions is the Grid Editor. This is a tabular editor with an associated
                         xy plot that allows bulk editing of data points, together with data
                         smoothing operations.<screenshot>
                             <mediaobject>
@@ -2251,20 +2255,20 @@ Naval Undersea Warfare Center (NUWC)
                     <para>The Grid Editor tracks the current selection in the Layer Manager. Thus,
                         when you select something capable of being edited in a grid in the Layer
                         Manager (such as a set of positions or sensor cuts) then it is shown in the
-                        Layer Manager.  <note>
+                        Layer Manager. <note>
                             <para>If this becomes inconvenient you can stop the Grid Editor from
                                 tracking the Layer Manager selection by clearing the <guilabel>Track
                                     Selection</guilabel> lock icon.</para>
                         </note></para>
                     <para>When a set of data is first loaded into the Grid Editor it is shown as a
-                        plain table. Click into any cell to edit it's data.  Buttons in the Grid
-                        Editor toolbar allow you to insert or delete a row.  But, the Grid Editor
-                        becomes significantly more capable when you focus on a single attribute.  Do
+                        plain table. Click into any cell to edit it's data. Buttons in the Grid
+                        Editor toolbar allow you to insert or delete a row. But, the Grid Editor
+                        becomes significantly more capable when you focus on a single attribute. Do
                         this by clicking on the title label for a field (such as depth, bearing,
-                        etc).  </para>
+                        etc). </para>
                     <para>When you focus the grid editor on a single field it shows an xy plot of
-                        that field.  This plot can be used to highlight/remove/fix outliers and for
-                        general data smoothing operations.   Drag points in the graph in order to
+                        that field. This plot can be used to highlight/remove/fix outliers and for
+                        general data smoothing operations. Drag points in the graph in order to
                         smooth them, or for Debrief to take on the smoothing for you, select a
                         series of rows either side of the dodgy items then select the
                             <emphasis>interpolate</emphasis> calculator icon to smooth the
