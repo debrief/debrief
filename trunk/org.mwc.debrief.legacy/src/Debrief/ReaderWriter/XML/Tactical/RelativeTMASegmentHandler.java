@@ -78,6 +78,9 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 
 		// sort out the remaining attributes
 		segE.setAttribute(HOST, seg.getReferenceTrack().getName());		
+		
+		// and the offset vector
+		WorldVectorHandler.exportVector(OFFSET, seg.getOffset(),segE, doc);
 	
 		trk.appendChild(segE);
 		
