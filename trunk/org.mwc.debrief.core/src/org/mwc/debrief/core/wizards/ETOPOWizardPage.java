@@ -14,16 +14,14 @@ import MWC.GUI.Tools.Palette.CreateTOPO;
  * OR with the extension that matches the expected one (xml).
  */
 
-public class ETOPOWizardPage extends CoreEditableWizardPage
-{
+public class ETOPOWizardPage extends CoreEditableWizardPage {
 
 	/**
 	 * Constructor for SampleNewWizardPage.
 	 * 
 	 * @param pageName
 	 */
-	public ETOPOWizardPage(ISelection selection)
-	{
+	public ETOPOWizardPage(ISelection selection) {
 		super(
 				selection,
 				"etopoPage",
@@ -33,28 +31,35 @@ public class ETOPOWizardPage extends CoreEditableWizardPage
 	}
 
 	@Override
-	protected Editable createMe()
-	{
+	protected Editable createMe() {
 		if (_editable == null)
 			_editable = CreateTOPO.load2MinBathyData();
 
 		return _editable;
 	}
 
+	/** do we have valid data?
+	 * 
+	 * @return 
+	 */
+	public boolean isAvailable() {
+		return CreateTOPO.check2MinBathyData();
+	}
+
 	/**
 	 * @return
 	 */
 	@Override
-	protected PropertyDescriptor[] getPropertyDescriptors()
-	{
-		final java.beans.PropertyDescriptor[] descriptors =
-		{
-				longProp("KeyLocation", "the current location of the color-key",
-						getEditable(), KeyLocationPropertyEditor.class),
+	protected PropertyDescriptor[] getPropertyDescriptors() {
+		final java.beans.PropertyDescriptor[] descriptors = {
+				longProp("KeyLocation",
+						"the current location of the color-key", getEditable(),
+						KeyLocationPropertyEditor.class),
 				prop("ShowLand", "whether to shade land-data", getEditable()),
 				prop("BathyVisible", "whether to show the gridded contours",
 						getEditable()),
-				prop("ContoursVisible", "whether to show the contours", getEditable()), };
+				prop("ContoursVisible", "whether to show the contours",
+						getEditable()), };
 		return descriptors;
 	}
 

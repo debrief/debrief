@@ -12,8 +12,20 @@
 		<description>Select [File/New/Debrief Plot] and the Wizard will open.
 		</description>
 	</item>
+ <item
+       title="Set parent folder">
+    <description>
+       Once the wizard opens, the first step is to specify where you would like the plot to be stored (it&apos;s <b>Container</b>. So, click on <b>Browse</b> button and select the top-level folder of your data directories.  Also provide a filename.
+    </description>
+ </item>
 	<item title="Add background data">
-		<description>From the wizard, follow the series of tabs to indicate what information you'd like shown in the background of the plot, clicking Finish to complete.
+		<description>From the wizard, follow the series of tabs to indicate what information you&apos;d like shown in the background of the plot, clicking Finish to complete.  Some of the steps will not advance until all of the necessary fields have been filled.
 		</description>
 	</item>
+ <item
+       title="Finished">
+    <description>
+       Once the Wizard has closed, the plot you&apos;ve created can be found in the folder
+    </description>
+ </item>
 </cheatsheet>

@@ -44,8 +44,7 @@ import MWC.GUI.Chart.Painters.CoastPainter;
  * same extension, it will be able to open it.
  */
 
-public class NewPlotWizard extends Wizard implements INewWizard
-{
+public class NewPlotWizard extends Wizard implements INewWizard {
 	private FilenameWizardPage _fileWizard;
 	private ScaleWizardPage _scaleWizard;
 	private CoastWizardPage _coastWizard;
@@ -59,8 +58,7 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	/**
 	 * Constructor for NewPlotWizard.
 	 */
-	public NewPlotWizard()
-	{
+	public NewPlotWizard() {
 		super();
 		setNeedsProgressMonitor(true);
 
@@ -72,18 +70,21 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	 */
 
 	@Override
-	public void addPages()
-	{
+	public void addPages() {
 		_fileWizard = new FilenameWizardPage(selection);
 		_scaleWizard = new ScaleWizardPage(selection);
 		_coastWizard = new CoastWizardPage(selection);
 		_gridWizard = new GridWizardPage(selection);
+
+		// check there's ETOPO data before we add the page
 		_etopoWizard = new ETOPOWizardPage(selection);
+
 		addPage(_fileWizard);
 		addPage(_scaleWizard);
 		addPage(_coastWizard);
 		addPage(_gridWizard);
-		addPage(_etopoWizard);
+		if (_etopoWizard.isAvailable())
+			addPage(_etopoWizard);
 	}
 
 	/**
@@ -92,49 +93,38 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	 * file.
 	 */
 
-	void doFinish(String containerName, String fileName, IProgressMonitor monitor)
-			throws CoreException
-	{
+	void doFinish(String containerName, String fileName,
+			IProgressMonitor monitor) throws CoreException {
 		// create a sample file
 		monitor.beginTask("Creating " + fileName, 2);
 		final IWorkspaceRoot root = ResourcesPlugin.getWorkspace().getRoot();
 		final IResource resource = root.findMember(new Path(containerName));
-		if (!resource.exists() || !(resource instanceof IContainer))
-		{
-			throwCoreException("Container \"" + containerName + "\" does not exist.");
+		if (!resource.exists() || !(resource instanceof IContainer)) {
+			throwCoreException("Container \"" + containerName
+					+ "\" does not exist.");
 		}
 		final IContainer container = (IContainer) resource;
 		final IFile file = container.getFile(new Path(fileName));
-		try
-		{
+		try {
 			final InputStream stream = openContentStream();
-			if (file.exists())
-			{
+			if (file.exists()) {
 				file.setContents(stream, true, true, monitor);
-			}
-			else
-			{
+			} else {
 				file.create(stream, true, monitor);
 			}
 			stream.close();
-		}
-		catch (final IOException e)
-		{
+		} catch (final IOException e) {
 		}
 		monitor.worked(1);
 		monitor.setTaskName("Opening file for editing...");
-		getShell().getDisplay().asyncExec(new Runnable()
-		{
-			public void run()
-			{
+		getShell().getDisplay().asyncExec(new Runnable() {
+			public void run() {
 				final IWorkbenchPage page = PlatformUI.getWorkbench()
 						.getActiveWorkbenchWindow().getActivePage();
-				try
-				{
-					IDE.openEditor(page, file, "org.mwc.debrief.core.editors.PlotEditor");
-				}
-				catch (final PartInitException e)
-				{
+				try {
+					IDE.openEditor(page, file,
+							"org.mwc.debrief.core.editors.PlotEditor");
+				} catch (final PartInitException e) {
 				}
 			}
 		});
@@ -147,16 +137,14 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	 * 
 	 * @see IWorkbenchWizard#init(IWorkbench, IStructuredSelection)
 	 */
-	public void init(IWorkbench workbench, IStructuredSelection selection1)
-	{
+	public void init(IWorkbench workbench, IStructuredSelection selection1) {
 		this.selection = selection1;
 	}
 
 	/**
 	 * Put our layers object into a file
 	 */
-	private InputStream openContentStream()
-	{
+	private InputStream openContentStream() {
 		// ok, where do we dump our layers to?
 		final ByteArrayOutputStream bos = new ByteArrayOutputStream();
 
@@ -172,13 +160,11 @@ public class NewPlotWizard extends Wizard implements INewWizard
 	 * will create an operation and run it using wizard as execution context.
 	 */
 	@Override
-	public boolean performFinish()
-	{
+	public boolean performFinish() {
 
 		// get the chart features layer.
 		Layer chartFeatures = _myNewLayers.findLayer(Layers.CHART_FEATURES);
-		if (chartFeatures == null)
-		{
+		if (chartFeatures == null) {
 			final BaseLayer baseFeatures = new BaseLayer();
 			baseFeatures.setName(Layers.CHART_FEATURES);
 
@@ -201,9 +187,9 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		chartFeatures.add(_gridWizard.getEditable());
 
 		final CoastPainter coast = (CoastPainter) _coastWizard.getEditable();
-		if (coast != null)
-		{
-			// complete the laze instantiation of the coastline - we're only going to
+		if (coast != null) {
+			// complete the laze instantiation of the coastline - we're only
+			// going to
 			// load the data if/when we need it
 			coast.initData();
 
@@ -212,52 +198,42 @@ public class NewPlotWizard extends Wizard implements INewWizard
 		}
 
 		// also add in the ETOPO layer if it worked
-		final Layer etopoLayer = (Layer) _etopoWizard.getEditable();
-		if (etopoLayer != null)
-			_myNewLayers.addThisLayer(etopoLayer);
+		if (_etopoWizard.isAvailable()) {
+			final Layer etopoLayer = (Layer) _etopoWizard.getEditable();
+			if (etopoLayer != null)
+				_myNewLayers.addThisLayer(etopoLayer);
+		}
 
 		final String containerName = _fileWizard.getContainerName();
 		final String fileName = _fileWizard.getFileName();
-		final IRunnableWithProgress op = new IRunnableWithProgress()
-		{
+		final IRunnableWithProgress op = new IRunnableWithProgress() {
 			public void run(IProgressMonitor monitor)
-					throws InvocationTargetException
-			{
-				try
-				{
+					throws InvocationTargetException {
+				try {
 					doFinish(containerName, fileName, monitor);
-				}
-				catch (final CoreException e)
-				{
+				} catch (final CoreException e) {
 					throw new InvocationTargetException(e);
-				}
-				finally
-				{
+				} finally {
 					monitor.done();
 				}
 			}
 		};
-		try
-		{
+		try {
 			getContainer().run(true, false, op);
-		}
-		catch (final InterruptedException e)
-		{
+		} catch (final InterruptedException e) {
 			return false;
-		}
-		catch (final InvocationTargetException e)
-		{
+		} catch (final InvocationTargetException e) {
 			final Throwable realException = e.getTargetException();
-			MessageDialog.openError(getShell(), "Error", realException.getMessage());
+			MessageDialog.openError(getShell(), "Error", realException
+					.getMessage());
 			return false;
 		}
 		return true;
 	}
 
-	private void throwCoreException(String message) throws CoreException
-	{
-		final IStatus status = new Status(IStatus.ERROR, "org.mwc.debrief.core",
-				IStatus.OK, message, null);
+	private void throwCoreException(String message) throws CoreException {
+		final IStatus status = new Status(IStatus.ERROR,
+				"org.mwc.debrief.core", IStatus.OK, message, null);
 		throw new CoreException(status);
 	}
 }
