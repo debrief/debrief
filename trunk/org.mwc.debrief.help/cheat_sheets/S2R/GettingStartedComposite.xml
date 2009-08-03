@@ -6,12 +6,9 @@
          completed the <b>A Debrief walkthrough</b>  cheat-sheet, so you 
          know how to configure Debrief and how to load your data.  
          If you haven&apos;t completed the Debrief walkthrough, 
-         click on <b>Restore Welcome</b> at the top of this window (or select <b>Welcome</b> from the Help menu, 
+         click on <b>Restore Welcome</b> at the top of this window (or select <b>Welcome</b> from the Help menu), 
          navigate to the Tutorials tab, and start the Debrief walkthrough.
       </intro>
-      <onCompletion>
-         <b>Conclusion</b>
-      </onCompletion>
       <task kind="cheatsheet" name="Tidying the ownship track" skip="false">
          <intro>
             <b>Frequently, before you can start work on producing the red track, you must perform some grooming of the ownship track.</b>
@@ -43,9 +40,6 @@
             <intro>
                Next we&apos;re going to combine the discrete track segments into a tidy target track ready for subsequent analysis.
             </intro>
-            <onCompletion>
-               That
-            </onCompletion>
             <param name="path" value="CombineTargetTracks.xml">
             </param>
          </task>
