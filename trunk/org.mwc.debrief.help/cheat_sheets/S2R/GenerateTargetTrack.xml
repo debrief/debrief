@@ -3,7 +3,7 @@
       title="Generate a target track">
    <intro>
       <description>
-         This cheat sheet is going to work through creating a segment of target track from bearing data.  The target track is going to represent a period of straight-line motion, and can be interpreted as a Manual TMA Solution.  You should have a hold a tidy track and sensor data as produced in the previous cheat-sheet.
+         This cheat sheet is going to work through creating a segment of target track from bearing data.  The target track is going to represent a period of straight-line motion, and can be interpreted as a Manual TMA Solution.  You should have open a tidy track and sensor data as produced in the previous cheat-sheet.  Feel free to close the Grid Editor window now that we&apos;re concentrating on the plot.
       </description>
    </intro>
    <item
