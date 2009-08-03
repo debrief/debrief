@@ -574,7 +574,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						tdp.removeTrackShiftListener(_myShiftListener);
 
 						if (tdp == _myTrackDataProvider)
+						{
 							_myTrackDataProvider = null;
+						}
 
 						// hey - lets clear our plot
 						updateStackedDots();
@@ -618,6 +620,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							if (_ourLayersSubject != null)
 								_ourLayersSubject
 										.removeDataReformattedListener(_layersListener);
+							
+							// and remember the new one
+							_ourLayersSubject = theLayers;
 						}
 
 						// now start listening to the new one.
@@ -637,6 +642,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						{
 							// yup, stop listening
 							_ourLayersSubject.removeDataReformattedListener(_layersListener);
+							
+							_linePlot.setDataset(null);
+							_dotPlot.setDataset(null);
 						}
 					}
 
