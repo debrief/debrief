@@ -1371,7 +1371,7 @@ Naval Undersea Warfare Center (NUWC)
                         in <xref linkend="debrief_bugs"/>and we'll correct it.</para>
                     <para>Each open Debrief plot has it's own undo buffer - so if the undo button
                         appears disabled you must first make sure you've clicked on the plot it
-                        relates to.  Whilst you may have made the edit via the Layer Manager, you
+                        relates to. Whilst you may have made the edit via the Layer Manager, you
                         must still click on the plot before conducting an undo operation.</para>
                 </sect2>
                 <sect2 id="format_the_plot">
@@ -2273,7 +2273,7 @@ Naval Undersea Warfare Center (NUWC)
                         series of rows either side of the dodgy items then select the
                             <emphasis>interpolate</emphasis> calculator icon to smooth the
                         unselected rows.</para>
-                    <para>See the <emphasis>Use of Grid Editor</emphasis> cheat sheet for more
+                    <para>See the <emphasis>Groom Sensor Data</emphasis> cheat sheet for more
                         guidance on these operations.</para>
                 </sect2>
             </sect1>
