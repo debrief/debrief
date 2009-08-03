@@ -27,24 +27,24 @@
             Now it&apos;s time to start building the target track
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            You&apos;ve now learnt how to create and manage target tracks in Debrief.
          </onCompletion>
          <task kind="cheatsheet" name="Generating a segment of target track" skip="false">
             <intro>
-               <b>Introduction</b>
+               The next step of the analysis process is to produce a valid target track from our ownship data plus sensor data.
             </intro>
             <onCompletion>
-               <b>Conclusion</b>
+               We now have a pair of target track sections.
             </onCompletion>
             <param name="path" value="GenerateTargetTrack.xml">
             </param>
          </task>
          <task kind="cheatsheet" name="Combining sections of target track" skip="false">
             <intro>
-               <b>Introduction</b>
+               Next we&apos;re going to combine the discrete track segments into a tidy target track ready for subsequent analysis.
             </intro>
             <onCompletion>
-               <b>Conclusion</b>
+               That
             </onCompletion>
             <param name="path" value="CombineTargetTracks.xml">
             </param>
