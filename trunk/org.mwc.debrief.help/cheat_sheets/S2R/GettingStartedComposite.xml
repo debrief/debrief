@@ -26,9 +26,19 @@
          <onCompletion>
             You&apos;ve now learnt how to create and manage target tracks in Debrief.
          </onCompletion>
+         <task kind="cheatsheet" name="Load and groom sensor data" skip="false">
+            <intro>
+               Now we&apos;ve learned about how to groom data by drag and dropping segments we&apos;re going to encounter the <b>Grid Editor</b> a Debrief panel dedicated to editing raw data.
+            </intro>
+            <onCompletion>
+               We&apos;ve now got a track with lovely smooth sensor data. Hmm.
+            </onCompletion>
+            <param name="path" value="GroomSensorData.xml">
+            </param>
+         </task>
          <task kind="cheatsheet" name="Generating a segment of target track" skip="false">
             <intro>
-               The next step of the analysis process is to produce a valid target track from our ownship data plus sensor data.
+               The next step of the analysis process is to produce a valid target track from our tidied data
             </intro>
             <onCompletion>
                We now have a pair of target track sections.
