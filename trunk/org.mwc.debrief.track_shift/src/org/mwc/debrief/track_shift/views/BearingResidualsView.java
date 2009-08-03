@@ -31,7 +31,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 		showCourse.setChecked(true);
 		showCourse.setToolTipText("Show ownship course in absolute plot");
 		showCourse.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/follow_selection.gif"));
+				.getImageDescriptor("icons/showCourse.png"));
 
 	}
 
