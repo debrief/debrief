@@ -9,10 +9,10 @@
 				id="debrief-whatsnew" style-id="content-link">
 				<text>New features to be found in Debrief NG</text>
 			</link>
-			<link label="Debrief's changelog"
-				url="http://org.eclipse.ui.intro/showMessage?message=Debrief change-log available soon."
-				id="debrief-changelog" style-id="content-link">
-				<text>Detailed list of changes in the current build of Debrief</text>
+			<link label="Debrief's recent history"
+				url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/History.html#TwoThouOnwards"
+				id="debrief-whatsnew" style-id="content-link">
+				<text>Recent changes in Debrief</text>
 			</link>
 		</group>
 	</extensionContent>

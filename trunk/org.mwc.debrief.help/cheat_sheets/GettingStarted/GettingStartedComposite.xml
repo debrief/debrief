@@ -59,6 +59,9 @@
             <intro>
                Here you&apos;ll learn more about the Debrief user interface
             </intro>
+            <onCompletion>
+               That&apos;s it for getting started with Debrief.  If you&apos;re following the Single Sided Reconstruction composite cheat sheet just go back to the <b>Tutorials</b> page of the <b>Welcome</b> page and select it
+            </onCompletion>
             <param name="path" value="ViewHelpForUI.xml">
             </param>
          </task>

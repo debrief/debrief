@@ -10,13 +10,24 @@
 				style-id="content-link">
 				<text>Welcome to Debrief, it's background and it's history</text>
 			</link>
-			<link style-id="content-link" label="A Debrief walkthrough"
-				url="http://org.eclipse.ui.intro/showStandby?partId=org.eclipse.platform.cheatsheet&amp;input=org.mwc.debrief.help.started.tutorial"
-				id="debrief-tutorial">
-				<text>
-					Let Debrief itself lead you through your first session
-				</text>
+			<link label="Installing and starting Debrief"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/get_start.html"
+				style-id="content-link">
+				<text>How to obtain and install Debrief</text>
 			</link>
+			<link label="Grooming track data"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/GroomingTrackData.html"
+				style-id="content-link">
+				<text>How to groom positional data, including removal of jumps</text>
+			</link>			
+			<link label="Debrief file formats"
+				id="debrief-welcome"
+   			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/reference.html#replay_file_format"
+				style-id="content-link">
+				<text>Use this guidance and you'll be able to get your data smoothly into Debrief</text>
+			</link>					
 		</group>
 	</extensionContent>
 </introContent>

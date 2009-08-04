@@ -1107,8 +1107,27 @@ Naval Undersea Warfare Center (NUWC)
                             linkend="maintainers_guide">maintainers</link> section of the this
                         document. </para>
                 </sect2>
+                <sect2 id="DebrieffileFormat">
+                    <title>The Debrief file format</title>
+                    <para>Note that the Replay file format just stores sensor readings, it does not
+                        store any formatting details.  Thus, any formatting applied to a plot cannot
+                        be saved as a Replay file.  Thus, Debrief has it's <emphasis>Debrief File
+                            Format</emphasis>.  This is a more complex file format that stores a
+                        wide range of data-types, formatting instructions, and user-interface
+                        settings (such as the current viewport on the data).</para>
+                    <para>Thus, whilst you may load data from a <emphasis>.REP</emphasis> Replay
+                        file, any modifications made to the plot must be stored in a Debrief plot
+                        file (<emphasis>.xml</emphasis>).  No changes are save to REP files by the
+                        Debrief plot editor (though it possible to make textual changes to REP files
+                        using Debrief's built-in text editor). XML is a file format capable of
+                        storing structured information in predefined types, as in the following
+                        example:<programlisting>&lt;?xml version="1.0" encoding="UTF-8" standalone="no"?>
+     &lt;plot Created="Tue Nov 18 09:54:38 GMT 2008" Name="Debrief Plot">
+        &lt;details Text="Saved with Debrief version dated Tue Nov 18 09:51:52 GMT 2008"/>
+and so on....</programlisting></para>
+                </sect2>
                 <sect2 id="import_section">
-                    <title>Import</title>
+                    <title>Importing data</title>
                     <para> See the <link linkend="g_cheat">cheat-sheet</link> covering importing
                         existing data into Debrief. </para>
                     <para>When data is imported, <application>Debrief</application> applies default
@@ -5741,11 +5760,11 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 </sect2>
                 <sect2 id="more_directory_structure">
                     <title>Directory Structure</title>
-                    <para>Debrief installs itself into a <filename>Debrief NG</filename> folder
-                        within your <filename>Program Files</filename>. Within the Debrief NG folder
-                        you will find the DebriefNG executable in the top-level, together with some
-                        additional <filename>dll</filename> files used for optimised graphics
-                            (<filename>gdiplus.dll</filename>), and copy to clipboard (<filename
+                    <para>Debrief installs itself into a <filename>Debrief NG</filename> folder in
+                        the top level of your C:\ drive.. Within the Debrief NG folder you will find
+                        the DebriefNG executable in the top-level, together with some additional
+                            <filename>dll</filename> files used for optimised graphics (<filename
+                            >gdiplus.dll</filename>), and copy to clipboard (<filename
                             >JavaClipboard.dll</filename>).</para>
                     <para>The <filename>jre</filename> folder contains a Java Runtime Environment
                         that's been modified by the inclusion of a current set of Java3d libraries.
@@ -5762,6 +5781,36 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         for new users. It contains current work projects together with a large
                         volume of metadata representing change history, screen layout and user
                         preferences.</para>
+                </sect2>
+                <sect2 id="CentralUpdates">
+                    <title>Centralised software updates</title>
+                    <para>In the Autumn 2009 updates Debrief adopted the Eclipse p2
+                        <emphasis>update</emphasis> mechanism. With this update came support for
+                        centralised updates.  Centralised updates allow updated Debrief components
+                        to be placed at a central location on shared network storage, with
+                        individual Debrief installations automatically updating from it.</para>
+                    <para>Start by locating a central shared folder, and creating a
+                            <emphasis>Repository</emphasis> folder in it.  This is where your
+                        Debrief maintainer will unzip Debrief updates.  Next, you must tell the
+                        individual Debrief installations where the repository is.  Do this from the
+                            <guilabel>Preferences</guilabel>
+                        <guilabel>Install/Update</guilabel>
+                        <guilabel>Available Software Sites</guilabel> dialog:<figure
+                            id="ReposLocation" float="0">
+                            <title>Repository location dialog</title>
+                            <screenshot>
+                                <mediaobject>
+                                    <imageobject>
+                                        <imagedata fileref="figures/ReposLocation.png" width="100%"
+                                        />
+                                    </imageobject>
+                                </mediaobject>
+                            </screenshot>
+                        </figure></para>
+                    <para>Then, to update a Debrief installation select <emphasis>Check for
+                        updates</emphasis> from the <emphasis>Help</emphasis> menu.  Note, the
+                            <emphasis>Install/Updates</emphasis> section of Debrief preferences also
+                        includes options for automatic software updates.</para>
                 </sect2>
                 <sect2 id="starting_debrief">
                     <title>Starting the program</title>
