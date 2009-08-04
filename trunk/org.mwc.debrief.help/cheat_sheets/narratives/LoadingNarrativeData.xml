@@ -9,8 +9,6 @@
       <description>
          In the top left hand corner of Debrief you should find the Navigator window.  If is isn&apos;t there, select &quot;Navigator&quot; from Debrief&apos;s Window/Show View menu.
       </description>
-      <action class="OpenCheatSheetAction" confirm="false">
-      </action>
    </item>
    <item title="Check you have a workspace" dialog="true" skip="false">
       <description>
