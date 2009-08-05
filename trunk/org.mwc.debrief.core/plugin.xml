@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.core"
    name="Debrief Core"
-   version="1.0.66"
+   version="1.0.67"
    provider-name="MWC"
    class="org.mwc.debrief.core.DebriefPlugin">
 
@@ -435,7 +435,7 @@
         </property>
    		<property            
    				name="introTitle"
-            	value="Welcome to Debrief NG"/>
+            	value="Welcome to Debrief NG (with S2R)"/>
       <property
             name="introBrandingImage"
             value="product:icons/debrief_icon.gif"/>
