@@ -48,6 +48,7 @@ public class GenerateJoiningSegment implements RightClickContextItemGenerator
 			{
 				final TrackWrapper parentTrack = (TrackWrapper) firstParent;
 
+				// do they have the same parent layer?
 				if (parentLayers[1] == parentLayers[0])
 				{
 					// ok, is it worth going for?

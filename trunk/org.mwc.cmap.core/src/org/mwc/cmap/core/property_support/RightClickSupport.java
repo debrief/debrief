@@ -173,7 +173,15 @@ public class RightClickSupport {
 					.iterator(); thisItem.hasNext();) {
 				RightClickContextItemGenerator thisGen = (RightClickContextItemGenerator) thisItem
 						.next();
-				thisGen.generate(manager, theLayers, topLevelLayers, editables);
+				
+
+				try {
+					thisGen.generate(manager, theLayers, topLevelLayers, editables);
+				} catch (Exception e) {
+					// and log the error
+					CorePlugin.logError(Status.ERROR, "failed whilst creating context menu", e);
+					e.printStackTrace();
+				}
 			}
 		}
 	}

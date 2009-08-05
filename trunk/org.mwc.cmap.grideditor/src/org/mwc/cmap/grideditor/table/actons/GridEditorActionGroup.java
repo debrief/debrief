@@ -112,8 +112,15 @@ public class GridEditorActionGroup extends ActionGroup {
 			
 			// collate the other metadata
 			GriddableWrapper wrapper = (GriddableWrapper) myView.getUI().getTable().getTableViewer().getInput();
-			Layer[] topLayers = new Layer[]{wrapper.getWrapper().getTopLevelLayer()};
-			Layer[] parentLayers = new Layer[]{wrapper.getWrapper().getTopLevelLayer()};
+			
+			// fill the layers objects
+			Layer[] topLayers = new Layer[sel.size()];
+			Layer[] parentLayers = new Layer[sel.size()];
+			for(int i=0;i<sel.size();i++)
+			{
+				topLayers[i] = wrapper.getWrapper().getTopLevelLayer();
+				parentLayers[i] = wrapper.getWrapper().getTopLevelLayer();
+			}
 			Layers theLayers = wrapper.getWrapper().getLayers();
 			
 			// create a drop-down menu for this item
