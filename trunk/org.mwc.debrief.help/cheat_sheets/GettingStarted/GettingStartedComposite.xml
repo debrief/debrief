@@ -22,6 +22,8 @@
             </param>
             <param name="showIntro" value="true">
             </param>
+            <param name="path" value="GenerateProject.xml">
+            </param>
          </task>
          <task kind="cheatsheet" name="Finding your data" skip="false">
             <intro>
@@ -31,6 +33,8 @@
                You can now repeat this process to create links to your other Debrief data directories.
             </onCompletion>
             <param name="id" value="org.mwc.debrief.help.started.existing_data">
+            </param>
+            <param name="path" value="FindingYourData.xml">
             </param>
          </task>
       </taskGroup>
@@ -47,6 +51,8 @@
             </onCompletion>
             <param name="id" value="org.mwc.debrief.help.started.create_plot">
             </param>
+            <param name="path" value="CreatePlot.xml">
+            </param>
          </task>
          <task kind="cheatsheet" name="Importing some existing data" skip="false">
             <intro>
@@ -54,14 +60,20 @@
             </intro>
             <param name="id" value="org.mwc.debrief.help.started.loading_data">
             </param>
+            <param name="path" value="ImportingData.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Make some changes" skip="false">
+            <intro>
+               Now we&apos;ve got a complex plot open, we&apos;ll experiment with making some changes to it.
+            </intro>
+            <param name="path" value="EditingYourData.xml">
+            </param>
          </task>
          <task kind="cheatsheet" name="Learn more about the UI" skip="false">
             <intro>
                Here you&apos;ll learn more about the Debrief user interface
             </intro>
-            <onCompletion>
-               That&apos;s it for getting started with Debrief.  If you&apos;re following the Single Sided Reconstruction composite cheat sheet just go back to the <b>Tutorials</b> page of the <b>Welcome</b> page and select it
-            </onCompletion>
             <param name="path" value="ViewHelpForUI.xml">
             </param>
          </task>
