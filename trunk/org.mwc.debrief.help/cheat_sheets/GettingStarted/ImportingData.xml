@@ -20,7 +20,7 @@
  <item
        title="Drag in a complex plot">
     <description>
-       If you have multiple tracks to analyse you can drag them onto the track plot you&apos;ve just created.  But, for now, close the plot you have open (by clicking on the cross icon in it&apos;s tab.  You&apos;ll be asked if you want to save it, press <b>don&apos;t save</b>.  Now drag across <b>sample.xml</b>. You&apos;ll see that this plot contains more complex UI features.
+       If you have multiple tracks to analyse you can drag them onto the track plot you&apos;ve just created.  But, for now, close the plot you have open (by clicking on the cross icon in it&apos;s tab.  You&apos;ll be asked if you want to save it, press <b>don&apos;t save</b>.  Now drag across <b>sample.xml</b>. You&apos;ll see that this plot contains more complex graphical features.
     </description>
  </item>
 	<item title="Done">
