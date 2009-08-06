@@ -9,11 +9,8 @@
    <item
          title="Load datafiles">
       <description>
-         We&apos;re using new datafiles for this step, so double-click on <b>nonsuch.rep</b> in the Navigator to load ownship track (and select <b>DR</b> mode when asked).  Perform a Fit to Window once loaded to have a look at the track. Next, drag in <b>sensor.dsf</b>.
+         We&apos;re using new datafiles for this step, so double-click on <b>nonsuch.rep</b> in the Navigator to load ownship track (and select <b>DR</b> mode when asked).  Perform a Fit to Window once loaded to have a look at the track. Next, drag in <b>sensor.dsf</b>. Now, <b>don&apos;t worry </b> if it doesn&apos;t appear on the plot - this is by intention.
       </description>
-      <command
-            required="false"
-            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ResourceNavigator)"/>
    </item>
    <item
          title="Make sensor data visible">
@@ -24,7 +21,7 @@
       <item
          title="Resolve ambiguity">
       <description>
-         In our data you can see one bearing fan heading off to the WNW, and the other off towards NNE.  Intelligence tells us (well, Ian H tells us) that the actual contact is off to the NW.  If we open the Time Controller view and drag the time slider back and forth we&apos;ll see the current position highlight moving from top-right to bottom left. Thus, the NW block of sensor data is to the Starboard of the track.
+         In our data you can see one bearing fan heading off to the WNW, and the other off towards NNE.  Intelligence tells us (well, Ian H tells us) that the actual contact is off to the NW.  If we open the Time Controller view and drag the time slider back and forth we&apos;ll see the current position highlight moving from top-right to bottom left. Thus, the NW block of sensor data is to the Starboard of the track. Use <b>Click to perform</b> to open the Time Controller.
       </description>
       <command
             required="false"
@@ -39,7 +36,7 @@
    <item
          title="Open grid editor">
       <description>
-         In this tutoral we&apos;re going to be editing the raw sensor data using the Grid Editor.  So, select <b>Grid Editor</b> in the <b>Show view</b> (or click on the link below).  The editor will open to the right-hand side of the plot.
+         In this tutoral we&apos;re going to be editing the raw sensor data using the Grid Editor.  So, select <b>Grid Editor</b> from the <b>Window/Show view menu</b> (or click on the link below).  The editor will open to the right-hand side of the plot.
       </description>
       <command
             required="false"
@@ -48,7 +45,7 @@
    <item
          title="Indicate data to edit">
       <description>
-         The grid editor listens out for the current selection on the layer manager.  So, if the item on the layer manager is suitable for being edited in grid format it will be shown in the grid editor (though this behaviour can be cancelled by clicking on the lock icon in the grid editor toolbar.  If you open the <b>Track:NONSUCH</b> item and select the positions you&apos;ll see them appear in the grid editor.  Do the same for the Sensor data.
+         The grid editor listens out for the current selection on the layer manager.  So, if the item on the layer manager is suitable for being edited in grid format it will be shown in the grid editor (though this behaviour can be cancelled by clicking on the lock icon in the grid editor toolbar).  If you open the <b>Track:NONSUCH</b> item and select the positions you&apos;ll see them appear in the grid editor.  Now click on the sensor data for Track:NONSUCH (<b>Sensor:SENSOR_A(52 items)</b>.
       </description>
    </item>
    <item

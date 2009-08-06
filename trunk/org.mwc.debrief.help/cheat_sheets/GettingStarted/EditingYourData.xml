@@ -16,7 +16,7 @@
 		<description>The properties window is normally at the bottom left of Debrief.  If it's there but not at the top of the 'stack', click on its title to reveal it.  If you can't find it, select "Properties" from the 'Window/Show View" drop-down list.</description>
 	</item>
 	<item title="Select an item">
-		<description>Now double-click on one of the corners of the green rectangle.  You'll now see its editable attributes appear on the properties window.  Cool.  You'll see that the attributes are grouped for each of use, and some must be expanded (those for location &amp; time).</description>
+		<description>Now double-click on one of the corners of the green rectangle.  You&apos;ll now see its editable attributes appear on the properties window.  Cool.  You&apos;ll see that the attributes are grouped for each of use, and some must be expanded (those for location &amp; time).  On your Debrief installation the Properties and Layer Manager views may be on the same stack.  If this is the case, drag the Properties view and move it into another stack (such as over the Navigator view).  Feel free to experiment with your arrangement of views - both their size and location.</description>
 	</item>
 	<item title="Make a change">
 		<description>Now have a go at changing the rectangle's label color.  Click once on the green rectangle next to 'LabelColor'.  A button containing three dots will appear.  Click on this to open the color editor.  Click on the red rectangle and then the 'OK' button.  The dialog will close, the label color property will be updated, and the plot will redraw.  Well done.</description>

@@ -16,7 +16,7 @@
    <item
          title="Highlight contacts">
       <description>
-         We&apos;re going to chance the color of the contacts to use for our first solution.  Double-click somewhere along the bearing line for the last data point in first period of steady bearing data - it will be highlighted in the Layer Manager.  By my (unqualified eye), the last data point is the one at <b>090722 04417</b>.  Click on that to select it.  Next scroll back up to the start of the sensor data, hold down the &lt;shift&gt; key and click on the first entry.  This period of sensor data is now selected.  Before creating a TMA segment based on it we&apos;re going to highlight it in a unique color. So, right-click anywhere on it, and select <b>Multiple items/Color/Orange</b>.
+         We&apos;re going to change the color of the contacts to use for our first solution.  Double-click somewhere along the bearing line for the last data point in first period of steady bearing data - it will be highlighted in the Layer Manager.  By my (unqualified eye), the last data point is the one at <b>090722 04417</b>.  Click on that to select it.  Next scroll back up to the start of the sensor data, hold down the &lt;shift&gt; key and click on the first entry.  This period of sensor data is now selected.  Before creating a TMA segment based on it we&apos;re going to highlight it in a unique color. So, right-click anywhere on it, and select <b>Multiple items/Color/Orange</b>.
       </description>
    </item>
    <item
