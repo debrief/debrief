@@ -25,7 +25,7 @@
         serialization="org.eclipse.ui.window.preferences(preferencePageId=org.mwc.cmap.core.preferences.CMAPPrefsPage)"/>
 	</item>
 	<item title="Drag in sample data">
-		<description>Double-click on the dodgy_track.rep file from your the S2R_demo folder of the Navigator view to load that track as a new Debrief plot. The plot and any
+		<description>In the sample data folder you linked to via the Navigator view, you&apos;ll find a <b>S2R</b> folder containing test data for this tutorial.  Double-click on the dodgy_track.rep file from your the S2R folder of the Navigator view to load that track as a new Debrief plot. The plot and any
 			associated views will promptly update. As the REP file is dragged in, you&apos;ll be asked
 			whether you wish to import the data in Over The Ground (OTG) or Dead Reckoning (DR)
 			mode. Select OTG for the track segments in this tutorial file</description>
