@@ -31,6 +31,7 @@ import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
+import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
@@ -105,6 +106,8 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 			// and add the relative bearing calcuation
 			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
 					new relBearingCalc(), theFormatter, true, 180));
+			_theOperations.addElement(new ShowTimeVariablePlot3.CalculationHolder(
+					new atbCalc(), theFormatter, true, 180));
 		}
 
 		if (_pastSelections == null)

@@ -270,6 +270,7 @@ abstract public class AnalysisTote implements Pane,
     _theCalculationTypes.addElement(rangeCalc.class);
     _theCalculationTypes.addElement(bearingCalc.class);
     _theCalculationTypes.addElement(relBearingCalc.class);
+    _theCalculationTypes.addElement(atbCalc.class);
     _theCalculationTypes.addElement(speedCalc.class);
     _theCalculationTypes.addElement(courseCalc.class);
     _theCalculationTypes.addElement(depthCalc.class);

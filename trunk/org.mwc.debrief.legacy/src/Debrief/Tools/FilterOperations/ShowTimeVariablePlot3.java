@@ -139,6 +139,7 @@ import Debrief.GUI.Tote.StepControl;
 import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
+import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
 import Debrief.Tools.Tote.Calculations.bearingRateCalc;
 import Debrief.Tools.Tote.Calculations.courseCalc;
@@ -248,6 +249,8 @@ public final class ShowTimeVariablePlot3 implements FilterOperation
 
 		// and add the relative bearing calcuation
 		_theOperations.addElement(new CalculationHolder(new relBearingCalc(), theFormatter,
+				true, 180));
+		_theOperations.addElement(new CalculationHolder(new atbCalc(), theFormatter,
 				true, 180));
 	}
 

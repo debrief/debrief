@@ -143,17 +143,17 @@ public class relBearingCalc extends plainCalc
 		return UK_FORMAT.booleanValue();
 	}
 
-	public final double calculate(Watchable primary, Watchable secondary,
+	public double calculate(Watchable primary, Watchable secondary,
 			HiResDate thisTime)
 	{
 		double res = 0.0;
-		if ((primary != null) && (secondary != null) && (primary != secondary))
+		if ((secondary != null) && (primary != null) && (secondary != primary))
 		{
 			// find
-			double brg = primary.getLocation().bearingFrom(secondary.getLocation());
+			double brg = secondary.getLocation().bearingFrom(primary.getLocation());
 			brg = Conversions.clipRadians(brg);
 			brg = Conversions.Rads2Degs(brg);
-			double course = secondary.getCourse();
+			double course = primary.getCourse();
 
 			// find the course
 			course = Conversions.Rads2Degs(course);
@@ -205,12 +205,15 @@ public class relBearingCalc extends plainCalc
 		if ((primary != null) && (secondary != null) && (primary != secondary))
 		{
 
-			// convert to string
+			// get the value
+			double theValue = calculate(primary, secondary, time);
+			
+			// and convert to string
 			if (useUKFormat())
 				res = MWC.Utilities.TextFormatting.FormatRelativeBearing
-						.toString(calculate(primary, secondary, time));
+						.toString(theValue);
 			else
-				res = _myPattern.format(calculate(primary, secondary, time));
+				res = _myPattern.format(theValue);
 		}
 		else
 			res = NOT_APPLICABLE;

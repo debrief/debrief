@@ -150,6 +150,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
     _theOperations.addElement(new rangeCalc());
     _theOperations.addElement(new bearingCalc());
     _theOperations.addElement(new relBearingCalc());
+    _theOperations.addElement(new atbCalc());
     _theOperations.addElement(new bearingRateCalc());
     _theOperations.addElement(new colorCalc());
   }

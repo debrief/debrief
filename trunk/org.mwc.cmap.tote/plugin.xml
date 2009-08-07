@@ -29,6 +29,10 @@
             name="Rel Brg"/>
    </extension>   
    <extension point="org.mwc.cmap.tote.ToteCalculation">
+      <calculation class="Debrief.Tools.Tote.Calculations.atbCalc"
+            name="ATB"/>
+   </extension>   
+   <extension point="org.mwc.cmap.tote.ToteCalculation">
       <calculation class="Debrief.Tools.Tote.Calculations.speedCalc"
             name="Speed"/>
    </extension>   
