@@ -310,6 +310,22 @@ public class TrackManager implements TrackDataProvider // ,
 		}
 	}
 
+
+	public void setSecondary(WatchableList secondary)
+	{
+		// clear out any existing secondarires
+		_theSecondaries = null;
+ 		
+		// right, insert this as a secondary track
+		addSecondaryImpl(secondary);
+
+		// was it the primary?
+		if (secondary == _thePrimary)
+			setPrimaryImpl(null);
+
+		fireTracksChanged();
+	}
+	
 	public void addSecondary(WatchableList secondary)
 	{
 		// right, insert this as a secondary track
@@ -324,6 +340,8 @@ public class TrackManager implements TrackDataProvider // ,
 
 	private void addSecondaryImpl(WatchableList secondary)
 	{
+		// check we don't already hold it
+	
 		// store the new list
 		Vector<WatchableList> newList = new Vector<WatchableList>(0, 1);
 
@@ -333,6 +351,13 @@ public class TrackManager implements TrackDataProvider // ,
 			for (int i = 0; i < _theSecondaries.length; i++)
 			{
 				newList.add(_theSecondaries[i]);
+				
+				if(_theSecondaries[i] == secondary)
+				{
+					// we've already got it - drop out.
+					return;
+				}
+				
 			}
 		}
 

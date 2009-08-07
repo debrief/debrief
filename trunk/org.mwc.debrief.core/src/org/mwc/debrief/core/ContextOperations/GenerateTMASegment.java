@@ -101,7 +101,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 			_newTrack = new TrackWrapper();
 			_newTrack.setColor(Color.red);
 			String tNow = "TMA_"
-					+ FormatRNDateTime.toShortString(new Date().getTime());
+					+ FormatRNDateTime.toString(new Date().getTime());
 			_newTrack.setName(tNow);
 			_newTrack.add(seg);
 

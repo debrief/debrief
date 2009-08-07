@@ -61,10 +61,15 @@ public class LayerManagerView extends ViewPart
 	Action _makePrimary;
 
 	/**
-	 * add the current item to the secondary track
+	 * set the current item as the secondary track
 	 */
 	Action _makeSecondary;
 
+	/**
+	 * add the current item to the secondary track
+	 */
+	Action _addAsSecondary;
+	
 	/**
 	 * hide the selected item(s)
 	 */
@@ -450,6 +455,9 @@ public class LayerManagerView extends ViewPart
 
 					// and see if we can make it a secondary
 					_makeSecondary.setEnabled(isValidSecondary(ss));
+
+					// and see if we can make it a secondary
+					_addAsSecondary.setEnabled(isValidSecondary(ss));
 				}
 			}
 
@@ -698,6 +706,7 @@ public class LayerManagerView extends ViewPart
 		manager.add(new Separator());
 		manager.add(_makePrimary);
 		manager.add(_makeSecondary);
+		manager.add(_addAsSecondary);
 		manager.add(new Separator());
 		manager.add(_revealAction);
 		manager.add(_hideAction);
@@ -728,7 +737,10 @@ public class LayerManagerView extends ViewPart
 			if (isValidPrimary(sel))
 				manager.add(_makePrimary);
 			if (isValidSecondary(sel))
+			{
 				manager.add(_makeSecondary);
+				manager.add(_addAsSecondary);
+			}
 
 			// now stick in the separator anyway
 			manager.add(new Separator());
@@ -778,6 +790,7 @@ public class LayerManagerView extends ViewPart
 		manager.add(_followSelectionToggle);
 		manager.add(_makePrimary);
 		manager.add(_makeSecondary);
+		manager.add(_addAsSecondary);
 		manager.add(_hideAction);
 		manager.add(_revealAction);
 		manager.add(_trackNewLayers);
@@ -940,6 +953,65 @@ public class LayerManagerView extends ViewPart
 
 									// make it the primary
 									if (_theTrackDataListener != null)
+										_theTrackDataListener.setSecondary(list);
+								}
+							}
+						}, new IOperateOn()
+						{
+							public void doItTo(Editable item)
+							{
+								// is it a watchable-list?
+								if (item instanceof WatchableList)
+								{
+									WatchableList list = (WatchableList) item;
+
+									// make it the primary
+									if (_theTrackDataListener != null)
+										_theTrackDataListener.removeSecondary(list);
+								}
+							}
+						}, new IOperateOn()
+						{
+							public void doItTo(Editable item)
+							{
+								// is it a watchable-list?
+								if (item instanceof WatchableList)
+								{
+									WatchableList list = (WatchableList) item;
+
+									// make it the primary
+									if (_theTrackDataListener != null)
+										_theTrackDataListener.setSecondary(list);
+								}
+							}
+						}, _treeViewer, _myLayers);
+				CorePlugin.run(doIt);
+
+			}
+		};
+		_makeSecondary.setText("Make Secondary");
+		_makeSecondary.setToolTipText("Set this item as the secondary track");
+		_makeSecondary.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/secondary.gif"));
+		_makeSecondary.setEnabled(false);
+		
+		_addAsSecondary = new Action()
+		{
+			public void run()
+			{
+
+				AbstractOperation doIt = new SelectionOperation("Add as secondary",
+						new IOperateOn()
+						{
+							public void doItTo(Editable item)
+							{
+								// is it a watchable-list?
+								if (item instanceof WatchableList)
+								{
+									WatchableList list = (WatchableList) item;
+
+									// make it the primary
+									if (_theTrackDataListener != null)
 										_theTrackDataListener.addSecondary(list);
 								}
 							}
@@ -976,11 +1048,11 @@ public class LayerManagerView extends ViewPart
 
 			}
 		};
-		_makeSecondary.setText("Make Secondary");
-		_makeSecondary.setToolTipText("Add this item to the secondary tracks");
-		_makeSecondary.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/secondary.gif"));
-		_makeSecondary.setEnabled(false);
+		_addAsSecondary.setText("Add as Secondary");
+		_addAsSecondary.setToolTipText("Add this item to the secondary tracks");
+		_addAsSecondary.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/addSecondary.gif"));
+		_addAsSecondary.setEnabled(false);
 
 		_hideAction = new Action()
 		{
