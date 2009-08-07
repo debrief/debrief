@@ -25,7 +25,7 @@ public final class SymbolHighlighter implements PlotHighlighter, Editable
   public final void highlightIt(MWC.Algorithms.PlainProjection proj,
                           java.awt.Graphics dest,
                           Debrief.Tools.Tote.WatchableList list,
-                          Debrief.Tools.Tote.Watchable watch)
+                          Debrief.Tools.Tote.Watchable watch, final boolean isPrimary)
   {
     // check that our graphics context is still valid -
     // we can't, so we will just have to trap any exceptions it raises

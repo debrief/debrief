@@ -96,7 +96,7 @@ public final class SnailDrawSWTFix implements drawSWTHighLight, Editable
     if(thisHighlighter instanceof SWTSymbolHighlighter)
     {
       // just plot away!
-      thisHighlighter.highlightIt(proj, dest, list, watch);
+      thisHighlighter.highlightIt(proj, dest, list, watch, false);
 
       // work out the area covered
       final WorldArea wa = watch.getBounds();

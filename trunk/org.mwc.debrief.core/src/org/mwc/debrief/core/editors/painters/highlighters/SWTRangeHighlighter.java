@@ -26,7 +26,11 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	 * the radius of the outer ring (yds)
 	 */
 	private double _radius;
-
+	/**
+	 * just plot a ring around the primary track
+	 * 
+	 */
+	private boolean _justPlotPrimary;
 	/**
 	 * how far either side the arcs should extend (degs)
 	 */
@@ -72,28 +76,37 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	 * @param watch
 	 *          the current data point
 	 */
-	public final void highlightIt(MWC.Algorithms.PlainProjection proj, CanvasType dest,
-			Debrief.Tools.Tote.WatchableList list, Debrief.Tools.Tote.Watchable watch)
+	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
+			CanvasType dest, Debrief.Tools.Tote.WatchableList list,
+			Debrief.Tools.Tote.Watchable watch, boolean isPrimary)
 	{
+		boolean doPlot = true;
+		if(isJustPlotPrimary())
+			doPlot = isPrimary;
 		
-  	// sort out if this is an item that we plot
-  	if(watch instanceof DoNotHighlightMe)
-  	{
-  		// hey, don't bother...
-  		return;
-  	}
-  	
-		if (_plainRectangle)
+		// are we concerend about primary track?
+		if (doPlot)
 		{
-			drawRectangle(watch, dest, proj, 5);
-		}
-		else
-		{
-			WorldLocation center = watch.getLocation();
-			int header = (int) MWC.Algorithms.Conversions.Rads2Degs(watch.getCourse());
-			drawRangeRings(center, _radius, header, _arcs, _rings, _spoke_separation, dest);
-		}
+			// sort out if this is an item that we plot
+			if (watch instanceof DoNotHighlightMe)
+			{
+				// hey, don't bother...
+				return;
+			}
 
+			if (_plainRectangle)
+			{
+				drawRectangle(watch, dest, proj, 5);
+			}
+			else
+			{
+				WorldLocation center = watch.getLocation();
+				int header = (int) MWC.Algorithms.Conversions.Rads2Degs(watch
+						.getCourse());
+				drawRangeRings(center, _radius, header, _arcs, _rings,
+						_spoke_separation, dest);
+			}
+		}
 	}
 
 	/**
@@ -138,7 +151,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	}
 
 	private void drawRectangle(final Debrief.Tools.Tote.Watchable watch,
-			final CanvasType dest, final MWC.Algorithms.PlainProjection proj, final int mySize)
+			final CanvasType dest, final MWC.Algorithms.PlainProjection proj,
+			final int mySize)
 	{
 		// set the highlight colour
 		dest.setColor(_myColor);
@@ -160,9 +174,9 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 
 	}
 
-	private void drawRangeRings(final WorldLocation worldCentre, final double worldRadius,
-			final int rawAxis, final int arcs, final int rings, final int spoke_separation,
-			final CanvasType dest)
+	private void drawRangeRings(final WorldLocation worldCentre,
+			final double worldRadius, final int rawAxis, final int arcs,
+			final int rings, final int spoke_separation, final CanvasType dest)
 	{
 
 		dest.setColor(_myColor);
@@ -176,8 +190,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 
 		// sort out the range in screen coords
 		final WorldLocation worldEdge = worldCentre.add(new WorldVector(
-				MWC.Algorithms.Conversions.Degs2Rads(rawAxis), MWC.Algorithms.Conversions
-						.Yds2Degs(worldRadius), 0));
+				MWC.Algorithms.Conversions.Degs2Rads(rawAxis),
+				MWC.Algorithms.Conversions.Yds2Degs(worldRadius), 0));
 		final Point screenEdge = _proj.toScreen(worldEdge);
 		final int dx = screenEdge.x - centrex;
 		final int dy = screenEdge.y - centrey;
@@ -185,7 +199,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 
 		// check that the axis is in the correct direction (we may be in relative
 		// projection)
-		final int axis = (int) MWC.Algorithms.Conversions.Rads2Degs(Math.atan2(dx, -dy));
+		final int axis = (int) MWC.Algorithms.Conversions.Rads2Degs(Math.atan2(dx,
+				-dy));
 
 		// now the centre stalk
 		final double axisRads = MWC.Algorithms.Conversions.Degs2Rads(axis);
@@ -261,7 +276,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 			origin.translate(-thisRadius, -thisRadius);
 
 			// draw in the arc itself
-			dest.drawArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2, startAngle, angle);
+			dest.drawArc(origin.x, origin.y, thisRadius * 2, thisRadius * 2,
+					startAngle, angle);
 
 			// move on to the next radius
 			thisRadius += ring_separation;
@@ -330,6 +346,26 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 		return _plainRectangle;
 	}
 
+	/**
+	 * determine if we should just plot a ring around the primary track
+	 * 
+	 * @return
+	 */
+	public boolean isJustPlotPrimary()
+	{
+		return _justPlotPrimary;
+	}
+
+	/**
+	 * indicate that we should just plot a ring around the primary track
+	 * 
+	 * @param justPlotPrimary
+	 */
+	public void setJustPlotPrimary(boolean justPlotPrimary)
+	{
+		_justPlotPrimary = justPlotPrimary;
+	}
+
 	// //////////////////////
 	/**
 	 * get the arcs either side of ownship heading
@@ -389,7 +425,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	/**
 	 * the number of rings between the centre and the outer spoke
 	 * 
-	 * @param val number of rings
+	 * @param val
+	 *          number of rings
 	 */
 	public final void setNumRings(final BoundedInteger val)
 	{
@@ -397,15 +434,17 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	}
 
 	/**
-	 * the number of rings between the centre and the outer spoke - convenience method for XML persistence
+	 * the number of rings between the centre and the outer spoke - convenience
+	 * method for XML persistence
 	 * 
-	 * @param val number of rings
+	 * @param val
+	 *          number of rings
 	 */
 	public final void setNumRings(final int val)
 	{
 		_rings = val;
 	}
-	
+
 	/**
 	 * the number of rings between the centre and the outer spoke
 	 * 
@@ -445,11 +484,14 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 		{
 			try
 			{
-				final java.beans.PropertyDescriptor[] res = {
+				final java.beans.PropertyDescriptor[] res =
+				{
 						prop("Color", "Color to paint highlight"),
 						prop("Radius", "Radius of outer ring (yds)"),
 						prop("Arcs", "Angle of arcs each side (degs)"),
 						prop("SpokeSeparation", "Angle between spokes (degs)"),
+						prop("JustPlotPrimary",
+								"Only plot range rings around the primary track"),
 						prop("NumRings", "Number of range rings to draw (including outer)"),
 				// prop("PlainRectangle", "Draw simple rectangle around point"),
 				};

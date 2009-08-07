@@ -681,7 +681,7 @@ public class SnailPainter extends TotePainter implements Editable
 					if (thisHighlighter.getName().equals("Range Rings"))
 					{
 						thisHighlighter.highlightIt(canvas.getProjection(), dest, _theTote
-								.getPrimary(), oldPrimary);
+								.getPrimary(), oldPrimary, true);
 					}
 				}
 
@@ -739,7 +739,7 @@ public class SnailPainter extends TotePainter implements Editable
 			{
 
 				thisHighlighter.highlightIt(canvas.getProjection(), dest, _theTote.getPrimary(),
-						newPrimary);
+						newPrimary, true);
 			}
 		}
 

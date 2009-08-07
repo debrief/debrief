@@ -172,7 +172,7 @@ public final class SnailDrawFix implements SnailPainter.drawHighLight, Editable
     if(thisHighlighter instanceof Debrief.GUI.Tote.Painters.Highlighters.SymbolHighlighter)
     {
       // just plot away!
-      thisHighlighter.highlightIt(proj, dest, list, watch);
+      thisHighlighter.highlightIt(proj, dest, list, watch, true);
 
       // work out the area covered
       final WorldArea wa = watch.getBounds();
