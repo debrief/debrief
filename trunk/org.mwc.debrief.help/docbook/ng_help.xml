@@ -1110,14 +1110,14 @@ Naval Undersea Warfare Center (NUWC)
                 <sect2 id="DebrieffileFormat">
                     <title>The Debrief file format</title>
                     <para>Note that the Replay file format just stores sensor readings, it does not
-                        store any formatting details.  Thus, any formatting applied to a plot cannot
-                        be saved as a Replay file.  Thus, Debrief has it's <emphasis>Debrief File
-                            Format</emphasis>.  This is a more complex file format that stores a
-                        wide range of data-types, formatting instructions, and user-interface
-                        settings (such as the current viewport on the data).</para>
+                        store any formatting details. Thus, any formatting applied to a plot cannot
+                        be saved as a Replay file. Thus, Debrief has it's <emphasis>Debrief File
+                            Format</emphasis>. This is a more complex file format that stores a wide
+                        range of data-types, formatting instructions, and user-interface settings
+                        (such as the current viewport on the data).</para>
                     <para>Thus, whilst you may load data from a <emphasis>.REP</emphasis> Replay
                         file, any modifications made to the plot must be stored in a Debrief plot
-                        file (<emphasis>.xml</emphasis>).  No changes are save to REP files by the
+                        file (<emphasis>.xml</emphasis>). No changes are save to REP files by the
                         Debrief plot editor (though it possible to make textual changes to REP files
                         using Debrief's built-in text editor). XML is a file format capable of
                         storing structured information in predefined types, as in the following
@@ -1999,11 +1999,12 @@ and so on....</programlisting></para>
                         list. Once open you will see the data shown as a series of layers - each
                         with a tick indicating if it's visible or not. A toolbar provides command
                         buttons to make items visible or not visible, and buttons are enabled to
-                        make an entity the primary or secondary track when applicable. Note that not
-                        just tracks may be denoted primary or secondary: and graphic item with a
-                        position and date-time can be selected: thus Debrief can be configured to
-                        show a running indication of bearing and range for a series of vessels from
-                        a single label datum (representing a sonar-buoy or mine).</para>
+                        make an entity the primary or secondary track, or to add the selected item
+                        as another secondary (when applicable). Note that not just tracks may be
+                        denoted primary or secondary: and graphic item with a position and date-time
+                        can be selected: thus Debrief can be configured to show a running indication
+                        of bearing and range for a series of vessels from a single label datum
+                        (representing a sonar-buoy or mine).</para>
                     <para>The drop-down menu provides further commands, significantly including the
                         ability to add a new layer; <guimenuitem>Create Layer</guimenuitem>. Further
                         commands are available when right-clicking on one or more Layer Manager
@@ -5786,14 +5787,14 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <title>Centralised software updates</title>
                     <para>In the Autumn 2009 updates Debrief adopted the Eclipse p2
                         <emphasis>update</emphasis> mechanism. With this update came support for
-                        centralised updates.  Centralised updates allow updated Debrief components
-                        to be placed at a central location on shared network storage, with
-                        individual Debrief installations automatically updating from it.</para>
+                        centralised updates. Centralised updates allow updated Debrief components to
+                        be placed at a central location on shared network storage, with individual
+                        Debrief installations automatically updating from it.</para>
                     <para>Start by locating a central shared folder, and creating a
-                            <emphasis>Repository</emphasis> folder in it.  This is where your
-                        Debrief maintainer will unzip Debrief updates.  Next, you must tell the
-                        individual Debrief installations where the repository is.  Do this from the
-                            <guilabel>Preferences</guilabel>
+                            <emphasis>Repository</emphasis> folder in it. This is where your Debrief
+                        maintainer will unzip Debrief updates. Next, you must tell the individual
+                        Debrief installations where the repository is. Do this from the <guilabel
+                            >Preferences</guilabel>
                         <guilabel>Install/Update</guilabel>
                         <guilabel>Available Software Sites</guilabel> dialog:<figure
                             id="ReposLocation" float="0">
@@ -5808,7 +5809,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             </screenshot>
                         </figure></para>
                     <para>Then, to update a Debrief installation select <emphasis>Check for
-                        updates</emphasis> from the <emphasis>Help</emphasis> menu.  Note, the
+                        updates</emphasis> from the <emphasis>Help</emphasis> menu. Note, the
                             <emphasis>Install/Updates</emphasis> section of Debrief preferences also
                         includes options for automatic software updates.</para>
                 </sect2>
