@@ -6743,6 +6743,87 @@ departure / d.lat = tan (course)</markup>
             </screen>
                     </para>
                 </sect2>
+                <sect2 id="freq_alg">
+                    <title>Frequency algortithms</title>
+                    <para>In the Single Sided Reconstruction extensions to Debrief (2009) the use of
+                        frequency data in track reconstruction,  specifically involving the
+                        application of Doppler Offsets.  The algorithms used have been loosely taken
+                        from the Royal Naval Submarine School training guide titled <emphasis>The
+                            Bearing Frequency Plot and Narrowband Analysis</emphasis>.  The core
+                        doppler calculation is as
+                        follows:<programlisting>	private static double calcDopplerComponent(final double theBearingRads,
+      final double myCourseRads, 
+      final double mySpeedKts,	final double observedFreq)
+	{
+		final double speedOfSoundKts = 2951;
+		double relBearingRads = theBearingRads - myCourseRads;
+
+		final double ownSpeedAlongKts = Math.abs(Math.cos(relBearingRads)
+				* mySpeedKts);
+
+		// put rel brg into +/- 180 domain
+		while (relBearingRads > Math.PI)
+			relBearingRads -= (2 * Math.PI);
+		while (relBearingRads &lt; -(Math.PI))
+			relBearingRads += (2 * Math.PI);
+
+		double dopplerOffset = (ownSpeedAlongKts * observedFreq) / speedOfSoundKts;
+
+		if (Math.abs(relBearingRads) &lt; (Math.PI / 2))
+			dopplerOffset = -dopplerOffset;
+		return dopplerOffset;
+	}</programlisting>The
+                        doppler calculation is used in calculation of the corrected frequency -
+                        which involves the removal of the ownship doppler
+                        component:<programlisting>	public double getCorrectedFrequency()
+	{
+		double correctedFreq = 0;
+
+		final double theBearingDegs = getBearingToTarget();
+		final double theBearingRads = MWC.Algorithms.Conversions
+				.Degs2Rads(theBearingDegs);
+		final double myCourseRads = _hostFix.getCourse();
+
+		final double mySpeedKts = _hostFix.getSpeed();
+		double observedFreq = _sensor.getFrequency();
+		final double dopplerComponent = calcDopplerComponent(theBearingRads,
+				myCourseRads, mySpeedKts, observedFreq);
+
+		correctedFreq = observedFreq + dopplerComponent;
+
+		return correctedFreq;
+	}</programlisting>The
+                        next frequency calculation involves the addition of ownship and target
+                        dopplers to the base frequency:
+                        <programlisting>	public double getPredictedFrequency()
+	{
+		double predictedFreq = 0;
+
+		if (_targetTrack instanceof RelativeTMASegment)
+		{
+			RelativeTMASegment rt = (RelativeTMASegment) _targetTrack;
+			final double theBearingDegs = getBearingToTarget();
+			final double theBearingRads = MWC.Algorithms.Conversions
+					.Degs2Rads(theBearingDegs);
+			final double myCourseRads = _hostFix.getCourse();
+
+			final double mySpeedKts = _hostFix.getSpeed();
+			double baseFreq = rt.getBaseFrequency();
+			final double myDopplerComponent = calcDopplerComponent(theBearingRads,
+					myCourseRads, mySpeedKts, baseFreq);
+
+			final double hisCourseRads = _targetFix.getCourse();
+			final double hisSpeedKts = _targetFix.getSpeed();
+
+			final double hisDopplerComponent = calcDopplerComponent(Math.PI
+					+ theBearingRads, hisCourseRads, hisSpeedKts, baseFreq);
+
+			predictedFreq = baseFreq + myDopplerComponent + hisDopplerComponent;
+		}
+		return predictedFreq;
+	}</programlisting>
+                    </para>
+                </sect2>
             </sect1>
             <sect1 id="contouring_algorithm">
                 <title>Contouring Algorithm</title>

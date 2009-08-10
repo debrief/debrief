@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.core"
    name="Debrief Core"
-   version="1.0.69"
+   version="1.0.70"
    provider-name="MWC"
    class="org.mwc.debrief.core.DebriefPlugin">
 
