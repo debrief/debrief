@@ -2,9 +2,6 @@ package org.mwc.debrief.track_shift.views;
 
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 
-import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
-import MWC.GUI.JFreeChart.DatedToolTipGenerator;
-
 public class FrequencyResidualsView extends BaseStackedDotsView
 {
 	protected String getUnits()

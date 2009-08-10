@@ -205,7 +205,7 @@ public final class StackedDotHelper
 					final double calculatedBearing = thisD.getCalculatedBearing(null,
 							null);
 					final Color calcColor = thisD.getTarget().getColor();
-					final double thisError = thisD.calculateError(measuredBearing,
+					final double thisError = thisD.calculateBearingError(measuredBearing,
 							calculatedBearing);
 					final ColouredDataItem newError = new ColouredDataItem(
 							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
@@ -449,7 +449,7 @@ public final class StackedDotHelper
 				if (thisD.getTarget() != null)
 				{
 					final double predictedFreq = thisD.getPredictedFrequency();
-					final double thisError = thisD.calculateError(measuredFreq,
+					final double thisError = thisD.calculateFreqError(measuredFreq,
 							predictedFreq);
 					final double baseFreq = thisD.getBaseFrequency();
 					final Color calcColor = thisD.getTarget().getColor();

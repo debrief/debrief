@@ -56,17 +56,14 @@ public final class Doublet
 	}
 
 	/**
-	 * ok find what the current bearing error is for this track
-	 * 
-	 * @param sensorOffset
-	 *          if the sensor track has been dragged
-	 * @param targetOffset
-	 *          if the target track has been dragged
+	 * ok find bearing error (wrapped to -..360)
+	 * @param measuredValue
+	 * @param calcValue
 	 * @return
 	 */
-	public double calculateError(double measuredBearing, double calcBearing)
+	public double calculateBearingError(double measuredValue, double calcValue)
 	{
-		double theError = measuredBearing - calcBearing;
+		double theError = measuredValue - calcValue;
 
 		while (theError > 180)
 			theError -= 360.0;
@@ -106,6 +103,26 @@ public final class Doublet
 
 		return calcBearing;
 	}
+	
+	/**
+	 * ok find frequency error
+	 * @param measuredValue
+	 * @param calcValue
+	 * @return
+	 */
+	public double calculateFreqError(double measuredValue, double calcValue)
+	{
+		double theError = measuredValue - calcValue;
+
+		while (theError > 180)
+			theError -= 360.0;
+
+		while (theError < -180)
+			theError += 360.0;
+
+		return theError;
+	}
+
 
 	/**
 	 * get the base frequency of this track participant, if it has one
@@ -127,27 +144,6 @@ public final class Doublet
 	public double getMeasuredFrequency()
 	{
 		return _sensor.getFrequency();
-	}
-
-	/**
-	 * get the colour of this sensor fix
-	 */
-	public Color getColor()
-	{
-		return _sensor.getColor();
-	}
-
-	// ////////////////////////////////////////////////
-	// member methods
-	// ////////////////////////////////////////////////
-	/**
-	 * get the DTG of this contact
-	 * 
-	 * @return the DTG
-	 */
-	public HiResDate getDTG()
-	{
-		return _sensor.getDTG();
 	}
 
 	/**
@@ -229,6 +225,28 @@ public final class Doublet
 			predictedFreq = baseFreq + myDopplerComponent + hisDopplerComponent;
 		}
 		return predictedFreq;
+	}
+
+
+	/**
+	 * get the colour of this sensor fix
+	 */
+	public Color getColor()
+	{
+		return _sensor.getColor();
+	}
+
+	// ////////////////////////////////////////////////
+	// member methods
+	// ////////////////////////////////////////////////
+	/**
+	 * get the DTG of this contact
+	 * 
+	 * @return the DTG
+	 */
+	public HiResDate getDTG()
+	{
+		return _sensor.getDTG();
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
