@@ -285,10 +285,6 @@ public final class SensorContactWrapper extends
 				style, sensorName);
 	}
 
-	// ///////////////////////////////////////////
-	// accessor methods
-	// ///////////////////////////////////////////
-
 	public SensorContactWrapper(String theTrack, HiResDate theDtg,
 			WorldDistance range, double brg, Double brg2, Double freq,
 			WorldLocation origin, Color theColor, String labelStr, int theStyle,

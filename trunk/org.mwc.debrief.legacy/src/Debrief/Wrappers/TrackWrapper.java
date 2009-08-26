@@ -1102,6 +1102,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	transient private WorldArea _myWorldArea;
 
+	private final PropertyChangeListener _locationListener;
+
+	public PropertyChangeListener getLocationListener()
+	{
+		return _locationListener;
+	}
+
 	// //////////////////////////////////////
 	// constructors
 	// //////////////////////////////////////
@@ -1111,6 +1118,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 */
 	public TrackWrapper()
 	{
+
+		// create a property listener for when fixes are moved
+		_locationListener = new PropertyChangeListener()
+		{
+
+			public void propertyChange(PropertyChangeEvent arg0)
+			{
+				fixMoved();
+			}
+		};
+
 		// declare our arrays
 		_thePositions = new TrackWrapper_Support.SegmentList();
 		_thePositions.setWrapper(this);
@@ -1254,15 +1272,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_myWorldArea.extend(theFix.getLocation());
 
 		// we want to listen out for the fix being moved. better listen in to it
-		theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-				new PropertyChangeListener()
-				{
-
-					public void propertyChange(PropertyChangeEvent arg0)
-					{
-						fixMoved();
-					}
-				});
+//
+//		theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+//				_locationListener);
 	}
 
 	/**
@@ -2798,6 +2810,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				final TrackSegment seg = (TrackSegment) segments.nextElement();
 				seg.removeElement(point);
+				// and stop listening to it (if it's a fix)
+				if(point instanceof FixWrapper)
+				{
+					FixWrapper fw = (FixWrapper) point;
+				  fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _locationListener);
+				}
 			}
 		}
 

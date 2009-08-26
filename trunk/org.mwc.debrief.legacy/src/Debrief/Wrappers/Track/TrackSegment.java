@@ -19,6 +19,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.LineStylePropertyEditor;
@@ -362,8 +363,14 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	{
 		super.add(fix);
 
-		// tell it about our daddy
-		fix.setTrackWrapper(_myTrack);
+		// and register the listener (if we know our track)
+		if (_myTrack != null)
+		{
+			// tell it about our daddy
+			fix.setTrackWrapper(_myTrack);
+			fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _myTrack
+					.getLocationListener());
+		}
 	}
 
 	/**
@@ -613,6 +620,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	@Override
 	public void setWrapper(final TrackWrapper wrapper)
 	{
+
 		// is it different?
 		if (wrapper == _myTrack)
 			return;
@@ -627,6 +635,9 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		{
 			final FixWrapper fix = (FixWrapper) iterator.next();
 			fix.setTrackWrapper(_myTrack);
+			// and let the track wrapper listen to location changed events
+			fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, wrapper
+					.getLocationListener());
 		}
 	}
 
