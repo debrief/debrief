@@ -81,44 +81,59 @@ public final class StackedDotHelper
 					{
 						FixWrapper targetFix = null;
 						TrackSegment targetParent = null;
-						// right, get the track segment and fix nearest to this
-						// DTG
-						Enumeration<Editable> trkData = targetTrack.elements();
-						while (trkData.hasMoreElements())
-						{
-							Editable thisI = trkData.nextElement();
-							if (thisI instanceof TrackSegment)
-							{
-								TrackSegment ts = (TrackSegment) thisI;
-								TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts
-										.startDTG(), ts.endDTG());
-								if (validPeriod.contains(scw.getDTG()))
-								{
-									// sorted. here we go
-									targetParent = ts;
 
-									// and the child element
-									FixWrapper index = new FixWrapper(new Fix(scw.getDTG(),
-											new WorldLocation(0, 0, 0), 0.0, 0.0));
-									SortedSet<Editable> items = ts.tailSet(index);
-									targetFix = (FixWrapper) items.first();
+						if (targetTrack != null)
+						{
+							// right, get the track segment and fix nearest to this
+							// DTG
+							Enumeration<Editable> trkData = targetTrack.elements();
+							while (trkData.hasMoreElements())
+							{
+								Editable thisI = trkData.nextElement();
+								if (thisI instanceof TrackSegment)
+								{
+									TrackSegment ts = (TrackSegment) thisI;
+									TimePeriod validPeriod = new TimePeriod.BaseTimePeriod(ts
+											.startDTG(), ts.endDTG());
+									if (validPeriod.contains(scw.getDTG()))
+									{
+										// sorted. here we go
+										targetParent = ts;
+
+										// and the child element
+										FixWrapper index = new FixWrapper(new Fix(scw.getDTG(),
+												new WorldLocation(0, 0, 0), 0.0, 0.0));
+										SortedSet<Editable> items = ts.tailSet(index);
+										targetFix = (FixWrapper) items.first();
+									}
 								}
 							}
 						}
 
-						// just check that we were able to get target data
-						if (targetFix != null)
-						{
+						FixWrapper hostFix = (FixWrapper) sensorHost.getNearestTo(scw
+								.getDTG())[0];
 
-							// have a go at the host position
-							FixWrapper hostFix = (FixWrapper) sensorHost.getNearestTo(scw
-									.getDTG())[0];
-							
+						final Doublet thisDub = new Doublet(scw, targetFix, targetParent,
+								hostFix);
+
+						// if we've no target track add all the points
+						if (targetTrack == null)
+						{
 							// store our data
-							final Doublet thisDub = new Doublet(scw, targetFix, targetParent,
-									hostFix);
 							res.add(thisDub);
-						} // if we find a match
+						}
+						else
+						{
+							// if we've got a target track we only add points for which we
+							// have
+							// a target location
+							if (targetFix != null)
+							{
+								// store our data
+								res.add(thisDub);
+							}
+						}
+						// if we find a match
 					} // if cut is visible
 				} // loop through cuts
 			} // if sensor is visible
@@ -149,8 +164,8 @@ public final class StackedDotHelper
 			initialise(tracks, false, onlyVis, holder, logger, "Bearing");
 
 		// did it work?
-		if (_secondaryTrack == null)
-			return;
+		// if (_secondaryTrack == null)
+		// return;
 
 		if (_primaryDoublets == null)
 			return;
@@ -239,10 +254,15 @@ public final class StackedDotHelper
 		}
 
 		// ok, add these new series
-		errorSeries.addSeries(errorValues);
+
+		if (errorValues.getItemCount() > 0)
+			errorSeries.addSeries(errorValues);
 
 		actualSeries.addSeries(measuredValues);
-		actualSeries.addSeries(calculatedValues);
+
+		if (calculatedValues.getItemCount() > 0)
+			actualSeries.addSeries(calculatedValues);
+
 		if (showCourse)
 		{
 			actualSeries.addSeries(osCourseValues);
@@ -310,30 +330,30 @@ public final class StackedDotHelper
 		// any?
 		if ((secs == null) || (secs.length == 0))
 		{
-			logger.logError(IStatus.INFO,
-					"A secondary track must be present on the tote", null);
-			return;
-		}
-
-		// too many?
-		if (secs.length > 1)
-		{
-			logger.logError(IStatus.INFO,
-					"Only 1 secondary track may be on the tote", null);
-			return;
-		}
-
-		// correct sort?
-		final WatchableList secTrk = secs[0];
-		if (!(secTrk instanceof TrackWrapper))
-		{
-			logger.logError(IStatus.INFO,
-					"The secondary track must be a vehicle track", null);
-			return;
 		}
 		else
 		{
-			_secondaryTrack = (TrackWrapper) secTrk;
+			// too many?
+			if (secs.length > 1)
+			{
+				logger.logError(IStatus.INFO,
+						"Only 1 secondary track may be on the tote", null);
+				return;
+			}
+
+			// correct sort?
+			final WatchableList secTrk = secs[0];
+			if (!(secTrk instanceof TrackWrapper))
+			{
+				logger.logError(IStatus.INFO,
+						"The secondary track must be a vehicle track", null);
+				return;
+			}
+			else
+			{
+				_secondaryTrack = (TrackWrapper) secTrk;
+			}
+
 		}
 
 		if (_primaryTrack.getSensors() == null)
@@ -371,7 +391,7 @@ public final class StackedDotHelper
 	{
 		// ok - we're now there
 		// so, do we have primary and secondary tracks?
-		if (_primaryTrack != null && _secondaryTrack != null)
+		if (_primaryTrack != null)
 		{
 			// cool sort out the list of sensor locations for these tracks
 			_primaryDoublets = getDoublets(_primaryTrack, _secondaryTrack, onlyVis);
@@ -398,8 +418,6 @@ public final class StackedDotHelper
 			initialise(tracks, false, onlyVis, holder, logger, "Frequency");
 
 		// did it work?
-		if (_secondaryTrack == null)
-			return;
 
 		if (_primaryDoublets == null)
 			return;
@@ -453,7 +471,6 @@ public final class StackedDotHelper
 							predictedFreq);
 					final double baseFreq = thisD.getBaseFrequency();
 					final Color calcColor = thisD.getTarget().getColor();
-					
 
 					final ColouredDataItem eFreq = new ColouredDataItem(
 							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
@@ -490,12 +507,16 @@ public final class StackedDotHelper
 		}
 
 		// ok, add these new series
-		errorSeries.addSeries(errorValues);
+		if (errorValues.getItemCount() > 0)
+			errorSeries.addSeries(errorValues);
 
 		actualSeries.addSeries(measuredValues);
 		actualSeries.addSeries(correctedValues);
-		actualSeries.addSeries(predictedValues);
-		actualSeries.addSeries(baseValues);
+
+		if (predictedValues.getItemCount() > 0)
+			actualSeries.addSeries(predictedValues);
+		if (baseValues.getItemCount() > 0)
+			actualSeries.addSeries(baseValues);
 
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);

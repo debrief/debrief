@@ -34,11 +34,13 @@ import org.jfree.data.Range;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
+import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackShiftListener;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.track_shift.Activator;
 
+import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -124,6 +126,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	private Action _autoResize;
 
 	private CombinedDomainXYPlot _combined;
+
+	protected TrackDataListener _myTrackDataListener;
 
 	/**
 	 * The constructor.
@@ -542,6 +546,18 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 									updateStackedDots();
 								}
 							};
+							
+							_myTrackDataListener = new TrackDataListener(){
+
+								@Override
+								public void tracksUpdated(WatchableList primary,
+										WatchableList[] secondaries)
+								{
+									_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
+											.isChecked(), _holder, logger, getType());
+									
+									updateStackedDots();
+								}};
 						}
 
 						// is this the one we're already listening to?
@@ -552,12 +568,16 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 							// nope, better stop listening then
 							if (_myTrackDataProvider != null)
+							{
 								_myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
+								_myTrackDataProvider.removeTrackDataListener(_myTrackDataListener);
+							}
 
 							// ok, start listening to it anyway
 							_myTrackDataProvider = dataP;
 							_myTrackDataProvider.addTrackShiftListener(_myShiftListener);
-
+							_myTrackDataProvider.addTrackDataListener(_myTrackDataListener);
+							
 							// hey - fire a dot update
 							updateStackedDots();
 						}
@@ -572,6 +592,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 					{
 						final TrackDataProvider tdp = (TrackDataProvider) part;
 						tdp.removeTrackShiftListener(_myShiftListener);
+						tdp.removeTrackDataListener(_myTrackDataListener);
+
 
 						if (tdp == _myTrackDataProvider)
 						{
