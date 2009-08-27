@@ -4,15 +4,21 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.eclipse.core.resources.IMarker;
+import org.eclipse.core.resources.IResource;
+import org.eclipse.core.runtime.CoreException;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -24,6 +30,10 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IEditorPart;
+import org.eclipse.ui.IFileEditorInput;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.NarrativeViewer.NarrativeViewer;
@@ -33,6 +43,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.gridharness.data.FormatDateTime;
 
 import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.HiResDate;
@@ -90,10 +101,18 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 
 	protected ControllableTime _controllableTime;
 
+	/** the current editor (we store this so we can create bookmarks
+	 * 
+	 */
+	private IEditorPart _currentEditor;
+
+
 	/**
 	 * the people listening to us
 	 */
 	Vector<ISelectionChangedListener> _selectionListeners;
+
+	private Action _setAsBookmarkAction;
 
 	public void createPartControl(Composite parent)
 	{
@@ -241,6 +260,21 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		_controlTime.setChecked(true);
 		menuManager.add(_controlTime);
 		toolManager.add(_controlTime);
+		
+		// now the add-bookmark item
+		_setAsBookmarkAction = new Action("Add DTG as bookmark",
+				Action.AS_PUSH_BUTTON)
+		{
+			public void runWithEvent(Event event)
+			{
+				addMarker();
+			}
+		};
+		_setAsBookmarkAction.setImageDescriptor(CorePlugin
+				.getImageDescriptor("icons/bkmrk_nav.gif"));
+		_setAsBookmarkAction
+				.setToolTipText("Add this DTG to the list of bookmarks");
+		menuManager.add(_setAsBookmarkAction);
 
 		// and the DTG formatter
 		addDateFormats(menuManager);
@@ -446,6 +480,7 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 		_myPartMonitor.addPartListener(TimeProvider.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
+
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
@@ -478,6 +513,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 							}
 							_myTemporalDataset.addListener(_temporalListener,
 									TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+							
+							// and is it an editor we want to remember?
+							// hmm, do we want to store this part?
+							if (parentPart instanceof IEditorPart)
+							{
+								_currentEditor = (IEditorPart) parentPart;
+							}
 						}
 					}
 				});
@@ -722,6 +764,57 @@ public class NViewerView extends ViewPart implements PropertyChangeListener,
 				}
 			}
 		}
+	}
+	
+
+	protected void addMarker()
+	{
+		try
+		{
+			// right, do we have an editor with a file?
+			IEditorInput input = _currentEditor.getEditorInput();
+			if (input instanceof IFileEditorInput)
+			{
+				// aaah, and is there a file present?
+				IFileEditorInput ife = (IFileEditorInput) input;
+				IResource file = ife.getFile();
+				
+				// check we have a selection
+				int [] rows = myViewer.getRowSelection();
+				if(rows.length == 1)
+				{
+					NarrativeEntry entry = myViewer.getModel().getEntryAt(0, rows[0]);
+					long tNow =entry.getDTG().getMicros();
+					String currentText = FormatDateTime.toString(tNow / 1000) ;
+					if (file != null)
+					{
+						// yup, get the description
+						InputDialog inputD = new InputDialog(getViewSite().getShell(),
+								"Add bookmark at this DTG", "Enter description of this bookmark",
+								currentText, null);
+						inputD.open();
+
+						String content = inputD.getValue();
+						if (content != null)
+						{
+							IMarker marker = file.createMarker(IMarker.BOOKMARK);
+							Map<String, Object> attributes = new HashMap<String, Object>(4);
+							attributes.put(IMarker.MESSAGE, content);
+							attributes.put(IMarker.LOCATION, currentText);
+							attributes.put(IMarker.LINE_NUMBER, "" + tNow);
+							attributes.put(IMarker.USER_EDITABLE, Boolean.FALSE);
+							marker.setAttributes(attributes);
+						}
+					}
+				}
+
+			}
+		}
+		catch (CoreException e)
+		{
+			e.printStackTrace();
+		}
+
 	}
 
 }
