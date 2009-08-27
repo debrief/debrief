@@ -55,7 +55,6 @@ public class CharHashMap
     private static class Entry
     {
         int hash;
-        char key;
         Object value;
         Entry next;
 
@@ -70,7 +69,6 @@ public class CharHashMap
         protected Entry(int hash, char key, Object value, Entry next)
         {
             this.hash = hash;
-            this.key = key;
             this.value = value;
             this.next = next;
         }

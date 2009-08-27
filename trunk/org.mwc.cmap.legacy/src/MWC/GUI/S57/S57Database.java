@@ -1034,14 +1034,6 @@ public class S57Database
 
 		public class VectorPointer
 		{
-			final String _name;
-
-			final int _usage;
-
-			final int _topi;
-
-			final int _mask;
-
 			final int _rcnm1;
 
 			final int _rcid1;
@@ -1054,10 +1046,6 @@ public class S57Database
 
 				_rcnm1 = rcnm;
 				_rcid1 = rcid;
-				_name = name;
-				_usage = usage;
-				_topi = topi;
-				_mask = mask;
 			}
 		}
 

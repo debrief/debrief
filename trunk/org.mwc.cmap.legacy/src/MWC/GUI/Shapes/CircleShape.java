@@ -123,6 +123,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
@@ -147,6 +148,12 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
    * the area covered by this circle
    */
   protected WorldArea _theArea;
+  
+  /** the shape, broken down into a series of points
+   * 
+   */
+  protected Vector<WorldLocation> _myPoints = new Vector<WorldLocation>();
+
 
   /**
    * the centre of this circle
@@ -213,22 +220,28 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
       dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(), TRANSPARENCY_SHADE));
     }
 
-    // get the origin
-    Point tl = dest.toScreen(_theArea.getTopLeft());
-
-    int tlx = tl.x;
-    int tly = tl.y;
-
-    // get the width and height
-    Point br = dest.toScreen(_theArea.getBottomRight());
-
-    // and now draw it
-
+    // break the circle down into points
+    final int STEPS = _myPoints.size();
+    int[] xP = new int[STEPS];
+    int[] yP = new int[STEPS];
+    int ctr = 0;
+    Iterator<WorldLocation> iter = _myPoints.iterator();
+    while(iter.hasNext())
+    {
+      Point pt = dest.toScreen(iter.next());
+      xP[ctr] = pt.x;
+      yP[ctr++] = pt.y;
+    }
+    
+    // and plot the polygon
     if (getFilled())
-      dest.fillOval(tlx, tly, br.x - tlx, br.y - tly);
+    {
+    	dest.fillPolygon(xP, yP, STEPS);
+    }
     else
-      dest.drawOval(tlx, tly, br.x - tlx, br.y - tly);
-
+    {
+    	dest.drawPolygon(xP, yP, STEPS);
+    }
   }
 
 
@@ -246,13 +259,28 @@ public class CircleShape extends PlainShape implements Serializable, Editable, D
 
     // create & extend to top left
     WorldLocation other = _theCentre.add(new WorldVector(0, radDegs, 0));
+    _theArea.extend(other);
     other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(270), radDegs, 0));
     _theArea.extend(other);
 
     // create & extend to bottom right
     other = _theCentre.add(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(180), radDegs, 0));
+    _theArea.extend(other);
     other.addToMe(new WorldVector(MWC.Algorithms.Conversions.Degs2Rads(90), radDegs, 0));
     _theArea.extend(other);
+    
+    // clear our local list of points
+    _myPoints.removeAllElements();
+
+    // and the circle as a series of points (so it turns properly in relative mode)
+    final int STEPS = 100;
+    for(int i=0;i<STEPS;i++)
+    {
+    	double thisAngle = (Math.PI * 2) / (double) STEPS * i;
+      // create & extend to top left
+      WorldLocation newPt = _theCentre.add(new WorldVector(thisAngle, radDegs, 0));
+			_myPoints.add(newPt);
+    }
   }
 
   public MWC.GenericData.WorldArea getBounds()

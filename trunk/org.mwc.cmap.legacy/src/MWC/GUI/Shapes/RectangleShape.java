@@ -147,6 +147,7 @@ import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
@@ -204,20 +205,30 @@ public class RectangleShape extends PlainShape implements Editable, Serializable
 		dest.setColor(new Color(newcol.getRed(), newcol.getGreen(), newcol.getBlue(),
 				TRANSPARENCY_SHADE));
 
-		// ok - get the coordinates for our rect
-		Point tl = dest.toScreen(_myArea.getTopLeft());
-
-		// remember the coords of this points (since it gets overwritten in the next
-		// toScreen operation)
-		int tlx = tl.x;
-		int tly = tl.y;
-		Point br = dest.toScreen(_myArea.getBottomRight());
+		Collection<WorldLocation> pts = getDataPoints();
+		Iterator<WorldLocation> iter = pts.iterator();
+    final int STEPS = pts.size();
+    int[] xP = new int[STEPS];
+    int[] yP = new int[STEPS];
+    int ctr = 0;
+		while(iter.hasNext())
+		{
+			Point pt = dest.toScreen(iter.next());
+			xP[ctr] = pt.x;
+			yP[ctr++] = pt.y;
+			
+		}
 
 		// is it to be filled?
-		if (getFilled())
-			dest.fillRect(tlx, tly, br.x - tlx, br.y - tly);
-		else
-			dest.drawRect(tlx, tly, br.x - tlx, br.y - tly);
+    // and plot the polygon
+    if (getFilled())
+    {
+    	dest.fillPolygon(xP, yP, STEPS);
+    }
+    else
+    {
+    	dest.drawPolygon(xP, yP, STEPS);
+    }
 		
 	}
 

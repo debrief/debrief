@@ -55,7 +55,6 @@ public class IntHashMap
     private static class Entry
     {
         int hash;
-        int key;
         Object value;
         Entry next;
 
@@ -70,7 +69,6 @@ public class IntHashMap
         protected Entry(int hash, int key, Object value, Entry next)
         {
             this.hash = hash;
-            this.key = key;
             this.value = value;
             this.next = next;
         }

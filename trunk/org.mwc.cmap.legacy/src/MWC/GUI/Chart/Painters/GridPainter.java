@@ -298,6 +298,10 @@ public class GridPainter implements Plottable, Serializable
     // check we are visible
     if (!_isOn)
       return;
+    
+    // we can't do a grid when it's being plotted relative plotting
+      if(g.getProjection().getRelativePlot())
+       	return;
 
     float oldLineWidth = g.getLineWidth();
 

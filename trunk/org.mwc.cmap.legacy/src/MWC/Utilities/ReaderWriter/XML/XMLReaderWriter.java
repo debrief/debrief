@@ -19,6 +19,7 @@ import MWC.GUI.Plottable;
  * @author  IAN MAYO
  * @version 1
  */
+@SuppressWarnings("deprecation")
 public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderWriter.PlainImporter
 {
 
@@ -40,15 +41,13 @@ public class XMLReaderWriter extends XMLHandler implements MWC.Utilities.ReaderW
     return false;
   }
 
-  @SuppressWarnings("deprecation")
-	protected void handleOurselves(String name, AttributeList atts)
+  protected void handleOurselves(String name, AttributeList atts)
   {
     // stuff it
   }
 
 
-  @SuppressWarnings("deprecation")
-	private void doImport(org.xml.sax.InputSource is,
+  private void doImport(org.xml.sax.InputSource is,
                         XMLHandler theHandler)
   {
 
