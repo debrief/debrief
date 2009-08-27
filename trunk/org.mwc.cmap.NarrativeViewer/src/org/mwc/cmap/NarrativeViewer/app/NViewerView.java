@@ -4,13 +4,20 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.Iterator;
 import java.util.TimeZone;
+import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.layout.GridData;
@@ -24,6 +31,7 @@ import org.mwc.cmap.NarrativeViewer.model.TimeFormatter;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import MWC.GUI.Properties.DateFormatPropertyEditor;
@@ -33,7 +41,8 @@ import MWC.TacticalData.NarrativeEntry;
 import MWC.TacticalData.IRollingNarrativeProvider.INarrativeListener;
 import de.kupzog.ktable.KTableCellDoubleClickAdapter;
 
-public class NViewerView extends ViewPart implements PropertyChangeListener
+public class NViewerView extends ViewPart implements PropertyChangeListener,
+		ISelectionProvider
 {
 	public static final String VIEW_ID = "com.borlander.ianmayo.nviewer.app.view";
 
@@ -43,6 +52,13 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 	 * helper application to help track creation/activation of new plots
 	 */
 	private PartMonitor _myPartMonitor;
+
+	/**
+	 * help out with listening for selection changes
+	 * 
+	 */
+	ISelectionChangedListener _selectionChangeListener;
+
 	IRollingNarrativeProvider _myRollingNarrative;
 
 	protected INarrativeListener _myRollingNarrListener;
@@ -52,6 +68,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 	 * 
 	 */
 	Action _clipText;
+
+	private static SimpleDateFormat _myFormat;
+	private static String _myFormatString;
 
 	/**
 	 * whether to follow the controllable time
@@ -70,6 +89,11 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 	protected PropertyChangeListener _temporalListener;
 
 	protected ControllableTime _controllableTime;
+
+	/**
+	 * the people listening to us
+	 */
+	Vector<ISelectionChangedListener> _selectionListeners;
 
 	public void createPartControl(Composite parent)
 	{
@@ -114,26 +138,55 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 		{
 			public void cellDoubleClicked(int col, int row, int statemask)
 			{
-				NarrativeEntry[] entries = myViewer.getModel().getInput()
-						.getNarrativeHistory(new String[]
-						{});
-				HiResDate newTime = entries[row - 1].getDTG();
-				fireNewTime(newTime);
+				final NarrativeEntry theEntry = myViewer.getModel().getEntryAt(col, row);
+				fireNewSeletion(theEntry);
 			}
 		});
+
+		_selectionChangeListener = new ISelectionChangedListener()
+		{
+
+			public void selectionChanged(SelectionChangedEvent event)
+			{
+				// right, see what it is
+				ISelection sel = event.getSelection();
+				if (sel instanceof StructuredSelection)
+				{
+					StructuredSelection ss = (StructuredSelection) sel;
+					Object datum = ss.getFirstElement();
+					if (datum instanceof EditableWrapper)
+					{
+						EditableWrapper pw = (EditableWrapper) datum;
+
+						// now see if it's a narrative entry
+						if (pw.getEditable() instanceof NarrativeEntry)
+						{
+							NarrativeEntry entry = (NarrativeEntry) pw.getEditable();
+							timeUpdated(entry.getDTG());
+						}
+					}
+				}
+			}
+		};
 
 	}
 
 	/**
 	 * send this new time to the time controller
 	 * 
-	 * @param newTime
+	 * @param newEntry
 	 */
-	protected void fireNewTime(HiResDate newTime)
+	protected void fireNewSeletion(NarrativeEntry newEntry)
 	{
+		// first update the time
 		if (_controlTime.isChecked())
 			if (_controllableTime != null)
-				_controllableTime.setTime(this, newTime, true);
+				_controllableTime.setTime(this, newEntry.getDTG(), true);
+
+		// now update the selection
+		EditableWrapper wrappedEntry = new EditableWrapper(newEntry);
+		StructuredSelection structuredItem = new StructuredSelection(wrappedEntry);
+		setSelection(structuredItem);
 	}
 
 	private void populateMenu()
@@ -248,43 +301,43 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 		myViewer.setFocus();
 	}
 
-	/** flag for if we're currently in update
+	/**
+	 * flag for if we're currently in update
 	 * 
 	 */
 	private static boolean _amUpdating = false;
 
-	protected void timeUpdated(final HiResDate dtg)
+	protected void entryUpdated(final NarrativeEntry entry)
 	{
-		if (_followTime.isChecked())
+		if (_amUpdating)
 		{
-			if (_amUpdating)
-			{
-				// don't worry, we'll be finished soon
-				System.err.println("already doing update");
-			} 
-			else
-			{
-				// ok, remember that we're updating
-				_amUpdating = true;
+			// don't worry, we'll be finished soon
+			System.err.println("already doing update");
+		}
+		else
+		{
+			// ok, remember that we're updating
+			_amUpdating = true;
 
-				// get on with the update
-				try
+			// get on with the update
+			try
+			{
+				Display.getDefault().asyncExec(new Runnable()
 				{
-					Display.getDefault().asyncExec(new Runnable()
+
+					public void run()
 					{
-
-						public void run()
-						{
-							// ok, tell the model to move to the relevant item
-							myViewer.setDTG(dtg);
-						}
-					});
-				} finally
-				{
-					// clear the updating lock
-					_amUpdating = false;
-				}
+						// ok, tell the model to move to the relevant item
+						myViewer.setEntry(entry);
+					}
+				});
 			}
+			finally
+			{
+				// clear the updating lock
+				_amUpdating = false;
+			}
+
 		}
 	}
 
@@ -341,6 +394,9 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 	 */
 	private void setupPartListeners()
 	{
+
+		final NViewerView me = this;
+		
 		_myPartMonitor.addPartListener(IRollingNarrativeProvider.class,
 				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
 				{
@@ -464,6 +520,35 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 					}
 				});
 
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not is
+						if (part != me)
+						{
+							ISelectionProvider iS = (ISelectionProvider) part;
+							iS.addSelectionChangedListener(_selectionChangeListener);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(ISelectionProvider.class,
+				PartMonitor.DEACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						// aah, just check it's not is
+						if (part != me)
+						{
+							ISelectionProvider iS = (ISelectionProvider) part;
+							iS.removeSelectionChangedListener(_selectionChangeListener);
+						}
+					}
+				});
+
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
 				.getActivePage());
@@ -489,9 +574,6 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 		super.dispose();
 
 	}
-
-	private static SimpleDateFormat _myFormat;
-	private static String _myFormatString;
 
 	public static String toStringHiRes(HiResDate time, String pattern)
 			throws IllegalArgumentException
@@ -537,7 +619,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 			// yes
 			res.append(".");
 			res.append(microsFormat.format(micros % 1000000));
-		} else
+		}
+		else
 		{
 			// do we have millis?
 			if (micros % 1000000 > 0)
@@ -548,7 +631,8 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 
 				res.append(".");
 				res.append(millisFormat.format(millis));
-			} else
+			}
+			else
 			{
 				// just use the normal output
 			}
@@ -567,6 +651,76 @@ public class NViewerView extends ViewPart implements PropertyChangeListener
 		if (_followTime.isChecked())
 		{
 
+		}
+	}
+
+	@Override
+	public void addSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		if (_selectionListeners == null)
+			_selectionListeners = new Vector<ISelectionChangedListener>(0, 1);
+
+		// see if we don't already contain it..
+		if (!_selectionListeners.contains(listener))
+			_selectionListeners.add(listener);
+	}
+
+	@Override
+	public ISelection getSelection()
+	{
+		return null;
+	}
+
+	public void removeSelectionChangedListener(ISelectionChangedListener listener)
+	{
+		_selectionListeners.remove(listener);
+	}
+
+	public void setSelection(ISelection selection)
+	{
+		// tell everybody about us
+		for (Iterator<ISelectionChangedListener> iterator = _selectionListeners
+				.iterator(); iterator.hasNext();)
+		{
+			ISelectionChangedListener type = iterator.next();
+			SelectionChangedEvent event = new SelectionChangedEvent(this, selection);
+			type.selectionChanged(event);
+		}
+	}
+
+	protected void timeUpdated(final HiResDate dtg)
+	{
+		if (_followTime.isChecked())
+		{
+			if (_amUpdating)
+			{
+				// don't worry, we'll be finished soon
+				System.err.println("already doing update");
+			}
+			else
+			{
+				// ok, remember that we're updating
+				_amUpdating = true;
+
+				// get on with the update
+				try
+				{
+					Display.getDefault().asyncExec(new Runnable()
+					{
+
+						public void run()
+						{
+							// ok, tell the model to move to the relevant item
+							myViewer.setDTG(dtg);
+						}
+					});
+				}
+				finally
+				{
+					// clear the updating lock
+					_amUpdating = false;
+				}
+			}
 		}
 	}
 

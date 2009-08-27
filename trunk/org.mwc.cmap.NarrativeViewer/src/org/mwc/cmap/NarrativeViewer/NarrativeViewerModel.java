@@ -244,6 +244,11 @@ public class NarrativeViewerModel extends KTableDefaultModel
         return row == 0 ? column.getColumnName() : column
                 .getProperty(myVisibleRows.get(row - 1));
     }
+    
+    public NarrativeEntry getEntryAt(int col, int row)
+    {
+        return myVisibleRows.get(row - 1);
+    }
 
     @Override
     public int doGetRowCount()

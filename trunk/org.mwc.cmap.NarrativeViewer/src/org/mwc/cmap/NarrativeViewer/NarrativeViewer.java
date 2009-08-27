@@ -162,9 +162,20 @@ public class NarrativeViewer extends KTable {
           thisIndex++;
 				}
         
+        
         // ok, try to select this entry
         if(theIndex > -1)
         {
+        	// just check it's not already selected
+          int[] currentRows = super.getRowSelection();
+          if(currentRows.length == 1)
+          {
+          	// don't bother, we've already selected it
+          	if(currentRows[0] == theIndex + 1)
+          		return;
+          }
+
+        	
         	// to make sure the desired entry is fully visible (even if it's a multi-line one),
         	// select the entry after our target one, then our target entry.
           super.setSelection(1, theIndex + 2, true);
@@ -174,4 +185,47 @@ public class NarrativeViewer extends KTable {
         }
 
     }
+    
+
+  	/** the controlling time has updated
+  	 * 
+  	 * @param dtg the selected dtg
+  	 */
+      public void setEntry(NarrativeEntry entry)
+      {
+          // find the table entry immediately after or on this DTG
+      		int theIndex = -1;
+      		int thisIndex = 0;
+      		
+      		// retrieve the list of visible rows
+          LinkedList<NarrativeEntry> visEntries = myModel.myVisibleRows;
+          
+          // step through them
+          for (Iterator<NarrativeEntry> entryIterator = visEntries.iterator(); entryIterator.hasNext();)
+  				{        	
+  					NarrativeEntry narrativeEntry = (NarrativeEntry) entryIterator.next();
+  					
+  					if(narrativeEntry == entry)
+  					{
+            	// yup, remember the index
+              theIndex = thisIndex;
+              break;
+            }             
+  					
+            // increment the counter
+            thisIndex++;
+  				}
+          
+          // ok, try to select this entry
+          if(theIndex > -1)
+          {
+          	// to make sure the desired entry is fully visible (even if it's a multi-line one),
+          	// select the entry after our target one, then our target entry.
+            super.setSelection(1, theIndex + 2, true);
+            
+            // right, it's currently looking at the entry after our one.  Now select our one.
+            super.setSelection(1, theIndex + 1, true);
+          }
+
+      }
 }
