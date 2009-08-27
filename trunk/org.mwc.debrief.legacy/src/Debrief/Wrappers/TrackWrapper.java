@@ -1102,12 +1102,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	transient private WorldArea _myWorldArea;
 
-	private final PropertyChangeListener _locationListener;
+	transient private final PropertyChangeListener _locationListener;
 
-	public PropertyChangeListener getLocationListener()
-	{
-		return _locationListener;
-	}
 
 	// //////////////////////////////////////
 	// constructors
@@ -1898,6 +1894,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		return set;
+	}
+	
+
+	/** just have the one property listener - rather than an anonymous class
+	 * 
+	 * @return
+	 */
+	public PropertyChangeListener getLocationListener()
+	{
+		return _locationListener;
 	}
 
 	/**
