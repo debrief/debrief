@@ -1887,7 +1887,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				addMarker();
 			}
 		};
-		_setAsBookmarkAction.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
+		_setAsBookmarkAction.setImageDescriptor(CorePlugin
 				.getImageDescriptor("icons/bkmrk_nav.gif"));
 		_setAsBookmarkAction
 				.setToolTipText("Add this DTG to the list of bookmarks");
