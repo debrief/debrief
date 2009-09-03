@@ -123,7 +123,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	private Vector<Action> _customActions;
 
-	private Action _autoResize;
+	protected Action _autoResize;
 
 	private CombinedDomainXYPlot _combined;
 
@@ -448,20 +448,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	void updateStackedDots()
 	{
 
-		if (_autoResize.isChecked())
-		{
-			if (_showDotPlot.isChecked())
-			{
-				_dotPlot.getRangeAxis().setAutoRange(true);
-				_dotPlot.getDomainAxis().setAutoRange(true);
-			}
-			if (_showLinePlot.isChecked())
-			{
-				_linePlot.getRangeAxis().setAutoRange(true);
-				_linePlot.getDomainAxis().setAutoRange(true);
-			}
-		}
-
 		// update the current datasets
 		updateData();
 
@@ -476,6 +462,24 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				final double maxVal = Math.max(Math.abs(rng.getLowerBound()), Math
 						.abs(rng.getUpperBound()));
 				_dotPlot.getRangeAxis().setRange(-maxVal, maxVal);
+			}
+		}
+		
+		if (_autoResize.isChecked())
+		{
+			if (_showDotPlot.isChecked())
+			{
+				_dotPlot.getRangeAxis().setAutoRange(false);
+				_dotPlot.getDomainAxis().setAutoRange(false);
+				_dotPlot.getRangeAxis().setAutoRange(true);
+				_dotPlot.getDomainAxis().setAutoRange(true);
+			}
+			if (_showLinePlot.isChecked())
+			{
+				_linePlot.getRangeAxis().setAutoRange(false);
+				_linePlot.getDomainAxis().setAutoRange(false);
+				_linePlot.getRangeAxis().setAutoRange(true);
+				_linePlot.getDomainAxis().setAutoRange(true);
 			}
 		}
 	}
@@ -556,7 +560,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 									_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
 											.isChecked(), _holder, logger, getType());
 									
+									// ok, do the recalc
 									updateStackedDots();
+									
+									// ok - if we're on auto update, do the update
+									updateLinePlotRanges();
+
 								}};
 						}
 
@@ -675,6 +684,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// ok we're all ready now. just try and see if the current part is valid
 		_myPartMonitor.fireActivePart(getSite().getWorkbenchWindow()
 				.getActivePage());
+	}
+
+	/** some data has changed.  if we're auto ranging, update the axes
+	 * 
+	 */
+	protected void updateLinePlotRanges()
+	{
+		// have a look at the auto resize
+		if(_autoResize.isChecked())
+		{
+			_linePlot.getRangeAxis().setAutoRange(false);
+			_linePlot.getDomainAxis().setAutoRange(false);
+			_linePlot.getRangeAxis().setAutoRange(true);
+			_linePlot.getDomainAxis().setAutoRange(true);
+		}
 	}
 
 }

@@ -24,8 +24,8 @@ public class BearingResidualsView extends BaseStackedDotsView
 			public void run()
 			{
 				super.run();
-				// ok - redraw the plot we may have changed the course visibility
-				updateStackedDots();
+				
+				processShowCourse();
 			}
 		};
 		showCourse.setChecked(true);
@@ -74,5 +74,14 @@ public class BearingResidualsView extends BaseStackedDotsView
 			// just make sure the first series is visible, it's clearly not a course
 			lineRend.setSeriesShapesVisible(0, true);
 		}
+	}
+
+	private void processShowCourse()
+	{
+		// ok - redraw the plot we may have changed the course visibility
+		updateStackedDots();
+		
+		// ok - if we're on auto update, do the update
+		updateLinePlotRanges();
 	}
 }
