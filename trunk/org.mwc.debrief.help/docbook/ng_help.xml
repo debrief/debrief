@@ -847,6 +847,25 @@ Naval Undersea Warfare Center (NUWC)
                     <para>It&apos;s now time to start <application>Debrief</application>
                     </para>
                 </sect2>
+                <sect2 id="setting_location_prefs">
+                	<title>Configuring background data</title>
+                	If you want to take advantage of Debrief's support for background datasets, don't forget
+                	to read the instructions on how to configure their locations, as below.  Note, the VPF and ETOPO
+                	datasets probably aren't present in your Debrief installation (due to their size), so you will
+                	have to request/load them separately.  The world.dat file used for the simple coastline should be in your Debrief installation folder.
+                	<itemizedlist>
+                            <listitem>
+                                <para>VPF instructions are <link linkend="configure_for_vpf">here</link></para>
+                            </listitem>
+                            <listitem>
+                                <para>ETOPO instructions are <link linkend="etopo_install">here</link></para>
+                            </listitem>
+                            <listitem>
+                                <para>Simple coastline instructions are similar to the above</para>
+                            </listitem>
+                        </itemizedlist>
+                	
+                </sect2>
             </sect1>
             <sect1 id="start_up">
                 <title>Start Debrief</title>

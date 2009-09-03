@@ -14,7 +14,7 @@
 				id="debrief-welcome"
    			    url="http://org.eclipse.ui.intro/showHelpTopic?id=/org.mwc.debrief.help/html/legacy/get_start.html"
 				style-id="content-link">
-				<text>How to obtain and install Debrief</text>
+				<text>How to obtain and install Debrief (including configuring background data)</text>
 			</link>
 			<link label="Grooming track data"
 				id="debrief-welcome"
