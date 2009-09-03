@@ -54,13 +54,25 @@ public class BearingResidualsView extends BaseStackedDotsView
 	
 	protected void updateData()
 	{
+		_dotPlot.setDataset(null);
+		_linePlot.setDataset(null);
+		
 		// update the current datasets
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
-				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this);	
-		
-		// hide the line for the course dataset
-		DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot.getRenderer();
-		lineRend.setSeriesShapesVisible(1, false);
-		
+				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this);
+
+		// hide the line for the course dataset (if we're showing the course)
+		DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
+		.getRenderer();
+		if (showCourse.isChecked())
+		{
+			// right, we've got a course, and it's always in slot one - so hide the shapes
+			lineRend.setSeriesShapesVisible(0, false);
+		}
+		else
+		{
+			// just make sure the first series is visible, it's clearly not a course
+			lineRend.setSeriesShapesVisible(0, true);
+		}
 	}
 }
