@@ -10,12 +10,14 @@ import java.util.SortedSet;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.swt.widgets.Composite;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.data.general.SeriesException;
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.TimeSeries;
 import org.jfree.data.time.TimeSeriesCollection;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 
 import Debrief.Tools.Tote.WatchableList;
@@ -237,23 +239,18 @@ public final class StackedDotHelper
 			}
 			catch (final SeriesException e)
 			{
-				// hack: we shouldn't be allowing this exception. Look at why
-				// we're
-				// getting the same
-				// time period being entered twice for this track.
-
-				// Stop catching the error, load Dave W's holistic approach plot
-				// file,
-				// and check the track/fix which is causing the problem.
-
-				// e.printStackTrace(); //To change body of catch statement use
-				// File |
-				// Settings | File Templates.
+				CorePlugin.logError(Status.INFO,"some kind of trip whilst updating bearing plot", e);
 			}
 
 		}
 
 		// ok, add these new series
+
+
+		if (showCourse)
+		{
+			actualSeries.addSeries(osCourseValues);
+		}
 
 		if (errorValues.getItemCount() > 0)
 			errorSeries.addSeries(errorValues);
@@ -262,11 +259,6 @@ public final class StackedDotHelper
 
 		if (calculatedValues.getItemCount() > 0)
 			actualSeries.addSeries(calculatedValues);
-
-		if (showCourse)
-		{
-			actualSeries.addSeries(osCourseValues);
-		}
 
 		dotPlot.setDataset(errorSeries);
 		linePlot.setDataset(actualSeries);
@@ -490,18 +482,7 @@ public final class StackedDotHelper
 			}
 			catch (final SeriesException e)
 			{
-				// hack: we shouldn't be allowing this exception. Look at why
-				// we're
-				// getting the same
-				// time period being entered twice for this track.
-
-				// Stop catching the error, load Dave W's holistic approach plot
-				// file,
-				// and check the track/fix which is causing the problem.
-
-				e.printStackTrace(); // To change body of catch statement use
-				// File |
-				// Settings | File Templates.
+				CorePlugin.logError(Status.INFO,"some kind of trip whilst updating frequency plot", e);
 			}
 
 		}
