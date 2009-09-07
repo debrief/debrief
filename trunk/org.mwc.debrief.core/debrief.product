@@ -33,7 +33,7 @@
 
    <vm>
       <linux>java-6-sun-1.6.0.03</linux>
-      <macos>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.6</macos>
+      <macos>org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5</macos>
       <windows>jre1.6.0_06</windows>
    </vm>
 
@@ -211,10 +211,10 @@ Library.
    </plugins>
 
    <features>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.18"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.14"/>
       <feature id="org.eclipse.rcp" version="3.5.0.v20090519-9SA0FwxFv6x089WEf-TWh11"/>
       <feature id="org.eclipse.platform" version="3.5.0.v20090611a-9gEeG1HFtQcmRThO4O3aR_fqSMvJR2sJ"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.17"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.10"/>
    </features>
 
 

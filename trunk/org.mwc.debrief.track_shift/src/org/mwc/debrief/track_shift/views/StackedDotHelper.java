@@ -439,31 +439,30 @@ public final class StackedDotHelper
 
 				final Color thisColor = thisD.getColor();
 				final double measuredFreq = thisD.getMeasuredFrequency();
-				final double correctedFreq = thisD.getCorrectedFrequency();
 				final HiResDate currentTime = thisD.getDTG();
 
 				final ColouredDataItem mFreq = new ColouredDataItem(
 						new FixedMillisecond(currentTime.getDate().getTime()),
 						measuredFreq, thisColor, false, null);
 
-				final ColouredDataItem corrFreq = new ColouredDataItem(
-						new FixedMillisecond(currentTime.getDate().getTime()),
-						correctedFreq, thisColor, true, null);
 				// final ColouredDataItem corrFreq = new ColouredDataItem(
 				// new FixedMillisecond(currentTime.getDate().getTime()),
 				// correctedFreq, thisColor, false, null);
 				measuredValues.add(mFreq);
-				correctedValues.add(corrFreq);
 
 				// do we have target data?
 				if (thisD.getTarget() != null)
 				{
+					final double correctedFreq = thisD.getCorrectedFrequency();
 					final double predictedFreq = thisD.getPredictedFrequency();
 					final double thisError = thisD.calculateFreqError(measuredFreq,
 							predictedFreq);
 					final double baseFreq = thisD.getBaseFrequency();
 					final Color calcColor = thisD.getTarget().getColor();
 
+					final ColouredDataItem corrFreq = new ColouredDataItem(
+							new FixedMillisecond(currentTime.getDate().getTime()),
+							correctedFreq, thisColor, true, null);
 					final ColouredDataItem eFreq = new ColouredDataItem(
 							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
 							thisColor, false, null);
@@ -474,6 +473,7 @@ public final class StackedDotHelper
 					final ColouredDataItem pFreq = new ColouredDataItem(
 							new FixedMillisecond(currentTime.getDate().getTime()),
 							predictedFreq, calcColor, false, null);
+					correctedValues.add(corrFreq);
 					errorValues.add(eFreq);
 					baseValues.add(bFreq);
 					predictedValues.add(pFreq);
