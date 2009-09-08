@@ -17,6 +17,8 @@ import MWC.GenericData.WorldVector;
 
 public final class Doublet
 {
+	public static final double INVALID_BASE_FREQUENCY = -1d;
+
 	private final SensorContactWrapper _sensor;
 
 	private final FixWrapper _targetFix;
@@ -131,7 +133,7 @@ public final class Doublet
 	 */
 	public double getBaseFrequency()
 	{
-		double res = 0d;
+		double res = INVALID_BASE_FREQUENCY;
 		if (_targetTrack instanceof CoreTMASegment)
 		{
 			CoreTMASegment tma = (CoreTMASegment) _targetTrack;
