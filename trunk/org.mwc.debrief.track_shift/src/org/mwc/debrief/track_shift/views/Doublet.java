@@ -81,6 +81,14 @@ public final class Doublet
 		return _sensor.getBearing();
 	}
 
+	public double getAmbiguousMeasuredBearing()
+	{
+		double res = INVALID_BASE_FREQUENCY;
+		if(_sensor.getHasAmbiguousBearing())
+			res = _sensor.getAmbiguousBearing();
+		
+		return res;
+	}
 	public double getCalculatedBearing(final WorldVector sensorOffset,
 			final WorldVector targetOffset)
 	{

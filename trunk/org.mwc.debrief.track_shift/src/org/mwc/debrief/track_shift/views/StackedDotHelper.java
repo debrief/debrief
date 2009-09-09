@@ -67,6 +67,12 @@ public final class StackedDotHelper {
 			final TrackWrapper targetTrack, boolean onlyVis) {
 		final Vector<Doublet> res = new Vector<Doublet>(0, 1);
 
+		// friendly fix-wrapper to save us repeatedly creating it
+		FixWrapper index = new FixWrapper(
+				new Fix(null,
+						new WorldLocation(0, 0,
+								0), 0.0, 0.0));
+		
 		// loop through our sensor data
 		Enumeration<SensorWrapper> sensors = sensorHost.getSensors();
 		while (sensors.hasMoreElements()) {
@@ -120,11 +126,10 @@ public final class StackedDotHelper {
 										// sorted. here we go
 										targetParent = ts;
 
-										// and the child element
-										FixWrapper index = new FixWrapper(
-												new Fix(scw.getDTG(),
-														new WorldLocation(0, 0,
-																0), 0.0, 0.0));
+										// create an object with the right time
+										index.getFix().setTime(scw.getDTG());
+										
+										// and find any matching items
 										SortedSet<Editable> items = ts
 												.tailSet(index);
 										targetFix = (FixWrapper) items.first();
@@ -201,6 +206,7 @@ public final class StackedDotHelper {
 		final TimeSeries errorValues = new TimeSeries(_primaryTrack.getName());
 
 		final TimeSeries measuredValues = new TimeSeries("Measured");
+		final TimeSeries ambigValues = new TimeSeries("Ambiguous Bearing");
 		final TimeSeries calculatedValues = new TimeSeries("Calculated");
 
 		final TimeSeries osCourseValues = new TimeSeries("Course");
@@ -215,11 +221,13 @@ public final class StackedDotHelper {
 				// obvious stuff first (stuff that doesn't need the tgt data)
 				final Color thisColor = thisD.getColor();
 				final double measuredBearing = thisD.getMeasuredBearing();
+				final double ambigBearing = thisD.getAmbiguousMeasuredBearing();
 				final double ownshipCourse = MWC.Algorithms.Conversions
 						.Rads2Degs(thisD.getHost().getCourse());
 				final HiResDate currentTime = thisD.getDTG();
 				final Color hostColor = thisD.getHost().getColor();
 
+				
 				final ColouredDataItem mBearing = new ColouredDataItem(
 						new FixedMillisecond(currentTime.getDate().getTime()),
 						measuredBearing, thisColor, false, null);
@@ -228,9 +236,18 @@ public final class StackedDotHelper {
 						new FixedMillisecond(currentTime.getDate().getTime()),
 						ownshipCourse, hostColor, true, null);
 
+				
 				// and add them to the series
 				measuredValues.add(mBearing);
 				osCourseValues.add(crseBearing);
+
+				if(ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
+				{
+					final ColouredDataItem amBearing = new ColouredDataItem(
+							new FixedMillisecond(currentTime.getDate().getTime()),
+							ambigBearing, thisColor, false, null);
+					ambigValues.add(amBearing);
+				}	
 
 				// do we have target data?
 				if (thisD.getTarget() != null) {
@@ -270,6 +287,9 @@ public final class StackedDotHelper {
 			errorSeries.addSeries(errorValues);
 
 		actualSeries.addSeries(measuredValues);
+		
+		if(ambigValues.getItemCount() > 0)
+			actualSeries.addSeries(ambigValues);
 
 		if (calculatedValues.getItemCount() > 0)
 			actualSeries.addSeries(calculatedValues);
