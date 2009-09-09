@@ -273,8 +273,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  */
 public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		Watchable, DynamicPlottable, CanvasType.MultiLineTooltipProvider,
-		TimeStampedDataItem
-{
+		TimeStampedDataItem {
 
 	// //////////////////////////////////////
 	// member variables
@@ -323,8 +322,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	private WorldArea _myArea;
 
 	/**
-	 * a single instance of our editor type - which can be listened to by multiple
-	 * listeners
+	 * a single instance of our editor type - which can be listened to by
+	 * multiple listeners
 	 */
 	transient private Editable.EditorType _myEditor = null;
 
@@ -350,8 +349,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	// constructors
 	// //////////////////////////////////////
 
-	public FixWrapper(final Fix theFix)
-	{
+	public FixWrapper(final Fix theFix) {
 		// store the fix
 		_theFix = theFix;
 		// create the symbol
@@ -378,8 +376,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 		// check that/if we have an area for this fix
 		final WorldLocation wl = theFix.getLocation();
-		if (wl != null)
-		{
+		if (wl != null) {
 			// store the area
 			_myArea = new WorldArea(wl, wl);
 		}
@@ -389,8 +386,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * instruct this object to clear itself out, ready for ditching
 	 * 
 	 */
-	public final void closeMe()
-	{
+	public final void closeMe() {
 		// do the parent
 		super.closeMe();
 
@@ -414,9 +410,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * produce an interpolated fix between the two supplied ones
 	 * 
 	 */
-	static public FixWrapper interpolateFix(FixWrapper previous, FixWrapper next,
-			HiResDate dtg)
-	{
+	static public FixWrapper interpolateFix(FixWrapper previous,
+			FixWrapper next, HiResDate dtg) {
 		FixWrapper res = null;
 
 		// and the time different?
@@ -434,7 +429,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		WorldVector sep = next.getLocation().subtract(previous.getLocation());
 
 		// do the calcs
-		double dLat = next.getLocation().getLat() - previous.getLocation().getLat();
+		double dLat = next.getLocation().getLat()
+				- previous.getLocation().getLat();
 		double dLong = next.getLocation().getLong()
 				- previous.getLocation().getLong();
 		double dDepth = next.getLocation().getDepth()
@@ -446,12 +442,15 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		dDepth *= proportion;
 
 		// and apply it (for both range and depth)
-		// WorldVector newSep = new WorldVector(sep.getBearing(), sep.getRange() *
+		// WorldVector newSep = new WorldVector(sep.getBearing(), sep.getRange()
+		// *
 		// proportion, sep.getDepth() * proportion);
 
 		// cool, sort out the new location
-		WorldLocation newLoc = new WorldLocation(previous.getLocation().getLat()
-				+ dLat, previous.getLocation().getLong() + dLong, previous.getDepth()
+		WorldLocation newLoc = new WorldLocation(previous.getLocation()
+				.getLat()
+				+ dLat, previous.getLocation().getLong() + dLong, previous
+				.getDepth()
 				+ dDepth);
 
 		// COURSE + SPEED
@@ -479,18 +478,15 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		return res;
 	}
 
-	public final void setTrackWrapper(final TrackWrapper theTrack)
-	{
-			_trackWrapper = theTrack;
+	public final void setTrackWrapper(final TrackWrapper theTrack) {
+		_trackWrapper = theTrack;
 	}
 
-	public final TrackWrapper getTrackWrapper()
-	{
+	public final TrackWrapper getTrackWrapper() {
 		return _trackWrapper;
 	}
 
-	public final void resetColor()
-	{
+	public final void resetColor() {
 		setColor(null);
 	}
 
@@ -500,13 +496,10 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * 
 	 * @return the colour of this fix, or the track if null
 	 */
-	public final Color getColor()
-	{
-		if (super.getColor() == null)
-		{
+	public final Color getColor() {
+		if (super.getColor() == null) {
 			return _trackWrapper.getColor();
-		}
-		else
+		} else
 			return super.getColor();
 	}
 
@@ -515,8 +508,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * 
 	 * @return fix colour, including null if applicable
 	 */
-	public final Color getActualColor()
-	{
+	public final Color getActualColor() {
 		// take the colour from the parent class, not from this one
 		// - this is mostly because when we do a save, we want to
 		// correctly reflect that this instance may take it's
@@ -527,33 +519,28 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	/**
 	 * method to set the size of the symbol plotted
 	 */
-	public final void setSymbolScale(final Double val)
-	{
+	public final void setSymbolScale(final Double val) {
 		_theLocationWrapper.setSymbolScale(val);
 	}
 
 	/**
 	 * method to get the size of the symbol plotted
 	 */
-	public final Double getSymbolScale()
-	{
+	public final Double getSymbolScale() {
 		return _theLocationWrapper.getSymbolScale();
 	}
 
-	public final void paint(final CanvasType dest)
-	{
+	public final void paint(final CanvasType dest) {
 		/**
-		 * control of the painting functionality has been passed back to the Track
-		 * object
+		 * control of the painting functionality has been passed back to the
+		 * Track object
 		 */
 	}
 
-	public final void paintMe(final CanvasType dest, WorldLocation centre)
-	{
+	public final void paintMe(final CanvasType dest, WorldLocation centre) {
 		_theLocationWrapper.setColor(getColor());
 
-		if (getSymbolShowing())
-		{
+		if (getSymbolShowing()) {
 			// see if the symbol should be shaded (if the lable is showing)
 			_theLocationWrapper.setFillSymbol(getLabelShowing());
 
@@ -575,44 +562,36 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * paint the label using the current settings.
 	 * 
 	 * @param dest
-	 *          the destination to paint to
+	 *            the destination to paint to
 	 */
-	public void paintLabel(final CanvasType dest)
-	{
+	public void paintLabel(final CanvasType dest) {
 		// now draw the label
-		if (getLabelShowing())
-		{
+		if (getLabelShowing()) {
 			_theLabel.setColor(getColor());
 			_theLabel.setFont(getFont());
 			_theLabel.paint(dest);
 		}
 	}
 
-	public final Font getFont()
-	{
+	public final Font getFont() {
 		return _theFont;
 	}
 
-	public final void setLabelLocation(final Integer loc)
-	{
+	public final void setLabelLocation(final Integer loc) {
 		_theLabel.setRelativeLocation(loc);
 	}
 
-	public final Integer getLabelLocation()
-	{
+	public final Integer getLabelLocation() {
 		return _theLabel.getRelativeLocation();
 	}
 
-	public final void setFont(final Font theFont)
-	{
+	public final void setFont(final Font theFont) {
 		_theFont = theFont;
 	}
 
-	public final WorldArea getBounds()
-	{
+	public final WorldArea getBounds() {
 		// check that our bounds have been defined
-		if (_myArea == null)
-		{
+		if (_myArea == null) {
 			_myArea = new WorldArea(this.getLocation(), this.getLocation());
 		}
 
@@ -620,94 +599,78 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		return _myArea;
 	}
 
-	public final Fix getFix()
-	{
+	public final Fix getFix() {
 		return _theFix;
 	}
 
-	public void resetName()
-	{
+	public void resetName() {
 		// do we have a time?
-		if (_theFix.getTime() != null)
-		{
-			_theLabel.setString(FormatRNDateTime.toShortString(_theFix.getTime()
-					.getDate().getTime()));
-		}
-		else
-		{
+		if (_theFix.getTime() != null) {
+			_theLabel.setString(FormatRNDateTime.toShortString(_theFix
+					.getTime().getDate().getTime()));
+		} else {
 			_theLabel.setString("Pending");
 		}
 	}
 
-	public final String toString()
-	{
+	public final String toString() {
 		return getName();
 	}
 
-	public final String getLabel()
-	{
+	public final String getLabel() {
 		return _theLabel.getString();
 	}
 
-	public final void setLabel(final String val)
-	{
+	public final void setLabel(final String val) {
 		_theLabel.setString(val);
 	}
 
-	public final String getName()
-	{
+	public final String getName() {
 		return getLabel();
 	}
 
-	public String getMultiLineName()
-	{
+	public String getMultiLineName() {
 		return "<u>"
 				+ _trackWrapper.getName()
 				+ ":"
 				+ getName()
 				+ "</u>\n"
 				+ GeneralFormat.formatStatus(MWC.Algorithms.Conversions
-						.Rads2Degs(_theFix.getCourse()), getSpeed(), _theFix.getLocation()
-						.getDepth());
+						.Rads2Degs(_theFix.getCourse()), getSpeed(), _theFix
+						.getLocation().getDepth());
 	}
 
-	public final boolean getLabelShowing()
-	{
+	public final boolean getLabelShowing() {
 		if (_showLabel == null)
 			_showLabel = Boolean.FALSE;
 
 		return _showLabel.booleanValue();
 	}
 
-	public final void setLabelShowing(final boolean val)
-	{
+	public final void setLabelShowing(final boolean val) {
 		_showLabel = new Boolean(val);
 	}
 
-	public final boolean getSymbolShowing()
-	{
+	public final boolean getSymbolShowing() {
 		return _showSymbol;
 	}
 
-	public final void setSymbolShowing(final boolean val)
-	{
+	public final void setSymbolShowing(final boolean val) {
 		_showSymbol = val;
 	}
 
-	public final boolean visibleBetween(final HiResDate start, final HiResDate end)
-	{
+	public final boolean visibleBetween(final HiResDate start,
+			final HiResDate end) {
 		return ((this.getTime().greaterThan(start)) && (getTime().lessThan(end)));
 	}
 
 	/**
 	 * get the editing information for this type
 	 */
-	public final Editable.EditorType getInfo()
-	{
+	public final Editable.EditorType getInfo() {
 		String trkName = "Track unset";
 
-		if (_trackWrapper != null)
-		{
+		if (_trackWrapper != null) {
 			trkName = _trackWrapper.getName();
 		}
 
@@ -717,8 +680,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		return _myEditor;
 	}
 
-	public final boolean hasEditor()
-	{
+	public final boolean hasEditor() {
 		return true;
 	}
 
@@ -726,24 +688,21 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * how far away are we from this point? or return null if it can't be
 	 * calculated
 	 */
-	public final double rangeFrom(final WorldLocation other)
-	{
+	public final double rangeFrom(final WorldLocation other) {
 		return _theFix.getLocation().rangeFrom(other);
 	}
 
 	// ////////////////////////////////////////////////////
 	// watchable (tote) information for this class
 	// ///////////////////////////////////////////////////
-	public final WorldLocation getLocation()
-	{
+	public final WorldLocation getLocation() {
 		return _theFix.getLocation();
 	}
 
 	/**
 	 * return the course (in radians)
 	 */
-	public final double getCourse()
-	{
+	public final double getCourse() {
 		return _theFix.getCourse();
 	}
 
@@ -751,18 +710,16 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * set the course for this observation
 	 * 
 	 * @param val
-	 *          the course (rads)
+	 *            the course (rads)
 	 */
-	public void setCourse(double val)
-	{
+	public void setCourse(double val) {
 		_theFix.setCourse(val);
 	}
 
 	/**
 	 * return the course (in radians)
 	 */
-	public final double getCourseDegs()
-	{
+	public final double getCourseDegs() {
 		return MWC.Algorithms.Conversions.Rads2Degs(_theFix.getCourse());
 	}
 
@@ -770,8 +727,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * change the course
 	 * 
 	 */
-	public void setCourseDegs(double val)
-	{
+	public void setCourseDegs(double val) {
 		_theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(val));
 	}
 
@@ -779,107 +735,102 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * set the speed of this participant (in knots)
 	 * 
 	 * @param val
-	 *          the speed (knots)
+	 *            the speed (knots)
 	 */
-	public void setSpeed(double val)
-	{
+	public void setSpeed(double val) {
 		_theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(val));
 	}
 
 	/**
 	 * return the speed (in knots)
 	 */
-	public final double getSpeed()
-	{
+	public final double getSpeed() {
 		return MWC.Algorithms.Conversions.Yps2Kts(_theFix.getSpeed());
 	}
 
 	/**
 	 * return the depth (in metres)
 	 */
-	public final double getDepth()
-	{
+	public final double getDepth() {
 		return _theFix.getLocation().getDepth();
 	}
 
 	/**
 	 * return the time of the fix (as long)
 	 */
-	public final HiResDate getTime()
-	{
+	public final HiResDate getTime() {
 		return _theFix.getTime();
 	}
 
-	public void setDepth(double val)
-	{
+	public void setDepth(double val) {
 		_theFix.getLocation().setDepth(val);
 	}
 
 	/**
 	 * set the current location of the fix
 	 */
-	public final void setFixLocation(final WorldLocation val)
-	{
+	public final void setFixLocation(final WorldLocation val) {
 		// set the central bits
 		setFixLocationSilent(val);
 
 		// also, fire the parent's updated method
-		super.getSupport().firePropertyChange(PlainWrapper.LOCATION_CHANGED, null,
-				val);
+		super.getSupport().firePropertyChange(PlainWrapper.LOCATION_CHANGED,
+				null, val);
 	}
 
 	/**
 	 * set the current location of the fix
 	 */
-	public final void setFixLocationSilent(final WorldLocation val)
-	{
+	public final void setFixLocationSilent(final WorldLocation val) {
 		_theFix.setLocation(val);
 		_theLabel.setLocation(val);
 		_theLocationWrapper.setLocation(val);
 
-		_myArea = new WorldArea(val, val);
+		// try to reduce object allocation, if we can...
+		if (_myArea == null)
+			_myArea = new WorldArea(val, val);
+		else {
+			// just reuse our current object
+			_myArea.setTopLeft(val);
+			_myArea.setBottomRight(val);
+		}
 	}
 
 	/**
 	 * return the current location of the fix (as a world location). Keep this
 	 * method, since it's used from the fix property editors
 	 */
-	public final WorldLocation getFixLocation()
-	{
+	public final WorldLocation getFixLocation() {
 		return _theFix.getLocation();
 	}
 
-	public final HiResDate getDateTimeGroup()
-	{
+	public final HiResDate getDateTimeGroup() {
 		return _theFix.getTime();
 	}
 
-	public final void setDateTimeGroup(final HiResDate val)
-	{
+	public final void setDateTimeGroup(final HiResDate val) {
 		_theFix.setTime(val);
 	}
 
-	public final String getLabelFormat()
-	{
+	public final String getLabelFormat() {
 		return _theFormat;
 		/**
-		 * note, we return null, not the "N/A" value, so that none of the values in
-		 * the tag list are designated as "current value"
+		 * note, we return null, not the "N/A" value, so that none of the values
+		 * in the tag list are designated as "current value"
 		 */
 	}
 
-	public final void setLabelFormat(final String format)
-	{
+	public final void setLabelFormat(final String format) {
 		_theFormat = format;
 
 		// just check that the user isn't keeping the value as null
 		if (format == null)
 			return;
 
-		if (!format.equals(MyDateFormatPropertyEditor.stringTags[0]))
-		{
+		if (!format.equals(MyDateFormatPropertyEditor.stringTags[0])) {
 			// so, reformat the label to this format
-			final java.text.DateFormat df = new java.text.SimpleDateFormat(format);
+			final java.text.DateFormat df = new java.text.SimpleDateFormat(
+					format);
 			df.setTimeZone(TimeZone.getTimeZone("GMT"));
 			this.setLabel(df.format(this.getTime().getDate()));
 			// this.setLabel(DebriefFormatDateTime.toStringHiRes(this.getTime()));
@@ -890,20 +841,16 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 * meet the requirements of the comparable interface
 	 * 
 	 */
-	public final int compareTo(Plottable o)
-	{
+	public final int compareTo(Plottable o) {
 		int res = 0;
 
-		if (o instanceof FixWrapper)
-		{
+		if (o instanceof FixWrapper) {
 			final FixWrapper f = (FixWrapper) o;
 
 			// cool, use our HiResDate comparator
 			res = getTime().compareTo(f.getTime());
 
-		}
-		else
-		{
+		} else {
 			// just put it first
 			res = 1;
 		}
@@ -911,119 +858,109 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		return res;
 	}
 
-	public void setLineShowing(boolean val)
-	{
+	public void setLineShowing(boolean val) {
 		_lineShowing = val;
 	}
 
-	public boolean getLineShowing()
-	{
+	public boolean getLineShowing() {
 		return _lineShowing;
 	}
 
-	public void setLocation(WorldLocation val)
-	{
+	public void setLocation(WorldLocation val) {
 		_theFix.setLocation(val);
 	}
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class
 	// ///////////////////////////////////////////////////
-	public final class fixInfo extends Griddable
-	{
+	public final class fixInfo extends Griddable {
 
 		public fixInfo(final FixWrapper data, final String theName,
-				final String trackName)
-		{
+				final String trackName) {
 			super(data, theName, trackName + ": theName");
 		}
 
-		public final String getDisplayName()
-		{
+		public final String getDisplayName() {
 			return getTrackWrapper().getName() + ":" + super.getName();
 		}
 
 		@Override
-		public PropertyDescriptor[] getGriddablePropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
+		public PropertyDescriptor[] getGriddablePropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
 						prop("Label", "the label for this data item"),
 						prop("Depth", "depth of this position"),
 						prop("Visible", "whether this position is visible"),
-						prop("FixLocation", "the location for this position", OPTIONAL),
-						prop("CourseDegs", "current course of this platform (degs)",
+						prop("FixLocation", "the location for this position",
+								OPTIONAL),
+						prop("CourseDegs",
+								"current course of this platform (degs)",
 								SPATIAL),
 						prop("Speed", "current speed of this vehicle", SPATIAL) };
 
 				return res;
 
-			}
-			catch (IntrospectionException e)
-			{
+			} catch (IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
 		}
 
-		public final BeanInfo[] getAdditionalBeanInfo()
-		{
-			final BeanInfo[] res =
-			{ getTrackWrapper().getInfo() };
+		public final BeanInfo[] getAdditionalBeanInfo() {
+			final BeanInfo[] res = { getTrackWrapper().getInfo() };
 			return res;
 		}
 
-		public final PropertyDescriptor[] getPropertyDescriptors()
-		{
-			try
-			{
-				final PropertyDescriptor[] res =
-				{
+		public final PropertyDescriptor[] getPropertyDescriptors() {
+			try {
+				final PropertyDescriptor[] res = {
 						prop("SymbolScale", "the scale of the symbol", FORMAT),
 						prop("DateTimeGroup", "the DTG for the fix"),
 						prop("Color", "the position color", FORMAT),
 						prop("Label", "the position label", FORMAT),
 						prop("Font", "the label font", FORMAT),
-						prop("LabelShowing", "whether the label is showing", VISIBILITY),
-						prop("SymbolShowing", "whether the symbol is showing", VISIBILITY),
-						prop("LineShowing",
+						prop("LabelShowing", "whether the label is showing",
+								VISIBILITY),
+						prop("SymbolShowing", "whether the symbol is showing",
+								VISIBILITY),
+						prop(
+								"LineShowing",
 								"whether the to join this position it's predecessor",
 								VISIBILITY),
 						prop("FixLocation", "the location of the fix", SPATIAL),
-						prop("Visible", "whether the whole fix is visible", VISIBILITY),
-						longProp("LabelFormat",
+						prop("Visible", "whether the whole fix is visible",
+								VISIBILITY),
+						longProp(
+								"LabelFormat",
 								"the time format of the label, or N/A to leave as-is",
 								MyDateFormatPropertyEditor.class, SPATIAL),
-						longProp("LabelLocation", "the label location",
-								MWC.GUI.Properties.LocationPropertyEditor.class, FORMAT) };
+						longProp(
+								"LabelLocation",
+								"the label location",
+								MWC.GUI.Properties.LocationPropertyEditor.class,
+								FORMAT) };
 				res[0]
 						.setPropertyEditorClass(MWC.GUI.Shapes.Symbols.SymbolScalePropertyEditor.class);
 				return res;
-			}
-			catch (IntrospectionException e)
-			{
+			} catch (IntrospectionException e) {
 				return super.getPropertyDescriptors();
 			}
 		}
 
-		public final MethodDescriptor[] getMethodDescriptors()
-		{
+		public final MethodDescriptor[] getMethodDescriptors() {
 			// just add the reset color field first
 			final Class<FixWrapper> c = FixWrapper.class;
-			final MethodDescriptor[] mds =
-			{ method(c, "resetColor", null, "Reset Color"),
+			final MethodDescriptor[] mds = {
+					method(c, "resetColor", null, "Reset Color"),
 					method(c, "resetName", null, "Reset Label"),
 					method(c, "exportThis", null, "Export Shape") };
 			return mds;
 		}
 
-		public final SubjectAction[] getUndoableActions()
-		{
+		public final SubjectAction[] getUndoableActions() {
 			FixWrapper fw = (FixWrapper) getData();
 			String lbl = fw.getLabel();
-			final SubjectAction[] res = new SubjectAction[]
-			{ new SplitTrack(true, "Split track before " + lbl),
+			final SubjectAction[] res = new SubjectAction[] {
+					new SplitTrack(true, "Split track before " + lbl),
 					new SplitTrack(false, "Split track after " + lbl) };
 			return res;
 		}
@@ -1034,8 +971,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	// and a class representing interpolated fixes
 	// //////////////////////////////////////////////////////////////
 	public static class InterpolatedFixWrapper extends FixWrapper implements
-			PlainWrapper.InterpolatedData
-	{
+			PlainWrapper.InterpolatedData {
 
 		/**
 		 * 
@@ -1047,8 +983,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		 * 
 		 * @param fixData
 		 */
-		public InterpolatedFixWrapper(Fix fixData)
-		{
+		public InterpolatedFixWrapper(Fix fixData) {
 			super(fixData);
 		}
 
@@ -1060,34 +995,27 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	// a N/A property - which means leave the label as it is
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	public static final class MyDateFormatPropertyEditor extends
-			MWC.GUI.Properties.DateFormatPropertyEditor
-	{
+			MWC.GUI.Properties.DateFormatPropertyEditor {
 		static private final String NULL_VALUE = "N/A";
 
-		static final String[] stringTags =
-		{ NULL_VALUE, "mm:ss.SSS", "HHmm.ss", "HHmm", "ddHHmm", "ddHHmm.ss",
-				"yy/MM/dd HH:mm", };
+		static final String[] stringTags = { NULL_VALUE, "mm:ss.SSS",
+				"HHmm.ss", "HHmm", "ddHHmm", "ddHHmm.ss", "yy/MM/dd HH:mm", };
 
-		public final String[] getTags()
-		{
+		public final String[] getTags() {
 			return stringTags;
 		}
 
-		public void setAsText(String val)
-		{
+		public void setAsText(String val) {
 			_myFormat = getMyIndexOf(val);
 		}
 
-		private int getMyIndexOf(String val)
-		{
+		private int getMyIndexOf(String val) {
 			int res = INVALID_INDEX;
 
 			// cycle through the tags until we get a matching one
-			for (int i = 0; i < getTags().length; i++)
-			{
+			for (int i = 0; i < getTags().length; i++) {
 				String thisTag = getTags()[i];
-				if (thisTag.equals(val))
-				{
+				if (thisTag.equals(val)) {
 					res = i;
 					break;
 				}
@@ -1101,19 +1029,16 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
 	// testing for this class
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
-	static public final class testMe extends junit.framework.TestCase
-	{
+	static public final class testMe extends junit.framework.TestCase {
 		static public final String TEST_ALL_TEST_TYPE = "UNIT";
 
-		public testMe(final String val)
-		{
+		public testMe(final String val) {
 			super(val);
 		}
 
-		public final void testMyParams()
-		{
-			final Fix fx = new Fix(new HiResDate(12, 0),
-					new WorldLocation(2d, 2d, 2d), 2d, 2d);
+		public final void testMyParams() {
+			final Fix fx = new Fix(new HiResDate(12, 0), new WorldLocation(2d,
+					2d, 2d), 2d, 2d);
 			final TrackWrapper tw = new TrackWrapper();
 			tw.setName("here ew arw");
 			FixWrapper ed = new FixWrapper(fx);
@@ -1126,11 +1051,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		 * Test method for
 		 * {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)} .
 		 */
-		public void testInterpolate()
-		{
+		public void testInterpolate() {
 			FixWrapper fw1 = TrackWrapper_Test.createFix(100, 1, 1, 2, 3);
 			FixWrapper fw2 = TrackWrapper_Test.createFix(200, 2, 1, 2, 3);
-			FixWrapper fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
+			FixWrapper fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(
+					150));
 			assertEquals("right time", 150, fw3.getTime().getDate().getTime());
 			assertEquals("right lat", 1.5, fw3.getLocation().getLat(), 0001);
 			assertEquals("right lat", 1, fw3.getLocation().getLong(), 0.0001);
@@ -1167,22 +1092,25 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 			fw2 = TrackWrapper_Test.createFix(200, 60, 15, 0, 31, 30, 0, 2, 3);
 			fw3 = FixWrapper.interpolateFix(fw1, fw2, new HiResDate(150));
 
-			System.out.println(fw1.getLocation() + ": " + fw1.getLocation().getLat()
-					+ ", " + fw1.getLocation().getLong());
-			System.out.println(fw2.getLocation() + ": " + fw2.getLocation().getLat()
-					+ ", " + fw2.getLocation().getLong());
-			System.out.println(fw3.getLocation() + ": " + fw3.getLocation().getLat()
-					+ ", " + fw3.getLocation().getLong());
+			System.out.println(fw1.getLocation() + ": "
+					+ fw1.getLocation().getLat() + ", "
+					+ fw1.getLocation().getLong());
+			System.out.println(fw2.getLocation() + ": "
+					+ fw2.getLocation().getLat() + ", "
+					+ fw2.getLocation().getLong());
+			System.out.println(fw3.getLocation() + ": "
+					+ fw3.getLocation().getLat() + ", "
+					+ fw3.getLocation().getLong());
 
 			assertEquals("right time", 150, fw3.getTime().getDate().getTime());
-			assertEquals("right long", 31.25, fw3.getLocation().getLong(), 0.0001);
+			assertEquals("right long", 31.25, fw3.getLocation().getLong(),
+					0.0001);
 			assertEquals("right lat", 60.375, fw3.getLocation().getLat(), 0.001);
 		}
 
 	}
 
-	private static class SplitTrack implements SubjectAction
-	{
+	private static class SplitTrack implements SubjectAction {
 		private final boolean _splitBefore;
 		private String _title;
 		private Vector<TrackSegment> _splitSections;
@@ -1191,62 +1119,53 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		 * create an instance of this operation
 		 * 
 		 * @param keepPort
-		 *          whether to keep the port removal
+		 *            whether to keep the port removal
 		 * @param title
-		 *          what to call ourselves
+		 *            what to call ourselves
 		 */
-		public SplitTrack(boolean splitBefore, String title)
-		{
+		public SplitTrack(boolean splitBefore, String title) {
 			_splitBefore = splitBefore;
 			_title = title;
 		}
 
-		public String toString()
-		{
+		public String toString() {
 			return _title;
 		}
 
-		public void execute(Editable subject)
-		{
+		public void execute(Editable subject) {
 			FixWrapper fix = (FixWrapper) subject;
 			TrackWrapper parent = fix.getTrackWrapper();
 			_splitSections = parent.splitTrack(fix, _splitBefore);
 		}
 
-		public void undo(Editable subject)
-		{
+		public void undo(Editable subject) {
 			FixWrapper fix = (FixWrapper) subject;
 			TrackWrapper parent = fix.getTrackWrapper();
 			parent.combineSections(_splitSections);
 		}
 
-		public boolean isRedoable()
-		{
+		public boolean isRedoable() {
 			return true;
 		}
 
-		public boolean isUndoable()
-		{
+		public boolean isUndoable() {
 			return true;
 		}
 
 	}
 
-	public static void main(String[] args)
-	{
+	public static void main(String[] args) {
 		testMe tm = new testMe("scrap");
 		tm.testMyParams();
 	}
 
 	@Override
-	public HiResDate getDTG()
-	{
+	public HiResDate getDTG() {
 		return _theFix.getTime();
 	}
 
 	@Override
-	public void setDTG(HiResDate date)
-	{
+	public void setDTG(HiResDate date) {
 		_theFix.setTime(date);
 	}
 }
