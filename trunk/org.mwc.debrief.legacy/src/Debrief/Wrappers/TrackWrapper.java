@@ -3341,8 +3341,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
 
 			// put the lists back into plottable layers
-			ts1 = new RelativeTMASegment(theTMA, p1, theTMA.getOffset());
-			ts2 = new RelativeTMASegment(theTMA, p2, secondOffset);
+			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1, theTMA.getOffset());
+			RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
+			
+			// update the freq's
+			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
+			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
+
+			// and store them
+			ts1 = tr1;
+			ts2 = tr2;
 
 		}
 		else if (relevantSegment instanceof AbsoluteTMASegment)
@@ -3360,9 +3368,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			FixWrapper t1Start = (FixWrapper) p1.first();
 
 			// put the lists back into plottable layers
-			ts1 = new AbsoluteTMASegment(theTMA, p1, t1Start.getLocation(), null,
+			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1, t1Start.getLocation(), null,
 					null);
-			ts2 = new AbsoluteTMASegment(theTMA, p2, origin, null, null);
+			AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null, null);
+
+			// update the freq's
+			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
+			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
+
+			// and store them
+			ts1 = tr1;
+			ts2 = tr2;
 
 		}
 		else
