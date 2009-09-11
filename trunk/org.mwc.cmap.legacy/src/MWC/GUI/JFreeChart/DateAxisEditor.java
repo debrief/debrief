@@ -7,6 +7,7 @@
  */
 package MWC.GUI.JFreeChart;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -21,6 +22,59 @@ import MWC.GUI.Properties.AbstractPropertyEditor;
 
 public class DateAxisEditor extends AbstractPropertyEditor
 {
+
+	public static class OptimisedDateTickUnit extends DateTickUnit
+	{
+
+		public OptimisedDateTickUnit(DateTickUnitType unitType, int multiple)
+		{
+			super(unitType, multiple);
+			// TODO Auto-generated constructor stub
+		}
+
+		public OptimisedDateTickUnit(DateTickUnitType unitType, int multiple,
+				DateFormat formatter)
+		{
+			super(unitType, multiple, formatter);
+			// TODO Auto-generated constructor stub
+		}
+
+		public OptimisedDateTickUnit(DateTickUnitType unitType, int multiple,
+				DateTickUnitType rollUnitType, int rollMultiple, DateFormat formatter)
+		{
+			super(unitType, multiple, rollUnitType, rollMultiple, formatter);
+			// TODO Auto-generated constructor stub
+		}
+
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		/**
+		 * static calendar instance, to reduce object allocation
+		 * 
+		 */
+		private static Calendar _myCal = null;
+		
+		/**
+		 * Overrides parent implementation, in order that we can use static Calendar
+		 * instance rather than creating it lots of times.
+		 */
+		@SuppressWarnings("deprecation")
+		public Date addToDate(Date base, TimeZone zone)
+		{
+			
+			// do we have a calenar already?
+			if (_myCal == null)
+				_myCal = Calendar.getInstance(zone);
+
+			_myCal.setTime(base);
+			_myCal.add(this.getUnitType().getCalendarField(), this.getCount());
+			return _myCal.getTime();
+
+		}
+	}
 
 	// ////////////////////////////////////////////////
 	// member variables
@@ -138,33 +192,50 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		TickUnits units = new TickUnits();
 
 		// milliseconds
-		units.add(new DateTickUnit(DateTickUnitType.MILLISECOND, 500, new RNFormatter(
-				"HH:mm:ss.SSS")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MILLISECOND, 500,
+				new RNFormatter("HH:mm:ss.SSS")));
 
 		// seconds
-		units.add(new DateTickUnit(DateTickUnitType.SECOND, 1, new RNFormatter("HH:mm:ss")));
-		units.add(new DateTickUnit(DateTickUnitType.SECOND, 5, new RNFormatter("HH:mm:ss")));
-		units.add(new DateTickUnit(DateTickUnitType.SECOND, 10, new RNFormatter("HH:mm:ss")));
-		units.add(new DateTickUnit(DateTickUnitType.SECOND, 30, new RNFormatter("HH:mm:ss")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 1,
+				new RNFormatter("HH:mm:ss")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 5,
+				new RNFormatter("HH:mm:ss")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 10,
+				new RNFormatter("HH:mm:ss")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.SECOND, 30,
+				new RNFormatter("HH:mm:ss")));
 
 		// minutes
-		units.add(new DateTickUnit(DateTickUnitType.MINUTE, 1, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.MINUTE, 2, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.MINUTE, 5, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.MINUTE, 10, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.MINUTE, 15, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.MINUTE, 20, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.MINUTE, 30, new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 1,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 2,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 5,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 10,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 15,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 20,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.MINUTE, 30,
+				new RNFormatter("HH:mm")));
 
 		// hours
-		units.add(new DateTickUnit(DateTickUnitType.HOUR, 1, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.HOUR, 2, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.HOUR, 4, new RNFormatter("HH:mm")));
-		units.add(new DateTickUnit(DateTickUnitType.HOUR, 6, new RNFormatter("ddHHmm")));
-		units.add(new DateTickUnit(DateTickUnitType.HOUR, 12, new RNFormatter("ddHHmm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 1,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 2,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 4,
+				new RNFormatter("HH:mm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 6,
+				new RNFormatter("ddHHmm")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.HOUR, 12,
+				new RNFormatter("ddHHmm")));
 
 		// days
-		units.add(new DateTickUnit(DateTickUnitType.DAY, 1, new RNFormatter("d-MMM")));
+		units.add(new OptimisedDateTickUnit(DateTickUnitType.DAY, 1,
+				new RNFormatter("d-MMM")));
 
 		return units;
 	}
@@ -183,17 +254,22 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		ArrayList<MWCDateTickUnitWrapper> units = new ArrayList<MWCDateTickUnitWrapper>();
 
 		units.add(MWCDateTickUnitWrapper.getAutoScale());
-		
-		////////////////////////////////////////////////////////
-		
+
+		// //////////////////////////////////////////////////////
+
 		// milliseconds
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MILLISECOND, 500,"HH:mm:ss.SSS"));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MILLISECOND, 500,
+				"HH:mm:ss.SSS"));
 
 		// seconds
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1, "HH:mm:ss"));
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 5, "HH:mm:ss"));
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 10, "HH:mm:ss"));
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 30, "HH:mm:ss"));
+		units
+				.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1, "HH:mm:ss"));
+		units
+				.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 5, "HH:mm:ss"));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 10,
+				"HH:mm:ss"));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 30,
+				"HH:mm:ss"));
 
 		// minutes
 		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 1, "HH:mm"));
@@ -212,45 +288,67 @@ public class DateAxisEditor extends AbstractPropertyEditor
 		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 12, "ddHHmm"));
 
 		// days
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.DAY, 1, "d-MMM"));		
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.DAY, 1, "d-MMM"));
 
-		
-		///////////////////////////////////////////////////////
-		
-//		// milliseconds
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MILLISECOND, 500, "HH:mm:ss.SSS"));
-//
-//		// seconds
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1, "HH:mm:ss"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 5, "HH:mm:ss"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 10, "HH:mm:ss"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 30, "HH:mm:ss"));
-//
-//		// minutes
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 1, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 2, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 5, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 10, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 15, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 20, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 30, "HH:mm"));
-//
-//		// hours
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 1, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 2, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 4, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 6, "HH:mm"));
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 12, "d-MMM, HH:mm"));
-//
-//		// days
-//		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.DAY, 1, "d-MMM"));
+		// /////////////////////////////////////////////////////
+
+		// // milliseconds
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MILLISECOND,
+		// 500, "HH:mm:ss.SSS"));
+		//
+		// // seconds
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1,
+		// "HH:mm:ss"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 5,
+		// "HH:mm:ss"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 10,
+		// "HH:mm:ss"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 30,
+		// "HH:mm:ss"));
+		//
+		// // minutes
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 1,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 2,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 5,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 10,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 15,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 20,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.MINUTE, 30,
+		// "HH:mm"));
+		//
+		// // hours
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 1,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 2,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 4,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 6,
+		// "HH:mm"));
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.HOUR, 12,
+		// "d-MMM, HH:mm"));
+		//
+		// // days
+		// units.add(new MWCDateTickUnitWrapper(DateTickUnitType.DAY, 1,
+		// "d-MMM"));
 
 		// absolute seconds
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1, RELATIVE_DTG_FORMAT));
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 5, RELATIVE_DTG_FORMAT));
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 10, RELATIVE_DTG_FORMAT));
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 30, RELATIVE_DTG_FORMAT));
-		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 60, RELATIVE_DTG_FORMAT));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 1,
+				RELATIVE_DTG_FORMAT));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 5,
+				RELATIVE_DTG_FORMAT));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 10,
+				RELATIVE_DTG_FORMAT));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 30,
+				RELATIVE_DTG_FORMAT));
+		units.add(new MWCDateTickUnitWrapper(DateTickUnitType.SECOND, 60,
+				RELATIVE_DTG_FORMAT));
 
 		return units;
 
@@ -292,7 +390,8 @@ public class DateAxisEditor extends AbstractPropertyEditor
 
 		protected String _formatter;
 
-		public MWCDateTickUnitWrapper(DateTickUnitType unit, int count, String formatter)
+		public MWCDateTickUnitWrapper(DateTickUnitType unit, int count,
+				String formatter)
 		{
 			_unit = unit;
 			_count = count;
@@ -308,7 +407,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 				SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
 				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-				res = new DateTickUnit(_unit, _count, sdf);
+				res = new OptimisedDateTickUnit(_unit, _count, sdf);
 
 			}
 			else
@@ -316,7 +415,7 @@ public class DateAxisEditor extends AbstractPropertyEditor
 				SimpleDateFormat sdf = new SimpleDateFormat(_formatter);
 				sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-				res = new DateTickUnit(_unit, _count, sdf)
+				res = new OptimisedDateTickUnit(_unit, _count, sdf)
 				{
 					/**
 					 * 
