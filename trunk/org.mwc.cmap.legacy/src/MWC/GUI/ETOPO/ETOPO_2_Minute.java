@@ -62,7 +62,7 @@ public final class ETOPO_2_Minute extends SpatialRasterPainter
 	// //////////////////////////////////
 	public ETOPO_2_Minute(final String etopo_path)
 	{
-		super("2 Minute Topology");
+		super("ETOPO (2 Minute)");
 
 		// store the path to the data file
 		_thePath = etopo_path;
