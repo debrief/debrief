@@ -14,11 +14,11 @@ public class FrequencyResidualsView extends BaseStackedDotsView
 		return "Frequency";
 	}
 	
-	protected void updateData()
+	protected void updateData(boolean updateDoublets)
 	{
 		// update the current datasets
 		_myHelper.updateFrequencyData(_dotPlot, _linePlot, _theTrackDataListener,
-				_onlyVisible.isChecked(), _holder, this);		
+				_onlyVisible.isChecked(), _holder, this, updateDoublets);		
 		
 		// hide the line for the base freq dataset
 		DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot.getRenderer();

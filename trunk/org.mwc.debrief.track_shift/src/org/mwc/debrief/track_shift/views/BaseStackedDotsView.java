@@ -18,7 +18,10 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.awt.SWT_AWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.part.ViewPart;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
@@ -46,7 +49,7 @@ import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
-import MWC.GUI.JFreeChart.DatedToolTipGenerator;
+import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Layers.DataListener;
 
 /**
@@ -55,6 +58,10 @@ import MWC.GUI.Layers.DataListener;
 abstract public class BaseStackedDotsView extends ViewPart implements
 		ErrorLogger
 {
+
+	private static final String SHOW_DOT_PLOT = "SHOW_DOT_PLOT";
+
+	private static final String SHOW_LINE_PLOT = "SHOW_LINE_PLOT";
 
 	/**
 	 * helper application to help track creation/activation of new plots
@@ -136,7 +143,8 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	{
 		_myHelper = new StackedDotHelper();
 
-		// create the actions - the 'centre-y axis' action may get called before the
+		// create the actions - the 'centre-y axis' action may get called before
+		// the
 		// interface is shown
 		makeActions();
 	}
@@ -145,7 +153,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 	abstract protected String getType();
 
-	abstract protected void updateData();
+	abstract protected void updateData(boolean updateDoublets);
 
 	private void contributeToActionBars()
 	{
@@ -215,38 +223,42 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		final DateAxis xAxis = new DateAxis("");
 		xAxis.setDateFormatOverride(_df);
 
-		// xAxis.setStandardTickUnits(DateAxisEditor
-		// .createStandardDateTickUnitsAsTickUnits());
+		xAxis.setStandardTickUnits(DateAxisEditor
+				.createStandardDateTickUnitsAsTickUnits());
+		xAxis.setAutoTickUnitSelection(true);
 
 		// create the special stepper plot
 		_dotPlot = new XYPlot();
 		_dotPlot.setRangeAxis(new NumberAxis("Error (" + getUnits() + ")"));
 		_dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-		_dotPlot.setRenderer(new ColourStandardXYItemRenderer(
-				new DatedToolTipGenerator(), null, _dotPlot));
-		
+		_dotPlot
+				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
+
 		_linePlot = new XYPlot();
 		NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
 		_linePlot.setRangeAxis(absBrgAxis);
 		absBrgAxis.setAutoRangeIncludesZero(false);
 		_linePlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
-		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(
-				new DatedToolTipGenerator(), null, _linePlot);
+		DefaultXYItemRenderer lineRend = new ColourStandardXYItemRenderer(null,
+				null, _linePlot);
 		lineRend.setPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
 
 		// give them a fancy backdrop
-		 GradientPaint gradientPaint = new GradientPaint(0.0F, 10.0F, Color.LIGHT_GRAY, 10.0F, 0.0F, Color.LIGHT_GRAY.brighter(), true);
-		 _dotPlot.setBackgroundPaint(gradientPaint);
-		 _linePlot.setBackgroundPaint(gradientPaint);
-		
+		GradientPaint gradientPaint = new GradientPaint(0.0F, 10.0F,
+				Color.LIGHT_GRAY, 10.0F, 0.0F, Color.LIGHT_GRAY.brighter(), true);
+		_dotPlot.setBackgroundPaint(gradientPaint);
+		_linePlot.setBackgroundPaint(gradientPaint);
+
 		// set the y axes to autocalculate
 		_dotPlot.getRangeAxis().setAutoRange(true);
 		_linePlot.getRangeAxis().setAutoRange(true);
 
 		_combined = new CombinedDomainXYPlot(xAxis);
-		_combined.add(_linePlot);
-		_combined.add(_dotPlot);
+		
+	  _combined.add(_linePlot);
+  	_combined.add(_dotPlot);
+		
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
 
 		// put the plot into a chart
@@ -262,6 +274,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// and insert into the panel
 		plotControl.add(plotHolder, BorderLayout.CENTER);
+		
+		// do a little tidying to reflect the memento settings
+		if(!_showLinePlot.isChecked())
+			_combined.remove(_linePlot);
+		if(!_showDotPlot.isChecked() && _showLinePlot.isChecked())
+			_combined.remove(_dotPlot);
 	}
 
 	/**
@@ -275,7 +293,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		super.dispose();
 
 		// ditch the actions
-		if(_customActions != null)
+		if (_customActions != null)
 			_customActions.removeAllElements();
 
 		// are we listening to any layers?
@@ -330,7 +348,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			{
 				super.run();
 				// ok - redraw the plot we may have changed the axis centreing
-				updateStackedDots();
+				updateStackedDots(false);
 			}
 		};
 		_centreYAxis.setText("Center Y Axis");
@@ -408,13 +426,14 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				// set the title, so there's something useful in there
 				_myChart.setTitle(getType() + " Error");
 
-				// we need to get a fresh set of data pairs - the number may have
+				// we need to get a fresh set of data pairs - the number may
+				// have
 				// changed
 				_myHelper.initialise(_theTrackDataListener, true, _onlyVisible
 						.isChecked(), _holder, logger, getType());
 
 				// and a new plot please
-				updateStackedDots();
+				updateStackedDots(true);
 			}
 		};
 		_onlyVisible.setText("Only plot visible data");
@@ -445,11 +464,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	/**
 	 * the track has been moved, update the dots
 	 */
-	void updateStackedDots()
+	void updateStackedDots(boolean updateDoublets)
 	{
 
 		// update the current datasets
-		updateData();
+		updateData(updateDoublets);
 
 		// we will only centre the y-axis if the user hasn't performed a zoom
 		// operation
@@ -464,7 +483,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				_dotPlot.getRangeAxis().setRange(-maxVal, maxVal);
 			}
 		}
-		
+
 		if (_autoResize.isChecked())
 		{
 			if (_showDotPlot.isChecked())
@@ -506,15 +525,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							// cool, remember about it.
 							_theTrackDataListener = (TrackManager) part;
 
-							// set the title, so there's something useful in there
+							// set the title, so there's something useful in
+							// there
 							_myChart.setTitle(getType() + " Error");
 
 							// ok - fire off the event for the new tracks
 							_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
 									.isChecked(), _holder, logger, getType());
 
-							// just in case we're ready to start plotting, go for it!
-							updateStackedDots();
+							// just in case we're ready to start plotting, go
+							// for it!
+							updateStackedDots(true);
 						}
 
 					}
@@ -547,26 +568,33 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							{
 								public void trackShifted(TrackWrapper subject)
 								{
-									updateStackedDots();
+									// the tracks have moved, we haven't changed the tracks or
+									// anything like that...
+									updateStackedDots(false);
 								}
 							};
-							
-							_myTrackDataListener = new TrackDataListener(){
+
+							_myTrackDataListener = new TrackDataListener()
+							{
 
 								@Override
 								public void tracksUpdated(WatchableList primary,
 										WatchableList[] secondaries)
 								{
-									_myHelper.initialise(_theTrackDataListener, false, _onlyVisible
-											.isChecked(), _holder, logger, getType());
-									
+									_myHelper.initialise(_theTrackDataListener, false,
+											_onlyVisible.isChecked(), _holder, logger, getType());
+
+									// ahh, the tracks have changed, better update the doublets
+
 									// ok, do the recalc
-									updateStackedDots();
-									
-									// ok - if we're on auto update, do the update
+									updateStackedDots(true);
+
+									// ok - if we're on auto update, do the
+									// update
 									updateLinePlotRanges();
 
-								}};
+								}
+							};
 						}
 
 						// is this the one we're already listening to?
@@ -579,16 +607,17 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 							if (_myTrackDataProvider != null)
 							{
 								_myTrackDataProvider.removeTrackShiftListener(_myShiftListener);
-								_myTrackDataProvider.removeTrackDataListener(_myTrackDataListener);
+								_myTrackDataProvider
+										.removeTrackDataListener(_myTrackDataListener);
 							}
 
 							// ok, start listening to it anyway
 							_myTrackDataProvider = dataP;
 							_myTrackDataProvider.addTrackShiftListener(_myShiftListener);
 							_myTrackDataProvider.addTrackDataListener(_myTrackDataListener);
-							
+
 							// hey - fire a dot update
-							updateStackedDots();
+							updateStackedDots(true);
 						}
 					}
 				});
@@ -603,14 +632,13 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						tdp.removeTrackShiftListener(_myShiftListener);
 						tdp.removeTrackDataListener(_myTrackDataListener);
 
-
 						if (tdp == _myTrackDataProvider)
 						{
 							_myTrackDataProvider = null;
 						}
 
 						// hey - lets clear our plot
-						updateStackedDots();
+						updateStackedDots(true);
 					}
 				});
 
@@ -639,7 +667,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 								{
 									_myHelper.initialise(_theTrackDataListener, false,
 											_onlyVisible.isChecked(), _holder, logger, getType());
-									updateStackedDots();
+									updateStackedDots(false);
 								}
 							};
 						}
@@ -647,11 +675,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						// is this what we're listening to?
 						if (_ourLayersSubject != theLayers)
 						{
-							// nope, stop listening to the old one (if there is one!)
+							// nope, stop listening to the old one (if there is
+							// one!)
 							if (_ourLayersSubject != null)
 								_ourLayersSubject
 										.removeDataReformattedListener(_layersListener);
-							
+
 							// and remember the new one
 							_ourLayersSubject = theLayers;
 						}
@@ -673,7 +702,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 						{
 							// yup, stop listening
 							_ourLayersSubject.removeDataReformattedListener(_layersListener);
-							
+
 							_linePlot.setDataset(null);
 							_dotPlot.setDataset(null);
 						}
@@ -686,19 +715,48 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				.getActivePage());
 	}
 
-	/** some data has changed.  if we're auto ranging, update the axes
+	/**
+	 * some data has changed. if we're auto ranging, update the axes
 	 * 
 	 */
 	protected void updateLinePlotRanges()
 	{
 		// have a look at the auto resize
-		if(_autoResize.isChecked())
+		if (_autoResize.isChecked())
 		{
 			_linePlot.getRangeAxis().setAutoRange(false);
 			_linePlot.getDomainAxis().setAutoRange(false);
 			_linePlot.getRangeAxis().setAutoRange(true);
 			_linePlot.getDomainAxis().setAutoRange(true);
 		}
+	}
+
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException
+	{
+		super.init(site, memento);
+
+		Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
+		Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
+		if (showLineVal != null)
+		{
+			_showLinePlot.setChecked(showLineVal);
+		}
+		if (showDotVal != null)
+		{
+			_showDotPlot.setChecked(showDotVal);
+		}
+	}
+
+	@Override
+	public void saveState(IMemento memento)
+	{
+		super.saveState(memento);
+
+		// remember if we're showing the error plot
+		memento.putBoolean(SHOW_LINE_PLOT, _showLinePlot.isChecked());
+		memento.putBoolean(SHOW_DOT_PLOT, _showDotPlot.isChecked());
+
 	}
 
 }

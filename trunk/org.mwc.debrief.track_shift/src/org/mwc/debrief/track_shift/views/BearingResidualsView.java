@@ -3,6 +3,9 @@ package org.mwc.debrief.track_shift.views;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.ui.IMemento;
+import org.eclipse.ui.IViewSite;
+import org.eclipse.ui.PartInitException;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.mwc.cmap.core.CorePlugin;
 
@@ -11,6 +14,7 @@ public class BearingResidualsView extends BaseStackedDotsView
 	
 
 
+	private static final String SHOW_COURSE = "SHOW_COURSE";
 	private Action showCourse;
 
 	@Override
@@ -52,14 +56,14 @@ public class BearingResidualsView extends BaseStackedDotsView
 		return "Bearing";
 	}
 	
-	protected void updateData()
+	protected void updateData(boolean updateDoublets)
 	{
 		_dotPlot.setDataset(null);
 		_linePlot.setDataset(null);
 		
 		// update the current datasets
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
-				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this);
+				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this, updateDoublets);
 
 		// hide the line for the course dataset (if we're showing the course)
 		DefaultXYItemRenderer lineRend = (DefaultXYItemRenderer) super._linePlot
@@ -79,9 +83,29 @@ public class BearingResidualsView extends BaseStackedDotsView
 	private void processShowCourse()
 	{
 		// ok - redraw the plot we may have changed the course visibility
-		updateStackedDots();
+		updateStackedDots(false);
 		
 		// ok - if we're on auto update, do the update
 		updateLinePlotRanges();
 	}
+
+	@Override
+	public void init(IViewSite site, IMemento memento) throws PartInitException
+	{
+		super.init(site, memento);
+		
+		Boolean doCourse = memento.getBoolean(SHOW_COURSE);
+		if(doCourse != null)
+			showCourse.setChecked(doCourse.booleanValue());
+	}
+
+	@Override
+	public void saveState(IMemento memento)
+	{
+		super.saveState(memento);
+		
+		memento.putBoolean(SHOW_COURSE, showCourse.isChecked());
+	}
+	
+	
 }
