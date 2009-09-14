@@ -31,6 +31,7 @@ import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.ValueMarker;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.DefaultXYItemRenderer;
 import org.jfree.data.Range;
@@ -213,7 +214,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	 * @return the chart, in it's own panel
 	 */
 	@SuppressWarnings("deprecation")
-	private void createStackedPlot(Frame plotControl)
+	protected void createStackedPlot(Frame plotControl)
 	{
 
 		// first create the x (time) axis
@@ -233,6 +234,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		_dotPlot
 				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
+		
+		// now try to do add a zero marker on the error bar
+		_dotPlot.addRangeMarker(new ValueMarker(0.0));
 
 		_linePlot = new XYPlot();
 		NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
