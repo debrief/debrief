@@ -1,0 +1,85 @@
+<project name="headless-build" default="build">
+
+	<!--sets the path of the properties file-->
+	<property file="/Users/ianmayo/dev/cmap_64/org.mwc.debrief.build/build_release_osx.properties" />
+
+	<fileset id="features" dir="../">
+		<include name="org.mwc.cmap.combined.feature/**" />
+		<include name="org.mwc.debrief.combined.feature/**" />
+	</fileset>
+	<fileset id="plugins" dir="../">
+		<exclude name="org.mwc.cmap.combined.feature" />
+		<exclude name="org.mwc.debrief.combined.feature" />
+		<include name="org.mwc.cmap*/**" />
+		<include name="org.mwc.debrief*/**" />
+	</fileset>
+
+	<target name="clean">
+		<delete dir="${buildDirectory}" />
+		<delete dir="${buildDirectory}/../DebriefNG" />
+		<delete dir="${buildDirectory}/../Repository" />
+			<delete file="${buildDirectory}/../DebriefNG.Zip" />
+			<delete file="${buildDirectory}/../Repository.Zip" />
+	</target>
+
+	<target name="init">
+		<mkdir dir="${buildDirectory}" />
+		<mkdir dir="${buildDirectory}/plugins" />
+		<mkdir dir="${buildDirectory}/features" />
+		<copy todir="${buildDirectory}/plugins">
+			<fileset refid="plugins" />
+		</copy>
+		<copy todir="${buildDirectory}/features">
+			<fileset refid="features" />
+		</copy>
+	</target>
+
+
+	<!--
+		This target actually executes the PDE Build process by launching the 
+		Eclipse antRunner application.
+	-->
+	<target name="pde-build">
+		<echo>here we are before:${path2jre}</echo>
+		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
+			<arg value="-application" />
+			<arg value="org.eclipse.ant.core.antRunner" />
+			<arg value="-buildfile" />
+			<arg value="${eclipseLocation}/plugins/org.eclipse.pde.build_${pdeBuildPluginVersion}/scripts/productBuild/productBuild.xml" />
+			<arg value="-Dtimestamp=${timestamp}" />
+			<classpath>
+				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="copy-jre">
+		<copy todir="${buildDirectory}/tmp/${archivePrefix}/jre">
+			<fileset dir="${path2jre}" includes="**" />
+		</copy>
+	</target>
+
+	<target name="move_dist">
+		<move todir="${buildDirectory}/../">
+			<fileset dir="${buildDirectory}/tmp/" includes="**" />
+		</move>
+		<move todir="${buildDirectory}/../Repository">
+			<fileset dir="${buildDirectory}/repository/" includes="**" />
+		</move>
+	</target>
+
+	<target name="zip_dist">
+
+		<zip destFile="${buildDirectory}/../DebriefNG.zip" whenempty="fail" duplicate="fail">
+			<fileset dir="${buildDirectory}/../DebriefNG" />
+		</zip>
+		<zip destFile="${buildDirectory}/../Repository.zip" whenempty="fail" duplicate="fail">
+			<fileset dir="${buildDirectory}/../Repository" />
+		</zip>
+	</target>
+
+
+	<!--This target defines the run-order of the targets-->
+	<target name="build" depends="clean, init, pde-build, copy-jre, move_dist, zip_dist" />
+
+</project>
