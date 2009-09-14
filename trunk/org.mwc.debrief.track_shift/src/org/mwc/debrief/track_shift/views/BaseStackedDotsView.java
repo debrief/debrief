@@ -255,10 +255,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_linePlot.getRangeAxis().setAutoRange(true);
 
 		_combined = new CombinedDomainXYPlot(xAxis);
-		
-	  _combined.add(_linePlot);
-  	_combined.add(_dotPlot);
-		
+
+		_combined.add(_linePlot);
+		_combined.add(_dotPlot);
+
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
 
 		// put the plot into a chart
@@ -274,11 +274,11 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// and insert into the panel
 		plotControl.add(plotHolder, BorderLayout.CENTER);
-		
+
 		// do a little tidying to reflect the memento settings
-		if(!_showLinePlot.isChecked())
+		if (!_showLinePlot.isChecked())
 			_combined.remove(_linePlot);
-		if(!_showDotPlot.isChecked() && _showLinePlot.isChecked())
+		if (!_showDotPlot.isChecked() && _showLinePlot.isChecked())
 			_combined.remove(_dotPlot);
 	}
 
@@ -736,15 +736,19 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	{
 		super.init(site, memento);
 
-		Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
-		Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
-		if (showLineVal != null)
+		if (memento != null)
 		{
-			_showLinePlot.setChecked(showLineVal);
-		}
-		if (showDotVal != null)
-		{
-			_showDotPlot.setChecked(showDotVal);
+
+			Boolean showLineVal = memento.getBoolean(SHOW_LINE_PLOT);
+			Boolean showDotVal = memento.getBoolean(SHOW_DOT_PLOT);
+			if (showLineVal != null)
+			{
+				_showLinePlot.setChecked(showLineVal);
+			}
+			if (showDotVal != null)
+			{
+				_showDotPlot.setChecked(showDotVal);
+			}
 		}
 	}
 

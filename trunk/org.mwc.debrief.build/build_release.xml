@@ -1,7 +1,7 @@
 <project name="headless-build" default="build">
 
 	<!--sets the path of the properties file-->
-	<property file="C:/dev/cmap_35/org.mwc.debrief.build/build_release.properties" />
+	<property file="C:/dev/cmap4/org.mwc.debrief.build/build_release.properties" />
 
 	<fileset id="features" dir="../">
 		<include name="org.mwc.cmap.combined.feature/**" />
