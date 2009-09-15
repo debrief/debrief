@@ -58,9 +58,6 @@ public class BearingResidualsView extends BaseStackedDotsView
 
 	protected void updateData(boolean updateDoublets)
 	{
-		_dotPlot.setDataset(null);
-		_linePlot.setDataset(null);
-
 		// update the current datasets
 		_myHelper.updateBearingData(_dotPlot, _linePlot, _theTrackDataListener,
 				_onlyVisible.isChecked(), showCourse.isChecked(), _holder, this,
