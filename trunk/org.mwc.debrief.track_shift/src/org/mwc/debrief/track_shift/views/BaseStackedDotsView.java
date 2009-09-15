@@ -27,6 +27,7 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.axis.AxisLocation;
+import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -234,7 +235,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_dotPlot.setRangeAxisLocation(AxisLocation.TOP_OR_LEFT);
 		_dotPlot
 				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
-		
+
 		// now try to do add a zero marker on the error bar
 		_dotPlot.addRangeMarker(new ValueMarker(0.0));
 
@@ -264,6 +265,12 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_combined.add(_dotPlot);
 
 		_combined.setOrientation(PlotOrientation.HORIZONTAL);
+
+		// try to fix the space for the dates (so we're not recalculating them so
+		// often - it was causing a 'memory race' type of thingy)
+		AxisSpace space = new AxisSpace();
+		space.setLeft(50);
+		_combined.setFixedDomainAxisSpace(space);
 
 		// put the plot into a chart
 		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
@@ -488,21 +495,37 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 			}
 		}
 
+		// right, are we updating the range data?
 		if (_autoResize.isChecked())
 		{
 			if (_showDotPlot.isChecked())
 			{
 				_dotPlot.getRangeAxis().setAutoRange(false);
-				_dotPlot.getDomainAxis().setAutoRange(false);
 				_dotPlot.getRangeAxis().setAutoRange(true);
-				_dotPlot.getDomainAxis().setAutoRange(true);
 			}
 			if (_showLinePlot.isChecked())
 			{
 				_linePlot.getRangeAxis().setAutoRange(false);
-				_linePlot.getDomainAxis().setAutoRange(false);
 				_linePlot.getRangeAxis().setAutoRange(true);
+			}
+		}
+
+		// note, we also update the domain axis if we're updating the data in
+		// question
+		if (updateDoublets)
+		{
+			System.out.println("updating domain range");
+			if (_showDotPlot.isChecked())
+			{
+				_dotPlot.getDomainAxis().setAutoRange(false);
+				_dotPlot.getDomainAxis().setAutoRange(true);
+				_dotPlot.getDomainAxis().setAutoRange(false);
+			}
+			if (_showLinePlot.isChecked())
+			{
+				_linePlot.getDomainAxis().setAutoRange(false);
 				_linePlot.getDomainAxis().setAutoRange(true);
+				_linePlot.getDomainAxis().setAutoRange(false);
 			}
 		}
 	}

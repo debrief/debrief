@@ -240,13 +240,14 @@ public final class StackedDotHelper
 						.getHost().getCourse());
 				final HiResDate currentTime = thisD.getDTG();
 				final Color hostColor = thisD.getHost().getColor();
-
+				final FixedMillisecond thisMilli = new FixedMillisecond(currentTime.getDate().getTime());
+				
 				final ColouredDataItem mBearing = new ColouredDataItem(
-						new FixedMillisecond(currentTime.getDate().getTime()),
+						thisMilli,
 						measuredBearing, thisColor, false, null);
 
 				final ColouredDataItem crseBearing = new ColouredDataItem(
-						new FixedMillisecond(currentTime.getDate().getTime()),
+						thisMilli,
 						ownshipCourse, hostColor, true, null);
 
 				// and add them to the series
@@ -256,7 +257,7 @@ public final class StackedDotHelper
 				if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
 				{
 					final ColouredDataItem amBearing = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()),
+							thisMilli,
 							ambigBearing, thisColor, false, null);
 					ambigValues.add(amBearing);
 				}
@@ -270,11 +271,11 @@ public final class StackedDotHelper
 					final double thisError = thisD.calculateBearingError(measuredBearing,
 							calculatedBearing);
 					final ColouredDataItem newError = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()), thisError,
+							thisMilli, thisError,
 							thisColor, false, null);
 
 					final ColouredDataItem cBearing = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()),
+							thisMilli,
 							calculatedBearing, calcColor, true, null);
 
 					errorValues.add(newError);
@@ -490,9 +491,10 @@ public final class StackedDotHelper
 				final Color thisColor = thisD.getColor();
 				final double measuredFreq = thisD.getMeasuredFrequency();
 				final HiResDate currentTime = thisD.getDTG();
-
+				final FixedMillisecond thisMilli = new FixedMillisecond(currentTime.getDate().getTime());
+				
 				final ColouredDataItem mFreq = new ColouredDataItem(
-						new FixedMillisecond(currentTime.getDate().getTime()),
+						thisMilli,
 						measuredFreq, thisColor, false, null);
 
 				// final ColouredDataItem corrFreq = new ColouredDataItem(
@@ -508,7 +510,7 @@ public final class StackedDotHelper
 					final Color calcColor = thisD.getTarget().getColor();
 
 					final ColouredDataItem corrFreq = new ColouredDataItem(
-							new FixedMillisecond(currentTime.getDate().getTime()),
+							thisMilli,
 							correctedFreq, thisColor, true, null);
 
 					// did we get a base frequency? We may have a track
@@ -519,13 +521,13 @@ public final class StackedDotHelper
 						final double thisError = thisD.calculateFreqError(measuredFreq,
 								predictedFreq);
 						final ColouredDataItem bFreq = new ColouredDataItem(
-								new FixedMillisecond(currentTime.getDate().getTime()),
+								thisMilli,
 								baseFreq, thisColor, true, null);
 						final ColouredDataItem pFreq = new ColouredDataItem(
-								new FixedMillisecond(currentTime.getDate().getTime()),
+								thisMilli,
 								predictedFreq, calcColor, false, null);
 						final ColouredDataItem eFreq = new ColouredDataItem(
-								new FixedMillisecond(currentTime.getDate().getTime()),
+								thisMilli,
 								thisError, thisColor, false, null);
 						baseValues.add(bFreq);
 						predictedValues.add(pFreq);
