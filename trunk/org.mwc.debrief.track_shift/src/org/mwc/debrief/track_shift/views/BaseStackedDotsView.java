@@ -27,7 +27,6 @@ import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.LegendItemSource;
 import org.jfree.chart.axis.AxisLocation;
-import org.jfree.chart.axis.AxisSpace;
 import org.jfree.chart.axis.DateAxis;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.CombinedDomainXYPlot;
@@ -222,7 +221,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		SimpleDateFormat _df = new SimpleDateFormat("HHmm:ss");
 		_df.setTimeZone(TimeZone.getTimeZone("GMT"));
 
-		final DateAxis xAxis = new DateAxis("");
+		final DateAxis xAxis = new CachedTickDateAxis("");
 		xAxis.setDateFormatOverride(_df);
 
 		xAxis.setStandardTickUnits(DateAxisEditor
@@ -268,9 +267,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// try to fix the space for the dates (so we're not recalculating them so
 		// often - it was causing a 'memory race' type of thingy)
-		AxisSpace space = new AxisSpace();
-		space.setLeft(50);
-		_combined.setFixedDomainAxisSpace(space);
+//		AxisSpace space = new AxisSpace();
+//		space.setLeft(50);
+//		_combined.setFixedDomainAxisSpace(space);
 
 		// put the plot into a chart
 		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
@@ -299,7 +298,6 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	@Override
 	public void dispose()
 	{
-		System.out.println("disposing of stacked dots");
 		// get parent to ditch itself
 		super.dispose();
 
@@ -514,7 +512,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		// question
 		if (updateDoublets)
 		{
-			System.out.println("updating domain range");
+			// trigger recalculation of date axis ticks
+			CachedTickDateAxis date =  (CachedTickDateAxis) _combined.getDomainAxis();
+			date.clearTicks();
+			
 			if (_showDotPlot.isChecked())
 			{
 				_dotPlot.getDomainAxis().setAutoRange(false);
