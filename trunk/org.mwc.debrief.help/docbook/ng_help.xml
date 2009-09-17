@@ -4249,7 +4249,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         track). If your data contains frequency data then you can open the <guilabel
                             >Frequency Residuals</guilabel> view, which display actual, and
                         calculated frequencies (based on the selected solution). Read more about the
-                        frequency algorithms in  <xref linkend="freq_alg"/></para>
+                        frequency algorithms in <xref linkend="freq_alg"/></para>
                     <para>Once the plot is in 'Drag track segment' mode a series of track-dragging
                         modes are enabled - with the current mode selected via the control buttons
                         on the Stacked Dots plot. The control buttons provide the following
@@ -4773,6 +4773,34 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         for new users. It contains current work projects together with a large
                         volume of metadata representing change history, screen layout and user
                         preferences.</para>
+                </sect2>
+                <sect2 id="mulit_user">
+                    <title>Multi-user Debrief installation</title>
+                    <para>The conventional way of installing Debrief is for each user to have their
+                        own copy, maintaining their own sets of plugins and updates (as above).
+                        There is an alternate installation scenario, however - for all users to
+                        share a common Debrief installation. An advantage of this scenario is that
+                        software updates only need to be performed once, at the central location.
+                        By default, however, shared installations are troublesome for Debrief -
+                        since all users will be looking at a single set of settings - so
+                        administrator participation is necessary. The following guidance is taken
+                        from the Eclipse online help at <ulink
+                            url="http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/misc/multi_user_installs.html"
+                        /></para>
+                    <para>In this scenario, a single install area is shared by many users. The
+                        "configuration" directory under the install area is home only to the
+                        config.ini as shipped with the product (it is not initialized). Every user
+                        has their own local standalone configuration location.</para>
+                    <para> The set up for this scenario requires making the install area read-only
+                        for regular users. When users start Eclipse, this causes the configuration
+                        area to automatically default to a directory under the user home dir. If
+                        this measure is not taken, all users will end up using the same location for
+                        their configuration area, which is not supported.</para>
+                    <para>In summary, a system administrator must make the Debrief <filename
+                            >configuration</filename> directory read only for network users.  Thus,
+                        when they login, Debrief will look in their login folder for a configuration
+                        folder.  If there's one there it will read it and user that users' custom
+                        settings.  If there isn't one there, then it will create one. </para>
                 </sect2>
                 <sect2 id="CentralUpdates">
                     <title>Centralised software updates</title>
