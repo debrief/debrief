@@ -3,7 +3,7 @@
 <plugin
    id="org.mwc.debrief.core"
    name="Debrief Core"
-   version="1.0.72"
+   version="1.0.73"
    provider-name="MWC"
    class="org.mwc.debrief.core.DebriefPlugin">
 
@@ -352,7 +352,7 @@
          <action
                class="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
                icon="icons/auto_layer.gif"
-               id="org.mwc.debrief.core.creators.shapes.InsertLine"
+               id="org.mwc.debrief.core.creators.shapes.AutoSelectTarget"
                label="&amp;Manually select target layer"
                menubarPath="org.mwc.debrief.core.EditorShapes/shapes"
                state="true"
