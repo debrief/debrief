@@ -19,13 +19,11 @@ abstract public class UserControlHandler extends CoreDecisionHandler
   private final static String DEPTH = "Depth";
   private final static String SPEED = "Speed";
   private final static String COURSE = "Course";
-  private final static String ACTIVE = "Active";
 
 
   double _speed;
   double _course;
   double _depth;
-  boolean _isActive = true;
 
 
   public UserControlHandler()
@@ -53,13 +51,7 @@ abstract public class UserControlHandler extends CoreDecisionHandler
         _course = val;
       }
     });
-    addAttributeHandler(new HandleBooleanAttribute(ACTIVE)
-    {
-      public void setValue(String name, final boolean val)
-      {
-        _isActive = val;
-      }
-    });
+
   }
 
 
@@ -69,7 +61,6 @@ abstract public class UserControlHandler extends CoreDecisionHandler
 
     super.setAttributes(ev);
 
-    ev.setActive(_isActive);
     // finally output it
     setModel(ev);
   }
@@ -93,7 +84,6 @@ abstract public class UserControlHandler extends CoreDecisionHandler
     thisPart.setAttribute(DEPTH, writeThis(bb.getDepth()));
     thisPart.setAttribute(SPEED, writeThis(bb.getSpeed()));
     thisPart.setAttribute(COURSE, writeThis(bb.getCourse()));
-    thisPart.setAttribute(ACTIVE, writeThis(bb.isActive()));
 
     parent.appendChild(thisPart);
 
