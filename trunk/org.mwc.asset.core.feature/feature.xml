@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.asset.core.feature"
       label="Feature Feature"
-      version="1.0.0">
+      version="1.0.1">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -36,6 +36,46 @@
 
    <plugin
          id="org.mwc.cmap.static_resources"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.ScenarioController2"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.ScenarioPlotter"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.SensorMonitor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.VesselMonitor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.mwc.asset.help"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="org.mwc.asset.sample_data"
          download-size="0"
          install-size="0"
          version="0.0.0"
