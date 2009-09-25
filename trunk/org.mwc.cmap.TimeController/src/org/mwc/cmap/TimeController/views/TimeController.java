@@ -1324,6 +1324,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// tell the parent that some buttons have changed, and that it probably
 		// wants to do a re-layout
 		_btnPanel.pack(true);
+		
+		// sort out the dropdowns
+		populateDropDownList(null);
+		
 	}
 
 	/**
@@ -1813,19 +1817,24 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// create a host for when we're populating the properties window
 		final ISelectionProvider provider = this;
 
-		// ok - add the painter selectors/editors
-		createPainterOptions(myLayerPainterManager, menuManager, toolManager,
-				provider);
+		// right, do we have something with editable layer details?
+		if (myLayerPainterManager != null)
+		{
 
-		// ok, let's have a separator
-		toolManager.add(new Separator());
+			// ok - add the painter selectors/editors
+			createPainterOptions(myLayerPainterManager, menuManager, toolManager,
+					provider);
 
-		// now add the highlighter options/editors
-		createHighlighterOptions(myLayerPainterManager, menuManager, provider);
+			// ok, let's have a separator
+			toolManager.add(new Separator());
 
-		// and another separator
-		menuManager.add(new Separator());
+			// now add the highlighter options/editors
+			createHighlighterOptions(myLayerPainterManager, menuManager, provider);
 
+			// and another separator
+			menuManager.add(new Separator());
+		}
+		
 		// add the list of DTG formats for the DTG slider
 		addDateFormats(menuManager);
 
