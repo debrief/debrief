@@ -19,72 +19,6 @@
 	<property name="helpDest" value="${helpDir}/html/legacy" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
-	<target name="_log1_produce" description="produce the cvs change logs">
-
-		<!-- clear the output directory -->
-		<delete dir="${buildSVNLogDir}" />
-
-		<!-- create the output directory if we have to -->
-		<mkdir dir="${buildSVNLogDir}" />
-		<mkdir dir="${buildSVNLogDir}/statcvs" />
-
-		<!-- produce the CVS log -->
-		<echo message="about to log:${sourceDir}" />
-
-		<tstamp>
-			<format property="statsvn.start" pattern="yyyy-MM-dd" />
-		</tstamp>
-		<tstamp>
-			<format property="statsvn.stop"
-			        pattern="yyyy-MM-dd"
-			        offset="-60"
-			        unit="day" />
-		</tstamp>
-
-		<exec executable="svn"
-		      dir="${sourceDir}"
-		      output="../deploy/cvs/statcvs.xml">
-			<arg line="log" />
-			<arg line="-v" />
-			<arg line="--xml" />
-			<arg line="-r {${statsvn.start}}:{${statsvn.stop}}" />
-		</exec>
-
-	</target>
-
-	<target name="_log2_format" description="use the stylesheet tidier">
-		<antcall target="_svn_stat_formatter">
-			<param name="svn_stat_outputDir"
-			       value="${buildSVNLogDir}/statcvs/short" />
-			<param name="svn_stat_stylesheet"
-			       value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
-			<param name="svn_stat_outputTitle"
-			       value="Abbreviated change statistics" />
-		</antcall>
-
-<!--		<antcall target="_svn_stat_formatter">
-			<param name="svn_stat_outputDir"
-			       value="${buildSVNLogDir}/statcvs/long" />
-			<param name="svn_stat_stylesheet"
-			       value="../org.mwc.cmap.installer/statcvs_template/suite.xml" />
-			<param name="svn_stat_outputTitle"
-			       value="ASSET change statistics" />
-		</antcall> -->
-	</target>
-
-	<target name="_log3_copy"
-	        description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
-		<copy todir="..\org.mwc.asset.help\html\history">
-			<fileset dir="${buildSVNLogDir}" />
-		</copy>
-	</target>
-
-	<target name="cvs_log" description="do the steps to produce a cvs log">
-		<antcall target="_log1_produce" />
-		<antcall target="_log2_format" />
-		<antcall target="_log3_copy" />
-	</target>
-
 	<target name="clear_output" description="ditch the existing output files">
 		<delete dir="${helpDest}" />
 	</target>
@@ -144,12 +78,8 @@
 		      todir="${helpDest}"
 		      preservelastmodified="yes" />
 
-		<!-- try to insert our additional section content -->
-		<echo message="Inserting history" />
-		<antcall target="insert_history_link" />
-
-		<!-- lastly, do the pdf stage -->
-		<antcall target="docbook_to_pdf"></antcall>
+		<!-- lastly, do the pdf stage-->
+		<antcall target="docbook_to_pdf"></antcall> 
 		
 	</target>
 
@@ -157,19 +87,19 @@
 	<target name="docbook_to_pdf"  description="Generate html from docbook">
 
 		<property name="fopVersion"
-		          value="fop-0.94"
+		          value="fop-0.95"
 		          description="the current version of FOP" />
 		<property name="fopDir"
 		          value="${rootDir}/contribs/${fopVersion}"
 		          description="where the fop libraries are located" />
 		<property name="docName"
 		          value="AssetNG.pdf"
-		          description="The ASSET document file" />
+		          description="The ASSET documentation file" />
 		<property name="xml.dir"
 		          value="docbook"
 		          description="where our docbook sources are" />
 		
-		<property name="pdfDestination" value="../org.mwc.asset.help.feature/root_installs"/>
+		<property name="pdfDestination" value="../org.mwc.cmap.combined.feature/root_installs"/>
 		<echo message="Ditching old pdf"/>
 		<delete file="${pdfDestination}/${docName}"/>
 
@@ -193,9 +123,9 @@
 			<classpath>
 				<pathelement location="${fopDir}/build/fop.jar" />
 				<pathelement location="${fopDir}/lib/avalon-framework-4.2.0.jar" />
-				<pathelement location="${fopDir}/lib/batik-all-1.6.jar" />
+				<pathelement location="${fopDir}/lib/batik-all-1.7.jar" />
 				<pathelement location="${fopDir}/lib/commons-logging-1.0.4.jar" />
-				<pathelement location="${fopDir}/lib/xmlgraphics-commons-1.2.jar" />
+				<pathelement location="${fopDir}/lib/xmlgraphics-commons-1.3.1.jar" />
 				<pathelement location="${fopDir}/lib/commons-io-1.3.1.jar" />
 			</classpath>
 		</taskdef>
@@ -212,49 +142,4 @@
 		<move file="docbook/AssetNG.pdf" todir="${pdfDestination}" failonerror="true" />
  	</target>
 
-	<!-- now, how do we tie the two together? -->
-	<target name="insert_history_link">
-		<property name="dupFile" value="${helpDest}/toc2.xml" />
-
-		<!-- make sure the target file is gone -->
-		<delete file="${dupFile}" />
-
-		<!-- create a fresh copy -->
-		<copy file="${helpDest}\toc.xml" tofile="${dupFile}" />
-
-		<!-- try the change -->
-		<replace file="${dupFile}">
-			<replacetoken>label="Getting started"</replacetoken>
-			<replacevalue>label="Short History" href="html/history/statcvs/short/index.html"/&gt;
-			  	&lt;topic label="Verbose History" href="html/history/statcvs/long/index.html"/&gt;
-			  	&lt;topic label="Getting started" </replacevalue>
-		</replace>
-
-	</target>
-
-	<!--
-	######################################################################################
-	##	utility tasks
-	######################################################################################
-	  -->
-
-	<target name="_svn_stat_formatter" description="use the stylesheet tidier">
-		<!-- ok, delete the output directory -->
-		<delete dir="${svn_stat_outputDir}" />
-
-		<!-- and create it afresh -->
-		<mkdir dir="${svn_stat_outputDir}" />
-
-		<!-- and produce the output -->
-		<java dir="${sourceDir}"
-		      jar="${contribDir}/statsvn-0.3.1/statsvn.jar"
-		      fork="true">
-			<env key="LANG" value="en_US" />
-			<jvmarg line="-mx256m" />
-			<arg line="	-output-dir ${svn_stat_outputDir}
-					-title 'ASSET NG Source listing' 
-					deploy/cvs/statcvs.xml 
-				    ${rootDir}" />
-		</java>
-	</target>
 </project>
