@@ -964,7 +964,7 @@
 			 model algorithms - but other sections may be added where applicable.</para>
         <table frame="sides">
           <title>Template for model algorithm authors</title>
-          <tgroup cols="2">
+          <tgroup cols="3">
             <colspec colname="col01" colnum="1" colwidth="1.30*"/>
             <colspec colname="col1" colnum="2" colwidth="1.5*"/>
             <colspec colname="col2" colnum="3" colwidth="1.5*"/>
