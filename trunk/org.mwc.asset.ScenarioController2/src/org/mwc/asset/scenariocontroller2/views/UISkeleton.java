@@ -1,6 +1,8 @@
 package org.mwc.asset.scenariocontroller2.views;
+import org.eclipse.jface.viewers.TableViewer;
 
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.StackLayout;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.layout.FillLayout;
@@ -11,6 +13,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.layout.RowData;
 import org.eclipse.swt.layout.RowLayout;
+import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
@@ -35,6 +38,8 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	private Label scenarioLbl;
 	private Label controlLabel;
 	private Label singleStatLabel;
+	private Button runBtn;
+	private Button doGenerateButton;
 	private Composite composite1;
 	private Label singleStatVal;
 	private TabItem multipleTab;
@@ -42,6 +47,9 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	private TabFolder scenarioTabs;
 	private Label controlVal;
 	private Label scenarioVal;
+	private TableViewer multiScenTable;
+	private Composite composite2;
+	private Composite multiRunBtnHolder;
 
 	/**
 	* Auto-generated main method to display this 
@@ -166,6 +174,39 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 				{
 					multipleTab = new TabItem(scenarioTabs, SWT.NONE);
 					multipleTab.setText("Multiple Scenarios");
+					{
+						composite2 = new Composite(scenarioTabs, SWT.NONE);
+						GridLayout composite2Layout = new GridLayout();
+						composite2Layout.makeColumnsEqualWidth = true;
+						composite2.setLayout(composite2Layout);
+						multipleTab.setControl(composite2);
+						{
+							multiRunBtnHolder = new Composite(composite2, SWT.NONE);
+							RowLayout multiRunBtnHolderLayout = new RowLayout(org.eclipse.swt.SWT.HORIZONTAL);
+							multiRunBtnHolderLayout.fill = true;
+							GridData multiRunBtnHolderLData = new GridData();
+							multiRunBtnHolderLData.grabExcessHorizontalSpace = true;
+							multiRunBtnHolder.setLayoutData(multiRunBtnHolderLData);
+							multiRunBtnHolder.setLayout(multiRunBtnHolderLayout);
+							{
+								doGenerateButton = new Button(multiRunBtnHolder, SWT.PUSH | SWT.CENTER);
+								doGenerateButton.setText("Generate");
+							}
+							{
+								runBtn = new Button(multiRunBtnHolder, SWT.PUSH | SWT.CENTER);
+								runBtn.setText("Run");
+							}
+						}
+						{
+							multiScenTable = new TableViewer(composite2, SWT.NONE);
+							multiScenTable.getTable().setItemCount(3);
+							GridData multiScenTableLData = new GridData();
+							multiScenTableLData.grabExcessHorizontalSpace = true;
+							multiScenTableLData.grabExcessVerticalSpace = true;
+							multiScenTable.getControl().setLayoutData(multiScenTableLData);
+							multiScenTable.getTable().setHeaderVisible(true);
+						}
+					}
 				}
 				FormData scenarioTabsLData = new FormData();
 				scenarioTabsLData.width = 204;
@@ -201,6 +242,18 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	
 	public Label getSingleScenarioStatus() {
 		return singleStatVal;
+	}
+	
+	public TableViewer getMultiScenTable() {
+		return multiScenTable;
+	}
+	
+	public Button getDoGenerateButton() {
+		return doGenerateButton;
+	}
+	
+	public Button getRunBtn() {
+		return runBtn;
 	}
 
 }

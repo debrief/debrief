@@ -20,7 +20,7 @@ import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.asset.core.ASSETPlugin;
-import org.mwc.asset.scenariocontroller2.views.ScenarioController;
+import org.mwc.asset.scenariocontroller2.views.ScenarioControllerView;
 import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
@@ -341,7 +341,7 @@ public class ASSETPlotEditor extends EditorPart implements
 		}
 		else
 		{
-			ScenarioController cont = (ScenarioController) timeRef.getPart(true);
+			ScenarioControllerView cont = (ScenarioControllerView) timeRef.getPart(true);
 			
 			// extract the path
 			String thePath = null;

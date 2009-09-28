@@ -35,6 +35,8 @@ import org.eclipse.swt.dnd.DropTargetEvent;
 import org.eclipse.swt.dnd.DropTargetListener;
 import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -115,7 +117,6 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 	private ScenarioWrapper _scenarioWrapper;
 	private Vector<ScenarioObserver> _theObservers;
 	private SteppableTime _steppableTime;
-
 	/**
 	 * The constructor.
 	 */
@@ -244,6 +245,47 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 
 		// declare fact that we can provide selections
 		getSite().setSelectionProvider(this);
+		
+		// now listen to the UI buttons
+		_myUI.getDoGenerateButton().addSelectionListener(new SelectionListener(){
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				// ok, do the gen
+				doGenerateOperation();
+			}});
+		
+		_myUI.getRunBtn().addSelectionListener(new SelectionListener(){
+
+			@Override
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				doRunOperation();
+			}});
+	
+	}
+
+
+	protected void doRunOperation()
+	{
+		// TODO finish off the run bits
+		System.out.println("doing run");
+	}
+
+	protected void doGenerateOperation()
+	{
+		// TODO finish off the genny bits
+		System.out.println("doing gen");
+		_myUI.getRunBtn().setEnabled(true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -412,7 +454,6 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 					}
 					catch (Exception e)
 					{
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 				}
@@ -515,7 +556,7 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 			}
 
 			// check if it's multi scenario..
-			boolean isMulti = CommandLine.checkIfGenerationRequired(controlFile);
+			final boolean isMulti = CommandLine.checkIfGenerationRequired(controlFile);
 			final int tgtIndex = (isMulti) ? 1 : 0;
 
 			// ui update, put it in an async operation
@@ -525,7 +566,11 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 			{
 				public void run()
 				{
+					// show the correct tab
 					_myUI.getScenarioTabs().setSelection(tgtIndex);
+					
+					// and update that tab
+					updateControllerTab(isMulti);
 
 					// and tell everybody
 					fireControllerChanged();
@@ -537,6 +582,36 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 		{
 			e.printStackTrace();
 		}
+	}
+
+	/** ok, controller is loaded. go for it.
+	 * 
+	 * @param isMulti is this is a multi-scenario run
+	 */
+	protected void updateControllerTab(boolean isMulti)
+	{
+		if(isMulti)
+			updateMultiTab();
+		else
+			updateSingleTab();
+	}
+
+	private void updateSingleTab()
+	{
+		// TODO Auto-generated method stub
+		
+	}
+
+	private void updateMultiTab()
+	{
+		// clear the table
+		_myUI.getMultiScenTable().getTable().setData(null);
+		
+		// ok, disable the run button, 
+		_myUI.getRunBtn().setEnabled(false);
+		
+		// and now enable the genny button
+		_myUI.getDoGenerateButton().setEnabled(true);
 	}
 
 	private IProject getAProject()
