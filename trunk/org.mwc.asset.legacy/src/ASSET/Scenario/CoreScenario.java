@@ -379,7 +379,8 @@ public class CoreScenario implements ScenarioType
     // reset the listeners
     if (_participantListeners != null)
     {
-      final Iterator<ParticipantsChangedListener> it = _participantListeners.iterator();
+      Vector<ParticipantsChangedListener> tmpList = new Vector<ParticipantsChangedListener>(_participantListeners);
+      final Iterator<ParticipantsChangedListener> it = tmpList.iterator();
       while (it.hasNext())
       {
         final ParticipantsChangedListener pcl =  it.next();

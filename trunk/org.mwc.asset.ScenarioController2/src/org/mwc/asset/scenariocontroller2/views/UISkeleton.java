@@ -141,22 +141,23 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 					singleTab.setText("Single Scenario");
 					{
 						composite1 = new Composite(scenarioTabs, SWT.NONE);
-						RowLayout composite1Layout = new RowLayout(org.eclipse.swt.SWT.HORIZONTAL);
-						composite1Layout.center = true;
-						composite1Layout.fill = true;
-						composite1Layout.wrap = false;
+						GridLayout composite1Layout = new GridLayout();
+						composite1Layout.makeColumnsEqualWidth = true;
+						composite1Layout.numColumns = 2;
 						composite1.setLayout(composite1Layout);
 						singleTab.setControl(composite1);
 						{
 							singleStatLabel = new Label(composite1, SWT.NONE);
 							singleStatLabel.setText("Status:");
+							GridData singleStatLabelLData = new GridData();
+							singleStatLabel.setLayoutData(singleStatLabelLData);
 							singleStatLabel.setAlignment(SWT.RIGHT);
 						}
 						{
-							singleStatVal = new Label(composite1, SWT.NONE);
-							RowData singleStatValLData = new RowData();
-							singleStatValLData.width = 160;
-							singleStatValLData.height = 13;
+							singleStatVal = new Label(composite1, SWT.WRAP);
+							GridData singleStatValLData = new GridData();
+							singleStatValLData.horizontalAlignment = GridData.FILL;
+							singleStatValLData.grabExcessHorizontalSpace = true;
 							singleStatVal.setLayoutData(singleStatValLData);
 							singleStatVal.setText("[pending]");
 						}

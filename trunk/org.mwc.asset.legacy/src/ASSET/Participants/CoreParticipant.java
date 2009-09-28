@@ -157,8 +157,13 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			final DemandedStatus demStatus, final String name)
 	{
 		_myId = id;
-		_myInitialStatus = _myStatus = status;
-		_myInitialDemandedStatus = _myDemandedStatus = demStatus;
+		_myStatus = status;
+		_myDemandedStatus = demStatus;
+		if (_myStatus != null)
+			_myInitialStatus = new Status(_myStatus);
+		if (_myDemandedStatus != null)
+			_myInitialDemandedStatus = DemandedStatus.copy(_myDemandedStatus
+					.getTime(), _myDemandedStatus);
 		_movement = new ASSET.Models.Movement.CoreMovement();
 		_myName = name;
 		_myNewDetections = new DetectionList();
@@ -221,7 +226,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 		// do we have a demanded status? We may not do in the first step
 		if (_myDemandedStatus == null)
-			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(), _myStatus);
+			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(),
+					_myStatus);
 
 		final DemandedStatus oldDemStatus = _myDemandedStatus;
 
@@ -235,14 +241,16 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			if (_myDemandedStatus != null)
 				copyDemStatus = DemandedStatus.copy(newTime, _myDemandedStatus);
 
-			_myDemandedStatus = _decisionModel.decide(_myStatus, this.getMovementChars(),
-					copyDemStatus, _myNewDetections, scenario, newTime);
+			_myDemandedStatus = _decisionModel.decide(_myStatus, this
+					.getMovementChars(), copyDemStatus, _myNewDetections, scenario,
+					newTime);
 		}
 
 		// if we haven't got a way ahead, continue in steady state
 		if (_myDemandedStatus == null)
 		{
-			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(), _myStatus);
+			_myDemandedStatus = new SimpleDemandedStatus(_myStatus.getTime(),
+					_myStatus);
 			_myActivity = INACTIVE_DESCRIPTOR;
 		}
 		else
@@ -254,7 +262,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		}
 
 		// and fire the update
-		if ((oldDemStatus != _myDemandedStatus) || (!_myActivity.equals(_myLastActivity)))
+		if ((oldDemStatus != _myDemandedStatus)
+				|| (!_myActivity.equals(_myLastActivity)))
 			fireDecided(_myActivity, _myDemandedStatus);
 
 		_myLastActivity = _myActivity;
@@ -267,8 +276,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		// do detection cycle
 		if (_mySensors != null)
-			_mySensors.detects(scenario.getEnvironment(), _myNewDetections, this, scenario,
-					newTime);
+			_mySensors.detects(scenario.getEnvironment(), _myNewDetections, this,
+					scenario, newTime);
 
 		// get detections from any remote sensors (sonar buoy, weapon in the water,
 		// ..)
@@ -324,7 +333,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			// do we have any demanded sensor states?
 			if (_myDemandedStatus != null)
 			{
-				Vector<DemandedSensorStatus> theStates = _myDemandedStatus.getSensorStates();
+				Vector<DemandedSensorStatus> theStates = _myDemandedStatus
+						.getSensorStates();
 				if (theStates != null)
 				{
 					if (theStates.size() > 0)
@@ -333,13 +343,12 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 						// yes, work through them
 						for (int i = 0; i < theStates.size(); i++)
 						{
-							DemandedSensorStatus sensorStatus = (DemandedSensorStatus) theStates
-									.elementAt(i);
+							DemandedSensorStatus sensorStatus = theStates.elementAt(i);
 
 							// and inform each sensor
 							while (theSensors.hasNext())
 							{
-								SensorType thisSensor = (SensorType) theSensors.next();
+								SensorType thisSensor = theSensors.next();
 								if (thisSensor.getMedium() == sensorStatus.getMedium())
 								{
 									thisSensor.inform(sensorStatus);
@@ -354,13 +363,14 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			theSensors = getSensorFit().getSensors().iterator();
 			while (theSensors.hasNext())
 			{
-				SensorType sensor = (SensorType) theSensors.next();
+				SensorType sensor = theSensors.next();
 				sensor.update(_myDemandedStatus, _myStatus, newTime);
 			}
 		}
 
 		// do movement itself
-		_myStatus = _movement.step(newTime, _myStatus, _myDemandedStatus, _movementChars);
+		_myStatus = _movement.step(newTime, _myStatus, _myDemandedStatus,
+				_movementChars);
 
 		// do the state update cycle
 		updateStates(newTime);
@@ -470,8 +480,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	public double getRadiatedNoiseFor(final int medium, final double brg_degs)
 	{
-		double vesselRadiated = _radiatedChars.radiatedEnergyFor(medium, getStatus(),
-				brg_degs);
+		double vesselRadiated = _radiatedChars.radiatedEnergyFor(medium,
+				getStatus(), brg_degs);
 		double sensorRadiated = _mySensors.getRadiatedNoiseFor(medium);
 		double res = vesselRadiated + sensorRadiated;
 		return res;
@@ -482,7 +492,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 */
 	public double getSelfNoiseFor(final int medium, final double brg_degs)
 	{
-		double res = getSelfNoise().radiatedEnergyFor(medium, getStatus(), brg_degs);
+		double res = getSelfNoise()
+				.radiatedEnergyFor(medium, getStatus(), brg_degs);
 		return res;
 	}
 
@@ -508,11 +519,13 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	/**
 	 * reset, to go back to the initial state
 	 */
+	@SuppressWarnings("unchecked")
 	public void restart()
 	{
 		// reset the statuses
-		_myStatus = _myInitialStatus;
-		_myDemandedStatus = _myInitialDemandedStatus;
+		_myStatus = new Status(_myInitialStatus);
+		_myDemandedStatus = DemandedStatus.copy(_myStatus.getTime(),
+				_myInitialDemandedStatus);
 
 		// reset the other data
 		_myActivity = "inactive";
@@ -528,30 +541,40 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 		// inform the listeners
 		if (_participantDecidedListeners != null)
 		{
-			final Iterator<ParticipantDecidedListener> it = _participantDecidedListeners.iterator();
+			// work on a copy of the list, in case it gets modified
+			Vector<ParticipantDecidedListener> tmpListeners = (Vector<ParticipantDecidedListener>) _participantDetectedListeners
+					.clone();
+			final Iterator<ParticipantDecidedListener> it = tmpListeners.iterator();
 			while (it.hasNext())
 			{
-				final ParticipantDecidedListener pdl = (ParticipantDecidedListener) it.next();
+				final ParticipantDecidedListener pdl = it.next();
 				pdl.restart();
 			}
 		}
 
 		if (_participantDetectedListeners != null)
 		{
-			final Iterator<ParticipantDetectedListener> it = _participantDetectedListeners.iterator();
+			// work on a copy of the list, in case it gets modified
+			Vector<ParticipantDetectedListener> tmpListeners = (Vector<ParticipantDetectedListener>) _participantDetectedListeners
+					.clone();
+			final Iterator<ParticipantDetectedListener> it = tmpListeners.iterator();
 			while (it.hasNext())
 			{
-				final ParticipantDetectedListener ptl = (ParticipantDetectedListener) it.next();
+				final ParticipantDetectedListener ptl = it.next();
 				ptl.restart();
 			}
 		}
 
 		if (_participantMovedListeners != null)
 		{
-			final Iterator<ParticipantMovedListener> it = _participantMovedListeners.iterator();
+			// work on a copy of the list, in case it gets modified
+			Vector<ParticipantMovedListener> tmpListeners = (Vector<ParticipantMovedListener>) _participantMovedListeners
+					.clone();
+
+			final Iterator<ParticipantMovedListener> it = tmpListeners.iterator();
 			while (it.hasNext())
 			{
-				final ParticipantMovedListener pml = (ParticipantMovedListener) it.next();
+				final ParticipantMovedListener pml = it.next();
 				pml.restart();
 			}
 		}
@@ -584,9 +607,9 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	public int getNumSensors()
 	{
 		int res = 0;
-		if(_mySensors != null)
+		if (_mySensors != null)
 			res = _mySensors.getNumSensors();
-		
+
 		return res;
 	}
 
@@ -741,29 +764,35 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			_participantMovedListeners.remove(list);
 	}
 
-	public void addParticipantDecidedListener(final ParticipantDecidedListener list)
+	public void addParticipantDecidedListener(
+			final ParticipantDecidedListener list)
 	{
 		if (_participantDecidedListeners == null)
-			_participantDecidedListeners = new Vector<ParticipantDecidedListener>(1, 2);
+			_participantDecidedListeners = new Vector<ParticipantDecidedListener>(1,
+					2);
 
 		_participantDecidedListeners.add(list);
 	}
 
-	public void removeParticipantDecidedListener(final ParticipantDecidedListener list)
+	public void removeParticipantDecidedListener(
+			final ParticipantDecidedListener list)
 	{
 		if (_participantDecidedListeners != null)
 			_participantDecidedListeners.remove(list);
 	}
 
-	public void addParticipantDetectedListener(final ParticipantDetectedListener list)
+	public void addParticipantDetectedListener(
+			final ParticipantDetectedListener list)
 	{
 		if (_participantDetectedListeners == null)
-			_participantDetectedListeners = new Vector<ParticipantDetectedListener>(1, 2);
+			_participantDetectedListeners = new Vector<ParticipantDetectedListener>(
+					1, 2);
 
 		_participantDetectedListeners.add(list);
 	}
 
-	public void removeParticipantDetectedListener(final ParticipantDetectedListener list)
+	public void removeParticipantDetectedListener(
+			final ParticipantDetectedListener list)
 	{
 		if (_participantDetectedListeners != null)
 			_participantDetectedListeners.remove(list);
@@ -773,10 +802,11 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		if (_participantMovedListeners != null)
 		{
-			final Iterator<ParticipantMovedListener> it = _participantMovedListeners.iterator();
+			final Iterator<ParticipantMovedListener> it = _participantMovedListeners
+					.iterator();
 			while (it.hasNext())
 			{
-				final ParticipantMovedListener pml = (ParticipantMovedListener) it.next();
+				final ParticipantMovedListener pml = it.next();
 				pml.moved(newStatus);
 			}
 		}
@@ -786,23 +816,26 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	{
 		if (_participantDetectedListeners != null)
 		{
-			final Iterator<ParticipantDetectedListener> it = _participantDetectedListeners.iterator();
+			final Iterator<ParticipantDetectedListener> it = _participantDetectedListeners
+					.iterator();
 			while (it.hasNext())
 			{
-				final ParticipantDetectedListener pml = (ParticipantDetectedListener) it.next();
+				final ParticipantDetectedListener pml = it.next();
 				pml.newDetections(list);
 			}
 		}
 	}
 
-	private void fireDecided(final String decision, final DemandedStatus dem_status)
+	private void fireDecided(final String decision,
+			final DemandedStatus dem_status)
 	{
 		if (_participantDecidedListeners != null)
 		{
-			final Iterator<ParticipantDecidedListener> it = _participantDecidedListeners.iterator();
+			final Iterator<ParticipantDecidedListener> it = _participantDecidedListeners
+					.iterator();
 			while (it.hasNext())
 			{
-				final ParticipantDecidedListener pml = (ParticipantDecidedListener) it.next();
+				final ParticipantDecidedListener pml = it.next();
 				pml.newDecision(decision, dem_status);
 			}
 		}
@@ -877,14 +910,15 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			final ParticipantType part = new CoreParticipant(12);
 			part.setMovementModel(new ASSET.Models.Movement.CoreMovement());
-			part.setMovementChars(new SSMovementCharacteristics("here", 
+			part.setMovementChars(new SSMovementCharacteristics("here",
 					new WorldAcceleration(1, WorldAcceleration.M_sec_sec),
-	         new WorldAcceleration(1, WorldAcceleration.M_sec_sec),
-	         0, new WorldSpeed(20, WorldSpeed.M_sec),
-	         new WorldSpeed(1, WorldSpeed.M_sec), new WorldDistance(200, WorldDistance.METRES),
-	         new WorldSpeed(1, WorldSpeed.M_sec), new WorldSpeed(1, WorldSpeed.M_sec),
-	         new WorldDistance(100, WorldDistance.METRES), new WorldDistance(1, WorldDistance.METRES)));
-			
+					new WorldAcceleration(1, WorldAcceleration.M_sec_sec), 0,
+					new WorldSpeed(20, WorldSpeed.M_sec), new WorldSpeed(1,
+							WorldSpeed.M_sec), new WorldDistance(200, WorldDistance.METRES),
+					new WorldSpeed(1, WorldSpeed.M_sec), new WorldSpeed(1,
+							WorldSpeed.M_sec), new WorldDistance(100, WorldDistance.METRES),
+					new WorldDistance(1, WorldDistance.METRES)));
+
 			// initialise the participant
 			final Status newStat1 = new Status(part.getId(), 0);
 			newStat1.setLocation(new MWC.GenericData.WorldLocation(0.0, 0.0, 0));
@@ -921,7 +955,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 					this.dem_state);
 			assertEquals("new dem state is correct", 45d,
 					((SimpleDemandedStatus) this.dem_status).getCourse(), 0.001);
-			assertEquals("no detections made (no sensors)", null, this.newDetectionList);
+			assertEquals("no detections made (no sensors)", null,
+					this.newDetectionList);
 
 			// make second step
 			part.doDecision(10000, 20000, theScenario);
@@ -932,7 +967,8 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 					this.dem_state);
 			assertEquals("new dem state is correct", 45d,
 					((SimpleDemandedStatus) this.dem_status).getCourse(), 0.001);
-			assertEquals("no detections made (no sensors)", null, this.newDetectionList);
+			assertEquals("no detections made (no sensors)", null,
+					this.newDetectionList);
 
 		}
 	}

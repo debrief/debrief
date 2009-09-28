@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Vector;
 
 import javax.xml.parsers.DocumentBuilder;
@@ -451,7 +452,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			ASSETPlugin.logError(Status.ERROR, "The sample-data plugin isn't loaded",
 					e);
 		}
-
+		
 	}
 
 	private void controllerAssigned(String controlFile)
@@ -579,14 +580,25 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		for (int i = 0; i < theObservers.size(); i++)
 		{
 			// get the next observer
-			ScenarioObserver observer = (ScenarioObserver) theObservers.elementAt(i);
-
-			// setup the observer
-			observer.setup(_myScenario);
+			ScenarioObserver observer = theObservers.elementAt(i);
 
 			// and add it to our list
 			_myObservers.add(observer);
 
+		}
+
+		setupObservers(_myScenario);
+
+
+	}
+
+	private void setupObservers(ScenarioType theScenario)
+	{
+		// and actually setup the observers
+		for (Iterator<ScenarioObserver> iterator = _myObservers.iterator(); iterator.hasNext();)
+		{
+			ScenarioObserver thisO = iterator.next();
+			thisO.setup(theScenario);
 		}
 	}
 
@@ -605,6 +617,9 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 			_myTimeProvider.setTime(this, new HiResDate(time), true);
 		}
 
+		// also, re-initialise the observers
+		setupObservers(_myScenario);
+		
 		// and show the loaded status in the ui
 		setScenarioStatus(_myScenario, "Loaded");
 	}

@@ -150,9 +150,6 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
     {
       _batcher.submitResult(scenario.getName(), scenario.getCaseId(), getBatchResult());
     }
-
-    // ok, all done. Clear our performance data
-    restart();
   }
 
 
