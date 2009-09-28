@@ -12,7 +12,11 @@ package ASSET.Scenario.SuperSearch;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jaxen.dom.DOMXPath;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.input.SAXBuilder;
@@ -62,6 +66,8 @@ public class SuperSearch {
    *
    */
   protected int _startId;
+
+	private XPathFactory _myXpathFactory;
 
   /** the counter for the current id number
    *
@@ -314,9 +320,14 @@ public class SuperSearch {
       final Document doc = builder.build(input);
 
       // get the root of our variables
-      final DOMXPath xpath = new DOMXPath("//SuperSearchControl");
+			if(_myXpathFactory == null)
+  			_myXpathFactory = XPathFactory.newInstance();
+			XPath xp = _myXpathFactory.newXPath();
 
-      final Element el = (Element)xpath.selectSingleNode(doc);
+			// can we find a scenario generator?
+			XPathExpression xp2 = xp.compile("//SuperSearchControl");
+			Element el =  (Element) xp2.evaluate(doc,
+					XPathConstants.NODE);
 
       if(el != null)
       {

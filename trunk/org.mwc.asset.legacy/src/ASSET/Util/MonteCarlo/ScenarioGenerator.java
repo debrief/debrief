@@ -11,8 +11,6 @@ package ASSET.Util.MonteCarlo;
 import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
 import ASSET.Util.XML.ScenarioHandler;
-import org.jaxen.JaxenException;
-import org.jaxen.dom.DOMXPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -28,6 +26,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
 import java.io.*;
 import java.util.Vector;
 
@@ -77,6 +80,8 @@ public final class ScenarioGenerator
 	 */
 	private Integer _theSeed;
 
+	private XPathFactory _myXpathFactory;
+
 	// phrases to indicate where error may have occured
 	public static final String CONTROL_FILE_ERROR = "Control file";
 	public static final String TEMPLATE_FILE_ERROR = "Template file";
@@ -105,12 +110,12 @@ public final class ScenarioGenerator
 	public String createScenarios(String templatePath, String controlPath,
 			Vector<Document> results)
 	{
-		Document var = null;
+		Document theControlFile = null;
 		String res = null;
 
 		try
 		{
-			var = ScenarioGenerator
+			theControlFile = ScenarioGenerator
 					.readDocumentFrom(new FileInputStream(controlPath));
 		}
 		catch (SAXException e)
@@ -128,10 +133,10 @@ public final class ScenarioGenerator
 		{
 
 			// now try to load the scenario
-			Document doc = null;
+			Document theScenarioTemplate = null;
 			try
 			{
-				doc = ScenarioGenerator.readDocumentFrom(new FileInputStream(
+				theScenarioTemplate = ScenarioGenerator.readDocumentFrom(new FileInputStream(
 						templatePath));
 			}
 			catch (SAXException e)
@@ -147,7 +152,7 @@ public final class ScenarioGenerator
 			if (res == null)
 			{
 				// yup, go for it.
-				res = doScenarioGeneration(doc, var, results);
+				res = doScenarioGeneration(theScenarioTemplate, theControlFile, results);
 			}
 
 		}
@@ -369,7 +374,7 @@ public final class ScenarioGenerator
 		}
 		catch (IOException e)
 		{
-			System.out.println("IO Exception occurred!");
+			writeOut("IO Exception occurred!");
 			e.printStackTrace(); // To change body of catch statement use Options |
 														// File Templates.
 		}
@@ -473,28 +478,39 @@ public final class ScenarioGenerator
 
 		try
 		{
+			
+			if(_myXpathFactory == null)
+  			_myXpathFactory = XPathFactory.newInstance();
+			XPath xp = _myXpathFactory.newXPath();
+
 			// can we find a scenario generator?
-			DOMXPath xpath = new DOMXPath("//MultiScenarioGenerator");
-			Element el = (Element) xpath.selectSingleNode(document);
+			XPathExpression xp2 = xp.compile("//MultiScenarioGenerator");
+			Element el =  (Element) xp2.evaluate(document,
+					XPathConstants.NODE);
+						
 			if (el != null)
 			{
 				this._scenarioGenny = new MultiScenarioGenerator(document);
 			}
 
 			// can we find a scenario generator?
-			xpath = new DOMXPath("//MultiParticipantGenerator");
-			el = (Element) xpath.selectSingleNode(document);
+			xp2 = xp.compile("//MultiParticipantGenerator");
+			el =  (Element) xp2.evaluate(document,
+					XPathConstants.NODE);
 			if (el != null)
 			{
 				this._participantGenny = new MultiParticipantGenerator(document);
 			}
 
-			xpath = new DOMXPath("//ScenarioGenerator");
-			el = (Element) xpath.selectSingleNode(document);
+			xp2 = xp.compile("//ScenarioGenerator");
+			el =  (Element) xp2.evaluate(document,
+					XPathConstants.NODE);
 
+			
 			// retrieve our working values
-			xpath = new DOMXPath("//ScenarioController");
-			el = (Element) xpath.selectSingleNode(document);
+			xp2 = xp.compile("//ScenarioController");
+			el =  (Element) xp2.evaluate(document,
+					XPathConstants.NODE);
 
 			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
 
@@ -504,7 +520,7 @@ public final class ScenarioGenerator
 					_theSeed = Integer.valueOf(theSeedStr);
 
 		}
-		catch (JaxenException e)
+		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
@@ -564,8 +580,8 @@ public final class ScenarioGenerator
 		// do we have a scenario generator?
 		if (_scenarioGenny != null)
 		{
-			System.out.println("Generating scenarios");
-			System.out.println("====================");
+			writeOut("Generating scenarios");
+			writeOut("====================");
 
 			_scenarioGenny.setDocument(_targetScenario);
 
@@ -661,6 +677,11 @@ public final class ScenarioGenerator
 		}
 
 		return res;
+	}
+
+	private static void writeOut(String string)
+	{
+		System.out.println(string);
 	}
 
 	// /** validate a single document - convering the document

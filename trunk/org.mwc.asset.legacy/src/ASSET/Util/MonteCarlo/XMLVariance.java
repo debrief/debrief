@@ -8,19 +8,19 @@
  */
 package ASSET.Util.MonteCarlo;
 
-import ASSET.Util.RandomGenerator;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-import org.jaxen.JaxenException;
-import org.jaxen.XPath;
-import org.jaxen.dom.DOMXPath;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
 
-import java.util.Iterator;
-import java.util.List;
+import ASSET.Util.RandomGenerator;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 
 public final class XMLVariance
 {
@@ -32,7 +32,7 @@ public final class XMLVariance
   /**
    * the XPath identifier for this variance
    */
-  private XPath _myPath = null;
+  private XPathExpression _myPath = null;
 
   /**
    * the xpath id we use
@@ -175,8 +175,8 @@ public final class XMLVariance
     try
     {
       // find our object
-      final Element ourObj = (Element) _myPath.selectSingleNode(document);
-
+      final Element ourObj = (Element) _myPath.evaluate(document, XPathConstants.NODE);
+      
       // did we find it?
       if (ourObj != null)
       {
@@ -184,7 +184,7 @@ public final class XMLVariance
         res = _myObject.getCurValueIn(ourObj);
       }
     }
-    catch (org.jaxen.JaxenException je)
+    catch (Exception je)
     {
       throw new java.lang.RuntimeException(je.getMessage());
     }
@@ -194,8 +194,7 @@ public final class XMLVariance
   /**
    * modify the supplied document with our operation
    */
-  @SuppressWarnings("unchecked")
-	public final String permutate(final String parentXPath, final Document document)
+  public final String permutate(final String parentXPath, final Document document)
     throws MatchingException, IllegalExpressionException
   {
 
@@ -213,19 +212,22 @@ public final class XMLVariance
     }
 
     // find our objects
-    List ourObj = null;
+    NodeList ourObj = null;
 
     try
     {
       //
       // right, first create our xpath
       //
-      _myPath = new DOMXPath(theXPath);
-
-      // and now try for any matches
-      ourObj = (List) _myPath.selectNodes(document);
+    	
+			XPathFactory xpf = XPathFactory.newInstance();
+			XPath xp = xpf.newXPath();
+			_myPath = xp.compile(theXPath);
+			ourObj = (NodeList) _myPath.evaluate(document,
+					XPathConstants.NODESET);
+      
     }
-    catch (JaxenException je)
+    catch (Exception je)
     {
       throw new IllegalExpressionException(theXPath, je);
     }
@@ -238,16 +240,15 @@ public final class XMLVariance
 
     if (ourObj != null)
     {
-      if (ourObj.size() > 0)
+      if (ourObj.getLength() > 0)
       {
         // yup, found hime. we don't need to throw the exception now
         foundHim = true;
 
-        // cycle through the matching elements
-        for (Iterator iterator = ourObj.iterator(); iterator.hasNext();)
+        for(int i=0;i<ourObj.getLength();i++)
         {
           // get the next one
-          Element element = (Element) iterator.next();
+          Element element = (Element)ourObj.item(i);
 
           // perform our operation
           resStr += _myObject.execute(element, document);

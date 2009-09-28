@@ -39,7 +39,7 @@ public class XMLChoice implements XMLOperation
    *  constructor
    ***************************************************************/
   @SuppressWarnings("unchecked")
-	public XMLChoice(final org.jdom.Element element)
+	public XMLChoice(final Element element)
   {
     this();
 

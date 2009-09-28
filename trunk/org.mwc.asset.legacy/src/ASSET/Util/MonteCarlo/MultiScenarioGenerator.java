@@ -8,13 +8,30 @@
  */
 package ASSET.Util.MonteCarlo;
 
-import java.io.*;
-import java.util.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.StringReader;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.jaxen.JaxenException;
-import org.jaxen.dom.DOMXPath;
-import org.w3c.dom.*;
-import org.xml.sax.*;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import ASSET.Util.SupportTesting;
 import ASSET.Util.XML.ScenarioHandler;
@@ -93,8 +110,11 @@ public final class MultiScenarioGenerator
 		try
 		{
 			// get the root of our variances
-			final DOMXPath xpath = new DOMXPath("//ScenarioGenerator/" + GENERATOR_TYPE);
-			final Element el = (Element) xpath.selectSingleNode(document);
+			XPathFactory xpf = XPathFactory.newInstance();
+			XPath xp = xpf.newXPath();
+			XPathExpression xp2 = xp.compile("//ScenarioGenerator/" + GENERATOR_TYPE);
+			NodeList nl = (NodeList) xp2.evaluate(document, XPathConstants.NODESET);
+			Element el = (Element) nl.item(0);
 
 			// retrieve our working values
 			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
@@ -169,7 +189,8 @@ public final class MultiScenarioGenerator
 	}
 
 	public final Document[] createNewRandomisedPermutations()
-			throws XMLVariance.IllegalExpressionException, XMLVariance.MatchingException
+			throws XMLVariance.IllegalExpressionException,
+			XMLVariance.MatchingException
 	{
 		Vector<Document> results = new Vector<Document>(0, 1);
 
@@ -179,16 +200,21 @@ public final class MultiScenarioGenerator
 		// keep track of number of compliant instances created
 		int counter = 0;
 
-		int[] ranges = {1000, 2000, 4000 };
-		int[] sectors = {1, 46, 91, 136, 181, 226, 271, 316 };
-		double[] courses = { 0.1, 22.6, 45.1, 67.6, 90.1, 112.6, 135.1, 157.6, 180.1, 202.6, 225.1, 247.6, 270.1, 292.6, 315.1, 337.6 };
-		int[] speeds =  {6, 10 };
-//		
-//
-//		int[] ranges = {1000};
-//		int[] sectors = {316};
-//		double[] courses = {337.5};
-//		int[] speeds =  {6};
+		int[] ranges =
+		{ 1000, 2000, 4000 };
+		int[] sectors =
+		{ 1, 46, 91, 136, 181, 226, 271, 316 };
+		double[] courses =
+		{ 0.1, 22.6, 45.1, 67.6, 90.1, 112.6, 135.1, 157.6, 180.1, 202.6, 225.1,
+				247.6, 270.1, 292.6, 315.1, 337.6 };
+		int[] speeds =
+		{ 6, 10 };
+		//		
+		//
+		// int[] ranges = {1000};
+		// int[] sectors = {316};
+		// double[] courses = {337.5};
+		// int[] speeds = {6};
 
 		// loop through the sector for the start location
 		// for (int thisRespond = 0; thisRespond < choiceList.length; thisRespond++)
@@ -203,7 +229,7 @@ public final class MultiScenarioGenerator
 				// loop through start courses
 				for (int thisC = 0; thisC < courses.length; thisC++)
 				{
-					// loop through this speed					
+					// loop through this speed
 					for (int thisSpd = 0; thisSpd < speeds.length; thisSpd++)
 					{
 						int choice = 0; // choiceList[thisRespond];
@@ -224,10 +250,11 @@ public final class MultiScenarioGenerator
 						// there are situations where scenarios get ditched, we ignore
 						// those
 						// in order to get a continuous series of scenario numbers
-						NodeList list = newDoc.getElementsByTagName(ScenarioHandler.SCENARIO_NAME);
+						NodeList list = newDoc
+								.getElementsByTagName(ScenarioHandler.SCENARIO_NAME);
 						Element scen = (Element) list.item(0);
-						String theName = "scen," + counter + "," + choice + "," + range + ","
-								+ course + "," + sector + "," + speed;
+						String theName = "scen," + counter + "," + choice + "," + range
+								+ "," + course + "," + sector + "," + speed;
 						scen.setAttribute(SCENARIO_NAME_ATTRIBUTE, theName);
 
 						// store the case description for this scenario
@@ -248,7 +275,8 @@ public final class MultiScenarioGenerator
 		// make sure the command line's on a new line
 		System.out.println(" created:" + counter);
 
-		Document[] res = (Document[]) results.toArray(new Document[] {});
+		Document[] res = (Document[]) results.toArray(new Document[]
+		{});
 
 		return res;
 	}
@@ -268,57 +296,60 @@ public final class MultiScenarioGenerator
 			_attribute = attribute;
 		}
 
-		@SuppressWarnings("unchecked")
 		public void applyTo(Document target)
 		{
-			DOMXPath _myPath;
+
+			XPathFactory xpf = XPathFactory.newInstance();
+			XPath xp = xpf.newXPath();
+			XPathExpression xp2;
 			try
 			{
-				_myPath = new DOMXPath(_path);
-				// and now try for any matches
-				List ourObj = (List) _myPath.selectNodes(target);
-				if (ourObj.size() > 0)
+				xp2 = xp.compile(_path);
+
+				NodeList nl = (NodeList) xp2.evaluate(target, XPathConstants.NODESET);
+				if (nl.getLength() < 0)
 				{
-					Element first = (Element) ourObj.get(0);
-					first.setAttribute(_attribute, _newVal);
+					Element thisE = (Element) nl.item(0);
+					thisE.setAttribute(_attribute, _newVal);
 				}
 			}
-			catch (JaxenException e)
+			catch (XPathExpressionException e)
 			{
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
 		}
 	}
 
-	private void generateScenarioFor(Document newDoc, int choice, int range, double course,
-			int sector, int speed)
+	private void generateScenarioFor(Document newDoc, int choice, int range,
+			double course, int sector, int speed)
 	{
 		// finally the start location
-		double xLoc = 10000 + range * Math.sin(MWC.Algorithms.Conversions.Degs2Rads(sector));
-		double yLoc = 10000 + range * Math.cos(MWC.Algorithms.Conversions.Degs2Rads(sector));
+		double xLoc = 10000 + range
+				* Math.sin(MWC.Algorithms.Conversions.Degs2Rads(sector));
+		double yLoc = 10000 + range
+				* Math.cos(MWC.Algorithms.Conversions.Degs2Rads(sector));
 
 		// and store the list
 		Vector<AttributeChange> theChanges = new Vector<AttributeChange>(0, 1);
-		theChanges.add(new AttributeChange("//SSN[@Name='BLUE']//Speed", "Value", ""
-				+ speed));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status", "Course", ""
-				+ course));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']//Speed", "Value", ""
-				+ speed));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status//North", "Value",
-				"" + (int) yLoc));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status//East", "Value",
-				"" + (int) xLoc));
-		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']/Status", "Course", ""
-				+ course));
-		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']//Speed", "Value", ""
-				+ speed));
-		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']/Status//North",
+		theChanges.add(new AttributeChange("//SSN[@Name='BLUE']//Speed", "Value",
+				"" + speed));
+		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status",
+				"Course", "" + course));
+		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']//Speed",
+				"Value", "" + speed));
+		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status//North",
 				"Value", "" + (int) yLoc));
-		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']/Status//East", "Value",
-				"" + (int) xLoc));
+		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status//East",
+				"Value", "" + (int) xLoc));
+		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']/Status",
+				"Course", "" + course));
+		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']//Speed",
+				"Value", "" + speed));
+		theChanges.add(new AttributeChange(
+				"//SSN[@Name='UNREACTIVE']/Status//North", "Value", "" + (int) yLoc));
+		theChanges.add(new AttributeChange(
+				"//SSN[@Name='UNREACTIVE']/Status//East", "Value", "" + (int) xLoc));
 
 		// and loop through the changes
 		for (Iterator<AttributeChange> iter = theChanges.iterator(); iter.hasNext();)
@@ -329,7 +360,8 @@ public final class MultiScenarioGenerator
 	}
 
 	public final Document[] createNewRandomisedPermutationsOld()
-			throws XMLVariance.IllegalExpressionException, XMLVariance.MatchingException
+			throws XMLVariance.IllegalExpressionException,
+			XMLVariance.MatchingException
 	{
 		Vector<Document> results = new Vector<Document>(0, 1);
 
@@ -339,7 +371,7 @@ public final class MultiScenarioGenerator
 		// keep a record of the scenarios we create, since
 		// the user may want to create a specific number of
 		// permutations of each test-case
-		HashMap<String,Integer> map = new HashMap<String, Integer>();
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
 
 		// keep track of number of compliant instances created
 		int counter = 0;
@@ -433,7 +465,8 @@ public final class MultiScenarioGenerator
 		// make sure the command line's on a new line
 		System.out.println(" attempted:" + attempts + " created:" + counter);
 
-		Document[] res = (Document[]) results.toArray(new Document[] {});
+		Document[] res = (Document[]) results.toArray(new Document[]
+		{});
 
 		return res;
 	}
@@ -448,7 +481,8 @@ public final class MultiScenarioGenerator
 	 * @throws XMLVariance.MatchingException
 	 */
 	public String applyVariances(Document newDoc)
-			throws XMLVariance.IllegalExpressionException, XMLVariance.MatchingException
+			throws XMLVariance.IllegalExpressionException,
+			XMLVariance.MatchingException
 	{
 		// apply the variances to it
 		String thisHash = _myVariances.apply(null, newDoc);
@@ -463,7 +497,8 @@ public final class MultiScenarioGenerator
 	 * @param path_prefix
 	 *          the path to put the scenarios into
 	 */
-	public static void writeTheseToFile(Vector<Document> scenarios, String path_prefix)
+	public static void writeTheseToFile(Vector<Document> scenarios,
+			String path_prefix)
 	{
 		for (int counter = 0; counter < scenarios.size(); counter++)
 		{
@@ -581,14 +616,15 @@ public final class MultiScenarioGenerator
 			if (code_root == null)
 				code_root = "..\\src\\java";
 
-			final String docPath = code_root + "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+			final String docPath = code_root
+					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
 
 			// create server
 			Document document = null;
 			try
 			{
-				document = ScenarioGenerator.readDocumentFrom(new FileInputStream(docPath
-						+ "test_variance1.xml"));
+				document = ScenarioGenerator.readDocumentFrom(new FileInputStream(
+						docPath + "test_variance1.xml"));
 			}
 			catch (SAXException e)
 			{
@@ -658,7 +694,8 @@ public final class MultiScenarioGenerator
 			if (code_root == null)
 				code_root = "..\\src\\java";
 
-			final String docPath = code_root + "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+			final String docPath = code_root
+					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -718,12 +755,17 @@ public final class MultiScenarioGenerator
 			// did we change the speed?
 			try
 			{
-				DOMXPath bravoa = new DOMXPath("//*[@Name='bravo']/Status/Speed");
-				Element thisA = (Element) bravoa.selectSingleNode(thisDocument);
+				XPathFactory xpf = XPathFactory.newInstance();
+				XPath xp = xpf.newXPath();
+				XPathExpression xp2 = xp.compile("//*[@Name='bravo']/Status/Speed");
+				NodeList nl = (NodeList) xp2.evaluate(thisDocument,
+						XPathConstants.NODESET);
+				Element thisA = (Element) nl.item(0);
 				String val = thisA.getAttribute("Value");
 				originalSpeed = Double.parseDouble(val);
+
 			}
-			catch (JaxenException e)
+			catch (Exception e)
 			{
 				e.printStackTrace(); // To change body of catch statement use Options |
 				// File Templates.
@@ -762,18 +804,24 @@ public final class MultiScenarioGenerator
 
 				Document resDocument = results[0];
 
-				DOMXPath bravo2 = new DOMXPath("//Participants/*[@Name='bravo']");
-				Element thisE = (Element) bravo2.selectSingleNode(resDocument);
-				assertNotNull("found our participant", thisE);
-				assertEquals("correct name", "bravo", thisE.getAttribute("Name"));
+				XPathFactory xpf = XPathFactory.newInstance();
+				XPath xp = xpf.newXPath();
+				XPathExpression xp2 = xp.compile("//Participants/*[@Name='bravo']");
+				NodeList nl = (NodeList) xp2.evaluate(resDocument,
+						XPathConstants.NODESET);
+				Element thisA = (Element) nl.item(0);
+				assertNotNull("found our participant", thisA);
+				assertEquals("correct name", "bravo", thisA.getAttribute("Name"));
 
 				// did we change the speed?
-				bravo2 = new DOMXPath("//*[@Name='bravo']/Status/Speed");
-				thisE = (Element) bravo2.selectSingleNode(resDocument);
-				assertTrue("correct name",
-						Double.parseDouble(thisE.getAttribute("Value")) != originalSpeed);
+				xp = xpf.newXPath();
+				xp2 = xp.compile("//*[@Name='bravo']/Status/Speed");
+				nl = (NodeList) xp2.evaluate(resDocument, XPathConstants.NODESET);
+				thisA = (Element) nl.item(0);
+				assertTrue("correct name", Double.parseDouble(thisA
+						.getAttribute("Value")) != originalSpeed);
 			}
-			catch (JaxenException e)
+			catch (Exception e)
 			{
 				e.printStackTrace(); // To change body of catch statement use Options |
 				// File Templates.
@@ -793,13 +841,15 @@ public final class MultiScenarioGenerator
 			if (code_root == null)
 				code_root = "..\\src\\java";
 
-			final String docPath = code_root + "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+			final String docPath = code_root
+					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
 			try
 			{
-				dataStream = new FileInputStream(docPath + "test_variance_scenario_area.xml");
+				dataStream = new FileInputStream(docPath
+						+ "test_variance_scenario_area.xml");
 				varianceStream = new FileInputStream(docPath + "test_variance_area.xml");
 			}
 			catch (FileNotFoundException e)
@@ -828,16 +878,29 @@ public final class MultiScenarioGenerator
 			// examine the first scenario generated. see if the bits loaded
 			try
 			{
-				DOMXPath testEle = new DOMXPath("//Participants/Helo//Investigate");
-				Element thisE = (Element) testEle.selectSingleNode(thisScenarioDocument);
+
+				XPathFactory xpf = XPathFactory.newInstance();
+				XPath xp = xpf.newXPath();
+				XPathExpression xp2 = xp.compile("//Participants/Helo//Investigate");
+				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
+						XPathConstants.NODESET);
+				Element thisE = (Element) nl.item(0);
 				assertNotNull("found our investigate behaviour", thisE);
-				assertEquals("correct name", "Find fishermen", thisE.getAttribute("Name"));
-				assertEquals("correct name", "Identified", thisE.getAttribute("DetectionLevel"));
-				testEle = new DOMXPath("//Participants/Helo//Investigate//Type");
-				thisE = (Element) testEle.selectSingleNode(thisScenarioDocument);
-				assertEquals("correct type", "FISHING_VESSEL", thisE.getAttribute("Name"));
+				assertEquals("correct name", "Find fishermen", thisE
+						.getAttribute("Name"));
+				assertEquals("correct name", "Identified", thisE
+						.getAttribute("DetectionLevel"));
+
+				xp = xpf.newXPath();
+				xp2 = xp.compile("//Participants/Helo//Investigate");
+				nl = (NodeList) xp2.evaluate(thisScenarioDocument,
+						XPathConstants.NODESET);
+				thisE = (Element) nl.item(0);
+				assertEquals("correct type", "FISHING_VESSEL", thisE
+						.getAttribute("Name"));
+
 			}
-			catch (JaxenException e)
+			catch (Exception e)
 			{
 				e.printStackTrace(); // To change body of catch statement use File |
 				// Settings | File Templates.
@@ -846,7 +909,8 @@ public final class MultiScenarioGenerator
 			Document thisVarianceDocument = null;
 			try
 			{
-				thisVarianceDocument = ScenarioGenerator.readDocumentFrom(varianceStream);
+				thisVarianceDocument = ScenarioGenerator
+						.readDocumentFrom(varianceStream);
 			}
 			catch (SAXException e)
 			{
@@ -862,8 +926,12 @@ public final class MultiScenarioGenerator
 			// can we find a scenario generator?
 			try
 			{
-				DOMXPath xpath = new DOMXPath("//MultiParticipantGenerator");
-				Element el = (Element) xpath.selectSingleNode(thisVarianceDocument);
+				XPathFactory xpf = XPathFactory.newInstance();
+				XPath xp = xpf.newXPath();
+				XPathExpression xp2 = xp.compile("//MultiParticipantGenerator");
+				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
+						XPathConstants.NODESET);
+				Element el = (Element) nl.item(0);
 				if (el != null)
 				{
 					MultiParticipantGenerator participantGenny = new MultiParticipantGenerator(
@@ -871,7 +939,7 @@ public final class MultiScenarioGenerator
 					assertNotNull("didn't load participant genny", participantGenny);
 				}
 			}
-			catch (JaxenException e)
+			catch (Exception e)
 			{
 				e.printStackTrace(); // To change body of catch statement use File |
 				// Settings | File Templates.
@@ -890,12 +958,17 @@ public final class MultiScenarioGenerator
 			// did we change the speed?
 			try
 			{
-				DOMXPath bravoa = new DOMXPath("//Environment");
-				Element thisA = (Element) bravoa.selectSingleNode(thisScenarioDocument);
+
+				XPathFactory xpf = XPathFactory.newInstance();
+				XPath xp = xpf.newXPath();
+				XPathExpression xp2 = xp.compile("//Environment");
+				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
+						XPathConstants.NODESET);
+				Element thisA = (Element) nl.item(0);
 				String val = thisA.getAttribute("SeaState");
 				originalSeaState = Integer.parseInt(val);
 			}
-			catch (JaxenException e)
+			catch (Exception e)
 			{
 				e.printStackTrace(); // To change body of catch statement use Options |
 				// File Templates.
@@ -925,46 +998,65 @@ public final class MultiScenarioGenerator
 			// did we load the proximity observer
 			try
 			{
-				DOMXPath bravoa = new DOMXPath("//StopOnProximityDetectionObserver");
-				Element thisA = (Element) bravoa.selectSingleNode(thisVarianceDocument);
+				XPathFactory xpf = XPathFactory.newInstance();
+				XPath xp = xpf.newXPath();
+				XPathExpression xp2 = xp.compile("//StopOnProximityDetectionObserver");
+				NodeList nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+						XPathConstants.NODESET);
+				Element thisA = (Element) nl.item(0);
 				String val = thisA.getAttribute("Name");
 				assertEquals("correct name", "HELO detected within SAM range", val);
 				val = thisA.getAttribute("Active");
 				assertTrue("set as active", true);
 
-				bravoa = new DOMXPath(
-						"//StopOnProximityDetectionObserver/Target/TargetType/Type[1]");
-				thisA = (Element) bravoa.selectSingleNode(thisVarianceDocument);
+				xp = xpf.newXPath();
+				xp2 = xp
+						.compile("//StopOnProximityDetectionObserver/Target/TargetType/Type[1]");
+				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+						XPathConstants.NODESET);
+				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "HELICOPTER", val);
 
-				bravoa = new DOMXPath("//MultiScenarioGenerator");
-				thisA = (Element) bravoa.selectSingleNode(thisVarianceDocument);
+				xp = xpf.newXPath();
+				xp2 = xp.compile("//MultiScenarioGenerator");
+				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+						XPathConstants.NODESET);
+				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Number");
 				assertTrue("found number", val.length() > 0);
 				numScenariosRequested = new Integer(val).intValue();
 
-				bravoa = new DOMXPath(
-						"//StopOnProximityDetectionObserver/Watch/TargetType/Type[1]");
-				thisA = (Element) bravoa.selectSingleNode(thisVarianceDocument);
+				xp = xpf.newXPath();
+				xp2 = xp
+						.compile("//StopOnProximityDetectionObserver/Watch/TargetType/Type[1]");
+				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+						XPathConstants.NODESET);
+				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "FISHING_VESSEL", val);
 
-				bravoa = new DOMXPath(
-						"//StopOnProximityDetectionObserver/Watch/TargetType/Type[2]");
-				thisA = (Element) bravoa.selectSingleNode(thisVarianceDocument);
+				xp = xpf.newXPath();
+				xp2 = xp
+						.compile("//StopOnProximityDetectionObserver/Watch/TargetType/Type[2]");
+				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+						XPathConstants.NODESET);
+				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "RED", val);
 
-				bravoa = new DOMXPath("//StopOnProximityDetectionObserver/Range");
-				thisA = (Element) bravoa.selectSingleNode(thisVarianceDocument);
+				xp = xpf.newXPath();
+				xp2 = xp.compile("//StopOnProximityDetectionObserver/Range");
+				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+						XPathConstants.NODESET);
+				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Units");
 				assertEquals("correct name", "nm", val);
 				val = thisA.getAttribute("Value");
 				assertEquals("correct name", "2.5", val);
 
 			}
-			catch (JaxenException e)
+			catch (Exception e)
 			{
 				e.printStackTrace(); // To change body of catch statement use Options |
 				// File Templates.
@@ -973,7 +1065,8 @@ public final class MultiScenarioGenerator
 			assertTrue("check no exceptions thrown", worked);
 
 			assertNotNull("got some documents", results);
-			assertEquals("correct num scenarios", numScenariosRequested, results.length);
+			assertEquals("correct num scenarios", numScenariosRequested,
+					results.length);
 
 			// keep track of if a different sea state gets generated
 			boolean foundDifferentSeaState = false;
@@ -986,16 +1079,26 @@ public final class MultiScenarioGenerator
 
 					Document resDocument = results[i];
 
-					DOMXPath bravo2 = new DOMXPath("//Participants/*[@Name='SAM_FISHER']");
-					Element thisE = (Element) bravo2.selectSingleNode(resDocument);
+					XPathFactory xpf = XPathFactory.newInstance();
+					XPath xp = xpf.newXPath();
+					XPathExpression xp2 = xp
+							.compile("//Participants/*[@Name='SAM_FISHER']");
+					NodeList nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+							XPathConstants.NODESET);
+					Element thisE = (Element) nl.item(0);
 					assertNotNull("found our participant", thisE);
 					assertEquals("correct name", "SAM_FISHER", thisE.getAttribute("Name"));
 
 					// did we change the sea state?
-					bravo2 = new DOMXPath("//Environment");
-					thisE = (Element) bravo2.selectSingleNode(resDocument);
+					xp = xpf.newXPath();
+					xp2 = xp.compile("//Environment");
+					nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+							XPathConstants.NODESET);
+					thisE = (Element) nl.item(0);
+
 					// is this different?
-					final int thisSeaState = Integer.parseInt(thisE.getAttribute("SeaState"));
+					final int thisSeaState = Integer.parseInt(thisE
+							.getAttribute("SeaState"));
 
 					if (thisSeaState != originalSeaState)
 					{
@@ -1004,7 +1107,7 @@ public final class MultiScenarioGenerator
 					}
 				}
 			}
-			catch (JaxenException e)
+			catch (Exception e)
 			{
 				e.printStackTrace(); // To change body of catch statement use Options |
 				// File Templates.

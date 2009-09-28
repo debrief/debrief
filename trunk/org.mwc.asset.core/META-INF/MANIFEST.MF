@@ -6,16 +6,29 @@ Bundle-Version: 1.0.0
 Bundle-Activator: org.mwc.asset.core.ASSETPlugin
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
+ org.mwc.asset.legacy;visibility:=reexport,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
  org.mwc.cmap.layer_manager,
- org.mwc.asset.legacy,
  org.mwc.cmap.plotViewer,
  org.mwc.debrief.core,
  org.mwc.asset.sample_data,
  org.mwc.cmap.legacy,
  org.eclipse.draw2d
 Bundle-ActivationPolicy: lazy
-Export-Package: org.mwc.asset.core,
- org.mwc.asset.core.property_support
+Export-Package: org.mwc.asset.core;
+  uses:="org.eclipse.jface.resource,
+   org.eclipse.core.commands.operations,
+   org.mwc.cmap.layer_manager.views,
+   org.eclipse.ui,
+   org.eclipse.ui.plugin,
+   org.osgi.framework,
+   org.mwc.cmap.layer_manager.views.support,
+   MWC.GUI",
+ org.mwc.asset.core.property_support;
+  uses:="org.eclipse.jface.viewers,
+   org.mwc.cmap.core.property_support,
+   org.eclipse.swt.widgets,
+   ASSET.Models.Decision,
+   org.eclipse.jface.dialogs"
 Bundle-ClassPath: .

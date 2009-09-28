@@ -62,6 +62,7 @@ import org.w3c.dom.NodeList;
 
 import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
+import ASSET.GUI.CommandLine.MultiScenarioCore;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
@@ -117,6 +118,7 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 	private ScenarioWrapper _scenarioWrapper;
 	private Vector<ScenarioObserver> _theObservers;
 	private SteppableTime _steppableTime;
+	private MultiScenarioCore _myMultiScenario;
 	/**
 	 * The constructor.
 	 */
@@ -277,14 +279,24 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 
 	protected void doRunOperation()
 	{
-		// TODO finish off the run bits
 		System.out.println("doing run");
+		_myMultiScenario.nowRun(System.out, System.err, System.in);
 	}
 
 	protected void doGenerateOperation()
 	{
-		// TODO finish off the genny bits
 		System.out.println("doing gen");
+		
+		if(_myMultiScenario == null)
+		{
+		// create a new, fresh multi scenario generator
+		_myMultiScenario = new MultiScenarioCore();
+		}
+		
+		// and let it create some files
+		_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName, System.out, System.err, System.in);
+		
+		
 		_myUI.getRunBtn().setEnabled(true);
 	}
 

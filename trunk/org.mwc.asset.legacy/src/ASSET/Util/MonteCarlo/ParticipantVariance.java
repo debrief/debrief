@@ -12,15 +12,17 @@ import ASSET.Util.XML.ParticipantsHandler;
 import ASSET.Util.XML.Vessels.ParticipantHandler;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import org.jaxen.JaxenException;
-import org.jaxen.XPath;
-import org.jaxen.dom.DOMXPath;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import java.text.DecimalFormat;
+
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
 
 /**
  * list of items in a particular file which may be changed
@@ -52,7 +54,7 @@ public final class ParticipantVariance extends XMLVarianceList
   /**
    * the path to find us
    */
-  private XPath _myPath;
+  private XPathExpression _myPath;
 
   /**
    * whether the new participants should be handled with parrallel planes processing
@@ -68,6 +70,8 @@ public final class ParticipantVariance extends XMLVarianceList
    * the area of coverage for participant generation
    */
   private WorldArea _distributionArea = null;
+
+	private XPathFactory _myXpathFactory;
 
 
   /**
@@ -94,11 +98,16 @@ public final class ParticipantVariance extends XMLVarianceList
     {
       final String xPathExpression = getExpression(_myName);
 
-      // get the identifier
-      _myPath = new DOMXPath(xPathExpression);
+      
+      if(_myXpathFactory == null)
+			_myXpathFactory = XPathFactory.newInstance();
+      
+			XPath xp = _myXpathFactory.newXPath();
+			_myPath = xp.compile(xPathExpression);
+      
 
     }
-    catch (JaxenException e)
+    catch (Exception e)
     {
       e.printStackTrace();  //To change body of catch statement use Options | File Templates.
     }
@@ -142,7 +151,8 @@ public final class ParticipantVariance extends XMLVarianceList
 
       // ok - find ourselves in the document
       // find our object
-      final Element ourObj = (Element) _myPath.selectSingleNode(newDoc);
+    	final Element ourObj = (Element) _myPath.evaluate(newDoc, XPathConstants.NODE);
+     
 
       // did we find it?
       if (ourObj != null)
@@ -196,7 +206,7 @@ public final class ParticipantVariance extends XMLVarianceList
 
       }
     }
-    catch (org.jaxen.JaxenException je)
+    catch (Exception je)
     {
       throw new java.lang.RuntimeException(je.getMessage());
     }
