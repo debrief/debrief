@@ -20,11 +20,11 @@ public class ScenarioWrapper extends Layers
 	 */
 	private static final long serialVersionUID = 1L;
 
-	private ScenarioController _theCont;
+	private ScenarioControllerView _theCont;
 	private ContWrapper _theController;
 	private ScenarioLayer _scenLayer;
 
-	public ScenarioWrapper(ScenarioController scenarioController)
+	public ScenarioWrapper(ScenarioControllerView scenarioController)
 	{
 		_theCont = scenarioController;
 		_theController = new ContWrapper();

@@ -73,7 +73,7 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-public class ScenarioController extends ViewPart implements ISelectionProvider
+public class ScenarioControllerView extends ViewPart implements ISelectionProvider
 {
 
 	/**
@@ -119,7 +119,7 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 	/**
 	 * The constructor.
 	 */
-	public ScenarioController()
+	public ScenarioControllerView()
 	{
 		_myScenario = new CoreScenario();
 		_scenarioWrapper = new ScenarioWrapper(this);
@@ -903,14 +903,14 @@ public class ScenarioController extends ViewPart implements ISelectionProvider
 		@SuppressWarnings("synthetic-access")
 		public final void testRelativePathMethod()
 		{
-		  super.assertEquals("failed to recognise drive", false, ScenarioController.isRelativePath(new File("c:\\test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("\\test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("\\\\test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("//test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioController.isRelativePath(new File("////test.rep")));
-		  super.assertEquals("failed to recognise absolute ref", true, ScenarioController.isRelativePath(new File("test.rep")));
-		  super.assertEquals("failed to recognise relative ref", true, ScenarioController.isRelativePath(new File("./test.rep")));
-		  super.assertEquals("failed to recognise parent ref", true, ScenarioController.isRelativePath(new File("../test.rep")));
+		  super.assertEquals("failed to recognise drive", false, ScenarioControllerView.isRelativePath(new File("c:\\test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("\\test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("\\\\test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("//test.rep")));
+		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("////test.rep")));
+		  super.assertEquals("failed to recognise absolute ref", true, ScenarioControllerView.isRelativePath(new File("test.rep")));
+		  super.assertEquals("failed to recognise relative ref", true, ScenarioControllerView.isRelativePath(new File("./test.rep")));
+		  super.assertEquals("failed to recognise parent ref", true, ScenarioControllerView.isRelativePath(new File("../test.rep")));
 		}
 	}
 }
