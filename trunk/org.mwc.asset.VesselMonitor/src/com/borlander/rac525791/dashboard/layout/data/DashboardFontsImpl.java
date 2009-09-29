@@ -15,7 +15,7 @@ public class DashboardFontsImpl implements DashboardFonts {
 	private final int myTextSize; 
 	private final int myValueSize;
 	private final int myUnitsSize;
-	private final boolean myTextBold = true;
+	private boolean myTextBold = true;
 
 	public DashboardFontsImpl(int text, int value, int units){
 		myTextSize = text;
