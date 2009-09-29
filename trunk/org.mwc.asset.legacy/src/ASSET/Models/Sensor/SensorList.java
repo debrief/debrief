@@ -129,7 +129,8 @@ public class SensorList implements ASSET.Models.SensorType, java.io.Serializable
    */
   public int getMedium()
   {
-    if (true)
+  	boolean IamTrue = true;
+    if (IamTrue)
       throw new RuntimeException("Shouldn't be asking SensorFit for medium");
 
     return 1;
