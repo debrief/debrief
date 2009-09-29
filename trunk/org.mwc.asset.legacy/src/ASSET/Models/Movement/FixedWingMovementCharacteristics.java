@@ -162,7 +162,7 @@ public class FixedWingMovementCharacteristics extends ThreeDimMovementCharacteri
     // just check that we have an angular velocity
     if (turn_rate_degs_sec == 0)
     {
-      MWC.Utilities.Errors.Trace.trace("Invalid turn rate for fixed wing movement", false);
+     // MWC.Utilities.Errors.Trace.trace("Invalid turn rate for fixed wing movement", false);
       radius = _hoverTurnCircle;
     }
     else

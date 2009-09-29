@@ -8,22 +8,23 @@
  */
 package ASSET.Util.XMLFactory;
 
-import org.jdom.Element;
 
 import java.util.List;
 import java.util.Vector;
 import java.util.Iterator;
 
+import org.w3c.dom.Element;
+
 public class XMLNode implements XMLObject
 {
   private XMLChoice _myOperation = null;
 
-  public XMLNode(final org.jdom.Element element)
+  public XMLNode(final Element element)
   {
     // read ourselves in from this node
 
     // get the choice
-    final Element choice = element.getChild("Choice");
+    final Element choice = (Element) element.getElementsByTagName("Choice").item(0);
     _myOperation = new XMLChoice(choice);
   }
 
@@ -57,12 +58,12 @@ public class XMLNode implements XMLObject
     final Iterator<Element> iter = list.iterator();
     while (iter.hasNext())
     {
-      final Object o = (Object) iter.next();
+      final Object o = iter.next();
       if(o instanceof Element)
       {
         final Element el = (Element)o;
-        final Element dup = (Element) el.clone();
-        dup.detach();
+        final Element dup = (Element) el.cloneNode(true);
+        el.removeChild(dup);
         duplicate.add(dup);
       }
     }
@@ -71,10 +72,15 @@ public class XMLNode implements XMLObject
 
     // set it's parent
     // remove any existing content
-    object.getChildren().clear();
+    while(object.hasChildNodes())
+    	object.removeChild(object.getFirstChild());
 
     // set the data
-    object.setContent(duplicate);
+    for (Iterator<Element> iterator = duplicate.iterator(); iterator.hasNext();)
+		{
+			Element element = iterator.next();
+			object.appendChild(element);
+		}
 
   }
 

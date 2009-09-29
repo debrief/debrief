@@ -8,7 +8,9 @@
  */
 package ASSET.Util.XMLFactory;
 
-import org.jdom.Element;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
+
 
 public class XMLAttribute implements XMLObject
 {
@@ -29,29 +31,29 @@ public class XMLAttribute implements XMLObject
   /***************************************************************
    *  constructor
    ***************************************************************/
-  public XMLAttribute(final org.jdom.Element element)
+  public XMLAttribute(final Element element)
   {
     // read ourselves in from this element
 
     // read in the attribute name
-    _name = element.getAttribute("name").getValue();
+    _name = element.getAttribute("name");
 
     // read in the operation
-    Element obj = element.getChild("Range");
+    NodeList obj = element.getElementsByTagName("Range");
 
-    if(obj == null)
+    if(obj.getLength() == 0)
     {
       // oh well, try for a choice
-      obj = element.getChild("Choice");
+      obj = element.getElementsByTagName("Choice");
 
-      if(obj != null)
+      if(obj.getLength() > 0)
       {
-        _myOperation = new XMLChoice(obj);
+        _myOperation = new XMLChoice((Element) obj.item(0));
       }
     }
     else
     {
-      _myOperation = new XMLRange(obj);
+      _myOperation = new XMLRange((Element) obj.item(0));
     }
   }
 
@@ -100,7 +102,7 @@ public class XMLAttribute implements XMLObject
    */
   public String getCurValueIn(final Element object)
   {
-    final String res = object.getAttribute(_name).getValue();
+    final String res = object.getAttribute(_name);
     return res;
   }
 

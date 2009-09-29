@@ -90,7 +90,7 @@ public final class MultiParticipantGenerator
 			// get the root of our variances
 			final XPath xpath = _xpathFactory.newXPath();
 			XPathExpression xpe = xpath.compile("//" + GENERATOR_TYPE);
-			Object result = xpe.evaluate(document);
+			Object result = xpe.evaluate(document, XPathConstants.NODESET);
 
 			if (result != null)
 			{
@@ -209,10 +209,10 @@ public final class MultiParticipantGenerator
 			String code_root = System.getProperty("CODE_ROOT");
 			System.out.println("root:" + code_root);
 			if (code_root == null)
-				code_root = "..\\src\\java";
+				code_root = "src";
 
 			final String docPath = code_root
-					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+					+ "/ASSET/Util/MonteCarlo/";
 
 			Document doc = null;
 			try
@@ -352,10 +352,10 @@ public final class MultiParticipantGenerator
 			// get the file to read in
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
-				code_root = "..\\src\\java";
+				code_root = "src";
 
 			final String docPath = code_root
-					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+					+ "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -455,7 +455,7 @@ public final class MultiParticipantGenerator
 				// //////////////////////////////////////////////////////////
 				// now the alphas
 				// //////////////////////////////////////////////////////////
-				xp2 = xp.compile("//Participants/*[@Name='alpha_001");
+				xp2 = xp.compile("//Participants/*[@Name='alpha_001']");
 				nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
 				thisE = (Element)nl.item(0);
 				assertEquals("correct name", "alpha_001", thisE.getAttribute("Name"));
@@ -479,10 +479,10 @@ public final class MultiParticipantGenerator
 			// get the file to read in
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
-				code_root = "..\\src\\java";
+				code_root = "src";
 
 			final String docPath = code_root
-					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+					+ "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -552,8 +552,8 @@ public final class MultiParticipantGenerator
 			catch (XMLVariance.MatchingException e)
 			{
 				ex = e;
-
 			}
+
 
 			// check that an exception got thrown
 			assertNotNull("check no exceptions thrown", ex);
@@ -568,10 +568,10 @@ public final class MultiParticipantGenerator
 			// get the file to read in
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
-				code_root = "..\\src\\java";
+				code_root = "src";
 
 			final String docPath = code_root
-					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+					+ "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;

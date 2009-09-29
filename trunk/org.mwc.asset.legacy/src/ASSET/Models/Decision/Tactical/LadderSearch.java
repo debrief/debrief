@@ -1049,8 +1049,8 @@ public final class LadderSearch extends CoreDecision implements Serializable
       //      tpo.tearDown(cs);
 
       WorldLocation endPoint = merlin.getStatus().getLocation();
-      WorldLocation correctEnd = SupportTesting.createLocation(125345, 15479);
-      //      SupportTesting.outputLocation(endPoint);
+      WorldLocation correctEnd = SupportTesting.createLocation(265420,25517);
+            SupportTesting.outputLocation(endPoint);
       WorldVector error = correctEnd.subtract(endPoint);
       assertEquals("near to correct end point", 0, MWC.Algorithms.Conversions.Degs2m(error.getRange()), 400);
 

@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
-<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///d:/dev/Asset/src/schemas/ASSET.xsd" OutputDirectory="bb">
+<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:schemas/ASSET.xsd" OutputDirectory="bb">
   <ScenarioGenerator>
     <MultiParticipantGenerator>
       <ParticipantVariance name="alpha" number="6">

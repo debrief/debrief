@@ -181,6 +181,9 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     {
       try
       {
+      	if(_os == null)
+      		super.createOutputFile();
+      	
         _os.write(msg);
         _os.flush();
       }
@@ -308,6 +311,10 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
     String msg = ";RECT: @@ " + topLeft + " " + botRight + " some area " + System.getProperty("line.separator");
     try
     {
+    	// check our output file is created
+    	if(_os == null)
+    		super.createOutputFile();
+    	
       super._os.write(msg);
     }
     catch (IOException e)

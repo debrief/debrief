@@ -8,7 +8,8 @@
  */
 package ASSET.Util.XMLFactory;
 
-import org.jdom.Element;
+import org.w3c.dom.Element;
+
 
 public interface XMLObject
 {

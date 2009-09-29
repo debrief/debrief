@@ -13,7 +13,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import org.jdom.Element;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 
 import ASSET.Util.RandomGenerator;
 
@@ -47,28 +48,26 @@ public class XMLChoice implements XMLOperation
 
     // have a fish around inside it
 
-    final List vars = element.getChildren();
+    final NodeList vars = element.getChildNodes();
 
-    final Iterator it = vars.iterator();
-    while (it.hasNext())
+    for(int i=0;i<vars.getLength();i++)
     {
-      final Element thisE = (Element) it.next();
-      final String thisName = thisE.getAttribute("name").getValue();
-      final List children = thisE.getChildren();
+      final Element thisE = (Element) vars.item(i);
+      final String thisName = thisE.getAttribute("name");
+      final NodeList children = thisE.getChildNodes();
 
       final List<Element> duplicates = new Vector(0,1);
 
-      if(children != null)
+      if(children.getLength() > 0)
       {
         // keep track of the elements to be detached
         Vector toBeDetached = new Vector(0,1);
 
         // in this first pass, take copies of the children
-        final Iterator iter = children.iterator();
-        while (iter.hasNext())
+        for(int j=0;j<children.getLength();j++)
         {
-          final Element el = (Element) iter.next();
-          duplicates.add((Element)el.clone());
+          final Element el = (Element) children.item(j);
+          duplicates.add((Element)el.cloneNode(true));
           toBeDetached.add(el);
         }
 
@@ -77,7 +76,7 @@ public class XMLChoice implements XMLOperation
         while (iter2.hasNext())
         {
           Element el = (Element) iter2.next();
-          el.detach();
+          thisE.removeChild(el);
         }
 
         _myList.put(duplicates, thisName);

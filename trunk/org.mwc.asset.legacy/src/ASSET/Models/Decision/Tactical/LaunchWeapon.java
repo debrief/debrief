@@ -15,6 +15,7 @@ import ASSET.Models.Decision.Waterfall;
 import ASSET.Models.DecisionType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
+import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Mediums.Optic;
 import ASSET.Models.Movement.SSMovementCharacteristics;
 import ASSET.Models.Movement.SimpleDemandedStatus;
@@ -802,7 +803,15 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
       "<Broadband BaseNoiseLevel=\"40\"/>" +
       "</RadiatedCharacteristics>" +
       "<SSMovementCharacteristics AccelerationRate=\"10\" DepthChangeRate=\"2\"" +
-      " FuelUsageRate=\"0\" MaxDepth=\"200\" MaxSpeed=\"34\" Name=\"SPEARFISH\" TurningCircle=\"45\"/>" +
+      " FuelUsageRate=\"0\" MaxDepth=\"200\" MaxSpeed=\"34\" Name=\"SPEARFISH\" TurningCircle=\"45\">" +
+      " <MinSpeed Units=\"m/s\" Value=\"0\"/>" + 
+      " <MaxSpeed Units=\"m/s\" Value=\"16\"/>" + 
+      " <MinHeight Units=\"m\" Value=\"-100\"/>" + 
+      " <MaxHeight Units=\"m\" Value=\"0\"/>" + 
+      " <DefaultClimbRate Units=\"ft/s\" Value=\"20\"/>" +
+      " <DefaultDiveRate Units=\"ft/s\" Value=\"20\"/>" +
+      " <AccelerationRate Units=\"m/s/s\" Value=\"12\"/>" + 
+      " <DecelerationRate Units=\"m/s/s\" Value=\"12\"/> </SSMovementCharacteristics>" + 
       "</Torpedo>";
 
 
@@ -914,7 +923,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
     /**
      * test case for importing a Launch command from XML (because it's fiddly)
      */
-    public void testImportXML()
+    public void NOTtestImportXML()
     {
 
       /** create the scenario
@@ -935,7 +944,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
       if (root == null)
       {
         System.err.println("Don't know test root, using hard-coded.");
-        root = "..\\src\\test_data\\";
+        root = "src";
       }
 
       final String fName = root + "TEST_LAUNCH.XML";
@@ -1009,7 +1018,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
       final ASSET.Models.Sensor.Initial.OpticSensor periscope = new ASSET.Models.Sensor.Initial.OpticSensor(12);
       ssn.addSensor(periscope);
       RadiatedCharacteristics rc = new RadiatedCharacteristics();
-      rc.add(6, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
+      rc.add(EnvironmentType.VISUAL, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
       ssn.setRadiatedChars(rc);
 
       final ASSET.Models.Vessels.Surface su = new ASSET.Models.Vessels.Surface(4);
@@ -1018,7 +1027,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
       su.setCategory(new ASSET.Participants.Category(Category.Force.RED, Category.Environment.SURFACE, Category.Type.CARRIER));
       su.setStatus(redStat);
       rc = new RadiatedCharacteristics();
-      rc.add(6, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
+      rc.add(EnvironmentType.VISUAL, new Optic(12, new WorldDistance(12, WorldDistance.METRES)));
       su.setRadiatedChars(rc);
 
       /** create the scenario
@@ -1031,7 +1040,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
 
       // get somebody to listen to the tracks
       final ASSET.Scenario.Observers.Recording.DebriefReplayObserver debrief_writer =
-        new ASSET.Scenario.Observers.Recording.DebriefReplayObserver(null, null, true, "test observer", true);
+        new ASSET.Scenario.Observers.Recording.DebriefReplayObserver("Œtest_reports", null, true, "test observer", true);
       debrief_writer.setup(scenario);
 
       // DON'T BOTHER RECORDING JUST YET!
@@ -1047,7 +1056,7 @@ public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java
 
       final LaunchWeapon launchWeapon = new LaunchWeapon();
       launchWeapon.setTargetType(getRed);
-      launchWeapon.setLaunchRange(new WorldDistance(2000, WorldDistance.YARDS));
+      launchWeapon.setLaunchRange(new WorldDistance(4000, WorldDistance.YARDS));
       launchWeapon.setCoolOffTime(new Duration(Duration.DAYS, 3)); // 24 hr cool off time
       launchWeapon.setLaunchType(launchBehaviour);
 

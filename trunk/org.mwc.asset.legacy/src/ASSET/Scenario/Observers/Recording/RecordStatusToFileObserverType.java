@@ -347,11 +347,14 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
       // and do the setup
       observer.setup(cs);
 
-      assertNotNull("build date wasn't called", _buildDate);
-      assertNotNull("headerDetails weren't called", _headerDetails);
+      assertNull("build date called - we should defer it until the first step", _buildDate);
+      assertNull("headerDetails called - we should defer it until the first step", _headerDetails);
 
       // do a step
       cs.step();
+
+      assertNotNull("build date wasn't called", _buildDate);
+      assertNotNull("headerDetails weren't called", _headerDetails);
 
       // see if the relevant bits were called
       assertEquals("positions called", testPos, _positionDetailsWritten);

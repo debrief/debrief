@@ -26,7 +26,7 @@
 				</Location>
 				<Speed Units="ft/s" Value="30"/>
 			</Status>
-			<Waterfall IsAlive="true" StayAlive="false" Name="Helo behavious">
+			<Waterfall IsActive="true" StayAlive="false" Name="Helo behavious">
 				<BearingTrail Name="find the frigate" TrailBearing="135">
 					<TrailRange Units="m" Value="800"/>
 					<TargetType>
@@ -75,7 +75,7 @@
 				</Location>
 				<Speed Units="kts" Value="8"/>
 			</Status>
-			<Waterfall StayAlive="false" IsAlive="true" Name="Surface behavior">
+			<Waterfall StayAlive="false" IsActive="true" Name="Surface behavior">
 				<Wander Name="just wander around">
 					<Range Units="nm" Value="9"/>
 					<Location>

@@ -1306,8 +1306,8 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
       assertEquals("at correct speed", helo.getStatus().getSpeed().getValueIn(WorldSpeed.M_sec),
                    12, 0.001);
 
-      assertEquals("at correct lat", 0.0084, helo.getStatus().getLocation().getLat(), 0.001);
-      assertEquals("at correct long", 0.14099, helo.getStatus().getLocation().getLong(), 0.0001);
+      assertEquals("at correct lat", -0.0271, helo.getStatus().getLocation().getLat(), 0.001);
+      assertEquals("at correct long", 0.14571, helo.getStatus().getLocation().getLong(), 0.0001);
 
     }
 

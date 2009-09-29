@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///d:/dev/Asset/src/schemas/ASSET.xsd" Created="2001-12-12T12:23:00" Name="some test scenario" StartTime="2001-12-12T12:23:00">
+<Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:schemas/ASSET.xsd" Created="2001-12-12T12:23:00" Name="some test scenario" StartTime="2001-12-12T12:23:00">
   <StepTime Units="seconds" Value="30"/>
   <Environment Name="first test env" SeaState="3" AtmosphericAttenuation="HAZE" LightLevel="DAYLIGHT">
     <RadarLookupEnvironment Name="radar environment">
@@ -51,7 +51,7 @@
         </Location>
         <Speed Units="m/s" Value="60"/>
       </Status>
-      <Waterfall Name="The sequence of behaviours" IsAlive="true">
+      <Waterfall Name="The sequence of behaviours" IsActive="true">
         <Trail Name="">
           <TrailRange Units="nm" Value="5"/>
           <AllowableError Units="nm" Value="1"/>
@@ -102,7 +102,7 @@
         </Location>
         <Speed Units="m/s" Value="60"/>
       </Status>
-      <Waterfall Name="The sequence of behaviours" IsAlive="true">
+      <Waterfall Name="The sequence of behaviours" IsActive="true">
         <Evade Name="evade helos">
           <Duration Units="hours" Value="1"/>
           <FleeHeight Units="m" Value="100"/>
@@ -151,7 +151,7 @@
         </Location>
         <Speed Units="m/s" Value="60"/>
       </Status>
-      <Waterfall Name="The sequence of behaviours" IsAlive="true">
+      <Waterfall Name="The sequence of behaviours" IsActive="true">
         <Wander Name="just wander around">
           <Range Units="nm" Value="20"/>
           <Location>

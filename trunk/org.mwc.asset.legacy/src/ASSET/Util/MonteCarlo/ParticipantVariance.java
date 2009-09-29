@@ -12,6 +12,8 @@ import ASSET.Util.XML.ParticipantsHandler;
 import ASSET.Util.XML.Vessels.ParticipantHandler;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
+
+import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -22,6 +24,7 @@ import java.text.DecimalFormat;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 /**
@@ -146,71 +149,67 @@ public final class ParticipantVariance extends XMLVarianceList
   public final void populate(final Document newDoc) throws XMLVariance.IllegalExpressionException,
     XMLVariance.MatchingException
   {
-    try
-    {
 
-      // ok - find ourselves in the document
-      // find our object
-    	final Element ourObj = (Element) _myPath.evaluate(newDoc, XPathConstants.NODE);
-     
+      try
+			{
+				// ok - find ourselves in the document
+				// find our object
+				final Element ourObj = (Element) _myPath.evaluate(newDoc, XPathConstants.NODE);
+   
+				// did we find it?
+				if (ourObj != null)
+				{
+				  // get the (so that we can auto-gen new ones
+				  final String ourName = ourObj.getAttribute(ParticipantHandler.NAME);
 
-      // did we find it?
-      if (ourObj != null)
-      {
-        // get the (so that we can auto-gen new ones
-        final String ourName = ourObj.getAttribute(ParticipantHandler.NAME);
+				  // get the parent - so that we can remove ourselves
+				  final Node parent = ourObj.getParentNode();
 
-        // get the parent - so that we can remove ourselves
-        final Node parent = ourObj.getParentNode();
+				  // loop through our permutations
+				  for (int i = 0; i < _number; i++)
+				  {
+				    // generate a new copy
+				    final Element newObj = (Element) ourObj.cloneNode(true);
 
-        // loop through our permutations
-        for (int i = 0; i < _number; i++)
-        {
-          // generate a new copy
-          final Element newObj = (Element) ourObj.cloneNode(true);
+				    // generate a new name
+				    final String newName = ourName + "_" + paddedInteger.format(i + 1);
 
-          // generate a new name
-          final String newName = ourName + "_" + paddedInteger.format(i + 1);
+				    // and set the new name
+				    newObj.setAttribute(ParticipantHandler.NAME, newName);
 
-          // and set the new name
-          newObj.setAttribute(ParticipantHandler.NAME, newName);
+				    // check if we have a distribution area we want to put the objects into
+				    if (_distributionArea != null)
+				    {
+				      // ok, go and do something, man.
+				      applyDistributionArea(newObj, i, _number, _distributionArea, newDoc);
+				    }
 
-          // check if we have a distribution area we want to put the objects into
-          if (_distributionArea != null)
-          {
-            // ok, go and do something, man.
-            applyDistributionArea(newObj, i, _number, _distributionArea, newDoc);
-          }
+				    // just check that it know's it's monte carlo participant
+				    String isMonte = newObj.getAttribute(ParticipantHandler.MONTE_CARLO_TARGET);
 
-          // just check that it know's it's monte carlo participant
-          String isMonte = newObj.getAttribute(ParticipantHandler.MONTE_CARLO_TARGET);
+				    if (isMonte == "")
+				    {
+				      newObj.setAttribute(ParticipantHandler.MONTE_CARLO_TARGET, "" + _inParallelPlanes);
+				    }
 
-          if (isMonte == "")
-          {
-            newObj.setAttribute(ParticipantHandler.MONTE_CARLO_TARGET, "" + _inParallelPlanes);
-          }
+				    // append the new permutation
+				    parent.insertBefore(newObj, ourObj);
 
-          // append the new permutation
-          parent.insertBefore(newObj, ourObj);
+				    // generate a new permutation
+				    final String thisExpression = getExpression(newName);
+				    super.apply(thisExpression, newDoc);
 
-          // generate a new permutation
-          final String thisExpression = getExpression(newName);
-          super.apply(thisExpression, newDoc);
+				  }
+				  // lastly, remove the existing participant instance
+				  parent.removeChild(ourObj);
 
-        }
-
-
-        // lastly, remove the existing participant instance
-        parent.removeChild(ourObj);
-
-
-      }
-    }
-    catch (Exception je)
-    {
-      throw new java.lang.RuntimeException(je.getMessage());
-    }
-
+				}
+			}
+			catch (XPathExpressionException e)
+			{
+				throw new XMLVariance.MatchingException(_myPath.toString(), e);
+			}
+   
   }
 
   /**

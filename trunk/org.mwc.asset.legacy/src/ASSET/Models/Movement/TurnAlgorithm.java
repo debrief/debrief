@@ -1509,21 +1509,21 @@ public class TurnAlgorithm implements MWCModel
       res = turner.doTurn(res, sds, chars, 6250);
 
       // see how it looks
-      assertEquals("decelerated", 40, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
+      assertEquals("decelerated", 52.5, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
       assertEquals("dived", -82.5, res.getLocation().getDepth(), 0);
 
       // ok, now move forward a little more
       res = turner.doTurn(res, sds, chars, 6750);
 
       // see how it looks
-      assertEquals("decelerated", 20, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
+      assertEquals("decelerated", 32.5, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
       assertEquals("dived", -87.5, res.getLocation().getDepth(), 0);
 
       // ok, now move forward a little more
       res = turner.doTurn(res, sds, chars, 7000);
 
       // see how it looks
-      assertEquals("decelerated", 20, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
+      assertEquals("decelerated", 22.5, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
       assertEquals("dived", -90, res.getLocation().getDepth(), 0);
 
       // ok, now move forward a little more
@@ -1572,7 +1572,7 @@ public class TurnAlgorithm implements MWCModel
       res = turner.doTurn(stat, sds, chars, 6000);
 
       // see how it looks
-      assertEquals("decelerated", 50, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
+      assertEquals("decelerated", 100, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
       assertEquals("dived", -80, res.getLocation().getDepth(), 0);
 
       sds.setHeight(120);
@@ -1581,7 +1581,7 @@ public class TurnAlgorithm implements MWCModel
       res = turner.doTurn(res, sds, chars, 11000);
 
       // see how it looks
-      assertEquals("decelerated", 30, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
+      assertEquals("decelerated", 100, res.getSpeed().getValueIn(WorldSpeed.M_sec), 0);
       assertEquals("dived", -120, res.getLocation().getDepth(), 0);
 
 

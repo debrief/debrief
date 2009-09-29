@@ -11,6 +11,7 @@ package ASSET.Util.MonteCarlo;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
@@ -169,7 +170,7 @@ public final class XMLVariance
   /**
    * return the current value of the our variance in the suppled document
    */
-  public final String getValueIn(final org.jdom.Document document)
+  public final String getValueIn(final Document document)
   {
     String res = null;
     try
@@ -227,10 +228,10 @@ public final class XMLVariance
 					XPathConstants.NODESET);
       
     }
-    catch (Exception je)
-    {
+		catch (XPathExpressionException je)
+		{
       throw new IllegalExpressionException(theXPath, je);
-    }
+		}
 
     // keep track of the values we use - to become a hashmap
     String resStr = "";

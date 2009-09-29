@@ -9,23 +9,8 @@ package ASSET.Scenario.SuperSearch;
  * @version 1.0
  */
 
-import java.util.Iterator;
-import java.util.List;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-
 import ASSET.ParticipantType;
 import ASSET.Util.MonteCarlo.XMLVarianceList;
-import ASSET.Util.XML.ASSETReaderWriter;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
 
 public class SuperSearch {
 
@@ -67,9 +52,7 @@ public class SuperSearch {
    */
   protected int _startId;
 
-	private XPathFactory _myXpathFactory;
-
-  /** the counter for the current id number
+	/** the counter for the current id number
    *
    */
   protected static int _currentId;
@@ -305,79 +288,7 @@ public class SuperSearch {
 		return res;
 	}
 
-  /** read in our control data from the specified file
-   *
-   */
-  @SuppressWarnings("unchecked")
-	protected void configure(final java.io.InputStream input)
-  {
-
-    // read the stream into a document
-    SAXBuilder builder = ASSETReaderWriter.getSAXBuilder();
-
-    try
-    {
-      final Document doc = builder.build(input);
-
-      // get the root of our variables
-			if(_myXpathFactory == null)
-  			_myXpathFactory = XPathFactory.newInstance();
-			XPath xp = _myXpathFactory.newXPath();
-
-			// can we find a scenario generator?
-			XPathExpression xp2 = xp.compile("//SuperSearchControl");
-			Element el =  (Element) xp2.evaluate(doc,
-					XPathConstants.NODE);
-
-      if(el != null)
-      {
-        // get the name
-    //    final String name = el.getAttribute("Name").getValue();
-
-        // get the generator
-        final Element genny = el.getChild("Generator");
-
-        // get the x & y constraints
-        _xNum = genny.getAttribute("xNum").getIntValue();
-        _yNum = genny.getAttribute("yNum").getIntValue();
-        _timeStep = genny.getAttribute("timeStep").getIntValue();
-
-        // get the WorldArea
-        WorldLocation loc_a = null;
-        WorldLocation loc_b = null;
-        final Element area = genny.getChild("WorldArea");
-        final List<Object> points = area.getChildren("Location");
-        final Iterator<Object> it = points.iterator();
-        while (it.hasNext())
-        {
-          final Element thisLoc = (Element) it.next();
-          final Element shortLoc = thisLoc.getChild("shortLocation");
-          final double _lat = shortLoc.getAttribute("Lat").getDoubleValue();
-          final double _long = shortLoc.getAttribute("Long").getDoubleValue();
-          if(loc_a == null)
-           loc_a = new WorldLocation(_lat, _long, 0);
-          else
-           loc_b = new WorldLocation(_lat, _long, 0);
-        }
-
-        _area = new WorldArea(loc_a, loc_b);
-        _area.normalise();
-
-      }
-    }
-
-    catch(org.jdom.JDOMException e)
-    {
-      e.printStackTrace();
-      throw new java.lang.RuntimeException(e.getMessage());
-    }
-    catch(Exception e)
-    {
-      throw new java.lang.RuntimeException(e.getMessage());
-    }
-
-  }
-
+  
   //////////////////////////////////////////////////////////////////////////////////////////////////
   // testing for this class
   //////////////////////////////////////////////////////////////////////////////////////////////////

@@ -1016,7 +1016,7 @@ public class BatchCollatorHelper
         if (res == null)
           res = s;
         else
-          res += " " + s;
+          res += ", " + s;
       }
       return res;
     }
@@ -1231,9 +1231,9 @@ public class BatchCollatorHelper
 
 
       // get the result
-      nonPerCaseCC.getResult(name, units);
-      assertTrue("count wrongly performed", nonPerCaseCC.getResult(name, units).indexOf(nonPerCaseString) > 0);
-      assertTrue("collator name not included", nonPerCaseCC.getResult(name, units).indexOf(name) > 0);
+      String thisResult = nonPerCaseCC.getResult(name, units);
+      assertTrue("count wrongly performed", thisResult.indexOf(nonPerCaseString) > 0);
+      assertTrue("collator name not included", thisResult.indexOf(name) > 0);
 
       // and now the per-case instance
       // ok, add some items
@@ -1250,7 +1250,8 @@ public class BatchCollatorHelper
       // check we've stored them
       assertNotNull("store not created", perCaseCC._myData);
 
-      assertTrue("results wrongly performed", perCaseCC.getResult(name, units).indexOf(perCaseString) > 0);
+      final String newResult = perCaseCC.getResult(name, units);
+			assertTrue("results wrongly performed", newResult.indexOf(perCaseString) > 0);
 
     }
 
@@ -1335,7 +1336,7 @@ public class BatchCollatorHelper
       ListCollator cc = new ItemisedListCollator(false);
       ListCollator cc2 = new ItemisedListCollator(true);
 
-      doCoreTest(cc, cc2, "lister", "(a1 : 2.0), (a3 : 3.0)", "a,(a7 : 2.0), (a9 : sddfgsdfs)", "feet");
+      doCoreTest(cc, cc2, "lister", "a1 , 2.0", "a,a7 , 2.0", "feet");
 
       // ok, both collators should have some data in them now. do some more checking
 
@@ -1359,7 +1360,7 @@ public class BatchCollatorHelper
       FrequencyListCollator cc = new FrequencyListCollator(false);
       FrequencyListCollator cc2 = new FrequencyListCollator(true);
 
-      doCoreTest(cc, cc2, "lister", "(3.0: 2), (sddfgsdfs: 2),", "a, (2.0: 1), (sddfgsdfs: 2), (5.0: 2)", "feet");
+      doCoreTest(cc, cc2, "lister", "(3.0: 2), (sddfgsdfs: 2),", "a, (sddfgsdfs: 2), (2.0: 1), (5.0: 2)", "feet");
 
       // ok, both collators should have some data in them now. do some more checking
 

@@ -38,7 +38,7 @@
         </Location>
         <Speed Units="ft/s" Value="30"/>
       </Status>
-      <Waterfall Name="Go and do a couple of dips" IsAlive="true" StayAlive="false">
+      <Waterfall Name="Go and do a couple of dips" IsActive="true" StayAlive="false">
         <Trail Name="trail red">
           <TrailRange Units="nm" Value="1"/>
           <AllowableError Units="km" Value="2"/>
@@ -105,7 +105,7 @@
         </Location>
         <Speed Units="kts" Value="8"/>
       </Status>
-      <Waterfall StayAlive="false" IsAlive="true" Name="Surface behavior">
+      <Waterfall StayAlive="false" IsActive="true" Name="Surface behavior">
         <Wander Name="just wander around">
           <Range Units="nm" Value="9"/>
           <Location>

@@ -1886,7 +1886,7 @@ public abstract class LookupSensor extends CoreSensor
 			});
 
 			ASSET.Scenario.Observers.Recording.DebriefReplayObserver dr = new DebriefReplayObserver(
-					"c:/temp", null, true, "record file", true);
+					"test_reports", null, true, "record file", true);
 			dr.setup(scenario);
 
 			for (int i = 0; i < 4000; i++)
@@ -1990,7 +1990,7 @@ public abstract class LookupSensor extends CoreSensor
 			CoreScenario cs = new CoreScenario();
 			try
 			{
-				String fName = "d:/dev/asset/src/test_data/lookup_tutorial_scenario.xml";
+				String fName = "../org.mwc.asset.sample_data/data/lookup_tutorial_scenario.xml";
 				java.io.FileInputStream fis = new java.io.FileInputStream(fName);
 				ASSET.Util.XML.ASSETReaderWriter.importThis(cs, fName, fis);
 			}
@@ -2007,7 +2007,7 @@ public abstract class LookupSensor extends CoreSensor
 			assertEquals("all parts loaded", 4, cs.getListOfParticipants().length, 0);
 
 			// run through for a few hours, recording to file
-			DebriefReplayObserver dro = new DebriefReplayObserver("./", "test_tutorial.rep",
+			DebriefReplayObserver dro = new DebriefReplayObserver("./test_reports", "test_tutorial.rep",
 					true, "test observer", true);
 			dro.setup(cs);
 

@@ -825,7 +825,7 @@ public class OnTopWaypoint extends WaypointVisitor
       assertEquals("on correct course", 46, helo.getStatus().getCourse(), 1);
 
       // check we're at the correct finish point
-      WorldLocation endPoint = new WorldLocation(0.07776733, 0.089824, 0);
+      WorldLocation endPoint = new WorldLocation(0.0776899319,0.089914902, 0);
       double rng = helo.getStatus().getLocation().subtract(endPoint).getRange();
       rng = MWC.Algorithms.Conversions.Degs2m(rng);
       assertEquals("at correct end point:" + helo.getStatus().getLocation().getLat() + "," + helo.getStatus().getLocation().getLong(), 0, rng, 1);

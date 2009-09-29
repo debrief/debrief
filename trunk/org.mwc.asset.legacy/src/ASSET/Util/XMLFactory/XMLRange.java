@@ -8,7 +8,8 @@
  */
 package ASSET.Util.XMLFactory;
 
-import org.jdom.Element;
+import org.w3c.dom.Element;
+
 import ASSET.Util.RandomGenerator;
 
 public class XMLRange implements XMLOperation
@@ -46,10 +47,10 @@ public class XMLRange implements XMLOperation
     try
     {
       // get the data items
-      _min = element.getAttribute("min").getDoubleValue();
-      _max = element.getAttribute("max").getDoubleValue();
-      _step = element.getAttribute("step").getDoubleValue();
-      final String fr = element.getAttribute("format").getValue();
+      _min = Double.parseDouble(element.getAttribute("min"));
+      _max = Double.parseDouble(element.getAttribute("max"));
+      _step = Double.parseDouble(element.getAttribute("step"));
+      final String fr = element.getAttribute("format");
       if(fr != null)
         _format = new java.text.DecimalFormat(fr);
 
@@ -57,7 +58,7 @@ public class XMLRange implements XMLOperation
       newPermutation();
 
     }
-    catch(org.jdom.DataConversionException de)
+    catch(NumberFormatException de)
     {
       de.printStackTrace();
       throw new java.lang.RuntimeException("Poor XMLRange data");

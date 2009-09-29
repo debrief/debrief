@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
-<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:///d:/dev/Asset/src/schemas/ASSET.xsd" OutputDirectory="c:/temp/asset_test_output/force_prot2">
+<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schemas/ASSET.xsd" OutputDirectory="test_reports/asset_test_output/force_prot2">
   <ScoGenerator OutputDirectory="./" Filename="res">
     <MultiScenarioGenerator NameTemplate="output" Number="3">
       <VarianceList>

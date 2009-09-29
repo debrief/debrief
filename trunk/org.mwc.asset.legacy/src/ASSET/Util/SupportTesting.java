@@ -39,7 +39,7 @@ import java.util.Iterator;
 public class SupportTesting extends junit.framework.TestCase
 {
 
-  static final String TEST_DIR = "c://temp//";
+  static final String TEST_DIR = "./test_reports/";
 
 
   /**

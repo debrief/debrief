@@ -549,7 +549,7 @@ public class MADLookupSensor extends LookupSensor
     public void testRead()
     {
       String fileName = "lookup_test_scenario.xml";
-      fileName = "../src/java/asset_src/asset/models/sensor/lookup/" + fileName;
+      fileName = "src/ASSET/Models/Sensor/Lookup/" + fileName;
 
       CoreScenario scen = new CoreScenario();
       try

@@ -10,11 +10,11 @@ import java.io.*;
 import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.xml.serialize.*;
-import org.jdom.input.SAXBuilder;
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 import ASSET.ScenarioType;
 import ASSET.Models.SensorType;
@@ -480,16 +480,6 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
   }
 
-  public static SAXBuilder getSAXBuilder()
-  {
-    // read the stream into a document
-    final SAXBuilder builder = new SAXBuilder();
-    builder.setFeature("http://xml.org/sax/features/validation",
-                       false);
-    builder.setFeature("http://apache.org/xml/features/nonvalidating/load-external-dtd",
-                       false);
-    return builder;
-  }
 
   /**
    * handy container to let us pass the complex scenario controller structure around

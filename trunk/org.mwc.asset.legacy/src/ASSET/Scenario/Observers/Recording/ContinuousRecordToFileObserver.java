@@ -206,6 +206,10 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
 
       // and do the setup
       observer.setup(cs);
+      
+      // sort out the data file
+      observer.createOutputFile();
+  
 
       assertTrue("listeners weren't added", _listenersAdded);
       assertNotNull("output file wasn't created", observer._os);
@@ -224,7 +228,7 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
 
     }
 
-    protected String dir_name = "c:/temp";
+    protected String dir_name = "test_reports";
     protected String file_name = "cont_observer";
 
     //////////////////////////////////////////////////

@@ -18,13 +18,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.StringReader;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Vector;
 
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
@@ -188,176 +186,117 @@ public final class MultiScenarioGenerator
 		return _myFileTemplate + index;
 	}
 
-	public final Document[] createNewRandomisedPermutations()
-			throws XMLVariance.IllegalExpressionException,
-			XMLVariance.MatchingException
-	{
+  public final Document[] createNewRandomisedPermutations() throws XMLVariance.IllegalExpressionException,
+    XMLVariance.MatchingException
+  {
 		Vector<Document> results = new Vector<Document>(0, 1);
 
-		// take a copy of the document
-		final String currentDoc = ScenarioGenerator.writeToString(_myDocument);
 
-		// keep track of number of compliant instances created
-		int counter = 0;
+    // take a copy of the document
+    final String currentDoc = ScenarioGenerator.writeToString(_myDocument);
 
-		int[] ranges =
-		{ 1000, 2000, 4000 };
-		int[] sectors =
-		{ 1, 46, 91, 136, 181, 226, 271, 316 };
-		double[] courses =
-		{ 0.1, 22.6, 45.1, 67.6, 90.1, 112.6, 135.1, 157.6, 180.1, 202.6, 225.1,
-				247.6, 270.1, 292.6, 315.1, 337.6 };
-		int[] speeds =
-		{ 6, 10 };
-		//		
-		//
-		// int[] ranges = {1000};
-		// int[] sectors = {316};
-		// double[] courses = {337.5};
-		// int[] speeds = {6};
+    // keep a record of the scenarios we create, since
+    // the user may want to create a specific number of
+    // permutations of each test-case
+    HashMap<String, Integer> map = new HashMap<String, Integer>();
 
-		// loop through the sector for the start location
-		// for (int thisRespond = 0; thisRespond < choiceList.length; thisRespond++)
-		// {
+    // keep track of number of compliant instances created
+    int counter = 0;
 
-		// loop through start ranges
-		for (int thisR = 0; thisR < ranges.length; thisR++)
-		{
-			// loop through the sector for the start location
-			for (int thisS = 0; thisS < sectors.length; thisS++)
-			{
-				// loop through start courses
-				for (int thisC = 0; thisC < courses.length; thisC++)
-				{
-					// loop through this speed
-					for (int thisSpd = 0; thisSpd < speeds.length; thisSpd++)
-					{
-						int choice = 0; // choiceList[thisRespond];
-						int range = ranges[thisR];
-						double course = courses[thisC];
-						int sector = sectors[thisS];
-						int speed = speeds[thisSpd];
+    // keep track of how many we've tried to generate
+    int attempts = 0;
 
-						// create a clone of the provided document
-						Document newDoc = createClone(currentDoc);
+    // set a max limit - to stop mad error conditions
 
-						// generate the new scenario
-						generateScenarioFor(newDoc, choice, range, course, sector, speed);
+    // loop through our permutations
+    while (counter < _numPerms)
+    {
+      // create a clone of the provided document
+      Document newDoc = createClone(currentDoc);
 
-						counter++;
+      attempts++;
 
-						// rename the scenario - we only do it at this point since
-						// there are situations where scenarios get ditched, we ignore
-						// those
-						// in order to get a continuous series of scenario numbers
-						NodeList list = newDoc
-								.getElementsByTagName(ScenarioHandler.SCENARIO_NAME);
-						Element scen = (Element) list.item(0);
-						String theName = "scen," + counter + "," + choice + "," + range
-								+ "," + course + "," + sector + "," + speed;
-						scen.setAttribute(SCENARIO_NAME_ATTRIBUTE, theName);
+      String thisHash = applyVariances(newDoc);
 
-						// store the case description for this scenario
-						setScenarioCase(newDoc, "case details");
+      // have we already found this hash?
+      boolean isValid = true;
+      if (map.containsKey(thisHash))
+      {
+        // yes, how many have been set?
+        Integer count = map.get(thisHash);
 
-						// and now store it
-						results.add(newDoc);
+        // are we counting permutations
+        if (_maxPerms != -1)
+        {
+          // so, how many are we at
+          if (count.intValue() < _maxPerms)
+          {
+            isValid = true;
+            // and increment the counter
+            map.put(thisHash, new Integer(count.intValue() + 1));
+          }
+          else
+          {
+            isValid = false;
+          }
+        }
+        else
+        {
+          // not tracking - don't bother
+          isValid = true;
+        }
+      }
+      else
+      {
+        // first time we've found this one
+        isValid = true;
 
-						// and announce the progress to the command line
-						ScenarioGenerator.outputProgress(counter);
+        // and create it
+        map.put(thisHash, new Integer(1));
+      }
 
-					}
-				}
-			}
-			// }
-		}
+      if (isValid)
+      {
+        //
+        counter++;
 
-		// make sure the command line's on a new line
-		System.out.println(" created:" + counter);
+        // rename the scenario - we only do it at this point since
+        // there are situations where scenarios get ditched, we ignore those
+        // in order to get a continuous series of scenario numbers
+        renameScenario(newDoc, counter);
 
-		Document[] res = (Document[]) results.toArray(new Document[]
-		{});
+        // store the case description for this scenario
+        setScenarioCase(newDoc, thisHash);
 
-		return res;
-	}
+        // and now store it
+        results.add(newDoc);
 
-	private class AttributeChange
-	{
-		private final String _path;
+        // and announce the progress to the command line
+        ScenarioGenerator.outputProgress(counter);
+      }
+      else
+      {
+        // just ditch it
+        newDoc = null;
+      }
 
-		private final String _newVal;
+      // include drop-dead case for a insolveable loop
+      if (attempts > 2 * _numPerms)
+      {
+        System.err.println("Not possible to create valid number of acceptable permutations");
+      }
 
-		private final String _attribute;
+    }
 
-		public AttributeChange(String path, String attribute, String newVal)
-		{
-			_path = path;
-			_newVal = newVal;
-			_attribute = attribute;
-		}
+    // make sure the command line's on a new line
+    System.out.println(" attempted:" + attempts + " created:" + counter);
 
-		public void applyTo(Document target)
-		{
+    Document[] res = results.toArray(new Document[]{});
 
-			XPathFactory xpf = XPathFactory.newInstance();
-			XPath xp = xpf.newXPath();
-			XPathExpression xp2;
-			try
-			{
-				xp2 = xp.compile(_path);
+    return res;
+  }
 
-				NodeList nl = (NodeList) xp2.evaluate(target, XPathConstants.NODESET);
-				if (nl.getLength() < 0)
-				{
-					Element thisE = (Element) nl.item(0);
-					thisE.setAttribute(_attribute, _newVal);
-				}
-			}
-			catch (XPathExpressionException e)
-			{
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-	}
 
-	private void generateScenarioFor(Document newDoc, int choice, int range,
-			double course, int sector, int speed)
-	{
-		// finally the start location
-		double xLoc = 10000 + range
-				* Math.sin(MWC.Algorithms.Conversions.Degs2Rads(sector));
-		double yLoc = 10000 + range
-				* Math.cos(MWC.Algorithms.Conversions.Degs2Rads(sector));
-
-		// and store the list
-		Vector<AttributeChange> theChanges = new Vector<AttributeChange>(0, 1);
-		theChanges.add(new AttributeChange("//SSN[@Name='BLUE']//Speed", "Value",
-				"" + speed));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status",
-				"Course", "" + course));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']//Speed",
-				"Value", "" + speed));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status//North",
-				"Value", "" + (int) yLoc));
-		theChanges.add(new AttributeChange("//SSN[@Name='REACTIVE']/Status//East",
-				"Value", "" + (int) xLoc));
-		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']/Status",
-				"Course", "" + course));
-		theChanges.add(new AttributeChange("//SSN[@Name='UNREACTIVE']//Speed",
-				"Value", "" + speed));
-		theChanges.add(new AttributeChange(
-				"//SSN[@Name='UNREACTIVE']/Status//North", "Value", "" + (int) yLoc));
-		theChanges.add(new AttributeChange(
-				"//SSN[@Name='UNREACTIVE']/Status//East", "Value", "" + (int) xLoc));
-
-		// and loop through the changes
-		for (Iterator<AttributeChange> iter = theChanges.iterator(); iter.hasNext();)
-		{
-			AttributeChange change = (AttributeChange) iter.next();
-			change.applyTo(newDoc);
-		}
-	}
 
 	public final Document[] createNewRandomisedPermutationsOld()
 			throws XMLVariance.IllegalExpressionException,
@@ -396,7 +335,7 @@ public final class MultiScenarioGenerator
 			if (map.containsKey(thisHash))
 			{
 				// yes, how many have been set?
-				Integer count = (Integer) map.get(thisHash);
+				Integer count = map.get(thisHash);
 
 				// are we counting permutations
 				if (_maxPerms != -1)
@@ -465,7 +404,7 @@ public final class MultiScenarioGenerator
 		// make sure the command line's on a new line
 		System.out.println(" attempted:" + attempts + " created:" + counter);
 
-		Document[] res = (Document[]) results.toArray(new Document[]
+		Document[] res = results.toArray(new Document[]
 		{});
 
 		return res;
@@ -502,7 +441,7 @@ public final class MultiScenarioGenerator
 	{
 		for (int counter = 0; counter < scenarios.size(); counter++)
 		{
-			Document thisDoc = (Document) scenarios.elementAt(counter);
+			Document thisDoc = scenarios.elementAt(counter);
 
 			String asString = ScenarioGenerator.writeToString(thisDoc);
 
@@ -614,10 +553,12 @@ public final class MultiScenarioGenerator
 		{
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
-				code_root = "..\\src\\java";
+				code_root = "src";
 
 			final String docPath = code_root
-					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+					+ "/ASSET/Util/MonteCarlo/";
+			
+			System.out.println("curent dir is:" + System.getProperty("user.dir"));
 
 			// create server
 			Document document = null;
@@ -692,10 +633,10 @@ public final class MultiScenarioGenerator
 			// get the file to read in
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
-				code_root = "..\\src\\java";
+				code_root = "src";
 
 			final String docPath = code_root
-					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+					+ "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -839,10 +780,10 @@ public final class MultiScenarioGenerator
 			// get the file to read in
 			String code_root = System.getProperty("CODE_ROOT");
 			if (code_root == null)
-				code_root = "..\\src\\java";
+				code_root = "src";
 
 			final String docPath = code_root
-					+ "\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\";
+					+ "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -892,7 +833,7 @@ public final class MultiScenarioGenerator
 						.getAttribute("DetectionLevel"));
 
 				xp = xpf.newXPath();
-				xp2 = xp.compile("//Participants/Helo//Investigate");
+				xp2 = xp.compile("//Participants/Helo//Investigate//Type");
 				nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				thisE = (Element) nl.item(0);

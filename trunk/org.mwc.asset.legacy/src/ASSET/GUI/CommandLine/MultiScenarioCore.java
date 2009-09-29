@@ -368,8 +368,8 @@ public class MultiScenarioCore
 			bos.reset();
 			bes.reset();
 			String[] args = new String[2];
-			args[0] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_scenario.xml";
-			args[1] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
+			args[1] = "src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
+			args[0] = "src/ASSET/Util/MonteCarlo/test_variance1.xml";
 			// args[1] =
 			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
 			MultiScenarioCore scen = new MultiScenarioCore();
@@ -387,8 +387,8 @@ public class MultiScenarioCore
 		public void testCommandLineMainProcessing()
 		{
 			String[] args = new String[2];
-			args[0] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_scenario.xml";
-			args[1] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_realistic.xml";
+			args[0] = "src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
+			args[1] = "src/ASSET/Util/MonteCarlo/test_variance_realistic.xml";
 
 			CommandLine.main(args);
 		}

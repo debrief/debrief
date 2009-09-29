@@ -251,7 +251,7 @@ public class CoreMovement implements MovementType, java.io.Serializable
 
       CoreScenario dummyScenario = new CoreScenario();
 
-      TrackPlotObserver tpo = new TrackPlotObserver("./", 400, 400, "tpo.png",
+      TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 400, 400, "tpo.png",
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false,  "test observer", true);
       tpo.setup(dummyScenario);
@@ -321,7 +321,7 @@ public class CoreMovement implements MovementType, java.io.Serializable
 
       CoreScenario dummyScenario = new CoreScenario();
 
-      TrackPlotObserver tpo = new TrackPlotObserver("./", 400, 400, "tpo.png",
+      TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 400, 400, "tpo.png",
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false, "test observer", true);
       tpo.setup(dummyScenario);

@@ -773,7 +773,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       current.setSpeed(new WorldSpeed(10.172, WorldSpeed.M_sec));
       current.setCourse(0);
 
-      TrackPlotObserver tpo = new TrackPlotObserver("./", 400, 400, "transit2b.png",
+      TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 400, 400, "transit2b.png",
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false, "test observer", true);
       CoreParticipant cp = OnTopWaypoint.createTestHelo();
@@ -781,7 +781,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       cp.setMovementChars(chars);
       cp.setStatus(current);
 
-      ASSET.Scenario.Observers.Recording.DebriefReplayObserver dr = new DebriefReplayObserver("./", null, false, "test observer", true);
+      ASSET.Scenario.Observers.Recording.DebriefReplayObserver dr = new DebriefReplayObserver("./test_reports", null, false, "test observer", true);
 
       CoreScenario cs = new CoreScenario();
       cs.addParticipant(cp.getId(), cp);
@@ -855,7 +855,7 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       current.setSpeed(new WorldSpeed(10.172, WorldSpeed.M_sec));
       current.setCourse(0);
 
-      TrackPlotObserver tpo = new TrackPlotObserver("./", 400, 400, "testAcceleratingForwardLoopRoute.png",
+      TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 400, 400, "testAcceleratingForwardLoopRoute.png",
                                                     new WorldDistance(100, WorldDistance.METRES),
                                                     false, true, false, "test observer", true);
       CoreParticipant cp = OnTopWaypoint.createTestHelo();
@@ -863,8 +863,8 @@ public class TransitWaypoint extends CoreDecision implements java.io.Serializabl
       cp.setMovementChars(chars);
       cp.setStatus(current);
 
-      ASSET.Scenario.Observers.Recording.DebriefReplayObserver dr = new DebriefReplayObserver("./", "testAcceleratingForwardLoopRoute.rep", false, "test observer", true);
-      ASSET.Scenario.Observers.Recording.CSVTrackObserver csv = new CSVTrackObserver("./", "testAcceleratingForwardLoopRoute.csv", false, "test observer", true);
+      ASSET.Scenario.Observers.Recording.DebriefReplayObserver dr = new DebriefReplayObserver("./test_reports", "testAcceleratingForwardLoopRoute.rep", false, "test observer", true);
+      ASSET.Scenario.Observers.Recording.CSVTrackObserver csv = new CSVTrackObserver("./test_reports", "testAcceleratingForwardLoopRoute.csv", false, "test observer", true);
 
       CoreScenario cs = new CoreScenario();
       cs.addParticipant(cp.getId(), cp);

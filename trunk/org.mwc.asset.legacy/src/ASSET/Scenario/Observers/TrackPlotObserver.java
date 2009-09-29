@@ -694,7 +694,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
     {
 
 
-      final String directoryName = "./";
+      final String directoryName = "./test_reports/";
       final String fileName = "res.png";
 
       TrackPlotObserver tpo = new TrackPlotObserver(directoryName, 400, 400, fileName,
@@ -765,7 +765,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
       File file = new File(directoryName + fileName);
       assertTrue("file got created", file.exists());
       System.out.println("file size is:" + file.length());
-      assertEquals("file is of correct size", (float) 3707, (float) file.length(), 100);
+      assertEquals("file is of correct size", (float) 3823, (float) file.length(), 100);
     }
   }
 

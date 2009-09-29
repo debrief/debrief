@@ -449,9 +449,9 @@ public class MarkDip extends CoreDecision implements Serializable
       hel.setDecisionModel(sq);
       cs.setScenarioStepTime(2000);
 
-      TrackPlotObserver tpo = new TrackPlotObserver("./", 400, 400, "mark_dip.png", null, true, true, false, "test observer", true);
+      TrackPlotObserver tpo = new TrackPlotObserver("./test_reports/", 400, 400, "mark_dip.png", null, true, true, false, "test observer", true);
       tpo.setup(cs);
-      DebriefReplayObserver dbo = new DebriefReplayObserver("./", "mark_dip.rep", false, "test observer", true);
+      DebriefReplayObserver dbo = new DebriefReplayObserver("./test_reports", "mark_dip.rep", false, "test observer", true);
       dbo.setup(cs);
 
       for (int i = 0; i < 190; i++)

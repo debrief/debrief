@@ -407,7 +407,7 @@ public class MultiScenarioCommandLine
       bos.reset();
       bes.reset();
       args = new String[1];
-      args[0] = "..\\src\\java\\ASSET_SRC\\Util\\MonteCarlo\\small_test_scenario.xml";
+      args[0] = "src/ASSET/Util/MonteCarlo/small_test_scenario.xml";
 
       scen = new MultiScenarioCommandLine();
       res = scen.processThis(args, out, err, in);
@@ -423,8 +423,8 @@ public class MultiScenarioCommandLine
       bos.reset();
       bes.reset();
       args = new String[2];
-      args[0] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\small_test_scenario.xml";
-      args[1] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_invalid.xml";
+      args[0] = "src/ASSET/Util/MonteCarlo/small_test_scenario.xml";
+      args[1] = "src/ASSET/Util/MonteCarlo/test_variance_invalid.xml";
       scen = new MultiScenarioCommandLine();
       res = scen.processThis(args, out, err, in);
 
@@ -447,8 +447,8 @@ public class MultiScenarioCommandLine
       bos.reset();
       bes.reset();
       String[] args = new String[2];
-      args[0] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_scenario.xml";
-      args[1] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
+      args[0] = "src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
+      args[1] = "src/ASSET/Util/MonteCarlo/test_variance1.xml";
       //      args[1] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
       MultiScenarioCommandLine scen = new MultiScenarioCommandLine();
       int res = scen.processThis(args, out, err, in);
@@ -465,8 +465,8 @@ public class MultiScenarioCommandLine
     public void testCommandLineMainProcessing()
     {
       String[] args = new String[2];
-      args[0] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_scenario.xml";
-      args[1] = "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance_realistic.xml";
+      args[0] = "src/ASSET/Util/MonteCarlo/test_variance_scenario.xml";
+      args[1] = "src/ASSET/Util/MonteCarlo/test_variance_realistic.xml";
 
       CommandLine.main(args);
     }

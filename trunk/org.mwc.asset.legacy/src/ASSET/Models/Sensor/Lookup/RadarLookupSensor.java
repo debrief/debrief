@@ -620,7 +620,7 @@ public class RadarLookupSensor extends LookupSensor
     public void testRead()
     {
       String fileName = "lookup_test_scenario.xml";
-      fileName = "d:/dev/asset/src/java/asset_src/asset/models/sensor/lookup/" + fileName;
+      fileName = "src/ASSET/Models/Sensor/Lookup/" + fileName;
 
       CoreScenario scen = new CoreScenario();
       try
@@ -692,7 +692,7 @@ public class RadarLookupSensor extends LookupSensor
         }
       });
 
-      DebriefReplayObserver dro = new DebriefReplayObserver("c:/temp", "radar_lookup.rep", true, "test observer", true);
+      DebriefReplayObserver dro = new DebriefReplayObserver("test_reports", "radar_lookup.rep", true, "test observer", true);
       dro.setup(scen);
 
 
