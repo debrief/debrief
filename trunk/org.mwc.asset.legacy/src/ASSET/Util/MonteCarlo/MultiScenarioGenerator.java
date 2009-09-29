@@ -1083,7 +1083,7 @@ public final class MultiScenarioGenerator
 					XPath xp = xpf.newXPath();
 					XPathExpression xp2 = xp
 							.compile("//Participants/*[@Name='SAM_FISHER']");
-					NodeList nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+					NodeList nl = (NodeList) xp2.evaluate(resDocument,
 							XPathConstants.NODESET);
 					Element thisE = (Element) nl.item(0);
 					assertNotNull("found our participant", thisE);
@@ -1092,7 +1092,7 @@ public final class MultiScenarioGenerator
 					// did we change the sea state?
 					xp = xpf.newXPath();
 					xp2 = xp.compile("//Environment");
-					nl = (NodeList) xp2.evaluate(thisVarianceDocument,
+					nl = (NodeList) xp2.evaluate(resDocument,
 							XPathConstants.NODESET);
 					thisE = (Element) nl.item(0);
 

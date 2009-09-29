@@ -3,17 +3,12 @@
  */
 package org.qinetiq.data_feed.feed;
 
-import java.awt.Color;
 import java.awt.event.ActionEvent;
-import java.util.Date;
 
-import Debrief.ReaderWriter.Replay.*;
-import Debrief.Wrappers.*;
-import MWC.GenericData.*;
-import MWC.TacticalData.*;
-import MWC.Utilities.ReaderWriter.PlainImporterBase;
+import org.mwc.debrief.data_feed.views.LiveFeedViewer;
+import org.mwc.debrief.data_feed.views.RealTimeProvider;
+
 import MWC.Utilities.Timer.TimerListener;
-import org.mwc.debrief.data_feed.views.*;
 
 /**
  * @author ian.mayo
@@ -32,27 +27,7 @@ public class QinetiQDataProvider implements RealTimeProvider, TimerListener
 	 */
 	private LiveFeedViewer _myHost;
 
-	/** DUMMY time-generator
-	 * 
-	 */
-	private HiResDate _dtg;
-
-	/** DUMMY previous location
-	 * 
-	 */
-	private WorldLocation _lastLoc;
-
-	/** useful - generate String from data item
-	 * 
-	 */
-	private PlainImporterBase _iff;
-
-	/** useful - parent for positions we're creating
-	 * 
-	 */
-	private TrackWrapper _trk;
-
-  public QinetiQDataProvider()
+	public QinetiQDataProvider()
   {
 
 		/** DUMMY the timer-related settings

@@ -30,6 +30,11 @@ import org.jfree.ui.RefineryUtilities;
 public class First extends ApplicationFrame
 {
 	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/**
 	 * A demonstration application showing how to create a simple time series
 	 * chart. This example uses monthly data.
 	 * 
@@ -92,6 +97,7 @@ public class First extends ApplicationFrame
 	 * 
 	 * @return the dataset.
 	 */
+	@SuppressWarnings("deprecation")
 	private static XYDataset createDataset()
 	{
 		TimeSeries s1 = new TimeSeries("L&G European Index Trust", Month.class);

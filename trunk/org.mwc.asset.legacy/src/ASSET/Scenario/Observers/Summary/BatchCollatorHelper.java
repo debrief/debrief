@@ -404,17 +404,6 @@ public class BatchCollatorHelper
     }
 
     /**
-     * find out if this datum is a number
-     *
-     * @param datum the data result to inspect
-     * @return yes/no
-     */
-    static protected boolean isANumber(Object datum)
-    {
-      return (datum instanceof Number);
-    }
-
-    /**
      * ok, this hasn't got to be managed on a per-case basis, do the simple stuff
      *
      * @param scenario_name
@@ -1153,33 +1142,6 @@ public class BatchCollatorHelper
       return processCaseResult(scenario_name, thisCase, "" + datum);
     }
 
-
-    /**
-     * convert to object to a number
-     *
-     * @param datum
-     * @return
-     */
-    protected String objectToString(Object datum)
-    {
-      String res;
-      if (datum instanceof Integer || datum instanceof Long)
-      {
-        Number thisNum = (Number) datum;
-        res = "" + thisNum.longValue();
-      }
-      else if (datum instanceof Double || datum instanceof Float)
-      {
-        Number thisNum = (Number) datum;
-        res = "" + thisNum.doubleValue();
-      }
-      else
-
-        res = datum.toString();
-
-
-      return res;
-    }
 
     /**
      * we haven't processed this case yet, create a container for it
