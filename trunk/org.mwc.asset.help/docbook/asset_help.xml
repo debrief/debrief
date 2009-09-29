@@ -8379,8 +8379,8 @@
 				Units="nm" Value="0"/&gt; &lt;East Units="nm" Value="0"/&gt; &lt;Height
 				Units="ft" Value="500"/&gt; &lt;/relativeLocation&gt; &lt;/Location&gt;
             &lt;Speed Units="kts" Value="140"/&gt; &lt;/Status&gt; &lt;Waterfall Name="Go
-				and do a couple of dips" IsAlive="true" &gt; &lt;Investigate
-				Name="Find fishermen" DetectionLevel="Identified" IsAlive="true"&gt;
+				and do a couple of dips" IsActive="true" &gt; &lt;Investigate
+				Name="Find fishermen" DetectionLevel="Identified" IsActive="true"&gt;
             &lt;TargetType&gt; &lt;Type Name="FISHING_VESSEL"/&gt; &lt;/TargetType&gt;
             &lt;/Investigate&gt; &lt;LadderSearch Name="First ladder search"
 				LadderAxis="90"&gt; &lt;StartPoint&gt; &lt;relativeLocation&gt; &lt;North
@@ -8411,7 +8411,7 @@
 				Fuel="22"&gt; &lt;Location&gt; &lt;relativeLocation&gt; &lt;North Units="nm"
 				Value="5"/&gt; &lt;East Units="nm" Value="5"/&gt; &lt;/relativeLocation&gt;
             &lt;/Location&gt; &lt;Speed Units="m/s" Value="16"/&gt; &lt;/Status&gt;
-            &lt;Waterfall Name="Do some stuff" IsAlive="true" &gt;
+            &lt;Waterfall Name="Do some stuff" IsActive="true" &gt;
             &lt;RectangleWander Name="just wander around my area"&gt; &lt;Area&gt;
             &lt;TopLeft&gt; &lt;relativeLocation&gt; &lt;North Units="nm" Value="40"/&gt;
             &lt;East Units="nm" Value="40"/&gt; &lt;/relativeLocation&gt; &lt;/TopLeft&gt;
@@ -8431,7 +8431,7 @@
             &lt;relativeLocation&gt; &lt;North Units="nm" Value="4"/&gt; &lt;East
 				Units="nm" Value="3"/&gt; &lt;/relativeLocation&gt; &lt;/Location&gt; &lt;Speed
 				Units="m/s" Value="16"/&gt; &lt;/Status&gt; &lt;Waterfall Name="Fishing vessel
-				behaviour" IsAlive="true" &gt; &lt;RectangleWander Name="just
+				behaviour" IsActive="true" &gt; &lt;RectangleWander Name="just
 				wander around my area"&gt; &lt;Area&gt; &lt;TopLeft&gt;
             &lt;relativeLocation&gt; &lt;North Units="nm" Value="40"/&gt; &lt;East
 				Units="nm" Value="40"/&gt; &lt;/relativeLocation&gt; &lt;/TopLeft&gt;
