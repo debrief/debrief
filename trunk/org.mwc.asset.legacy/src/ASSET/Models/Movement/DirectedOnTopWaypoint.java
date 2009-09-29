@@ -469,10 +469,6 @@ public class DirectedOnTopWaypoint extends WaypointVisitor
 			 * 
 			 */
 			private static final long serialVersionUID = 1L;
-
-			public PointsTooCloseException()
-      {
-      }
     }
 
   }
