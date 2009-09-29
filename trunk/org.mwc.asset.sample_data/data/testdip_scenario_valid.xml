@@ -27,7 +27,7 @@
 				</Location>
 				<Speed Units="m/s" Value="4"/>
 			</Status>
-			<Sequence Name="Go and do a couple of dips" IsAlive="true" StayAlive="false">
+			<Sequence Name="Go and do a couple of dips" IsActive="true" StayAlive="false">
 				<Move Name="move across a bit" Course="66">
 					<Speed Units="m/s" Value="12"/>
 					<Height Units="m" Value="300"/>
