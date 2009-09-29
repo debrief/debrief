@@ -2,13 +2,10 @@ package com.visutools.nav.bislider;
 
 import java.awt.AWTException;
 import java.awt.BorderLayout;
-import java.awt.event.*;
-import java.awt.geom.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.GradientPaint;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Point;
@@ -18,12 +15,38 @@ import java.awt.RenderingHints;
 import java.awt.Robot;
 import java.awt.Shape;
 import java.awt.SystemColor;
-import javax.swing.*;
-import javax.swing.event.*;
-import java.io.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
+import java.awt.event.InputEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
+import java.awt.geom.Rectangle2D;
+import java.awt.geom.RoundRectangle2D;
+import java.io.Serializable;
 import java.util.Hashtable;
-import java.util.List;
 import java.util.Vector;
+
+import javax.swing.BorderFactory;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.Popup;
+import javax.swing.PopupFactory;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.UIManager;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 import javax.swing.plaf.ColorUIResource;
 import javax.swing.plaf.metal.MetalLookAndFeel;
 
@@ -1128,98 +1151,94 @@ public class BiSliderPresentation implements Serializable, MouseListener,
 	 * @author Christophe Jacquet, Frederic Vernier <tt>false</tt>, it will be
 	 *         painted downward
 	 */
-	@SuppressWarnings("unchecked")
 	private void paintThumb(Graphics Graphics_Arg, boolean up, Polygon Thumb_Arg,
 			Color MainColor_Arg, Color DarkColor_Arg, Color BrightColor_Arg)
 	{
 
 		Graphics2D G2 = (Graphics2D) Graphics_Arg;
-		// System.out.println("UIManager.getLookAndFeel() =
-		// "+UIManager.getLookAndFeel().getName());
-		// System.out.println("MetalLookAndFeel.getCurrentTheme() =
-		// "+MetalLookAndFeel.getCurrentTheme().getName());
-
-		// if (UIManager.getLookAndFeel().getName().equals("Metal") &&
-		// MetalLookAndFeel.getCurrentTheme().getName().equals("Ocean")) {
-		if (UIManager.getLookAndFeel().getName().equals("Metal") && false)
-		{
-			Color BackColor = null;
-			Object SliderBackColor = UIManager.getLookAndFeel().getDefaults().get(
-					"Slider.gradient");
-			if (SliderBackColor != null && SliderBackColor instanceof List)
-			{
-				List GradientProperties = (List) SliderBackColor;
-				Float Cut1 = (Float) GradientProperties.get(0);
-				Float Cut2 = (Float) GradientProperties.get(1);
-				Color Color1 = (Color) GradientProperties.get(2);
-				Color Color2 = (Color) GradientProperties.get(3);
-				Color Color3 = (Color) GradientProperties.get(4);
-				float Rem = 1f - Cut2.floatValue() - 2 * Cut1.floatValue();
-				int x1 = up ? Thumb_Arg.xpoints[0] : Thumb_Arg.xpoints[6];
-				int y1 = up ? Thumb_Arg.ypoints[0] : Thumb_Arg.ypoints[6];
-
-				int x2 = up ? Thumb_Arg.xpoints[1] : Thumb_Arg.xpoints[5];
-				int y2 = up ? Thumb_Arg.ypoints[1] : Thumb_Arg.ypoints[5];
-
-				Shape Shape0 = G2.getClip();
-				G2.setClip(Thumb_Arg);
-				if (up)
-				{
-					GradientPaint GradientPaint1 = new GradientPaint(x1 - 7, y1, Color3, x1, y1
-							+ (int) (16f * Rem), Color1);
-					GradientPaint GradientPaint2 = new GradientPaint(x1, y1 + (int) (16f * Rem),
-							Color1, x1, y1 + (int) (16f * (Rem + Cut1.floatValue())), Color2);
-					GradientPaint GradientPaint3 = new GradientPaint(x1, y1
-							+ (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), Color2, x1,
-							y1 + 16, Color3);
-
-					G2.setPaint(GradientPaint1);
-					G2.fillRect(x1 - 7, y1, 15, (int) (16f * Rem));
-					G2.setPaint(GradientPaint2);
-					G2.fillRect(x1 - 7, y1 + (int) (16f * Rem), 15,
-							(int) (16f * Cut1.floatValue()) + 1);
-					G2.setColor(Color2);
-					G2.fillRect(x1 - 7, y1 + (int) (16f * (Rem + Cut1.floatValue())), 15,
-							(int) (16f * Cut2.floatValue()) + 1);
-					G2.setPaint(GradientPaint3);
-					G2.fillRect(x1 - 7, y1
-							+ (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), 15,
-							(int) (16f * Cut1.floatValue()) + 1);
-				}
-				else
-				{
-					GradientPaint GradientPaint1 = new GradientPaint(x1 - 7, y1, Color3, x1, y1
-							- (int) (16f * Rem), Color1);
-					GradientPaint GradientPaint2 = new GradientPaint(x1, y1 - (int) (16f * Rem),
-							Color1, x1, y1 - (int) (16f * (Rem + Cut1.floatValue())), Color2);
-					GradientPaint GradientPaint3 = new GradientPaint(x1, y1
-							- (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), Color2, x1,
-							y1 - 16, Color3);
-
-					G2.setPaint(GradientPaint1);
-					G2.fillRect(x1 - 7, y1 - (int) (16f * Rem), 15, (int) (16f * Rem));
-					G2.setPaint(GradientPaint2);
-					G2.fillRect(x1 - 7, y1 - (int) (16f * (Rem + Cut1.floatValue())), 15,
-							(int) (16f * Cut1.floatValue()) + 1);
-					G2.setColor(Color2);
-					G2.fillRect(x1 - 7, y1
-							- (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), 15,
-							(int) (16f * Cut2.floatValue()) + 1);
-					G2.setPaint(GradientPaint3);
-					G2.fillRect(x1 - 7, y1 - 16, 15, (int) (16f * Cut1.floatValue()) + 1);
-				}
-				G2.setClip(Shape0);
-			}
-
-		}
-		else
-		{
+		
+		// HACK: commented out the next block of code.  Because it's being compared with 
+		// 'false', it can never run anyway.  I suspect it's part of Borlander's workaround
+		
+//
+//		if (UIManager.getLookAndFeel().getName().equals("Metal") && false)
+//		{
+//			Color BackColor = null;
+//			Object SliderBackColor = UIManager.getLookAndFeel().getDefaults().get(
+//					"Slider.gradient");
+//			if (SliderBackColor != null && SliderBackColor instanceof List)
+//			{
+//				List GradientProperties = (List) SliderBackColor;
+//				Float Cut1 = (Float) GradientProperties.get(0);
+//				Float Cut2 = (Float) GradientProperties.get(1);
+//				Color Color1 = (Color) GradientProperties.get(2);
+//				Color Color2 = (Color) GradientProperties.get(3);
+//				Color Color3 = (Color) GradientProperties.get(4);
+//				float Rem = 1f - Cut2.floatValue() - 2 * Cut1.floatValue();
+//				int x1 = up ? Thumb_Arg.xpoints[0] : Thumb_Arg.xpoints[6];
+//				int y1 = up ? Thumb_Arg.ypoints[0] : Thumb_Arg.ypoints[6];
+//
+//				int x2 = up ? Thumb_Arg.xpoints[1] : Thumb_Arg.xpoints[5];
+//				int y2 = up ? Thumb_Arg.ypoints[1] : Thumb_Arg.ypoints[5];
+//
+//				Shape Shape0 = G2.getClip();
+//				G2.setClip(Thumb_Arg);
+//				if (up)
+//				{
+//					GradientPaint GradientPaint1 = new GradientPaint(x1 - 7, y1, Color3, x1, y1
+//							+ (int) (16f * Rem), Color1);
+//					GradientPaint GradientPaint2 = new GradientPaint(x1, y1 + (int) (16f * Rem),
+//							Color1, x1, y1 + (int) (16f * (Rem + Cut1.floatValue())), Color2);
+//					GradientPaint GradientPaint3 = new GradientPaint(x1, y1
+//							+ (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), Color2, x1,
+//							y1 + 16, Color3);
+//
+//					G2.setPaint(GradientPaint1);
+//					G2.fillRect(x1 - 7, y1, 15, (int) (16f * Rem));
+//					G2.setPaint(GradientPaint2);
+//					G2.fillRect(x1 - 7, y1 + (int) (16f * Rem), 15,
+//							(int) (16f * Cut1.floatValue()) + 1);
+//					G2.setColor(Color2);
+//					G2.fillRect(x1 - 7, y1 + (int) (16f * (Rem + Cut1.floatValue())), 15,
+//							(int) (16f * Cut2.floatValue()) + 1);
+//					G2.setPaint(GradientPaint3);
+//					G2.fillRect(x1 - 7, y1
+//							+ (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), 15,
+//							(int) (16f * Cut1.floatValue()) + 1);
+//				}
+//				else
+//				{
+//					GradientPaint GradientPaint1 = new GradientPaint(x1 - 7, y1, Color3, x1, y1
+//							- (int) (16f * Rem), Color1);
+//					GradientPaint GradientPaint2 = new GradientPaint(x1, y1 - (int) (16f * Rem),
+//							Color1, x1, y1 - (int) (16f * (Rem + Cut1.floatValue())), Color2);
+//					GradientPaint GradientPaint3 = new GradientPaint(x1, y1
+//							- (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), Color2, x1,
+//							y1 - 16, Color3);
+//
+//					G2.setPaint(GradientPaint1);
+//					G2.fillRect(x1 - 7, y1 - (int) (16f * Rem), 15, (int) (16f * Rem));
+//					G2.setPaint(GradientPaint2);
+//					G2.fillRect(x1 - 7, y1 - (int) (16f * (Rem + Cut1.floatValue())), 15,
+//							(int) (16f * Cut1.floatValue()) + 1);
+//					G2.setColor(Color2);
+//					G2.fillRect(x1 - 7, y1
+//							- (int) (16f * (Rem + Cut1.floatValue() + Cut2.floatValue())), 15,
+//							(int) (16f * Cut2.floatValue()) + 1);
+//					G2.setPaint(GradientPaint3);
+//					G2.fillRect(x1 - 7, y1 - 16, 15, (int) (16f * Cut1.floatValue()) + 1);
+//				}
+//				G2.setClip(Shape0);
+//			}
+//
+//		}
+//		else
+//		{
 			G2.setColor(new Color(MainColor_Arg.getRed(), MainColor_Arg.getGreen(),
 					MainColor_Arg.getBlue(), 196));
 			G2.fillPolygon(Thumb_Arg);
-		}
-		// System.out.println( ((OceanTheme)MetalLookAndFeel.getCurrentTheme()).
-		// getProperty("Button.gradient"));
+	//	}
+
 
 		G2.setColor(Color.BLACK);
 		G2.drawPolygon(Thumb_Arg);
