@@ -277,8 +277,6 @@ import MWC.Utilities.ReaderWriter.PlainLineImporter;
 import MWC.Utilities.ReaderWriter.ReaderMonitor;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
-
 /**
  * class to read in a complete replay file. The class knows of the types of data
  * in Replay format, and users the correct import filters accordingly.
@@ -287,7 +285,8 @@ import com.sun.org.apache.xerces.internal.impl.xpath.regex.ParseException;
 public class ImportReplay extends PlainImporterBase
 {
 
-	/** interface for class that is able to retrieve the import mode from the user
+	/**
+	 * interface for class that is able to retrieve the import mode from the user
 	 * 
 	 * @author ianmayo
 	 * @see ImportReplay.TRACK_IMPORT_MODE
@@ -296,7 +295,7 @@ public class ImportReplay extends PlainImporterBase
 	{
 		public String getSelectedImportMode(final String trackName);
 	}
-	
+
 	/**
 	 * the format we use to parse text
 	 */
@@ -480,15 +479,8 @@ public class ImportReplay extends PlainImporterBase
 
 			// now read it in.
 			Object thisObject = null;
-			try
-			{
-				thisObject = thisOne.readThisLine(theLine);
-			}
-			catch (ParseException pe)
-			{
-				System.err.println("Failed to read in:" + theLine);
-				pe.printStackTrace();
-			}
+
+			thisObject = thisOne.readThisLine(theLine);
 
 			// see if we are going to do any special processing
 
@@ -523,15 +515,15 @@ public class ImportReplay extends PlainImporterBase
 
 					if (importMode.equals(ImportReplay.ASK_THE_AUDIENCE))
 					{
-						if(_myParent instanceof ProvidesModeSelector)
+						if (_myParent instanceof ProvidesModeSelector)
 						{
 							ProvidesModeSelector selector = (ProvidesModeSelector) _myParent;
 							importMode = selector.getSelectedImportMode(theTrack);
 						}
 					}
-					
+
 					TrackSegment initialLayer = null;
-					
+
 					if (importMode.equals(ImportReplay.IMPORT_AS_OTG))
 					{
 						initialLayer = new TrackSegment();
@@ -553,7 +545,7 @@ public class ImportReplay extends PlainImporterBase
 
 					// give it the data container
 					trkWrapper.add(initialLayer);
-					
+
 					// get the colour for this track
 					trkWrapper.setColor(thisColor);
 

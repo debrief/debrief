@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Aug 04 20:47:55 BST 2009" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Thu Jul 30 09:24:18 BST 2009"/>
+<plot Created="Thu Aug 27 12:02:56 BST 2009" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Wed Aug 26 10:18:23 BST 2009"/>
 <session>
 <layers>
 <layer LineThickness="0" Name="Chart Features" Visible="true">
@@ -24,7 +24,7 @@
 <track InterpolatePoints="false" LineThickness="2" Name="OSPREY" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
 <colour Value="RED"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<TrackSegment LineStyle="Solid" Name="120500.00" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix Course="269.700" Dtg="951212 050000" Label="120500" LabelLocation="Left" LabelShowing="true" LineShowing="true" Speed="2.000" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
@@ -2442,7 +2442,7 @@
 <track InterpolatePoints="false" LineThickness="2" Name="ALLIANCE" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Submarine" Visible="true">
 <colour Value="BLUE"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<TrackSegment LineStyle="Solid" Name="120503.00" PlotRelative="false" Visible="true">
+<TrackSegment LineStyle="Solid" Name="Positions" PlotRelative="false" Visible="true">
 <fix Course="0.300" Dtg="951212 050300" Label="120503" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="3.500" SymbolShowing="false" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
@@ -4869,20 +4869,9 @@
 <fontcolour Value="YELLOW"/>
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="0.000" Lat="11.9116666" Long="-11.3165203"/>
+<shortLocation Depth="0.000" Lat="12.0837593" Long="-11.6243864"/>
 </centre>
 </circle>
-<rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
-<colour Value="GREEN"/>
-<fontcolour Value="GREEN"/>
-<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
-<tl>
-<shortLocation Depth="0.000" Lat="12.1483758" Long="-11.6983092"/>
-</tl>
-<br>
-<shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
-</br>
-</rectangle>
 <line Label="BARRIER CHARLIE" LabelLocation="Left" LabelVisible="true" LineThickness="0" Visible="true">
 <colour CustomBlue="0" CustomGreen="255" CustomRed="128" Value="custom"/>
 <fontcolour Value="CYAN"/>
@@ -4894,6 +4883,17 @@
 <shortLocation Depth="0.000" Lat="12.0756081" Long="-11.6832623"/>
 </br>
 </line>
+<rectangle Filled="false" Label="NOGO DELTA" LabelLocation="Right" LabelVisible="true" LineThickness="2" Visible="true">
+<colour Value="GREEN"/>
+<fontcolour Value="GREEN"/>
+<font Bold="false" Family="Sans Serif" Italic="false" Size="12"/>
+<tl>
+<shortLocation Depth="0.000" Lat="12.1483758" Long="-11.6983092"/>
+</tl>
+<br>
+<shortLocation Depth="0.000" Lat="12.1142789" Long="-11.6758295"/>
+</br>
+</rectangle>
 </layer>
 <narrative Name="Narratives">
 <narrative_entry Dtg="951212 050000" Entry="comment 1" Track="CARPET"/>
@@ -4936,7 +4936,7 @@
 <property Name="LinkPositions" Value="true"/>
 <property Name="Arcs" Value="180"/>
 <property Name="FadePoints" Value="true"/>
-<property Name="CurrentTime" Value="951212 110500"/>
+<property Name="CurrentTime" Value="951212 052200"/>
 <property Name="NumRings" Value="3"/>
 <property Name="PointSize" Value="5"/>
 <property Name="PlotTrackName" Value="false"/>

@@ -6,6 +6,5 @@
 	<classpathentry kind="src" path="schemas"/>
 	<classpathentry exported="true" kind="lib" path="libs/postgis_1.3.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/postgresql-8.3-604.jdbc4.jar"/>
-	<classpathentry kind="lib" path="libs/saxpath.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

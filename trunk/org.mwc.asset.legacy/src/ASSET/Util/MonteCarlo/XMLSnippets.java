@@ -14,8 +14,6 @@ import org.w3c.dom.NodeList;
 
 import ASSET.Util.SupportTesting;
 
-import com.sun.org.apache.xerces.internal.dom.DeferredTextImpl;
-
 /**
  * Created by IntelliJ IDEA.
  * User: Ian
@@ -50,11 +48,8 @@ public final class XMLSnippets
       // ok, get the next snippet
       final Element thisNode = (Element) theSnippets.item(i);
 
-      // and extract it's contents
-      final DeferredTextImpl snippet = (DeferredTextImpl) thisNode.getFirstChild();
-
       // and now for the sibling (which contains our data)
-      final Node nextS = snippet.getNextSibling();
+      final Node nextS = thisNode.getNextSibling();
 
       // now add them to our choices
       _mySnippets.add(nextS);
