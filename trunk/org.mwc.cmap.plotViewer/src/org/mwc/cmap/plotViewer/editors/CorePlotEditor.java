@@ -58,7 +58,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	/**
 	 * the graphic data we know about
 	 */
-	final protected Layers _myLayers;
+	protected Layers _myLayers;
 
 	/**
 	 * handle narrative management
@@ -111,7 +111,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 	private boolean _ignoreDirtyCalls;
 
-	private PartMonitor _myPartMonitor;
+	protected PartMonitor _myPartMonitor;
 
 	private StatusPanel _myRngBrg;
 
@@ -518,13 +518,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	protected void timeChanged(HiResDate newDTG)
 	{
 	}
-
-	/**
-	 * method called when a helper object has completed a plot-load operation
-	 * 
-	 * @param source
-	 */
-	abstract public void loadingComplete(Object source);
 
 	/**
 	 * return the file representing where this plot is stored

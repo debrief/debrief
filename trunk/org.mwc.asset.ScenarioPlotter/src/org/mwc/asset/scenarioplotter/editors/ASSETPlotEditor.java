@@ -17,15 +17,13 @@ import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
-import org.eclipse.ui.part.EditorPart;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.scenariocontroller2.views.ScenarioControllerView;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
-import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
+import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
@@ -34,37 +32,22 @@ import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.GUI.Plottable;
 import MWC.GUI.Layers.DataListener;
 import MWC.GenericData.WorldArea;
 
-public class ASSETPlotEditor extends EditorPart implements
-		IControllableViewport, IChartBasedEditor
+public class ASSETPlotEditor extends CorePlotEditor
 {
 
 	// //////////////////////////////
 	// member data
 	// //////////////////////////////
 
-	/**
-	 * the chart we store/manager
-	 */
-	protected SWTChart _myChart = null;
-
-	/**
-	 * the graphic data we know about
-	 */
-	protected Layers _myLayers = null;
 
 	/**
 	 * the scenario we're listening to
 	 * 
 	 */
 	protected ScenarioType _myScenario = null;
-
-	protected DataListener _listenForMods;
-
-	private PartMonitor _myPartMonitor;
 
 	private ScenarioSteppedListener _stepListener;
 
@@ -112,11 +95,6 @@ public class ASSETPlotEditor extends EditorPart implements
 		
 		// and ask for a refresh
 		fireDirty();
-	}
-
-	protected void fireDirty()
-	{
-		update();
 	}
 
 	private void stopListeningToThis(Layers layers)
@@ -172,8 +150,7 @@ public class ASSETPlotEditor extends EditorPart implements
 
 	public void createPartControl(Composite parent)
 	{
-		// hey, create the chart
-		_myChart = createTheChart(parent);
+		super.createPartControl(parent);
 
 		// and over-ride the undo button
 		IAction undoAction = new UndoActionHandler(getEditorSite(),
@@ -439,11 +416,6 @@ public class ASSETPlotEditor extends EditorPart implements
 					}
 				});
 
-	}
-
-	public void selectPlottable(Plottable shape, Layer layer)
-	{
-		// ignore it, we don't need to see it here.
 	}
 
 }
