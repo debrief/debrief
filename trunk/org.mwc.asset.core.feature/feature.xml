@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.asset.core.feature"
       label="Feature Feature"
-      version="1.0.2">
+      version="1.0.3">
 
    <description url="http://www.example.com/description">
       [Enter Feature Description here.]
@@ -76,6 +76,34 @@
 
    <plugin
          id="org.mwc.asset.sample_data"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.editor.model"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.editor.model.edit"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.editor.model.editor"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mwc.asset.editor.model.tests"
          download-size="0"
          install-size="0"
          version="0.0.0"
