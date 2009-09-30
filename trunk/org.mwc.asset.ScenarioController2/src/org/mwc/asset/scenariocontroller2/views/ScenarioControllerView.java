@@ -127,6 +127,7 @@ public class ScenarioControllerView extends ViewPart implements
 	private SteppableTime _steppableTime;
 	private MultiScenarioCore _myMultiScenario;
 	private String[] _myPendingFilenames;
+	private TimeControlPreferences _myTimeControlProps;
 
 	/**
 	 * The constructor.
@@ -336,7 +337,10 @@ public class ScenarioControllerView extends ViewPart implements
 		}
 		else if (adapter == TimeControlPreferences.class)
 		{
-			res = new TimeControlProperties();
+			if(_myTimeControlProps == null)
+				_myTimeControlProps = new TimeControlProperties();
+			
+			res = _myTimeControlProps;
 		}
 		else if (adapter == TimeManager.LiveScenario.class)
 		{

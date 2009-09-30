@@ -11,6 +11,8 @@ package ASSET.Util.XML.Decisions;
 
 import ASSET.Models.Decision.UserControl;
 import ASSET.Util.XML.Decisions.Tactical.CoreDecisionHandler;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldSpeed;
 
 abstract public class UserControlHandler extends CoreDecisionHandler
   {
@@ -57,7 +59,7 @@ abstract public class UserControlHandler extends CoreDecisionHandler
 
   public void elementClosed()
   {
-    final UserControl ev = new UserControl(_course, _speed, _depth);
+    final UserControl ev = new UserControl(_course, new WorldSpeed(_speed, WorldSpeed.Kts), new WorldDistance(_depth, WorldDistance.METRES));
 
     super.setAttributes(ev);
 
@@ -81,8 +83,8 @@ abstract public class UserControlHandler extends CoreDecisionHandler
     CoreDecisionHandler.exportThis(bb, thisPart, doc);
 
     // output it's attributes
-    thisPart.setAttribute(DEPTH, writeThis(bb.getDepth()));
-    thisPart.setAttribute(SPEED, writeThis(bb.getSpeed()));
+    thisPart.setAttribute(DEPTH, writeThis(bb.getDepth().getValueIn(WorldDistance.METRES)));
+    thisPart.setAttribute(SPEED, writeThis(bb.getSpeed().getValueIn(WorldSpeed.Kts)));
     thisPart.setAttribute(COURSE, writeThis(bb.getCourse()));
 
     parent.appendChild(thisPart);

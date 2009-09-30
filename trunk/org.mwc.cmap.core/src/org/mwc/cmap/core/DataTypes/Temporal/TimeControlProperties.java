@@ -128,6 +128,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 				{
 					return new DurationHelper.DurationCellEditor(parent);
 				}
+				
 			};
 			SMALL_STEP.setAlwaysIncompatible(true);
 			SMALL_STEP.setDescription("The size of the small time step");
@@ -231,10 +232,7 @@ public class TimeControlProperties extends java.beans.PropertyChangeSupport impl
 			newVal = _dtgFormat = _defaultFormat;
 		}
 
-		oldVal = newVal;
-
 		fireChange((String) id, oldVal, newVal);
-
 	}
 
 	public void setPropertyValue(Object id, Object value)

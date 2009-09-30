@@ -630,11 +630,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	void stopPlaying()
 	{
-		if (_steppableTime != null)
-		{
-			_steppableTime.stop(this, true);
-		}
-		else
 			_theTimer.stop();
 	}
 
@@ -643,14 +638,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	void startPlaying()
 	{
-		// just check we haven't got a simulation running
-		if (_steppableTime != null)
-		{
-			_steppableTime.run(this, true);
-		}
-		else
-		{
-
 			// hey - set a practical minimum step size, 1/4 second is a fair start
 			// point
 			final long delayToUse = Math.max(_myStepperProperties.getAutoInterval()
@@ -660,7 +647,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			_theTimer.setDelay(delayToUse);
 
 			_theTimer.start();
-		}
 	}
 
 	public void onTime(ActionEvent event)

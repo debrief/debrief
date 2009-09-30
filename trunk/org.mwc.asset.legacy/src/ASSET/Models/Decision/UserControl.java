@@ -5,6 +5,8 @@ import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldSpeed;
 
 /**
  * Our implementation of user control, where the vessel is non-autonomous, obeying the
@@ -30,12 +32,12 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
   /**
    * the current demanded speed (kts)
    */
-  private double _demandedSpeed = 0;
+  private WorldSpeed _demandedSpeed = null;
 
   /**
    * the current demanded depth (m)
    */
-  private double _demandedDepth = 0;
+  private WorldDistance _demandedDepth = null;
 
   /**
    * a local copy of our editable object
@@ -53,7 +55,7 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
    * @param defaultSpeed  the initial speed for this behaviour (kts)
    * @param defaultDepth  the initial depth for this behaviour (m)
    */
-  public UserControl(final double defaultCourse, final double defaultSpeed, final double defaultDepth)
+  public UserControl(final double defaultCourse, final WorldSpeed defaultSpeed, final WorldDistance defaultDepth)
   {
     super("User Control");
     _demandedCourse = defaultCourse;
@@ -106,7 +108,7 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
       res = new SimpleDemandedStatus(status.getId(), time);
       res.setCourse(_demandedCourse);
       res.setSpeed(_demandedSpeed);
-      res.setHeight(-_demandedDepth);
+      res.setHeight(-_demandedDepth.getValueIn(WorldDistance.METRES));
 
       activity = "under control";
 
@@ -153,22 +155,22 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
     this._demandedCourse = demandedCourse;
   }
 
-  public double getSpeed()
+  public WorldSpeed getSpeed()
   {
     return _demandedSpeed;
   }
 
-  public void setSpeed(double demandedSpeed)
+  public void setSpeed(WorldSpeed demandedSpeed)
   {
     this._demandedSpeed = demandedSpeed;
   }
 
-  public double getDepth()
+  public WorldDistance getDepth()
   {
     return _demandedDepth;
   }
 
-  public void setDepth(double demandedDepth)
+  public void setDepth(WorldDistance demandedDepth)
   {
     this._demandedDepth = demandedDepth;
   }
@@ -292,6 +294,9 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
       {
         final java.beans.PropertyDescriptor[] res = {
           prop("Active", "whether this control is active"),
+          prop("Course", "whether this control is active"),
+          prop("Speed", "whether this control is active"),
+          prop("Depth", "whether this control is active"),
         };
         return res;
       }
@@ -338,7 +343,7 @@ public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.
      */
     public Editable getEditable()
     {
-      return new UserControl(0, 0, 0);
+      return new UserControl(0,null,null);
     }
   }
 
