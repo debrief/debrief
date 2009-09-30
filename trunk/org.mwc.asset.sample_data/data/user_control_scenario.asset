@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
+<!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by ian mayo (pml) -->
+<Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="d:\dev\Asset\src\schemas\ASSET.xsd" Created="2001-12-05T21:00:00" Name="Test 1 scenario file" StartTime="2001-12-05T21:00:00">
+  <StepTime Units="seconds" Value="5.0"/>
+  <StepPause Units="seconds" Value="5.0"/>
+  <Participants>
+    <SSN Name="ALPHA">
+      <Category Environment="SUBSURFACE" Force="RED" Type="SUBMARINE"/>
+      <SensorFit/>
+      <Status Course="11.0" Fuel="23.0">
+        <Location>
+          <relativeLocation>
+            <North Units="nm" Value="5.0"/>
+            <East Units="nm" Value="2.0"/>
+          </relativeLocation>
+        </Location>
+        <Speed Units="m/s" Value="33.0"/>
+      </Status>
+      <Waterfall Name="SSN Behaviour">
+        <UserControl Name="ALPHA Control" Course="0.0" Depth="-100.0" Speed="15.0"/>
+      </Waterfall>
+      <RadiatedCharacteristics/>
+      <SSMovementCharacteristics FuelUsageRate="0.0" Name="SSN Man model">
+        <MinSpeed Units="kts" Value="1.0"/>
+        <MaxSpeed Units="kts" Value="30.0"/>
+        <AccelerationRate Units="kt/s" Value="1.0"/>
+        <DecelerationRate Units="kt/s" Value="2.0"/>
+        <MinHeight Units="m" Value="-400.0"/>
+        <MaxHeight Units="m" Value="-20.0"/>
+        <DefaultClimbRate Units="ft/s" Value="1.0"/>
+        <DefaultDiveRate Units="ft/s" Value="2.0"/>
+        <TurningCircle Units="m" Value="200.0"/>
+      </SSMovementCharacteristics>
+    </SSN>
+    <SSN Name="BRAVO">
+      <Category Environment="SUBSURFACE" Force="BLUE" Type="SUBMARINE"/>
+      <SensorFit/>
+      <Status Course="11.0" Fuel="23.0">
+        <Location>
+          <relativeLocation>
+            <North Units="nm" Value="1.0"/>
+            <East Units="nm" Value="1.0"/>
+          </relativeLocation>
+        </Location>
+        <Speed Units="m/s" Value="33.0"/>
+      </Status>
+      <Waterfall Name="SSN Behaviour">
+        <UserControl Name="Bravo control" Course="0.0" Depth="-100.0" Speed="15.0"/>
+      </Waterfall>
+      <RadiatedCharacteristics/>
+      <SSMovementCharacteristics FuelUsageRate="0.0" Name="SSN Man model">
+        <MinSpeed Units="kts" Value="1.0"/>
+        <MaxSpeed Units="kts" Value="30.0"/>
+        <AccelerationRate Units="kt/s" Value="1.0"/>
+        <DecelerationRate Units="kt/s" Value="2.0"/>
+        <MinHeight Units="m" Value="-400.0"/>
+        <MaxHeight Units="m" Value="-20.0"/>
+        <DefaultClimbRate Units="ft/s" Value="1.0"/>
+        <DefaultDiveRate Units="ft/s" Value="2.0"/>
+        <TurningCircle Units="m" Value="200.0"/>
+      </SSMovementCharacteristics>
+    </SSN>
+  </Participants>
+</Scenario>
