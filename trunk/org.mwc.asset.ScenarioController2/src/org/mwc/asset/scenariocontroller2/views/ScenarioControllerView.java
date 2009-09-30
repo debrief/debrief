@@ -42,9 +42,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
+import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistableElement;
+import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchPartSite;
+import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
@@ -76,9 +80,12 @@ import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
-public class ScenarioControllerView extends ViewPart implements ISelectionProvider
+public class ScenarioControllerView extends ViewPart implements
+		ISelectionProvider
 {
 
+	private static final String CONTROL_FILE_INDEX = "CONTROL_FILE";
+	private static final String SCENARIO_FILE_INDEX = "SCENARIO_FILE";
 	/**
 	 * remember the files we've loaded
 	 * 
@@ -119,6 +126,8 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 	private Vector<ScenarioObserver> _theObservers;
 	private SteppableTime _steppableTime;
 	private MultiScenarioCore _myMultiScenario;
+	private String[] _myPendingFilenames;
+
 	/**
 	 * The constructor.
 	 */
@@ -154,14 +163,15 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 				IProject theProj = getAProject();
 				try
 				{
-					theProj.refreshLocal(2,null);
+					theProj.refreshLocal(2, null);
 				}
 				catch (CoreException e)
 				{
-					ASSETPlugin.logError(Status.ERROR, "Had trouble refreshing project folder", e);
+					ASSETPlugin.logError(Status.ERROR,
+							"Had trouble refreshing project folder", e);
 					e.printStackTrace();
 				}
-				
+
 			}
 
 			public void newScenarioStepTime(int val)
@@ -247,9 +257,10 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 
 		// declare fact that we can provide selections
 		getSite().setSelectionProvider(this);
-		
+
 		// now listen to the UI buttons
-		_myUI.getDoGenerateButton().addSelectionListener(new SelectionListener(){
+		_myUI.getDoGenerateButton().addSelectionListener(new SelectionListener()
+		{
 			public void widgetDefaultSelected(SelectionEvent e)
 			{
 			}
@@ -259,9 +270,11 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 			{
 				// ok, do the gen
 				doGenerateOperation();
-			}});
-		
-		_myUI.getRunBtn().addSelectionListener(new SelectionListener(){
+			}
+		});
+
+		_myUI.getRunBtn().addSelectionListener(new SelectionListener()
+		{
 
 			@Override
 			public void widgetDefaultSelected(SelectionEvent e)
@@ -272,10 +285,14 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 			public void widgetSelected(SelectionEvent e)
 			{
 				doRunOperation();
-			}});
-	
-	}
+			}
+		});
+		
+		// if we have any pending filenames, get them dropped
+		if(_myPendingFilenames != null)
+			filesDropped(_myPendingFilenames);
 
+	}
 
 	protected void doRunOperation()
 	{
@@ -286,17 +303,17 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 	protected void doGenerateOperation()
 	{
 		System.out.println("doing gen");
-		
-		if(_myMultiScenario == null)
+
+		if (_myMultiScenario == null)
 		{
-		// create a new, fresh multi scenario generator
-		_myMultiScenario = new MultiScenarioCore();
+			// create a new, fresh multi scenario generator
+			_myMultiScenario = new MultiScenarioCore();
 		}
-		
+
 		// and let it create some files
-		_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName, System.out, System.err, System.in);
-		
-		
+		_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName,
+				System.out, System.err, System.in);
+
 		_myUI.getRunBtn().setEnabled(true);
 	}
 
@@ -413,60 +430,64 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 		{
 			final String thisName = fileNames[i];
 
-			// ok, examine this file
-			String firstNode = getFirstNodeName(thisName);
-
-			if (firstNode != null)
+			if (thisName != null)
 			{
-				if (firstNode.equals("Scenario"))
+
+				// ok, examine this file
+				String firstNode = getFirstNodeName(thisName);
+
+				if (firstNode != null)
 				{
-					// remember it
-					_scenarioFileName = thisName;
-
-					// set the filename
-					_myUI.getScenarioVal().setText(new File(thisName).getName());
-
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IProgressService ps = wb.getProgressService();
-					try
+					if (firstNode.equals("Scenario"))
 					{
-						ps.busyCursorWhile(new IRunnableWithProgress()
+						// remember it
+						_scenarioFileName = thisName;
+
+						// set the filename
+						_myUI.getScenarioVal().setText(new File(thisName).getName());
+
+						IWorkbench wb = PlatformUI.getWorkbench();
+						IProgressService ps = wb.getProgressService();
+						try
 						{
-							public void run(IProgressMonitor pm)
+							ps.busyCursorWhile(new IRunnableWithProgress()
 							{
-								scenarioAssigned(thisName);
-							}
-						});
-					}
-					catch (Exception e)
-					{
-						e.printStackTrace();
-					}
-
-				}
-				else if (firstNode.equals("ScenarioController"))
-				{
-					// remember it
-					_controlFileName = thisName;
-
-					// show it
-					_myUI.getControlVal().setText(new File(thisName).getName());
-
-					IWorkbench wb = PlatformUI.getWorkbench();
-					IProgressService ps = wb.getProgressService();
-					try
-					{
-						ps.busyCursorWhile(new IRunnableWithProgress()
+								public void run(IProgressMonitor pm)
+								{
+									scenarioAssigned(thisName);
+								}
+							});
+						}
+						catch (Exception e)
 						{
-							public void run(IProgressMonitor pm)
-							{
-								controllerAssigned(thisName);
-							}
-						});
+							e.printStackTrace();
+						}
+
 					}
-					catch (Exception e)
+					else if (firstNode.equals("ScenarioController"))
 					{
-						e.printStackTrace();
+						// remember it
+						_controlFileName = thisName;
+
+						// show it
+						_myUI.getControlVal().setText(new File(thisName).getName());
+
+						IWorkbench wb = PlatformUI.getWorkbench();
+						IProgressService ps = wb.getProgressService();
+						try
+						{
+							ps.busyCursorWhile(new IRunnableWithProgress()
+							{
+								public void run(IProgressMonitor pm)
+								{
+									controllerAssigned(thisName);
+								}
+							});
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
 					}
 				}
 			}
@@ -490,7 +511,8 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 			// final SampleDataPlugin thePlugin = SampleDataPlugin.getDefault();
 			InputStream theStream = new FileInputStream(theFile);//
 			// thePlugin.getResource(thePath);
-			ASSETReaderWriter.importThis(_myScenario, _scenarioWrapper, scenarioStr, theStream);
+			ASSETReaderWriter.importThis(_myScenario, _scenarioWrapper, scenarioStr,
+					theStream);
 
 			fireScenarioChanged();
 		}
@@ -505,7 +527,7 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 			ASSETPlugin.logError(Status.ERROR, "The sample-data plugin isn't loaded",
 					e);
 		}
-		
+
 	}
 
 	private void controllerAssigned(String controlFile)
@@ -568,7 +590,8 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 			}
 
 			// check if it's multi scenario..
-			final boolean isMulti = CommandLine.checkIfGenerationRequired(controlFile);
+			final boolean isMulti = CommandLine
+					.checkIfGenerationRequired(controlFile);
 			final int tgtIndex = (isMulti) ? 1 : 0;
 
 			// ui update, put it in an async operation
@@ -580,7 +603,7 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 				{
 					// show the correct tab
 					_myUI.getScenarioTabs().setSelection(tgtIndex);
-					
+
 					// and update that tab
 					updateControllerTab(isMulti);
 
@@ -596,13 +619,15 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 		}
 	}
 
-	/** ok, controller is loaded. go for it.
+	/**
+	 * ok, controller is loaded. go for it.
 	 * 
-	 * @param isMulti is this is a multi-scenario run
+	 * @param isMulti
+	 *          is this is a multi-scenario run
 	 */
 	protected void updateControllerTab(boolean isMulti)
 	{
-		if(isMulti)
+		if (isMulti)
 			updateMultiTab();
 		else
 			updateSingleTab();
@@ -611,17 +636,17 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 	private void updateSingleTab()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	private void updateMultiTab()
 	{
 		// clear the table
 		_myUI.getMultiScenTable().getTable().setData(null);
-		
-		// ok, disable the run button, 
+
+		// ok, disable the run button,
 		_myUI.getRunBtn().setEnabled(false);
-		
+
 		// and now enable the genny button
 		_myUI.getDoGenerateButton().setEnabled(true);
 	}
@@ -631,9 +656,9 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 		IProject res = null;
 		IProject[] projects = ResourcesPlugin.getWorkspace().getRoot()
 				.getProjects();
-		if(projects != null)
+		if (projects != null)
 		{
-			if(projects.length > 0)
+			if (projects.length > 0)
 				res = projects[0];
 		}
 		return res;
@@ -644,18 +669,18 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 		boolean res = true;
 
 		String thePath = tgtDir.getPath();
-		
+
 		// use series of tests to check whether this is a relative path
-		if(thePath.contains(":"))
+		if (thePath.contains(":"))
 			res = false;
-		if(thePath.contains("\\\\"))
+		if (thePath.contains("\\\\"))
 			res = false;
-		if(thePath.charAt(0) == '\\')
+		if (thePath.charAt(0) == '\\')
 			res = false;
-		if(thePath.contains("//"))
+		if (thePath.contains("//"))
 			res = false;
-		if(thePath.charAt(0) == '/')
-			res = false;	
+		if (thePath.charAt(0) == '/')
+			res = false;
 
 		return res;
 	}
@@ -676,13 +701,63 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 
 		setupObservers(_myScenario);
 
+	}
+
+	/**
+	 * right - store ourselves into the supplied memento object
+	 * 
+	 * @param memento
+	 */
+	public void saveState(IMemento memento)
+	{
+		// let our parent go for it first
+		super.saveState(memento);
+
+		if (_scenarioFileName != null)
+			memento.putString(SCENARIO_FILE_INDEX, _scenarioFileName);
+		if (_controlFileName != null)
+			memento.putString(CONTROL_FILE_INDEX, _controlFileName);
+	}
+
+	/*
+	 * (non-Javadoc)
+	 * 
+	 * @see org.eclipse.ui.part.ViewPart#init(org.eclipse.ui.IViewSite,
+	 * org.eclipse.ui.IMemento)
+	 */
+	public void init(IViewSite site, IMemento memento) throws PartInitException
+	{
+		// let the parent do its bits
+		super.init(site, memento);
+
+		Vector<String> pendingFilenames = new Vector<String>();
+
+		// are we showing the units column?
+		if (memento != null)
+		{
+			String scenFile = memento.getString(SCENARIO_FILE_INDEX);
+			if (scenFile != null)
+			{
+				pendingFilenames.add(scenFile);
+			}
+			String contFile = memento.getString(CONTROL_FILE_INDEX);
+			if (contFile != null)
+			{
+				pendingFilenames.add(contFile);
+			}
+		}
+		
+		// did we receive any?
+		if(pendingFilenames.size() > 0)
+  		_myPendingFilenames = pendingFilenames.toArray(new String[]{});
 
 	}
 
 	private void setupObservers(ScenarioType theScenario)
 	{
 		// and actually setup the observers
-		for (Iterator<ScenarioObserver> iterator = _myObservers.iterator(); iterator.hasNext();)
+		for (Iterator<ScenarioObserver> iterator = _myObservers.iterator(); iterator
+				.hasNext();)
 		{
 			ScenarioObserver thisO = iterator.next();
 			thisO.setup(theScenario);
@@ -706,7 +781,7 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 
 		// also, re-initialise the observers
 		setupObservers(_myScenario);
-		
+
 		// and show the loaded status in the ui
 		setScenarioStatus(_myScenario, "Loaded");
 	}
@@ -878,14 +953,16 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 	{
 		try
 		{
-			getSite().getWorkbenchWindow().getActivePage().showView(
-					getViewSite().getId());
+			IWorkbenchPartSite site = getSite();
+			IWorkbenchWindow window = site.getWorkbenchWindow();
+		  IWorkbenchPage page = window.getActivePage();
+			page.showView(
+					site.getId());
 		}
 		catch (PartInitException e)
 		{
 			ASSETPlugin.logError(Status.ERROR,
-					"failed to activate scenario controller", e);
-			e.printStackTrace();
+					"failed to activate scenario controller - possible because trying to activing during init", e);
 		}
 	}
 
@@ -990,14 +1067,22 @@ public class ScenarioControllerView extends ViewPart implements ISelectionProvid
 		@SuppressWarnings("synthetic-access")
 		public final void testRelativePathMethod()
 		{
-		  super.assertEquals("failed to recognise drive", false, ScenarioControllerView.isRelativePath(new File("c:\\test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("\\test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("\\\\test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("//test.rep")));
-		  super.assertEquals("failed to root designator", false, ScenarioControllerView.isRelativePath(new File("////test.rep")));
-		  super.assertEquals("failed to recognise absolute ref", true, ScenarioControllerView.isRelativePath(new File("test.rep")));
-		  super.assertEquals("failed to recognise relative ref", true, ScenarioControllerView.isRelativePath(new File("./test.rep")));
-		  super.assertEquals("failed to recognise parent ref", true, ScenarioControllerView.isRelativePath(new File("../test.rep")));
+			super.assertEquals("failed to recognise drive", false,
+					ScenarioControllerView.isRelativePath(new File("c:\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					ScenarioControllerView.isRelativePath(new File("\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					ScenarioControllerView.isRelativePath(new File("\\\\test.rep")));
+			super.assertEquals("failed to root designator", false,
+					ScenarioControllerView.isRelativePath(new File("//test.rep")));
+			super.assertEquals("failed to root designator", false,
+					ScenarioControllerView.isRelativePath(new File("////test.rep")));
+			super.assertEquals("failed to recognise absolute ref", true,
+					ScenarioControllerView.isRelativePath(new File("test.rep")));
+			super.assertEquals("failed to recognise relative ref", true,
+					ScenarioControllerView.isRelativePath(new File("./test.rep")));
+			super.assertEquals("failed to recognise parent ref", true,
+					ScenarioControllerView.isRelativePath(new File("../test.rep")));
 		}
 	}
 }
