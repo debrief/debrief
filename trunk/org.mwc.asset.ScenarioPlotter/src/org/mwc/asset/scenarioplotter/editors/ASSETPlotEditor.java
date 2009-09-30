@@ -112,11 +112,13 @@ public class ASSETPlotEditor extends CorePlotEditor
 				public void restart()
 				{
 					fireDirty();
+					update();
 				}
 
 				public void step(long newTime)
 				{
 					fireDirty();
+					update();
 				}
 			};
 

@@ -69,11 +69,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 * an object to look after all of the time bits
 	 */
 	public TimeManager _timeManager;
-	
-	/** and how we view the time
-	 * 
-	 */
-	protected TimeControlPreferences _timePreferences;
+
 
 	/**
 	 * the object which listens to time-change events. we remember it so that it
@@ -152,9 +148,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 
 		// create the time manager. cool
 		_timeManager = new TimeManager();
-		
-		// and how time is managed
-		_timePreferences = new TimeControlProperties();
+
 
 		// and listen for new times
 		_timeListener = new PropertyChangeListener()
@@ -486,10 +480,7 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		{
 			res = _timeManager;
 		}
-		else if (adapter == TimeControlPreferences.class)
-		{
-			res = _timePreferences;
-		}
+
 		else if (adapter == CanvasType.class)
 		{
 			res = _myChart.getCanvas();

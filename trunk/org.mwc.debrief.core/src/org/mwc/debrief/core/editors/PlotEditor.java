@@ -53,6 +53,8 @@ import org.eclipse.ui.ide.FileStoreEditorInput;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
@@ -123,6 +125,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * something to look after our layer painters
 	 */
 	LayerPainterManager _layerPainterManager;
+	
+	
+	/** and how we view the time
+	 * 
+	 */
+	protected TimeControlPreferences _timePreferences;
 
 	private PlotOperations _myOperations;
 
@@ -163,6 +171,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					getChart().update();
 			}
 		});
+		
+		
+		// and how time is managed
+		_timePreferences = new TimeControlProperties();
 
 		// listen out for when our input changes, since we will change the
 		// editor
@@ -573,6 +585,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		else if (adapter == ControllablePeriod.class)
 		{
 			res = _myOperations;
+		}
+		else if (adapter == TimeControlPreferences.class)
+		{
+			res = _timePreferences;
 		}
 		else if (adapter == IRollingNarrativeProvider.class)
 		{
