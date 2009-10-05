@@ -18,6 +18,22 @@ public class TimeManager implements ControllableTime, TimeProvider
 	 */
 	public static interface LiveScenario
 	{
+		/** event name for when this live scenario is complete
+		 * 
+		 */
+		public static final String FINISHED = "FINISHED";
+		
+		/** somebody wants to know when we finish
+		 * 
+		 * @param listener
+		 */
+		public void addStoppedListener(PropertyChangeListener listener);
+		
+		/** somebody doesn't want to know when we finish
+		 * 
+		 * @param listener
+		 */
+		public void removeStoppedListener(PropertyChangeListener listener);
 	}
 	
 	/**
@@ -99,7 +115,7 @@ public class TimeManager implements ControllableTime, TimeProvider
 
 		_pSupport.addPropertyChangeListener(propertyType, listener);
 	}
-
+	
 	/**
 	 * let somebody stop listening to our changes
 	 * 

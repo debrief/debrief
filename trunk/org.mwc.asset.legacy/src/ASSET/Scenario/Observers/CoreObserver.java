@@ -6,6 +6,12 @@
  */
 package ASSET.Scenario.Observers;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
+import java.util.Date;
+
+import simData.Attribute;
+
 import ASSET.ScenarioType;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -13,8 +19,6 @@ import MWC.GUI.Plottable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.TextFormatting.GeneralFormat;
-
-import java.util.Date;
 
 abstract public class CoreObserver implements ScenarioObserver, Editable
 {
@@ -40,6 +44,16 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
    * the editor for this data type
    */
   protected Editable.EditorType _myEditor = null;
+  
+  /** our property support
+   * 
+   */
+  protected PropertyChangeSupport _pSupport;
+  
+  /** attribute helper support, just in case we want it
+   * 
+   */
+  private Attribute.AttributeHelper _myAttributeHelper;
 
   /**
    * ************************************************************
@@ -51,6 +65,9 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
   {
     _myName = myName;
     _isActive = isActive;
+    
+    // create the prop support, mostly used for the IAttribute listen-able stats hierarchy
+		_pSupport = new PropertyChangeSupport(this);
   }
 
 
@@ -59,6 +76,36 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
    * member methods
    * *************************************************************
    */
+
+  /** convenience class, largely helping with attribute watchers
+   * 
+   */
+  protected Attribute.AttributeHelper getHelper()
+  {
+  	if(_myAttributeHelper == null)
+  		_myAttributeHelper = new Attribute.AttributeHelper(_pSupport);
+  	
+  	return _myAttributeHelper;
+  }
+  
+  /** somebody cares about us, aaah
+   * 
+   * @param listener that loving soul
+   */
+  public void addPropertyChangeListener(PropertyChangeListener listener)
+  {
+  	_pSupport.addPropertyChangeListener(listener);
+  }
+  
+  /** somebody doesn't care about us
+   * 
+   * @param listener not worth mentioning
+   */
+  public void removePropertyChangeListener(PropertyChangeListener listener)
+  {
+  	_pSupport.removePropertyChangeListener(listener);
+  }
+  
   public void restart()
   {
     // remember the scenario - since we will probably forget it when we teardown

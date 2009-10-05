@@ -24,6 +24,7 @@ import org.eclipse.core.filesystem.IFileInfo;
 import org.eclipse.core.filesystem.IFileStore;
 import org.eclipse.core.internal.resources.ResourceException;
 import org.eclipse.core.resources.IFile;
+import org.eclipse.core.resources.IMarker;
 import org.eclipse.core.resources.IResource;
 import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
@@ -50,11 +51,15 @@ import org.eclipse.ui.IPropertyListener;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.dialogs.SaveAsDialog;
 import org.eclipse.ui.ide.FileStoreEditorInput;
+import org.eclipse.ui.ide.IGotoMarker;
 import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
+import org.mwc.cmap.core.DataTypes.Temporal.ControllableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
@@ -125,9 +130,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * something to look after our layer painters
 	 */
 	LayerPainterManager _layerPainterManager;
-	
-	
-	/** and how we view the time
+
+	/**
+	 * and how we view the time
 	 * 
 	 */
 	protected TimeControlPreferences _timePreferences;
@@ -138,6 +143,16 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 * support tool that provides a relative plot
 	 */
 	private RelativeProjectionParent _myRelativeWrapper;
+
+	/**
+	 * handle narrative management
+	 */
+	protected IRollingNarrativeProvider _theNarrativeProvider;
+
+	/**
+	 * an object to look after all of the time bits
+	 */
+	private TimeManager _timeManager;
 
 	/**
 	 * constructor - quite simple really.
@@ -171,8 +186,12 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					getChart().update();
 			}
 		});
-		
-		
+
+		// create the time manager. cool
+		_timeManager = new TimeManager();
+		_timeManager.addListener(_timeListener,
+				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 		// and how time is managed
 		_timePreferences = new TimeControlProperties();
 
@@ -192,7 +211,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 			}
 		});
-		
+
 		_myOperations = new PlotOperations()
 		{
 			// just provide with our complete set of layers
@@ -250,6 +269,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 						.setPeriod(new TimePeriod.BaseTimePeriod(startDTG, endDTG));
 			}
 		}
+	}
+
+	@Override
+	public void dispose()
+	{
+		super.dispose();
+
+		// stop listening to the time manager
+		_timeManager.removeListener(_timeListener,
+				TimeProvider.TIME_CHANGED_PROPERTY_NAME);
+
 	}
 
 	public void init(IEditorSite site, IEditorInput input)
@@ -471,7 +501,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		if (timePeriod != null)
 		{
-			super._timeManager.setPeriod(this, timePeriod);
+			_timeManager.setPeriod(this, timePeriod);
 
 			// also give it a current DTG (if it doesn't have one)
 			if (_timeManager.getTime() == null)
@@ -559,14 +589,20 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
+	 * @see
+	 * org.mwc.cmap.plotViewer.editors.CorePlotEditor#getAdapter(java.lang.Class)
 	 */
 	@SuppressWarnings("unchecked")
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
 
-		if (adapter == TrackManager.class)
+		if (adapter == Layers.class)
+		{
+			if (_myLayers != null)
+				res = _myLayers;
+		}
+		else if (adapter == TrackManager.class)
 		{
 			res = _trackDataProvider;
 		}
@@ -590,6 +626,36 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			res = _timePreferences;
 		}
+		else if (adapter == ControllableTime.class)
+		{
+			res = _timeManager;
+		}
+		else if (adapter == TimeProvider.class)
+		{
+			res = _timeManager;
+		}
+		else if (adapter == IRollingNarrativeProvider.class)
+		{
+			res = _theNarrativeProvider;
+		}
+		else if (adapter == IGotoMarker.class)
+		{
+			return new IGotoMarker()
+			{
+				public void gotoMarker(IMarker marker)
+				{
+					String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
+					if (lineNum != "na")
+					{
+						// right, convert to DTG
+						HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
+						_timeManager.setTime(this, tNow, true);
+					}
+				}
+
+			};
+		}
+
 		else if (adapter == IRollingNarrativeProvider.class)
 		{
 			// so, do we have any narrative data?
@@ -695,9 +761,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							// get the parent track
 							FixWrapper fix = (FixWrapper) selected;
 							TrackWrapper parent11 = fix.getTrackWrapper();
-							RightClickSupport.getDropdownListFor(menuManager,
-									new Editable[] { parent11 }, new Layer[] { theParentLayer },
-									new Layer[] { theParentLayer }, getLayers(), true);
+							RightClickSupport.getDropdownListFor(menuManager, new Editable[]
+							{ parent11 }, new Layer[]
+							{ theParentLayer }, new Layer[]
+							{ theParentLayer }, getLayers(), true);
 						}
 					}
 				};
@@ -763,8 +830,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							if (watch != null)
 							{
 								// aah, is this the primary?
-								boolean isPrimary = (list == _trackDataProvider.getPrimaryTrack());
-								
+								boolean isPrimary = (list == _trackDataProvider
+										.getPrimaryTrack());
+
 								// plot it
 								_layerPainterManager.getCurrentHighlighter().highlightIt(
 										dest.getProjection(), dest, list, watch, isPrimary);
@@ -877,7 +945,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 							// move the temp file to be our real working file
 							tmpFile.renameTo(thePath.toFile().getAbsoluteFile());
-							
+
 							// finally, delete the backup file
 							if (existingBackupFile.exists())
 							{
@@ -886,10 +954,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 												+ existingBackupFile.getAbsolutePath(), null);
 								existingBackupFile.delete();
 							}
-							
+
 							// throw in a refresh - since we've done the save outside Eclipse
-							file.getParent().refreshLocal(IResource.DEPTH_INFINITE, monitor);													
-							
+							file.getParent().refreshLocal(IResource.DEPTH_INFINITE, monitor);
+
 						}
 						else if (input instanceof FileStoreEditorInput)
 						{
@@ -897,7 +965,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 							FileStoreEditorInput fi = (FileStoreEditorInput) input;
 							URI _uri = fi.getURI();
 							Path _p = new Path(_uri.getPath());
-							
+
 							// create pointers to the existing file, and the backup file
 							IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
 							IFileStore backupFile = EFS.getLocalFileSystem().getStore(
@@ -918,7 +986,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 							// and rename the temp file as the working file
 							tmpFile.renameTo(existingFile.toLocalFile(EFS.NONE, monitor));
-							
+
 							if (backupStatus.exists())
 							{
 								CorePlugin.logError(Status.INFO,
@@ -926,7 +994,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 												+ backupFile.toURI().getRawPath(), null);
 								backupFile.delete(EFS.NONE, monitor);
 							}
-							
+
 						}
 					}
 				}
@@ -942,8 +1010,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				}
 				catch (Exception e)
 				{
-					CorePlugin.logError(Status.ERROR,
-							"Unknown file-save error occurred", e);
+					CorePlugin.logError(Status.ERROR, "Unknown file-save error occurred",
+							e);
 
 				}
 				finally
@@ -1031,7 +1099,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				try
 				{
 					System.out.println("creating:" + file.getName());
-					file.create(new ByteArrayInputStream(new byte[] {}), false, null);
+					file.create(new ByteArrayInputStream(new byte[]
+					{}), false, null);
 				}
 				catch (CoreException e)
 				{

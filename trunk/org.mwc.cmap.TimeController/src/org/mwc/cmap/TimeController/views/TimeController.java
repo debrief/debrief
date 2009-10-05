@@ -72,6 +72,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
@@ -316,6 +317,25 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		_theTimer.stop();
 		_theTimer.setDelay(1000);
 		_theTimer.addTimerListener(this);
+
+		// sort out the live listener bits
+		_myStoppedListener = new PropertyChangeListener()
+		{
+			public void propertyChange(PropertyChangeEvent evt)
+			{
+				if (evt.getPropertyName() == TimeManager.LiveScenario.FINISHED)
+				{
+					// are we playing?
+					if (_playButton.getSelection())
+					{
+						// better stop it
+						_playButton.setSelection(false);
+						System.err.println("play stopped");
+					}
+
+				}
+			}
+		};
 
 	}
 
@@ -630,7 +650,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	void stopPlaying()
 	{
-			_theTimer.stop();
+		_theTimer.stop();
 	}
 
 	/**
@@ -638,15 +658,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	void startPlaying()
 	{
-			// hey - set a practical minimum step size, 1/4 second is a fair start
-			// point
-			final long delayToUse = Math.max(_myStepperProperties.getAutoInterval()
-					.getMillis(), 250);
+		// hey - set a practical minimum step size, 1/4 second is a fair start
+		// point
+		final long delayToUse = Math.max(_myStepperProperties.getAutoInterval()
+				.getMillis(), 250);
 
-			// ok - make sure the time has the right time
-			_theTimer.setDelay(delayToUse);
+		// ok - make sure the time has the right time
+		_theTimer.setDelay(delayToUse);
 
-			_theTimer.start();
+		_theTimer.start();
 	}
 
 	public void onTime(ActionEvent event)
@@ -808,6 +828,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 */
 	protected TrackDataProvider _myTrackProvider;
 
+	protected LiveScenario _liveScenario;
+
+	protected PropertyChangeListener _myStoppedListener;
+
 	void fireNewTime(HiResDate dtg)
 	{
 		if (!_firingNewTime)
@@ -842,6 +866,39 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						// ok, we can't control this in the normal way, do some control
 						// hiding
 						reformatUI(false);
+
+						// is it a different scenario?
+						if (part != _liveScenario)
+						{
+							// stop listening to the current one
+							if (_liveScenario != null)
+								_liveScenario.removeStoppedListener(_myStoppedListener);
+
+						}
+
+						// also register as a listener
+						_liveScenario = (LiveScenario) part;
+
+						_liveScenario.addStoppedListener(_myStoppedListener);
+
+					}
+				});
+
+		_myPartMonitor.addPartListener(TimeManager.LiveScenario.class,
+				PartMonitor.CLOSED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						// is it our scenario?
+						if (part == _liveScenario)
+						{
+							// stop listening to it
+								_liveScenario.removeStoppedListener(_myStoppedListener);
+								
+								// clear the pointer
+								_liveScenario = null;
+						}
 					}
 				});
 
@@ -1310,10 +1367,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		// tell the parent that some buttons have changed, and that it probably
 		// wants to do a re-layout
 		_btnPanel.pack(true);
-		
+
 		// sort out the dropdowns
 		populateDropDownList(null);
-		
+
 	}
 
 	/**
@@ -1820,7 +1877,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			// and another separator
 			menuManager.add(new Separator());
 		}
-		
+
 		// add the list of DTG formats for the DTG slider
 		addDateFormats(menuManager);
 

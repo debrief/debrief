@@ -1,39 +1,64 @@
 package org.mwc.cmap.plotViewer.editors;
 
 import java.awt.Color;
-import java.beans.*;
-import java.util.*;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+import java.util.Iterator;
+import java.util.Vector;
 
-import org.eclipse.core.resources.*;
+import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.Status;
-import org.eclipse.jface.action.*;
-import org.eclipse.jface.viewers.*;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IAction;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.dnd.DropTarget;
+import org.eclipse.swt.dnd.DropTargetEvent;
+import org.eclipse.swt.dnd.DropTargetListener;
+import org.eclipse.swt.dnd.FileTransfer;
+import org.eclipse.swt.dnd.Transfer;
+import org.eclipse.swt.widgets.Button;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Event;
+import org.eclipse.swt.widgets.Label;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IWorkbenchPart;
+import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
-import org.eclipse.ui.ide.IGotoMarker;
-import org.eclipse.ui.operations.*;
+import org.eclipse.ui.operations.RedoActionHandler;
+import org.eclipse.ui.operations.UndoActionHandler;
 import org.eclipse.ui.part.EditorPart;
 import org.mwc.cmap.core.CorePlugin;
-import org.mwc.cmap.core.DataTypes.Temporal.*;
-import org.mwc.cmap.core.interfaces.*;
+import org.mwc.cmap.core.interfaces.IControllableViewport;
+import org.mwc.cmap.core.interfaces.IPlotGUI;
+import org.mwc.cmap.core.interfaces.IResourceProvider;
 import org.mwc.cmap.core.property_support.EditableWrapper;
-import org.mwc.cmap.core.ui_support.*;
+import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
 import org.mwc.cmap.plotViewer.actions.IChartBasedEditor;
 import org.mwc.cmap.plotViewer.actions.RangeBearing;
-import org.mwc.cmap.plotViewer.editors.chart.*;
+import org.mwc.cmap.plotViewer.editors.chart.CursorTracker;
+import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
+import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
+import org.mwc.cmap.plotViewer.editors.chart.StatusPanel;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart.PlotMouseDragger;
 
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GUI.Editable.EditorType;
 import MWC.GUI.Layers.DataListener;
 import MWC.GUI.Tools.Chart.DblClickEdit;
-import MWC.GenericData.*;
-import MWC.TacticalData.IRollingNarrativeProvider;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.WorldArea;
 
 public abstract class CorePlotEditor extends EditorPart implements IResourceProvider,
 		IControllableViewport, ISelectionProvider, IPlotGUI, IChartBasedEditor
@@ -60,15 +85,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 	 */
 	protected Layers _myLayers;
 
-	/**
-	 * handle narrative management
-	 */
-	protected IRollingNarrativeProvider _theNarrativeProvider;
-
-	/**
-	 * an object to look after all of the time bits
-	 */
-	public TimeManager _timeManager;
 
 
 	/**
@@ -146,9 +162,6 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		_myLayers.addDataModifiedListener(_listenForMods);
 		_myLayers.addDataReformattedListener(_listenForMods);
 
-		// create the time manager. cool
-		_timeManager = new TimeManager();
-
 
 		// and listen for new times
 		_timeListener = new PropertyChangeListener()
@@ -165,15 +178,11 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 			}
 		};
 
-		_timeManager.addListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 	}
 
 	public void dispose()
 	{
 		super.dispose();
-
-		// stop listening to the time manager
-		_timeManager.removeListener(_timeListener, TimeProvider.TIME_CHANGED_PROPERTY_NAME);
 		
 		_myRngBrg.close();
 		_myRngBrg = null;
@@ -451,22 +460,9 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		Object res = null;
 
 		// so, is he looking for the layers?
-		if (adapter == Layers.class)
-		{
-			if (_myLayers != null)
-				res = _myLayers;
-		}
-		else if (adapter == CorePlotEditor.class)
+		if (adapter == CorePlotEditor.class)
 		{
 			res = this;
-		}
-		else if (adapter == IRollingNarrativeProvider.class)
-		{
-			res = _theNarrativeProvider;
-		}
-		else if (adapter == TimeProvider.class)
-		{
-			res = _timeManager;
 		}
 		else if (adapter == ISelectionProvider.class)
 		{
@@ -476,32 +472,11 @@ public abstract class CorePlotEditor extends EditorPart implements IResourceProv
 		{
 			res = this;
 		}
-		else if (adapter == ControllableTime.class)
-		{
-			res = _timeManager;
-		}
-
 		else if (adapter == CanvasType.class)
 		{
 			res = _myChart.getCanvas();
 		}
-		else if (adapter == IGotoMarker.class)
-		{
-			return new IGotoMarker()
-			{
-				public void gotoMarker(IMarker marker)
-				{
-					String lineNum = marker.getAttribute(IMarker.LINE_NUMBER, "na");
-					if (lineNum != "na")
-					{
-						// right, convert to DTG
-						HiResDate tNow = new HiResDate(0, Long.parseLong(lineNum));
-						_timeManager.setTime(this, tNow, true);
-					}
-				}
 
-			};
-		}
 
 		return res;
 	}

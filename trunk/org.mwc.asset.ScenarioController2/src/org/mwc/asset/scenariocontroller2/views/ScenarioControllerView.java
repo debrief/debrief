@@ -1,5 +1,7 @@
 package org.mwc.asset.scenariocontroller2.views;
 
+import java.beans.PropertyChangeListener;
+import java.beans.PropertyChangeSupport;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -81,7 +83,7 @@ import MWC.GenericData.HiResDate;
 import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 public class ScenarioControllerView extends ViewPart implements
-		ISelectionProvider
+		ISelectionProvider, TimeManager.LiveScenario
 {
 
 	private static final String CONTROL_FILE_INDEX = "CONTROL_FILE";
@@ -128,6 +130,11 @@ public class ScenarioControllerView extends ViewPart implements
 	private MultiScenarioCore _myMultiScenario;
 	private String[] _myPendingFilenames;
 	private TimeControlPreferences _myTimeControlProps;
+	
+	/** support for anybody that wants to know how we're getting on
+	 * 
+	 */
+	private PropertyChangeSupport _scenStopSupport;
 
 	/**
 	 * The constructor.
@@ -157,6 +164,9 @@ public class ScenarioControllerView extends ViewPart implements
 		{
 			public void finished(long elapsedTime, String reason)
 			{
+				// communicate what's happened to the time controller, if there is one.
+				_scenStopSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED,null, this);
+
 				// update our own status indicator(s)
 				setScenarioStatus(_myScenario, reason);
 
@@ -288,9 +298,9 @@ public class ScenarioControllerView extends ViewPart implements
 				doRunOperation();
 			}
 		});
-		
+
 		// if we have any pending filenames, get them dropped
-		if(_myPendingFilenames != null)
+		if (_myPendingFilenames != null)
 			filesDropped(_myPendingFilenames);
 
 	}
@@ -337,16 +347,14 @@ public class ScenarioControllerView extends ViewPart implements
 		}
 		else if (adapter == TimeControlPreferences.class)
 		{
-			if(_myTimeControlProps == null)
+			if (_myTimeControlProps == null)
 				_myTimeControlProps = new TimeControlProperties();
-			
+
 			res = _myTimeControlProps;
 		}
 		else if (adapter == TimeManager.LiveScenario.class)
 		{
-			return new TimeManager.LiveScenario()
-			{
-			};
+			return this;
 		}
 		else if (adapter == SteppableTime.class)
 		{
@@ -750,10 +758,11 @@ public class ScenarioControllerView extends ViewPart implements
 				pendingFilenames.add(contFile);
 			}
 		}
-		
+
 		// did we receive any?
-		if(pendingFilenames.size() > 0)
-  		_myPendingFilenames = pendingFilenames.toArray(new String[]{});
+		if (pendingFilenames.size() > 0)
+			_myPendingFilenames = pendingFilenames.toArray(new String[]
+			{});
 
 	}
 
@@ -959,14 +968,16 @@ public class ScenarioControllerView extends ViewPart implements
 		{
 			IWorkbenchPartSite site = getSite();
 			IWorkbenchWindow window = site.getWorkbenchWindow();
-		  IWorkbenchPage page = window.getActivePage();
-			page.showView(
-					site.getId());
+			IWorkbenchPage page = window.getActivePage();
+			page.showView(site.getId());
 		}
 		catch (PartInitException e)
 		{
-			ASSETPlugin.logError(Status.ERROR,
-					"failed to activate scenario controller - possible because trying to activing during init", e);
+			ASSETPlugin
+					.logError(
+							Status.ERROR,
+							"failed to activate scenario controller - possible because trying to activing during init",
+							e);
 		}
 	}
 
@@ -1088,5 +1099,20 @@ public class ScenarioControllerView extends ViewPart implements
 			super.assertEquals("failed to recognise parent ref", true,
 					ScenarioControllerView.isRelativePath(new File("../test.rep")));
 		}
+	}
+
+	@Override
+	public void addStoppedListener(PropertyChangeListener listener)
+	{
+		if (_scenStopSupport == null)
+			_scenStopSupport = new PropertyChangeSupport(listener);
+		_scenStopSupport.addPropertyChangeListener(listener);
+	}
+
+	@Override
+	public void removeStoppedListener(PropertyChangeListener listener)
+	{
+		if (_scenStopSupport != null)
+			_scenStopSupport.removePropertyChangeListener(listener);
 	}
 }

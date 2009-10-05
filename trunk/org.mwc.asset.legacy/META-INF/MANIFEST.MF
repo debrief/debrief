@@ -2,8 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.asset.legacy
-Bundle-Version: 1.0.1
-Require-Bundle: org.mwc.cmap.legacy
+Bundle-Version: 1.0.2
+Require-Bundle: org.mwc.cmap.legacy,
+ LiveDataMonitor;bundle-version="1.0.0"
 Export-Package: ASSET;
   uses:="ASSET.Models.Sensor,
    ASSET.Participants,
