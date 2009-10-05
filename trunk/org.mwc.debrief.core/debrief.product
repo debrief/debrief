@@ -12,9 +12,7 @@
 
    <launcherArgs>
       <vmArgs>-Xms128m
--Xmx512m
--Xbootclasspath/a:\jre\lib\ext\j3daudio.jar;jre\lib\ext\j3dcore.jar;jre\lib\ext\j3dutils.jar;jre\lib\ext\vecmath.jar
--Dj3d.rend=d3d</vmArgs>
+-Xmx512m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
