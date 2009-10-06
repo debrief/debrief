@@ -20,6 +20,7 @@ Export-Package:
    javax.swing,
    MWC.GUI.Properties,
    MWC.GUI",
+ MWC.Algorithms.LiveData,
  MWC.Algorithms.Projections;uses:="MWC.GenericData,MWC.Algorithms,MWC.GUI",
  MWC.GUI;
   uses:="MWC.GUI.Tools.Chart,

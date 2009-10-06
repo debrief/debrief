@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
-<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:schemas/ASSET.xsd" OutputDirectory="test_reports/asset_test_output/force_prot2" RandomSeed="32">
-	<ScenarioGenerator Filename="force_prot_res2">
-		<MultiScenarioGenerator NameTemplate="force_output4" Number="50" MaxPerms="100">
+<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ xsi:noNamespaceSchemaLocation="file:/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.legacy/schemas/ASSET.xsd"
+ OutputDirectory="test_reports/asset_test_output/force_prot2"
+ RandomSeed="32">
+	<ScenarioGenerator >
+		<MultiScenarioGenerator NameTemplate="force_output4" Number="6" MaxPerms="100">
 			<VarianceList>
 				<Variance name="sea_state" id="//Environment">
 					<Attribute name="SeaState">
