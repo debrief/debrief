@@ -55,6 +55,7 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
+import org.mwc.asset.SimulationController.SimControllerUI;
 import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.sample_data.SampleDataPlugin;
 import org.mwc.cmap.core.CorePlugin;
@@ -130,11 +131,13 @@ public class ScenarioControllerView extends ViewPart implements
 	private MultiScenarioCore _myMultiScenario;
 	private String[] _myPendingFilenames;
 	private TimeControlPreferences _myTimeControlProps;
-	
-	/** support for anybody that wants to know how we're getting on
+
+	/**
+	 * support for anybody that wants to know how we're getting on
 	 * 
 	 */
 	private PropertyChangeSupport _scenStopSupport;
+	private SimControllerUI multiUI;
 
 	/**
 	 * The constructor.
@@ -165,7 +168,8 @@ public class ScenarioControllerView extends ViewPart implements
 			public void finished(long elapsedTime, String reason)
 			{
 				// communicate what's happened to the time controller, if there is one.
-				_scenStopSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED,null, this);
+				_scenStopSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED,
+						null, this);
 
 				// update our own status indicator(s)
 				setScenarioStatus(_myScenario, reason);
@@ -259,6 +263,9 @@ public class ScenarioControllerView extends ViewPart implements
 		// create our UI
 		_myUI = new UISkeleton(parent, SWT.FILL);
 
+		multiUI = new SimControllerUI(_myUI.getMultiTableHolder());
+		multiUI.setSelectionProvider(this);
+
 		// let us accept dropped files
 		configureFileDropSupport(_myUI);
 
@@ -315,16 +322,27 @@ public class ScenarioControllerView extends ViewPart implements
 	{
 		System.out.println("doing gen");
 
-		if (_myMultiScenario == null)
+		try
 		{
-			// create a new, fresh multi scenario generator
-			_myMultiScenario = new MultiScenarioCore();
+			if (_myMultiScenario == null)
+			{
+				// create a new, fresh multi scenario generator
+				_myMultiScenario = new MultiScenarioCore();
+			}
+
+			// and let it create some files
+			_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName,
+					System.out, System.err, System.in);
+
+			// ok, now give the scenarios to the multi scenario table
+			multiUI.setInput(_myMultiScenario);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
 		}
 
-		// and let it create some files
-		_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName,
-				System.out, System.err, System.in);
-
+		// and make the run button live
 		_myUI.getRunBtn().setEnabled(true);
 	}
 
@@ -653,9 +671,6 @@ public class ScenarioControllerView extends ViewPart implements
 
 	private void updateMultiTab()
 	{
-		// clear the table
-		_myUI.getMultiScenTable().getTable().setData(null);
-
 		// ok, disable the run button,
 		_myUI.getRunBtn().setEnabled(false);
 
@@ -966,10 +981,15 @@ public class ScenarioControllerView extends ViewPart implements
 	{
 		try
 		{
+			// just check we're alive - just in case we've been called before
+			// the init is complete
 			IWorkbenchPartSite site = getSite();
 			IWorkbenchWindow window = site.getWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
-			page.showView(site.getId());
+			if (page != null)
+			{
+				page.showView(site.getId());
+			}
 		}
 		catch (PartInitException e)
 		{

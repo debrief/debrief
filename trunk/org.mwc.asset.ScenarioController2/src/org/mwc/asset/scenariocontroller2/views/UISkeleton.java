@@ -44,7 +44,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	private TabFolder scenarioTabs;
 	private Label controlVal;
 	private Label scenarioVal;
-	private TableViewer multiScenTable;
+	private Composite multiTableHolder;
 	private Composite composite2;
 	private Composite multiRunBtnHolder;
 
@@ -194,14 +194,14 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 								runBtn.setText("Run");
 							}
 						}
+			
 						{
-							multiScenTable = new TableViewer(composite2, SWT.NONE);
-							multiScenTable.getTable().setItemCount(3);
-							GridData multiScenTableLData = new GridData();
-							multiScenTableLData.grabExcessHorizontalSpace = true;
-							multiScenTableLData.grabExcessVerticalSpace = true;
-							multiScenTable.getControl().setLayoutData(multiScenTableLData);
-							multiScenTable.getTable().setHeaderVisible(true);
+							GridData multiTableHolderLData = new GridData();
+							multiTableHolder = new Composite(composite2, SWT.NONE);
+							GridLayout multiTableHolderLayout = new GridLayout();
+							multiTableHolderLayout.makeColumnsEqualWidth = true;
+							multiTableHolder.setLayout(multiTableHolderLayout);
+							multiTableHolder.setLayoutData(multiTableHolderLData);
 						}
 					}
 				}
@@ -213,7 +213,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 				scenarioTabsLData.height = 79;
 				scenarioTabsLData.top =  new FormAttachment(0, 1000, 56);
 				scenarioTabs.setLayoutData(scenarioTabsLData);
-				scenarioTabs.setSelection(0);
+				scenarioTabs.setSelection(1);
 			}
 			this.layout();
 		} catch (Exception e) {
@@ -241,16 +241,16 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 		return singleStatVal;
 	}
 	
-	public TableViewer getMultiScenTable() {
-		return multiScenTable;
-	}
-	
 	public Button getDoGenerateButton() {
 		return doGenerateButton;
 	}
 	
 	public Button getRunBtn() {
 		return runBtn;
+	}
+	
+	public Composite getMultiTableHolder() {
+		return multiTableHolder;
 	}
 
 }
