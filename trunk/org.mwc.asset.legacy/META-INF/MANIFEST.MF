@@ -3,8 +3,7 @@ Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.asset.legacy
 Bundle-Version: 1.0.2
-Require-Bundle: org.mwc.cmap.legacy,
- LiveDataMonitor;bundle-version="1.0.0"
+Require-Bundle: org.mwc.cmap.legacy
 Export-Package: ASSET;
   uses:="ASSET.Models.Sensor,
    ASSET.Participants,
@@ -161,7 +160,8 @@ Export-Package: ASSET;
    ASSET.Scenario,
    MWC.GUI",
  ASSET.Models.Decision;
-  uses:="ASSET.Participants,
+  uses:="MWC.GenericData,
+   ASSET.Participants,
    ASSET.Models.Detection,
    ASSET.Models.Decision.Conditions,
    ASSET.Util,
@@ -286,11 +286,13 @@ Export-Package: ASSET;
    ASSET.Models.Environment,
    MWC.GUI",
  ASSET.Scenario.Genetic;uses:="junit.framework,ASSET.Util.MonteCarlo,org.w3c.dom",
+ ASSET.Scenario.LiveScenario;uses:="MWC.Algorithms.LiveData",
  ASSET.Scenario.Observers;
   uses:="ASSET,
+   ASSET.Models.Detection,
    MWC.GenericData,
    ASSET.Participants,
-   ASSET.Models.Detection,
+   MWC.Algorithms.LiveData,
    ASSET.Scenario.Observers.Summary,
    ASSET.Util,
    ASSET.Scenario,
@@ -330,7 +332,6 @@ Export-Package: ASSET;
  ASSET.Util.MonteCarlo;
   uses:="junit.framework,
    MWC.GenericData,
-   org.jdom,
    ASSET.Util,
    javax.xml.parsers,
    org.w3c.dom,
@@ -352,7 +353,6 @@ Export-Package: ASSET;
   uses:="ASSET,
    ASSET.Models.Sensor,
    MWC.Utilities.ReaderWriter.XML,
-   org.jdom.input,
    ASSET.Models.Decision,
    org.w3c.dom,
    ASSET.Scenario,
@@ -452,7 +452,7 @@ Export-Package: ASSET;
    MWC.Utilities.ReaderWriter.XML,
    ASSET.Models.Vessels.Radiated,
    org.w3c.dom",
- ASSET.Util.XMLFactory;uses:="org.jdom",
+ ASSET.Util.XMLFactory;uses:="org.w3c.dom",
  ASSET.Util.jip.rmi,
  ASSET.Util.jip.tools
 Bundle-ClassPath: libs/jaxen-full.jar,

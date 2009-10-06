@@ -6,6 +6,5 @@
 	<classpathentry kind="src" path="schemas"/>
 	<classpathentry exported="true" kind="lib" path="libs/postgis_1.3.5.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/postgresql-8.3-604.jdbc4.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/LiveDataMonitor"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

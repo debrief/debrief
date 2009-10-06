@@ -10,7 +10,7 @@ package ASSET.Util.XML.Control.Observers;
  */
 
 import ASSET.Scenario.Observers.ScenarioObserver;
-import ASSET.Scenario.Observers.TimeObserver;
+import ASSET.Scenario.Observers.StopOnElapsedObserver;
 import MWC.GenericData.Duration;
 import MWC.Utilities.ReaderWriter.XML.Util.DurationHandler;
 
@@ -58,7 +58,7 @@ abstract class TimeObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   public void elementClosed()
   {
     // create ourselves
-    final ScenarioObserver timeO = new TimeObserver(_theDuration, _name, _isActive);
+    final ScenarioObserver timeO = new StopOnElapsedObserver(_theDuration, _name, _isActive);
 
     setObserver(timeO);
 
@@ -77,7 +77,7 @@ abstract class TimeObserverHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
     final org.w3c.dom.Element thisPart = doc.createElement(type);
 
     // get data item
-    final TimeObserver bb = (TimeObserver) toExport;
+    final StopOnElapsedObserver bb = (StopOnElapsedObserver) toExport;
 
     // output it's attributes
     thisPart.setAttribute("Name", bb.getName());

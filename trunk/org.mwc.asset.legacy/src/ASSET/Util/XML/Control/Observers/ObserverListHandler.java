@@ -270,7 +270,7 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       {
         CSVTrackObserverHandler.exportThis(observer, sens, doc);
       }
-      else if (observer instanceof TimeObserver)
+      else if (observer instanceof StopOnElapsedObserver)
       {
         TimeObserverHandler.exportThis(observer, sens, doc);
       }

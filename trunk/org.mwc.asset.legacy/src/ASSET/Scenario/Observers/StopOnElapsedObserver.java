@@ -6,15 +6,14 @@
  */
 package ASSET.Scenario.Observers;
 
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
-import java.util.Vector;
-
+import ASSET.Scenario.Genetic.ScenarioRunner;
 import ASSET.ScenarioType;
 import ASSET.Util.SupportTesting;
-import MWC.Algorithms.LiveData.DataDoublet;
-import MWC.Algorithms.LiveData.IAttribute;
 import MWC.GUI.Editable;
+import MWC.GenericData.Duration;
+
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 
 
 /** controller observer that stops running after indicated period
@@ -22,23 +21,58 @@ import MWC.GUI.Editable;
  * @author ianmayo
  *
  */
-public class TimeObserver extends
-  CoreObserver implements ASSET.Scenario.ScenarioSteppedListener, IAttribute
+public class StopOnElapsedObserver extends
+  CoreObserver implements ASSET.Scenario.ScenarioSteppedListener,
+  ScenarioObserver.ScenarioReferee
 {
   /***************************************************************
    *  member variables
    ***************************************************************/
+  /**
+   * the period of time elapsed so far
+   */
+  private Duration _elapsedTime = null;
+
+  /**
+   * a record of the start time for the scenario
+   */
+  private long _startTime = -1;
+
+  /**
+   * did we actually stop it?
+   */
+  private boolean _weStoppedIt = false;
 
   /***************************************************************
    *  constructor
    ***************************************************************/
   /**
-   * default constructor - doesn't need much
+   * default constructor, taking the elapsed time after which the
+   * scenario should be stopped
    *
+   * @param elapsed elapsed milliseconds since scenario start time
    */
-  public TimeObserver()
+  public StopOnElapsedObserver(Duration elapsed, String name, final boolean isActive)
   {
-    super("Time", true);
+    super(name, isActive);
+    _elapsedTime = elapsed;
+  }
+
+  /**
+   * convenience constructor
+   *
+   * @param days  number of elapsed days
+   * @param hours number of elapsed hours
+   * @param mins  number of elapsed minutes
+   * @param secs  number of elapsed seconds
+   */
+  public StopOnElapsedObserver(final int days, final int hours, final int mins, final int secs,
+                      String name, final boolean isActive)
+  {
+    this(new Duration((days * 24 * 60 * 60 * 1000) +
+                      (hours * 60 * 60 * 1000) +
+                      (mins * 60 * 1000) +
+                      (secs * 1000), Duration.MILLISECONDS), name, isActive);
   }
 
 
@@ -48,6 +82,16 @@ public class TimeObserver extends
    * *************************************************************
    */
 
+  public Duration getElapsed()
+  {
+    return _elapsedTime;
+  }
+
+  public void setElapsed(Duration val)
+  {
+    _elapsedTime = val;
+  }
+
   /**
    * we're getting up and running.  The observers have been created and we've remembered
    * the scenario
@@ -56,6 +100,11 @@ public class TimeObserver extends
    */
   protected void performSetupProcessing(ScenarioType scenario)
   {
+    // take record of the start time
+    _startTime = scenario.getTime();
+
+
+    _weStoppedIt = false;
   }
 
   /**
@@ -66,6 +115,8 @@ public class TimeObserver extends
    */
   protected void performCloseProcessing(ScenarioType scenario)
   {
+    // reset the data
+    _startTime = -1;
 
   }
 
@@ -92,9 +143,47 @@ public class TimeObserver extends
    */
   public void step(final long newTime)
   {
-  	getHelper().newData(newTime, newTime);
+    // find out start
+    if (_startTime == -1)
+    {
+      _startTime = _myScenario.getTime();
+    }
+
+    // find out elapsed
+    final long elapsed = newTime - _startTime;
+
+    if (elapsed >= _elapsedTime.getValueIn(Duration.MILLISECONDS))
+    {
+      _weStoppedIt = true;
+
+      _myScenario.stop("Stopped on elapsed time:" + getName());
+    }
   }
 
+  /**
+   * return how well this scenario performed, according to this referee.
+   */
+  public ScenarioRunner.ScenarioOutcome getOutcome()
+  {
+    ScenarioRunner.ScenarioOutcome res = null;
+    if (_weStoppedIt)
+    {
+      res = new ScenarioRunner.ScenarioOutcome();
+      res.summary = "Stopped:" + getName();
+    }
+
+    return res;
+  }
+
+  /**
+   * accessor function to indicate if this observer stopped the scenario
+   *
+   * @return yes/no for if we stopped it
+   */
+  public boolean hasStopped()
+  {
+    return _weStoppedIt;
+  }
 
   //////////////////////////////////////////////////
   // property editing
@@ -139,7 +228,7 @@ public class TimeObserver extends
      *
      * @param data the object we're going to edit
      */
-    public TimeObserverInfo(final TimeObserver data)
+    public TimeObserverInfo(final StopOnElapsedObserver data)
     {
       super(data, data.getName(), "Edit");
     }
@@ -179,27 +268,9 @@ public class TimeObserver extends
      */
     public Editable getEditable()
     {
-      return new TimeObserver();
+      return new StopOnElapsedObserver(12, 12, 12, 12, "", true);
     }
   }
-
-  @Override
-	public DataDoublet getCurrent()
-	{
-		return getHelper().getCurrent();
-	}
-
-  @Override
-	public Vector<DataDoublet> getHistoricValues()
-	{
-		return getHelper().getHistoricValues();
-	}
-
-	@Override
-	public boolean isSignificant()
-	{
-		return true;
-	}
 
 
 }

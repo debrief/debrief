@@ -12,8 +12,6 @@ import java.io.File;
 import java.util.Iterator;
 import java.util.Vector;
 
-import simData.DataDoublet;
-import simData.IAttribute;
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
@@ -29,6 +27,8 @@ import ASSET.Scenario.Genetic.ScenarioRunner;
 import ASSET.Scenario.Observers.Summary.BatchCollator;
 import ASSET.Scenario.Observers.Summary.BatchCollatorHelper;
 import ASSET.Util.SupportTesting;
+import MWC.Algorithms.LiveData.DataDoublet;
+import MWC.Algorithms.LiveData.IAttribute;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -738,6 +738,7 @@ public class ProximityObserver extends CoreObserver implements
       }
     }
   }
+
 
 
 }

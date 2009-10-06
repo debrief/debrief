@@ -10,9 +10,8 @@ import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.Date;
 
-import simData.Attribute;
-
 import ASSET.ScenarioType;
+import MWC.Algorithms.LiveData.Attribute;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Plottable;

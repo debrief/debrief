@@ -11,6 +11,7 @@ import java.beans.PropertyDescriptor;
 import java.util.Vector;
 
 import ASSET.ScenarioType;
+import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Util.SupportTesting;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
@@ -22,10 +23,12 @@ import MWC.GUI.Editable;
  * @author ianmayo
  *
  */
-public class TimeObserver extends
+public class ScenarioStatusObserver extends
   CoreObserver implements ASSET.Scenario.ScenarioSteppedListener, IAttribute
 {
-  /***************************************************************
+  private ScenarioRunningListener _runner;
+
+	/***************************************************************
    *  member variables
    ***************************************************************/
 
@@ -36,9 +39,9 @@ public class TimeObserver extends
    * default constructor - doesn't need much
    *
    */
-  public TimeObserver()
+  public ScenarioStatusObserver()
   {
-    super("Time", true);
+    super("Status", true);
   }
 
 
@@ -56,6 +59,44 @@ public class TimeObserver extends
    */
   protected void performSetupProcessing(ScenarioType scenario)
   {
+  	if(_runner == null)
+  	_runner = new ScenarioRunningListener(){
+
+			@Override
+			public void finished(long elapsedTime, String reason)
+			{
+				getHelper().newData(elapsedTime, "FINISHED");
+			}
+
+			@Override
+			public void newScenarioStepTime(int val)
+			{
+			}
+
+			@Override
+			public void newStepTime(int val)
+			{
+			}
+
+			@Override
+			public void paused()
+			{
+			}
+
+			@Override
+			public void restart()
+			{
+			}
+
+			@Override
+			public void started()
+			{
+			}};
+  	
+  	scenario.addScenarioRunningListener(_runner);
+  	
+  	// initialise
+  	getHelper().newData(scenario.getTime(), "WAITING");
   }
 
   /**
@@ -66,7 +107,7 @@ public class TimeObserver extends
    */
   protected void performCloseProcessing(ScenarioType scenario)
   {
-
+  	scenario.removeScenarioRunningListener(_runner);
   }
 
   /**
@@ -122,7 +163,7 @@ public class TimeObserver extends
   public EditorType getInfo()
   {
     if (_myEditor1 == null)
-      _myEditor1 = new TimeObserverInfo(this);
+      _myEditor1 = new StatusObserverInfo(this);
 
     return _myEditor1;
   }
@@ -130,7 +171,7 @@ public class TimeObserver extends
   //////////////////////////////////////////////////
   // editable properties
   //////////////////////////////////////////////////
-  static public class TimeObserverInfo extends EditorType
+  static public class StatusObserverInfo extends EditorType
   {
 
 
@@ -139,7 +180,7 @@ public class TimeObserver extends
      *
      * @param data the object we're going to edit
      */
-    public TimeObserverInfo(final TimeObserver data)
+    public StatusObserverInfo(final ScenarioStatusObserver data)
     {
       super(data, data.getName(), "Edit");
     }
@@ -155,7 +196,6 @@ public class TimeObserver extends
       {
         final PropertyDescriptor[] res = {
           prop("Name", "the name of this observer"),
-          prop("Elapsed", "period after which scenario should be stopped")
         };
         return res;
       }
@@ -179,7 +219,7 @@ public class TimeObserver extends
      */
     public Editable getEditable()
     {
-      return new TimeObserver();
+      return new ScenarioStatusObserver();
     }
   }
 

@@ -11,11 +11,14 @@ import ASSET.Models.Environment.*;
 import ASSET.Models.Sensor.Initial.BroadbandSensor;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Participants.Status;
+import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Util.RandomGenerator;
+import MWC.Algorithms.LiveData.Attribute;
+import MWC.Algorithms.LiveData.IAttribute;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
-public class CoreScenario implements ScenarioType
+public class CoreScenario implements ScenarioType, ISimulation
 {
 
   //////////////////////////////////////
@@ -152,6 +155,9 @@ public class CoreScenario implements ScenarioType
         stepping = false;
       }
     });
+    
+    _myState = new Attribute("State", true);
+    _myState.fireUpdate(getTime(), "PENDING");
 
     _pSupport = new java.beans.PropertyChangeSupport(this);
 
@@ -258,6 +264,9 @@ public class CoreScenario implements ScenarioType
 
     // fire event
     this.fireScenarioStopped(elapsedTime, thisReason);
+    
+    // and update our state
+    _myState.fireUpdate(getTime(), "FINISHED");
 
   }
 
@@ -267,6 +276,8 @@ public class CoreScenario implements ScenarioType
    * 
    */
 	private BaseLayer _myBackdrop;
+
+	private final Attribute _myState;
 
   /**
    * Move the scenario through a single step
@@ -700,6 +711,7 @@ public class CoreScenario implements ScenarioType
         pcl.started();
       }
     }
+    
   }
 
   /**
@@ -1485,5 +1497,29 @@ public class CoreScenario implements ScenarioType
 	public void setBackdrop(BaseLayer layer)
 	{
 		_myBackdrop = layer;
+	}
+
+
+	@Override
+	public Vector<IAttribute> getAttributes()
+	{
+		Vector<IAttribute> res = new Vector<IAttribute>(0,1);
+		res.add(_myState);
+		return res;
+	}
+
+
+	@Override
+	public IAttribute getState()
+	{
+		return _myState;
+	}
+
+
+	@Override
+	public void stop()
+	{
+		// TODO Auto-generated method stub
+		
 	}
 }

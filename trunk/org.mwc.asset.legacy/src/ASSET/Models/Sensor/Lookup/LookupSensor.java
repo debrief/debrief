@@ -17,7 +17,7 @@ import ASSET.Participants.ParticipantDetectedListener;
 import ASSET.Participants.Status;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
-import ASSET.Scenario.Observers.TimeObserver;
+import ASSET.Scenario.Observers.StopOnElapsedObserver;
 import ASSET.ScenarioType;
 import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
@@ -2011,7 +2011,7 @@ public abstract class LookupSensor extends CoreSensor
 					true, "test observer", true);
 			dro.setup(cs);
 
-			ASSET.Scenario.Observers.TimeObserver to = new TimeObserver(0, 3, 0, 0,
+			ASSET.Scenario.Observers.StopOnElapsedObserver to = new StopOnElapsedObserver(0, 3, 0, 0,
 					"Test time observer", true);
 			to.setup(cs);
 
