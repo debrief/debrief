@@ -9,17 +9,13 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IEditorSite;
-import org.eclipse.ui.IViewReference;
-import org.eclipse.ui.IWorkbenchPage;
 import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.SubActionBars2;
 import org.eclipse.ui.actions.ActionFactory;
 import org.eclipse.ui.operations.RedoActionHandler;
 import org.eclipse.ui.operations.UndoActionHandler;
-import org.eclipse.ui.part.FileEditorInput;
 import org.mwc.asset.core.ASSETPlugin;
-import org.mwc.asset.scenariocontroller2.views.ScenarioControllerView;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.PlotViewerPlugin;
 import org.mwc.cmap.plotViewer.actions.ExportWMF;
@@ -297,46 +293,46 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException
 	{
-
-		setSite(site);
-		setInputWithNotify(input);
-		
-		// ok, try to pass this file to the scenario controller
-		IWorkbenchPage page = this.getEditorSite().getPage();
-		IViewReference timeRef = page.findViewReference(ASSETPlugin.SCENARIO_CONTROLLER2);
-
-		// ok, try to pass the file to it.
-		if(timeRef == null)
-		{
-			// ok, better open it
-			page.showView(ASSETPlugin.SCENARIO_CONTROLLER, null,IWorkbenchPage.VIEW_VISIBLE );
-			timeRef = page.findViewReference(ASSETPlugin.SCENARIO_CONTROLLER2);
-		}
-		
-		if(timeRef == null)
-		{
-			// bugger, we can't create the scenario controller
-			ASSETPlugin.logError(org.eclipse.core.runtime.Status.ERROR, "Can't find scenario controller to give it a file, dying", null);
-		}
-		else
-		{
-			ScenarioControllerView cont = (ScenarioControllerView) timeRef.getPart(true);
-			
-			// extract the path
-			String thePath = null;
-			
-			if(input instanceof FileEditorInput)
-			{
-				FileEditorInput fi = (FileEditorInput) input;
-				thePath = fi.getPath().toOSString();
-			}
-			
-			// ok, now give it the file	
-			if(thePath != null)
-				cont.filesDropped(new String[]{thePath});
-		}
-		
-		
+//
+//		setSite(site);
+//		setInputWithNotify(input);
+//		
+//		// ok, try to pass this file to the scenario controller
+//		IWorkbenchPage page = this.getEditorSite().getPage();
+//		IViewReference timeRef = page.findViewReference(ASSETPlugin.SCENARIO_CONTROLLER2);
+//
+//		// ok, try to pass the file to it.
+//		if(timeRef == null)
+//		{
+//			// ok, better open it
+//			page.showView(ASSETPlugin.SCENARIO_CONTROLLER, null,IWorkbenchPage.VIEW_VISIBLE );
+//			timeRef = page.findViewReference(ASSETPlugin.SCENARIO_CONTROLLER2);
+//		}
+//		
+//		if(timeRef == null)
+//		{
+//			// bugger, we can't create the scenario controller
+//			ASSETPlugin.logError(org.eclipse.core.runtime.Status.ERROR, "Can't find scenario controller to give it a file, dying", null);
+//		}
+//		else
+//		{
+//			ScenarioControllerView cont = (ScenarioControllerView) timeRef.getPart(true);
+//			
+//			// extract the path
+//			String thePath = null;
+//			
+//			if(input instanceof FileEditorInput)
+//			{
+//				FileEditorInput fi = (FileEditorInput) input;
+//				thePath = fi.getPath().toOSString();
+//			}
+//			
+//			// ok, now give it the file	
+//			if(thePath != null)
+//				cont.filesDropped(new String[]{thePath});
+//		}
+//		
+//		
 	}
 
 	public boolean isSaveAsAllowed()
