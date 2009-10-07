@@ -3,6 +3,7 @@ package org.mwc.cmap.xyplot;
 import java.util.HashMap;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.IAdaptable;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -23,13 +24,11 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.jfree.data.general.AbstractSeriesDataset;
-import org.mwc.cmap.TimeController.views.TimeController;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3;
 import Debrief.Tools.FilterOperations.ShowTimeVariablePlot3.CalculationHolder;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
@@ -50,6 +49,7 @@ import MWC.GUI.JFreeChart.RelBearingFormatter;
 import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 
 /**
  * embedded class to generate menu-items for creating tactical plot
@@ -299,10 +299,13 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 								return;
 							}
 
-							TimeController timer = (TimeController) timeRef.getView(true);
+							IAdaptable timeC = (IAdaptable) timeRef.getView(true);
 
 							// that's it, now get the data
-							TimePeriod period = timer.getPeriod();
+							TimePeriod period = (TimePeriod) timeC.getAdapter(TimePeriod.class);
+							if(period == null)
+								return;
+							
 							startTime = period.getStartDTG();
 							endTime = period.getEndDTG();
 
