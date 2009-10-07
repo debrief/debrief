@@ -3,8 +3,8 @@ package org.mwc.cmap.TimeController.Operations;
 import java.util.Vector;
 
 import Debrief.Tools.FilterOperations.CopyTimeDataToClipboard;
-import Debrief.Tools.Tote.WatchableList;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 
 public class ExportTimeDataToClipboard
 {

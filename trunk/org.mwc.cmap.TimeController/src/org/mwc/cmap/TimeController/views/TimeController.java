@@ -82,7 +82,6 @@ import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.editors.painters.TemporalLayerPainter;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
 
-import Debrief.Tools.Tote.WatchableList;
 import MWC.Algorithms.PlainProjection;
 import MWC.Algorithms.PlainProjection.RelativeProjectionParent;
 import MWC.GUI.Layers;
@@ -90,6 +89,7 @@ import MWC.GUI.Properties.DateFormatPropertyEditor;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.Utilities.Timer.TimerListener;
 
@@ -174,7 +174,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * the people listening to us
 	 */
 	Vector<ISelectionChangedListener> _selectionListeners;
-
+	
 	/**
 	 * and the preferences for time control
 	 */
@@ -894,10 +894,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						if (part == _liveScenario)
 						{
 							// stop listening to it
-								_liveScenario.removeStoppedListener(_myStoppedListener);
-								
-								// clear the pointer
-								_liveScenario = null;
+							_liveScenario.removeStoppedListener(_myStoppedListener);
+
+							// clear the pointer
+							_liveScenario = null;
 						}
 					}
 				});
@@ -2513,4 +2513,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public Object getAdapter(Class adapter)
+	{
+		Object res = null;
+		if(adapter == TimePeriod.class)
+			res = getPeriod();
+		else 
+			res =super.getAdapter(adapter); 
+		
+		return res; 
+	}
+
+	
+	
 }
