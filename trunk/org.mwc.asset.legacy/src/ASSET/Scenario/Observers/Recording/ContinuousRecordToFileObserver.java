@@ -261,12 +261,12 @@ public abstract class ContinuousRecordToFileObserver extends RecordToFileObserve
           return "new_name";  //To change body of implemented methods use File | Settings | File Templates.
         }
 
-        protected void addListeners()
+        protected void addListeners(ScenarioType scenario)
         {
           _listenersAdded = true;
         }
 
-        protected void removeListeners()
+        protected void removeListeners(ScenarioType scenario)
         {
           _listenersRemoved = true;
         }

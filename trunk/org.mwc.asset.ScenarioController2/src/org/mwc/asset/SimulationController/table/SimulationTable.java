@@ -246,7 +246,7 @@ public class SimulationTable {
 					@Override
 					public Object getValue(ISimulation simulation) {
 						final int colIndex = columnDescriptor.getIndex();
-						DataDoublet dataDoublet = simulation.getAttributes().get(colIndex).getCurrent();
+						DataDoublet dataDoublet = simulation.getAttributes().get(colIndex).getCurrent(simulation);
 						return dataDoublet == null ? null : dataDoublet.getValue();
 					}
 				});
@@ -378,7 +378,7 @@ public class SimulationTable {
 		}
 
 		private void onStateChanged() {
-			if (ISimulation.RUNNING.equals(getSimulation().getState().getCurrent().getValue())) {
+			if (ISimulation.RUNNING.equals(getSimulation().getState().getCurrent(getSimulation()).getValue())) {
 				if (!myIsRunning) {
 					myIsRunning = true;
 					for (ColumnDescriptor columnDescriptor : myVisibleAttributeColumns) {

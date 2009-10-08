@@ -72,7 +72,7 @@ public class TimeObserver extends
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
     // and become a listener
     _myScenario.addScenarioSteppedListener(this);
@@ -81,7 +81,7 @@ public class TimeObserver extends
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     // remove ourselves as a listener
     _myScenario.removeScenarioSteppedListener(this);
@@ -90,9 +90,9 @@ public class TimeObserver extends
   /**
    * the scenario has stepped forward
    */
-  public void step(final long newTime)
+  public void step(ScenarioType scenario, final long newTime)
   {
-  	getHelper().newData(newTime, newTime);
+  	getAttributeHelper().newData(scenario, newTime, newTime);
   }
 
 
@@ -184,21 +184,29 @@ public class TimeObserver extends
   }
 
   @Override
-	public DataDoublet getCurrent()
+	public DataDoublet getCurrent(Object index)
 	{
-		return getHelper().getCurrent();
+		return getAttributeHelper().getCurrent(index);
 	}
 
   @Override
-	public Vector<DataDoublet> getHistoricValues()
+	public Vector<DataDoublet> getHistoricValues(Object index)
 	{
-		return getHelper().getHistoricValues();
+		return getAttributeHelper().getValuesFor(index);
 	}
 
 	@Override
 	public boolean isSignificant()
 	{
 		return true;
+	}
+
+
+	@Override
+	public String getUnits()
+	{
+		
+		return "n/a";
 	}
 
 

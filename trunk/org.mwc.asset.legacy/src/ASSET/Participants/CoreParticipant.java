@@ -520,7 +520,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 	 * reset, to go back to the initial state
 	 */
 	@SuppressWarnings("unchecked")
-	public void restart()
+	public void restart(ScenarioType scenario)
 	{
 		// reset the statuses
 		_myStatus = new Status(_myInitialStatus);
@@ -548,7 +548,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			while (it.hasNext())
 			{
 				final ParticipantDecidedListener pdl = it.next();
-				pdl.restart();
+				pdl.restart(scenario);
 			}
 		}
 
@@ -561,7 +561,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			while (it.hasNext())
 			{
 				final ParticipantDetectedListener ptl = it.next();
-				ptl.restart();
+				ptl.restart(scenario);
 			}
 		}
 
@@ -575,7 +575,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 			while (it.hasNext())
 			{
 				final ParticipantMovedListener pml = it.next();
-				pml.restart();
+				pml.restart(scenario);
 			}
 		}
 
@@ -870,7 +870,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 				dem_status = dem_stat;
 			}
 
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 				;
 			}
@@ -883,7 +883,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 				newDetectionList = list;
 			}
 
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 				;
 			}
@@ -896,7 +896,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 				newStat = newStatus;
 			}
 
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 				;
 			}

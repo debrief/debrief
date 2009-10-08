@@ -11,6 +11,7 @@ import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 
 import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Participants.*;
@@ -265,7 +266,7 @@ public class VesselMonitor extends ViewPart
 				updateStatus(newStatus);
 			}
 
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 			}
 		};
@@ -277,7 +278,7 @@ public class VesselMonitor extends ViewPart
 				updateDecision(description, dem_status);
 			}
 
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 			}
 		};

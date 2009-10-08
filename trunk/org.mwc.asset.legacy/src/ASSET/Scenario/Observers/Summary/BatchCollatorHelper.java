@@ -1,12 +1,16 @@
 package ASSET.Scenario.Observers.Summary;
 
-import ASSET.Util.SupportTesting;
-import MWC.Utilities.TextFormatting.GeneralFormat;
-
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.TreeMap;
+import java.util.Vector;
+
+import ASSET.Util.SupportTesting;
+import MWC.Utilities.TextFormatting.GeneralFormat;
 
 /**
  * Created by IntelliJ IDEA.
@@ -17,6 +21,8 @@ import java.util.*;
  */
 public class BatchCollatorHelper
 {
+
+	
   //////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////

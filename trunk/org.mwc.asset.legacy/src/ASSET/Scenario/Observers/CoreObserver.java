@@ -53,6 +53,12 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
    * 
    */
   private Attribute.AttributeHelper _myAttributeHelper;
+  
+	
+	/** our multi scenario observer helper
+	 * 
+	 */
+	private BatchListenerHelper _batchListener = null;
 
   /**
    * ************************************************************
@@ -79,12 +85,20 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
   /** convenience class, largely helping with attribute watchers
    * 
    */
-  protected Attribute.AttributeHelper getHelper()
+  protected Attribute.AttributeHelper getAttributeHelper()
   {
   	if(_myAttributeHelper == null)
   		_myAttributeHelper = new Attribute.AttributeHelper(_pSupport);
   	
   	return _myAttributeHelper;
+  }
+  
+  protected BatchListenerHelper getListenerHelper()
+  {
+  	if(_batchListener == null)
+  		_batchListener = new BatchListenerHelper();
+  	
+  	return _batchListener;
   }
   
   /** somebody cares about us, aaah
@@ -105,7 +119,7 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
   	_pSupport.removePropertyChangeListener(listener);
   }
   
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     // remember the scenario - since we will probably forget it when we teardown
     final ScenarioType tmpScen = _myScenario;
@@ -196,7 +210,7 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
       _myScenario = scenario;
 
       // also add any listeners we're interested in
-      addListeners();
+      addListeners(scenario);
 
       // and the specific processing for this type
       performSetupProcessing(scenario);
@@ -216,7 +230,7 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
       performCloseProcessing(scenario);
 
       // ok, remove any listeners
-      removeListeners();
+      removeListeners(scenario);
 
       _myScenario = null;
     }
@@ -241,14 +255,16 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
 
   /**
    * add any applicable listeners
+   * @param scenario TODO
    */
-  abstract protected void addListeners();
+  abstract protected void addListeners(ScenarioType scenario);
 
 
   /**
    * remove any listeners
+   * @param scenario TODO
    */
-  abstract protected void removeListeners();
+  abstract protected void removeListeners(ScenarioType scenario);
 
   /**********************************************************************
    * editable parameters

@@ -131,7 +131,7 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
   /**
    * the scenario has stepped forward
    */
-  public void step(long newTime)
+  public void step(ScenarioType scenario, long newTime)
   {
     if (!isActive())
       return;
@@ -212,7 +212,7 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
     _myScenario.addScenarioSteppedListener(this);
   }
@@ -220,7 +220,7 @@ abstract public class RecordStatusToFileObserverType extends ContinuousRecordToF
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     _myScenario.removeScenarioSteppedListener(this);
   }

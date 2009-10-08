@@ -8,7 +8,7 @@ import ASSET.Scenario.Observers.ScenarioObserver;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.Layers;
 
-/** view of a complete simulation (scenario and controls)
+/** view of a complete simulation (scenario and controllers)
  * 
  * @author Administrator
  *

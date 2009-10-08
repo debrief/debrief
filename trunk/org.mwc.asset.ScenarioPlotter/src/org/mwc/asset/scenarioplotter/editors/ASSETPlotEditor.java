@@ -105,13 +105,13 @@ public class ASSETPlotEditor extends CorePlotEditor
 		if (_stepListener == null)
 			_stepListener = new ScenarioSteppedListener()
 			{
-				public void restart()
+				public void restart(ScenarioType scenario)
 				{
 					fireDirty();
 					update();
 				}
 
-				public void step(long newTime)
+				public void step(ScenarioType scenario, long newTime)
 				{
 					fireDirty();
 					update();

@@ -156,8 +156,8 @@ public class CoreScenario implements ScenarioType, ISimulation
       }
     });
     
-    _myState = new Attribute("State", true);
-    _myState.fireUpdate(getTime(), "PENDING");
+    _myState = new Attribute("State", "n/a", true);
+    _myState.fireUpdate(this, getTime(), "PENDING");
 
     _pSupport = new java.beans.PropertyChangeSupport(this);
 
@@ -266,7 +266,7 @@ public class CoreScenario implements ScenarioType, ISimulation
     this.fireScenarioStopped(elapsedTime, thisReason);
     
     // and update our state
-    _myState.fireUpdate(getTime(), "FINISHED");
+    _myState.fireUpdate(this, getTime(), "FINISHED");
 
   }
 
@@ -381,7 +381,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       while (iter.hasNext())
       {
         final ParticipantType pt = iter.next();
-        pt.restart();
+        pt.restart(this);
       }
     }
 
@@ -395,7 +395,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       while (it.hasNext())
       {
         final ParticipantsChangedListener pcl =  it.next();
-        pcl.restart();
+        pcl.restart(this);
       }
     }
 
@@ -408,7 +408,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       while (it.hasNext())
       {
         final ScenarioRunningListener prl =  it.next();
-        prl.restart();
+        prl.restart(this);
       }
     }
 
@@ -419,7 +419,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       while (it.hasNext())
       {
         final ScenarioSteppedListener ssl = it.next();
-        ssl.restart();
+        ssl.restart(this);
       }
     }
 
@@ -687,7 +687,7 @@ public class CoreScenario implements ScenarioType, ISimulation
         final ScenarioSteppedListener pcl = (ScenarioSteppedListener) it.next();
         try
         {
-          pcl.step(time);
+          pcl.step(this, time);
         }
         catch (Exception e)
         {
@@ -1062,7 +1062,7 @@ public class CoreScenario implements ScenarioType, ISimulation
         destroyedCounter++;
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
         ;
       }
@@ -1098,7 +1098,7 @@ public class CoreScenario implements ScenarioType, ISimulation
       {
         newStepTime = val;
       };
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
         ;
       }
@@ -1107,13 +1107,13 @@ public class CoreScenario implements ScenarioType, ISimulation
 
     protected class stepListener implements ScenarioSteppedListener
     {
-      public void step(final long newTime)
+      public void step(ScenarioType scenario, final long newTime)
       {
         lastTime = newTime;
         stepCounter++;
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
         ;
       }

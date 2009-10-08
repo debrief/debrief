@@ -104,7 +104,7 @@ public class DebriefDeployableSensorLocationObserver extends DebriefReplayObserv
   /**
    * the scenario has stepped forward
    */
-  public void step(long newTime)
+  public void step(ScenarioType scenario, long newTime)
   {
     if (!isActive())
       return;

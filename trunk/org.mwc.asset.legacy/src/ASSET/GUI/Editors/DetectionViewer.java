@@ -9,6 +9,7 @@ package ASSET.GUI.Editors;
  * @version 1.0
  */
 
+import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Sensor.Initial.BroadbandSensor;
@@ -172,7 +173,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
   /**
    * the scenario has restarted
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     newDetections(null);
   }
@@ -292,7 +293,7 @@ class DetectionViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor
       assertEquals("we can set  data", dv.detList.getModel().getSize(), 1);
 
       // check restart
-      dv.restart();
+      dv.restart(null);
       assertEquals("we can do restart", dv.detList.getModel().getSize(), 0);
 
       System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");

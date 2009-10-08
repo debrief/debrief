@@ -623,7 +623,7 @@ public class MADLookupSensor extends LookupSensor
           }
         }
 
-        public void restart()
+        public void restart(ScenarioType scenario)
         {
         }
       });

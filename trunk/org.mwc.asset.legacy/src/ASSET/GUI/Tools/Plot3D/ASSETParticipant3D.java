@@ -304,7 +304,7 @@ public class ASSETParticipant3D extends Participant3D implements ScenarioStepped
   /**
    * the scenario has stepped forward
    */
-  public void step(final long newTime)
+  public void step(ScenarioType scenario, final long newTime)
   {
     super.updated(new HiResDate(newTime));
   }
@@ -312,7 +312,7 @@ public class ASSETParticipant3D extends Participant3D implements ScenarioStepped
   /**
    * the scenario has restarted, reset
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     // ignroe this
   }

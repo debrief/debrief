@@ -83,7 +83,7 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
 
     // and register as a listener with the scenario
@@ -101,7 +101,7 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     // remove ourselves from our vessels
     final Iterator<ParticipantType> it = _watchedVessels.iterator();

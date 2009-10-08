@@ -68,9 +68,9 @@ public class TimeToLaunchObserver extends CoreObserver implements ScenarioObserv
   /**
    * the scenario has restarted
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
-    super.restart();
+    super.restart(scenario);
 
     _myScore = -1;
   }
@@ -115,7 +115,7 @@ public class TimeToLaunchObserver extends CoreObserver implements ScenarioObserv
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
     // and become a listener
     _myScenario.addScenarioSteppedListener(this);
@@ -127,7 +127,7 @@ public class TimeToLaunchObserver extends CoreObserver implements ScenarioObserv
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     // remove ourselves as a listener
     _myScenario.removeScenarioSteppedListener(this);
@@ -178,7 +178,7 @@ public class TimeToLaunchObserver extends CoreObserver implements ScenarioObserv
   /**
    * the scenario has stepped forward
    */
-  public void step(long newTime)
+  public void step(ScenarioType scenario, long newTime)
   {
     _currentTime = newTime;
   }

@@ -1,5 +1,4 @@
 package org.mwc.asset.scenariocontroller2.views;
-import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;

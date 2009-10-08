@@ -271,7 +271,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
     _myScenario.addScenarioSteppedListener(this);
   }
@@ -279,7 +279,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     _myScenario.removeScenarioSteppedListener(this);
   }
@@ -479,7 +479,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
   /**
    * the scenario has stepped forward
    */
-  public void step(long newTime)
+  public void step(ScenarioType scenario, long newTime)
   {
     if (!isActive())
       return;

@@ -2,6 +2,7 @@ package MWC.Algorithms.LiveData;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.HashMap;
 import java.util.Vector;
 
 
@@ -15,6 +16,11 @@ public class Attribute implements IAttribute
 	 * 
 	 */
 	private String _name;
+	
+	/** the units for this attribute type
+	 * 
+	 */
+	private String _units;
 
 	/**
 	 * support for property listeners
@@ -37,7 +43,7 @@ public class Attribute implements IAttribute
 	 * 
 	 * @param name
 	 */
-	public Attribute(String name, boolean isSignificant)
+	public Attribute(String name, String units, boolean isSignificant)
 	{
 		_isSignificant = isSignificant;
 		
@@ -65,9 +71,9 @@ public class Attribute implements IAttribute
 	}
 
 	@Override
-	public Vector<DataDoublet> getHistoricValues()
+	public Vector<DataDoublet> getHistoricValues(Object index)
 	{
-		return _myHelper.getHistoricValues();
+		return _myHelper.getValuesFor(index);
 	}
 
 	@Override
@@ -81,15 +87,15 @@ public class Attribute implements IAttribute
 	 * @param time
 	 * @param newValue
 	 */
-	public void fireUpdate(long time, Object newValue)
+	public void fireUpdate(Object index, long time, Object newValue)
 	{
-		_myHelper.newData(time, newValue);
+		_myHelper.newData(index, time, newValue);
 	}
 
 	@Override
-	public DataDoublet getCurrent()
+	public DataDoublet getCurrent(Object index)
 	{
-		return _myHelper.getCurrent();
+		return _myHelper.getCurrent(index);
 	}
 
 	@Override
@@ -98,10 +104,14 @@ public class Attribute implements IAttribute
 		return _isSignificant;
 	}
 
-	@Override
-	public String toString()
+	/** return the current value of the specified index as a string
+	 * 
+	 * @param index
+	 * @return
+	 */
+	public String toString(Object index)
 	{
-		return getName() + ":" + getCurrent().getValue();
+		return getName() + ":" + getCurrent(index).getValue();
 	}
 	
 	/** convenience class to help objects that can't inherit from Attribute class
@@ -111,15 +121,16 @@ public class Attribute implements IAttribute
 	 */
 	public static class AttributeHelper
 	{
-		/** the collection of data items
-		 * 
-		 */
-    private	Vector<DataDoublet> _historicData;
     
     /** the property listeners for this object
      * 
      */
     private PropertyChangeSupport _pSupport;
+
+		/** the collection of data items
+		 * 
+		 */
+    private HashMap<Object, Vector<DataDoublet>> _indexedData;
 		
     /** constructor, to get us moving
      * 
@@ -135,44 +146,54 @@ public class Attribute implements IAttribute
 		 * @param time
 		 * @param value
 		 */
-		public void newData(long time, Object value)
+		public void newData(Object index, long time, Object value)
 		{		
 			DataDoublet newD = new DataDoublet(time, value);
-			DataDoublet oldD = getCurrent();
+			DataDoublet oldD = getCurrent(index);
 
 			// store the new value
-			getHistoricValues().add(newD);
+			getValuesFor(index).add(newD);
 			
 			// and tell the chaps
 			_pSupport.firePropertyChange(VALUE, oldD, newD);
 			
 		}
 		
+		public Vector<DataDoublet> getValuesFor(Object index)
+		{
+			if(_indexedData == null)
+				_indexedData = new HashMap<Object, Vector<DataDoublet>>();
+			
+			Vector<DataDoublet> res = _indexedData.get(index);
+			
+			if(res == null)
+			{
+				res = new Vector<DataDoublet>();
+				_indexedData.put(index, res);
+			}
+			return res;
+				
+		}
+		
 		/** find the most recent data item
 		 * 
 		 * @return
 		 */
-		public DataDoublet getCurrent()
+		public DataDoublet getCurrent(Object index)
 		{
 			DataDoublet res = null;
-			if(getHistoricValues().size() > 0)
-				res = getHistoricValues().lastElement();
+			if(getValuesFor(index).size() > 0)
+				res = getValuesFor(index).lastElement();
 			
 			return res;
 		}
-		
-		/** get the past values
-		 * 
-		 * @return
-		 */
-		public Vector<DataDoublet> getHistoricValues()
-		{
-			if(_historicData == null)
-				_historicData = new Vector<DataDoublet>();
-			
-			return _historicData;
-		}
 
+	}
+
+	@Override
+	public String getUnits()
+	{
+		return _units;
 	}
 
 }

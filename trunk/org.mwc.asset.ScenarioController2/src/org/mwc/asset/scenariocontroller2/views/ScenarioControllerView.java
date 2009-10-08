@@ -152,12 +152,12 @@ public class ScenarioControllerView extends ViewPart implements
 		// listen to the scenario
 		_myScenario.addScenarioSteppedListener(new ScenarioSteppedListener()
 		{
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 				scenarioRestarted();
 			}
 
-			public void step(long newTime)
+			public void step(ScenarioType scenario, long newTime)
 			{
 				scenarioStepped(newTime);
 			}
@@ -205,7 +205,7 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 			}
 
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 			}
 		});

@@ -13,6 +13,7 @@ package ASSET.Scenario;
  */
 
 import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -468,7 +469,7 @@ public class MultiForceScenario extends CoreScenario
       /**
        * the scenario has restarted
        */
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
 
@@ -509,7 +510,7 @@ public class MultiForceScenario extends CoreScenario
       /**
        * the scenario has restarted
        */
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
 
@@ -517,7 +518,7 @@ public class MultiForceScenario extends CoreScenario
 
     protected class stepListener implements ScenarioSteppedListener
     {
-      public void step(final long newTime)
+      public void step(ScenarioType scenario, final long newTime)
       {
         lastTime = newTime;
         stepCounter++;
@@ -526,7 +527,7 @@ public class MultiForceScenario extends CoreScenario
       /**
        * the scenario has restarted
        */
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
 

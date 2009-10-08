@@ -184,7 +184,7 @@ public class SupportTesting extends junit.framework.TestCase
         recordThis(newStatus, cp, newStatus.getTime());
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
     };

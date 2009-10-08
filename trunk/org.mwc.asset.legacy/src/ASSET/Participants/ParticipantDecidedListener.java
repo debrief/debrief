@@ -1,5 +1,7 @@
 package ASSET.Participants;
 
+import ASSET.ScenarioType;
+
 /**
  * Title:
  * Description:
@@ -20,5 +22,5 @@ public interface ParticipantDecidedListener extends java.util.EventListener
   /** the scenario has restarted
    *
    */
-  public void restart();
+  public void restart(ScenarioType scenario);
 }

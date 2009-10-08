@@ -1,5 +1,6 @@
 package ASSET.Scenario.Observers.Summary;
 
+import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioRunningListener;
 
 import java.io.FileWriter;
@@ -87,7 +88,7 @@ public class FinalStateObserver extends EndOfRunBatchObserver implements Scenari
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
     _myScenario.addScenarioRunningListener(this);
   }
@@ -95,7 +96,7 @@ public class FinalStateObserver extends EndOfRunBatchObserver implements Scenari
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     _myScenario.removeScenarioRunningListener(this);
   }

@@ -8,6 +8,7 @@
  */
 package ASSET.GUI.Painters;
 
+import ASSET.ScenarioType;
 import ASSET.Models.Environment.CoreEnvironment;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
@@ -278,14 +279,14 @@ public class ScenarioNoiseLevelPainter extends SpatialRasterPainter implements N
   /**
    * the scenario has restarted, reset
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
   }
 
   /**
    * the scenario has stepped forward
    */
-  public void step(long newTime)
+  public void step(ScenarioType scenario, long newTime)
   {
     // somehow, we have to update ourselves...
     _theLayers.fireModified(this);

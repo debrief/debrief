@@ -10,6 +10,7 @@ import java.awt.Color;
 
 import javax.swing.JFrame;
 
+import ASSET.ScenarioType;
 import ASSET.GUI.Core.CoreGUISwing;
 import MWC.GUI.Layers;
 import MWC.GUI.Tools.Action;
@@ -82,7 +83,7 @@ public class SuperSearchGUI extends CoreGUISwing
     _searcher.addScenarioSteppedListener(new ASSET.Scenario.ScenarioSteppedListener()
     {
       @SuppressWarnings("synthetic-access")
-			public void step(final long time)
+			public void step(ScenarioType scenario, final long time)
       {
         if (_searcher != null)
         {
@@ -96,7 +97,7 @@ public class SuperSearchGUI extends CoreGUISwing
       }
 
       @SuppressWarnings("synthetic-access")
-			public void restart()
+			public void restart(ScenarioType scenario)
       {
         // reset the data
       	localData.fireModified(null);

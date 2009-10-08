@@ -232,9 +232,9 @@ public class DetectionObserver extends WatchParticipantObserver implements
   /**
    * the scenario has restarted
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {	
-  	super.restart();
+  	super.restart(scenario);
   	
     _numDetected = 0;
     if (_myDetections != null)

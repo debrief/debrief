@@ -36,11 +36,11 @@ public abstract class Simulation implements ISimulation
 		_name = name;
 
 		// declare our state object
-		_state = new Attribute("State", true);
-		_state.fireUpdate(getTime(), Simulation.WAITING);
+		_state = new Attribute("State", "n/a", true);
+		_state.fireUpdate(this, getTime(), Simulation.WAITING);
 		
-		_time = new Attribute("Time", true);
-		_time.fireUpdate(getTime(), 0);
+		_time = new Attribute("Time", "n/a", true);
+		_time.fireUpdate(this, getTime(), 0);
 
 	}
 
@@ -62,13 +62,13 @@ public abstract class Simulation implements ISimulation
 	@Override
 	public void start()
 	{
-		_state.fireUpdate(getTime(), RUNNING);
+		_state.fireUpdate(this, getTime(), RUNNING);
 	}
 
 	@Override
 	public void stop()
 	{
-		_state.fireUpdate(getTime(), TERMINATED);
+		_state.fireUpdate(this, getTime(), TERMINATED);
 	}
 
 	/**
@@ -77,7 +77,7 @@ public abstract class Simulation implements ISimulation
 	 */
 	protected void complete()
 	{
-		_state.fireUpdate(getTime(), COMPLETE);
+		_state.fireUpdate(this, getTime(), COMPLETE);
 	}
 
 	@Override

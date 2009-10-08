@@ -118,14 +118,14 @@ public class ScenarioLayer extends MWC.GUI.BaseLayer implements ASSET.Scenario.P
   /**
    * the scenario has restarted
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     // reset our plottables
     final Enumeration<Editable> it = super.elements();
     while (it.hasMoreElements())
     {
       final ScenarioParticipantWrapper pl = (ScenarioParticipantWrapper) it.nextElement();
-      pl.restart();
+      pl.restart(scenario);
     }
   }
 

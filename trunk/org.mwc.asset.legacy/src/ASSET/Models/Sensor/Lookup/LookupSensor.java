@@ -1859,7 +1859,7 @@ public abstract class LookupSensor extends CoreSensor
 					}
 				}
 
-				public void restart()
+				public void restart(ScenarioType scenario)
 				{
 				}
 

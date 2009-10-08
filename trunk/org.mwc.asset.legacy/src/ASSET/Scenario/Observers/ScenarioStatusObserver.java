@@ -57,7 +57,7 @@ public class ScenarioStatusObserver extends
    *
    * @param scenario the new scenario we're looking at
    */
-  protected void performSetupProcessing(ScenarioType scenario)
+  protected void performSetupProcessing(final ScenarioType scenario)
   {
   	if(_runner == null)
   	_runner = new ScenarioRunningListener(){
@@ -65,7 +65,7 @@ public class ScenarioStatusObserver extends
 			@Override
 			public void finished(long elapsedTime, String reason)
 			{
-				getHelper().newData(elapsedTime, "FINISHED");
+				getAttributeHelper().newData(scenario, elapsedTime, "FINISHED");
 			}
 
 			@Override
@@ -84,7 +84,7 @@ public class ScenarioStatusObserver extends
 			}
 
 			@Override
-			public void restart()
+			public void restart(ScenarioType scenario)
 			{
 			}
 
@@ -96,7 +96,7 @@ public class ScenarioStatusObserver extends
   	scenario.addScenarioRunningListener(_runner);
   	
   	// initialise
-  	getHelper().newData(scenario.getTime(), "WAITING");
+  	getAttributeHelper().newData(scenario, scenario.getTime(), "WAITING");
   }
 
   /**
@@ -113,7 +113,7 @@ public class ScenarioStatusObserver extends
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
     // and become a listener
     _myScenario.addScenarioSteppedListener(this);
@@ -122,7 +122,7 @@ public class ScenarioStatusObserver extends
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     // remove ourselves as a listener
     _myScenario.removeScenarioSteppedListener(this);
@@ -131,9 +131,9 @@ public class ScenarioStatusObserver extends
   /**
    * the scenario has stepped forward
    */
-  public void step(final long newTime)
+  public void step(ScenarioType scenario, final long newTime)
   {
-  	getHelper().newData(newTime, newTime);
+  	getAttributeHelper().newData(scenario, newTime, newTime);
   }
 
 
@@ -224,21 +224,29 @@ public class ScenarioStatusObserver extends
   }
 
   @Override
-	public DataDoublet getCurrent()
+	public DataDoublet getCurrent(Object index)
 	{
-		return getHelper().getCurrent();
+		return getAttributeHelper().getCurrent(index);
 	}
 
   @Override
-	public Vector<DataDoublet> getHistoricValues()
+	public Vector<DataDoublet> getHistoricValues(Object index)
 	{
-		return getHelper().getHistoricValues();
+		return getAttributeHelper().getValuesFor(index);
 	}
 
 	@Override
 	public boolean isSignificant()
 	{
 		return true;
+	}
+
+
+	@Override
+	public String getUnits()
+	{
+		
+		return "n/a";
 	}
 
 

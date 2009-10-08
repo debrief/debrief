@@ -16,8 +16,6 @@ import MWC.Algorithms.LiveData.IAttribute;
  */
 public class MockSimulation extends Simulation
 {
-
-	private static final double TIME_VARIANCE = 0.9;
 	private static final int STEP_INTERVAL = 100;
 
 	/**
@@ -109,7 +107,7 @@ public class MockSimulation extends Simulation
 		}
 		
 		// fire the time update
-		super._time.fireUpdate(getTime(), getTime());
+		super._time.fireUpdate(this, getTime(), getTime());
 	}
 
 	/**
@@ -122,9 +120,9 @@ public class MockSimulation extends Simulation
 	public static MockSimulation createShort(String name, long runTime)
 	{
 		Vector<IAttribute> attrs = new Vector<IAttribute>();
-		IAttribute att1 = new Attribute("Height", true);
+		IAttribute att1 = new Attribute("Height","m", true);
 		attrs.add(att1);
-		IAttribute att2 = new Attribute("Speed", false);
+		IAttribute att2 = new Attribute("Speed", "kts", false);
 		attrs.add(att2);
 
 		MockSimulation res = new MockSimulation(name, runTime, attrs);
@@ -141,21 +139,21 @@ public class MockSimulation extends Simulation
 	public static MockSimulation createLong(String name, long runTime)
 	{
 		Vector<IAttribute> attrs = new Vector<IAttribute>();
-		IAttribute att1 = new Attribute("Height", true);
+		IAttribute att1 = new Attribute("Height","m",  true);
 		attrs.add(att1);
-		IAttribute att2 = new Attribute("Speed", false);
+		IAttribute att2 = new Attribute("Speed", "kts", false);
 		attrs.add(att2);
-		IAttribute att3 = new Attribute("Distance", true);
+		IAttribute att3 = new Attribute("Distance","yds",  true);
 		attrs.add(att3);
-		IAttribute att4 = new Attribute("Fuel", false);
+		IAttribute att4 = new Attribute("Fuel", "%", false);
 		attrs.add(att4);
-		IAttribute att5 = new Attribute("Range", true);
+		IAttribute att5 = new Attribute("Range","m",  true);
 		attrs.add(att5);
-		IAttribute att6 = new Attribute("Acceleration", false);
+		IAttribute att6 = new Attribute("Acceleration","m/s/s",  false);
 		attrs.add(att6);
-		IAttribute att7 = new Attribute("Water", false);
+		IAttribute att7 = new Attribute("Water","ddegs",  false);
 		attrs.add(att7);
-		IAttribute att8 = new Attribute("Temperature", false);
+		IAttribute att8 = new Attribute("Temperature","c",  false);
 		attrs.add(att8);
 
 		MockSimulation res = new MockSimulation(name, runTime, attrs);
@@ -233,7 +231,7 @@ public class MockSimulation extends Simulation
 		{
 
 			// is our sim still running?
-			if (_parent.getState().getCurrent().getValue() == Simulation.COMPLETE)
+			if (_parent.getState().getCurrent(_parent).getValue() == Simulation.COMPLETE)
 			{
 				super.cancel();
 				return;
@@ -249,7 +247,7 @@ public class MockSimulation extends Simulation
 				if (Math.random() >= 0.8)
 				{
 					// yup, exceeded the threshold, make some noddy change
-					type.fireUpdate(_parent.getTime(), new Integer(
+					type.fireUpdate(this, _parent.getTime(), new Integer(
 							(int) (Math.random() * 100)));
 				}
 			}

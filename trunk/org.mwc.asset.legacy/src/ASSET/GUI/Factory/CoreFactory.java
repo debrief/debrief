@@ -6,6 +6,7 @@
 */
 package ASSET.GUI.Factory;
 
+import ASSET.ScenarioType;
 import ASSET.Scenario.Genetic.Gene;
 import ASSET.Scenario.Genetic.GeneticAlgorithm;
 import ASSET.Scenario.Genetic.ScenarioRunner;
@@ -426,7 +427,7 @@ public class CoreFactory implements GeneticAlgorithm.GAProgressed, GeneticAlgori
     {
     }
 
-    public void restart()
+    public void restart(ScenarioType scenario)
     {
     }
 

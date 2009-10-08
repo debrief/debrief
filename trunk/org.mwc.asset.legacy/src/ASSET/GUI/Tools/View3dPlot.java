@@ -507,7 +507,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
     /**
      * the scenario has stepped forward
      */
-    public void step(final long newTime)
+    public void step(ScenarioType scenario, final long newTime)
     {
       // pass this through the listeners
       final Iterator<StepperListener> it = _theListeners.iterator();
@@ -521,7 +521,7 @@ public class View3dPlot extends PlainTool // implements Layers.DataListener
     /**
      * the scenario has restarted, reset
      */
-    public void restart()
+    public void restart(ScenarioType scenario)
     {
       // hey, just ignore it!
     }

@@ -1,5 +1,6 @@
 package ASSET.GUI.SuperSearch;
 
+import ASSET.ScenarioType;
 import ASSET.GUI.SuperSearch.Plotters.SSGuiSupport;
 import ASSET.Scenario.ScenarioSteppedListener;
 import MWC.GUI.Layer;
@@ -96,16 +97,16 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
   /** the scenario has stepped forward
    *
    */
-  public void step(final long newTime)
+  public void step(ScenarioType scenario, final long newTime)
   {
-    fireScenarioStepped(newTime);
+    fireScenarioStepped(scenario, newTime);
   }
 
 
   /** handle the restart event
    *
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     if(_stepListeners != null)
     {
@@ -113,12 +114,12 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
       while(it.hasNext())
       {
         final ASSET.Scenario.ScenarioSteppedListener pcl = (ASSET.Scenario.ScenarioSteppedListener)it.next();
-        pcl.restart();
+        pcl.restart(scenario);
       }
     }
   }
 
-  private void fireScenarioStepped(final long time)
+  private void fireScenarioStepped(ScenarioType scenario, final long time)
   {
     if(_stepListeners != null)
     {
@@ -126,7 +127,7 @@ public class CoreSuperSearch implements ASSET.Scenario.ScenarioSteppedListener {
       while(it.hasNext())
       {
         final ASSET.Scenario.ScenarioSteppedListener pcl = (ASSET.Scenario.ScenarioSteppedListener)it.next();
-        pcl.step(time);
+        pcl.step(scenario, time);
       }
     }
   }

@@ -14,6 +14,7 @@ import ASSET.GUI.Tools.View3dPlot;
 import ASSET.GUI.Util.FileList;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
@@ -264,7 +265,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
       	localData.fireModified(null);
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
     });
@@ -272,7 +273,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
     // listen to the time stepping
     _theScenario.addScenarioSteppedListener(new ASSET.Scenario.ScenarioSteppedListener()
     {
-      public void step(final long time)
+      public void step(ScenarioType scenario, final long time)
       {
         // tell the data it's been modified
         //  _theData.fireModified(null);
@@ -281,7 +282,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
         setTime(time);
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       };
     });
@@ -318,7 +319,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
       {
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
     });

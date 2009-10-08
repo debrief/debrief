@@ -1,5 +1,7 @@
 package ASSET.Scenario;
 
+import ASSET.ScenarioType;
+
 /**
  * Title:
  * Description:
@@ -16,13 +18,16 @@ package ASSET.Scenario;
   public interface ScenarioSteppedListener extends java.util.EventListener
   {
     /** the scenario has stepped forward
+     * @param scenario the scenario that has stepped
+     * @param the new time
      *
      */
-    public void step(long newTime);
+    public void step(final ScenarioType scenario, final long newTime);
 
     /** the scenario has restarted, reset
+     * @param scenario the scenario that has restarted
      *
      */
-    public void restart();
+    public void restart(final ScenarioType scenario);
 
   }

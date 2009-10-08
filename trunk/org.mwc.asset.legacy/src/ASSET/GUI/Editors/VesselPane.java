@@ -4,6 +4,7 @@ import java.awt.*;
 
 import javax.swing.BorderFactory;
 
+import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioParticipantWrapper;
 import ASSET.Participants.Status;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
@@ -67,7 +68,7 @@ public class VesselPane extends MWC.GUI.Properties.Swing.SwingCustomEditor
   /** support the restart event
    *
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     updateForm();
   }

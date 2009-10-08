@@ -40,6 +40,7 @@ import ASSET.Scenario.LiveScenario.SimulationQue;
 import MWC.Algorithms.LiveData.Attribute;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
+import MWC.Algorithms.LiveData.IAttribute.IndexedAttribute;
 
 
 /**
@@ -216,9 +217,9 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 	 * 
 	 * @param attribute what we're going to watch
 	 */
-	private void storeDataset(IAttribute attribute)
+	private void storeDataset(IAttribute attribute, Object index)
 	{
-		Vector<DataDoublet> data = attribute.getHistoricValues();
+		Vector<DataDoublet> data = attribute.getHistoricValues(index);
 
 		// is there any data in it?
 		if (data.size() == 0)
@@ -309,11 +310,11 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 
 	private IAttribute createSampleDataset()
 	{
-		Attribute res = new Attribute("height", false);
+		Attribute res = new Attribute("height", "m", false);
 		int len = (int) (Math.random() * 1120);
 		for (int i = 0; i < len; i++)
 		{
-			res.fireUpdate(i * 1000, new Double(Math.random() * 1000));
+			res.fireUpdate(this, i * 1000, new Double(Math.random() * 1000));
 		}
 
 		return res;
@@ -321,14 +322,14 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 
 	protected void showNewSelection(Object sel)
 	{
-
-
 			// it it something we want to watch?
-			if (sel instanceof IAttribute)
+			if (sel instanceof IndexedAttribute)
 			{
+				IAttribute.IndexedAttribute ind = (IndexedAttribute) sel;
 
 				// cool, go for it.
-				final IAttribute attr = (IAttribute) sel;
+				final IAttribute attr = ind.attribute;
+				final Object index = ind.index;
 
 				// is this a different one?
 				if (_watchedAttr != attr)
@@ -345,7 +346,7 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 					// and start listening to it
 					_watchedAttr.addPropertyChangeListener(_attListener);
 
-					storeDataset(_watchedAttr);
+					storeDataset(_watchedAttr, index);
 				}
 
 			}

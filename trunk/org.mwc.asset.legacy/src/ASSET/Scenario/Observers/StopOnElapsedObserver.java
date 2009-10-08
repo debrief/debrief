@@ -123,7 +123,7 @@ public class StopOnElapsedObserver extends
   /**
    * add any applicable listeners
    */
-  protected void addListeners()
+  protected void addListeners(ScenarioType scenario)
   {
     // and become a listener
     _myScenario.addScenarioSteppedListener(this);
@@ -132,7 +132,7 @@ public class StopOnElapsedObserver extends
   /**
    * remove any listeners
    */
-  protected void removeListeners()
+  protected void removeListeners(ScenarioType scenario)
   {
     // remove ourselves as a listener
     _myScenario.removeScenarioSteppedListener(this);
@@ -141,7 +141,7 @@ public class StopOnElapsedObserver extends
   /**
    * the scenario has stepped forward
    */
-  public void step(final long newTime)
+  public void step(ScenarioType scenario, final long newTime)
   {
     // find out start
     if (_startTime == -1)

@@ -1,5 +1,7 @@
 package ASSET.Participants;
 
+import ASSET.ScenarioType;
+
 /**
  * Title:
  * Description:
@@ -19,8 +21,9 @@ public interface ParticipantDetectedListener extends java.util.EventListener
 
   /**
    * the scenario has restarted
+   * @param scenario TODO
    */
-  public void restart();
+  public void restart(ScenarioType scenario);
 
 
   public class Helper implements ParticipantDetectedListener
@@ -69,7 +72,7 @@ public interface ParticipantDetectedListener extends java.util.EventListener
     /**
      * the scenario has restarted
      */
-    public void restart()
+    public void restart(ScenarioType scenario)
     {
 
     }

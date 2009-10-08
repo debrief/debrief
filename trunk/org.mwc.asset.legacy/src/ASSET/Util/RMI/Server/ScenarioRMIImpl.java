@@ -229,7 +229,7 @@ public class ScenarioRMIImpl extends UnicastRemoteObject implements ScenarioRMI,
     }
   }
 
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     for (int i = 0; i < _scenarioSteppedListeners.size(); i++)
     {
@@ -250,7 +250,7 @@ public class ScenarioRMIImpl extends UnicastRemoteObject implements ScenarioRMI,
     }
   }
 
-  public void step(final long newTime)
+  public void step(ScenarioType scenario, final long newTime)
   {
     for (int i = 0; i < _scenarioSteppedListeners.size(); i++)
     {

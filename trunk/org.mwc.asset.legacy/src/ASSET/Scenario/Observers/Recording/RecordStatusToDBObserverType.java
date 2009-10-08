@@ -381,7 +381,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	/**
 	 * the scenario has stepped forward
 	 */
-	public void step(long newTime)
+	public void step(ScenarioType scenario, long newTime)
 	{
 		if (!isActive())
 			return;
@@ -458,7 +458,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	/**
 	 * add any applicable listeners
 	 */
-	protected void addListeners()
+	protected void addListeners(ScenarioType scenario)
 	{
 		_myScenario.addScenarioSteppedListener(this);
 	}
@@ -466,7 +466,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
 	/**
 	 * remove any listeners
 	 */
-	protected void removeListeners()
+	protected void removeListeners(ScenarioType scenario)
 	{
 		_myScenario.removeScenarioSteppedListener(this);
 	}

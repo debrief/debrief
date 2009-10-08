@@ -3,6 +3,7 @@ package ASSET.GUI.Workbench.Plotters;
 import java.awt.Point;
 import java.util.*;
 
+import ASSET.ScenarioType;
 import ASSET.Models.Detection.*;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.Participants.Status;
@@ -123,7 +124,7 @@ public class ScenarioParticipantWrapper implements
 	/**
 	 * the scenario has restarted
 	 */
-	public void restart()
+	public void restart(ScenarioType scenario)
 	{
 		_curLocation = _myPart.getStatus().getLocation();
 	}

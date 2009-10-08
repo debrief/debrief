@@ -1,5 +1,7 @@
 package ASSET.Scenario;
 
+import ASSET.ScenarioType;
+
 /**
  * Title:
  * Description:
@@ -24,7 +26,8 @@ package ASSET.Scenario;
     public void participantRemoved(int index);
 
     /** the scenario has restarted, reset
+     * @param scenario TODO
      *
      */
-    public void restart();
+    public void restart(ScenarioType scenario);
   }

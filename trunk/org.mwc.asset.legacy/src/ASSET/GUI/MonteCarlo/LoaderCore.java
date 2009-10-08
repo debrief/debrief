@@ -1,5 +1,6 @@
 package ASSET.GUI.MonteCarlo;
 
+import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.ScenarioRunningListener;
@@ -60,7 +61,7 @@ abstract class LoaderCore
       {
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
 

@@ -1,5 +1,6 @@
 package ASSET.GUI.CommandLine;
 
+import ASSET.ScenarioType;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.CoreObserver;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
@@ -152,7 +153,7 @@ public class CommandLine
       {
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
       }
 

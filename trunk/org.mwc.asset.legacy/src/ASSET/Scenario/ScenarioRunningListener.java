@@ -1,5 +1,7 @@
 package ASSET.Scenario;
 
+import ASSET.ScenarioType;
+
 /**
  * Title:
  * Description:
@@ -44,7 +46,8 @@ public interface ScenarioRunningListener extends java.util.EventListener
 
   /**
    * the scenario has restarted, reset
+   * @param scenario TODO
    */
-  public void restart();
+  public void restart(ScenarioType scenario);
 
 }

@@ -102,7 +102,7 @@ public class SimulationQue implements ISimulationQue
 					ISimulation thisS = iter.next();
 
 					// what's its state?
-					String thisState = (String) thisS.getState().getCurrent().getValue();
+					String thisState = (String) thisS.getState().getCurrent(thisS).getValue();
 
 					// check the state
 					if (thisState == MockSimulation.RUNNING)
@@ -156,10 +156,10 @@ public class SimulationQue implements ISimulationQue
 
 	}
 	
-	private static void dumpThis(IAttribute theAttribute)
+	private static void dumpThis(IAttribute theAttribute, Object index)
 	{
 		System.out.println("================");
-		Vector<DataDoublet> list = theAttribute.getHistoricValues();
+		Vector<DataDoublet> list = theAttribute.getHistoricValues(index);
 		for (Iterator<DataDoublet> iterator = list.iterator(); iterator.hasNext();)
 		{
 			DataDoublet thisOne = iterator.next();
@@ -208,9 +208,9 @@ public class SimulationQue implements ISimulationQue
 
 		IAttribute theAttribute = shortQue.elementAt(1).getAttributes()
 				.elementAt(1);
-		dumpThis(theAttribute);
+		dumpThis(theAttribute, shortQue.elementAt(1));
 		theAttribute = shortQue.elementAt(0).getAttributes().elementAt(1);
-		dumpThis(theAttribute);
+		dumpThis(theAttribute, shortQue.elementAt(0));
 	}
 
 

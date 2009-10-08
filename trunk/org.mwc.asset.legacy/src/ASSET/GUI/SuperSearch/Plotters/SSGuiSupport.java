@@ -3,6 +3,7 @@ package ASSET.GUI.SuperSearch.Plotters;
 import java.util.Enumeration;
 
 import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Scenario.MultiForceScenario;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
@@ -95,7 +96,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
         blueParticipantRemoved(index);
       }
 
-      public void restart()
+      public void restart(ScenarioType scenario)
       {
         ;
       }
@@ -158,14 +159,14 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
   /**
    * the scenario has restarted, process it
    */
-  public void restart()
+  public void restart(ScenarioType scenario)
   {
     // pass through our elements, resetting them
     final Enumeration<Editable> it = super.elements();
     while (it.hasMoreElements())
     {
       final ParticipantListener pl = (ParticipantListener) it.nextElement();
-      pl.restart();
+      pl.restart(scenario);
     }
   }
 
@@ -365,7 +366,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
     /**
      * the scenario has restarted
      */
-    public void restart()
+    public void restart(ScenarioType scenario)
     {
       _curLocation = _myPart.getStatus().getLocation();
     }

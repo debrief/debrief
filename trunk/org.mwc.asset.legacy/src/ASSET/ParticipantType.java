@@ -76,7 +76,7 @@ public interface ParticipantType extends ParticipantDetectedListener, SensorData
   /**
    * reset, to go back to the initial state
    */
-  public void restart();
+  public void restart(ScenarioType scenario);
 
   /**
    * the movement characteristics for this participant
