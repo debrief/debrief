@@ -183,6 +183,8 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 /**
  * Swing implementation of a tote

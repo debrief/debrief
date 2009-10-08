@@ -4,12 +4,12 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
 
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
+import MWC.GenericData.WatchableList;
 
 /**
  * embedded class which manages the primary & secondary tracks

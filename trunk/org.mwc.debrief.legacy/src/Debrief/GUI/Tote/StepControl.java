@@ -217,7 +217,6 @@ package Debrief.GUI.Tote;
 //
 
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
-import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GUI.Properties.PropertiesPanel;
@@ -226,6 +225,7 @@ import MWC.GUI.SupportsPropertyListeners;
 import MWC.GUI.ToolParent;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import java.beans.*;
@@ -773,7 +773,7 @@ abstract public class StepControl implements Editable,
     final String type = evt.getPropertyName();
 
     // is it one we're interested in?
-    if (type.equals(Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY))
+    if (type.equals(MWC.GenericData.WatchableList.FILTERED_PROPERTY))
     {
       // see if we have received the new time period
       final Object newVal = evt.getNewValue();
@@ -817,7 +817,7 @@ abstract public class StepControl implements Editable,
     if (participant instanceof MWC.GUI.PlainWrapper)
     {
       final SupportsPropertyListeners val = (SupportsPropertyListeners) participant;
-      val.addPropertyChangeListener(Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, this);
+      val.addPropertyChangeListener(MWC.GenericData.WatchableList.FILTERED_PROPERTY, this);
     }
 
     // recalculate the start and end times
@@ -833,7 +833,7 @@ abstract public class StepControl implements Editable,
     if (participant instanceof MWC.GUI.PlainWrapper)
     {
       final SupportsPropertyListeners val = (SupportsPropertyListeners) participant;
-      val.removePropertyChangeListener(Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, this);
+      val.removePropertyChangeListener(MWC.GenericData.WatchableList.FILTERED_PROPERTY, this);
     }
     // recalculate the start and end times
     recalcTimes();

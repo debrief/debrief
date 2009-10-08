@@ -2,8 +2,8 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import Debrief.Tools.Tote.Watchable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 public class atbCalc extends relBearingCalc {
 	public atbCalc()

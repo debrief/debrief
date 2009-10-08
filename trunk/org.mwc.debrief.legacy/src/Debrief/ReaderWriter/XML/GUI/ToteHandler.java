@@ -2,8 +2,8 @@ package Debrief.ReaderWriter.XML.GUI;
 
 import java.util.Vector;
 
-import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
+import MWC.GenericData.WatchableList;
 
 /**
  * Title:        Debrief 2000
@@ -38,7 +38,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     {
       public void setTrack(String name)
       {
-        Debrief.Tools.Tote.WatchableList wa = getTrack(name);
+        MWC.GenericData.WatchableList wa = getTrack(name);
         if (wa != null)
         {
           if (_myTote != null)
@@ -54,7 +54,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     {
       public void setTrack(String name)
       {
-        Debrief.Tools.Tote.WatchableList wa = getTrack(name);
+        MWC.GenericData.WatchableList wa = getTrack(name);
         if (wa != null)
         {
           if (_myTote != null)
@@ -68,9 +68,9 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
   }
 
-  Debrief.Tools.Tote.WatchableList getTrack(String name)
+  MWC.GenericData.WatchableList getTrack(String name)
   {
-    Debrief.Tools.Tote.WatchableList res = null;
+    MWC.GenericData.WatchableList res = null;
 
     // look at the data
     MWC.GUI.Plottable ly = _theData.findLayer(name);
@@ -100,9 +100,9 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
     }
 
-    if (ly instanceof Debrief.Tools.Tote.WatchableList)
+    if (ly instanceof MWC.GenericData.WatchableList)
     {
-      res = (Debrief.Tools.Tote.WatchableList) ly;
+      res = (MWC.GenericData.WatchableList) ly;
     }
 
     return res;
@@ -129,7 +129,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
 
     // now output the parts of the tote
     // find the primary
-    Debrief.Tools.Tote.WatchableList primary = _theTote.getPrimary();
+    MWC.GenericData.WatchableList primary = _theTote.getPrimary();
     Vector<WatchableList> secondaries = _theTote.getSecondary();
 
     if (primary != null)
@@ -146,7 +146,7 @@ public final class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
         java.util.Enumeration<WatchableList> iter = secondaries.elements();
         while (iter.hasMoreElements())
         {
-          Debrief.Tools.Tote.WatchableList was = iter.nextElement();
+          MWC.GenericData.WatchableList was = iter.nextElement();
           org.w3c.dom.Element sec = doc.createElement("secondary");
           sec.setAttribute("Name", was.getName());
           tote.appendChild(sec);

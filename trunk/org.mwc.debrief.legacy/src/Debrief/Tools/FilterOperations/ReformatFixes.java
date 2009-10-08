@@ -90,7 +90,6 @@ import java.util.Vector;
 
 import javax.swing.JOptionPane;
 
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
 import Debrief.Wrappers.ShapeWrapper;
@@ -102,6 +101,7 @@ import MWC.GUI.Shapes.CircleShape;
 import MWC.GUI.Shapes.PlainShape;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldLocation;
 import MWC.TacticalData.Fix;
 

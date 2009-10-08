@@ -254,7 +254,6 @@ import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.NarrativeWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
@@ -271,6 +270,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Shapes.Symbols.SymbolFactory;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.TacticalData.NarrativeEntry;
 import MWC.Utilities.ReaderWriter.PlainImporterBase;
 import MWC.Utilities.ReaderWriter.PlainLineImporter;

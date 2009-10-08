@@ -22,8 +22,6 @@ import java.util.TreeSet;
 import java.util.Vector;
 
 import Debrief.ReaderWriter.Replay.FormatTracks;
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
@@ -47,6 +45,8 @@ import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -1993,7 +1993,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		// check that we do actually contain some data
 		if (_thePositions.size() == 0)
-			return new Debrief.Tools.Tote.Watchable[]
+			return new MWC.GenericData.Watchable[]
 			{};
 
 		// special case - if we've been asked for an invalid time value
@@ -2002,7 +2002,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final TrackSegment seg = (TrackSegment) _thePositions.first();
 			final FixWrapper fix = (FixWrapper) seg.first();
 			// just return our first location
-			return new Debrief.Tools.Tote.Watchable[]
+			return new MWC.GenericData.Watchable[]
 			{ (Watchable) fix };
 		}
 
@@ -2130,10 +2130,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		}
 
 		if (res != null)
-			return new Debrief.Tools.Tote.Watchable[]
+			return new MWC.GenericData.Watchable[]
 			{ res };
 		else
-			return new Debrief.Tools.Tote.Watchable[]
+			return new MWC.GenericData.Watchable[]
 			{};
 
 	}
@@ -2936,7 +2936,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// getting the
 					// fix immediately before the requested time
 					final HiResDate thisDTG = new HiResDate(0, start_time);
-					final Debrief.Tools.Tote.Watchable[] list = this
+					final MWC.GenericData.Watchable[] list = this
 							.getNearestTo(thisDTG);
 					// check we found some
 					if (list.length > 0)

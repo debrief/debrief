@@ -12,11 +12,13 @@ import org.eclipse.ui.IEditorRegistry;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.debrief.core.ContextOperations.GenerateJoiningSegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTMASegment;
 import org.mwc.debrief.core.ContextOperations.GenerateTrack;
 import org.mwc.debrief.core.ContextOperations.GroupTracks;
 import org.mwc.debrief.core.ContextOperations.MergeTracks;
+import org.mwc.debrief.core.ui.DebriefImageHelper;
 import org.osgi.framework.BundleContext;
 
 import MWC.GUI.MessageProvider;
@@ -90,6 +92,7 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 	// Resource bundle.
 	private ResourceBundle resourceBundle;
+	private DebriefImageHelper _myImageHelper;
 
 	/**
 	 * The constructor.
@@ -164,6 +167,12 @@ public class DebriefPlugin extends AbstractUIPlugin implements MessageProvider
 
 		// tell the message provider where it can fire messages to
 		MessageProvider.Base.setProvider(this);
+		
+		_myImageHelper  = new DebriefImageHelper();
+		
+		// give the LayerManager our image creator.
+		CoreViewLabelProvider.addImageHelper(_myImageHelper  );
+
 
 	}
 

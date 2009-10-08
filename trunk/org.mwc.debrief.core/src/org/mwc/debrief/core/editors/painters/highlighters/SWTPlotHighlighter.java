@@ -29,8 +29,8 @@ public interface SWTPlotHighlighter extends Editable  {
  */
   void highlightIt(MWC.Algorithms.PlainProjection proj,
                    CanvasType dest,
-                   Debrief.Tools.Tote.WatchableList list,
-                   Debrief.Tools.Tote.Watchable watch, boolean isPrimary);
+                   MWC.GenericData.WatchableList list,
+                   MWC.GenericData.Watchable watch, boolean isPrimary);
 
   //////////////////////////////////////////////////////////////////////
   // embedded class which just shows rectangular highlight around current point
@@ -50,8 +50,8 @@ public interface SWTPlotHighlighter extends Editable  {
      */
     public final void highlightIt(MWC.Algorithms.PlainProjection proj,
     		CanvasType dest,
-                            Debrief.Tools.Tote.WatchableList list,
-                            Debrief.Tools.Tote.Watchable watch, boolean isPrimary)
+                            MWC.GenericData.WatchableList list,
+                            MWC.GenericData.Watchable watch, boolean isPrimary)
     {
       // check that our graphics context is still valid -
       // we can't, so we will just have to trap any exceptions it raises

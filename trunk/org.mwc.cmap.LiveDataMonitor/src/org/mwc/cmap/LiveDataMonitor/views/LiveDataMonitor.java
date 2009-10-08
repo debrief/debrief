@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
@@ -185,12 +186,13 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 		};
 
 		actions.add(start);
+		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
 		actions.add(new SimMonitor(_theSims.elementAt(0), _theSims.elementAt(0)
-				.getAttributes().elementAt(2), this));
+				.getAttributes().elementAt(2), this, toolBarManager));
 		actions.add(new SimMonitor(_theSims.elementAt(1), _theSims.elementAt(1)
-				.getAttributes().elementAt(3), this));
+				.getAttributes().elementAt(3), this, toolBarManager));
 		actions.add(new SimMonitor(_theSims.elementAt(2), _theSims.elementAt(2)
-				.getAttributes().elementAt(4), this));
+				.getAttributes().elementAt(4), this, toolBarManager));
 
 		createActions(actions);		
 
@@ -401,9 +403,9 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 	{
 		private ISimulation _mySim;
 		private IAttribute _myAttr;
-		private LiveDataMonitor _mySelly;
+		private ISelectionProvider _mySelly;
 
-		public SimMonitor(ISimulation sim, IAttribute attr, LiveDataMonitor sel)
+		public SimMonitor(final ISimulation sim, final IAttribute attr, final ISelectionProvider sel, final IToolBarManager toolBarManager)
 		{
 			_mySim = sim;
 			_myAttr = attr;
@@ -432,8 +434,7 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 						@Override
 						public void run()
 						{
-							_mySelly.getViewSite().getActionBars().getToolBarManager()
-									.update(true);
+							toolBarManager.update(true);
 						}
 					});
 

@@ -8,8 +8,9 @@ import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.IStartup;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
-import org.mwc.cmap.layer_manager.views.LayerMgrDragDropSupport;
-import org.mwc.cmap.layer_manager.views.LayerMgrDragDropSupport.XMLFileDropHandler;
+import org.mwc.cmap.core.ui_support.DragDropSupport;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
+import org.mwc.cmap.core.ui_support.DragDropSupport.XMLFileDropHandler;
 import org.osgi.framework.BundleContext;
 
 import ASSET.ParticipantType;
@@ -33,18 +34,17 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	public static final String SCENARIO_CONTROLLER2 = "org.mwc.asset.ScenarioController2";
 
 	public static final String VESSEL_MONITOR = "org.mwc.asset.VesselMonitor";
-	
+
 	public static final String STATIC_DATA = "org.mwc.asset.sample_data";
 
 	public static final String SENSOR_MONITOR = "org.mwc.asset.SensorMonitor";
 
-	
 	/**
 	 * and the context used to describe our undo list
 	 */
-	public final static IUndoContext ASSET_CONTEXT = new ObjectUndoContext("ASSET");
+	public final static IUndoContext ASSET_CONTEXT = new ObjectUndoContext(
+			"ASSET");
 
-	
 	// The shared instance
 	private static ASSETPlugin plugin;
 
@@ -64,7 +64,9 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext)
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#start(org.osgi.framework.BundleContext
+	 * )
 	 */
 	public void start(BundleContext context) throws Exception
 	{
@@ -74,7 +76,9 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext)
+	 * @see
+	 * org.eclipse.ui.plugin.AbstractUIPlugin#stop(org.osgi.framework.BundleContext
+	 * )
 	 */
 	public void stop(BundleContext context) throws Exception
 	{
@@ -97,8 +101,7 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	 * 
 	 * @param severity
 	 *          the severity; one of <code>OK</code>, <code>ERROR</code>,
-	 *          <code>INFO</code>, <code>WARNING</code>, or
-	 *          <code>CANCEL</code>
+	 *          <code>INFO</code>, <code>WARNING</code>, or <code>CANCEL</code>
 	 * @param message
 	 *          a human-readable message, localized to the current locale
 	 * @param exception
@@ -106,8 +109,8 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	 */
 	public static void logError(int severity, String message, Throwable exception)
 	{
-		Status stat = new Status(severity, "org.mwc.asset.core", Status.OK, message,
-				exception);
+		Status stat = new Status(severity, "org.mwc.asset.core", Status.OK,
+				message, exception);
 		getDefault().getLog().log(stat);
 	}
 
@@ -121,7 +124,8 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	 */
 	public static ImageDescriptor getImageDescriptor(String path)
 	{
-		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.asset.core", path);
+		return AbstractUIPlugin.imageDescriptorFromPlugin("org.mwc.asset.core",
+				path);
 	}
 
 	protected static class XMLParticipantDropHandler extends XMLFileDropHandler
@@ -135,7 +139,8 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 		public void handleDrop(InputStream source, MWC.GUI.Editable targetElement,
 				Layers parent)
 		{
-			ParticipantType part = ASSETReaderWriter.importParticipant("unknown", source);
+			ParticipantType part = ASSETReaderWriter.importParticipant("unknown",
+					source);
 			ScenarioLayer layer = (ScenarioLayer) targetElement;
 			CoreScenario cs = (CoreScenario) layer.getScenario();
 			cs.addParticipant(part.getId(), part);
@@ -149,15 +154,16 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 	 */
 	public void earlyStartup()
 	{
-		XMLFileDropHandler parts = new XMLParticipantDropHandler(new String[] { "SSK",
-				"FixedWing", "Torpedo", "SSN", "Helo", "Surface" },
-				new Class[] { ScenarioLayer.class });
+		XMLFileDropHandler parts = new XMLParticipantDropHandler(new String[]
+		{ "SSK", "FixedWing", "Torpedo", "SSN", "Helo", "Surface" }, new Class[]
+		{ ScenarioLayer.class });
 
-		XMLFileDropHandler behaviours = new XMLFileDropHandler(new String[] { "Waterfall",
-				"Sequence", "Switch" }, new Class[] { BehavioursPlottable.class })
+		XMLFileDropHandler behaviours = new XMLFileDropHandler(new String[]
+		{ "Waterfall", "Sequence", "Switch" }, new Class[]
+		{ BehavioursPlottable.class })
 		{
-			public void handleDrop(InputStream source, MWC.GUI.Editable targetElement,
-					Layers parent)
+			public void handleDrop(InputStream source,
+					MWC.GUI.Editable targetElement, Layers parent)
 			{
 				// get the model for this element
 				BehavioursPlottable bp = (BehavioursPlottable) targetElement;
@@ -171,13 +177,15 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 			}
 		};
 
-		XMLFileDropHandler sensors = new XMLFileDropHandler(new String[] { "BroadbandSensor",
-				"ActiveBroadbandSensor", "DippingActiveBroadbandSensor", "NarrowbandSensor",
+		XMLFileDropHandler sensors = new XMLFileDropHandler(new String[]
+		{ "BroadbandSensor", "ActiveBroadbandSensor",
+				"DippingActiveBroadbandSensor", "NarrowbandSensor",
 				"OpticLookupSensor", "RadarLookupSensor", "MADLookupSensor",
-				"ActiveInterceptSensor", }, new Class[] { SensorsPlottable.class })
+				"ActiveInterceptSensor", }, new Class[]
+		{ SensorsPlottable.class })
 		{
-			public void handleDrop(InputStream source, MWC.GUI.Editable targetElement,
-					Layers parent)
+			public void handleDrop(InputStream source,
+					MWC.GUI.Editable targetElement, Layers parent)
 			{
 				// get the model for this element
 				SensorsPlottable bp = (SensorsPlottable) targetElement;
@@ -188,13 +196,12 @@ public class ASSETPlugin extends AbstractUIPlugin implements IStartup
 			}
 		};
 
-		LayerMgrDragDropSupport.addDropHelper(parts);
-		LayerMgrDragDropSupport.addDropHelper(behaviours);
-		LayerMgrDragDropSupport.addDropHelper(sensors);
+		DragDropSupport.addDropHelper(parts);
+		DragDropSupport.addDropHelper(behaviours);
+		DragDropSupport.addDropHelper(sensors);
 
 		_myImageHelper = new ASSETImageHelper();
 		// give the LayerManager our image creator.
-		org.mwc.cmap.layer_manager.views.support.ViewLabelProvider
-				.addImageHelper(_myImageHelper);
+		CoreViewLabelProvider.addImageHelper(_myImageHelper);
 	}
 }

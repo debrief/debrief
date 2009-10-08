@@ -77,7 +77,6 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import Debrief.Tools.Tote.Watchable;
 import MWC.GenericData.*;
 
 /** Calculate the bearing from the primary vessel to the secondary (for use in the tote)

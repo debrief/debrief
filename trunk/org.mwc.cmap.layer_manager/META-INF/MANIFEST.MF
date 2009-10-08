@@ -2,17 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Layer Manager
 Bundle-SymbolicName: org.mwc.cmap.layer_manager; singleton:=true
-Bundle-Version: 1.0.21
+Bundle-Version: 1.0.22
 Bundle-ClassPath: layer_manager.jar
 Bundle-Activator: org.mwc.cmap.layer_manager.Layer_managerPlugin
 Bundle-Vendor: MWC
-Require-Bundle: org.mwc.cmap.xyplot,
- org.eclipse.ui,
+Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy,
- org.mwc.debrief.legacy,
- org.eclipse.ui.views
+ org.eclipse.ui.views,
+ org.mwc.cmap.xyplot;bundle-version="1.0.14"
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.cmap.layer_manager,
  org.mwc.cmap.layer_manager.views,

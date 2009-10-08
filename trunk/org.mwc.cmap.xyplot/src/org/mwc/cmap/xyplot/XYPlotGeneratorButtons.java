@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Vector;
 
 import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.Separator;
@@ -24,6 +25,7 @@ import org.eclipse.ui.IWorkbenchWindow;
 import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.jfree.data.general.AbstractSeriesDataset;
+import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 import org.mwc.cmap.xyplot.views.XYPlotView;
 
@@ -304,7 +306,10 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// that's it, now get the data
 							TimePeriod period = (TimePeriod) timeC.getAdapter(TimePeriod.class);
 							if(period == null)
+							{
+								CorePlugin.logError(Status.ERROR, "TimeController view no longer provides TimePeriod adapter", null);
 								return;
+							}
 							
 							startTime = period.getStartDTG();
 							endTime = period.getEndDTG();

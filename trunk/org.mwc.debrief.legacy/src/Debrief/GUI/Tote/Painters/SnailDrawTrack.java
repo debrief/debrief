@@ -3,7 +3,6 @@ package Debrief.GUI.Tote.Painters;
 import java.awt.*;
 import java.util.*;
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;

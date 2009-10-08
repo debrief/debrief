@@ -29,7 +29,7 @@ public class PlainHighlighter implements TemporalLayerPainter
 	private int _mySize = 5;
 
 	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-			CanvasType dest, Debrief.Tools.Tote.Watchable watch)
+			CanvasType dest, MWC.GenericData.Watchable watch)
 	{
 		// check that our graphics context is still valid -
 		// we can't, so we will just have to trap any exceptions it raises

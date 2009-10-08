@@ -247,7 +247,6 @@ import java.io.Serializable;
 import java.util.TimeZone;
 import java.util.Vector;
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Test;
 import MWC.Algorithms.Conversions;
@@ -260,6 +259,7 @@ import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Tools.SubjectAction;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;

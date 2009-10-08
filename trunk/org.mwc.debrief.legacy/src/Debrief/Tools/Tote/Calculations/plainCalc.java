@@ -58,6 +58,7 @@ import java.text.*;
 
 import Debrief.Tools.Tote.*;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 abstract public class plainCalc implements toteCalculation
 {

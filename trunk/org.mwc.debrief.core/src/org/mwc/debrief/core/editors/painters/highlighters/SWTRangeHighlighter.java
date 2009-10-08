@@ -77,8 +77,8 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 	 *          the current data point
 	 */
 	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-			CanvasType dest, Debrief.Tools.Tote.WatchableList list,
-			Debrief.Tools.Tote.Watchable watch, boolean isPrimary)
+			CanvasType dest, MWC.GenericData.WatchableList list,
+			MWC.GenericData.Watchable watch, boolean isPrimary)
 	{
 		boolean doPlot = true;
 		if(isJustPlotPrimary())
@@ -150,7 +150,7 @@ public final class SWTRangeHighlighter implements SWTPlotHighlighter
 		return new RangeHighlightInfo(this);
 	}
 
-	private void drawRectangle(final Debrief.Tools.Tote.Watchable watch,
+	private void drawRectangle(final MWC.GenericData.Watchable watch,
 			final CanvasType dest, final MWC.Algorithms.PlainProjection proj,
 			final int mySize)
 	{

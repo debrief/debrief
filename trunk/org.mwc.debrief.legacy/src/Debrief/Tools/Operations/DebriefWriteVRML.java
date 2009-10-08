@@ -139,7 +139,7 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
       {
         Object oj = iter.nextElement();
 
-        if (oj instanceof Debrief.Tools.Tote.WatchableList)
+        if (oj instanceof MWC.GenericData.WatchableList)
         {
           // just check that we haven't got any dangling Fix lines
           // waiting to be finished
@@ -150,7 +150,7 @@ final class DebriefWriteVRML extends MWC.GUI.Tools.Operations.WriteVRML
             len = 0;
           }
 
-          Debrief.Tools.Tote.WatchableList tw = (Debrief.Tools.Tote.WatchableList) oj;
+          MWC.GenericData.WatchableList tw = (MWC.GenericData.WatchableList) oj;
           java.awt.Color col = tw.getColor();
           writeLineHeader(out, col);
         }

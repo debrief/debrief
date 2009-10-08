@@ -148,11 +148,11 @@ package Debrief.Wrappers;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 
-import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
@@ -351,14 +351,14 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 *          the DTG to search for
 	 * @return the nearest Watchable
 	 */
-	public final Debrief.Tools.Tote.Watchable[] getNearestTo(final HiResDate DTG)
+	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
 	{
 
 		/**
 		 * we need to end up with a watchable, not a fix, so we need to work our way
 		 * through the fixes
 		 */
-		Debrief.Tools.Tote.Watchable[] res = new Debrief.Tools.Tote.Watchable[]
+		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[]
 		{};
 
 		// check that we do actually contain some data
@@ -431,7 +431,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 				if (list.size() > 0)
 				{
-					final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]
+					final MWC.GenericData.Watchable[] dummy = new MWC.GenericData.Watchable[]
 					{ null };
 					res = list.toArray(dummy);
 				}
@@ -443,7 +443,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 				final java.util.Vector<SensorContactWrapper> list = new java.util.Vector<SensorContactWrapper>(
 						0, 1);
 				list.add(theLast);
-				final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]
+				final MWC.GenericData.Watchable[] dummy = new MWC.GenericData.Watchable[]
 				{ null };
 				res = list.toArray(dummy);
 			}
@@ -637,7 +637,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 			// //////////////////////////////////////////////////////////////////////
 			// finding the nearest entry
 			cal.set(2001, 10, 4, 4, 4, 05);
-			Debrief.Tools.Tote.Watchable[] list = sensor.getNearestTo(new HiResDate(
+			MWC.GenericData.Watchable[] list = sensor.getNearestTo(new HiResDate(
 					cal.getTime().getTime()));
 			SensorContactWrapper nearest = (SensorContactWrapper) list[0];
 			assertEquals("Nearest matching fix",
@@ -846,7 +846,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 
 			// check the correct number get returned
 			cal.set(2001, 10, 4, 4, 4, 25);
-			final Debrief.Tools.Tote.Watchable[] list = sensor
+			final MWC.GenericData.Watchable[] list = sensor
 					.getNearestTo(new HiResDate(cal.getTime().getTime(), 0));
 			assertEquals("after end of data", 2, list.length);
 

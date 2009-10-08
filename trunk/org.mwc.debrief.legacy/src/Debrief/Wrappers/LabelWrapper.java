@@ -187,7 +187,6 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.*;
 import MWC.GUI.Chart.Swing.SwingChart;
@@ -197,7 +196,7 @@ import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.*;
 
 public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		Debrief.Tools.Tote.WatchableList, Debrief.Tools.Tote.Watchable,
+		MWC.GenericData.WatchableList, MWC.GenericData.Watchable,
 		DraggableItem, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
@@ -502,7 +501,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 */
 	private long getThreshold()
 	{
-		long res = Debrief.Tools.Tote.WatchableList.TIME_THRESHOLD;
+		long res = MWC.GenericData.WatchableList.TIME_THRESHOLD;
 		final String appThreshold = Debrief.GUI.Frames.Application
 				.getThisProperty("STEP_THRESHOLD");
 
@@ -528,7 +527,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		return res;
 	}
 
-	public final Debrief.Tools.Tote.Watchable[] getNearestTo(final HiResDate DTG)
+	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
 	{
 		boolean res = false;
 
@@ -568,10 +567,10 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		if (res == true)
 		{
 			// produce a new LabelWrapper, with the indicated time
-			return new Debrief.Tools.Tote.Watchable[]
+			return new MWC.GenericData.Watchable[]
 			{ this };
 		} else
-			return new Debrief.Tools.Tote.Watchable[]
+			return new MWC.GenericData.Watchable[]
 			{};
 
 	}
@@ -623,7 +622,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		// if we have a property support class, fire the filtered event
 		if (getSupport() != null)
 			getSupport().firePropertyChange(
-					Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, null, null);
+					MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, null);
 
 	}
 

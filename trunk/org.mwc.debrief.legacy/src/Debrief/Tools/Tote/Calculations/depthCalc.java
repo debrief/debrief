@@ -62,8 +62,8 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import Debrief.Tools.Tote.Watchable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 public final class depthCalc extends plainCalc
 {

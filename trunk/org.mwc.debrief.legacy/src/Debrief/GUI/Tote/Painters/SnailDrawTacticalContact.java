@@ -1,12 +1,12 @@
 package Debrief.GUI.Tote.Painters;
 
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.PlainWrapper;
 import MWC.GenericData.Duration;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
@@ -226,7 +226,7 @@ public abstract class SnailDrawTacticalContact implements SnailPainter.drawHighL
      * @param dest        where we're painting it to
      * @param keep_simple whether to allow a change in line style
      */
-    abstract public void paint(final Debrief.Tools.Tote.WatchableList track,
+    abstract public void paint(final MWC.GenericData.WatchableList track,
                                final MWC.GUI.CanvasType dest,
                                final boolean keep_simple);
 

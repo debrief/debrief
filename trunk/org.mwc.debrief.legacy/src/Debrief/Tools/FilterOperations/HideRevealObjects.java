@@ -35,6 +35,7 @@ import MWC.GUI.Tools.Action;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 
 import javax.swing.*;
 

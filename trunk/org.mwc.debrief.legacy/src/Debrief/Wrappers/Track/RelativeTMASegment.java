@@ -5,14 +5,14 @@ import java.beans.PropertyDescriptor;
 import java.util.Enumeration;
 import java.util.SortedSet;
 
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;

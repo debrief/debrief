@@ -68,7 +68,6 @@ package Debrief.GUI.Tote;
 //
 
 
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.BuoyPatternWrapper;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.LabelWrapper;
@@ -78,6 +77,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.PropertiesPanel;
 import MWC.GUI.Tools.Chart.RightClickEdit;
+import MWC.GenericData.WatchableList;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;

@@ -1114,7 +1114,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
     public final class CanvasInfo extends Editable.EditorType
     {
 
-        public CanvasInfo(final SWTCanvasAdapter data)
+        public CanvasInfo(final Object data)
         {
             super(data, data.toString(), "");
         }

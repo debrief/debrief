@@ -13,7 +13,7 @@ package org.mwc.debrief.core.editors.painters.snail;
 //
 
 
-import Debrief.Tools.Tote.Watchable;
+import MWC.GenericData.Watchable;
 
 
 /**

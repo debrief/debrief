@@ -27,8 +27,8 @@ package Debrief.GUI.Tote.Painters;
 // Initial revision
 //
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.TMAContactWrapper;
+import MWC.GenericData.Watchable;
 
 
 /**

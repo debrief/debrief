@@ -477,14 +477,21 @@ public class XYPlotView extends ViewPart
 		IWorkbench wb = PlatformUI.getWorkbench();
 		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 		IWorkbenchPage page = win.getActivePage();
-		IEditorPart editor = page.getActiveEditor();
-
-		// do we have an active editor?
-		if (editor == null)
+		IEditorPart editor = null;
+		
+		// the page might not yet be open...
+		if(page != null)			
 		{
-			// nope, drop out.
-			return;
+	 	   editor = page.getActiveEditor();
+	 	  
+			// do we have an active editor?
+			if (editor == null)
+			{
+				// nope, drop out.
+				return;
+			}
 		}
+
 
 		// get it's time-provider interface
 		TimeProvider prov = (TimeProvider) editor.getAdapter(TimeProvider.class);

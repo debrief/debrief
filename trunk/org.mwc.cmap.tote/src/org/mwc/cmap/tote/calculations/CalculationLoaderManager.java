@@ -11,6 +11,7 @@ import org.mwc.cmap.tote.TotePlugin;
 
 import Debrief.Tools.Tote.*;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 /**
  * convenience class which handles loading/creating extensions

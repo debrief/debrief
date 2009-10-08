@@ -23,8 +23,8 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import Debrief.Tools.Tote.Watchable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 /** class to provide nice and tidy text-output, in a form which is readable by Excel
  *

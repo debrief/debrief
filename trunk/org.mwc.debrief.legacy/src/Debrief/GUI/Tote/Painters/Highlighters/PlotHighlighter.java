@@ -35,8 +35,8 @@ public interface PlotHighlighter extends Editable {
 	 */
 	void highlightIt(final MWC.Algorithms.PlainProjection proj,
 			final java.awt.Graphics dest,
-			final Debrief.Tools.Tote.WatchableList list,
-			final Debrief.Tools.Tote.Watchable watch, final boolean isPrimary);
+			final MWC.GenericData.WatchableList list,
+			final MWC.GenericData.Watchable watch, final boolean isPrimary);
 
 	// ////////////////////////////////////////////////////////////////////
 	// embedded class which just shows rectangular highlight around current
@@ -61,8 +61,8 @@ public interface PlotHighlighter extends Editable {
 		 *            the current data point
 		 */
 		public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-				java.awt.Graphics dest, Debrief.Tools.Tote.WatchableList list,
-				Debrief.Tools.Tote.Watchable watch, final boolean isPrimary) {
+				java.awt.Graphics dest, MWC.GenericData.WatchableList list,
+				MWC.GenericData.Watchable watch, final boolean isPrimary) {
 			// check that our graphics context is still valid -
 			// we can't, so we will just have to trap any exceptions it raises
 			try {

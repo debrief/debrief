@@ -2519,7 +2519,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	{
 		Object res = null;
 		if(adapter == TimePeriod.class)
+		{
+			// NOTE: xy plot plugin relies on getting this time period value from the time controller
 			res = getPeriod();
+		}
 		else 
 			res =super.getAdapter(adapter); 
 		

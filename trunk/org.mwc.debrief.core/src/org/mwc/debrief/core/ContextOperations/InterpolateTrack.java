@@ -13,7 +13,6 @@ import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.operations.CMAPOperation;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
 import MWC.GUI.*;
 import MWC.GUI.Properties.TimeStepPropertyEditor;

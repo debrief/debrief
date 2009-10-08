@@ -64,9 +64,9 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 import Debrief.GUI.Frames.Application;
-import Debrief.Tools.Tote.Watchable;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 /**
  * Calculate the bearing from the primary vessel to the secondary (for use in

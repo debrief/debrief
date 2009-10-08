@@ -30,7 +30,7 @@ public final class SWTSymbolHighlighter implements SWTPlotHighlighter, Editable
 	 *          the current data point
 	 */
 	public final void highlightIt(MWC.Algorithms.PlainProjection proj, CanvasType dest,
-			Debrief.Tools.Tote.WatchableList list, Debrief.Tools.Tote.Watchable watch, boolean isPrimary)
+			MWC.GenericData.WatchableList list, MWC.GenericData.Watchable watch, boolean isPrimary)
 	{
 		// check that our graphics context is still valid -
 		// we can't, so we will just have to trap any exceptions it raises

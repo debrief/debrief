@@ -173,12 +173,12 @@
 package Debrief.GUI.Tote;
 
 import Debrief.Tools.Tote.Calculations.*;
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 import java.awt.*;
 import java.util.Enumeration;

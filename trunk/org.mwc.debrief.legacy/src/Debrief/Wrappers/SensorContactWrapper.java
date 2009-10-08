@@ -160,7 +160,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		MWC.GUI.Plottable, Debrief.Tools.Tote.Watchable,
+		MWC.GUI.Plottable, MWC.GenericData.Watchable,
 		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe, TimeStampedDataItem
 {
 	/**
@@ -354,7 +354,7 @@ public final class SensorContactWrapper extends
 	 * return the coordinates for the start of the line
 	 */
 	public final WorldLocation getCalculatedOrigin(
-			Debrief.Tools.Tote.WatchableList parent)
+			MWC.GenericData.WatchableList parent)
 	{
 		if (parent == null)
 			parent = _mySensor.getHost();
@@ -372,8 +372,8 @@ public final class SensorContactWrapper extends
 				// better calculate it ourselves then
 
 				// get the origin
-				final Debrief.Tools.Tote.Watchable[] list = parent.getNearestTo(_DTG);
-				Debrief.Tools.Tote.Watchable wa = null;
+				final MWC.GenericData.Watchable[] list = parent.getNearestTo(_DTG);
+				MWC.GenericData.Watchable wa = null;
 				if (list.length > 0)
 					wa = list[0];
 
@@ -567,7 +567,7 @@ public final class SensorContactWrapper extends
 	 * @param keep_simple
 	 *          whether to allow a change in line style
 	 */
-	public final void paint(final Debrief.Tools.Tote.WatchableList track,
+	public final void paint(final MWC.GenericData.WatchableList track,
 			final MWC.GUI.CanvasType dest, final boolean keep_simple)
 	{
 		if (!getVisible())
@@ -755,9 +755,9 @@ public final class SensorContactWrapper extends
 	{
 
 		// get the origin
-		final Debrief.Tools.Tote.Watchable[] list = _mySensor._myHost
+		final MWC.GenericData.Watchable[] list = _mySensor._myHost
 				.getNearestTo(_DTG);
-		Debrief.Tools.Tote.Watchable wa = null;
+		MWC.GenericData.Watchable wa = null;
 		if (list.length > 0)
 			wa = list[0];
 

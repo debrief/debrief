@@ -95,6 +95,8 @@ import Debrief.Tools.Tote.*;
 import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.AWT.AWTPropertiesPanel;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 /** AWT implementation of a tote 
  * */

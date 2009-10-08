@@ -3,9 +3,9 @@ package org.mwc.cmap.tote.calculations;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.debrief.core.preferences.PrefsPage;
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Tools.Tote.Calculations.rangeCalc;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 public class SlantRangeCalc extends rangeCalc
 {

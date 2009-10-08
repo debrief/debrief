@@ -74,8 +74,8 @@ public final class RangeHighlighter implements PlotHighlighter
 	 *          the current data point
 	 */
 	public final void highlightIt(MWC.Algorithms.PlainProjection proj,
-			java.awt.Graphics dest, Debrief.Tools.Tote.WatchableList list,
-			Debrief.Tools.Tote.Watchable watch, final boolean isPrimary)
+			java.awt.Graphics dest, MWC.GenericData.WatchableList list,
+			MWC.GenericData.Watchable watch, final boolean isPrimary)
 	{
 		// are we concerend about primary track?
 		if (isJustPlotPrimary() && isPrimary)
@@ -137,7 +137,7 @@ public final class RangeHighlighter implements PlotHighlighter
 		return new RangeHighlightInfo(this);
 	}
 
-	private void drawRectangle(final Debrief.Tools.Tote.Watchable watch,
+	private void drawRectangle(final MWC.GenericData.Watchable watch,
 			final java.awt.Graphics dest, final MWC.Algorithms.PlainProjection proj,
 			final int mySize)
 	{

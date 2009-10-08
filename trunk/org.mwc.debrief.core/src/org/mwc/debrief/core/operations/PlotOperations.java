@@ -6,11 +6,11 @@ import java.util.Vector;
 
 import org.mwc.cmap.core.DataTypes.Temporal.ControllablePeriod;
 
-import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
 
 public class PlotOperations implements ControllablePeriod
 {

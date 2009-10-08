@@ -1,17 +1,18 @@
 package org.mwc.asset.core;
 
 import org.eclipse.jface.resource.ImageDescriptor;
-import org.mwc.cmap.layer_manager.views.support.ViewLabelProvider.ViewLabelImageHelper;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider.ViewLabelImageHelper;
 
 import ASSET.ParticipantType;
 import ASSET.GUI.Workbench.Plotters.*;
 import ASSET.Models.*;
 import ASSET.Participants.Category.Force;
+import MWC.GUI.Editable;
 
 public class ASSETImageHelper implements ViewLabelImageHelper
 {
 
-	public ImageDescriptor getImageFor(Object subject)
+	public ImageDescriptor getImageFor(Editable subject)
 	{
 		final ImageDescriptor res;
 		if ((subject instanceof SensorType) || (subject instanceof SensorsPlottable))

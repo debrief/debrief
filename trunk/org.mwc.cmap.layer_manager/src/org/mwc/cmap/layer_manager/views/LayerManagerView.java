@@ -16,14 +16,16 @@ import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.ui_support.DragDropSupport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.layer_manager.Layer_managerPlugin;
 import org.mwc.cmap.layer_manager.views.support.*;
 
-import Debrief.Tools.Tote.*;
-import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.*;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 /**
  * provide a tree of items on the plot.
@@ -104,7 +106,7 @@ public class LayerManagerView extends ViewPart
 
 	protected TrackManager _theTrackDataListener;
 
-	private LayerMgrDragDropSupport _dragDropSupport;
+	private DragDropSupport _dragDropSupport;
 
 	/**
 	 * whether we are already ignoring firing messages
@@ -350,7 +352,7 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setUseHashlookup(true);
 		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
-		_treeViewer.setLabelProvider(new ViewLabelProvider());
+		_treeViewer.setLabelProvider(new CoreViewLabelProvider());
 		_treeViewer.setSorter(new NameSorter());
 		_treeViewer.setInput(getViewSite());
 		_treeViewer.setComparer(new IElementComparer()
@@ -392,7 +394,7 @@ public class LayerManagerView extends ViewPart
 
 		});
 
-		_dragDropSupport = new LayerMgrDragDropSupport(_treeViewer);
+		_dragDropSupport = new DragDropSupport(_treeViewer);
 		_treeViewer.addDragSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport
 				.getTypes(), _dragDropSupport);
 		_treeViewer.addDropSupport(DND.DROP_MOVE | DND.DROP_COPY, _dragDropSupport
@@ -604,7 +606,7 @@ public class LayerManagerView extends ViewPart
 			Editable pl = pw.getEditable();
 
 			// hey, first see if it's even a candidate
-			if (pl instanceof TrackWrapper)
+			if (pl instanceof WatchableList)
 				// do we have a track data listener?
 				if (_theTrackDataListener != null)
 				{
@@ -631,7 +633,7 @@ public class LayerManagerView extends ViewPart
 		{
 			EditableWrapper pw = (EditableWrapper) ss.getFirstElement();
 			Editable pl = pw.getEditable();
-			if (pl instanceof TrackWrapper)
+			if (pl instanceof WatchableList)
 			{
 				// hey, it's a maybe.
 				res = true;

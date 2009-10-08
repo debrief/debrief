@@ -136,8 +136,6 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 
 import Debrief.GUI.Tote.StepControl;
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Tools.Tote.Calculations.atbCalc;
 import Debrief.Tools.Tote.Calculations.bearingCalc;
@@ -162,6 +160,8 @@ import MWC.GUI.JFreeChart.StepperChartPanel;
 import MWC.GUI.JFreeChart.StepperXYPlot;
 import MWC.GUI.JFreeChart.formattingOperation;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.Utilities.Errors.Trace;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 

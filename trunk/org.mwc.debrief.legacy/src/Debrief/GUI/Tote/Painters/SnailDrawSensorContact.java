@@ -63,7 +63,7 @@ package Debrief.GUI.Tote.Painters;
 // Initial revision
 //
 
-import Debrief.Tools.Tote.Watchable;
+import MWC.GenericData.Watchable;
 
 
 /**

@@ -459,20 +459,9 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 	protected static class OverviewSWTCanvas extends SWTCanvas
 	{
-
-		/** remember who is providing us with the target viewport
-		 * 
-		 */
-		private ChartOverview _parentView;
-
 		public OverviewSWTCanvas(Composite parent)
 		{
 			super(parent);
-		}
-
-		public void setChartOverview(ChartOverview parentView)
-		{
-			_parentView = parentView;
 		}
 		
 		/**
@@ -490,12 +479,6 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			// ignore - we don't do text in overview
 		}
 
-		public void paintPlot(CanvasType dest)
-		{		
-			// just check we're looking at something
-			if (_parentView._targetViewport != null)
-				super.paintPlot(dest);
-		}
 
 	}
 
@@ -557,8 +540,6 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 
 		public void setChartOverview(ChartOverview view)
 		{
-			OverviewSWTCanvas sc = (OverviewSWTCanvas) getCanvas();
-			sc.setChartOverview(view);
 			_parentView = view;
 		}
 

@@ -1,7 +1,7 @@
 /**
  * 
  */
-package org.mwc.cmap.layer_manager.views.support;
+package org.mwc.cmap.core.ui_support;
 
 import java.util.Iterator;
 import java.util.Vector;
@@ -15,13 +15,6 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
-import Debrief.Wrappers.FixWrapper;
-import Debrief.Wrappers.SensorContactWrapper;
-import Debrief.Wrappers.SensorWrapper;
-import Debrief.Wrappers.ShapeWrapper;
-import Debrief.Wrappers.TrackWrapper;
-import Debrief.Wrappers.Track.CoreTMASegment;
-import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
@@ -30,7 +23,7 @@ import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
 
-public class ViewLabelProvider extends LabelProvider implements ITableLabelProvider
+public class CoreViewLabelProvider extends LabelProvider implements ITableLabelProvider
 {
 
 	static Vector<ViewLabelImageHelper> imageHelpers = null;
@@ -56,7 +49,7 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 
 	/**
 	 */
-	public ViewLabelProvider()
+	public CoreViewLabelProvider()
 	{
 		// ok, retrieve the images from our own registry
 		visImage = CorePlugin.getImageFromRegistry("check2.png");
@@ -116,22 +109,8 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 
 			String imageKey = ISharedImages.IMG_OBJ_ELEMENT;
 
-			if (editable instanceof TrackWrapper)
-				imageKey = "track.gif";
-			else if (editable instanceof SensorWrapper)
-				imageKey = "SensorFit.png";
-			else if (editable instanceof SensorContactWrapper)
-				imageKey = "active16.png";
-			else if (editable instanceof CoreTMASegment)
-				imageKey = "tmasegment.png";
-			else if (editable instanceof TrackSegment)
-				imageKey = "tracksegment.gif";
-			else if (editable instanceof Layer)
+			if (editable instanceof Layer)
 				imageKey = "layer.gif";
-			else if (editable instanceof FixWrapper)
-				imageKey = "Location.png";
-			else if (editable instanceof ShapeWrapper)
-				imageKey = "shape.gif";
 			else if (editable instanceof GridPainter)
 				imageKey = "grid.gif";
 			else if (editable instanceof ScalePainter)
@@ -220,7 +199,7 @@ public class ViewLabelProvider extends LabelProvider implements ITableLabelProvi
 		 * @param subject
 		 * @return
 		 */
-		public ImageDescriptor getImageFor(Object subject);
+		public ImageDescriptor getImageFor(Editable subject);
 	}
 
 }

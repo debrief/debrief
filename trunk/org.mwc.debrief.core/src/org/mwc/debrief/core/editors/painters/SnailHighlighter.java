@@ -16,6 +16,8 @@ import MWC.Algorithms.PlainProjection;
 import MWC.GUI.*;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 /**
  * painter which plots all data, and draws a square rectangle around tactical

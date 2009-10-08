@@ -68,6 +68,7 @@ package Debrief.Tools.Tote.Calculations;
 import java.text.*;
 import Debrief.Tools.Tote.*;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 public final class colorCalc extends plainCalc
 {

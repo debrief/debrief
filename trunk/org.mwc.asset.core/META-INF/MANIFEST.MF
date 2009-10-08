@@ -2,19 +2,16 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Core Plug-in
 Bundle-SymbolicName: org.mwc.asset.core;singleton:=true
-Bundle-Version: 1.0.0
+Bundle-Version: 1.0.1
 Bundle-Activator: org.mwc.asset.core.ASSETPlugin
 Bundle-Vendor: MWC
-Require-Bundle: org.eclipse.ui,
- org.mwc.asset.legacy;visibility:=reexport,
+Require-Bundle: org.mwc.asset.legacy;visibility:=reexport,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
- org.mwc.cmap.plotViewer,
- org.mwc.debrief.core,
  org.mwc.asset.sample_data,
  org.mwc.cmap.legacy,
  org.eclipse.draw2d,
- org.mwc.cmap.layer_manager;bundle-version="1.0.21"
+ org.eclipse.ui
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.asset.core;
   uses:="org.eclipse.jface.resource,

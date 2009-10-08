@@ -146,12 +146,12 @@
 package Debrief.Wrappers;
 
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
-import Debrief.Tools.Tote.Watchable;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.HiResDate;
@@ -166,7 +166,7 @@ import java.util.*;
  * the BuoyPatternWrapper is a Layer containing a buoypattern
  */
 public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
-		java.io.Serializable, Debrief.Tools.Tote.WatchableList, 
+		java.io.Serializable, MWC.GenericData.WatchableList, 
 		MWC.GUI.Layer, TimePeriod, DoNotHighlightMe
 {
 
@@ -887,7 +887,7 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 
 	}
 
-	public Debrief.Tools.Tote.Watchable[] getNearestTo(final HiResDate DTG)
+	public MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
 	{
 		Watchable res = null;
 

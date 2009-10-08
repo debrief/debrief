@@ -11,7 +11,6 @@ import java.util.Iterator;
 import java.util.SortedSet;
 import java.util.Vector;
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.BaseItemLayer;
@@ -25,6 +24,7 @@ import MWC.GUI.TimeStampedDataItem;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;

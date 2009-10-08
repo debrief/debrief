@@ -1,7 +1,7 @@
 package Debrief.Tools.FilterOperations;
 
-import Debrief.Tools.Tote.WatchableList;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: FilterOperation.java,v $

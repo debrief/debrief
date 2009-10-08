@@ -7,8 +7,8 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 import org.mwc.cmap.core.property_support.RightClickSupport.RightClickContextItemGenerator;
 
-import Debrief.Tools.Tote.WatchableList;
 import MWC.GUI.*;
+import MWC.GenericData.WatchableList;
 
 /** embedded class to generate menu-items for creating tactical plot
  * 

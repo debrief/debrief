@@ -3,8 +3,8 @@
  */
 package org.mwc.cmap.core.DataTypes.TrackData;
 
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
+import MWC.GenericData.WatchableList;
 
 /**
  * @author ian.mayo

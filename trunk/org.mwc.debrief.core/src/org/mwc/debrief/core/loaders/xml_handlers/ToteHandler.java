@@ -3,7 +3,7 @@ package org.mwc.debrief.core.loaders.xml_handlers;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 
 import Debrief.ReaderWriter.XML.GUI.PrimarySecondaryHandler;
-import Debrief.Tools.Tote.WatchableList;
+import MWC.GenericData.WatchableList;
 
 /**
  * Title: Debrief 2000 Description: Debrief 2000 Track Analysis Software
@@ -89,7 +89,7 @@ public abstract class ToteHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLR
 
 		// now output the parts of the tote
 		// find the primary
-		Debrief.Tools.Tote.WatchableList primary = tracks.getPrimaryTrack();
+		MWC.GenericData.WatchableList primary = tracks.getPrimaryTrack();
 		WatchableList[] secondaries = tracks.getSecondaryTracks();
 
 		if (primary != null)

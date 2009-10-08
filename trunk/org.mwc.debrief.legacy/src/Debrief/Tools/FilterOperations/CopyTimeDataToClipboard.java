@@ -85,11 +85,11 @@ package Debrief.Tools.FilterOperations;
 //
 
 import Debrief.Tools.Tote.Calculations.*;
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 import javax.swing.*;
 import java.awt.datatransfer.Clipboard;
@@ -120,7 +120,7 @@ public class CopyTimeDataToClipboard implements FilterOperation, ClipboardOwner
   /**
    * the primary track for the relative parameters
    */
-  private Debrief.Tools.Tote.WatchableList _thePrimary = null;
+  private MWC.GenericData.WatchableList _thePrimary = null;
 
   // the line-break character
   private final String _theSeparator = "\n";

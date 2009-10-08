@@ -72,8 +72,8 @@ package Debrief.Tools.Tote.Calculations;
 // Initial revision
 //
 
-import Debrief.Tools.Tote.Watchable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 import java.text.DecimalFormat;

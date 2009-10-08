@@ -3,6 +3,7 @@ package org.mwc.asset.core;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.osgi.framework.BundleContext;
 
 /**
@@ -40,7 +41,7 @@ public class ASSETActivator extends AbstractUIPlugin {
 		
 		_myImageHelper  = new ASSETImageHelper();
 		// give the LayerManager our image creator.
-		org.mwc.cmap.layer_manager.views.support.ViewLabelProvider.addImageHelper(_myImageHelper  );
+		CoreViewLabelProvider.addImageHelper(_myImageHelper  );
 	}
 
 

@@ -79,6 +79,7 @@ import java.util.*;
 import MWC.GUI.Editable;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 import Debrief.Wrappers.*;
 
@@ -196,7 +197,7 @@ abstract public class SetTimeZero implements FilterOperation
         // first pass through, setting the labels visible
         while(this_time <= _end_time.getMicros())
         {
-          Debrief.Tools.Tote.Watchable[] list = tw.getNearestTo(new HiResDate(0, this_time));
+          MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(0, this_time));
           FixWrapper fw = null;
           if(list.length > 0)
              fw = (FixWrapper)list[0];
@@ -216,7 +217,7 @@ abstract public class SetTimeZero implements FilterOperation
         // first pass through, setting the symbols visible
         while(this_time <= _end_time.getMicros())
         {
-          Debrief.Tools.Tote.Watchable[] list = tw.getNearestTo(new HiResDate(this_time));
+          MWC.GenericData.Watchable[] list = tw.getNearestTo(new HiResDate(this_time));
           FixWrapper fw = null;
           if(list.length > 0)
              fw = (FixWrapper)list[0];

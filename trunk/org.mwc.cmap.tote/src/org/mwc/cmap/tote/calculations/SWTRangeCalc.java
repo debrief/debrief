@@ -7,6 +7,7 @@ import java.text.NumberFormat;
 
 import Debrief.Tools.Tote.*;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 /**

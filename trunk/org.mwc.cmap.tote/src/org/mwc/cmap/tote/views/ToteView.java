@@ -53,11 +53,11 @@ import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.tote.calculations.CalculationLoaderManager;
 
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Tools.Tote.toteCalculation;
 import Debrief.Wrappers.FixWrapper;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 
 /**
  * View which provides a track tote. The track tote is a table of values who are

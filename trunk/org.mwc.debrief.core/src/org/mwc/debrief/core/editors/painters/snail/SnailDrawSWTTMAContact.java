@@ -13,8 +13,8 @@ package org.mwc.debrief.core.editors.painters.snail;
 //
 
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.TMAContactWrapper;
+import MWC.GenericData.Watchable;
 
 
 /**

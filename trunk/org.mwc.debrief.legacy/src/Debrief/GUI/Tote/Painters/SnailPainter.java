@@ -211,8 +211,6 @@ package Debrief.GUI.Tote.Painters;
 //
 
 import Debrief.GUI.Tote.AnalysisTote;
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.*;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.PlainProjection;
@@ -220,6 +218,8 @@ import MWC.GUI.*;
 import MWC.GUI.CanvasType.PaintListener;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
 import java.awt.*;

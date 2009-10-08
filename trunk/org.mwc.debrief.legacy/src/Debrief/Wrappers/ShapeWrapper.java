@@ -238,8 +238,8 @@ import MWC.GUI.Shapes.*;
 import MWC.GenericData.*;
 
 public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		java.beans.PropertyChangeListener, Debrief.Tools.Tote.WatchableList,
-		Debrief.Tools.Tote.Watchable, DraggableItem, HasDraggableComponents,
+		java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
+		MWC.GenericData.Watchable, DraggableItem, HasDraggableComponents,
 		DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////
@@ -632,7 +632,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 	 */
 	protected long getThreshold()
 	{
-		long res = Debrief.Tools.Tote.WatchableList.TIME_THRESHOLD;
+		long res = MWC.GenericData.WatchableList.TIME_THRESHOLD;
 		final String appThreshold = Debrief.GUI.Frames.Application
 				.getThisProperty("STEP_THRESHOLD");
 
@@ -658,10 +658,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		return res;
 	}
 
-	public final Debrief.Tools.Tote.Watchable[] getNearestTo(final HiResDate DTG)
+	public final MWC.GenericData.Watchable[] getNearestTo(final HiResDate DTG)
 	{
 
-		Debrief.Tools.Tote.Watchable[] res = new Debrief.Tools.Tote.Watchable[]
+		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[]
 		{};
 		;
 
@@ -682,7 +682,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 					if ((getStartDTG().lessThan(DTG)) && (getEndDTG().greaterThan(DTG)))
 					{
 						// yes, it's within our time period
-						res = new Debrief.Tools.Tote.Watchable[]
+						res = new MWC.GenericData.Watchable[]
 						{ this };
 					} else
 					{
@@ -700,10 +700,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 					// is this within our threshold?
 					if (diff <= getThreshold())
-						res = new Debrief.Tools.Tote.Watchable[]
+						res = new MWC.GenericData.Watchable[]
 						{ this };
 					else
-						res = new Debrief.Tools.Tote.Watchable[]
+						res = new MWC.GenericData.Watchable[]
 						{};
 				}
 			} else
@@ -713,7 +713,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 				if (_theEndDTG == null)
 				{
 					// yup, say we were nearest
-					res = new Debrief.Tools.Tote.Watchable[]
+					res = new MWC.GenericData.Watchable[]
 					{ this };
 				}
 			}// this whole object is a watchable
@@ -781,7 +781,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		// if we have a property support class, fire the filtered event
 		if (getSupport() != null)
 			getSupport().firePropertyChange(
-					Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, null, null);
+					MWC.GenericData.WatchableList.FILTERED_PROPERTY, null, null);
 
 	}
 

@@ -187,8 +187,6 @@ import java.util.Vector;
 
 import Debrief.GUI.Tote.AnalysisTote;
 import Debrief.GUI.Tote.Painters.Highlighters.PlotHighlighter;
-import Debrief.Tools.Tote.Watchable;
-import Debrief.Tools.Tote.WatchableList;
 import MWC.Algorithms.PlainProjection;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -198,6 +196,8 @@ import MWC.GUI.StepperListener;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
 /**
@@ -476,14 +476,14 @@ public class TotePainter implements StepperListener, CanvasType.PaintListener,
 			if (oldHighlights == null)
 				oldHighlights = new HashMap<Watchable, WatchableList>();
 
-			final Debrief.Tools.Tote.Watchable[] list = primaryTrack
+			final MWC.GenericData.Watchable[] list = primaryTrack
 					.getNearestTo(oldDTG);
 			if (list.length > 0)
 				oldPrimary = list[0];
 		}
 
 		// find the point on the primary track which is nearest to the new point
-		Debrief.Tools.Tote.Watchable[] list = primaryTrack
+		MWC.GenericData.Watchable[] list = primaryTrack
 				.getNearestTo(newDTG);
 
 		Watchable newPrimary = null;

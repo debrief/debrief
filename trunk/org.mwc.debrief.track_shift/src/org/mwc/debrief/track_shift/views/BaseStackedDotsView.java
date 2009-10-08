@@ -44,7 +44,6 @@ import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.debrief.core.actions.DragSegment;
 import org.mwc.debrief.track_shift.Activator;
 
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.ErrorLogger;
 import MWC.GUI.Layer;
@@ -52,6 +51,7 @@ import MWC.GUI.Layers;
 import MWC.GUI.JFreeChart.ColourStandardXYItemRenderer;
 import MWC.GUI.JFreeChart.DateAxisEditor;
 import MWC.GUI.Layers.DataListener;
+import MWC.GenericData.WatchableList;
 
 /**
  */

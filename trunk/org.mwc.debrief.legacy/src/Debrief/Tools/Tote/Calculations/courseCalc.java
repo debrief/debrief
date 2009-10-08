@@ -62,9 +62,9 @@ package Debrief.Tools.Tote.Calculations;
 
 import java.text.DecimalFormat;
 
-import Debrief.Tools.Tote.Watchable;
 import MWC.Algorithms.Conversions;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 public final class courseCalc extends plainCalc
 {

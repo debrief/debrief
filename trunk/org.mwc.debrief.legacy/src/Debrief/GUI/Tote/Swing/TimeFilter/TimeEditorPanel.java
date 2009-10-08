@@ -8,7 +8,6 @@
 package Debrief.GUI.Tote.Swing.TimeFilter;
 
 import Debrief.Tools.FilterOperations.*;
-import Debrief.Tools.Tote.WatchableList;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -17,6 +16,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.WatchableList;
 
 import javax.swing.*;
 import java.awt.*;

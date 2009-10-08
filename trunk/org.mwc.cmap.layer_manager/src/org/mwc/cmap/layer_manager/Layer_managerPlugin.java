@@ -1,6 +1,7 @@
 package org.mwc.cmap.layer_manager;
 
-import java.util.*;
+import java.util.MissingResourceException;
+import java.util.ResourceBundle;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
@@ -33,7 +34,7 @@ public class Layer_managerPlugin extends AbstractUIPlugin
 	public void start(BundleContext context) throws Exception
 	{
 		super.start(context);
-
+		// tell the right-click object that we're ready & able to generate plots at will
 		try
 		{
 			// also fire up the xy-plotter item

@@ -1,4 +1,4 @@
-package Debrief.Tools.Tote;
+package MWC.GenericData;
 
 // Copyright MWC 1999, Debrief 3 Project
 // $RCSfile: WatchableList.java,v $
@@ -97,7 +97,6 @@ package Debrief.Tools.Tote;
 //
 
 import MWC.GUI.Editable;
-import MWC.GenericData.HiResDate;
 
 import java.util.Collection;
 
@@ -210,7 +209,7 @@ public interface WatchableList
       TestCase.assertTrue("all items were returned", coll.size() == 1);
 
       // test get nearest to
-      Debrief.Tools.Tote.Watchable[] nearest = noDates.getNearestTo(new HiResDate(3000, 0));
+      MWC.GenericData.Watchable[] nearest = noDates.getNearestTo(new HiResDate(3000, 0));
       TestCase.assertEquals("return itself when no DTG present", 1, nearest.length);
 
       // test get start DTG

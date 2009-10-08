@@ -64,7 +64,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	/**
 	 * the track of our host
 	 */
-	protected transient Debrief.Tools.Tote.WatchableList _myHost;
+	protected transient MWC.GenericData.WatchableList _myHost;
 
 	/**
 	 * manage the start/stop times for this period
@@ -75,7 +75,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * local copy of the last fix found, to speed up some getNearestTo(...)
 	 * operations
 	 */
-	protected transient Debrief.Tools.Tote.Watchable[] lastContact;
+	protected transient MWC.GenericData.Watchable[] lastContact;
 
 	/**
 	 * the DTG last searched for in getNearestTo()
@@ -209,14 +209,14 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	/**
 	 * set our host track
 	 */
-	public void setHost(final Debrief.Tools.Tote.WatchableList host) {
+	public void setHost(final MWC.GenericData.WatchableList host) {
 		_myHost = host;
 	}
 
 	/**
 	 * set our host track
 	 */
-	public final Debrief.Tools.Tote.WatchableList getHost() {
+	public final MWC.GenericData.WatchableList getHost() {
 		return _myHost;
 	}
 
@@ -465,7 +465,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 					// getting the
 					// fix immediately before the requested time
 					final HiResDate thisDTG = new HiResDate(0, start_time);
-					final Debrief.Tools.Tote.Watchable[] list = this
+					final MWC.GenericData.Watchable[] list = this
 							.getNearestTo(thisDTG);
 					// check we found some
 					if (list.length > 0) {
@@ -507,7 +507,7 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 			final Debrief.GUI.Tote.StepControl.somePeriod newPeriod = new Debrief.GUI.Tote.StepControl.somePeriod(
 					start, end);
 			getSupport().firePropertyChange(
-					Debrief.Tools.Tote.WatchableList.FILTERED_PROPERTY, null,
+					MWC.GenericData.WatchableList.FILTERED_PROPERTY, null,
 					newPeriod);
 		}
 

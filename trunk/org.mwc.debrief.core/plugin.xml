@@ -46,12 +46,12 @@
 
 	<requires>
 		<import plugin="org.mwc.cmap.core" />
-		<import plugin="org.eclipse.ui" />
-		<import plugin="org.eclipse.core.runtime" />
-		<import plugin="org.mwc.cmap.plotViewer" />
+  <import plugin="org.mwc.cmap.plotViewer"/>
 		<import plugin="org.mwc.cmap.legacy" />
 		<import plugin="org.mwc.debrief.legacy" />
+		<import plugin="org.eclipse.core.runtime" />
 		<import plugin="org.eclipse.core.resources" />
+		<import plugin="org.eclipse.ui" />
 		<import plugin="org.eclipse.ui.ide" />
 		<import plugin="org.eclipse.ui.cheatsheets" />
 		<import plugin="org.eclipse.ui.intro" />

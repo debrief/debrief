@@ -2,6 +2,7 @@ package org.mwc.cmap.xyplot;
 
 import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.ui.plugin.AbstractUIPlugin;
+import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.osgi.framework.BundleContext;
 
 /**

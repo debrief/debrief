@@ -1,4 +1,4 @@
-package org.mwc.cmap.layer_manager.views;
+package org.mwc.cmap.core.ui_support;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -40,7 +40,7 @@ import MWC.TacticalData.NarrativeEntry;
  * 
  * @author ian.mayo
  */
-public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetListener
+public class DragDropSupport implements DragSourceListener, DropTargetListener
 {
 
 	/**
@@ -66,7 +66,7 @@ public class LayerMgrDragDropSupport implements DragSourceListener, DropTargetLi
 	 * 
 	 * @param parent
 	 */
-	public LayerMgrDragDropSupport(StructuredViewer parent)
+	public DragDropSupport(StructuredViewer parent)
 	{
 		_parent = parent;
 	}

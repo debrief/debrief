@@ -5,7 +5,6 @@ import java.util.*;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 
-import Debrief.Tools.Tote.Watchable;
 import Debrief.Wrappers.*;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;

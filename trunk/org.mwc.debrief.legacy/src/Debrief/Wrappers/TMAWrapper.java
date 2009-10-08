@@ -63,7 +63,6 @@ package Debrief.Wrappers;
 import java.beans.*;
 import java.util.Iterator;
 
-import Debrief.Tools.Tote.Watchable;
 import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
@@ -370,7 +369,7 @@ public final class TMAWrapper  extends TacticalDataWrapper
         // is it after the last one?  If so, just plot the last one.  This helps us when we're doing snail trails.
         final java.util.Vector<TMAContactWrapper> list = new java.util.Vector<TMAContactWrapper>(0, 1);
         list.add(theLast);
-        final Debrief.Tools.Tote.Watchable[] dummy = new Debrief.Tools.Tote.Watchable[]{null};
+        final MWC.GenericData.Watchable[] dummy = new MWC.GenericData.Watchable[]{null};
         res = list.toArray(dummy);
       }
 
