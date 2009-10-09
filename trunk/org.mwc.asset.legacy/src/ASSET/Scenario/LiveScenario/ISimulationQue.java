@@ -19,7 +19,13 @@ public interface ISimulationQue
 	 * 
 	 * @return
 	 */
-	public abstract Iterable<IAttribute> getAttributes();
+	public abstract Vector<IAttribute> getAttributes();
+	
+	/**  how to listen for the state of the simulations changing
+	 * 
+	 * @return
+	 */
+	public IAttribute getState();
 
 	/**
 	 * start the que running

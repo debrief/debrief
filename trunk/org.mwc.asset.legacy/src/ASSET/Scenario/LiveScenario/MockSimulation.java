@@ -19,12 +19,6 @@ public class MockSimulation extends Simulation
 	private static final int STEP_INTERVAL = 100;
 
 	/**
-	 * the local set of attributes for this simulation
-	 * 
-	 */
-	private Vector<IAttribute> _attrs;
-
-	/**
 	 * our own timer
 	 * 
 	 */
@@ -67,25 +61,6 @@ public class MockSimulation extends Simulation
 
 		// create the object that looks after the task stepping
 		_updateCycle = new MockTimerTask(attrs, this);
-
-		// remember the attributes
-		_attrs = attrs;
-	}
-
-	@Override
-	public Vector<IAttribute> getAttributes()
-	{
-		// create results container
-		Vector<IAttribute> res = new Vector<IAttribute>();
-
-		// add the parent attributes
-		res.addAll(super.getAttributes());
-
-		// and add our attributes
-		res.addAll(_attrs);
-
-		// done.
-		return res;
 	}
 
 	@Override
@@ -231,7 +206,7 @@ public class MockSimulation extends Simulation
 		{
 
 			// is our sim still running?
-			if (_parent.getState().getCurrent(_parent).getValue() == Simulation.COMPLETE)
+			if (!_parent.isRunning())
 			{
 				super.cancel();
 				return;

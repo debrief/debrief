@@ -5,10 +5,12 @@ package ASSET.Scenario.LiveScenario;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.ScenarioType;
+import ASSET.Scenario.CoreScenario;
+import ASSET.Scenario.ScenarioRunningListener;
 import MWC.Algorithms.LiveData.Attribute;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
@@ -27,6 +29,8 @@ public class SimulationQue implements ISimulationQue
 	 * 
 	 */
 	Vector<ISimulation> _mySimulations;
+	
+	Attribute _theState;
 
 	/**
 	 * the thread that fires off the simulations
@@ -34,9 +38,59 @@ public class SimulationQue implements ISimulationQue
 	 */
 	private runThread runThread;
 
-	public SimulationQue(Vector<ISimulation> simulations)
+	private Vector<IAttribute> _myAttrs;
+
+	public SimulationQue(Vector<ISimulation> simulations, Vector<IAttribute> attrs)
 	{
 		_mySimulations = simulations;
+		_myAttrs = attrs;
+		_theState = new Attribute("State", "n/a", true);
+		
+		// store the simulations
+		for (final ISimulation sim : simulations)
+		{
+			// put it in it's initial state
+			_theState.fireUpdate(sim, sim.getTime(), ISimulation.WAITING);
+			
+			// and listen out for it
+			CoreScenario scen = (CoreScenario) sim;
+			scen.addScenarioRunningListener(new ScenarioRunningListener(){
+
+				@Override
+				public void finished(long elapsedTime, String reason)
+				{
+					_theState.fireUpdate(sim, elapsedTime, ISimulation.COMPLETE);
+				}
+
+				@Override
+				public void newScenarioStepTime(int val)
+				{
+				}
+
+				@Override
+				public void newStepTime(int val)
+				{
+				}
+
+				@Override
+				public void paused()
+				{
+					_theState.fireUpdate(sim, sim.getTime(), ISimulation.TERMINATED);
+
+				}
+
+				@Override
+				public void restart(ScenarioType scenario)
+				{
+				}
+
+				@Override
+				public void started()
+				{
+					_theState.fireUpdate(sim, sim.getTime(), ISimulation.RUNNING);
+
+				}});
+		}
 	}
 
 	/* (non-Javadoc)
@@ -50,8 +104,8 @@ public class SimulationQue implements ISimulationQue
 	/* (non-Javadoc)
 	 * @see ASSET.Scenario.LiveScenario.ISimulationQue#getAttributes()
 	 */
-	public Iterable<IAttribute> getAttributes() {
-		return getSimulations().isEmpty() ? (Collections.<IAttribute> emptyList()) : getSimulations().firstElement().getAttributes();
+	public Vector<IAttribute> getAttributes() {
+		return _myAttrs;
 	}
 
 	/* (non-Javadoc)
@@ -103,7 +157,7 @@ public class SimulationQue implements ISimulationQue
 					ISimulation thisS = iter.next();
 
 					// what's its state?
-					String thisState = (String) thisS.getState().getCurrent(thisS).getValue();
+					String thisState = _theState.getCurrent(thisS).getValue().toString();
 
 					// check the state
 					if (thisState == MockSimulation.RUNNING)
@@ -198,10 +252,18 @@ public class SimulationQue implements ISimulationQue
 		{
 			MockSimulation m1 = new MockSimulation("sim_" + i, runTime, attrs);
 			shortQue.add(m1);
-			m1.getState().addPropertyChangeListener(new StateListener(m1));
 		}
 
-		ISimulationQue que = new SimulationQue(shortQue);
+		// create the que
+		ISimulationQue que = new SimulationQue(shortQue, attrs);
+
+		// listen out for changes
+		for (ISimulation iSimulation : shortQue)
+		{
+			que.getState().addPropertyChangeListener(new StateListener(iSimulation));
+		}
+
+		// get it going
 		que.startQue();
 
 		// wait until the simulation is complete
@@ -221,6 +283,12 @@ public class SimulationQue implements ISimulationQue
 		dumpThis(att1, shortQue.elementAt(0));
 		dumpThis(att1, shortQue.elementAt(1));
 		dumpThis(att2, shortQue.elementAt(1));
+	}
+
+	@Override
+	public IAttribute getState()
+	{
+		return _theState;
 	}
 
 
