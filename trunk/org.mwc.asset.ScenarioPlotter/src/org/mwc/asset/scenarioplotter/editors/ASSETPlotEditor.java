@@ -293,46 +293,9 @@ public class ASSETPlotEditor extends CorePlotEditor
 	public void init(IEditorSite site, IEditorInput input)
 			throws PartInitException
 	{
-//
-//		setSite(site);
-//		setInputWithNotify(input);
-//		
-//		// ok, try to pass this file to the scenario controller
-//		IWorkbenchPage page = this.getEditorSite().getPage();
-//		IViewReference timeRef = page.findViewReference(ASSETPlugin.SCENARIO_CONTROLLER2);
-//
-//		// ok, try to pass the file to it.
-//		if(timeRef == null)
-//		{
-//			// ok, better open it
-//			page.showView(ASSETPlugin.SCENARIO_CONTROLLER, null,IWorkbenchPage.VIEW_VISIBLE );
-//			timeRef = page.findViewReference(ASSETPlugin.SCENARIO_CONTROLLER2);
-//		}
-//		
-//		if(timeRef == null)
-//		{
-//			// bugger, we can't create the scenario controller
-//			ASSETPlugin.logError(org.eclipse.core.runtime.Status.ERROR, "Can't find scenario controller to give it a file, dying", null);
-//		}
-//		else
-//		{
-//			ScenarioControllerView cont = (ScenarioControllerView) timeRef.getPart(true);
-//			
-//			// extract the path
-//			String thePath = null;
-//			
-//			if(input instanceof FileEditorInput)
-//			{
-//				FileEditorInput fi = (FileEditorInput) input;
-//				thePath = fi.getPath().toOSString();
-//			}
-//			
-//			// ok, now give it the file	
-//			if(thePath != null)
-//				cont.filesDropped(new String[]{thePath});
-//		}
-//		
-//		
+		// initialise importand stuff
+		setSite(site);
+		setInputWithNotify(input);
 	}
 
 	public boolean isSaveAsAllowed()
