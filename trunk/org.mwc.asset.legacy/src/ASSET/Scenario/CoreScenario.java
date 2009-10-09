@@ -3,20 +3,26 @@
 package ASSET.Scenario;
 
 import java.beans.PropertyChangeListener;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
 
-import ASSET.*;
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Environment.*;
+import ASSET.Models.Environment.EnvironmentType;
+import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Sensor.Initial.BroadbandSensor;
 import ASSET.Models.Vessels.SSN;
 import ASSET.Participants.Status;
 import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Util.RandomGenerator;
-import MWC.Algorithms.LiveData.Attribute;
-import MWC.Algorithms.LiveData.IAttribute;
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Layer;
+import MWC.GenericData.Duration;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 
 public class CoreScenario implements ScenarioType, ISimulation
 {
@@ -155,9 +161,6 @@ public class CoreScenario implements ScenarioType, ISimulation
         stepping = false;
       }
     });
-    
-    _myState = new Attribute("State", "n/a", true);
-    _myState.fireUpdate(this, getTime(), "PENDING");
 
     _pSupport = new java.beans.PropertyChangeSupport(this);
 
@@ -264,10 +267,6 @@ public class CoreScenario implements ScenarioType, ISimulation
 
     // fire event
     this.fireScenarioStopped(elapsedTime, thisReason);
-    
-    // and update our state
-    _myState.fireUpdate(this, getTime(), "FINISHED");
-
   }
 
   boolean _firstPass = true;
@@ -276,8 +275,6 @@ public class CoreScenario implements ScenarioType, ISimulation
    * 
    */
 	private BaseLayer _myBackdrop;
-
-	private final Attribute _myState;
 
   /**
    * Move the scenario through a single step
@@ -1498,23 +1495,6 @@ public class CoreScenario implements ScenarioType, ISimulation
 	{
 		_myBackdrop = layer;
 	}
-
-
-	@Override
-	public Vector<IAttribute> getAttributes()
-	{
-		Vector<IAttribute> res = new Vector<IAttribute>(0,1);
-		res.add(_myState);
-		return res;
-	}
-
-
-	@Override
-	public IAttribute getState()
-	{
-		return _myState;
-	}
-
 
 	@Override
 	public void stop()
