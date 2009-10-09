@@ -30,6 +30,7 @@ import org.eclipse.jface.resource.ImageDescriptor;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -56,8 +57,8 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.asset.SimulationController.SimControllerUI;
 import org.mwc.asset.SimulationController.table.SimulationTable;
+import org.mwc.asset.SimulationController.views.SelectionProvider;
 import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.sample_data.SampleDataPlugin;
 import org.mwc.cmap.core.CorePlugin;
@@ -139,8 +140,8 @@ public class ScenarioControllerView extends ViewPart implements
 	 * 
 	 */
 	private PropertyChangeSupport _scenStopSupport;
-	//private SimControllerUI multiUI;
-	private SimulationTable _myTable;
+	private SimulationTable _simTable;
+	private ISelection _currentSelection;
 
 	/**
 	 * The constructor.
@@ -265,18 +266,19 @@ public class ScenarioControllerView extends ViewPart implements
 	{
 		// create our UI
 		_myUI = new UISkeleton(parent, SWT.FILL);
-//		_myUI.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		// _myUI.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		
-		_myUI.getMultiTableHolder().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
-		 _myTable = new SimulationTable(_myUI.getMultiTableHolder());
-		_myTable.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+		_myUI.getMultiTableHolder().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		
-//		multiUI = new SimControllerUI(_myUI.getMultiTableHolder());
-//		multiUI.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-//		multiUI.pack();
+		_simTable = new SimulationTable(_myUI.getMultiTableHolder());
+		_simTable.getControl().setLayoutData(
+				new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+		// multiUI = new SimControllerUI(_myUI.getMultiTableHolder());
+		// multiUI.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1,
+		// 1));
+		// multiUI.pack();
 
 		// let us accept dropped files
 		configureFileDropSupport(_myUI);
@@ -285,8 +287,9 @@ public class ScenarioControllerView extends ViewPart implements
 		makeActions();
 		contributeToActionBars();
 
-		// declare fact that we can provide selections
+		// declare fact that we can provide selections (and let our scenario table know we do it aswell)
 		getSite().setSelectionProvider(this);
+		_simTable.setSelectionProvider(this);
 
 		// now listen to the UI buttons
 		_myUI.getDoGenerateButton().addSelectionListener(new SelectionListener()
@@ -327,39 +330,67 @@ public class ScenarioControllerView extends ViewPart implements
 	protected void doRunOperation()
 	{
 		System.out.println("doing run");
-		_myMultiScenario.nowRun(System.out, System.err, System.in);
+
+		Thread doRun = new Thread()
+		{
+
+			@Override
+			public void run()
+			{
+				_myMultiScenario.nowRun(System.out, System.err, System.in);
+			}
+		};
+		doRun.start();
 	}
 
 	protected void doGenerateOperation()
 	{
-		System.out.println("doing gen");
+		// disable the genny button, until it's done.
+		_myUI.getDoGenerateButton().setEnabled(false);
 
-		try
-		{
-			if (_myMultiScenario == null)
+
+		// make it run in a separate thread
+		Thread toGenny = new Thread(){
+
+			@Override
+			public void run()
 			{
-				// create a new, fresh multi scenario generator
-				_myMultiScenario = new MultiScenarioCore();
-			}
+				try
+				{
+					if (_myMultiScenario == null)
+					{
+						// create a new, fresh multi scenario generator
+						_myMultiScenario = new MultiScenarioCore();
+					}
 
-			// and let it create some files
-			_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName,
-					System.out, System.err, System.in);
+					// and let it create some files
+					_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName,
+							System.out, System.err, System.in);
 
-			// ok, now give the scenarios to the multi scenario table
-			_myTable.setInput(_myMultiScenario);
+					// ok, now give the scenarios to the multi scenario table (in the UI thread
+					Display.getDefault().asyncExec(new Runnable(){
+						public void run()
+						{
+							_simTable.setInput(_myMultiScenario);
+						}});
+				}
+				catch (Exception e)
+				{
+					e.printStackTrace();
+				}
+
+				Display.getDefault().asyncExec(new Runnable(){
+					public void run()
+					{
+						// and make the run button live
+						_myUI.getRunBtn().setEnabled(true);
+						_myUI.getDoGenerateButton().setEnabled(true);
+					}});
+				
+			}};
 			
-			// try to trigger a re-layout
-	//		multiUI.pack();
-			
-		}
-		catch (Exception e)
-		{
-			e.printStackTrace();
-		}
+			toGenny.start();
 
-		// and make the run button live
-		_myUI.getRunBtn().setEnabled(true);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1090,7 +1121,7 @@ public class ScenarioControllerView extends ViewPart implements
 
 	public ISelection getSelection()
 	{
-		return null;
+		return _currentSelection;
 	}
 
 	public void removeSelectionChangedListener(ISelectionChangedListener listener)
@@ -1100,7 +1131,17 @@ public class ScenarioControllerView extends ViewPart implements
 
 	public void setSelection(ISelection selection)
 	{
-		// ignore...
+		_currentSelection = selection;
+		
+		// and tell everybody about it
+		if(_selectionListeners != null)
+		{
+			for (ISelectionChangedListener thisL : _selectionListeners)
+			{
+				SelectionChangedEvent event = new SelectionChangedEvent(this, _currentSelection);
+				thisL.selectionChanged(event );
+			}
+		}
 	}
 
 	// ////////////////////////////////////////////////////////////////////////////////////////////////
