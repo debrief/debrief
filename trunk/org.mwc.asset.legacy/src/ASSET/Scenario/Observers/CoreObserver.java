@@ -231,8 +231,6 @@ abstract public class CoreObserver implements ScenarioObserver, Editable
 
       // ok, remove any listeners
       removeListeners(scenario);
-
-      _myScenario = null;
     }
   }
 

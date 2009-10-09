@@ -8,6 +8,7 @@ package ASSET.Scenario.Observers;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Date;
 import java.util.Vector;
 
 import ASSET.ScenarioType;
@@ -92,7 +93,7 @@ public class TimeObserver extends
    */
   public void step(ScenarioType scenario, final long newTime)
   {
-  	getAttributeHelper().newData(scenario, newTime, newTime);
+  	getAttributeHelper().newData(scenario, newTime,new Date(newTime));
   }
 
 
