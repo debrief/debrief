@@ -103,7 +103,7 @@ public class CommandLine
   /**
    * the scenario we are going to run
    */
-  private CoreScenario _myScenario;
+  private final CoreScenario _myScenario;
 
   /**
    * the list of observers loaded from the control file
@@ -122,11 +122,17 @@ public class CommandLine
    */
   public CommandLine()
   {
+  	this( new CoreScenario());
+  }
+  
+  public CommandLine(CoreScenario theScenario)
+  {
     // do some kind of checks?
-    _myScenario = new CoreScenario();
+    _myScenario = theScenario;
 
     // and create the list of observers
     _myObservers = new Vector<ScenarioObserver>(0, 1);
+  	
   }
 
   /**

@@ -71,6 +71,10 @@ public class MultiScenarioCore implements ISimulationQue
 
 	private Vector<CoreScenario> _theScenarios;
 
+	private Vector<IAttribute> _myAttributes;
+
+	private ScenarioStatusObserver _stateObserver;
+
 	/**
 	 * ok, get things up and running. Load the data-files
 	 * 
@@ -89,7 +93,8 @@ public class MultiScenarioCore implements ISimulationQue
 		_myScenarioDocuments = new Vector<Document>(0, 1);
 
 		// and now create the list of scenarios
-		String res = _myGenny.createScenarios(scenario, control, _myScenarioDocuments);
+		String res = _myGenny.createScenarios(scenario, control,
+				_myScenarioDocuments);
 
 		return res;
 	}
@@ -138,16 +143,15 @@ public class MultiScenarioCore implements ISimulationQue
 		int result = SUCCESS;
 
 		// get the data we're after
-		String controlStr = ScenarioGenerator.writeToString(_myGenny.getControlFile());
+		String controlStr = ScenarioGenerator.writeToString(_myGenny
+				.getControlFile());
 		InputStream controlStream = new ByteArrayInputStream(controlStr.getBytes());
-
 
 		// ok, everything's loaded. Just have a pass through to
 		// initialise any intra-scenario observers
 		for (int thisObs = 0; thisObs < _theIntraObservers.size(); thisObs++)
 		{
-			ScenarioObserver scen = _theIntraObservers
-					.elementAt(thisObs);
+			ScenarioObserver scen = _theIntraObservers.elementAt(thisObs);
 			if (scen.isActive())
 			{
 				IntraScenarioObserverType obs = (IntraScenarioObserverType) scen;
@@ -156,27 +160,30 @@ public class MultiScenarioCore implements ISimulationQue
 			}
 		}
 
+		// combine the two sets of observers
+		Vector<ScenarioObserver> _allObservers = new Vector<ScenarioObserver>();
+		_allObservers.addAll(_theIntraObservers);
+		_allObservers.addAll(_thePlainObservers);
+		
+		
 		final int scenarioLen = _myScenarioDocuments.size();
+		
 
 		// ok, we've got our scenarios up and running, might as well run through
 		// them
-		for (int i = 0; i < scenarioLen; i++)
+		int ctr = 0;
+		for (Iterator<CoreScenario> iterator = _theScenarios.iterator(); iterator.hasNext();)
 		{
-			// get the scenario
-			Document document = _myScenarioDocuments.elementAt(i);
-
-			// ok, put it into a stream
-			String scenarioStr = ScenarioGenerator.writeToString(document);
-			InputStream scenarioStream = new ByteArrayInputStream(scenarioStr
-					.getBytes());
-
+			CoreScenario thisS = (CoreScenario) iterator.next();
+			
 			File newOutputSubDirectory = new File(_resultsStore.outputDirectory, ""
-					+ (i + 1) + "/");
+					+ (ctr + 1) + "/");
 
 			// and run through this one
-			runThisOne(controlStream, scenarioStream, _resultsStore.observerList,
-					newOutputSubDirectory, _resultsStore.randomSeed, i, scenarioLen);
+			runThisOne(controlStream, thisS, _allObservers,
+					newOutputSubDirectory, _resultsStore.randomSeed, ctr, scenarioLen);
 
+			
 			try
 			{
 				// and reset the control stream
@@ -187,18 +194,18 @@ public class MultiScenarioCore implements ISimulationQue
 				e.printStackTrace(); // To change body of catch statement use Options |
 				// File Templates.
 			}
+			
+			ctr++;
 		}
 
 		// ok, everything's loaded. Just have a pass through to
 		// close any intra-scenario observers
 		for (int thisObs = 0; thisObs < _theIntraObservers.size(); thisObs++)
 		{
-			ScenarioObserver scen = _theIntraObservers
-					.elementAt(thisObs);
+			ScenarioObserver scen = _theIntraObservers.elementAt(thisObs);
 			if (scen.isActive())
 			{
-				IntraScenarioObserverType obs = _theIntraObservers
-						.elementAt(thisObs);
+				IntraScenarioObserverType obs = _theIntraObservers.elementAt(thisObs);
 				obs.finish();
 			}
 		}
@@ -225,20 +232,14 @@ public class MultiScenarioCore implements ISimulationQue
 	 *          the total number of scenarios
 	 */
 	private void runThisOne(InputStream controlStream,
-			InputStream scenarioStream, Vector<ScenarioObserver> theObservers,
+			CoreScenario thisScenario, Vector<ScenarioObserver> theObservers,
 			File outputDirectory, Integer theSeed, int thisIndex, int numScenarios)
 	{
-		// load the data
-		CommandLine runner = new CommandLine();
-
-		// load the scenario
-		// ok, read in the scenario
-		CoreScenario theScenario = runner.getScenario();
-		ASSET.Util.XML.ASSETReaderWriter.importThis(theScenario, null,
-				scenarioStream);
-
+		// wrap the scenario
+		CommandLine runner = new CommandLine(thisScenario);
+		
 		// now set the seed
-		theScenario.setSeed(theSeed);
+		thisScenario.setSeed(theSeed);
 
 		// ok, get the scenario, so we can set up our observers
 		for (int i = 0; i < theObservers.size(); i++)
@@ -282,10 +283,15 @@ public class MultiScenarioCore implements ISimulationQue
 	 * @return success code (0) or failure codes
 	 */
 
-	public int prepareThis(String controlFile, String scenarioFile, PrintStream out,
-			PrintStream err, InputStream in)
+	public int prepareThis(String controlFile, String scenarioFile,
+			PrintStream out, PrintStream err, InputStream in)
 	{
 		int resCode = 0;
+		
+		// do a little tidying
+		_myAttributes = null;
+		_theIntraObservers = null;
+		_thePlainObservers = null;
 
 		System.out.println("about to generate scenarios");
 
@@ -314,7 +320,7 @@ public class MultiScenarioCore implements ISimulationQue
 			resCode = writeToDisk(out, err, in);
 
 			// and let our generator ditch some gash
-		//	_myGenny = null;
+			// _myGenny = null;
 
 			// there was lots of stuff read in by the scenario generator. Whilst
 			// we've removed our only reference to
@@ -333,9 +339,10 @@ public class MultiScenarioCore implements ISimulationQue
 				}
 			}
 		}
-		
+
 		// convert the control file to a stream
-		String controlStr = ScenarioGenerator.writeToString(_myGenny.getControlFile());
+		String controlStr = ScenarioGenerator.writeToString(_myGenny
+				.getControlFile());
 		InputStream controlStream = new ByteArrayInputStream(controlStr.getBytes());
 
 		System.out.println("about to import Control file");
@@ -344,14 +351,15 @@ public class MultiScenarioCore implements ISimulationQue
 				.importThisControlFile(null, controlStream);
 
 		// sort out observers (inter & intra)
-		_theIntraObservers = new Vector<IntraScenarioObserverType>(
-				0, 1);
+		_theIntraObservers = new Vector<IntraScenarioObserverType>(0, 1);
 		_thePlainObservers = new Vector<ScenarioObserver>();
 
-		// start off by generating the time/state observers that we create for everybody
-		_thePlainObservers.add(new ScenarioStatusObserver());
+		// start off by generating the time/state observers that we create for
+		// everybody
+		 _stateObserver = new ScenarioStatusObserver();
+		_thePlainObservers.add(_stateObserver);
 		_thePlainObservers.add(new TimeObserver());
-		
+
 		// also add those from the file
 		Vector<ScenarioObserver> theObservers = _resultsStore.observerList;
 		for (int i = 0; i < theObservers.size(); i++)
@@ -366,9 +374,10 @@ public class MultiScenarioCore implements ISimulationQue
 		}
 
 		// also read in the collection of scenarios
-		 _theScenarios = new Vector<CoreScenario>(0,1);
+		_theScenarios = new Vector<CoreScenario>(0, 1);
 
-		for (Iterator<Document> iterator = _myScenarioDocuments.iterator(); iterator.hasNext();)
+		for (Iterator<Document> iterator = _myScenarioDocuments.iterator(); iterator
+				.hasNext();)
 		{
 			Document thisD = iterator.next();
 			String scenarioStr = ScenarioGenerator.writeToString(thisD);
@@ -376,14 +385,11 @@ public class MultiScenarioCore implements ISimulationQue
 					.getBytes());
 			CoreScenario newS = new CoreScenario();
 			ASSETReaderWriter.importThis(newS, null, scenarioStream);
-			_theScenarios.add(newS);
+			_theScenarios.add(newS);			
 		}
-		
-		
-		
+
 		return resCode;
 	}
-	
 
 	public int nowRun(PrintStream out, PrintStream err, InputStream in)
 	{
@@ -456,19 +462,34 @@ public class MultiScenarioCore implements ISimulationQue
 	}
 
 	@Override
-	public Iterable<IAttribute> getAttributes()
+	public Vector<IAttribute> getAttributes()
 	{
-		// look at our observers, find any attributes
-		Vector<IAttribute> attrs = new Vector<IAttribute>();
-		
-		for (Iterator<ScenarioObserver> iterator = _thePlainObservers.iterator(); iterator.hasNext();)
+		if (_myAttributes == null)
 		{
-			ScenarioObserver thisS = iterator.next();
-			if(thisS instanceof IAttribute)
-				attrs.add((IAttribute) thisS);
+			// look at our observers, find any attributes
+			_myAttributes = new Vector<IAttribute>();
+
+			// start off with the single-scenario observers
+			for (Iterator<ScenarioObserver> iterator = _thePlainObservers.iterator(); iterator
+					.hasNext();)
+			{
+				ScenarioObserver thisS = iterator.next();
+				if (thisS instanceof IAttribute)
+					_myAttributes.add((IAttribute) thisS);
+			}
+
+			// now the multi-scenario observers
+			for (Iterator<IntraScenarioObserverType> iterator = _theIntraObservers.iterator(); iterator
+					.hasNext();)
+			{
+				IntraScenarioObserverType thisS = iterator.next();
+				if (thisS instanceof IAttribute)
+					_myAttributes.add((IAttribute) thisS);
+			}
+
 		}
-		
-		return attrs;
+		// done.
+		return _myAttributes;
 	}
 
 	@Override
@@ -498,8 +519,13 @@ public class MultiScenarioCore implements ISimulationQue
 	public void stopQue()
 	{
 		// TODO Auto-generated method stub
-		
+
 	}
 
+	@Override
+	public IAttribute getState()
+	{
+		return _stateObserver;
+	}
 
 }
