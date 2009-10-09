@@ -9,6 +9,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Vector;
 
+import MWC.Algorithms.LiveData.Attribute;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
 
@@ -137,6 +138,11 @@ public class SimulationQue implements ISimulationQue
 
 	}
 
+	/** convenient little listener that tracks the state of simulations - mostly just for testing
+	 * 
+	 * @author ianmayo
+	 *
+	 */
 	private static class StateListener implements PropertyChangeListener
 	{
 		private ISimulation _thisSim;
@@ -151,7 +157,6 @@ public class SimulationQue implements ISimulationQue
 		{
 			DataDoublet data = (DataDoublet) evt.getNewValue();
 			System.out.println(_thisSim.getName() + " is now " + data.getValue());
-
 		}
 
 	}
@@ -165,7 +170,7 @@ public class SimulationQue implements ISimulationQue
 			DataDoublet thisOne = iterator.next();
 			if (thisOne != null)
 				System.out.println(" at " + thisOne.getTime() + " value of "
-						+ theAttribute.getName() + " is " + thisOne.getValue());
+						+ theAttribute.getName() + " is " + thisOne.getValue() + " " + theAttribute.getUnits());
 		}
 	}
 
@@ -180,10 +185,18 @@ public class SimulationQue implements ISimulationQue
 
 		long runTime = 6000;
 
+		Vector<IAttribute> attrs = new Vector<IAttribute>();
+		IAttribute att1 = new Attribute("Height","m", true);
+		attrs.add(att1);
+		IAttribute att2 = new Attribute("Speed", "kts", false);
+		attrs.add(att2);
+
+
+		
 		Vector<ISimulation> shortQue = new Vector<ISimulation>();
 		for (int i = 0; i < 5; i++)
 		{
-			MockSimulation m1 = MockSimulation.createShort("sim_" + i, runTime);
+			MockSimulation m1 = new MockSimulation("sim_" + i, runTime, attrs);
 			shortQue.add(m1);
 			m1.getState().addPropertyChangeListener(new StateListener(m1));
 		}
@@ -205,12 +218,9 @@ public class SimulationQue implements ISimulationQue
 		}
 
 		// have a look at the data
-
-		IAttribute theAttribute = shortQue.elementAt(1).getAttributes()
-				.elementAt(1);
-		dumpThis(theAttribute, shortQue.elementAt(1));
-		theAttribute = shortQue.elementAt(0).getAttributes().elementAt(1);
-		dumpThis(theAttribute, shortQue.elementAt(0));
+		dumpThis(att1, shortQue.elementAt(0));
+		dumpThis(att1, shortQue.elementAt(1));
+		dumpThis(att2, shortQue.elementAt(1));
 	}
 
 

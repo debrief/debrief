@@ -169,11 +169,30 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 		// get ready to build up our list of simulations
 		Vector<Action> actions = new Vector<Action>(0, 1);
 
+		// create a block of attributes
+		Vector<IAttribute> attrs = new Vector<IAttribute>();
+		IAttribute att1 = new Attribute("Height","m",  true);
+		attrs.add(att1);
+		IAttribute att2 = new Attribute("Speed", "kts", false);
+		attrs.add(att2);
+		IAttribute att3 = new Attribute("Distance","yds",  true);
+		attrs.add(att3);
+		IAttribute att4 = new Attribute("Fuel", "%", false);
+		attrs.add(att4);
+		IAttribute att5 = new Attribute("Range","m",  true);
+		attrs.add(att5);
+		IAttribute att6 = new Attribute("Acceleration","m/s/s",  false);
+		attrs.add(att6);
+		IAttribute att7 = new Attribute("Water","ddegs",  false);
+		attrs.add(att7);
+		IAttribute att8 = new Attribute("Temperature","c",  false);
+		attrs.add(att8);
+		
 		// sort out the simulation stuff
 		Vector<ISimulation> _theSims = new Vector<ISimulation>();
-		_theSims.add(MockSimulation.createLong("sim1", 26000));
-		_theSims.add(MockSimulation.createLong("sim2", 26000));
-		_theSims.add(MockSimulation.createLong("sim3", 26000));
+		_theSims.add(new MockSimulation("sim1", 2600, attrs));
+		_theSims.add(new MockSimulation("sim2", 4100, attrs));
+		_theSims.add(new MockSimulation("sim3", 5600, attrs));
 
 		final ISimulationQue sq = new SimulationQue(_theSims);
 		// and the start stop

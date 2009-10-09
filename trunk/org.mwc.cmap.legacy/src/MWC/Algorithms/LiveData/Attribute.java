@@ -9,29 +9,29 @@ import java.util.Vector;
 public class Attribute implements IAttribute
 {
 
-	public static final String VALUE = null;
+	public static final String VALUE = "VALUE";
 
 	/**
 	 * name of this attribute
 	 * 
 	 */
-	private String _name;
+	private final String _name;
 	
 	/** the units for this attribute type
 	 * 
 	 */
-	private String _units;
+	private final String _units;
 
 	/**
 	 * support for property listeners
 	 * 
 	 */
-	PropertyChangeSupport _pSupport;
+	private final PropertyChangeSupport _pSupport;
 
 	/** whether this attribute is worthy of display by default
 	 * 
 	 */
-	private boolean _isSignificant;
+	private final boolean _isSignificant;
 	
 	/** daddies little helper
 	 * 
@@ -49,6 +49,7 @@ public class Attribute implements IAttribute
 		
 		// remember the name
 		_name = name;
+		_units = units;
 
 		// get the support ready
 		_pSupport = new PropertyChangeSupport(this);

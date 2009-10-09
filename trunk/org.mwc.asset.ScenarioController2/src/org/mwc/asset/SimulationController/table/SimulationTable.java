@@ -245,6 +245,7 @@ public class SimulationTable {
 
 					@Override
 					public Object getValue(ISimulation simulation) {
+//						return new Integer(15);
 						final int colIndex = columnDescriptor.getIndex();
 						DataDoublet dataDoublet = simulation.getAttributes().get(colIndex).getCurrent(simulation);
 						return dataDoublet == null ? null : dataDoublet.getValue();

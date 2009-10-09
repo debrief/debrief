@@ -39,6 +39,7 @@ import org.eclipse.swt.dnd.FileTransfer;
 import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
@@ -56,6 +57,7 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.SimulationController.SimControllerUI;
+import org.mwc.asset.SimulationController.table.SimulationTable;
 import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.sample_data.SampleDataPlugin;
 import org.mwc.cmap.core.CorePlugin;
@@ -137,7 +139,8 @@ public class ScenarioControllerView extends ViewPart implements
 	 * 
 	 */
 	private PropertyChangeSupport _scenStopSupport;
-	private SimControllerUI multiUI;
+	//private SimControllerUI multiUI;
+	private SimulationTable _myTable;
 
 	/**
 	 * The constructor.
@@ -262,9 +265,18 @@ public class ScenarioControllerView extends ViewPart implements
 	{
 		// create our UI
 		_myUI = new UISkeleton(parent, SWT.FILL);
+//		_myUI.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		multiUI = new SimControllerUI(_myUI.getMultiTableHolder());
-		multiUI.setSelectionProvider(this);
+		
+		_myUI.getMultiTableHolder().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		 _myTable = new SimulationTable(_myUI.getMultiTableHolder());
+		_myTable.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
+
+		
+//		multiUI = new SimControllerUI(_myUI.getMultiTableHolder());
+//		multiUI.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+//		multiUI.pack();
 
 		// let us accept dropped files
 		configureFileDropSupport(_myUI);
@@ -335,7 +347,11 @@ public class ScenarioControllerView extends ViewPart implements
 					System.out, System.err, System.in);
 
 			// ok, now give the scenarios to the multi scenario table
-			multiUI.setInput(_myMultiScenario);
+			_myTable.setInput(_myMultiScenario);
+			
+			// try to trigger a re-layout
+	//		multiUI.pack();
+			
 		}
 		catch (Exception e)
 		{

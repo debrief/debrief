@@ -2,10 +2,12 @@ package org.mwc.asset.SimulationController;
 
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
@@ -28,14 +30,16 @@ public class SimControllerUI extends Composite {
 	private SimulationTable myTable;
 
 	public SimControllerUI(Composite parent) {
-		super(parent, SWT.NONE);
+		super(parent, SWT.BORDER);
+		
+		parent.setBackground(Display.getDefault().getSystemColor(SWT.COLOR_DARK_RED));
 
 		setLayout(new GridLayout(2, false));
 
 		Label titleLabel = new Label(this, SWT.NONE);
 		titleLabel.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 		titleLabel.setText(TITLE_LABEL_TEXT);
-
+		
 		myStartButton = new Button(this, SWT.PUSH);
 		myStartButton.setLayoutData(new GridData(SWT.RIGHT, SWT.CENTER, false, false));
 		myStartButton.setText(START_LABEL_TEXT);

@@ -247,7 +247,7 @@ public class MockSimulation extends Simulation
 				if (Math.random() >= 0.8)
 				{
 					// yup, exceeded the threshold, make some noddy change
-					type.fireUpdate(this, _parent.getTime(), new Integer(
+					type.fireUpdate(_parent, _parent.getTime(), new Integer(
 							(int) (Math.random() * 100)));
 				}
 			}
