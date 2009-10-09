@@ -8,10 +8,12 @@ package ASSET.Scenario.Observers;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.HashMap;
 import java.util.Vector;
 
 import ASSET.ScenarioType;
 import ASSET.Scenario.ScenarioRunningListener;
+import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Util.SupportTesting;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
@@ -26,7 +28,7 @@ import MWC.GUI.Editable;
 public class ScenarioStatusObserver extends
   CoreObserver implements ASSET.Scenario.ScenarioSteppedListener, IAttribute
 {
-  private ScenarioRunningListener _runner;
+  private HashMap<ScenarioType, ScenarioRunningListener> _runnerList;
 
 	/***************************************************************
    *  member variables
@@ -42,6 +44,8 @@ public class ScenarioStatusObserver extends
   public ScenarioStatusObserver()
   {
     super("Status", true);
+    
+    _runnerList = new HashMap<ScenarioType, ScenarioRunningListener>();
   }
 
 
@@ -59,13 +63,14 @@ public class ScenarioStatusObserver extends
    */
   protected void performSetupProcessing(final ScenarioType scenario)
   {
-  	if(_runner == null)
-  	_runner = new ScenarioRunningListener(){
+
+  	// create a fresh runner for each scenario
+  	ScenarioRunningListener runner = new ScenarioRunningListener(){
 
 			@Override
 			public void finished(long elapsedTime, String reason)
 			{
-				getAttributeHelper().newData(scenario, elapsedTime, "FINISHED");
+				getAttributeHelper().newData(scenario, elapsedTime, ISimulation.COMPLETE);
 			}
 
 			@Override
@@ -91,12 +96,17 @@ public class ScenarioStatusObserver extends
 			@Override
 			public void started()
 			{
+				System.out.println("STARTED");
+				getAttributeHelper().newData(scenario, scenario.getTime(), ISimulation.RUNNING);
+
 			}};
+			
+			_runnerList.put(scenario, runner);
   	
-  	scenario.addScenarioRunningListener(_runner);
+  	scenario.addScenarioRunningListener(runner);
   	
   	// initialise
-  	getAttributeHelper().newData(scenario, scenario.getTime(), "WAITING");
+  	getAttributeHelper().newData(scenario, scenario.getTime(), ISimulation.WAITING);
   }
 
   /**
@@ -107,7 +117,8 @@ public class ScenarioStatusObserver extends
    */
   protected void performCloseProcessing(ScenarioType scenario)
   {
-  	scenario.removeScenarioRunningListener(_runner);
+  	ScenarioRunningListener runner = _runnerList.get(scenario);
+  	scenario.removeScenarioRunningListener(runner);
   }
 
   /**
@@ -133,7 +144,7 @@ public class ScenarioStatusObserver extends
    */
   public void step(ScenarioType scenario, final long newTime)
   {
-  	getAttributeHelper().newData(scenario, newTime, newTime);
+ // 	getAttributeHelper().newData(scenario, newTime, newTime);
   }
 
 
@@ -226,6 +237,15 @@ public class ScenarioStatusObserver extends
   @Override
 	public DataDoublet getCurrent(Object index)
 	{
+  	// do we know about this object yet?
+  	Object val = getAttributeHelper().getCurrent(index);
+  	if(val == null)
+  	{
+  		// aah. we probably haven't heard of it yet. set it up
+  		ScenarioType scen = (ScenarioType) index;
+  		getAttributeHelper().newData(index, scen.getTime(), ISimulation.WAITING);
+  	}
+  	
 		return getAttributeHelper().getCurrent(index);
 	}
 
