@@ -143,6 +143,19 @@
 			</Watch>
 			<Range Units="nm" Value="2.5"/>
 		</StopOnProximityDetectionObserver>
+		<ProximityObserver Name="how close does it get?" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="HELICOPTER"/>
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="FISHING_VESSEL"/>
+					<Type Name="RED"/>
+				</TargetType>
+			</Watch>
+		</ProximityObserver>
 		<TrackPlotObserver Name="get a track plot" Active="true" show_positions="false">
 			<GridDelta Units="nm" Value="5"/>
 		</TrackPlotObserver>
