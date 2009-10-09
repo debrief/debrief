@@ -27,7 +27,7 @@ public interface IAttribute
 			attribute = _attribute;
 		}
 	}
-	
+			
 	/**
 	 * name of this attribute
 	 * 

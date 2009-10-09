@@ -194,7 +194,7 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 		_theSims.add(new MockSimulation("sim2", 4100, attrs));
 		_theSims.add(new MockSimulation("sim3", 5600, attrs));
 
-		final ISimulationQue sq = new SimulationQue(_theSims);
+		final ISimulationQue sq = new SimulationQue(_theSims, attrs);
 		// and the start stop
 		final Action start = new Action("Start")
 		{
@@ -207,17 +207,15 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 
 		actions.add(start);
 		IToolBarManager toolBarManager = getViewSite().getActionBars().getToolBarManager();
-		actions.add(new SimMonitor(_theSims.elementAt(0), _theSims.elementAt(0)
-				.getAttributes().elementAt(2), this, toolBarManager));
-		actions.add(new SimMonitor(_theSims.elementAt(1), _theSims.elementAt(1)
-				.getAttributes().elementAt(3), this, toolBarManager));
-		actions.add(new SimMonitor(_theSims.elementAt(2), _theSims.elementAt(2)
-				.getAttributes().elementAt(4), this, toolBarManager));
+		Attribute state = new Attribute("State", "n/a", true);
+		actions.add(new SimMonitor(_theSims.elementAt(0), attrs.elementAt(2), this, toolBarManager, state));
+		actions.add(new SimMonitor(_theSims.elementAt(1), attrs.elementAt(3), this, toolBarManager, state));
+		actions.add(new SimMonitor(_theSims.elementAt(2), attrs.elementAt(4), this, toolBarManager, state));
 
 		createActions(actions);		
 
 		// listen out for the last sim finishing
-		sq.getSimulations().lastElement().getState().addPropertyChangeListener(
+		sq.getState().addPropertyChangeListener(
 				new PropertyChangeListener()
 				{
 					public void propertyChange(PropertyChangeEvent evt)
@@ -425,7 +423,8 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 		private IAttribute _myAttr;
 		private ISelectionProvider _mySelly;
 
-		public SimMonitor(final ISimulation sim, final IAttribute attr, final ISelectionProvider sel, final IToolBarManager toolBarManager)
+		public SimMonitor(final ISimulation sim, final IAttribute attr, 
+				final ISelectionProvider sel, final IToolBarManager toolBarManager, IAttribute state)
 		{
 			_mySim = sim;
 			_myAttr = attr;
@@ -434,7 +433,7 @@ public class LiveDataMonitor extends ViewPart implements ISelectionProvider
 			setText(sim.getName() + "-" + attr.getName());
 
 			// start listening
-			_mySim.getState().addPropertyChangeListener(new PropertyChangeListener()
+			state.addPropertyChangeListener(new PropertyChangeListener()
 			{
 
 				public void propertyChange(PropertyChangeEvent evt)

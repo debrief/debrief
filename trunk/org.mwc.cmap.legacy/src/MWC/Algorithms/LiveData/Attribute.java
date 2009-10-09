@@ -1,5 +1,6 @@
 package MWC.Algorithms.LiveData;
 
+import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.util.HashMap;
@@ -156,7 +157,8 @@ public class Attribute implements IAttribute
 			getValuesFor(index).add(newD);
 			
 			// and tell the chaps
-			_pSupport.firePropertyChange(VALUE, oldD, newD);
+			PropertyChangeEvent pe = new PropertyChangeEvent(index, VALUE, oldD, newD);
+			_pSupport.firePropertyChange(pe);
 			
 		}
 		
