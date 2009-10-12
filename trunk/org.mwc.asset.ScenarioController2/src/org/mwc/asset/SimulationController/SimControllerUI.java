@@ -2,7 +2,6 @@ package org.mwc.asset.SimulationController;
 
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
@@ -12,7 +11,6 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.mwc.asset.SimulationController.table.SimulationTable;
-
 
 import ASSET.Scenario.LiveScenario.ISimulationQue;
 
@@ -52,7 +50,7 @@ public class SimControllerUI extends Composite {
 			}
 		});
 
-		myTable = new SimulationTable(this);
+		myTable = new SimulationTable(this, null);
 		myTable.getControl().setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 	}
 

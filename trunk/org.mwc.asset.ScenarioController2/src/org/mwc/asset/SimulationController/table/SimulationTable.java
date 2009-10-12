@@ -28,6 +28,7 @@ import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 import org.mwc.asset.SimulationController.SimControllerPlugin;
+import org.mwc.asset.scenariocontroller2.views.ScenarioControllerView;
 import org.mwc.asset.scenariocontroller2.views.ScenarioWrapper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
@@ -36,8 +37,10 @@ import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
+import ASSET.Scenario.Observers.CoreObserver;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
+import MWC.Algorithms.LiveData.IAttribute.IndexedAttribute;
 
 public class SimulationTable
 {
@@ -72,9 +75,13 @@ public class SimulationTable
 
 	private ColumnsResizer myColumnsResizer;
 
-	public SimulationTable(Composite parent)
+	private ScenarioControllerView _myControllerView;
+
+	public SimulationTable(Composite parent, ScenarioControllerView controllerView)
 	{
 		myTableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+
+		_myControllerView = controllerView;
 
 		getTable().setHeaderVisible(true);
 		getTable().setLinesVisible(true);
@@ -105,18 +112,38 @@ public class SimulationTable
 			{
 				getTable().setSelection(myTableCursor.getRow());
 				ISimulation theSim = (ISimulation) myTableCursor.getRow().getData();
+
+				// hmm, is this a data column?
 				Object newSel = getColumnData(
 						getTable().getColumn(myTableCursor.getColumn())).getSelection(
-						theSim,
-						myInput.getAttributes());
-				
-				// better wrap it
-				ScenarioLayer sl = new ScenarioLayer();
-				sl.setScenario((ScenarioType) theSim);
-				EditableWrapper ew = new EditableWrapper(sl);
-				
-				StructuredSelection strSel = new StructuredSelection(ew);
-				setSelection(strSel);
+						theSim, myInput.getAttributes());
+
+				StructuredSelection strSel = null;
+	
+				if (newSel instanceof CoreScenario)
+				{
+					// better wrap it
+					ScenarioLayer sl = new ScenarioLayer();
+					sl.setScenario((ScenarioType) theSim);
+					ScenarioWrapper sw = new ScenarioWrapper(_myControllerView, sl);
+					EditableWrapper ew = new EditableWrapper(sw);
+					 strSel = new StructuredSelection(ew);
+				}
+				else if (newSel instanceof IAttribute)
+				{
+					IAttribute attr = (IAttribute) newSel;
+					
+					// ok, create indexed attributed
+					IndexedAttribute indexed = new IndexedAttribute(theSim, attr);
+					
+					// better wrap it
+					strSel = new StructuredSelection(indexed);
+				}
+
+				if (strSel != null)
+				{
+					setSelection(strSel);
+				}
 			}
 		});
 	}

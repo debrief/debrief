@@ -26,9 +26,19 @@ public class ScenarioWrapper extends Layers
 
 	public ScenarioWrapper(ScenarioControllerView scenarioController)
 	{
+		this(scenarioController, new ScenarioLayer());
+	}
+	
+	/** convenience method for when we have our own scenario layer
+	 * 
+	 * @param scenarioController
+	 * @param layer
+	 */
+	public ScenarioWrapper(ScenarioControllerView scenarioController, ScenarioLayer layer)
+	{
 		_theCont = scenarioController;
 		_theController = new ContWrapper();
-		_scenLayer = new ScenarioLayer();
+		_scenLayer = layer;
 		this.addThisLayer(_scenLayer);
 		this.addThisLayer(_theController);
 	}

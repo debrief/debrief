@@ -271,7 +271,7 @@ public class ScenarioControllerView extends ViewPart implements
 		_myUI.getMultiTableHolder().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
 
-		_simTable = new SimulationTable(_myUI.getMultiTableHolder());
+		_simTable = new SimulationTable(_myUI.getMultiTableHolder(), this);
 		_simTable.getControl().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 2, 1));
 
