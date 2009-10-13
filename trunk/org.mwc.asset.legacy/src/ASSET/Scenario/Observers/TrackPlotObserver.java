@@ -245,7 +245,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
       theName = _myScenario.getName();
 
     final File outputFilename = new File(getDirectory() + "/" + newName(theName));
-
+    
     // do we have any data?
     if (_myTracks.size() > 0)
     {
@@ -259,7 +259,10 @@ public class TrackPlotObserver extends RecordToFileObserverType implements ASSET
 
     } // whether we had any tracks
 
-
+    // did it work?
+    if(!outputFilename.exists())
+    	System.err.println("failed to create " + outputFilename.getAbsolutePath());
+    
     // clear the objects
     _myTracks.clear();
     _myTracks = null;

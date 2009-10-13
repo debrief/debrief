@@ -135,6 +135,27 @@ public class CommandLine
   	
   }
 
+  /** class that helps monitor the progress of scenario tasks
+   * 
+   * @author ianmayo
+   *
+   */
+	public static interface ASSETProgressMonitor
+	{
+		/** the specified task has started, and we predict the specified amount of effort
+		 * 
+		 * @param name
+		 * @param totalWork
+		 */
+		void beginTask(String name, int totalWork);
+		
+		/** the specified amount of work has been performed
+		 * 
+		 * @param work
+		 */
+		void worked(int work);
+	}
+	
   /**
    * run through the scenario until its natural conclusion
    */

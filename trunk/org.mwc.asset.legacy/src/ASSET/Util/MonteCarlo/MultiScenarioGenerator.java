@@ -147,6 +147,11 @@ public final class MultiScenarioGenerator
 		}
 	}
 
+	public int getNumPerms()
+	{
+		return _numPerms;
+	}
+	
 	/**
 	 * set the document we are going to be changing
 	 */

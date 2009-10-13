@@ -115,10 +115,9 @@ public class LiveDataMonitor extends ViewPart
 
 						final TimeSeries series = tmpSeries;
 
-						// add to series in different thread...
-						Display.getDefault().asyncExec(new Runnable()
+						// add to series in current thread, accepting it will slow down the UI
+						Display.getDefault().syncExec(new Runnable()
 						{
-
 							@Override
 							public void run()
 							{
@@ -164,6 +163,7 @@ public class LiveDataMonitor extends ViewPart
 			TimeSeriesCollection dataset = new TimeSeriesCollection();
 			TimeSeries series = new TimeSeries(attribute.getName());
 			_chart.setTitle(attribute.getName());
+			_chart.getXYPlot().getRangeAxis().setLabel(attribute.getUnits());
 
 			for (Iterator<DataDoublet> iterator = data.iterator(); iterator.hasNext();)
 			{

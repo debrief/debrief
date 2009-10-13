@@ -75,7 +75,7 @@ public class MultiScenarioCommandLine
     _myScenarios = new Vector<Document>(0, 1);
 
     // and now create the list of scenarios
-    String res = _myGenny.createScenarios(scenario, control, _myScenarios);
+    String res = _myGenny.createScenarios(scenario, control, _myScenarios, null);
 
     return res;
   }

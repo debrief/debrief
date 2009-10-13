@@ -2,10 +2,10 @@
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
 <ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="file:/Users/ianmayo/dev/cmap_64/org.mwc.asset.legacy/schemas/ASSET.xsd"
- OutputDirectory="test_reports/asset_test_output/force_prot2"
+ OutputDirectory="~/test_reports/asset_test_output/force_prot"
  RandomSeed="32">
 	<ScenarioGenerator >
-		<MultiScenarioGenerator NameTemplate="force_output4" Number="6" MaxPerms="100">
+		<MultiScenarioGenerator NameTemplate="force_output4" Number="100" MaxPerms="100">
 			<VarianceList>
 				<Variance name="sea_state" id="//Environment">
 					<Attribute name="SeaState">
@@ -59,7 +59,7 @@
 						<Range min="3" max="8" step="0.5"/>
 					</Attribute>
 				</Variance>
-				<Variance name="SAM_Speed" id="Status">
+				<Variance name="SAM_Course" id="Status">
 					<Attribute name="Course">
 						<Range min="0" max="360" step="1"/>
 					</Attribute>
@@ -127,7 +127,7 @@
 	</ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="1 Hour Scenario" Active="true">
-			<Duration Units="hours" Value="2.5"/>
+			<Duration Units="hours" Value="6"/>
 		</TimeObserver>
 		<StopOnProximityDetectionObserver Name="HELO detected within SAM range" Active="true">
 			<Target>

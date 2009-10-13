@@ -38,6 +38,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
 import ASSET.Util.XML.ScenarioHandler;
@@ -112,11 +113,14 @@ public final class ScenarioGenerator
 
 	/**
 	 * ************************************************************ member methods
-	 * ************************************************************
+	 * *
+	 * 
+	 * @param mWrap
+	 *          ***********************************************************
 	 */
 
 	public String createScenarios(String templatePath, String controlPath,
-			Vector<Document> results)
+			Vector<Document> results, ASSETProgressMonitor mWrap)
 	{
 		Document theControlFile = null;
 		String res = null;
@@ -147,9 +151,9 @@ public final class ScenarioGenerator
 			Document theScenarioTemplate = null;
 			try
 			{
-					theScenarioTemplate = ScenarioGenerator
-							.readDocumentFrom(new FileInputStream(templatePath));
-		
+				theScenarioTemplate = ScenarioGenerator
+						.readDocumentFrom(new FileInputStream(templatePath));
+
 			}
 			catch (SAXException e)
 			{
@@ -164,7 +168,8 @@ public final class ScenarioGenerator
 			if (res == null)
 			{
 				// yup, go for it.
-				res = doScenarioGeneration(theScenarioTemplate, theControlFile, results);
+				res = doScenarioGeneration(theScenarioTemplate, theControlFile,
+						results, mWrap);
 			}
 
 		}
@@ -182,10 +187,11 @@ public final class ScenarioGenerator
 	 *          scenario control file (with builder information)
 	 * @param results
 	 *          vector containing the new scenarios
+	 * @param mWrap
 	 * @return error message on failure, or null for success
 	 */
 	protected String doScenarioGeneration(Document template,
-			Document controlFile, Vector<Document> results)
+			Document controlFile, Vector<Document> results, ASSETProgressMonitor mWrap)
 	{
 		String res = null;
 
@@ -202,7 +208,7 @@ public final class ScenarioGenerator
 		}
 
 		// and now the permutations
-		res = createNewRandomisedPermutations(results);
+		res = createNewRandomisedPermutations(results, mWrap);
 
 		return res;
 	}
@@ -582,8 +588,11 @@ public final class ScenarioGenerator
 	// }
 
 	public final String createNewRandomisedPermutations(
-			Vector<Document> resultsContainer)
+			Vector<Document> resultsContainer, ASSETProgressMonitor mWrap)
 	{
+
+		if (mWrap != null)
+			mWrap.beginTask("Generate permutations", _scenarioGenny.getNumPerms());
 
 		String res = null;
 
@@ -670,6 +679,10 @@ public final class ScenarioGenerator
 				}
 
 				newResults.add(thisScenario);
+				
+				// report progress to the monitor, if we have one
+				if(mWrap != null)
+					mWrap.worked(1);
 
 				// and indicate our progress
 				outputProgress(i);
@@ -907,7 +920,7 @@ public final class ScenarioGenerator
 				// File Templates.
 			}
 
-			String res = genny.doScenarioGeneration(doc, var, list);
+			String res = genny.doScenarioGeneration(doc, var, list, null);
 
 			assertNull("success - no error", res);
 
@@ -928,7 +941,7 @@ public final class ScenarioGenerator
 			ScenarioGenerator genny = new ScenarioGenerator();
 
 			String res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-					+ VARIANCE_FILE, list);
+					+ VARIANCE_FILE, list, null);
 
 			assertNull("success - no error", res);
 
@@ -949,7 +962,7 @@ public final class ScenarioGenerator
 			ScenarioGenerator genny = new ScenarioGenerator();
 
 			String res = genny.createScenarios(docPath + "test_variance_scnario.xml",
-					docPath + SCENARIO_FILE, list);
+					docPath + SCENARIO_FILE, list, null);
 
 			assertNotNull("success - error returned", res);
 			assertTrue("correct error returned",
@@ -959,7 +972,7 @@ public final class ScenarioGenerator
 			assertEquals("got no scenarios", 0, list.size());
 
 			res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-					+ "test_varince1.xml", list);
+					+ "test_varince1.xml", list, null);
 
 			assertNotNull("success - error returned", res);
 			assertTrue("correct error returned", res.indexOf(CONTROL_FILE_ERROR) > -1);
@@ -1027,7 +1040,7 @@ public final class ScenarioGenerator
 				// File Templates.
 			}
 
-			String res = genny.doScenarioGeneration(doc, var, list);
+			String res = genny.doScenarioGeneration(doc, var, list, null);
 
 			assertNull("success - no error", res);
 

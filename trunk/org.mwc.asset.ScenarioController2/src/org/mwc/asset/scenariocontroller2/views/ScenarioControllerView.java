@@ -20,7 +20,11 @@ import org.eclipse.core.resources.ResourcesPlugin;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.IPath;
 import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
 import org.eclipse.core.runtime.Status;
+import org.eclipse.core.runtime.jobs.IJobChangeEvent;
+import org.eclipse.core.runtime.jobs.Job;
+import org.eclipse.core.runtime.jobs.JobChangeAdapter;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
@@ -58,7 +62,6 @@ import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.SimulationController.table.SimulationTable;
-import org.mwc.asset.SimulationController.views.SelectionProvider;
 import org.mwc.asset.core.ASSETPlugin;
 import org.mwc.asset.sample_data.SampleDataPlugin;
 import org.mwc.cmap.core.CorePlugin;
@@ -73,6 +76,7 @@ import org.w3c.dom.NodeList;
 import ASSET.ScenarioType;
 import ASSET.GUI.CommandLine.CommandLine;
 import ASSET.GUI.CommandLine.MultiScenarioCore;
+import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.ScenarioRunningListener;
 import ASSET.Scenario.ScenarioSteppedListener;
@@ -287,7 +291,8 @@ public class ScenarioControllerView extends ViewPart implements
 		makeActions();
 		contributeToActionBars();
 
-		// declare fact that we can provide selections (and let our scenario table know we do it aswell)
+		// declare fact that we can provide selections (and let our scenario table
+		// know we do it aswell)
 		getSite().setSelectionProvider(this);
 		_simTable.setSelectionProvider(this);
 
@@ -343,20 +348,42 @@ public class ScenarioControllerView extends ViewPart implements
 		doRun.start();
 	}
 
+	protected static class WrappedProgressMonitor implements ASSETProgressMonitor
+	{
+		final IProgressMonitor monitor;
+		public WrappedProgressMonitor(IProgressMonitor val)
+		{
+			monitor = val;
+			
+		}
+		@Override
+		public void beginTask(String name, int totalWork)
+		{
+			monitor.beginTask(name, totalWork);
+		}
+		@Override
+		public void worked(int work)
+		{
+			monitor.worked(work);
+		};
+	}
+	
+
 	protected void doGenerateOperation()
 	{
 		// disable the genny button, until it's done.
 		_myUI.getDoGenerateButton().setEnabled(false);
 
-
-		// make it run in a separate thread
-		Thread toGenny = new Thread(){
-
+		Job job = new Job("Prepare the runs")
+		{
 			@Override
-			public void run()
+			protected IStatus run(IProgressMonitor monitor)
 			{
 				try
 				{
+					
+					ASSETProgressMonitor mWrap = new WrappedProgressMonitor(monitor);
+					
 					if (_myMultiScenario == null)
 					{
 						// create a new, fresh multi scenario generator
@@ -364,33 +391,45 @@ public class ScenarioControllerView extends ViewPart implements
 					}
 
 					// and let it create some files
-					_myMultiScenario.prepareThis(_controlFileName, _scenarioFileName,
-							System.out, System.err, System.in);
+					_myMultiScenario.prepareFiles(_controlFileName, _scenarioFileName,
+							System.out, System.err, System.in, mWrap);
 
-					// ok, now give the scenarios to the multi scenario table (in the UI thread
-					Display.getDefault().asyncExec(new Runnable(){
+					_myMultiScenario.prepareControllers();
+
+					// ok, now give the scenarios to the multi scenario table (in the UI
+					// thread
+					Display.getDefault().asyncExec(new Runnable()
+					{
 						public void run()
 						{
 							_simTable.setInput(_myMultiScenario);
-						}});
+							// and make the run button live
+							_myUI.getRunBtn().setEnabled(true);
+							_myUI.getDoGenerateButton().setEnabled(true);
+						}
+					});
 				}
 				catch (Exception e)
 				{
 					e.printStackTrace();
 				}
 
-				Display.getDefault().asyncExec(new Runnable(){
-					public void run()
-					{
-						// and make the run button live
-						_myUI.getRunBtn().setEnabled(true);
-						_myUI.getDoGenerateButton().setEnabled(true);
-					}});
-				
-			}};
-			
-			toGenny.start();
+				return null;
+			}
+		};
 
+		job.addJobChangeListener(new JobChangeAdapter()
+		{
+			public void done(IJobChangeEvent event)
+			{
+				if (event.getResult().isOK())
+					System.out.println("Job completed successfully");
+				else
+					System.err.println("Job did not complete successfully");
+			}
+		});
+		job.setUser(true);
+		job.schedule(); // start as soon as possible
 	}
 
 	@SuppressWarnings("unchecked")
@@ -1132,14 +1171,15 @@ public class ScenarioControllerView extends ViewPart implements
 	public void setSelection(ISelection selection)
 	{
 		_currentSelection = selection;
-		
+
 		// and tell everybody about it
-		if(_selectionListeners != null)
+		if (_selectionListeners != null)
 		{
 			for (ISelectionChangedListener thisL : _selectionListeners)
 			{
-				SelectionChangedEvent event = new SelectionChangedEvent(this, _currentSelection);
-				thisL.selectionChanged(event );
+				SelectionChangedEvent event = new SelectionChangedEvent(this,
+						_currentSelection);
+				thisL.selectionChanged(event);
 			}
 		}
 	}

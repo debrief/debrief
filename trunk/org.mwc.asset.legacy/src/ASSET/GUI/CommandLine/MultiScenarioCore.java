@@ -1,5 +1,6 @@
 package ASSET.GUI.CommandLine;
 
+import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
@@ -82,9 +83,10 @@ public class MultiScenarioCore implements ISimulationQue
 	 *          the scenario file
 	 * @param control
 	 *          the control file
+	 * @param mWrap 
 	 * @return null for success, message for failure
 	 */
-	private String setup(String scenario, String control)
+	private String setup(String scenario, String control, ASSETProgressMonitor mWrap)
 	{
 		// ok, create our genny
 		_myGenny = new ScenarioGenerator();
@@ -94,7 +96,7 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// and now create the list of scenarios
 		String res = _myGenny.createScenarios(scenario, control,
-				_myScenarioDocuments);
+				_myScenarioDocuments, mWrap);
 
 		return res;
 	}
@@ -269,6 +271,8 @@ public class MultiScenarioCore implements ISimulationQue
 		runner.clearObservers();
 	}
 
+	
+	
 	/**
 	 * member method, effectively to handle "main" processing.
 	 * 
@@ -280,14 +284,15 @@ public class MultiScenarioCore implements ISimulationQue
 	 *          error out
 	 * @param in
 	 *          input (to receive user input)
+	 * @param mWrap 
 	 * @return success code (0) or failure codes
 	 */
 
-	public int prepareThis(String controlFile, String scenarioFile,
-			PrintStream out, PrintStream err, InputStream in)
+	public int prepareFiles(String controlFile, String scenarioFile,
+			PrintStream out, PrintStream err, InputStream in, ASSETProgressMonitor mWrap)
 	{
 		int resCode = 0;
-		
+
 		// do a little tidying
 		_myAttributes = null;
 		_theIntraObservers = null;
@@ -296,7 +301,7 @@ public class MultiScenarioCore implements ISimulationQue
 		System.out.println("about to generate scenarios");
 
 		// and set it up (including generating the scenarios)
-		String res = setup(scenarioFile, controlFile);
+		String res = setup(scenarioFile, controlFile, mWrap);
 
 		if (res != null)
 		{
@@ -339,7 +344,15 @@ public class MultiScenarioCore implements ISimulationQue
 				}
 			}
 		}
+		
 
+		return resCode;
+	}
+
+	public int prepareControllers()
+	{
+		int resCode = 0;
+		
 		// convert the control file to a stream
 		String controlStr = ScenarioGenerator.writeToString(_myGenny
 				.getControlFile());
@@ -424,7 +437,7 @@ public class MultiScenarioCore implements ISimulationQue
 			// args[1] =
 			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
 			MultiScenarioCore scen = new MultiScenarioCore();
-			int res = scen.prepareThis(args[0], args[1], out, err, in);
+			int res = scen.prepareFiles(args[0], args[1], out, err, in, null);
 			assertEquals("ran ok", SUCCESS, res);
 
 			// check the contents of the error message
