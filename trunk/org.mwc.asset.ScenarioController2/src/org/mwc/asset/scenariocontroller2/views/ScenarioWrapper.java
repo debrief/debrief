@@ -3,6 +3,7 @@ package org.mwc.asset.scenariocontroller2.views;
 import java.util.Iterator;
 import java.util.Vector;
 
+import ASSET.ScenarioType;
 import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import MWC.GUI.BaseLayer;
@@ -42,6 +43,12 @@ public class ScenarioWrapper extends Layers
 		this.addThisLayer(_scenLayer);
 		this.addThisLayer(_theController);
 	}
+	
+	public ScenarioType getScenario()
+	{
+		return _scenLayer.getScenario();
+	}
+	
 
 	public void fireNewScenario()
 	{

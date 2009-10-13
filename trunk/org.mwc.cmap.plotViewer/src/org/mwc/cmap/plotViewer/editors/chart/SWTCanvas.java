@@ -188,7 +188,7 @@ public class SWTCanvas extends SWTCanvasAdapter
 				// System.out.println("loc is:" + e);
 				// _tooltip.setBounds(e.x, e.y, 200,50);
 				// _tooltip.setVisible(true);
-				
+
 				// clear the existing tooltip
 				_myCanvas.setToolTipText(null);
 
@@ -484,6 +484,17 @@ public class SWTCanvas extends SWTCanvasAdapter
 		_myCanvas.redraw(x, y, width, height, b);
 	}
 
+	/**
+	 * perform an immediate redraw, not a deferred one like we do for an updateme
+	 * operation
+	 * 
+	 */
+	public void redraw()
+	{
+		if (!_myCanvas.isDisposed())
+			_myCanvas.redraw();
+	}
+
 	public void addControlListener(ControlAdapter adapter)
 	{
 		_myCanvas.addControlListener(adapter);
@@ -514,10 +525,10 @@ public class SWTCanvas extends SWTCanvasAdapter
 		 * 
 		 * @param text
 		 * @param style
-		 * @param theCanvas -
-		 *          used to get the screen coords
-		 * @param theProjection -
-		 *          our screen/world converter
+		 * @param theCanvas
+		 *          - used to get the screen coords
+		 * @param theProjection
+		 *          - our screen/world converter
 		 */
 		public LocationSelectedAction(String text, int style, WorldLocation theLoc)
 		{

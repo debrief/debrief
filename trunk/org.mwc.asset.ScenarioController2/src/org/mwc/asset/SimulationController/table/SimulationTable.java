@@ -3,6 +3,7 @@ package org.mwc.asset.SimulationController.table;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
@@ -37,7 +38,6 @@ import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
-import ASSET.Scenario.Observers.CoreObserver;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
 import MWC.Algorithms.LiveData.IAttribute.IndexedAttribute;
@@ -77,9 +77,13 @@ public class SimulationTable
 
 	private ScenarioControllerView _myControllerView;
 
+	private HashMap<ScenarioType, ScenarioWrapper> _wrappedScenarios = new HashMap<ScenarioType, ScenarioWrapper>();
+
 	public SimulationTable(Composite parent, ScenarioControllerView controllerView)
 	{
 		myTableViewer = new TableViewer(parent, SWT.BORDER | SWT.FULL_SELECTION);
+
+		_wrappedScenarios = new HashMap<ScenarioType, ScenarioWrapper>();
 
 		_myControllerView = controllerView;
 
@@ -119,23 +123,34 @@ public class SimulationTable
 						theSim, myInput.getAttributes());
 
 				StructuredSelection strSel = null;
-	
+
 				if (newSel instanceof CoreScenario)
 				{
 					// better wrap it
 					ScenarioLayer sl = new ScenarioLayer();
 					sl.setScenario((ScenarioType) theSim);
-					ScenarioWrapper sw = new ScenarioWrapper(_myControllerView, sl);
+
+					// right, do we have a wrapper for this object. we cache them so we aren't always changing
+					ScenarioWrapper sw = _wrappedScenarios.get(theSim);
+					if (sw == null)
+					{
+						sw = new ScenarioWrapper(_myControllerView, sl);
+						_wrappedScenarios.put((ScenarioType) theSim, sw);
+					}
+
+					// ok, now wrap it as an editable
 					EditableWrapper ew = new EditableWrapper(sw);
-					 strSel = new StructuredSelection(ew);
+
+					// and as a selection
+					strSel = new StructuredSelection(ew);
 				}
 				else if (newSel instanceof IAttribute)
 				{
 					IAttribute attr = (IAttribute) newSel;
-					
+
 					// ok, create indexed attributed
 					IndexedAttribute indexed = new IndexedAttribute(theSim, attr);
-					
+
 					// better wrap it
 					strSel = new StructuredSelection(indexed);
 				}

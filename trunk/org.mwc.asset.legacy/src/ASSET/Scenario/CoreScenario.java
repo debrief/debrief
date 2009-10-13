@@ -410,7 +410,7 @@ public class CoreScenario implements ScenarioType, ISimulation
     }
 
     if (_stepListeners != null)
-    {
+    {   	
       final Vector<ScenarioSteppedListener> copyStepListeners = new Vector<ScenarioSteppedListener>(_stepListeners);
       final Iterator<ScenarioSteppedListener> it = copyStepListeners.iterator();
       while (it.hasNext())
@@ -678,7 +678,9 @@ public class CoreScenario implements ScenarioType, ISimulation
   {
     if (_stepListeners != null)
     {
-      final Iterator<ScenarioSteppedListener> it = _stepListeners.iterator();
+    	// take copy of step listeners, in case it gets modified mid-step
+      final Vector<ScenarioSteppedListener> copyStepListeners = new Vector<ScenarioSteppedListener>(_stepListeners);
+      final Iterator<ScenarioSteppedListener> it = copyStepListeners.iterator();
       while (it.hasNext())
       {
         final ScenarioSteppedListener pcl = (ScenarioSteppedListener) it.next();

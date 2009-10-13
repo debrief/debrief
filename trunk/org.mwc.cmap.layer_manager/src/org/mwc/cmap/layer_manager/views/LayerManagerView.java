@@ -1455,8 +1455,15 @@ public class LayerManagerView extends ViewPart
 
 	public void editableSelected(ISelection sel, EditableWrapper pw)
 	{
+
 		if (_followSelectionToggle.isChecked())
+		{
+			// ahh, just check if this is a whole new layers object
+			if(pw.getEditable() instanceof Layers)
+				processNewLayers(pw.getEditable());
+			else	
 			_treeViewer.setSelection(sel, _followSelectionToggle.isChecked());
+		}
 
 	}
 
