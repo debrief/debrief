@@ -5,7 +5,7 @@
  OutputDirectory="~/test_reports/asset_test_output/force_prot"
  RandomSeed="32">
 	<ScenarioGenerator >
-		<MultiScenarioGenerator NameTemplate="force_output4" Number="100" MaxPerms="100">
+		<MultiScenarioGenerator NameTemplate="force_output4" Number="5" MaxPerms="100">
 			<VarianceList>
 				<Variance name="sea_state" id="//Environment">
 					<Attribute name="SeaState">
@@ -127,7 +127,7 @@
 	</ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="1 Hour Scenario" Active="true">
-			<Duration Units="hours" Value="6"/>
+			<Duration Units="hours" Value="3"/>
 		</TimeObserver>
 		<StopOnProximityDetectionObserver Name="HELO detected within SAM range" Active="true">
 			<Target>

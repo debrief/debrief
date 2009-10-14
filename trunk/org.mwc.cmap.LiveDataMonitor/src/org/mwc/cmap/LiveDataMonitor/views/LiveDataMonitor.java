@@ -61,6 +61,8 @@ public class LiveDataMonitor extends ViewPart
 
 	private IndexedAttribute _myIndexedAttr;
 
+	private ChartComposite _chartFrame;
+
 	/*
 	 * The content provider class is responsible for providing objects to the
 	 * view. It can wrap existing objects in adapters or simply return objects
@@ -115,13 +117,19 @@ public class LiveDataMonitor extends ViewPart
 
 						final TimeSeries series = tmpSeries;
 
-						// add to series in current thread, accepting it will slow down the UI
+						// add to series in current thread, accepting it will slow down the
+						// UI
 						Display.getDefault().syncExec(new Runnable()
 						{
 							@Override
 							public void run()
 							{
-								series.addOrUpdate(new Millisecond(new Date(time)), value);
+								// are we still open?i
+								if (!_chartFrame.isDisposed())
+								{
+									// sure, go for it,
+									series.addOrUpdate(new Millisecond(new Date(time)), value);
+								}
 							}
 						});
 					}
@@ -136,8 +144,7 @@ public class LiveDataMonitor extends ViewPart
 	public void createPartControl(Composite parent)
 	{
 		_chart = createChart(null);
-		@SuppressWarnings("unused")
-		ChartComposite frame = new ChartComposite(parent, SWT.NONE, _chart, true);
+		_chartFrame = new ChartComposite(parent, SWT.NONE, _chart, true);
 
 		configureListeners();
 	}
@@ -168,8 +175,8 @@ public class LiveDataMonitor extends ViewPart
 			for (Iterator<DataDoublet> iterator = data.iterator(); iterator.hasNext();)
 			{
 				DataDoublet thisD = (DataDoublet) iterator.next();
-				series.addOrUpdate(new Millisecond(new Date(thisD.getTime())), (Number) thisD
-						.getValue());
+				series.addOrUpdate(new Millisecond(new Date(thisD.getTime())),
+						(Number) thisD.getValue());
 			}
 			dataset.addSeries(series);
 
@@ -223,7 +230,6 @@ public class LiveDataMonitor extends ViewPart
 		theWindow.getSelectionService().addSelectionListener(mylistener);
 	}
 
-
 	protected void showNewSelection(Object sel)
 	{
 		// it it something we want to watch?
@@ -265,6 +271,5 @@ public class LiveDataMonitor extends ViewPart
 	{
 
 	}
-
 
 }

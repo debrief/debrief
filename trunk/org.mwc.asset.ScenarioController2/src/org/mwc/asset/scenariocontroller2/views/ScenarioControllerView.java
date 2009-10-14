@@ -52,6 +52,7 @@ import org.eclipse.ui.IActionBars;
 import org.eclipse.ui.IEditorInput;
 import org.eclipse.ui.IMemento;
 import org.eclipse.ui.IPersistableElement;
+import org.eclipse.ui.IViewPart;
 import org.eclipse.ui.IViewSite;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPage;
@@ -351,23 +352,25 @@ public class ScenarioControllerView extends ViewPart implements
 	protected static class WrappedProgressMonitor implements ASSETProgressMonitor
 	{
 		final IProgressMonitor monitor;
+
 		public WrappedProgressMonitor(IProgressMonitor val)
 		{
 			monitor = val;
-			
+
 		}
+
 		@Override
 		public void beginTask(String name, int totalWork)
 		{
 			monitor.beginTask(name, totalWork);
 		}
+
 		@Override
 		public void worked(int work)
 		{
 			monitor.worked(work);
 		};
 	}
-	
 
 	protected void doGenerateOperation()
 	{
@@ -381,9 +384,9 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 				try
 				{
-					
-					ASSETProgressMonitor mWrap = new WrappedProgressMonitor(monitor);
-					
+
+					ASSETProgressMonitor pMon = new WrappedProgressMonitor(monitor);
+
 					if (_myMultiScenario == null)
 					{
 						// create a new, fresh multi scenario generator
@@ -392,9 +395,10 @@ public class ScenarioControllerView extends ViewPart implements
 
 					// and let it create some files
 					_myMultiScenario.prepareFiles(_controlFileName, _scenarioFileName,
-							System.out, System.err, System.in, mWrap);
+							System.out, System.err, System.in, pMon);
 
-					_myMultiScenario.prepareControllers();
+					// and sort out the observers
+					_myMultiScenario.prepareControllers(pMon);
 
 					// ok, now give the scenarios to the multi scenario table (in the UI
 					// thread
@@ -412,9 +416,10 @@ public class ScenarioControllerView extends ViewPart implements
 				catch (Exception e)
 				{
 					e.printStackTrace();
+
 				}
 
-				return null;
+				return Status.OK_STATUS;
 			}
 		};
 
@@ -1074,16 +1079,23 @@ public class ScenarioControllerView extends ViewPart implements
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null)
 			{
-				page.showView(site.getId());
+				// try to find our view first
+				IViewPart theView = page.findView(site.getId());
+				if (theView != null)
+				{
+					// cool, show it then
+					page.showView(site.getId());
+				}
 			}
 		}
 		catch (PartInitException e)
 		{
+			// demote this error, it happens quite frequently when we're still opening
 			ASSETPlugin
 					.logError(
-							Status.ERROR,
+							Status.WARNING,
 							"failed to activate scenario controller - possible because trying to activing during init",
-							e);
+							null);
 		}
 	}
 

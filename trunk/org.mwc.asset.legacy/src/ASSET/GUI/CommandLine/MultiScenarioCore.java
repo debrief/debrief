@@ -83,10 +83,10 @@ public class MultiScenarioCore implements ISimulationQue
 	 *          the scenario file
 	 * @param control
 	 *          the control file
-	 * @param mWrap 
+	 * @param pMon 
 	 * @return null for success, message for failure
 	 */
-	private String setup(String scenario, String control, ASSETProgressMonitor mWrap)
+	private String setup(String scenario, String control, ASSETProgressMonitor pMon)
 	{
 		// ok, create our genny
 		_myGenny = new ScenarioGenerator();
@@ -96,7 +96,7 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// and now create the list of scenarios
 		String res = _myGenny.createScenarios(scenario, control,
-				_myScenarioDocuments, mWrap);
+				_myScenarioDocuments, pMon);
 
 		return res;
 	}
@@ -284,12 +284,12 @@ public class MultiScenarioCore implements ISimulationQue
 	 *          error out
 	 * @param in
 	 *          input (to receive user input)
-	 * @param mWrap 
+	 * @param pMon 
 	 * @return success code (0) or failure codes
 	 */
 
 	public int prepareFiles(String controlFile, String scenarioFile,
-			PrintStream out, PrintStream err, InputStream in, ASSETProgressMonitor mWrap)
+			PrintStream out, PrintStream err, InputStream in, ASSETProgressMonitor pMon)
 	{
 		int resCode = 0;
 
@@ -301,7 +301,7 @@ public class MultiScenarioCore implements ISimulationQue
 		System.out.println("about to generate scenarios");
 
 		// and set it up (including generating the scenarios)
-		String res = setup(scenarioFile, controlFile, mWrap);
+		String res = setup(scenarioFile, controlFile, pMon);
 
 		if (res != null)
 		{
@@ -349,7 +349,7 @@ public class MultiScenarioCore implements ISimulationQue
 		return resCode;
 	}
 
-	public int prepareControllers()
+	public int prepareControllers(ASSETProgressMonitor pMon)
 	{
 		int resCode = 0;
 		
