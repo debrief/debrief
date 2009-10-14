@@ -2,10 +2,10 @@
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
 <ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
  xsi:noNamespaceSchemaLocation="file:/Users/ianmayo/dev/cmap_64/org.mwc.asset.legacy/schemas/ASSET.xsd"
- OutputDirectory="~/test_reports/asset_test_output/force_prot"
+ OutputDirectory="//Users/ianmayo/test_reports/asset_test_output/force_prot"
  RandomSeed="32">
 	<ScenarioGenerator >
-		<MultiScenarioGenerator NameTemplate="force_output4" Number="5" MaxPerms="100">
+		<MultiScenarioGenerator NameTemplate="test_scenario_" Number="5" MaxPerms="100">
 			<VarianceList>
 				<Variance name="sea_state" id="//Environment">
 					<Attribute name="SeaState">

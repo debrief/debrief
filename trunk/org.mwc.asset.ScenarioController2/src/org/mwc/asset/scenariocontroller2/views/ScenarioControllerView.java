@@ -377,7 +377,7 @@ public class ScenarioControllerView extends ViewPart implements
 		// disable the genny button, until it's done.
 		_myUI.getDoGenerateButton().setEnabled(false);
 
-		Job job = new Job("Prepare the runs")
+		Job job = new Job("Prepare multiple scenarios")
 		{
 			@Override
 			protected IStatus run(IProgressMonitor monitor)
@@ -415,8 +415,8 @@ public class ScenarioControllerView extends ViewPart implements
 				}
 				catch (Exception e)
 				{
+					CorePlugin.logError(Status.ERROR, "Failed in scenario generation", e);
 					e.printStackTrace();
-
 				}
 
 				return Status.OK_STATUS;
@@ -1150,6 +1150,9 @@ public class ScenarioControllerView extends ViewPart implements
 		if (_controlFileName != null)
 			filesDropped(new String[]
 			{ _controlFileName });
+		
+		// and clear the scenario table
+		_simTable.setInput(null);
 	}
 
 	/**

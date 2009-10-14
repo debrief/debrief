@@ -320,9 +320,13 @@ public class MultiScenarioCore implements ISimulationQue
 		else
 		{
 			out.println("about to write new scenarios to disk");
+			
+			pMon.beginTask("Writing generated scenarios to disk", 1);
 
 			// ok, now write the scenarios to disk
 			resCode = writeToDisk(out, err, in);
+			
+			pMon.worked(1);
 
 			// and let our generator ditch some gash
 			// _myGenny = null;
@@ -358,8 +362,6 @@ public class MultiScenarioCore implements ISimulationQue
 				.getControlFile());
 		InputStream controlStream = new ByteArrayInputStream(controlStr.getBytes());
 
-		System.out.println("about to import Control file");
-
 		_resultsStore = ASSETReaderWriter
 				.importThisControlFile(null, controlStream);
 
@@ -388,6 +390,8 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// also read in the collection of scenarios
 		_theScenarios = new Vector<CoreScenario>(0, 1);
+		
+		pMon.beginTask("Reading in block of scenarios", _myScenarioDocuments.size());
 
 		for (Iterator<Document> iterator = _myScenarioDocuments.iterator(); iterator
 				.hasNext();)
@@ -399,6 +403,7 @@ public class MultiScenarioCore implements ISimulationQue
 			CoreScenario newS = new CoreScenario();
 			ASSETReaderWriter.importThis(newS, null, scenarioStream);
 			_theScenarios.add(newS);			
+			pMon.worked(1);
 		}
 
 		return resCode;
