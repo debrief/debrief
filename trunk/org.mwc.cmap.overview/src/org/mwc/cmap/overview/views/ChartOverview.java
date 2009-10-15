@@ -211,6 +211,10 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 	 */
 	protected void paintDataRect(CanvasType dest)
 	{
+		// check we're alive
+		if(_targetViewport == null)
+			return;
+		
 		// get the projection
 		final PlainProjection proj = _targetViewport.getProjection();
 

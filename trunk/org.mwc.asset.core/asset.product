@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?pde version="3.5"?>
 
-<product name="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.5" useFeatures="true" includeLaunchers="true">
+<product name="AssetNG" uid="AssetNG" id="org.mwc.asset.core.ASSET" application="org.eclipse.ui.ide.workbench" version="1.0.5" useFeatures="true" includeLaunchers="true">
 
    <aboutInfo>
       <image path="/org.mwc.asset.core/icons/WorkBenchLogo.gif"/>
@@ -14,7 +14,7 @@
    </configIni>
 
    <launcherArgs>
-      <vmArgs>-Xms40m -Xmx256m -Xbootclasspath/a:\jre\lib\ext\j3daudio.jar;jre\lib\ext\j3dcore.jar;jre\lib\ext\j3dutils.jar;jre\lib\ext\vecmath.jar;C:\dev\cmap\org.mwc.asset.legacy\libs\postgis_1.3.5.jar;C:\dev\cmap\org.mwc.asset.legacy\libs\postgresql-8.3-604.jdbc4.jar</vmArgs>
+      <vmArgs>-Xms40m -Xmx256m</vmArgs>
       <vmArgsWin>-Djava.library.path=.;</vmArgsWin>
    </launcherArgs>
 
@@ -33,6 +33,7 @@
 
    <vm>
    </vm>
+
 
    <plugins>
       <plugin id="org.apache.ant"/>
