@@ -69,7 +69,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 		try
 		{
 			res = SAXParserFactory.newInstance().newSAXParser();
-			// res.setFeature("http://xml.org/sax/features/validation", false);
+			// res.setProperty("http://xml.org/sax/features/validation", false);
 			// res.setFeature(
 			// "http://apache.org/xml/features/nonvalidating/load-external-dtd",
 			// false);

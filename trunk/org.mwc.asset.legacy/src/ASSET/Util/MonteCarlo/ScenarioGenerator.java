@@ -337,7 +337,7 @@ public final class ScenarioGenerator
 			DocumentBuilderFactory _factory = DocumentBuilderFactory.newInstance();
 			_factory.setNamespaceAware(true); // set to false by default in
 			// DocumentBuilderFactory
-			_factory.setValidating(true);
+			_factory.setValidating(false);
 
 			final String JAXP_SCHEMA_LANGUAGE = "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
 

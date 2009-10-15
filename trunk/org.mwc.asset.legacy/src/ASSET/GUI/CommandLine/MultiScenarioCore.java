@@ -353,18 +353,12 @@ public class MultiScenarioCore implements ISimulationQue
 		return resCode;
 	}
 
-	public int prepareControllers(ASSETProgressMonitor pMon)
+	public int prepareControllers(ResultsContainer multiRunResultsStore, ASSETProgressMonitor pMon)
 	{
 		int resCode = 0;
+
+		_resultsStore = multiRunResultsStore;
 		
-		// convert the control file to a stream
-		String controlStr = ScenarioGenerator.writeToString(_myGenny
-				.getControlFile());
-		InputStream controlStream = new ByteArrayInputStream(controlStr.getBytes());
-
-		_resultsStore = ASSETReaderWriter
-				.importThisControlFile(null, controlStream);
-
 		// sort out observers (inter & intra)
 		_theIntraObservers = new Vector<IntraScenarioObserverType>(0, 1);
 		_thePlainObservers = new Vector<ScenarioObserver>();

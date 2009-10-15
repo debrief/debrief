@@ -10,8 +10,11 @@ import java.io.*;
 import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+
 import org.w3c.dom.*;
 import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
 import com.sun.org.apache.xml.internal.serialize.OutputFormat;
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
@@ -124,7 +127,7 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
    * @param is    an input stream to read from
    * @return the output directory to write, if applicable
    */
-  static public ResultsContainer importThisControlFile(final String fName,
+	static public ResultsContainer importThisControlFile(final String fName,
                                                        final java.io.InputStream is)
   {
     // create the new handler
@@ -141,7 +144,9 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
     };
 
     // import the datafile into this set of layers
-    xr.doImport(new InputSource(is), handler);
+    InputSource inputStream = new InputSource(is);
+       
+		xr.doImport(inputStream, handler);
 
     ResultsContainer results = null;
 

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scenario xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- xsi:noNamespaceSchemaLocation="file:/Users/ianmayo/dev/cmap_64/org.mwc.asset.legacy/schemas/ASSET.xsd"
  Created="2001-12-12T12:23:00"
  Name="some test scenario"
  StartTime="2001-12-12T12:23:00">
