@@ -169,8 +169,6 @@ public class LiveDataMonitor extends ViewPart
 		{
 			TimeSeriesCollection dataset = new TimeSeriesCollection();
 			TimeSeries series = new TimeSeries(attribute.getName());
-			_chart.setTitle(attribute.getName());
-			_chart.getXYPlot().getRangeAxis().setLabel(attribute.getUnits());
 
 			for (Iterator<DataDoublet> iterator = data.iterator(); iterator.hasNext();)
 			{
@@ -178,9 +176,14 @@ public class LiveDataMonitor extends ViewPart
 				series.addOrUpdate(new Millisecond(new Date(thisD.getTime())),
 						(Number) thisD.getValue());
 			}
-			dataset.addSeries(series);
-
-			_chart.getXYPlot().setDataset(dataset);
+			// did it work?
+			if (!series.isEmpty())
+			{
+				dataset.addSeries(series);
+				_chart.getXYPlot().setDataset(dataset);
+				_chart.setTitle(attribute.getName());
+				_chart.getXYPlot().getRangeAxis().setLabel(attribute.getUnits());
+			}
 		}
 	}
 
