@@ -6,7 +6,7 @@
          point="org.eclipse.ui.views">
       <view
             name="Live Data"
-            icon="icons/sample.gif"
+            icon="icons/pulse.gif"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.cmap.LiveDataMonitor.views.LiveDataMonitor"
             id="org.mwc.cmap.LiveDataMonitor">
