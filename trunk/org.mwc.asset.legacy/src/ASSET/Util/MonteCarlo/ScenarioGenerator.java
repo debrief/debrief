@@ -582,11 +582,6 @@ public final class ScenarioGenerator
 		setTemplate(thisDocument);
 	}
 
-	// public final Document getRawDocument()
-	// {
-	// return _targetScenario;
-	// }
-
 	public final String createNewRandomisedPermutations(
 			Vector<Document> resultsContainer, ASSETProgressMonitor mWrap)
 	{

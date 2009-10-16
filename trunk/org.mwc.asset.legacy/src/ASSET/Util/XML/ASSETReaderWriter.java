@@ -6,18 +6,15 @@
 
 package ASSET.Util.XML;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.util.Vector;
 
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
 
-import org.w3c.dom.*;
+import org.w3c.dom.DOMImplementation;
+import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-
-import com.sun.org.apache.xml.internal.serialize.OutputFormat;
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 import ASSET.ScenarioType;
 import ASSET.Models.SensorType;
@@ -28,7 +25,11 @@ import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
-import MWC.Utilities.ReaderWriter.XML.*;
+import MWC.Utilities.ReaderWriter.XML.LayersHandler;
+import MWC.Utilities.ReaderWriter.XML.MWCXMLReader;
+
+import com.sun.org.apache.xml.internal.serialize.OutputFormat;
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * @author IAN MAYO
