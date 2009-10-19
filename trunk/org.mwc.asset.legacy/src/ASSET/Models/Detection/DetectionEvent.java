@@ -13,6 +13,8 @@ package ASSET.Models.Detection;
  * @version 1.0
  */
 
+import java.io.Serializable;
+
 import ASSET.Models.SensorType;
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
@@ -21,10 +23,15 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class DetectionEvent implements java.util.Comparator<DetectionEvent>
+public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Serializable
 {
 
-  ////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	////////////////////////////////////////////////////////////
   // set of (ascending) detection states
   ////////////////////////////////////////////////////////////
 

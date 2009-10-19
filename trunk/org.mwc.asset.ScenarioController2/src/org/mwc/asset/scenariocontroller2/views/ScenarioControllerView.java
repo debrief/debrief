@@ -35,6 +35,7 @@ import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.ISelectionProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.dnd.DND;
 import org.eclipse.swt.dnd.DropTarget;
@@ -71,6 +72,7 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlProperties;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -276,6 +278,28 @@ public class ScenarioControllerView extends ViewPart implements
 
 		_myUI.getMultiTableHolder().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
+		
+		_myUI.getScenarioTabs().addSelectionListener(new SelectionListener(){
+
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			@Override
+			public void widgetSelected(SelectionEvent e)
+			{
+				if(_myUI.getScenarioTabs().getSelectionIndex() == 0)
+				{
+					EditableWrapper ew = new EditableWrapper(_scenarioWrapper);
+					StructuredSelection sel = new StructuredSelection(ew);
+					setSelection(sel);
+				}
+				else
+				{
+					setSelection(null);
+				}
+			
+			}});
 
 		_simTable = new SimulationTable(_myUI.getMultiTableHolder(), this);
 		_simTable.getControl().setLayoutData(
@@ -666,7 +690,7 @@ public class ScenarioControllerView extends ViewPart implements
 			}
 			else if (controlType == ScenarioControllerHandler.type)
 			{
-				 _multiRunResultsStore = ASSETReaderWriter.importThisControlFile(
+				_multiRunResultsStore = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
 
 				_theObservers = _multiRunResultsStore.observerList;
@@ -715,7 +739,6 @@ public class ScenarioControllerView extends ViewPart implements
 			final boolean isMulti = CommandLine
 					.checkIfGenerationRequired(controlFile);
 			final int tgtIndex = (isMulti) ? 1 : 0;
-
 			// ui update, put it in an async operation
 			// updating the text items has to be done in the UI thread. make it
 			// so
@@ -728,6 +751,21 @@ public class ScenarioControllerView extends ViewPart implements
 
 					// and update that tab
 					updateControllerTab(isMulti);
+
+					if (isMulti)
+					{
+						// set the selection object to nothing
+						setSelection(null);
+					}
+					else
+					{
+						// ok, now wrap it as an editable
+						EditableWrapper ew = new EditableWrapper(_scenarioWrapper);
+
+						// and as a selection
+						StructuredSelection strSel = new StructuredSelection(ew);
+						setSelection(strSel);
+					}
 
 					// and tell everybody
 					fireControllerChanged();
@@ -1151,7 +1189,7 @@ public class ScenarioControllerView extends ViewPart implements
 		if (_controlFileName != null)
 			filesDropped(new String[]
 			{ _controlFileName });
-		
+
 		// and clear the scenario table
 		_simTable.setInput(null);
 	}
@@ -1191,10 +1229,10 @@ public class ScenarioControllerView extends ViewPart implements
 		// and tell everybody about it
 		if (_selectionListeners != null)
 		{
+			SelectionChangedEvent event = new SelectionChangedEvent(this,
+					_currentSelection);
 			for (ISelectionChangedListener thisL : _selectionListeners)
 			{
-				SelectionChangedEvent event = new SelectionChangedEvent(this,
-						_currentSelection);
 				thisL.selectionChanged(event);
 			}
 		}

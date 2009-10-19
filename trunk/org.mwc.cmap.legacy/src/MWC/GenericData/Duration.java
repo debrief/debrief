@@ -6,15 +6,21 @@
  */
 package MWC.GenericData;
 
+import java.io.Serializable;
 import java.util.StringTokenizer;
 
 
 /**
  * class which represents a time as a value plus a set of units
  */
-final public class Duration
+final public class Duration implements Serializable
 {
-  /////////////////////////////////////////////////////////////////
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/////////////////////////////////////////////////////////////////
   // member variables
   /////////////////////////////////////////////////////////////////
 

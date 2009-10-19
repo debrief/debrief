@@ -6,14 +6,15 @@
  */
 package ASSET.Scenario.Observers;
 
-import ASSET.Scenario.Genetic.ScenarioRunner;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+
 import ASSET.ScenarioType;
+import ASSET.Scenario.Genetic.ScenarioRunner;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
 import MWC.GenericData.Duration;
-
-import java.beans.IntrospectionException;
-import java.beans.PropertyDescriptor;
 
 
 /** controller observer that stops running after indicated period
@@ -23,9 +24,14 @@ import java.beans.PropertyDescriptor;
  */
 public class StopOnElapsedObserver extends
   CoreObserver implements ASSET.Scenario.ScenarioSteppedListener,
-  ScenarioObserver.ScenarioReferee
+  ScenarioObserver.ScenarioReferee, Serializable
 {
-  /***************************************************************
+  /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+
+	/***************************************************************
    *  member variables
    ***************************************************************/
   /**
@@ -189,7 +195,7 @@ public class StopOnElapsedObserver extends
   // property editing
   //////////////////////////////////////////////////
 
-  private EditorType _myEditor1;
+  private transient EditorType _myEditor1;
 
   /**
    * whether there is any edit information for this item
