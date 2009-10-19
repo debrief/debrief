@@ -6,7 +6,7 @@
          id="org.mwc.asset.help"
          point="org.eclipse.help.toc">
       <toc
-            file="html/legacy/toc2.xml"
+            file="html/legacy/toc.xml"
             primary="true">
       </toc>
    </extension>
