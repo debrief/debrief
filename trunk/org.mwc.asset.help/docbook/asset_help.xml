@@ -498,8 +498,8 @@
           environment experiences propagation loss. </para>
         <important>
           <para>The <application>ASSET</application> user should have a full understanding of the
-            modelling used in a specific scenario, <application>ASSET</application> is not
-            attempting to reproduce a "real-world" equivalent, and the user must decide what
+            modelling abstraction used in a specific scenario, <application>ASSET</application> is
+            not attempting to reproduce a "real-world" equivalent, and the user must decide what
             assumptions can be made of the results. A thorough understanding of the <application
               >ASSET</application> Modelling Guide is required before any analysis of results is
             conducted. </para>
