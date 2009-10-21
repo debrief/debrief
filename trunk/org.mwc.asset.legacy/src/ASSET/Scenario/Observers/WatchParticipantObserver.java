@@ -26,7 +26,7 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
   /**
    * the type of vessel we are watching
    */
-  private TargetType _watchVessel = null;
+  private final TargetType _watchVessel;
   /**
    * the vessels we have added ourselves to
    */

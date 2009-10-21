@@ -573,6 +573,10 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 	protected void writeTheseDetails(WorldLocation loc, Status stat,
 			ParticipantType pt)
 	{
+		// we may not even have any tracks. just check
+		if(_myTracks == null)
+			return;
+		
 		// do we hold this participant
 		Track trk = (Track) _myTracks.get(pt);
 
