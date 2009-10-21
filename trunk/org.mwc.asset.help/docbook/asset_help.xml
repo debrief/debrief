@@ -94,8 +94,8 @@
           modelling facilities to support the needs of maritime tactical development. Fundamental to
           this strategy has been the identification of an acceptable fidelity in modelling, where
             <application>ASSET</application> can be used in initial investigations into new tactical
-          problems - acknowledging that  it may be necessary to employ a higher fidelity model in
-          the later stages of analysis, and that frequently the only true test for a tactic is
+          problems - acknowledging that it may be necessary to employ a higher fidelity model in the
+          later stages of analysis, and that frequently the only true test for a tactic is
           real-world employment. Nevertheless, <application>ASSET</application> can be employed to
           great benefit in the following methods of analysis: <itemizedlist>
             <listitem>
@@ -546,12 +546,6 @@
               </listitem>
             </varlistentry>
             <varlistentry>
-              <term>Background Noise</term>
-              <listitem>
-                <para/>
-              </listitem>
-            </varlistentry>
-            <varlistentry>
               <term>Detection Threshold</term>
               <listitem>
                 <para>Detection Threshold is covered in the Sensors section, at: <xref
@@ -778,6 +772,9 @@
               </listitem>
               <listitem>
                 <para>Depth (m)</para>
+              </listitem>
+              <listitem>
+                <para>Optionally, a change to a sensor line-up</para>
               </listitem>
             </itemizedlist></para>
         </sect2>
