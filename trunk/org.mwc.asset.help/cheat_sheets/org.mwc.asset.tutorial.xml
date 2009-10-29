@@ -2,7 +2,7 @@
 <compositeCheatsheet name="Getting started with ASSET">
    <taskGroup kind="sequence" name="A worked example in ASSET" skip="false">
       <intro>
-         <b>The series of cheat sheets will get you running with your first use of ASSET.</b>  ASSET is an MWC integrated modelling environment that provides tools to design, execute, and analyse tactical simulations.
+         <b>The series of cheat sheets will get you running with your first use of ASSET.  ASSET is an MWC integrated modelling environment that provides tools to design, execute, and analyse tactical simulations.</b>
       </intro>
       <onCompletion>
          <b>Well done, you&apos;ve completed the cheat sheets.</b>  If you&apos;re interested in learning more about ASSET, investigate the ASSET Modelling Guide in the online help.
@@ -22,57 +22,57 @@
             <b>The first data file we&apos;re going to create is the scenario. This is the file that describes the participants and their environment. </b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>That&apos;s the scenario complete. The next item of interest is the control file</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.gen_scenario.xml">
          </param>
       </task>
       <task kind="cheatsheet" name="Creating a control file" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>The control file contains the instructions for &lt;i&gt;how&lt;/i&gt; ASSET should run a scenario</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>We now have a description of how our target scenario is to be executed</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.gen_control.xml">
          </param>
       </task>
       <task kind="cheatsheet" name="Executing the simulation" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>Now that our data is defined, it&apos;s time to actually perform some simulation</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>Right, we&apos;ve successfully executed a simulation, and produced some results files.</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.run_scenario.xml">
          </param>
       </task>
       <task kind="cheatsheet" name="Analysing simulation results" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>We&apos;ve performed a simulation, and interactively seen what was happening.  But, since we&apos;re analysts, we really could do with delving deeper into some stats. That&apos;s what we&apos;ll cover here.</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>That&apos;s the conduct simple simulations completed.</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.analyse_results.xml">
          </param>
       </task>
       <task kind="cheatsheet" name="Performing multi-participant run" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>The next step up in complexity that we&apos;re going to consider is getting ASSET to generate multiple instances of one of our participants.</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>Now we know how to see how a behaviour pans out across a range of participants.</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.multi_participant.xml">
          </param>
       </task>
       <task kind="cheatsheet" name="Performing multi-scenario run" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>The last skill we&apos;re going to cover is how to get ASSET to run through a batch of simulations.</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>And that&apos;s the end of &lt;i&gt;Getting Started with ASSET&lt;/i&gt;</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.multi_scenario.xml">
          </param>

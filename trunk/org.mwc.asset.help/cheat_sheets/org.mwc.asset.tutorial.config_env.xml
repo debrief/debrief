@@ -3,7 +3,7 @@
       title="Configuring ASSET">
    <intro>
       <description>
-         <b>ASSET uses a workspace to contain your data.  Data in this workspace is stored in &lt;i&gt;Project folders&lt;i&gt;.  So you need to create a folder.  This is also a convenient time to </b>
+         <b>ASSET uses a workspace to contain your data.  Data in this workspace is stored in Project folders.  So you need to create a folder.  This is also a convenient time to integrate some sample data and check that you have a valid XML editor</b>
       </description>
    </intro>
    <item
