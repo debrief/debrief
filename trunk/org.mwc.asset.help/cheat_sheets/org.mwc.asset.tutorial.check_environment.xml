@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Checking your environment">
+   <intro>
+      <description>
+         <b>Body</b>
+      </description>
+   </intro>
+   <item
+         title="Generating your project">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Linking to sample data">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+</cheatsheet>
