@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Creating an empry scenario control file">
+   <intro>
+      <description>
+         <b>Body</b>
+      </description>
+   </intro>
+   <item
+         title="Create empty file">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+</cheatsheet>

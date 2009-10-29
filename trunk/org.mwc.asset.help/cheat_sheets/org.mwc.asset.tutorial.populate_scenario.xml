@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cheatsheet
+      title="Populating your scenario">
+   <intro>
+      <description>
+         <b>Body</b>
+      </description>
+   </intro>
+   <item
+         title="Familiarise yourself with XML Editor">
+      <description>
+         <b>Body</b>
+      </description>
+      <subitem
+            label="Create scenario">
+      </subitem>
+      <subitem
+            label="Enter scenario details">
+      </subitem>
+      <subitem
+            label="Add participant">
+      </subitem>
+      <subitem
+            label="Add participant sensors">
+      </subitem>
+      <subitem
+            label="Add participant decision model">
+      </subitem>
+   </item>
+   <item
+         title="Enter information from existing scenario">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+</cheatsheet>

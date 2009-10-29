@@ -14,7 +14,7 @@
          <onCompletion>
             <b>Conclusion</b>
          </onCompletion>
-         <task kind="cheatsheet" name="Check you have data" skip="true">
+         <task kind="cheatsheet" name="Check your environment" skip="true">
             <intro>
                <b>Introduction</b>
             </intro>
@@ -42,6 +42,26 @@
          <onCompletion>
             <b>Conclusion</b>
          </onCompletion>
+         <task kind="cheatsheet" name="Create empty scenario file" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.empty_scenario.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Populate scenario file" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.populate_scenario.xml">
+            </param>
+         </task>
       </taskGroup>
       <taskGroup kind="sequence" name="Creating a control file" skip="false">
          <intro>
@@ -50,6 +70,26 @@
          <onCompletion>
             <b>Conclusion</b>
          </onCompletion>
+         <task kind="cheatsheet" name="Create empty scenario control file" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.empty_control_file.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Populate scenario control file" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.populate_control.xml">
+            </param>
+         </task>
       </taskGroup>
       <taskGroup kind="sequence" name="Executing your simulation" skip="false">
          <intro>
@@ -58,6 +98,92 @@
          <onCompletion>
             <b>Conclusion</b>
          </onCompletion>
+         <task kind="cheatsheet" name="Load scenario" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.load_scenario.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Run scenario" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial_run_scenario.xml">
+            </param>
+         </task>
+      </taskGroup>
+      <taskGroup kind="sequence" name="Analyse simulation results" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <task kind="cheatsheet" name="Find output data" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.find_output_data.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Load output data in Debrief plot" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.load_results_in_debrief.xml">
+            </param>
+         </task>
+      </taskGroup>
+      <taskGroup kind="sequence" name="Switch to multi scenario run" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <task kind="cheatsheet" name="Amend scenario controller" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.multi.amend_scenario.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Run the scenario" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.multi.run_scenario.xml">
+            </param>
+         </task>
+         <task kind="cheatsheet" name="Analyse scenario output" skip="false">
+            <intro>
+               <b>Introduction</b>
+            </intro>
+            <onCompletion>
+               <b>Conclusion</b>
+            </onCompletion>
+            <param name="path" value="org.mwc.asset.tutorial.multi.analyse_results.xml">
+            </param>
+         </task>
       </taskGroup>
    </taskGroup>
 </compositeCheatsheet>
