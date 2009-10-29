@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet
-      title="Title">
+      title="Analysing what was produced">
    <intro>
       <description>
          <b>Body</b>
       </description>
    </intro>
    <item
-         title="Item">
+         title="Find the output folder">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="View a results plot">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="View Debrief tracks">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Add a Debrief narrative">
       <description>
          <b>Body</b>
       </description>

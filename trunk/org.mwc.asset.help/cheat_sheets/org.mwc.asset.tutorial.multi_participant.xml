@@ -1,13 +1,55 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet
-      title="Title">
+      title="Run multi-participant scenario">
    <intro>
       <description>
          <b>Body</b>
       </description>
    </intro>
    <item
-         title="Item">
+         title="View the scenario">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Decide what to change">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Open the scenario controller">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Add participant generation code">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Add specification for multi participant generation">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Reload the datafiles">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Re-run the scenario">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Inspect a results output">
       <description>
          <b>Body</b>
       </description>
