@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet
-      title="Title">
+      title="Generate a scenario">
    <intro>
       <description>
          <b>Body</b>
       </description>
    </intro>
    <item
-         title="Item">
+         title="Create empty scenario file">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Add simple element">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Edit scenario properties">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Add simple participant">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Edit participant properties">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Load actual sample dataset">
       <description>
          <b>Body</b>
       </description>

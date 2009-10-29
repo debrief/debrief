@@ -1,13 +1,43 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet
-      title="Title">
+      title="Configuring ASSET">
    <intro>
       <description>
-         <b>Body</b>
+         <b>ASSET uses a workspace to contain your data.  Data in this workspace is stored in &lt;i&gt;Project folders&lt;i&gt;.  So you need to create a folder.  This is also a convenient time to </b>
       </description>
    </intro>
    <item
-         title="Item">
+         title="Open the navigator">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Check you have a project">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Generate a project">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Include link to sample data">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Check you have an XML editor">
+      <description>
+         <b>ASSET uses data files that adhere to the XML data standard. XML is easily read and manipulated by computers, but can be a little verbose and fiddly when edited by humans. That&apos;s why we use an XML Editor that hides some of the fiddly details</b>
+      </description>
+   </item>
+   <item
+         title="Configure editor file types">
       <description>
          <b>Body</b>
       </description>

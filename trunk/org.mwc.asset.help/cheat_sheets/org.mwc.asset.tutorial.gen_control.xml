@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet
-      title="Title">
+      title="Generating the scenario controller">
    <intro>
       <description>
          <b>Body</b>
       </description>
    </intro>
    <item
-         title="Item">
+         title="Create empty scenario controller file">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Add some scenario control items">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Add first scenario observer">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Load complete scenario control file">
       <description>
          <b>Body</b>
       </description>

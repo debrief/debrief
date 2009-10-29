@@ -187,17 +187,17 @@
       </taskGroup>
       <task kind="cheatsheet" name="Configuring your environment" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>Unfortunately there&apos;s a little house-keeping to be done before you dive in to ASSET.  These steps will lead you through getting ready.</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>Right, now you&apos;re ready for action.  Let&apos;s move on</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.config_env.xml">
          </param>
       </task>
       <task kind="cheatsheet" name="Creating a scenario" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>The first data file we&apos;re going to create is the scenario. This is the file that describes the participants and their environment. </b>
          </intro>
          <onCompletion>
             <b>Conclusion</b>

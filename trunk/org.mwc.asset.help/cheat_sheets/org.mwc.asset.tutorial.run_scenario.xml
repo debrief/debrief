@@ -1,13 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <cheatsheet
-      title="Title">
+      title="Executing the scenario">
    <intro>
       <description>
          <b>Body</b>
       </description>
    </intro>
    <item
-         title="Item">
+         title="Load the data files">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Open the plot viewer">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Start the run">
+      <description>
+         <b>Body</b>
+      </description>
+   </item>
+   <item
+         title="Monitor a participant">
       <description>
          <b>Body</b>
       </description>
