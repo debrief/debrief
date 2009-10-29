@@ -9,27 +9,27 @@
       </onCompletion>
       <taskGroup kind="sequence" name="Configuring your environment" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>Unfortunately there&apos;s a little house-keeping to be done before you dive in to ASSET.  These steps will lead you through getting ready.</b>
          </intro>
          <onCompletion>
-            <b>Conclusion</b>
+            <b>Right, now you&apos;re ready for action.  Let&apos;s move on.</b>
          </onCompletion>
          <task kind="cheatsheet" name="Check your environment" skip="true">
             <intro>
-               <b>Introduction</b>
+               <b>The first thing to check is that you have somewhere for your data.</b>
             </intro>
             <onCompletion>
-               <b>Conclusion</b>
+               <b>That&apos;s the data sorted, now we can move one.</b>
             </onCompletion>
             <param name="path" value="org.mwc.asset.tutorial.check_environment.xml">
             </param>
          </task>
          <task kind="cheatsheet" name="Check you have an XML Editor" skip="false">
             <intro>
-               <b>Introduction</b>
+               <b>ASSET uses data files that adhere to the XML data standard. XML is easily read and manipulated by computers, but can be a little verbose and fiddly when edited by humans. That&apos;s why we use an XML Editor that hides some of the fiddly details</b>
             </intro>
             <onCompletion>
-               <b>Conclusion</b>
+               <b>Now you&apos;re ready to edit data.</b>
             </onCompletion>
             <param name="path" value="org.mwc.asset.tutorial.xml_editor.xml">
             </param>
@@ -37,7 +37,7 @@
       </taskGroup>
       <taskGroup kind="sequence" name="Creating a scenario" skip="false">
          <intro>
-            <b>Introduction</b>
+            <b>The first data file we&apos;re going to create is the </b>
          </intro>
          <onCompletion>
             <b>Conclusion</b>
@@ -185,5 +185,75 @@
             </param>
          </task>
       </taskGroup>
+      <task kind="cheatsheet" name="Configuring your environment" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="org.mwc.asset.tutorial.config_env.xml">
+         </param>
+      </task>
+      <task kind="cheatsheet" name="Creating a scenario" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="org.mwc.asset.tutorial.gen_scenario.xml">
+         </param>
+      </task>
+      <task kind="cheatsheet" name="Creating a control file" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="org.mwc.asset.tutorial.gen_control.xml">
+         </param>
+      </task>
+      <task kind="cheatsheet" name="Executing the simulation" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="org.mwc.asset.tutorial.run_scenario.xml">
+         </param>
+      </task>
+      <task kind="cheatsheet" name="Analysing simulation results" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="org.mwc.asset.tutorial.analyse_results.xml">
+         </param>
+      </task>
+      <task kind="cheatsheet" name="Performing multi-participant run" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="org.mwc.asset.tutorial.multi_participant.xml">
+         </param>
+      </task>
+      <task kind="cheatsheet" name="Performing multi-scenario run" skip="false">
+         <intro>
+            <b>Introduction</b>
+         </intro>
+         <onCompletion>
+            <b>Conclusion</b>
+         </onCompletion>
+         <param name="path" value="org.mwc.asset.tutorial.multi_scenario.xml">
+         </param>
+      </task>
    </taskGroup>
 </compositeCheatsheet>
