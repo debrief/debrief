@@ -27,4 +27,21 @@
       <contexts
             file="HelpContexts.xml"  plugin="org.mwc.asset.help"/>
    </extension>
+   <extension
+         point="org.eclipse.ui.cheatsheets.cheatSheetContent">
+      <category
+            id="org.mwc.asset.help.category128666804"
+            name="ASSET">
+      </category>
+      <cheatsheet
+            category="org.mwc.asset.help.category128666804"
+            composite="true"
+            contentFile="$nl$/cheat_sheets/org.mwc.asset.tutorial.xml"
+            id="org.mwc.asset.help.cheatsheet406552611"
+            name="Getting started with ASSET">
+         <description>
+            ASSET Integrated Simulation Environment
+         </description>
+      </cheatsheet>
+   </extension>
 </plugin>

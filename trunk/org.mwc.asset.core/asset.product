@@ -34,7 +34,6 @@
    <vm>
    </vm>
 
-
    <plugins>
       <plugin id="org.apache.ant"/>
       <plugin id="org.apache.lucene"/>
@@ -100,6 +99,7 @@
       <feature id="org.mwc.cmap.combined.feature" version="1.0.20"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.3"/>
       <feature id="org.mwc.debrief.combined.feature" version="1.0.25"/>
+      <feature id="com.oxygenxml.editor" version="11.0.0"/>
    </features>
 
 

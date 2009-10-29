@@ -78,7 +78,7 @@
       </describer>
    	</content-type>
    <content-type base-type="org.eclipse.core.runtime.xml"
-                 file-extensions="xml"
+                 file-extensions="asset"
                  id="org.mwc.asset.contenttype.ScenarioFile"
                  name="ASSET Scenario File"
                  priority="normal">
