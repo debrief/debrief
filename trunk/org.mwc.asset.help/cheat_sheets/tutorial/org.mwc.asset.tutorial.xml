@@ -72,7 +72,7 @@
             <b>The last skill we&apos;re going to cover is how to get ASSET to run through a batch of simulations.</b>
          </intro>
          <onCompletion>
-            <b>And that&apos;s the end of &lt;i&gt;Getting Started with ASSET&lt;/i&gt;</b>
+            <b>And that&apos;s the end of Getting Started with ASSET</b>
          </onCompletion>
          <param name="path" value="org.mwc.asset.tutorial.multi_scenario.xml">
          </param>
