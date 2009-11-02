@@ -40,7 +40,17 @@
             id="org.mwc.asset.help.cheatsheet406552611"
             name="Getting started with ASSET">
          <description>
-            ASSET Integrated Simulation Environment
+            A series of worked examples that help you to configure ASSET, create some data files, and run the simulations.
+         </description>
+      </cheatsheet>
+      <cheatsheet
+            category="org.mwc.asset.help.category128666804"
+            composite="false"
+            contentFile="$nl$/cheat_sheets/tutorial/org.mwc.asset.tutorial.config_env.xml"
+            id="org.mwc.asset.help.cheatsheet331235578"
+            name="Configuring ASSET">
+         <description>
+            How to prepare your ASSET installation for editing and running scenarios
          </description>
       </cheatsheet>
    </extension>
