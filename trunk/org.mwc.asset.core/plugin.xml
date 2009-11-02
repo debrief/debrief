@@ -91,6 +91,7 @@
    	</content-type>
 	</extension>
    <extension
+         name="create a catalog entry for the ASSET schema"
          point="org.eclipse.wst.xml.core.catalogContributions">
       <catalogContribution>
          <public
@@ -100,6 +101,7 @@
          </public>
       </catalogContribution>
    </extension>
+
 	
 	   
    
