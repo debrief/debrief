@@ -6,17 +6,10 @@
          point="org.eclipse.ui.editors">
       <editor
             name="ASSET Plot Editor"
-            extensions="xml"
             icon="icons/components.png"
             contributorClass="org.eclipse.ui.texteditor.BasicTextEditorActionContributor"
             class="org.mwc.asset.scenarioplotter.editors.ASSETPlotEditor"
             id="org.mwc.asset.ASSETPlotEditor">
-	      <contentTypeBinding
-	         contentTypeId="org.mwc.asset.contenttype.ScenarioFile">
-	      </contentTypeBinding>            
-	      <contentTypeBinding
-	         contentTypeId="org.mwc.asset.contenttype.ControlFile">
-	      </contentTypeBinding>            
       </editor>
    </extension>
 
