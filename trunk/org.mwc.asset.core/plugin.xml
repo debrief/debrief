@@ -83,12 +83,24 @@
          id="org.mwc.asset.contenttype.ScenarioFile"
          name="ASSET Scenario File"
          priority="normal">
-      <describer class="com.oxygenxml.editor.editors.xml.XMLContentDescriber">
+      <describer class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
          <parameter name="element"
                     value="Scenario">
          </parameter>
       </describer>
    	</content-type>
 	</extension>
+   <extension
+         point="org.eclipse.wst.xml.core.catalogContributions">
+      <catalogContribution>
+         <public
+               id="http://www.mwc.org/asset"
+               publicId="http://www.mwc.org/asset"
+               uri="platform:/plugin/org.mwc.asset.legacy/schemas/ASSET.xsd">
+         </public>
+      </catalogContribution>
+   </extension>
+	
+	   
    
 </plugin>

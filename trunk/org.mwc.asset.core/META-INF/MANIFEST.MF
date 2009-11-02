@@ -11,7 +11,8 @@ Require-Bundle: org.mwc.asset.legacy;visibility:=reexport,
  org.mwc.asset.sample_data,
  org.mwc.cmap.legacy,
  org.eclipse.draw2d,
- org.eclipse.ui
+ org.eclipse.ui,
+ org.eclipse.wst.xml.core
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.asset.core;
   uses:="org.eclipse.jface.resource,

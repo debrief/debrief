@@ -99,7 +99,9 @@
       <feature id="org.mwc.cmap.combined.feature" version="1.0.20"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.3"/>
       <feature id="org.mwc.debrief.combined.feature" version="1.0.25"/>
-      <feature id="com.oxygenxml.editor" version="11.0.0"/>
+      <feature id="org.eclipse.wst.xml_core.feature" version="3.1.1.v200907161031-7C7OFPgF7RZHIXHvT5MhWA"/>
+      <feature id="org.eclipse.wst.xml_ui.feature" version="3.1.1.v200907161031-7H6FM_DxtkM-7aeTHKEBbQqcZOZ2"/>
+      <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.1.1.v200906020459-50FR7AkF77f7MESDKEF"/>
    </features>
 
 
