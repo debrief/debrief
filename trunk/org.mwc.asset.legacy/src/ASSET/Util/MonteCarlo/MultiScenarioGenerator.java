@@ -32,6 +32,7 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import ASSET.Util.SupportTesting;
+import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
 import ASSET.Util.XML.ScenarioHandler;
 
 /**
@@ -108,9 +109,7 @@ public final class MultiScenarioGenerator
 		try
 		{
 			// get the root of our variances
-			XPathFactory xpf = XPathFactory.newInstance();
-			XPath xp = xpf.newXPath();
-			XPathExpression xp2 = xp.compile("//ScenarioGenerator/" + GENERATOR_TYPE);
+			XPathExpression xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator/" + GENERATOR_TYPE);
 			NodeList nl = (NodeList) xp2.evaluate(document, XPathConstants.NODESET);
 			Element el = (Element) nl.item(0);
 
@@ -701,9 +700,7 @@ public final class MultiScenarioGenerator
 			// did we change the speed?
 			try
 			{
-				XPathFactory xpf = XPathFactory.newInstance();
-				XPath xp = xpf.newXPath();
-				XPathExpression xp2 = xp.compile("//*[@Name='bravo']/Status/Speed");
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//*[@Name='bravo']/Status/Speed");
 				NodeList nl = (NodeList) xp2.evaluate(thisDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -752,7 +749,7 @@ public final class MultiScenarioGenerator
 
 				XPathFactory xpf = XPathFactory.newInstance();
 				XPath xp = xpf.newXPath();
-				XPathExpression xp2 = xp.compile("//Participants/*[@Name='bravo']");
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='bravo']");
 				NodeList nl = (NodeList) xp2.evaluate(resDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -761,7 +758,7 @@ public final class MultiScenarioGenerator
 
 				// did we change the speed?
 				xp = xpf.newXPath();
-				xp2 = xp.compile("//*[@Name='bravo']/Status/Speed");
+				xp2 = NamespaceContextProvider.createPath("//*[@Name='bravo']/Status/Speed");
 				nl = (NodeList) xp2.evaluate(resDocument, XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
 				assertTrue("correct name", Double.parseDouble(thisA
@@ -825,9 +822,7 @@ public final class MultiScenarioGenerator
 			try
 			{
 
-				XPathFactory xpf = XPathFactory.newInstance();
-				XPath xp = xpf.newXPath();
-				XPathExpression xp2 = xp.compile("//Participants/Helo//Investigate");
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/Helo//Investigate");
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element thisE = (Element) nl.item(0);
@@ -837,8 +832,7 @@ public final class MultiScenarioGenerator
 				assertEquals("correct name", "Identified", thisE
 						.getAttribute("DetectionLevel"));
 
-				xp = xpf.newXPath();
-				xp2 = xp.compile("//Participants/Helo//Investigate//Type");
+				xp2 = NamespaceContextProvider.createPath("//Participants/Helo//Investigate//Type");
 				nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				thisE = (Element) nl.item(0);
@@ -872,9 +866,7 @@ public final class MultiScenarioGenerator
 			// can we find a scenario generator?
 			try
 			{
-				XPathFactory xpf = XPathFactory.newInstance();
-				XPath xp = xpf.newXPath();
-				XPathExpression xp2 = xp.compile("//MultiParticipantGenerator");
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//MultiParticipantGenerator");
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element el = (Element) nl.item(0);
@@ -905,9 +897,7 @@ public final class MultiScenarioGenerator
 			try
 			{
 
-				XPathFactory xpf = XPathFactory.newInstance();
-				XPath xp = xpf.newXPath();
-				XPathExpression xp2 = xp.compile("//Environment");
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//Environment");
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -944,9 +934,7 @@ public final class MultiScenarioGenerator
 			// did we load the proximity observer
 			try
 			{
-				XPathFactory xpf = XPathFactory.newInstance();
-				XPath xp = xpf.newXPath();
-				XPathExpression xp2 = xp.compile("//StopOnProximityDetectionObserver");
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver");
 				NodeList nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -955,17 +943,14 @@ public final class MultiScenarioGenerator
 				val = thisA.getAttribute("Active");
 				assertTrue("set as active", true);
 
-				xp = xpf.newXPath();
-				xp2 = xp
-						.compile("//StopOnProximityDetectionObserver/Target/TargetType/Type[1]");
+				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Target/TargetType/Type[1]");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "HELICOPTER", val);
 
-				xp = xpf.newXPath();
-				xp2 = xp.compile("//MultiScenarioGenerator");
+				xp2 = NamespaceContextProvider.createPath("//MultiScenarioGenerator");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
@@ -973,26 +958,21 @@ public final class MultiScenarioGenerator
 				assertTrue("found number", val.length() > 0);
 				numScenariosRequested = new Integer(val).intValue();
 
-				xp = xpf.newXPath();
-				xp2 = xp
-						.compile("//StopOnProximityDetectionObserver/Watch/TargetType/Type[1]");
+				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Watch/TargetType/Type[1]");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "FISHING_VESSEL", val);
 
-				xp = xpf.newXPath();
-				xp2 = xp
-						.compile("//StopOnProximityDetectionObserver/Watch/TargetType/Type[2]");
+				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Watch/TargetType/Type[2]");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "RED", val);
 
-				xp = xpf.newXPath();
-				xp2 = xp.compile("//StopOnProximityDetectionObserver/Range");
+				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Range");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
@@ -1025,10 +1005,7 @@ public final class MultiScenarioGenerator
 
 					Document resDocument = results[i];
 
-					XPathFactory xpf = XPathFactory.newInstance();
-					XPath xp = xpf.newXPath();
-					XPathExpression xp2 = xp
-							.compile("//Participants/*[@Name='SAM_FISHER']");
+					XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='SAM_FISHER']");
 					NodeList nl = (NodeList) xp2.evaluate(resDocument,
 							XPathConstants.NODESET);
 					Element thisE = (Element) nl.item(0);
@@ -1036,8 +1013,7 @@ public final class MultiScenarioGenerator
 					assertEquals("correct name", "SAM_FISHER", thisE.getAttribute("Name"));
 
 					// did we change the sea state?
-					xp = xpf.newXPath();
-					xp2 = xp.compile("//Environment");
+					xp2 = NamespaceContextProvider.createPath("//Environment");
 					nl = (NodeList) xp2.evaluate(resDocument,
 							XPathConstants.NODESET);
 					thisE = (Element) nl.item(0);

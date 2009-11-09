@@ -9,6 +9,8 @@
 package ASSET.Util.MonteCarlo;
 
 import ASSET.Util.SupportTesting;
+import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -84,12 +86,7 @@ public final class MultiParticipantGenerator
 	{
 		try
 		{
-			if (_xpathFactory == null)
-				_xpathFactory = XPathFactory.newInstance();
-
-			// get the root of our variances
-			final XPath xpath = _xpathFactory.newXPath();
-			XPathExpression xpe = xpath.compile("//" + GENERATOR_TYPE);
+			XPathExpression xpe = NamespaceContextProvider.createPath("//" + GENERATOR_TYPE);
 			Object result = xpe.evaluate(document, XPathConstants.NODESET);
 
 			if (result != null)
@@ -438,16 +435,14 @@ public final class MultiParticipantGenerator
 			// hey, let's see how we got on
 			try
 			{
-				XPathFactory xpf = XPathFactory.newInstance();
-				XPath xp = xpf.newXPath();
-				XPathExpression xp2 = xp.compile("//Participants/*[@Name='bravo_001']");
+				XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='bravo_001']");
 				NodeList nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
 				Element thisE = (Element)nl.item(0);
 				// SupportTesting.outputThis(thisDocument,"have a look at this!");
 				assertEquals("correct name", "bravo_001", thisE.getAttribute("Name"));
 
 				// did we create the last one?
-				xp2 = xp.compile("//Participants/*[@Name='bravo_004']");
+				xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='bravo_004']");
 				nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
 				thisE = (Element)nl.item(0);
 				assertEquals("correct name", "bravo_004", thisE.getAttribute("Name"));
@@ -455,12 +450,12 @@ public final class MultiParticipantGenerator
 				// //////////////////////////////////////////////////////////
 				// now the alphas
 				// //////////////////////////////////////////////////////////
-				xp2 = xp.compile("//Participants/*[@Name='alpha_001']");
+				xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='alpha_001']");
 				nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
 				thisE = (Element)nl.item(0);
 				assertEquals("correct name", "alpha_001", thisE.getAttribute("Name"));
 
-				xp2 = xp.compile("//Participants/*[@Name='alpha_006']");
+				xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='alpha_006']");
 				nl = (NodeList) xp2.evaluate(thisDocument, XPathConstants.NODESET);
 				thisE = (Element)nl.item(0);
 				assertEquals("correct name", "alpha_006", thisE.getAttribute("Name"));

@@ -41,6 +41,7 @@ import org.xml.sax.SAXParseException;
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.Util.RandomGenerator;
 import ASSET.Util.SupportTesting;
+import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
 import ASSET.Util.XML.ScenarioHandler;
 
 /**
@@ -500,12 +501,8 @@ public final class ScenarioGenerator
 	{
 		try
 		{
-			if (_myXpathFactory == null)
-				_myXpathFactory = XPathFactory.newInstance();
-			XPath xp = _myXpathFactory.newXPath();
-
 			// can we find a scenario generator?
-			XPathExpression xp2 = xp.compile("//MultiScenarioGenerator");
+			XPathExpression xp2 = NamespaceContextProvider.createPath("//MultiScenarioGenerator");
 			Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
 			if (el != null)
@@ -514,18 +511,18 @@ public final class ScenarioGenerator
 			}
 
 			// can we find a scenario generator?
-			xp2 = xp.compile("//MultiParticipantGenerator");
+			xp2 = NamespaceContextProvider.createPath("//MultiParticipantGenerator");
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 			if (el != null)
 			{
 				this._participantGenny = new MultiParticipantGenerator(document);
 			}
 
-			xp2 = xp.compile("//ScenarioGenerator");
+			xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator");
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
 			// retrieve our working values
-			xp2 = xp.compile("//ScenarioController");
+			xp2 = NamespaceContextProvider.createPath("//ScenarioController");
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
 			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);

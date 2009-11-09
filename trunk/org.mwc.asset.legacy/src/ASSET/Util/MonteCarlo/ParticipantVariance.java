@@ -101,22 +101,9 @@ public final class ParticipantVariance extends XMLVarianceList
     try
     {
       String xPathExpression = getExpression(_myName);
-
-      
-      if(_myXpathFactory == null)
-			_myXpathFactory = XPathFactory.newInstance();
-      
-			XPath xp = _myXpathFactory.newXPath();
-			
-			
+		
 			// tell it what schema to use for the indicated elements
-			NamespaceContextProvider myResolver = new NamespaceContextProvider(XMLVariance.NAMESPACE_PREFIX, "http://www.mwc.org/asset");
-			xp.setNamespaceContext(myResolver);
-			
-			// note, we've got to stick the as bit in front of any matching xpath items
-			xPathExpression = myResolver.insertPrefixesTo(xPathExpression);
-
-			_myPath = xp.compile(xPathExpression);
+			_myPath = NamespaceContextProvider.createPath(xPathExpression);
       
 
     }

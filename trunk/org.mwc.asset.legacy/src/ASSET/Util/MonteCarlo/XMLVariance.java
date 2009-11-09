@@ -222,22 +222,8 @@ public final class XMLVariance
 
 		try
 		{
-			//
-			// right, first create our xpath
-			//
-			XPathFactory xpf = XPathFactory.newInstance();
-			XPath xp = xpf.newXPath();
-
-			// tell it what schema to use for the indicated elements
-			NamespaceContextProvider myResolver = new NamespaceContextProvider(
-					NAMESPACE_PREFIX, "http://www.mwc.org/asset");
-			xp.setNamespaceContext(myResolver);
-
-			// note, we've got to stick the as bit in front of any matching xpath
-			// items
-			theXPath = myResolver.insertPrefixesTo(theXPath);
-
-			_myPath = xp.compile(theXPath);
+			_myPath = NamespaceContextProvider.createPath(theXPath);
+			
 			ourObj = (NodeList) _myPath.evaluate(document, XPathConstants.NODESET);
 
 		}
@@ -685,6 +671,7 @@ public final class XMLVariance
 			return sourceDocument.lookupPrefix(namespaceURI);
 		}
 
+		@SuppressWarnings("unchecked")
 		public Iterator getPrefixes(String namespaceURI)
 		{
 			// not implemented yet
@@ -704,10 +691,33 @@ public final class XMLVariance
 	{
 		String boundPrefix, boundURI;
 
-		NamespaceContextProvider(String prefix, String URI)
+		private NamespaceContextProvider(String prefix, String URI)
 		{
 			boundPrefix = prefix;
 			boundURI = URI;
+		}
+
+		/** convenience method that sorts out some xpath bits for us
+		 * 
+		 * @param theXPath
+		 * @return
+		 * @throws XPathExpressionException
+		 */
+		public static XPathExpression createPath(final String theXPath) throws XPathExpressionException
+		{
+			XPathFactory xpf = XPathFactory.newInstance();
+			XPath xp = xpf.newXPath();
+
+			// tell it what schema to use for the indicated elements
+			NamespaceContextProvider myResolver = new NamespaceContextProvider(
+					NAMESPACE_PREFIX, "http://www.mwc.org/asset");
+			xp.setNamespaceContext(myResolver);
+
+			// note, we've got to stick the as bit in front of any matching xpath
+			// items
+			String myPath = myResolver.insertPrefixesTo(theXPath);
+
+			return xp.compile(myPath);
 		}
 
 		/**
@@ -716,11 +726,9 @@ public final class XMLVariance
 		 * 
 		 * @param theXPath
 		 *          the xpath regex received
-		 * @param ns
-		 *          TODO
 		 * @return the same regex, but with as: inserted before every element name
 		 */
-		public String insertPrefixesTo(final String theXPath)
+		private String insertPrefixesTo(final String theXPath)
 		{
 
 			String theRes = new String(theXPath);
@@ -783,6 +791,7 @@ public final class XMLVariance
 			}
 		}
 
+		@SuppressWarnings("unchecked")
 		public Iterator getPrefixes(String namespaceURI)
 		{
 			// not implemented for the example
