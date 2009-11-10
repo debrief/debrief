@@ -197,6 +197,14 @@ public class StepperXYPlot extends XYPlot implements StepperListener
 		_currentTime = newDTG;
 	}
 
+
+	@Override
+	public void zoom(double percent)
+	{
+		this.getDomainAxis().setAutoRange(true);
+		this.getRangeAxis().setAutoRange(true);
+	}
+	
 	/**
 	 * the mode for stepping has changed
 	 */
