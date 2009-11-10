@@ -90,6 +90,7 @@
       </describer>
    	</content-type>
 	</extension>
+	<!--
    <extension
          name="create a catalog entry for the ASSET schema"
          point="org.eclipse.wst.xml.core.catalogContributions">
@@ -100,7 +101,7 @@
                uri="platform:/plugin/org.mwc.asset.legacy/schemas/ASSET.xsd">
          </public>
       </catalogContribution>
-   </extension>
+   </extension>  -->
 
 	
 	   
