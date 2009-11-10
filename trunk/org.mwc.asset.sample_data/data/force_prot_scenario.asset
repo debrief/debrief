@@ -3,8 +3,8 @@
  Created="2001-12-12T12:23:00"
  Name="some test scenario"
  StartTime="2001-12-12T12:23:00">
-	<StepTime Units="seconds" Value="15"/>
-	<Environment Name="PROT_ENV" AtmosphericAttenuation="CLEAR" SeaState="1"/><Participants>
+	<StepTime Units="seconds" Value="15"></StepTime>
+	<Environment Name="PROT_ENV" AtmosphericAttenuation="CLEAR" SeaState="1"></Environment><Participants>
 		<Helo Name="HELO_ALPHA" id="1" MonteCarloTarget="false">
 			<Category Environment="AIRBORNE" Force="BLUE" Type="HELICOPTER" />
 			<SensorFit>

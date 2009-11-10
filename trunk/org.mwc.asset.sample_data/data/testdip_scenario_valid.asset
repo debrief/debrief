@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
 <!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by ian mayo (pml) -->
-<Scenario Created="2001-12-05T21:00:00" Name="Test 1 scenario file" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\schemas\ASSET.xsd" StartTime="2001-12-05T21:00:00">
+<Scenario Created="2001-12-05T21:00:00" Name="Test 1 scenario file"
+   xmlns="http://www.mwc.org/asset" StartTime="2001-12-05T21:00:00">
 	<StepTime Units="seconds" Value="15"/>
 	<Participants>
 		<Helo Name="HELO_ALPHA">
