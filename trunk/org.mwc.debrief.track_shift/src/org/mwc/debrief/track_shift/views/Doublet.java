@@ -232,7 +232,10 @@ public final class Doublet
 			final double hisDopplerComponent = calcDopplerComponent(Math.PI
 					+ theBearingRads, hisCourseRads, hisSpeedKts, baseFreq);
 
-			predictedFreq = baseFreq + myDopplerComponent + hisDopplerComponent;
+			// note, we've changed the sign of how we add the two components to the base freq
+			// - this wasn't based on theoretical evidence, but on empirical observations
+			//   by users
+			predictedFreq = baseFreq - (myDopplerComponent + hisDopplerComponent);
 		}
 		return predictedFreq;
 	}

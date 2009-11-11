@@ -2,7 +2,7 @@
 <feature
       id="org.mwc.debrief.combined.feature"
       label="Debrief-specific plugins"
-      version="1.0.26">
+      version="1.0.27">
 
    <description>
       Debrief-specific plugins used by the Debrief Maritime Analysis
@@ -178,7 +178,6 @@ Library.
    </license>
 
    <url>
-      <update label="local installer" url="file://C:/dev/cmap4/org.mwc.cmap.installer"/>
       <discovery label="Debrief Home Page" url="http://www.debrief.info"/>
    </url>
 
