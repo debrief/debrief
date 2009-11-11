@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="BearingResiduals"
+            name="Bearing Residuals"
             icon="icons/stacked_dots.png"
             category="org.mwc.cmap.plotViewer.CMAP"
             class="org.mwc.debrief.track_shift.views.BearingResidualsView"
