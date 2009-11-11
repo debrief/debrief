@@ -11,8 +11,10 @@
    </configIni>
 
    <launcherArgs>
+      <programArgs>-data
+@user.home/.DebriefNG</programArgs>
       <vmArgs>-Xms128m
--Xmx512m</vmArgs>
+-Xmx1024m</vmArgs>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.debrief.core/icons/icon.gif"/>
