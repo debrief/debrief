@@ -3,7 +3,6 @@ package org.mwc.debrief.track_shift.views;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
-import java.awt.GradientPaint;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -248,11 +247,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		lineRend.setPaint(Color.DARK_GRAY);
 		_linePlot.setRenderer(lineRend);
 
-		// give them a fancy backdrop
-		GradientPaint gradientPaint = new GradientPaint(0.0F, 10.0F,
-				Color.LIGHT_GRAY, 10.0F, 0.0F, Color.LIGHT_GRAY.brighter(), true);
-		_dotPlot.setBackgroundPaint(gradientPaint);
-		_linePlot.setBackgroundPaint(gradientPaint);
+		// give them a high contrast backdrop
+		_dotPlot.setBackgroundPaint(Color.black);
+		_linePlot.setBackgroundPaint(Color.black);
 
 		// set the y axes to autocalculate
 		_dotPlot.getRangeAxis().setAutoRange(true);
