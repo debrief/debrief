@@ -7,7 +7,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.URL;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Vector;
@@ -65,7 +64,6 @@ import org.eclipse.ui.part.ViewPart;
 import org.eclipse.ui.progress.IProgressService;
 import org.mwc.asset.SimulationController.table.SimulationTable;
 import org.mwc.asset.core.ASSETPlugin;
-import org.mwc.asset.sample_data.SampleDataPlugin;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.Temporal.SteppableTime;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeControlPreferences;
@@ -1140,48 +1138,6 @@ public class ScenarioControllerView extends ViewPart implements
 
 	protected void reloadDataFiles()
 	{
-		// get ourselves a scenario file, if we don't have one.
-		if (_scenarioFileName == null)
-		{
-			URL scenURL = null;
-			try
-			{
-				SampleDataPlugin data = new SampleDataPlugin();
-				scenURL = data.getFileURL("/data/lookup_tutorial_scenario.xml");
-			}
-			catch (IOException e)
-			{
-				// aah well, never mind
-				ASSETPlugin.logError(Status.ERROR, "Failed to load demo scenario data",
-						e);
-				e.printStackTrace();
-			}
-			// did it work?
-			if (scenURL != null)
-				_scenarioFileName = scenURL.getFile();
-		}
-
-		// now for the control file
-		if (_controlFileName == null)
-		{
-			URL contURL = null;
-			try
-			{
-				SampleDataPlugin data = new SampleDataPlugin();
-				contURL = data.getFileURL("/data/lookup_test_control.xml");
-			}
-			catch (IOException e)
-			{
-				// aah well, never mind
-				ASSETPlugin.logError(Status.ERROR, "Failed to load demo control data",
-						e);
-				e.printStackTrace();
-			}
-			// did it work?
-			if (contURL != null)
-				_controlFileName = contURL.getFile();
-		}
-
 		// ok, force the data-files to be reloaded
 		if (_scenarioFileName != null)
 			filesDropped(new String[]
