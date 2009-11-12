@@ -40,8 +40,9 @@
 		This target actually executes the PDE Build process by launching the 
 		Eclipse antRunner application.
 	-->
-	<target name="pde-build">
+	<target name="pde-build"> 
 		<echo>here we are before:${path2jre}</echo>
+		<echo>looking in: ${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" </echo>
 		<java classname="org.eclipse.equinox.launcher.Main" fork="true" failonerror="true">
 			<arg value="-application" />
 			<arg value="org.eclipse.ant.core.antRunner" />
@@ -52,7 +53,7 @@
 				<pathelement location="${eclipseLocation}/plugins/org.eclipse.equinox.launcher_${equinoxLauncherPluginVersion}.jar" />
 			</classpath>
 		</java>
-	</target>
+	</target> 
 
 	<target name="copy-jre">
 		<copy todir="${buildDirectory}/tmp/${archivePrefix}/jre">
