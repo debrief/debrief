@@ -556,4 +556,61 @@ public class RelativeTMASegment extends CoreTMASegment {
 
 	}
 
+	/** move the solution in or out from the ref track, maintaining the bearings to the host track
+	 * (changing speed but not course)
+	 * 
+	 * @param vector how far to push it.
+	 */
+	public void fanStretch(WorldVector vector)
+	{
+		// right, find the track we're based on
+		WatchableList refTrack = getReferenceTrack();
+		
+		// find our locations
+		FixWrapper start = (FixWrapper) this.first();
+		FixWrapper end = (FixWrapper) this.last();
+		
+		FixWrapper hisStart = (FixWrapper) refTrack.getNearestTo(start.getDateTimeGroup())[0];
+		FixWrapper hisEnd = (FixWrapper) refTrack.getNearestTo(end.getDateTimeGroup())[0];
+		
+		// find the bearings
+		double startBrg = 2 * Math.PI +  start.getLocation().bearingFrom(hisStart.getLocation());
+		double endBrg = 2 * Math.PI +  end.getLocation().bearingFrom(hisEnd.getLocation());
+
+		double midBrg = (endBrg + startBrg) / 2; 
+		while(midBrg >= (2 * Math.PI))
+			midBrg -= (2 * Math.PI);
+		
+		// separate out the component of travel.
+		double theRange = vector.getRange();
+		
+		
+		// sort out which direction we're going
+		double theBrg =  2 * Math.PI + vector.getBearing();
+		double theDelta = theBrg - midBrg;
+		while(theDelta > 2 * Math.PI)
+			theDelta -= 2 * Math.PI;
+
+		// right, see if we're going in or out
+		if(Math.abs(theDelta) > Math.PI / 2)
+		{
+			theRange *= -1;
+		}
+			
+		// generate new start location
+		_offset = new WorldVector(_offset.getBearing(), _offset.getRange() + theRange, 0);
+		
+		// calculate the distance delta (for how much longer the track will have to be
+		double courseRads = Math.PI +  MWC.Algorithms.Conversions.Degs2Rads(_courseDegs);
+		double distD = theRange  * Math.sin(courseRads + (Math.PI + endBrg));
+		
+//		System.err.println("course is:" + _courseDegs + " range is:" + distD);
+		
+		// turn this delta into a proportion		
+		double distP = distD / end.getLocation().subtract(start.getLocation()).getRange();
+		
+		// and change the speed proportionately
+		this.setSpeed(new WorldSpeed(_speed.getValue() *  (1d - distP), _speed.getUnits()));
+	}
+
 }
