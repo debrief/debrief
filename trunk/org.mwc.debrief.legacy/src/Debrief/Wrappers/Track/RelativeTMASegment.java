@@ -602,15 +602,20 @@ public class RelativeTMASegment extends CoreTMASegment {
 		
 		// calculate the distance delta (for how much longer the track will have to be
 		double courseRads = Math.PI +  MWC.Algorithms.Conversions.Degs2Rads(_courseDegs);
-		double distD = theRange  * Math.sin(courseRads + (Math.PI + endBrg));
+		double internalAngle = courseRads + (Math.PI - endBrg);
+		while(internalAngle > 2 * Math.PI)
+			internalAngle -= 2 * Math.PI;
 		
-//		System.err.println("course is:" + _courseDegs + " range is:" + distD);
+		double distD = theRange  * Math.sin(internalAngle);
+		
+		System.err.println("course is:" + _courseDegs + " range is:" + distD + " internal is:" + 
+				MWC.Algorithms.Conversions.Rads2Degs(internalAngle));
 		
 		// turn this delta into a proportion		
-		double distP = distD / end.getLocation().subtract(start.getLocation()).getRange();
+		double distP =  distD / end.getLocation().subtract(start.getLocation()).getRange();
 		
 		// and change the speed proportionately
-		this.setSpeed(new WorldSpeed(_speed.getValue() *  (1d - distP), _speed.getUnits()));
+		this.setSpeed(new WorldSpeed(_speed.getValue() *  (1d + distP), _speed.getUnits()));
 	}
 
 }
