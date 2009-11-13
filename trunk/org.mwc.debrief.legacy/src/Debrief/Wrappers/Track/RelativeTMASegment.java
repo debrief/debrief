@@ -563,12 +563,16 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 */
 	public void fanStretch(WorldVector vector)
 	{
+		System.out.println("vector is:" + (int) MWC.Algorithms.Conversions.Rads2Degs(vector.getBearing()) + 
+				" range is:" + (int) new WorldDistance(vector.getRange(), WorldDistance.DEGS).getValueIn(WorldDistance.YARDS));
+		
 		// right, find the track we're based on
 		WatchableList refTrack = getReferenceTrack();
 		
 		// find our locations
 		FixWrapper start = (FixWrapper) this.first();
 		FixWrapper end = (FixWrapper) this.last();
+		
 		
 		FixWrapper hisStart = (FixWrapper) refTrack.getNearestTo(start.getDateTimeGroup())[0];
 		FixWrapper hisEnd = (FixWrapper) refTrack.getNearestTo(end.getDateTimeGroup())[0];
@@ -577,6 +581,9 @@ public class RelativeTMASegment extends CoreTMASegment {
 		double startBrg = 2 * Math.PI +  start.getLocation().bearingFrom(hisStart.getLocation());
 		double endBrg = 2 * Math.PI +  end.getLocation().bearingFrom(hisEnd.getLocation());
 
+		System.err.println("end is:" + hisEnd.getLabel() + " end brg is:" + (int)MWC.Algorithms.Conversions.Rads2Degs(endBrg));
+
+		
 		double midBrg = (endBrg + startBrg) / 2; 
 		while(midBrg >= (2 * Math.PI))
 			midBrg -= (2 * Math.PI);
@@ -584,6 +591,12 @@ public class RelativeTMASegment extends CoreTMASegment {
 		// separate out the component of travel.
 		double theRange = vector.getRange();
 		
+		double newRange = theRange * Math.cos(midBrg - vector.getBearing());
+		
+		System.err.println(" drag:" + (int) MWC.Algorithms.Conversions.Rads2Degs(vector.getBearing())
+				+ " raw drag:" + vector.getBearing() 
+				+ " before rng:" + theRange + " after rng:" + newRange);
+		 
 		
 		// sort out which direction we're going
 		double theBrg =  2 * Math.PI + vector.getBearing();
@@ -608,14 +621,31 @@ public class RelativeTMASegment extends CoreTMASegment {
 		
 		double distD = theRange  * Math.sin(internalAngle);
 		
-		System.err.println("course is:" + _courseDegs + " range is:" + distD + " internal is:" + 
-				MWC.Algorithms.Conversions.Rads2Degs(internalAngle));
+		double l1 = theRange;
+		double a1 = endBrg - startBrg;
+		double l2 = l1 * Math.sin(a1);
+		double l3 = l2 * Math.sin(internalAngle);
+		
+		System.out.println("extension is:"+ (int) new WorldDistance(l3, WorldDistance.DEGS).getValueIn(WorldDistance.YARDS));
+		
+		
+//		System.err.println("course is:" + _courseDegs + " range is:" + distD + " internal is:" + 
+//				MWC.Algorithms.Conversions.Rads2Degs(internalAngle));
 		
 		// turn this delta into a proportion		
 		double distP =  distD / end.getLocation().subtract(start.getLocation()).getRange();
 		
+		double newLegLength = l3 + end.getLocation().subtract(start.getLocation()).getRange();
+		
+		WorldDistance lenDegs = new WorldDistance(newLegLength, WorldDistance.DEGS);
+		
+		double timeTakenMicros = (end.getDateTimeGroup().getMicros() - start.getDateTimeGroup().getMicros());
+		double timeTakenHours = timeTakenMicros / 1000 / 1000 / 60 / 60;
+		double speedKts = lenDegs.getValueIn(WorldDistance.NM) / timeTakenHours;
+		
 		// and change the speed proportionately
-		this.setSpeed(new WorldSpeed(_speed.getValue() *  (1d + distP), _speed.getUnits()));
+	//	this.setSpeed(new WorldSpeed(_speed.getValue() *  (1d + distP), _speed.getUnits()));
+		this.setSpeed(new WorldSpeed(speedKts, WorldSpeed.Kts));
 	}
 
 }
