@@ -1,16 +1,21 @@
 package Debrief.Wrappers.Track;
 
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
+import java.util.Collection;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.SortedSet;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldDistance;
@@ -556,6 +561,43 @@ public class RelativeTMASegment extends CoreTMASegment {
 
 	}
 
+	private void recalcPositions()
+	{
+		Collection<Editable> items = getData();
+		
+		// ok - draw that line!
+		WorldLocation tmaLastLoc = null;
+		long tmaLastDTG = 0;
+
+	
+		for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
+		{
+			FixWrapper thisF = (FixWrapper) iterator.next();
+	
+			long thisTime = thisF.getDateTimeGroup().getDate().getTime();
+	
+			// ok, is this our first location?
+			if (tmaLastLoc == null)
+			{
+				tmaLastLoc = new WorldLocation(getTrackStart());
+			}
+			else
+			{
+				// calculate a new vector
+				long timeDelta = thisTime - tmaLastDTG;
+				WorldVector thisVec = vectorFor(timeDelta, thisF.getSpeed(), thisF
+						.getCourse());
+				tmaLastLoc.addToMe(thisVec);
+			}
+			
+			// dump the location into the fix
+			thisF.setFixLocationSilent(new WorldLocation(tmaLastLoc));
+	
+			// cool, remember the time.
+			tmaLastDTG = thisTime;
+		}
+	}
+	
 	/** move the solution in or out from the ref track, maintaining the bearings to the host track
 	 * (changing speed but not course)
 	 * 
@@ -563,40 +605,34 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 */
 	public void fanStretch(WorldVector vector)
 	{
-		System.out.println("vector is:" + (int) MWC.Algorithms.Conversions.Rads2Degs(vector.getBearing()) + 
-				" range is:" + (int) new WorldDistance(vector.getRange(), WorldDistance.DEGS).getValueIn(WorldDistance.YARDS));
+//		System.out.println("vector is:" +  MWC.Algorithms.Conversions.Rads2Degs(vector.getBearing()) + 
+//				" range is:" +  new WorldDistance(vector.getRange(), WorldDistance.DEGS).getValueIn(WorldDistance.YARDS));
 		
 		// right, find the track we're based on
 		WatchableList refTrack = getReferenceTrack();
 		
 		// find our locations
-		FixWrapper start = (FixWrapper) this.first();
-		FixWrapper end = (FixWrapper) this.last();
+		WorldLocation start =  this.getTrackStart();
+		WorldLocation end = ((FixWrapper) this.last()).getLocation();
 		
-		
-		FixWrapper hisStart = (FixWrapper) refTrack.getNearestTo(start.getDateTimeGroup())[0];
-		FixWrapper hisEnd = (FixWrapper) refTrack.getNearestTo(end.getDateTimeGroup())[0];
+		WorldLocation hisStart =  refTrack.getNearestTo(this.startDTG())[0].getLocation();
+		WorldLocation hisEnd = refTrack.getNearestTo(this.endDTG())[0].getLocation();
 		
 		// find the bearings
-		double startBrg = 2 * Math.PI +  start.getLocation().bearingFrom(hisStart.getLocation());
-		double endBrg = 2 * Math.PI +  end.getLocation().bearingFrom(hisEnd.getLocation());
+		double startBrg = 2 * Math.PI +  start.bearingFrom(hisStart);
+		double endBrg = 2 * Math.PI +  end.bearingFrom(hisEnd);
 
-		System.err.println("end is:" + hisEnd.getLabel() + " end brg is:" + (int)MWC.Algorithms.Conversions.Rads2Degs(endBrg));
-
-		
 		double midBrg = (endBrg + startBrg) / 2; 
 		while(midBrg >= (2 * Math.PI))
 			midBrg -= (2 * Math.PI);
 		
 		// separate out the component of travel.
 		double theRange = vector.getRange();
-		
 		double newRange = theRange * Math.cos(midBrg - vector.getBearing());
 		
-		System.err.println(" drag:" + (int) MWC.Algorithms.Conversions.Rads2Degs(vector.getBearing())
-				+ " raw drag:" + vector.getBearing() 
-				+ " before rng:" + theRange + " after rng:" + newRange);
-		 
+//		System.err.println(" drag:" + (int) MWC.Algorithms.Conversions.Rads2Degs(vector.getBearing())
+//				+ " raw drag:" + vector.getBearing() 
+//				+ " before rng:" + theRange + " after rng:" + newRange);
 		
 		// sort out which direction we're going
 		double theBrg =  2 * Math.PI + vector.getBearing();
@@ -613,39 +649,98 @@ public class RelativeTMASegment extends CoreTMASegment {
 		// generate new start location
 		_offset = new WorldVector(_offset.getBearing(), _offset.getRange() + theRange, 0);
 		
+		// re-sort out the locations, once we've updated the offset
+		recalcPositions();
+		
+		// recalculate the dragged track
+		start =  this.getTrackStart();
+		end = ((FixWrapper) this.last()).getLocation();
+
+		// sort out points on the line we have to meet
+		WorldLocation outerStart = hisEnd;
+		WorldLocation outerEnd = outerStart.add(new WorldVector(endBrg, _offset.getRange(), 0));
+//		System.err.println("current start is" + start.getLocation() + " and current end is: " + end.getLocation());
+//		System.err.println("  outer start is" + outerStart + " and outer end is: " + outerEnd);
+		
+		double x1 = start.getLong(), y1 = start.getLat();
+		double x2 = end.getLong(), y2 = end.getLat();
+		
+		double x3 = outerStart.getLong(), y3 = outerStart.getLat();
+		double x4 = outerEnd.getLong(), y4 = outerEnd.getLat();
+		
+		double x12 = x1 - x2;
+		double x34 = x3 - x4;
+		double y12 = y1 - y2;
+		double y34 = y3 - y4;
+
+		double c = x12 * y34 - y12 * x34;
+
+		double intersectX=0, intersectY=0;
+		
+		if (Math.abs(c) < 0.000001)
+		{
+		  // No intersection
+			System.out.println(" no intersect, c is:" + c);
+			return;
+		}
+		else
+		{
+		  // Intersection
+			double a = x1 * y2 - y1 * x2;
+			double b = x3 * y4 - y3 * x4;
+
+			intersectX = (a * x34 - b * x12) / c;
+			intersectY = (a * y34 - b * y12) / c;
+
+//			System.out.println(x1 + "," + y1);
+//			System.out.println(x2 + "," + y2);
+//			System.out.println(x3 + "," + y3);
+//			System.out.println(x4 + "," + y4);
+//			System.out.println(intersectX + "," + intersectY);		
+		}
+		
 		// calculate the distance delta (for how much longer the track will have to be
-		double courseRads = Math.PI +  MWC.Algorithms.Conversions.Degs2Rads(_courseDegs);
-		double internalAngle = courseRads + (Math.PI - endBrg);
-		while(internalAngle > 2 * Math.PI)
-			internalAngle -= 2 * Math.PI;
+
+		WorldLocation newEnd = new WorldLocation(intersectY, intersectX, 0);
 		
-		double distD = theRange  * Math.sin(internalAngle);
-		
-		double l1 = theRange;
-		double a1 = endBrg - startBrg;
-		double l2 = l1 * Math.sin(a1);
-		double l3 = l2 * Math.sin(internalAngle);
-		
-		System.out.println("extension is:"+ (int) new WorldDistance(l3, WorldDistance.DEGS).getValueIn(WorldDistance.YARDS));
-		
-		
+//		double internalAngle = courseRads + (Math.PI - endBrg);
+//		while(internalAngle > 2 * Math.PI)
+//			internalAngle -= 2 * Math.PI;
+//		
+//		double distD = theRange  * Math.sin(internalAngle);
+//		
+//		double l1 = theRange;
+//		double a1 = endBrg - startBrg;
+//		double l2 = l1 * Math.sin(a1);
+//		double l3 = l2 * Math.sin(internalAngle);
+//		
+//		System.out.println("extension is:"+ (int) new WorldDistance(l3, WorldDistance.DEGS).getValueIn(WorldDistance.YARDS));
 //		System.err.println("course is:" + _courseDegs + " range is:" + distD + " internal is:" + 
 //				MWC.Algorithms.Conversions.Rads2Degs(internalAngle));
-		
 		// turn this delta into a proportion		
-		double distP =  distD / end.getLocation().subtract(start.getLocation()).getRange();
+//		double distP =  distD / end.getLocation().subtract(start.getLocation()).getRange();
 		
-		double newLegLength = l3 + end.getLocation().subtract(start.getLocation()).getRange();
-		
+		double newLegLength = newEnd.subtract(start).getRange();		
 		WorldDistance lenDegs = new WorldDistance(newLegLength, WorldDistance.DEGS);
+	//	System.err.print(" new length is:" + lenDegs.getValueIn(WorldDistance.METRES));
 		
-		double timeTakenMicros = (end.getDateTimeGroup().getMicros() - start.getDateTimeGroup().getMicros());
+		double oldLegLength = end.subtract(start).getRange();		
+		WorldDistance oldDegs = new WorldDistance(oldLegLength, WorldDistance.DEGS);
+	//	System.err.println(" old length is:" + oldDegs.getValueIn(WorldDistance.METRES));
+		
+		
+		double timeTakenMicros = (endDTG().getMicros() - startDTG().getMicros());
 		double timeTakenHours = timeTakenMicros / 1000 / 1000 / 60 / 60;
 		double speedKts = lenDegs.getValueIn(WorldDistance.NM) / timeTakenHours;
 		
 		// and change the speed proportionately
 	//	this.setSpeed(new WorldSpeed(_speed.getValue() *  (1d + distP), _speed.getUnits()));
+	//	System.out.println("speed was:" + ((FixWrapper)(this.first())).getSpeed() + " speed is:" + speedKts );
 		this.setSpeed(new WorldSpeed(speedKts, WorldSpeed.Kts));
+		
+		// re-sort out the locations, once we've updated the speed
+		recalcPositions();
+
 	}
 
 }
