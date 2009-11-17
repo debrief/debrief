@@ -561,9 +561,11 @@ public class RelativeTMASegment extends CoreTMASegment
 			newCourse += 360;
 
 		this.setCourse(newCourse);
+		
+		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
 
 		// tell the segment it's being stretched
-		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts "
+		_dragMsg = "[" + spdTxt  + " kts "
 				+ (int) newCourse + "\u00B0]";
 
 	}
@@ -646,7 +648,9 @@ public class RelativeTMASegment extends CoreTMASegment
 		this.setSpeed(newSpeed);
 
 		// tell the segment it's being stretched
-		_dragMsg = "[" + (int) newSpeed.getValueIn(WorldSpeed.Kts) + " kts]";
+		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
+
+		_dragMsg = "[" + spdTxt + " kts]";
 
 	}
 
@@ -804,7 +808,9 @@ public class RelativeTMASegment extends CoreTMASegment
 		recalcPositions();
 
 		// tell the segment it's being stretched
-		_dragMsg = "[" + (int) this.getSpeed().getValueIn(WorldSpeed.Kts) + " kts "
+		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(this.getSpeed().getValueIn(WorldSpeed.Kts));
+
+		_dragMsg = "[" + spdTxt + " kts "
 				+ (int) this.getCourse() + "\u00B0]";
 		
 	}
