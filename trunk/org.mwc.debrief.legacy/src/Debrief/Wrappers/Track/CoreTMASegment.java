@@ -242,12 +242,12 @@ abstract public class CoreTMASegment extends TrackSegment {
 			// put the text in a solid backdrop
 			int ht = 	dest.getStringHeight(null);
 			int wid = dest.getStringWidth(null, _dragMsg);
-			dest.setColor(Color.WHITE);
-			dest.fillRect(pt.x , pt.y + 15 - ht, wid, ht);
+			dest.setColor(Color.BLACK);
+			dest.fillRect(pt.x , pt.y + 20 - ht, wid, ht);
 			
 			// and draw the text
 			dest.setColor(java.awt.Color.red);
-			dest.drawText(_dragMsg, pt.x, pt.y + 15);
+			dest.drawText(_dragMsg, pt.x, pt.y + 15);			
 		}
 	}
 
