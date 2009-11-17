@@ -59,6 +59,19 @@ public class StretchDragMode extends RotateDragMode
 					2);	
 		}
 	}
+	
+	/**
+	 * generate an operation for when the centre of the line segment is dragged
+	 * 
+	 * @param seg
+	 *          the segment being dragged
+	 * @return an operation we can use to do this
+	 */
+	protected DraggableItem getCentreOperation(final TrackSegment seg)
+	{
+		return new StretchFanOperation(seg);
+	}
+
 
 	public StretchDragMode()
 	{

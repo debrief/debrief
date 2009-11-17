@@ -29,11 +29,13 @@ import MWC.GenericData.WorldVector;
  * @author Ian Mayo
  * 
  */
-public class RelativeTMASegment extends CoreTMASegment {
+public class RelativeTMASegment extends CoreTMASegment
+{
 	/**
 	 * class containing editable details of a track
 	 */
-	public final class TMASegmentInfo extends TrackSegmentInfo {
+	public final class TMASegmentInfo extends TrackSegmentInfo
+	{
 
 		private final static String OFFSET = "Offset";
 
@@ -43,39 +45,38 @@ public class RelativeTMASegment extends CoreTMASegment {
 		 * constructor for this editor, takes the actual track as a parameter
 		 * 
 		 * @param data
-		 *            track being edited
+		 *          track being edited
 		 */
-		public TMASegmentInfo(final TrackSegment data) {
+		public TMASegmentInfo(final TrackSegment data)
+		{
 			super(data);
 		}
 
 		@Override
-		public final PropertyDescriptor[] getPropertyDescriptors() {
+		public final PropertyDescriptor[] getPropertyDescriptors()
+		{
 			// start off with the parent
 			PropertyDescriptor[] parent = super.getPropertyDescriptors();
 			PropertyDescriptor[] mine = null;
 
-			try {
-				PropertyDescriptor[] res = {
-						expertProp("Course", "Course of this TMA Solution",
-								SOLUTION),
+			try
+			{
+				PropertyDescriptor[] res =
+				{
+						expertProp("Course", "Course of this TMA Solution", SOLUTION),
 						expertProp("BaseFrequency",
-								"The base frequency of this TMA segment",
-								SOLUTION),
-						expertProp("Speed", "Speed of this TMA Solution",
-								SOLUTION),
-						expertProp(
-								"HostName",
-								"Name of the track from which range/bearing measured",
+								"The base frequency of this TMA segment", SOLUTION),
+						expertProp("Speed", "Speed of this TMA Solution", SOLUTION),
+						expertProp("HostName",
+								"Name of the track from which range/bearing measured", OFFSET),
+						expertProp("OffsetRange", "Distance to start point on host track",
 								OFFSET),
-						expertProp("OffsetRange",
-								"Distance to start point on host track", OFFSET),
-						expertProp(
-								"OffsetBearing",
-								"Beraing from host track to start of this solution",
-								OFFSET) };
+						expertProp("OffsetBearing",
+								"Beraing from host track to start of this solution", OFFSET) };
 				mine = res;
-			} catch (final IntrospectionException e) {
+			}
+			catch (final IntrospectionException e)
+			{
 				return super.getPropertyDescriptors();
 			}
 
@@ -152,14 +153,16 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 * @param theLayers
 	 */
 	public RelativeTMASegment(final double courseDegs, final WorldSpeed speed,
-			final WorldVector offset, Layers theLayers) {
+			final WorldVector offset, Layers theLayers)
+	{
 		super(courseDegs, speed);
 		_theLayers = theLayers;
 		_offset = offset;
 	}
 
 	public RelativeTMASegment(RelativeTMASegment relevantSegment,
-			SortedSet<Editable> theItems, WorldVector theOffset) {
+			SortedSet<Editable> theItems, WorldVector theOffset)
+	{
 		// start off with the obvious bits
 		this(relevantSegment._courseDegs, relevantSegment._speed, theOffset,
 				relevantSegment._theLayers);
@@ -180,18 +183,18 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 * build up a solution from the supplied sensor data
 	 * 
 	 * @param observations
-	 *            create a single position for the DTG of each solution
+	 *          create a single position for the DTG of each solution
 	 * @param offset
-	 *            the range/brg from the host's position at the DTG of the first
-	 *            observation
+	 *          the range/brg from the host's position at the DTG of the first
+	 *          observation
 	 * @param speed
-	 *            the initial target speed estimate
+	 *          the initial target speed estimate
 	 * @param courseDegs
-	 *            the initial target course estimate
+	 *          the initial target course estimate
 	 */
 	public RelativeTMASegment(SensorContactWrapper[] observations,
-			WorldVector offset, WorldSpeed speed, double courseDegs,
-			Layers theLayers) {
+			WorldVector offset, WorldSpeed speed, double courseDegs, Layers theLayers)
+	{
 		this(courseDegs, speed, offset, theLayers);
 
 		// sort out the origin
@@ -206,17 +209,18 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 * build up a solution from the supplied sensor data
 	 * 
 	 * @param observations
-	 *            create a single position for the DTG of each solution
+	 *          create a single position for the DTG of each solution
 	 * @param offset
-	 *            the range/brg from the host's position at the DTG of the first
-	 *            observation
+	 *          the range/brg from the host's position at the DTG of the first
+	 *          observation
 	 * @param speed
-	 *            the initial target speed estimate
+	 *          the initial target speed estimate
 	 * @param courseDegs
-	 *            the initial target course estimate
+	 *          the initial target course estimate
 	 */
 	public RelativeTMASegment(SensorWrapper sw, WorldVector offset,
-			WorldSpeed speed, double courseDegs, Layers theLayers) {
+			WorldSpeed speed, double courseDegs, Layers theLayers)
+	{
 		this(courseDegs, speed, offset, theLayers);
 
 		// sort out the origin
@@ -226,93 +230,105 @@ public class RelativeTMASegment extends CoreTMASegment {
 		createPointsFrom(sw);
 	}
 
-
 	/**
 	 * create a fix at the specified dtg
 	 * 
 	 * @param thisS
 	 * @return
 	 */
-	protected FixWrapper createPointFor(SensorContactWrapper thisS) {
+	protected FixWrapper createPointFor(SensorContactWrapper thisS)
+	{
 		long theTime = thisS.getDTG().getDate().getTime();
 		return createFixAt(theTime);
 	}
 
-	/** create a solution from all of ths fixes in this sensor
+	/**
+	 * create a solution from all of ths fixes in this sensor
 	 * 
 	 * @param sw
 	 */
-	private void createPointsFrom(SensorWrapper sw) {
+	private void createPointsFrom(SensorWrapper sw)
+	{
 		Enumeration<Editable> obs = sw.elements();
-		while (obs.hasMoreElements()) {
-			SensorContactWrapper thisS = (SensorContactWrapper) obs
-					.nextElement();
+		while (obs.hasMoreElements())
+		{
+			SensorContactWrapper thisS = (SensorContactWrapper) obs.nextElement();
 			doThisFix(thisS);
 		}
 	}
 
-	/** create a solution from all of the array of fixes
+	/**
+	 * create a solution from all of the array of fixes
 	 * 
 	 * @param sw
 	 */
-	private void createPointsFrom(SensorContactWrapper[] observations) {
-		System.err
-				.println("about to create:" + observations.length + " points");
-		
+	private void createPointsFrom(SensorContactWrapper[] observations)
+	{
+		System.err.println("about to create:" + observations.length + " points");
+
 		// better start looping
-		for (int i = 0; i < observations.length; i++) {
+		for (int i = 0; i < observations.length; i++)
+		{
 			SensorContactWrapper thisS = observations[i];
-			
+
 			doThisFix(thisS);
 		}
 	}
 
-	/** create a fix from this sensor item
+	/**
+	 * create a fix from this sensor item
 	 * 
 	 * @param thisS
 	 */
 	private void doThisFix(SensorContactWrapper thisS)
 	{
 		// track the first & last visible sensor items
-		if(_firstSensorContact == null)
+		if (_firstSensorContact == null)
 			_firstSensorContact = thisS;
 		_lastSensorContact = thisS;
-		
+
 		// and create a fix for this cut
 		FixWrapper newFix = createPointFor(thisS);
 		newFix.setSymbolShowing(true);
 		addFix(newFix);
 	}
 
-	
-	public double getDetectionBearing() {
+	public double getDetectionBearing()
+	{
 		return MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
 	}
 
-	public WorldDistance getDetectionRange() {
+	public WorldDistance getDetectionRange()
+	{
 		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
 	}
 
-	public WorldLocation getHostLocation() {
+	public WorldLocation getHostLocation()
+	{
 		WorldLocation res = null;
 
 		// have we sorted out our reference track yet?
-		if (_referenceTrack == null) {
+		if (_referenceTrack == null)
+		{
 			identifyReferenceTrack();
 		}
 
-		if (_referenceTrack != null) {
+		if (_referenceTrack != null)
+		{
 			Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
-			if (pts.length > 0) {
+			if (pts.length > 0)
+			{
 				res = pts[0].getLocation();
 			}
 		}
 		return res;
 	}
 
-	public String getHostName() {
+	public String getHostName()
+	{
 		// just check we have some data
-		if (_hostName == null) {
+		if (_hostName == null)
+		{
 			if (_referenceTrack == null)
 				identifyReferenceTrack();
 
@@ -323,23 +339,28 @@ public class RelativeTMASegment extends CoreTMASegment {
 	}
 
 	@Override
-	public EditorType getInfo() {
+	public EditorType getInfo()
+	{
 		return new TMASegmentInfo(this);
 	}
 
-	public WorldVector getOffset() {
+	public WorldVector getOffset()
+	{
 		return _offset;
 	}
 
-	public double getOffsetBearing() {
+	public double getOffsetBearing()
+	{
 		return MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
 	}
 
-	public WorldDistance getOffsetRange() {
+	public WorldDistance getOffsetRange()
+	{
 		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
 	}
 
-	public WatchableList getReferenceTrack() {
+	public WatchableList getReferenceTrack()
+	{
 		return _referenceTrack;
 	}
 
@@ -349,9 +370,11 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 * @return
 	 */
 	@Override
-	public WorldLocation getTrackStart() {
+	public WorldLocation getTrackStart()
+	{
 		WorldLocation res = getHostLocation();
-		if (res != null) {
+		if (res != null)
+		{
 			res = res.add(_offset);
 		}
 		return res;
@@ -361,18 +384,21 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 * find the reference track for this relative solution
 	 * 
 	 */
-	private void identifyReferenceTrack() {
+	private void identifyReferenceTrack()
+	{
 		_referenceTrack = (WatchableList) _theLayers.findLayer(_hostName);
 	}
 
 	@Override
-	public void rotate(double brg, final WorldLocation origin) {
+	public void rotate(double brg, final WorldLocation origin)
+	{
 		brg = -brg;
 
 		// right - we just rotate about the ends, and we use different
 		// processing depending on which end is being shifted.
 		FixWrapper first = (FixWrapper) this.getData().iterator().next();
-		if (first.getLocation().equals(origin)) {
+		if (first.getLocation().equals(origin))
+		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our course
 			double brgDegs = MWC.Algorithms.Conversions.Rads2Degs(brg);
@@ -380,7 +406,9 @@ public class RelativeTMASegment extends CoreTMASegment {
 			// right, the start is the origin, so we just set our course to the
 			// bearing
 			this.setCourse(newBrg);
-		} else {
+		}
+		else
+		{
 			// right, we've got to shift the start point to the relevant
 			// location,
 			// and fix the bearing
@@ -405,8 +433,7 @@ public class RelativeTMASegment extends CoreTMASegment {
 			WorldVector vec = origin.subtract(newStart);
 
 			// update the course
-			this.setCourse(MWC.Algorithms.Conversions.Rads2Degs(vec
-					.getBearing()));
+			this.setCourse(MWC.Algorithms.Conversions.Rads2Degs(vec.getBearing()));
 
 		}
 
@@ -418,13 +445,15 @@ public class RelativeTMASegment extends CoreTMASegment {
 
 	}
 
-	public void setDetectionBearing(double detectionBearing) {
+	public void setDetectionBearing(double detectionBearing)
+	{
 		_offset = new WorldVector(MWC.Algorithms.Conversions
-				.Degs2Rads(detectionBearing), new WorldDistance(_offset
-				.getRange(), WorldDistance.DEGS), null);
+				.Degs2Rads(detectionBearing), new WorldDistance(_offset.getRange(),
+				WorldDistance.DEGS), null);
 	}
 
-	public void setDetectionRange(WorldDistance detectionRange) {
+	public void setDetectionRange(WorldDistance detectionRange)
+	{
 		_offset = new WorldVector(_offset.getBearing(), detectionRange, null);
 	}
 
@@ -434,16 +463,20 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 * 
 	 * @param hostName
 	 */
-	public void setHostName(final String hostName) {
+	public void setHostName(final String hostName)
+	{
 		// better trim what we've recived
 		String name = hostName.trim();
 
 		// have we got meaningful data?
-		if (name.length() > 0) {
+		if (name.length() > 0)
+		{
 			// right, see if we can find it
-			if (_theLayers != null) {
+			if (_theLayers != null)
+			{
 				Layer tgt = _theLayers.findLayer(name);
-				if (tgt != null) {
+				if (tgt != null)
+				{
 					// clear the reference item we're currently looking at
 					_referenceTrack = null;
 
@@ -456,18 +489,21 @@ public class RelativeTMASegment extends CoreTMASegment {
 
 	}
 
-	public void setOffsetBearing(double offsetBearing) {
+	public void setOffsetBearing(double offsetBearing)
+	{
 		_offset.setValues(MWC.Algorithms.Conversions.Degs2Rads(offsetBearing),
 				_offset.getRange(), _offset.getDepth());
 	}
 
-	public void setOffsetRange(WorldDistance offsetRange) {
+	public void setOffsetRange(WorldDistance offsetRange)
+	{
 		_offset.setValues(_offset.getBearing(), offsetRange
 				.getValueIn(WorldDistance.DEGS), _offset.getDepth());
 	}
 
 	@Override
-	public void shear(WorldLocation cursor, final WorldLocation origin) {
+	public void shear(WorldLocation cursor, final WorldLocation origin)
+	{
 		WorldVector offset = cursor.subtract(origin);
 		double rngDegs = offset.getRange();
 
@@ -479,15 +515,16 @@ public class RelativeTMASegment extends CoreTMASegment {
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
 		FixWrapper first = (FixWrapper) this.getData().iterator().next();
-		if (first.getLocation().equals(origin)) {
+		if (first.getLocation().equals(origin))
+		{
 			// set the new course
-			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset
-					.getBearing());
-		} else {
+			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
+		}
+		else
+		{
 			// reverse the course the course
 			offset = origin.subtract(cursor);
-			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset
-					.getBearing());
+			newCourse = MWC.Algorithms.Conversions.Rads2Degs(offset.getBearing());
 
 			// right, we've got to shift the start point to the relevant
 			// location,
@@ -497,8 +534,8 @@ public class RelativeTMASegment extends CoreTMASegment {
 			WorldVector newOffset = cursor.subtract(getHostLocation());
 
 			// update the offset to the new start location
-			this.setOffsetBearing(MWC.Algorithms.Conversions
-					.Rads2Degs(newOffset.getBearing()));
+			this.setOffsetBearing(MWC.Algorithms.Conversions.Rads2Degs(newOffset
+					.getBearing()));
 			this.setOffsetRange(new WorldDistance(newOffset.getRange(),
 					WorldDistance.DEGS));
 		}
@@ -532,7 +569,8 @@ public class RelativeTMASegment extends CoreTMASegment {
 	}
 
 	@Override
-	public void shift(WorldVector vector) {
+	public void shift(WorldVector vector)
+	{
 		// really, we just need to add this vector to our orign
 		WorldLocation tmpOrigin = new WorldLocation(getTrackStart());
 		tmpOrigin.addToMe(_offset);
@@ -548,21 +586,25 @@ public class RelativeTMASegment extends CoreTMASegment {
 	 * stretch this whole track to the supplied distance
 	 * 
 	 * @param rngDegs
-	 *            distance to stretch through (degs)
+	 *          distance to stretch through (degs)
 	 * @param origin
-	 *            origin of stretch, probably one end of the track
+	 *          origin of stretch, probably one end of the track
 	 */
-	public void stretch(double rngDegs, final WorldLocation origin) {
+	public void stretch(double rngDegs, final WorldLocation origin)
+	{
 		// make it always +ve, we'll just overwrite ourselves anyway
 		rngDegs = Math.abs(rngDegs);
 
 		// right - we just stretch about the ends, and we use different
 		// processing depending on which end is being shifted.
 		FixWrapper first = (FixWrapper) this.getData().iterator().next();
-		if (first.getLocation().equals(origin)) {
+		if (first.getLocation().equals(origin))
+		{
 			// right, we're dragging around the last point. Couldn't be easier,
 			// just change our speed
-		} else {
+		}
+		else
+		{
 			// right, we've got to shift the start point to the relevant
 			// location,
 			// and fix the bearing
@@ -611,18 +653,17 @@ public class RelativeTMASegment extends CoreTMASegment {
 	private void recalcPositions()
 	{
 		Collection<Editable> items = getData();
-		
+
 		// ok - draw that line!
 		WorldLocation tmaLastLoc = null;
 		long tmaLastDTG = 0;
 
-	
 		for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
 		{
 			FixWrapper thisF = (FixWrapper) iterator.next();
-	
+
 			long thisTime = thisF.getDateTimeGroup().getDate().getTime();
-	
+
 			// ok, is this our first location?
 			if (tmaLastLoc == null)
 			{
@@ -636,73 +677,91 @@ public class RelativeTMASegment extends CoreTMASegment {
 						.getCourse());
 				tmaLastLoc.addToMe(thisVec);
 			}
-			
+
 			// dump the location into the fix
 			thisF.setFixLocationSilent(new WorldLocation(tmaLastLoc));
-	
+
 			// cool, remember the time.
 			tmaLastDTG = thisTime;
 		}
 	}
-	
-	/** move the solution in or out from the ref track, maintaining the bearings to the host track
-	 * (changing speed but not course)
+
+	/**
+	 * move the solution in or out from the ref track, maintaining the bearings to
+	 * the host track (changing speed but not course)
 	 * 
-	 * @param vector how far to push it.
+	 * @param vector
+	 *          how far to push it.
 	 */
 	public void fanStretch(WorldVector vector)
 	{
 		// find our locations
-		final WorldLocation myStart =  this.getTrackStart();
+		final WorldLocation myStart = this.getTrackStart();
 		final WorldLocation myEnd = ((FixWrapper) this.last()).getLocation();
-		final WorldLocation hisStart =  sensorOriginAt(this.startDTG());
+		final WorldLocation hisStart = sensorOriginAt(this.startDTG());
 		final WorldLocation hisEnd = sensorOriginAt(this.endDTG());
 		
-		// find the bearings
-		double startBrg = 2 * Math.PI +  myStart.bearingFrom(hisStart);
-		double endBrg = 2 * Math.PI +  myEnd.bearingFrom(hisEnd);
+		// drop out if we don't have sensor data
+		if((hisStart == null ) || (hisEnd == null))
+		{
+			System.err.println("Failed to find sensor data to support fan stretch (RelativeTMASegment.fanStretch)");
+			return;
+		}
 
-		double midBrg = (endBrg + startBrg) / 2; 
-		while(midBrg >= (2 * Math.PI))
+		// find the bearings
+		double startBrg = 2 * Math.PI + myStart.bearingFrom(hisStart);
+		double endBrg = 2 * Math.PI + myEnd.bearingFrom(hisEnd);
+
+		double midBrg = (endBrg + startBrg) / 2;
+		while (midBrg >= (2 * Math.PI))
 			midBrg -= (2 * Math.PI);
-		
+
 		// how far has the user dragged it?
 		double theRange = vector.getRange();
-				
+
 		// sort out which direction we're going
-		double theBrg =  2 * Math.PI + vector.getBearing();
+		double theBrg = 2 * Math.PI + vector.getBearing();
 		double theDelta = theBrg - midBrg;
-		while(theDelta > 2 * Math.PI)
+		while (theDelta > 2 * Math.PI)
 			theDelta -= 2 * Math.PI;
 
 		// right, see if we're going in or out
-		if(Math.abs(theDelta) > Math.PI / 2)
+		if (Math.abs(theDelta) > Math.PI / 2)
 		{
 			theRange *= -1;
 		}
-			
-		// generate new start location
-		_offset = new WorldVector(_offset.getBearing(), _offset.getRange() + theRange, 0);
+
+		// whats the distance to the sensor origin?
+		double currSensorDist = myStart.subtract(hisStart).getRange();
 		
+		// create a new distance by moving out along the sensor bearing
+		WorldLocation newStart = hisStart.add(new WorldVector(startBrg, currSensorDist
+				+ theRange, 0));
+		
+		// and calculate the new offset (relative to a fix on the host position track)
+		_offset = newStart.subtract(getHostLocation());
+
 		// re-sort out the locations, once we've updated the offset
 		recalcPositions();
-		
+
 		// recalculate the dragged track
-		final WorldLocation myNewStart =  this.getTrackStart();
+		final WorldLocation myNewStart = this.getTrackStart();
 		final WorldLocation myNewEnd = ((FixWrapper) this.last()).getLocation();
 
 		// sort out points on the line we have to meet
 		WorldLocation outerStart = hisEnd;
-		WorldLocation outerEnd = outerStart.add(new WorldVector(endBrg, _offset.getRange(), 0));
+		WorldLocation outerEnd = outerStart.add(new WorldVector(endBrg, _offset
+				.getRange(), 0));
 
 		// perform the line intersect
-		// taken from http://stackoverflow.com/questions/385305/efficient-maths-algorithm-to-calculate-intersections
+		// taken from
+		// http://stackoverflow.com/questions/385305/efficient-maths-algorithm-to-calculate-intersections
 		double x1 = myNewStart.getLong(), y1 = myNewStart.getLat();
 		double x2 = myNewEnd.getLong(), y2 = myNewEnd.getLat();
-		
+
 		double x3 = outerStart.getLong(), y3 = outerStart.getLat();
 		double x4 = outerEnd.getLong(), y4 = outerEnd.getLat();
-		
+
 		double x12 = x1 - x2;
 		double x34 = x3 - x4;
 		double y12 = y1 - y2;
@@ -710,66 +769,70 @@ public class RelativeTMASegment extends CoreTMASegment {
 
 		double c = x12 * y34 - y12 * x34;
 
-		double intersectX=0, intersectY=0;
-		
+		double intersectX = 0, intersectY = 0;
+
 		if (Math.abs(c) < 0.00000001)
 		{
-		  // No intersection
-			System.out.println(" no intersect, c is:" + c);
+			// No intersection
 			return;
 		}
 		else
 		{
-		  // Intersection
+			// Intersection
 			double a = x1 * y2 - y1 * x2;
 			double b = x3 * y4 - y3 * x4;
 
 			intersectX = (a * x34 - b * x12) / c;
 			intersectY = (a * y34 - b * y12) / c;
-
-//			System.out.println(x1 + "," + y1);
-//			System.out.println(x2 + "," + y2);
-//			System.out.println(x3 + "," + y3);
-//			System.out.println(x4 + "," + y4);
-//			System.out.println(intersectX + "," + intersectY);		
 		}
-		
-		// calculate the distance delta (for how much longer the track will have to be
+
+		// calculate the distance delta (for how much longer the track will have to
+		// be
 		WorldLocation newEnd = new WorldLocation(intersectY, intersectX, 0);
-		double newLegLength = newEnd.subtract(myNewStart).getRange();		
+		double newLegLength = newEnd.subtract(myNewStart).getRange();
 		WorldDistance lenDegs = new WorldDistance(newLegLength, WorldDistance.DEGS);
-		
+
 		// and what's our speed to cover this distance?
 		double timeTakenMicros = (endDTG().getMicros() - startDTG().getMicros());
 		double timeTakenHours = timeTakenMicros / 1000 / 1000 / 60 / 60;
 		double speedKts = lenDegs.getValueIn(WorldDistance.NM) / timeTakenHours;
-		
+
 		// and change the speed proportionately
 		this.setSpeed(new WorldSpeed(speedKts, WorldSpeed.Kts));
-		
+
 		// re-sort out the locations, once we've updated the speed
 		recalcPositions();
 
+		// tell the segment it's being stretched
+		_dragMsg = "[" + (int) this.getSpeed().getValueIn(WorldSpeed.Kts) + " kts "
+				+ (int) this.getCourse() + "\u00B0]";
+		
 	}
 
+	/** convenience method to find the location of the sensor at the specified time
+	 * 
+	 * @param dtg the time we're hunting for
+	 * @return the location of the first sensor cut visible at that time
+	 */
 	private WorldLocation sensorOriginAt(HiResDate dtg)
 	{
 		// store the nearest item, and the time delta
 		SensorContactWrapper nearestContact = null;
-		
+		WorldLocation res = null;
+
 		// right, get the sensors for our reference track
 		TrackWrapper tw = (TrackWrapper) getReferenceTrack();
 		Enumeration<SensorWrapper> sensors = tw.getSensors();
 		while (sensors.hasMoreElements())
 		{
 			SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
-			if(thisS.getVisible())
-			{	
+			if (thisS.getVisible())
+			{
 				Watchable[] matches = thisS.getNearestTo(dtg);
 				for (int i = 0; i < matches.length; i++)
 				{
 					SensorContactWrapper scw = (SensorContactWrapper) matches[i];
-					if(scw.getDTG().equals(dtg))
+					if (scw.getDTG().equals(dtg))
 					{
 						nearestContact = scw;
 						continue;
@@ -777,12 +840,12 @@ public class RelativeTMASegment extends CoreTMASegment {
 				}
 			}
 		}
-		
-		WorldLocation res = nearestContact.getLocation();// .getCalculatedOrigin(getReferenceTrack());
-		
-		
+
+		// did we find anything?
+		if (nearestContact != null)
+			res = nearestContact.getLocation();
+
 		return res;
 	}
-
 
 }

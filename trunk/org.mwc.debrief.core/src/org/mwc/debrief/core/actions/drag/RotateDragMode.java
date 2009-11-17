@@ -124,7 +124,7 @@ public class RotateDragMode extends DragMode
 				WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
 				WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-				DraggableItem centreEnd = new TranslateOperation(seg);
+				DraggableItem centreEnd = getCentreOperation(seg);
 				DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last);
 				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first);
 

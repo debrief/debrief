@@ -1,5 +1,6 @@
 package Debrief.Wrappers.Track;
 
+import java.awt.Color;
 import java.awt.Point;
 import java.util.Collection;
 import java.util.Iterator;
@@ -237,6 +238,14 @@ abstract public class CoreTMASegment extends TrackSegment {
 			WorldArea area = new WorldArea(firstEnd, lastEnd);
 			WorldLocation centre = area.getCentre();
 			Point pt = dest.toScreen(centre);
+			
+			// put the text in a solid backdrop
+			int ht = 	dest.getStringHeight(null);
+			int wid = dest.getStringWidth(null, _dragMsg);
+			dest.setColor(Color.WHITE);
+			dest.fillRect(pt.x , pt.y + 15 - ht, wid, ht);
+			
+			// and draw the text
 			dest.setColor(java.awt.Color.red);
 			dest.drawText(_dragMsg, pt.x, pt.y + 15);
 		}
