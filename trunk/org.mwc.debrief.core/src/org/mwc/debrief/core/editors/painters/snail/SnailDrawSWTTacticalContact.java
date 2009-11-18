@@ -1,15 +1,23 @@
 package org.mwc.debrief.core.editors.painters.snail;
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 import org.mwc.debrief.core.editors.painters.SnailHighlighter.drawSWTHighLight;
 
-import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.*;
-import Debrief.Tools.Tote.*;
+import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.HostedList;
+import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GenericData.Duration;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Created by IntelliJ IDEA.

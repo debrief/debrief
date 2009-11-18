@@ -63,13 +63,16 @@ package Debrief.GUI.Tote.Painters;
 // insert header comments
 //
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 
-import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.BuoyPatternWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 
 
 /** class to handle drawing a buoy pattern when we're in snail mode

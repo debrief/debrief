@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.debrief.legacy;singleton:=true
-Bundle-Version: 1.0.80
+Bundle-Version: 1.0.81
 Bundle-ClassPath: debrief_legacy.jar
 Bundle-Vendor: MWC
 Export-Package: 
@@ -216,3 +216,4 @@ Export-Package:
    MWC.GUI",
  Debrief.Wrappers.Track
 Require-Bundle: org.mwc.cmap.legacy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

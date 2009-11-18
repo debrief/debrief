@@ -225,17 +225,31 @@ package Debrief.Wrappers;
 // Initial revision
 //
 
-import java.awt.*;
-import java.beans.*;
+import java.awt.Font;
+import java.awt.Point;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyDescriptor;
 import java.io.Serializable;
-import java.util.*;
+import java.util.Collection;
+import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
-import Debrief.Tools.Tote.*;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
 import MWC.GUI.Properties.LineStylePropertyEditor;
-import MWC.GUI.Shapes.*;
-import MWC.GenericData.*;
+import MWC.GUI.Shapes.DraggableItem;
+import MWC.GUI.Shapes.HasDraggableComponents;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 		java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,

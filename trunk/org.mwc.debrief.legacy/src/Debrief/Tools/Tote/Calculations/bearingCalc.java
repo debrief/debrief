@@ -63,10 +63,11 @@ package Debrief.Tools.Tote.Calculations;
 // Initial revision
 //
 
-import java.text.*;
-import Debrief.Tools.Tote.*;
-import MWC.Algorithms.*;
-import MWC.GenericData.*;
+import java.text.DecimalFormat;
+
+import MWC.Algorithms.Conversions;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 
 /** Calculate the bearing from the primary vessel to the secondary (for use in the tote)
  */

@@ -54,12 +54,17 @@ package Debrief.GUI.Tote.Painters;
 // Initial revision
 //
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 
-import Debrief.Tools.Tote.*;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Canvas.CanvasAdaptor;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 
 
 public final class SnailDrawAnnotation implements SnailPainter.drawHighLight

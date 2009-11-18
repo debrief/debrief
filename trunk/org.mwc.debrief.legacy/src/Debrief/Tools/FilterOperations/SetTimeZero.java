@@ -72,16 +72,17 @@ package Debrief.Tools.FilterOperations;
 // added VCS headers
 //
 
-import Debrief.Tools.Tote.*;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
 
-import java.util.*;
-
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
 import MWC.GUI.Tools.Action;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WatchableList;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import Debrief.Wrappers.*;
 
 abstract public class SetTimeZero implements FilterOperation
 {

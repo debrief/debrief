@@ -12,15 +12,23 @@ import java.awt.Color;
 import java.beans.PropertyChangeEvent;
 import java.util.Collection;
 
-import javax.media.j3d.*;
+import javax.media.j3d.LineArray;
+import javax.media.j3d.Node;
 import javax.vecmath.Point3d;
 
-import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.TrackWrapper;
-import MWC.GUI.*;
-import MWC.GUI.Java3d.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.PlainWrapper;
+import MWC.GUI.StepperListener;
+import MWC.GUI.Java3d.ModelFactory;
+import MWC.GUI.Java3d.World;
+import MWC.GUI.Java3d.WorldPlottingOptions;
 import MWC.GUI.Java3d.Tactical.Participant3D;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldLocation;
 
 public final class Track3D extends Participant3D implements StepperListener {
   ///////////////////////////

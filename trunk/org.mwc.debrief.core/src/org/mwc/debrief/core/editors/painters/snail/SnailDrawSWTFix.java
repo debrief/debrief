@@ -16,18 +16,28 @@ package org.mwc.debrief.core.editors.painters.snail;
 //
 
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.beans.PropertyDescriptor;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 import org.mwc.debrief.core.editors.painters.SnailHighlighter.drawSWTHighLight;
-import org.mwc.debrief.core.editors.painters.highlighters.*;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
+import org.mwc.debrief.core.editors.painters.highlighters.SWTSymbolHighlighter;
 
-import Debrief.Tools.Tote.*;
-import Debrief.Wrappers.*;
-import MWC.GUI.*;
-import MWC.GUI.Properties.*;
-import MWC.GenericData.*;
+import Debrief.Wrappers.FixWrapper;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Properties.BoundedInteger;
+import MWC.GUI.Properties.FractionPropertyEditor;
+import MWC.GenericData.Duration;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 
 public final class SnailDrawSWTFix implements drawSWTHighLight, Editable

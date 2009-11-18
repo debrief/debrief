@@ -10,15 +10,20 @@ package org.mwc.debrief.core.editors.painters.snail;
 //
 
 
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 import org.mwc.debrief.core.editors.painters.SnailHighlighter.drawSWTHighLight;
 
-import Debrief.Tools.Tote.*;
 import Debrief.Wrappers.BuoyPatternWrapper;
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 
 
 /** class to handle drawing a buoy pattern when we're in snail mode

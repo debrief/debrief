@@ -3,17 +3,26 @@
  */
 package org.mwc.debrief.core.editors.painters;
 
-import java.awt.*;
-import java.util.*;
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.debrief.core.editors.painters.highlighters.SWTPlotHighlighter;
-import org.mwc.debrief.core.editors.painters.snail.*;
+import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTAnnotation;
+import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTBuoyPattern;
+import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTFix;
+import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTSensorContact;
+import org.mwc.debrief.core.editors.painters.snail.SnailDrawSWTTMAContact;
 
 import Debrief.GUI.Tote.Painters.SnailPainter;
-import Debrief.Tools.Tote.*;
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;

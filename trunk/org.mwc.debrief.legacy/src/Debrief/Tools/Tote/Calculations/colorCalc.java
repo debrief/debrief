@@ -65,8 +65,8 @@ package Debrief.Tools.Tote.Calculations;
 // Initial revision
 //
 
-import java.text.*;
-import Debrief.Tools.Tote.*;
+import java.text.DecimalFormat;
+
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 

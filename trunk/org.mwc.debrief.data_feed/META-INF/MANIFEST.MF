@@ -2,14 +2,14 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Data_feed Plug-in
 Bundle-SymbolicName: org.mwc.debrief.data_feed; singleton:=true
-Bundle-Version: 1.0.1
+Bundle-Version: 1.0.2
 Bundle-Activator: org.mwc.debrief.data_feed.DataFeedActivator
-Bundle-Localization: plugin
 Require-Bundle: org.eclipse.ui,
  org.eclipse.core.runtime,
  org.mwc.cmap.core,
  org.mwc.cmap.legacy,
  org.mwc.debrief.legacy
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.debrief.data_feed,
  org.mwc.debrief.data_feed.views
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

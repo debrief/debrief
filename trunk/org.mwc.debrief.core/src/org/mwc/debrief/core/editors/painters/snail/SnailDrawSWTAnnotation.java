@@ -10,14 +10,20 @@ package org.mwc.debrief.core.editors.painters.snail;
 //
 
 
-import java.awt.*;
+import java.awt.BasicStroke;
+import java.awt.Graphics2D;
+import java.awt.Point;
+import java.awt.Rectangle;
 
 import org.mwc.debrief.core.editors.painters.SnailHighlighter;
 import org.mwc.debrief.core.editors.painters.SnailHighlighter.drawSWTHighLight;
 
-import Debrief.Tools.Tote.*;
-import MWC.GUI.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.PlainWrapper;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
 
 
 public final class SnailDrawSWTAnnotation implements drawSWTHighLight
