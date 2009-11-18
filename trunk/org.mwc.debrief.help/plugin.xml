@@ -77,155 +77,112 @@
             name="Track Reconstruction"
             parentCategory="org.mwc.debrief.help.cheats"/>         
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            category="org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/CreatePlot.xml"
             id="org.mwc.debrief.help.started.create_plot"
             name="Creating a new plot"/>
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            category="org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/OpenPlot.xml"
             id="org.mwc.debrief.help.started.open_plot"
             name="Opening an existing plot"/>                                       
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            category="org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/FindingYourData.xml"
             id="org.mwc.debrief.help.started.existing_data"
             name="Linking to existing datafiles"/>                                       
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            category="org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/GenerateProject.xml"
             id="org.mwc.debrief.help.started.generate_project"
             name="Generating a project"/>                 
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            category="org.mwc.debrief.help.cheat_started"
             contentFile="cheat_sheets/GettingStarted/ImportingData.xml"
             id="org.mwc.debrief.help.started.loading_data"
             name="Loading some data"/>                                      
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_started"
+            category="org.mwc.debrief.help.cheat_started"
             composite="true"
             contentFile="cheat_sheets/GettingStarted/GettingStartedComposite.xml"
             id="org.mwc.debrief.help.started.tutorial"
-            name="Getting started with Debrief tutorial"/>            
+            name="Getting started with Debrief tutorial"/>                     
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_viewing"
-            contentFile="cheat_sheets/ViewingPlots/LoadingSampleData.xml"
-            id="org.mwc.debrief.help.viewing.sample_data"
-            name="Loading sample data"/>            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_viewing"
+            category="org.mwc.debrief.help.cheat_viewing"
             contentFile="cheat_sheets/ViewingPlots/FilteringYourData.xml"
             id="org.mwc.debrief.help.viewing.filtering_data"
             name="Filtering visible data"/>            
             
      <!-- now for the formatting bits -->
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_formatting"
-            contentFile="cheat_sheets/formatting/EditingYourData.xml"
+            category="org.mwc.debrief.help.cheat_formatting"
+            contentFile="cheat_sheets/GettingStarted/EditingYourData.xml"
             id="org.mwc.debrief.help.formatting.editing_data"
-            name="Formatting your plot"/>            
+            name="Editing your data"/>            
                                          
      <!-- and for the analysis bits -->
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_analysing"
+            category="org.mwc.debrief.help.cheat_analysing"
             contentFile="cheat_sheets/analysis/SettingPrimaryAndSecondaryTracks.xml"
             id="org.mwc.debrief.help.analysis.pri_sec_tracks"
             name="Managing primary and secondary tracks"/>            
             
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_analysing"
+            category="org.mwc.debrief.help.cheat_analysing"
             contentFile="cheat_sheets/analysis/TemporalNavigation.xml"
             id="org.mwc.debrief.help.analysis.temp_nav"
             name="Temporal navigation through your data"/>            
            
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_analysing"
+            category="org.mwc.debrief.help.cheat_analysing"
             contentFile="cheat_sheets/analysis/TimeVariableAnalysis.xml"
             id="org.mwc.debrief.help.analysis.time_var_analysis"
             name="Time-related graphs of your data"/>            
       
             
-      <!-- right, now the sensor bits -->
+      <!-- right, now the sensor bits -->          
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_sensor"
-            contentFile="cheat_sheets/sensor/PreparingSensorData.xml"
-            id="org.mwc.debrief.help.sensor.preparing"
-            name="Preparing sensor data for analysis"/>            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_sensor"
-            contentFile="cheat_sheets/sensor/LoadingSensorData.xml"
-            id="org.mwc.debrief.help.sensor.loading"
-            name="Loading sensor data into Debrief"/>            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_sensor"
+            category="org.mwc.debrief.help.cheat_sensor"
             contentFile="cheat_sheets/sensor/AnalysingSensorData.xml"
             id="org.mwc.debrief.help.sensor.analysing"
             name="Analysing sensor data in Debrief"/>            
-      
-            
-      <!-- and the tma bits -->
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_tma"
-            contentFile="cheat_sheets/tma/PreparingTMAData.xml"
-            id="org.mwc.debrief.help.tma.preparing"
-            name="Preparing TMA data for analysis"/>            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_tma"
-            contentFile="cheat_sheets/tma/LoadingTMAData.xml"
-            id="org.mwc.debrief.help.tma.loading"
-            name="Loading TMA data into Debrief"/>            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_tma"
-            contentFile="cheat_sheets/tma/AnalysingTMAData.xml"
-            id="org.mwc.debrief.help.tma.analysing"
-            name="Analysing TMA data in Debrief"/>            
 
-      <!-- and the narrative bits -->
+      <!-- and the narrative bits -->          
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_narratives"
-            contentFile="cheat_sheets/narratives/PreparingNarrativeData.xml"
-            id="org.mwc.debrief.help.narrative.preparing"
-            name="Preparing narrative data for analysis"/>            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_narratives"
-            contentFile="cheat_sheets/narratives/LoadingNarrativeData.xml"
-            id="org.mwc.debrief.help.narrative.loading"
-            name="Loading narrative data into Debrief"/>            
-      <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_narratives"
+            category="org.mwc.debrief.help.cheat_narratives"
             contentFile="cheat_sheets/narratives/AnalysingNarrativeData.xml"
             id="org.mwc.debrief.help.narrativs.analysing"
             name="Analysing narrative data in Debrief"/>            
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.trackRecon"
+            category="org.mwc.debrief.help.trackRecon"
             contentFile="cheat_sheets/S2R/CombineTargetTracks.xml"
             id="org.mwc.debrief.help.trackRecon.MergeTracks"
             name="Merging two or more tracks in Debrief"/>            
 
       <!-- and the S2R bits -->
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
+            category="org.mwc.debrief.help.cheat_s2r"
             composite="false"
             contentFile="$nl$/cheat_sheets/S2R/GroomingTracks.xml"
             id="org.mwc.debrief.help.cheatsheet.s2r.grooming"
             name="Grooming track data">
       </cheatsheet>
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
+            category="org.mwc.debrief.help.cheat_s2r"
             composite="false"
             contentFile="$nl$/cheat_sheets/S2R/GenerateTargetTrack.xml"
             id="org.mwc.debrief.help.cheatsheet.s2r.genTarget"
             name="Generate a target track">
       </cheatsheet>
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
+            category="org.mwc.debrief.help.cheat_s2r"
             composite="false"
             contentFile="$nl$/cheat_sheets/S2R/CombineTargetTracks.xml"
             id="org.mwc.debrief.help.cheatsheet.s2r.combine"
             name="Combining sections of target track">
       </cheatsheet>
       <cheatsheet
-            category="org.mwc.debrief.help.cheats/org.mwc.debrief.help.cheat_s2r"
+            category="org.mwc.debrief.help.cheat_s2r"
             composite="true"
             contentFile="$nl$/cheat_sheets/S2R/GettingStartedComposite.xml"
             id="org.mwc.debrief.help.cheatsheet.s2r.composite"

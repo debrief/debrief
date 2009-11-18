@@ -219,16 +219,16 @@
 		<!-- make sure the target file is gone -->
 		<delete file="${dupFile}" />
 
-		<!-- create a fresh copy -->
-		<copy file="${helpDest}\toc.xml" tofile="${dupFile}" />
+		<!-- create a fresh copy
+		<copy file="${helpDest}\toc.xml" tofile="${dupFile}" /> -->
 
-		<!-- try the change -->
+		<!-- try the change
 		<replace file="${dupFile}">
 			<replacetoken>label="Getting started"</replacetoken>
 			<replacevalue>label="Short History" href="html/history/statcvs/short/index.html"/&gt;
 			  	&lt;topic label="Verbose History" href="html/history/statcvs/long/index.html"/&gt;
 			  	&lt;topic label="Getting started" </replacevalue>
-		</replace>
+		</replace> -->
 
 	</target>
 
