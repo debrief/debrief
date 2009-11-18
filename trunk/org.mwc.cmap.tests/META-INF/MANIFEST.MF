@@ -9,3 +9,4 @@ Require-Bundle: org.eclipse.ui,
  org.junit,
  org.mwc.cmap.legacy,
  org.mwc.cmap.TimeController
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

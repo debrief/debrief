@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: 3D View
 Bundle-SymbolicName: org.mwc.cmap.plot3d;singleton:=true
-Bundle-Version: 1.0.11
+Bundle-Version: 1.0.12
 Bundle-ClassPath: Plot3d.jar
 Bundle-Activator: org.mwc.cmap.plot3d.Plot3dPlugin
 Bundle-Vendor: MWC
@@ -14,4 +14,5 @@ Require-Bundle: org.eclipse.ui,
  org.mwc.cmap.TimeController,
  org.eclipse.ui.views,
  org.mwc.cmap.plotViewer
-Eclipse-LazyStart: true
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
