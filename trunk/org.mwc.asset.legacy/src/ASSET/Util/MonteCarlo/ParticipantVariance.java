@@ -8,25 +8,22 @@
  */
 package ASSET.Util.MonteCarlo;
 
-import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
-import ASSET.Util.XML.ParticipantsHandler;
-import ASSET.Util.XML.Vessels.ParticipantHandler;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldLocation;
+import java.text.DecimalFormat;
 
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathExpressionException;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import java.text.DecimalFormat;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
+import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
+import ASSET.Util.XML.ParticipantsHandler;
+import ASSET.Util.XML.Vessels.ParticipantHandler;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
 /**
  * list of items in a particular file which may be changed
@@ -75,10 +72,7 @@ public final class ParticipantVariance extends XMLVarianceList
    */
   private WorldArea _distributionArea = null;
 
-	private XPathFactory _myXpathFactory;
-
-
-  /**
+	/**
    * ************************************************************
    * constructor
    * *************************************************************

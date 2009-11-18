@@ -20,10 +20,8 @@ import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Vector;
 
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -747,8 +745,6 @@ public final class MultiScenarioGenerator
 
 				Document resDocument = results[0];
 
-				XPathFactory xpf = XPathFactory.newInstance();
-				XPath xp = xpf.newXPath();
 				XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='bravo']");
 				NodeList nl = (NodeList) xp2.evaluate(resDocument,
 						XPathConstants.NODESET);
@@ -757,7 +753,6 @@ public final class MultiScenarioGenerator
 				assertEquals("correct name", "bravo", thisA.getAttribute("Name"));
 
 				// did we change the speed?
-				xp = xpf.newXPath();
 				xp2 = NamespaceContextProvider.createPath("//*[@Name='bravo']/Status/Speed");
 				nl = (NodeList) xp2.evaluate(resDocument, XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);

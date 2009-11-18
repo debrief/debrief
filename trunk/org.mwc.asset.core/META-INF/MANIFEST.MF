@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Core Plug-in
 Bundle-SymbolicName: org.mwc.asset.core;singleton:=true
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Bundle-Activator: org.mwc.asset.core.ASSETPlugin
 Bundle-Vendor: MWC
 Require-Bundle: org.mwc.asset.legacy;visibility:=reexport,
@@ -27,3 +27,4 @@ Export-Package: org.mwc.asset.core;
    ASSET.Models.Decision,
    org.eclipse.jface.dialogs"
 Bundle-ClassPath: .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6

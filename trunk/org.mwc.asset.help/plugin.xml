@@ -23,11 +23,6 @@
 	</extension>
    
    <extension
-         point="org.eclipse.help.contexts">
-      <contexts
-            file="HelpContexts.xml"  plugin="org.mwc.asset.help"/>
-   </extension>
-   <extension
          point="org.eclipse.ui.cheatsheets.cheatSheetContent">
       <category
             id="org.mwc.asset.help.category128666804"
@@ -36,7 +31,7 @@
       <cheatsheet
             category="org.mwc.asset.help.category128666804"
             composite="true"
-            contentFile="$nl$/cheat_sheets/org.mwc.asset.tutorial.xml"
+            contentFile="cheat_sheets/tutorial/org.mwc.asset.tutorial.xml"
             id="org.mwc.asset.help.cheatsheet406552611"
             name="Getting started with ASSET">
          <description>
@@ -46,7 +41,7 @@
       <cheatsheet
             category="org.mwc.asset.help.category128666804"
             composite="false"
-            contentFile="$nl$/cheat_sheets/tutorial/org.mwc.asset.tutorial.config_env.xml"
+            contentFile="cheat_sheets/tutorial/org.mwc.asset.tutorial.config_env.xml"
             id="org.mwc.asset.help.cheatsheet331235578"
             name="Configuring ASSET">
          <description>

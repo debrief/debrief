@@ -8,15 +8,6 @@
  */
 package ASSET.Util.MonteCarlo;
 
-import ASSET.Util.SupportTesting;
-import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -24,10 +15,17 @@ import java.io.InputStream;
 import java.util.Iterator;
 import java.util.Vector;
 
-import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathFactory;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
+import ASSET.Util.SupportTesting;
+import ASSET.Util.MonteCarlo.XMLVariance.NamespaceContextProvider;
 
 /**
  * list of items in a particular file which may be changed
@@ -44,8 +42,6 @@ public final class MultiParticipantGenerator
 	 * our document
 	 */
 	private Document _myDocument;
-
-	private XPathFactory _xpathFactory;
 
 	/**
 	 * our type

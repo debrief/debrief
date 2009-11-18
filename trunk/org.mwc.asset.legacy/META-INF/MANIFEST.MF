@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Legacy Plug-in
 Bundle-SymbolicName: org.mwc.asset.legacy
-Bundle-Version: 1.0.2
+Bundle-Version: 1.0.3
 Require-Bundle: org.mwc.cmap.legacy
 Export-Package: ASSET;
   uses:="ASSET.Models.Sensor,
@@ -463,3 +463,4 @@ Bundle-ClassPath: libs/jaxen-full.jar,
  libs/saxpath.jar,
  libs/xerces.jar,
  .
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
