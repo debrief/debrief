@@ -88,6 +88,7 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 		return doExecute(monitor, info, false);
 	}
 
+	@SuppressWarnings("null")
 	@Override
 	public IStatus undo(IProgressMonitor monitor, IAdaptable info) throws ExecutionException {
 		final List<IStatus> result = new java.util.ArrayList<IStatus>(size());
@@ -200,11 +201,13 @@ public class CompositeOperation extends AbstractOperation implements ICompositeO
 					caughtException = e;
 				}
 
+				boolean statusMatchVal =  false;
 				if (status != null) {
 					result.add(status);
+					statusMatchVal = status.matches(IStatus.ERROR | IStatus.CANCEL);
 				}
-
-				boolean childFailed = (caughtException != null) || status.matches(IStatus.ERROR | IStatus.CANCEL);
+				
+				boolean childFailed = (caughtException != null) || statusMatchVal;
 				// monitor cancellation doesn't matter if this was the last child
 				if (childFailed || (monitor.isCanceled() && iter.hasNext())) {
 					if (childFailed) {

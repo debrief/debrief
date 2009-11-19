@@ -284,7 +284,7 @@ public class WorkBenchGUI extends CoreGUISwing implements ScenarioNoiseLevelPain
 
       public void restart(ScenarioType scenario)
       {
-      };
+      }
     });
 
     _theScenario.addScenarioRunningListener(new ScenarioRunningListener()

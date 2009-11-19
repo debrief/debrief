@@ -15,7 +15,7 @@ import MWC.GenericData.WorldSpeed;
  * with the specified behaviour
  */
 
-public class Composite extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
+public class Composite extends CoreDecision implements java.io.Serializable
 {
   /**
 	 * 

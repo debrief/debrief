@@ -618,6 +618,7 @@ public final class ImportFix implements PlainLineImporter
       catch (ParseException e)
       {
         e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        return;
       }
       HiResDate calculated = new HiResDate(theDate.getTime(), 100);
       assertEquals("time hasn't got mangled", calculated, res.theFix.getTime());

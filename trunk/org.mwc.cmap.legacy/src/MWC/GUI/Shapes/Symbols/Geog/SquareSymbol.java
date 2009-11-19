@@ -74,14 +74,13 @@ package MWC.GUI.Shapes.Symbols.Geog;
 
 import java.awt.Point;
 import java.awt.geom.Point2D;
-import java.io.Serializable;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
 import MWC.GenericData.WorldLocation;
 
-public class SquareSymbol extends PlainSymbol implements Serializable
+public class SquareSymbol extends PlainSymbol
 {
   /**
  * // keep track of versions

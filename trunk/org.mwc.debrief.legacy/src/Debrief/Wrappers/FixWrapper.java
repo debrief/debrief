@@ -243,7 +243,6 @@ import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.TimeZone;
 import java.util.Vector;
 
@@ -271,8 +270,7 @@ import MWC.Utilities.TextFormatting.GeneralFormat;
  * The fix wrapper has the responsibility for the GUI and data aspects of the
  * fix, tying the two together.
  */
-public class FixWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		Watchable, DynamicPlottable, CanvasType.MultiLineTooltipProvider,
+public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable, DynamicPlottable, CanvasType.MultiLineTooltipProvider,
 		TimeStampedDataItem {
 
 	// //////////////////////////////////////

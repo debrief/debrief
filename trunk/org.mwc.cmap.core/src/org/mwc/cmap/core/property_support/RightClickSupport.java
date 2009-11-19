@@ -657,7 +657,7 @@ public class RightClickSupport {
 									"While executing select editor for:"
 											+ thisP, e);
 						}
-					};
+					}
 
 				};
 

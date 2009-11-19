@@ -14,7 +14,7 @@ import MWC.GenericData.WorldDistance;
  * from an indicated type of target
  */
 
-public class Detonate extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
+public class Detonate extends CoreDecision implements java.io.Serializable
 {
   /**
 	 * 

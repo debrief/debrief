@@ -65,8 +65,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 
-public class Mercator2 extends PlainProjection implements Serializable,
-                                                          Editable
+public class Mercator2 extends PlainProjection
 {
   /**
 	 * 
@@ -344,7 +343,7 @@ public class Mercator2 extends PlainProjection implements Serializable,
     WorldArea wa = super.getDataArea();
     Dimension sz = super.getScreenArea();
 
-    if((wa == null) |
+    if((wa == null) ||
        (sz == null))
       return;
 

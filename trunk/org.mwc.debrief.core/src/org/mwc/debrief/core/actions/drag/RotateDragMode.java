@@ -251,6 +251,6 @@ public class RotateDragMode extends DragMode
 			return new Cursor(Display.getDefault(), DebriefPlugin.getImageDescriptor(
 					"icons/SelectFeatureHitRotate.ico").getImageData(), 4, 2);
 		}
-	};
+	}
 
 }

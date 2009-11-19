@@ -138,7 +138,7 @@ public class ManoeuvreToCourseHandler extends
 
 	public void setResponse(Response dec)
 	{
-	};
+	}
 
 	static public void exportThis(final Object toExport,
 			final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)

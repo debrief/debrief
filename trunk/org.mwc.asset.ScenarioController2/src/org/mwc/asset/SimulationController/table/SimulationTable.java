@@ -130,7 +130,8 @@ public class SimulationTable
 					ScenarioLayer sl = new ScenarioLayer();
 					sl.setScenario((ScenarioType) theSim);
 
-					// right, do we have a wrapper for this object. we cache them so we aren't always changing
+					// right, do we have a wrapper for this object. we cache them so we
+					// aren't always changing
 					ScenarioWrapper sw = _wrappedScenarios.get(theSim);
 					if (sw == null)
 					{
@@ -682,7 +683,7 @@ public class SimulationTable
 			boolean value1empty = value1 == null || "".equals(value1.toString()); //$NON-NLS-1$
 			boolean value2empty = value2 == null || "".equals(value2.toString()); //$NON-NLS-1$
 
-			int result;
+			int result = 0;
 			if (value1empty && value2empty)
 			{
 				result = 0;
@@ -709,7 +710,8 @@ public class SimulationTable
 				}
 				else
 				{
-					result = value1.toString().compareTo(value2.toString());
+					if ((value1 != null) && (value2 != null))
+						result = value1.toString().compareTo(value2.toString());
 				}
 				if (!myIsAscending)
 				{

@@ -69,7 +69,7 @@ public class WorldBathySupport
     WorldArea _myArea = new WorldArea(w1, w2);
 
     // calculate the width of the area in degrees (at the equator, not at this lat)
-    double width = _myArea.getBottomRight().getLong() - _myArea.getTopLeft().getLong();;
+    double width = _myArea.getBottomRight().getLong() - _myArea.getTopLeft().getLong();
     double height = _myArea.getHeight();
 
     // determine the bathy delta

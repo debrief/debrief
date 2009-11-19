@@ -6,7 +6,6 @@
 package MWC.Algorithms.Projections;
 
 import java.awt.Point;
-import java.io.Serializable;
 
 import MWC.Algorithms.PlainProjection;
 import MWC.GenericData.WorldArea;
@@ -16,7 +15,7 @@ import MWC.GenericData.WorldVector;
 
 /** flat earth projection
  */
-public class FlatProjection extends PlainProjection implements Serializable {
+public class FlatProjection extends PlainProjection {
 
   /**
 	 * 

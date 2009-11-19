@@ -10,8 +10,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 
-public class Mercator3 extends PlainProjection implements Serializable,
-                                                          Editable
+public class Mercator3 extends PlainProjection
 {
   /**
 	 * 
@@ -176,9 +175,15 @@ public class Mercator3 extends PlainProjection implements Serializable,
 
         double d2 = val.getLat();
 
-        for (; d2 - _centralMeridian < -180.0; d2 += 360.0) /* null body */ ;
+        for (; d2 - _centralMeridian < -180.0; d2 += 360.0)
+				{
+					/* null body */ 
+				}
 
-        for (; d2 - _centralMeridian > 180.0; d2 -= 360.0) /* null body */ ;
+        for (; d2 - _centralMeridian > 180.0; d2 -= 360.0)
+				{
+					/* null body */ 
+				}
 
         double d3 = (d2 - _centralMeridian) * 0.01745329251994 * _er;
 
@@ -349,7 +354,7 @@ public class Mercator3 extends PlainProjection implements Serializable,
     WorldArea wa = super.getDataArea();
     Dimension sz = super.getScreenArea();
 
-    if((wa == null) |
+    if((wa == null) ||
        (sz == null))
       return;
 

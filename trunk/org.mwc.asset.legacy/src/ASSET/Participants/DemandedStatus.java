@@ -74,6 +74,10 @@ abstract public class DemandedStatus
 				res = new HighLevelDemandedStatus(newTime,
 						(HighLevelDemandedStatus) other);
 			}
+			else
+			{
+				throw new RuntimeException("Failed to match demanded status type");
+			}
 
 			// initialise the set of states (if we have to)
 			if (other._myStates != null)

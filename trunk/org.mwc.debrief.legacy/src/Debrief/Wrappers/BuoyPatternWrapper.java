@@ -145,28 +145,31 @@
 
 package Debrief.Wrappers;
 
+import java.awt.Color;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
+import java.util.Collection;
+import java.util.Enumeration;
+import java.util.Iterator;
+import java.util.Vector;
+
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
+import MWC.GenericData.HiResDate;
 import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
-import MWC.GenericData.HiResDate;
-
-import java.awt.*;
-import java.beans.IntrospectionException;
-import java.beans.MethodDescriptor;
-import java.beans.PropertyDescriptor;
-import java.util.*;
 
 /**
  * the BuoyPatternWrapper is a Layer containing a buoypattern
  */
 public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
-		java.io.Serializable, MWC.GenericData.WatchableList, 
+		MWC.GenericData.WatchableList, 
 		MWC.GUI.Layer, TimePeriod, DoNotHighlightMe
 {
 

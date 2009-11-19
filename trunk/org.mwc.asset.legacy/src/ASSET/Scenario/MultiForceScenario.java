@@ -501,11 +501,11 @@ public class MultiForceScenario extends CoreScenario
       public void newScenarioStepTime(final int val)
       {
         newStepTime = val;
-      };
+      }
       public void newStepTime(final int val)
       {
         newStepTime = val;
-      };
+      }
 
       /**
        * the scenario has restarted

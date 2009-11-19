@@ -412,6 +412,9 @@ public class SwingObserver extends ObserverBaseImpl
       catch (RemoteException e)
       {
       }
+      if(stat == null)
+      	return;
+      
       String val = name + ":" + stat.toString();
       val += System.getProperty("line.separator");
       val += "Course:" + MWC.Utilities.TextFormatting.GeneralFormat.formatBearing(stat.getCourse())

@@ -1024,7 +1024,10 @@ abstract public class PlainPropertyEditor implements PropertyChangeListener
       }
       catch (java.lang.reflect.InvocationTargetException ie)
       {
-        String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val + " expecting type:" + p1.toString();
+        String tmpStr = null;
+        if(p1 != null)
+        	p1.toString();
+				String msg = "Using:" + setter.getName() + " to set:" + data + " to " + val + " expecting type:" + tmpStr;
         MWC.Utilities.Errors.Trace.trace(ie, msg);
       }
       catch (java.lang.IllegalArgumentException ell)

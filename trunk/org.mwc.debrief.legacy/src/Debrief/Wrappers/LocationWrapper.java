@@ -74,12 +74,11 @@ package Debrief.Wrappers;
 // Revision 1.1  1999-07-07 11:10:13+01  administrator
 // Initial revision
 
-import java.io.Serializable;
-
 import MWC.GUI.CanvasType;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldLocation;
 
-public final class LocationWrapper extends MWC.GUI.PlainWrapper implements Serializable {
+public final class LocationWrapper extends MWC.GUI.PlainWrapper {
   //////////////////////////////////////////////////
   // member variables
   //////////////////////////////////////////////////

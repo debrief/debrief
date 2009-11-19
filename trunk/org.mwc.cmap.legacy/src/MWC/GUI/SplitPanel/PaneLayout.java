@@ -377,9 +377,11 @@ public class PaneLayout implements LayoutManager2
     // catch (Exception e) {MWC.Utilities.Errors.Trace.trace(e);}
     //System.err.println("adding Component" + constraints);
     if (constraints instanceof PaneConstraints) {
-      if (justDeleted(newComponent,(PaneConstraints)constraints));
-      //System.err.println("ignored add for " + ((PaneConstraints)constraints).name);
-      else if (setComponentConstraints(newComponent,(PaneConstraints)constraints)) { //make sure it has not already been added
+      if (justDeleted(newComponent,(PaneConstraints)constraints))
+			{
+				
+			}
+			else if (setComponentConstraints(newComponent,(PaneConstraints)constraints)) { //make sure it has not already been added
         //System.err.println("this is ok; " + ((PaneConstraints)constraints).name + " already in containter");
         lastDeletion = null;
         return;

@@ -6,9 +6,7 @@ import org.eclipse.draw2d.geometry.PointList;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Pattern;
 
-import com.borlander.rac525791.draw2d.ext.RotatableDecorationExt;
-
-public class CircleDecoration extends GradientDecoration implements RotatableDecorationExt {
+public class CircleDecoration extends GradientDecoration {
 	private final Point TEMP = new Point();
 	private final Point myCenter;
 	private final int myRadius;

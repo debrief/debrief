@@ -11,7 +11,7 @@ import java.awt.*;
 import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
-public final class SymbolHighlighter implements PlotHighlighter, Editable
+public final class SymbolHighlighter implements PlotHighlighter
 {
 
   private Color _myColor = Color.white;

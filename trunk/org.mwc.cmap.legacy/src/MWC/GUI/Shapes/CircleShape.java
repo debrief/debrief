@@ -121,7 +121,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
@@ -134,7 +133,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class CircleShape extends PlainShape implements Serializable, Editable, DraggableItem, HasDraggableComponents
+public class CircleShape extends PlainShape implements Editable, HasDraggableComponents
 {
 
   //////////////////////////////////////////////////

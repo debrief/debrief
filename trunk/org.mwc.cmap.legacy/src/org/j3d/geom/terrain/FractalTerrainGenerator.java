@@ -660,7 +660,7 @@ public class FractalTerrainGenerator extends GeometryGenerator
                     }
 
                     sign = randomiser.nextBoolean() ? 1 : -1;
-                    height = (old_surface[old - 1][j] + old_surface[old][j]) / 2;;
+                    height = (old_surface[old - 1][j] + old_surface[old][j]) / 2;
                     height += delta * randomiser.nextFloat() * sign;
 
                     new_surface[i][count++] = height;

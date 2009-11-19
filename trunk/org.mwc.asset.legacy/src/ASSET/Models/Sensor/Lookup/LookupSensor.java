@@ -1149,7 +1149,7 @@ public abstract class LookupSensor extends CoreSensor
 				}
 			}
 			return res;
-		};
+		}
 
 		public void insertElementAt(Double value, int index)
 		{
@@ -1975,7 +1975,7 @@ public abstract class LookupSensor extends CoreSensor
 			// check that the RI has changed
 			tc = ts._pastContacts.get(bravo);
 			WorldDistance newRI = tc.getRI();
-			;
+			
 			boolean isSame = newRI.getValueIn(WorldDistance.METRES) == lastRI
 					.getValueIn(WorldDistance.METRES);
 			assertTrue("RI has changed", !isSame);

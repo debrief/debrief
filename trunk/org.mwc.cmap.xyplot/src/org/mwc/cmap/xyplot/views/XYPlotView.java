@@ -484,14 +484,14 @@ public class XYPlotView extends ViewPart
 		{
 	 	   editor = page.getActiveEditor();
 	 	  
-			// do we have an active editor?
-			if (editor == null)
-			{
-				// nope, drop out.
-				return;
-			}
 		}
 
+		// do we have an active editor?
+		if (editor == null)
+		{
+			// nope, drop out.
+			return;
+		}
 
 		// get it's time-provider interface
 		TimeProvider prov = (TimeProvider) editor.getAdapter(TimeProvider.class);
@@ -831,7 +831,7 @@ public class XYPlotView extends ViewPart
 
 		public StringHolder()
 		{
-		};
+		}
 
 		public StringHolder(String theString)
 		{
@@ -846,7 +846,7 @@ public class XYPlotView extends ViewPart
 		public void set_myString(String string)
 		{
 			_myString = string;
-		};
+		}
 	}
 
 }

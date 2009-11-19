@@ -25,7 +25,7 @@ abstract public class ShapeHandler extends MWC.Utilities.ReaderWriter.XML.MWCXML
   String _myType = null;
   String _label = null;
   java.awt.Font _font = null;
-  Integer _theLocation = null;;
+  Integer _theLocation = null;
   Integer _lineStyle = null;
   Integer _lineThickness = null;
   java.awt.Color _fontCol = null;

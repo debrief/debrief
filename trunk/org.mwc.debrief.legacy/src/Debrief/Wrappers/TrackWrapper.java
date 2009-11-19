@@ -13,7 +13,6 @@ import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -59,8 +58,8 @@ import MWC.TacticalData.Fix;
  * the FixWrapper
  */
 public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
-		Serializable, WatchableList, DynamicPlottable, MWC.GUI.Layer,
-		DraggableItem, HasDraggableComponents, ProvidesContiguousElements
+		WatchableList, DynamicPlottable, MWC.GUI.Layer, DraggableItem,
+		HasDraggableComponents, ProvidesContiguousElements
 {
 
 	// //////////////////////////////////////
@@ -85,7 +84,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		 * utility to track number of calls
 		 * 
 		 */
-		static int callCount = 0;;
+		static int callCount = 0;
 
 		/**
 		 * utility to track number of points passed to paint polyline method
@@ -1104,7 +1103,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 	transient private final PropertyChangeListener _locationListener;
 
-
 	// //////////////////////////////////////
 	// constructors
 	// //////////////////////////////////////
@@ -1268,9 +1266,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			_myWorldArea.extend(theFix.getLocation());
 
 		// we want to listen out for the fix being moved. better listen in to it
-//
-//		theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
-//				_locationListener);
+		//
+		// theFix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+		// _locationListener);
 	}
 
 	/**
@@ -1895,9 +1893,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 		return set;
 	}
-	
 
-	/** just have the one property listener - rather than an anonymous class
+	/**
+	 * just have the one property listener - rather than an anonymous class
 	 * 
 	 * @return
 	 */
@@ -2515,16 +2513,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						{
 							// calculate a new vector
 							long timeDelta = thisTime - tmaLastDTG;
-							double speedKts = lastFix.getSpeed();
-							double courseRads = lastFix.getCourse();
-							double depthM = lastFix.getDepth();
-							WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
-									courseRads);
-							tmaLastLoc.addToMe(thisVec);
-
-							// use the value of depth as read in from the file
-							tmaLastLoc.setDepth(depthM);
-							lastLocation = tmaLastLoc;
+							if (lastFix != null)
+							{
+								double speedKts = lastFix.getSpeed();
+								double courseRads = lastFix.getCourse();
+								double depthM = lastFix.getDepth();
+								// use the value of depth as read in from the file
+								tmaLastLoc.setDepth(depthM);
+								WorldVector thisVec = seg.vectorFor(timeDelta, speedKts,
+										courseRads);
+								tmaLastLoc.addToMe(thisVec);
+								lastLocation = tmaLastLoc;
+							}
 
 						}
 						lastFix = fw;
@@ -2817,10 +2817,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				final TrackSegment seg = (TrackSegment) segments.nextElement();
 				seg.removeElement(point);
 				// and stop listening to it (if it's a fix)
-				if(point instanceof FixWrapper)
+				if (point instanceof FixWrapper)
 				{
 					FixWrapper fw = (FixWrapper) point;
-				  fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED, _locationListener);
+					fw.removePropertyChangeListener(PlainWrapper.LOCATION_CHANGED,
+							_locationListener);
 				}
 			}
 		}
@@ -2936,8 +2937,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					// getting the
 					// fix immediately before the requested time
 					final HiResDate thisDTG = new HiResDate(0, start_time);
-					final MWC.GenericData.Watchable[] list = this
-							.getNearestTo(thisDTG);
+					final MWC.GenericData.Watchable[] list = this.getNearestTo(thisDTG);
 					// check we found some
 					if (list.length > 0)
 					{
@@ -3287,6 +3287,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
+		if(relevantSegment == null)
+		{
+			throw new RuntimeException("failed to provide relevant segment, alg will break");
+		}
+		
 		// hmm, if we're splitting after the point, we need to move along the
 		// bus by
 		// one
@@ -3341,12 +3346,15 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			WorldVector secondOffset = splitPoint.getLocation().subtract(refTrackLoc);
 
 			// put the lists back into plottable layers
-			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1, theTMA.getOffset());
+			RelativeTMASegment tr1 = new RelativeTMASegment(theTMA, p1, theTMA
+					.getOffset());
 			RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
-			
+
 			// update the freq's
-			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
-			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
+			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+					.getBaseFrequency());
+			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+					.getBaseFrequency());
 
 			// and store them
 			ts1 = tr1;
@@ -3368,13 +3376,16 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			FixWrapper t1Start = (FixWrapper) p1.first();
 
 			// put the lists back into plottable layers
-			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1, t1Start.getLocation(), null,
+			AbsoluteTMASegment tr1 = new AbsoluteTMASegment(theTMA, p1, t1Start
+					.getLocation(), null, null);
+			AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null,
 					null);
-			AbsoluteTMASegment tr2 = new AbsoluteTMASegment(theTMA, p2, origin, null, null);
 
 			// update the freq's
-			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
-			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment).getBaseFrequency());
+			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+					.getBaseFrequency());
+			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+					.getBaseFrequency());
 
 			// and store them
 			ts1 = tr1;

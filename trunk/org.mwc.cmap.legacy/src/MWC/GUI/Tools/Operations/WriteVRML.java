@@ -176,6 +176,9 @@ abstract public class WriteVRML extends MWC.GUI.Tools.PlainTool
 
 			}
 
+			if(bounds == null)
+				return res;
+			
 			// set the scaling limits
 			double max_dim = Math.max(bounds.getHeight(), bounds.getWidth());
 

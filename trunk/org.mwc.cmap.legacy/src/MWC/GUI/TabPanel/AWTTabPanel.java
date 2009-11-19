@@ -37,8 +37,7 @@ import java.util.Vector;
  *
  * @author Scott Fauerbach
  */
-public class AWTTabPanel extends BaseTabbedPanel implements java.io.Serializable,
-	MWC.GUI.CoreTabPanel
+public class AWTTabPanel extends BaseTabbedPanel implements MWC.GUI.CoreTabPanel
 {
     /**
 	 * 

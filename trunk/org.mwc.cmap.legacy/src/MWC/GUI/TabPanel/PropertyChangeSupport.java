@@ -27,7 +27,7 @@ import java.util.Vector;
  *
  * @author Symantec
  */
-public class PropertyChangeSupport extends java.beans.PropertyChangeSupport implements java.io.Serializable
+public class PropertyChangeSupport extends java.beans.PropertyChangeSupport
 {
     /**
 	 * 

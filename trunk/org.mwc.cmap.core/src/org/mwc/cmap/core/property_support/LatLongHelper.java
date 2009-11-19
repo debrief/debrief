@@ -104,7 +104,7 @@ public class LatLongHelper extends EditorHelper
 	public static class LatLongPropertySource implements IPropertySource2
 	{
 
-		private PropertyChangeSupport _pSupport;;
+		private PropertyChangeSupport _pSupport;
 		
 		/**
 		 * the working values

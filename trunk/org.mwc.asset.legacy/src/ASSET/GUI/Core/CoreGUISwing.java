@@ -531,7 +531,7 @@ abstract public class CoreGUISwing extends CoreGUI implements
 		public void setCursor(final int theCursor)
 		{
 			_frame.setCursor(Cursor.getPredefinedCursor(theCursor));
-		};
+		}
 
 		public void setTitle(String name)
 		{
@@ -541,22 +541,22 @@ abstract public class CoreGUISwing extends CoreGUI implements
 		public void restoreCursor()
 		{
 			_frame.setCursor(Cursor.getDefaultCursor());
-		};
+		}
 
 		public void addActionToBuffer(final Action theAction)
 		{
 			_undoBuffer.add(theAction);
-		};
+		}
 
 		public String getProperty(final String name)
 		{
 			return _appProps.getProperty(name);
-		};
+		}
 
 		public java.util.Map<String, String> getPropertiesLike(final String pattern)
 		{
 			return _appProps.getPropertiesLike(pattern);
-		};
+		}
 
 		public void setProperty(String name, String value)
 		{
@@ -567,7 +567,7 @@ abstract public class CoreGUISwing extends CoreGUI implements
 		{
 			System.err.println("ASSET Problem:" + text);
 			e.printStackTrace();
-		};
+		}
 	}
 
 	protected void setTime(final String val)
@@ -635,5 +635,5 @@ abstract public class CoreGUISwing extends CoreGUI implements
 
 		return res;
 
-	};
+	}
 }

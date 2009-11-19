@@ -4,7 +4,7 @@ import org.mwc.cmap.gridharness.data.GriddableItemDescriptor;
 
 import MWC.GUI.TimeStampedDataItem;
 
-class LinearItemsInterpolator extends AbstractItemsInterpolator implements ItemsInterpolator {
+class LinearItemsInterpolator extends AbstractItemsInterpolator {
 
 	private final LinearInterpolator myWorker;
 

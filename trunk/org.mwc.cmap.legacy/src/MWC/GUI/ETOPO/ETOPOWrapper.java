@@ -528,7 +528,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
         stepWidth = (BR.x - TL.x)/(double)num_labels;
         rectSize = new Dimension((int) stepWidth + 1, BR.y - TL.y  );
         break;
-      case(ETOPOPainter.KeyLocationPropertyEditor.BOTTOM):
+      default:
         TL = new Point((int)(screen_size.width * MIN_WID), (int)(screen_size.height - (screen_size.height * MIN_LEN) - txtHt));
         BR = new Point((int)(screen_size.width * (MIN_LEN + LEN)), (int)(screen_size.height - (screen_size.height * MIN_LEN)));
         num_labels = (BR.x - TL.x) / txtWid;
@@ -540,7 +540,7 @@ public class ETOPOWrapper extends MWCETOPOLayer implements Runnable, BathyProvid
     }
 
     // check its worth bothering with
-    if(BR == null)
+    if((BR == null) || (TL == null))
       return;
 
     // sort out how many shade steps we are going to produce (it depends on how big the text string is)

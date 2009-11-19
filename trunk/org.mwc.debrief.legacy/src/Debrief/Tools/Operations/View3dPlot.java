@@ -614,7 +614,7 @@ public final class View3dPlot extends PlainTool // implements Layers.DataListene
         if (pl instanceof Layer)
         {
           res = checkThisLayer((Layer) pl, plottable);
-          if (res = true)
+          if (res == true)
             break;
         }
       }

@@ -268,7 +268,7 @@ public class ColorPropertyEditor extends
   //////////////////////////////////////
   // internal class which keeps track of the current value
   //////////////////////////////////////
-  private class TickableComboBox extends JComboBox implements java.awt.event.ActionListener
+  private class TickableComboBox extends JComboBox
   {
     /**
 		 * 

@@ -432,8 +432,6 @@ public class TurnAlgorithm implements MWCModel
     final double used = rate * secs * MWC.Algorithms.Conversions.Mps2Kts(curSpeed_m_sec);
     fuelLevel = fuelLevel - used;
 
-
-
     // update the vectors
     // now produce rng & brg for the lat/long deltas
     final double dRng_m = Math.sqrt(latVal_m * latVal_m + longVal_m * longVal_m);
@@ -451,9 +449,10 @@ public class TurnAlgorithm implements MWCModel
     res.setFuelLevel(fuelLevel);
 
     // sometimes we never get onto the demanded course because of rads 2 degs not being commutative
-    double courseDelta = Math.abs(res.getCourse() - demStatus.getCourse());
+    double courseDegs = MWC.Algorithms.Conversions.Rads2Degs(demCourseRads);
+    double courseDelta = Math.abs(res.getCourse() - courseDegs);
     if(courseDelta < 0.00001)
-      res.setCourse(demStatus.getCourse());
+      res.setCourse(courseDegs);
 
     return res;
   }

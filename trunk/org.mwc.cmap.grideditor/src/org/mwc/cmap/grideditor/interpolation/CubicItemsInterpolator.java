@@ -6,7 +6,7 @@ import MWC.GUI.TimeStampedDataItem;
 
 import flanagan.interpolation.CubicSpline;
 
-class CubicItemsInterpolator extends AbstractItemsInterpolator implements ItemsInterpolator {
+class CubicItemsInterpolator extends AbstractItemsInterpolator {
 
 	private CubicSpline myWorker;
 

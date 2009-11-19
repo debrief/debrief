@@ -5,7 +5,6 @@ import java.awt.Dimension;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
@@ -255,8 +254,7 @@ public class LocalGridPainter extends GridPainter
 	// ///////////////////////////////////////////////////////////
 	// info class
 	// //////////////////////////////////////////////////////////
-	public class LocalGridPainterInfo extends GridPainterInfo implements
-			Serializable
+	public class LocalGridPainterInfo extends GridPainterInfo
 	{
 
 		/**

@@ -54,7 +54,8 @@ public class DebriefProperty implements IPropertyDescriptor
 			try
 			{
 				theEditor = specificEditor.newInstance();
-			} catch (Exception e)
+			}
+			catch (Exception e)
 			{
 				e.printStackTrace();
 			}
@@ -101,12 +102,12 @@ public class DebriefProperty implements IPropertyDescriptor
 		}
 		return res;
 	}
-	
+
 	public static void addSupplementalHelpers(Vector<EditorHelper> newHelpers)
 	{
 		// make sure our starter list is created
 		initialiseHelpers();
-		
+
 		// now add the new ones
 		for (Iterator<EditorHelper> iter = newHelpers.iterator(); iter.hasNext();)
 		{
@@ -122,7 +123,8 @@ public class DebriefProperty implements IPropertyDescriptor
 			_myHelperList = new Vector<EditorHelper>(0, 1);
 			_myHelperList.add(new ColorHelper(_theControl));
 			_myHelperList.add(new BoundedIntegerHelper());
-			_myHelperList.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
+			_myHelperList
+					.add(new BoundedIntegerHelper.SteppingBoundedIntegerHelper());
 			_myHelperList.add(new EditorHelper(String.class)
 			{
 				public CellEditor getCellEditorFor(Composite parent)
@@ -187,7 +189,7 @@ public class DebriefProperty implements IPropertyDescriptor
 					return res;
 				}
 
-			});			
+			});
 			_myHelperList.add(new BooleanHelper());
 			_myHelperList.add(new FontHelper());
 			_myHelperList.add(new DTGHelper());
@@ -213,7 +215,6 @@ public class DebriefProperty implements IPropertyDescriptor
 		}
 		return res;
 	}
-	
 
 	public Control createEditor(Composite parent)
 	{
@@ -223,7 +224,7 @@ public class DebriefProperty implements IPropertyDescriptor
 			res = _myHelper.getEditorControlFor(parent, this);
 		}
 		return res;
-	}	
+	}
 
 	public String getCategory()
 	{
@@ -270,7 +271,7 @@ public class DebriefProperty implements IPropertyDescriptor
 		}
 		return res;
 	}
-	
+
 	public EditorHelper getHelper()
 	{
 		return _myHelper;
@@ -282,9 +283,9 @@ public class DebriefProperty implements IPropertyDescriptor
 		boolean res = true;
 		if (this.getDisplayName().equals("Name"))
 			res = false;
-		if(this.getDisplayName().equals("DateTimeGroup"))
-				res = false;
-		if(this.getDisplayName().equals("FixLocation"))
+		if (this.getDisplayName().equals("DateTimeGroup"))
+			res = false;
+		if (this.getDisplayName().equals("FixLocation"))
 			res = false;
 		return res;
 	}
@@ -297,12 +298,17 @@ public class DebriefProperty implements IPropertyDescriptor
 		{
 			// find out the type of the editor
 			Method m = _thisProp.getReadMethod();
-			
-			if(m == null)
-				System.out.println("tripped, prop was:" + _thisProp.getDisplayName());
 
-			res = m.invoke(_subject,(Object[]) null);
-		} catch (Exception e)
+			if (m == null)
+			{
+				System.out.println("tripped, prop was:" + _thisProp.getDisplayName());
+			}
+			else
+			{
+				res = m.invoke(_subject, (Object[]) null);
+			}
+		}
+		catch (Exception e)
 		{
 			MWC.Utilities.Errors.Trace.trace(e);
 		}
@@ -336,14 +342,18 @@ public class DebriefProperty implements IPropertyDescriptor
 		Method write = _thisProp.getWriteMethod();
 		try
 		{
-			write.invoke(_subject, new Object[] { value });
-		} catch (IllegalArgumentException e)
+			write.invoke(_subject, new Object[]
+			{ value });
+		}
+		catch (IllegalArgumentException e)
 		{
 			e.printStackTrace();
-		} catch (IllegalAccessException e)
+		}
+		catch (IllegalAccessException e)
 		{
 			e.printStackTrace();
-		} catch (InvocationTargetException e)
+		}
+		catch (InvocationTargetException e)
 		{
 			e.printStackTrace();
 		}

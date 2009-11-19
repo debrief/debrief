@@ -309,7 +309,7 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 						}
 					};
 				}
-				;
+				
 			}
 
 		}

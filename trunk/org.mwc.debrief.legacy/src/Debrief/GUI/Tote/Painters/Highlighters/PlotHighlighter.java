@@ -45,7 +45,7 @@ public interface PlotHighlighter extends Editable {
 	/**
 	 * A simple (rectangular) highlighter
 	 */
-	public final class RectangleHighlight implements PlotHighlighter, Editable {
+	public final class RectangleHighlight implements PlotHighlighter {
 
 		private Color _myColor = Color.white;
 		private int _mySize = 5;

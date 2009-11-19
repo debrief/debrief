@@ -106,9 +106,9 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		_myEditor.pointList2.addDoubleClickListener(_dblClickListener);
 		_myEditor.helpLbl
 				.setText("Manipulate your points using the buttons to the right, "
-						+ " by double-clicking on a point to change it in the Properties view, " +
-								"by dragging in Drag Component mouse mode," +
-								"or by pasting from the clipboard.");
+						+ " by double-clicking on a point to change it in the Properties view, "
+						+ "by dragging in Drag Component mouse mode,"
+						+ "or by pasting from the clipboard.");
 
 		// say that we're a selection provider
 		getSite().setSelectionProvider(this);
@@ -125,7 +125,8 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	{
 		WorldLocation res = null;
 
-		StructuredSelection curr = (StructuredSelection) _myEditor.pointList2.getSelection();
+		StructuredSelection curr = (StructuredSelection) _myEditor.pointList2
+				.getSelection();
 		Object first = curr.getFirstElement();
 		if (first != null)
 		{
@@ -166,16 +167,17 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 
 	}
 
-	/** user is trying to paste location off clipboard
+	/**
+	 * user is trying to paste location off clipboard
 	 * 
 	 * @param thisPoint
 	 */
 	private void pasteLoc(WorldLocation thisPoint)
 	{
 		// is a location selected?
-		if(thisPoint != null)
+		if (thisPoint != null)
 		{
-		
+
 			// is there a location on the clipboard?
 			// right, see what's on the clipboard
 			// right, copy the location to the clipboard
@@ -191,15 +193,15 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 
 					// create the output value
 					thisPoint.copy(loc);
-					
+
 					// and fire some kind of update...
 					updateUI();
 				}
 				else
 				{
 					CorePlugin.showMessage("Paste location",
-							"Sorry the clipboard text is not in the right format." + "\nContents:"
-									+ txt);
+							"Sorry the clipboard text is not in the right format."
+									+ "\nContents:" + txt);
 				}
 			}
 		}
@@ -214,14 +216,14 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		CorePlugin.run(theAction);
 	}
 
-//	/**
-//	 * @param thisPoint
-//	 */
-//	private void moveDownward(WorldLocation thisPoint)
-//	{
-//		MoveDownAction theAction = new MoveDownAction(_myPath, thisPoint);
-//		CorePlugin.run(theAction);
-//	}
+	// /**
+	// * @param thisPoint
+	// */
+	// private void moveDownward(WorldLocation thisPoint)
+	// {
+	// MoveDownAction theAction = new MoveDownAction(_myPath, thisPoint);
+	// CorePlugin.run(theAction);
+	// }
 
 	/**
 	 * @param thisPoint
@@ -397,8 +399,11 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 
 		}
 
-		// right, take us back to the beginning
-		dest.drawLine(lastP.x, lastP.y, startP.x, startP.y);
+		if ((lastP != null) && (startP != null))
+		{
+			// right, take us back to the beginning
+			dest.drawLine(lastP.x, lastP.y, startP.x, startP.y);
+		}
 	}
 
 	/**
@@ -451,9 +456,11 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 		if (_selectionListeners != null)
 		{
 			SelectionChangedEvent sEvent = new SelectionChangedEvent(this, selection);
-			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners.iterator(); stepper.hasNext();)
+			for (Iterator<ISelectionChangedListener> stepper = _selectionListeners
+					.iterator(); stepper.hasNext();)
 			{
-				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper.next();
+				ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
+						.next();
 				if (thisL != null)
 				{
 					thisL.selectionChanged(sEvent);
@@ -629,12 +636,14 @@ public class PolygonEditorView extends ViewPart implements ISelectionProvider,
 	abstract public class AbstractPolygonAction extends CMAPOperation
 	{
 
-		/** the polygon we're operating on
+		/**
+		 * the polygon we're operating on
 		 * 
 		 */
 		protected WorldPath _path;
 
-		/** the point we're manipulating
+		/**
+		 * the point we're manipulating
 		 * 
 		 */
 		protected WorldLocation _loc;

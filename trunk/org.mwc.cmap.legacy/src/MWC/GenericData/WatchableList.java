@@ -104,191 +104,227 @@ import junit.framework.TestCase;
 
 public interface WatchableList
 {
-  /** the name of the property change event to fire should this object get filtered
-   *
-   */
-  public static final String FILTERED_PROPERTY = "WATCHABLE_FILTERED";
-
-	/** the time threshold around a Watchable to decide
-	 * if it is visible or not (value in micros)
+	/**
+	 * the name of the property change event to fire should this object get
+	 * filtered
+	 * 
 	 */
-	public static final long TIME_THRESHOLD=120000000; // 2 minutes
+	public static final String FILTERED_PROPERTY = "WATCHABLE_FILTERED";
 
-  /** get the name of this list
-   * @return the name of this list
-   */
-  public String getName();
+	/**
+	 * the time threshold around a Watchable to decide if it is visible or not
+	 * (value in micros)
+	 */
+	public static final long TIME_THRESHOLD = 120000000; // 2 minutes
 
-  /** get the start DTG of this list
-   * @return the start DTG, or -1 if not time-related
-   */
-  public HiResDate getStartDTG();
+	/**
+	 * get the name of this list
+	 * 
+	 * @return the name of this list
+	 */
+	public String getName();
 
-  /** get the end DTG of this list
-   * @return the end DTG, or -1 if not time-related
-   */
-  public HiResDate getEndDTG();
+	/**
+	 * get the start DTG of this list
+	 * 
+	 * @return the start DTG, or -1 if not time-related
+	 */
+	public HiResDate getStartDTG();
 
-  /** find out if this object is visible
-   *
-   * @return yes/no for visible
-   */
-  public boolean getVisible();
+	/**
+	 * get the end DTG of this list
+	 * 
+	 * @return the end DTG, or -1 if not time-related
+	 */
+	public HiResDate getEndDTG();
 
+	/**
+	 * find out if this object is visible
+	 * 
+	 * @return yes/no for visible
+	 */
+	public boolean getVisible();
 
-  /** get the watchable in this list nearest to the specified DTG.
-   * If the watchable list has start/finish times, only return a fix if the DTG
-   * supplied is during the "live" period of the watchables.
-   * If not DTG is present, or an invalid DTG is requested ,return all valid points
-   * @param DTG to search for
-   * @return the nearest Watchable
-   */
-  public Watchable[] getNearestTo(HiResDate DTG);
+	/**
+	 * get the watchable in this list nearest to the specified DTG. If the
+	 * watchable list has start/finish times, only return a fix if the DTG
+	 * supplied is during the "live" period of the watchables. If not DTG is
+	 * present, or an invalid DTG is requested ,return all valid points
+	 * 
+	 * @param DTG
+	 *          to search for
+	 * @return the nearest Watchable
+	 */
+	public Watchable[] getNearestTo(HiResDate DTG);
 
-	/** filter the list to the specified time period
+	/**
+	 * filter the list to the specified time period
 	 */
 	public void filterListTo(HiResDate start, HiResDate end);
 
-  /** return the set of items which fall inside the indicated period.
-   * If an items has an "alive" period which overlaps this period then it will
-   * be returned.  If the item has no time set, then return it as being valid
-   */
-  public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end);
+	/**
+	 * return the set of items which fall inside the indicated period. If an items
+	 * has an "alive" period which overlaps this period then it will be returned.
+	 * If the item has no time set, then return it as being valid
+	 */
+	public Collection<Editable> getItemsBetween(HiResDate start, HiResDate end);
 
-  /** find out the total area covered by this list
-   */
-  public MWC.GenericData.WorldArea getBounds();
+	/**
+	 * find out the total area covered by this list
+	 */
+	public MWC.GenericData.WorldArea getBounds();
 
-  /** find out the default colour for this list
-   */
-  public java.awt.Color getColor();
+	/**
+	 * find out the default colour for this list
+	 */
+	public java.awt.Color getColor();
 
-  /** find out the symbol to use for plotting this list in Snail mode
-   */
-  public MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape();
+	/**
+	 * find out the symbol to use for plotting this list in Snail mode
+	 */
+	public MWC.GUI.Shapes.Symbols.PlainSymbol getSnailShape();
 
-  /**********************************************************************
-   * embedded class for testing watchable lists.
-   * Used in support of JUnit testing
-   *********************************************************************/
-  public abstract class TestWatchables
-  {
-    /** get an example of this kind of list with no dates set
-     *
-     * @return
-     */
-    public abstract WatchableList getNullDates();
+	/**********************************************************************
+	 * embedded class for testing watchable lists. Used in support of JUnit
+	 * testing
+	 *********************************************************************/
+	public abstract class TestWatchables
+	{
+		/**
+		 * get an example of this kind of list with no dates set
+		 * 
+		 * @return
+		 */
+		public abstract WatchableList getNullDates();
 
-    /** get an example of this kind of list with both dates set
-     *
-     * @return
-     */
-    public abstract WatchableList getBothDates(HiResDate startDate, HiResDate endDate);
+		/**
+		 * get an example of this kind of list with both dates set
+		 * 
+		 * @return
+		 */
+		public abstract WatchableList getBothDates(HiResDate startDate,
+				HiResDate endDate);
 
-    /** get an example of this kind of list with only start date set
-     *
-     * @return
-     */
-    public abstract WatchableList getStartDateOnly(HiResDate startDate);
+		/**
+		 * get an example of this kind of list with only start date set
+		 * 
+		 * @return
+		 */
+		public abstract WatchableList getStartDateOnly(HiResDate startDate);
 
-    /** test an instance of this class
-     *
-     * @param tester
-     */
-    public final void doTest(junit.framework.TestCase tester)
-    {
-      // test without dates
-      WatchableList noDates = getNullDates();
+		/**
+		 * test an instance of this class
+		 * 
+		 * @param tester
+		 */
+		public final void doTest(junit.framework.TestCase tester)
+		{
+			// test without dates
+			WatchableList noDates = getNullDates();
 
-      // test filter list to
-      noDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
-      TestCase.assertTrue("item wasn't filtered", noDates.getVisible());
+			// test filter list to
+			noDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
+			TestCase.assertTrue("item wasn't filtered", noDates.getVisible());
 
-      // test get items between
-      Collection<Editable> coll = noDates.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
-      TestCase.assertTrue("all items were returned", coll.size() == 1);
+			// test get items between
+			Collection<Editable> coll = noDates.getItemsBetween(new HiResDate(2000),
+					new HiResDate(3000));
+			TestCase.assertTrue("all items were returned", coll.size() == 1);
 
-      // test get nearest to
-      MWC.GenericData.Watchable[] nearest = noDates.getNearestTo(new HiResDate(3000, 0));
-      TestCase.assertEquals("return itself when no DTG present", 1, nearest.length);
+			// test get nearest to
+			MWC.GenericData.Watchable[] nearest = noDates.getNearestTo(new HiResDate(
+					3000, 0));
+			TestCase.assertEquals("return itself when no DTG present", 1,
+					nearest.length);
 
-      // test get start DTG
-      TestCase.assertEquals("no start DTG", null, noDates.getStartDTG());
+			// test get start DTG
+			TestCase.assertEquals("no start DTG", null, noDates.getStartDTG());
 
-      // test get end DTG
-      TestCase.assertEquals("no end DTG", null, noDates.getEndDTG());
+			// test get end DTG
+			TestCase.assertEquals("no end DTG", null, noDates.getEndDTG());
 
-      // test start date only
-      WatchableList startOnly = getStartDateOnly(new HiResDate(2500));
+			// test start date only
+			WatchableList startOnly = getStartDateOnly(new HiResDate(2500));
 
-      // test filter list to
-      startOnly.filterListTo(new HiResDate(2000), new HiResDate(3000));
-      TestCase.assertTrue("item was filtered", startOnly.getVisible());
-      startOnly.filterListTo(new HiResDate(4000), new HiResDate(5000));
-      TestCase.assertTrue("item wasn't filtered", !startOnly.getVisible());
-      startOnly.filterListTo(new HiResDate(1000), new HiResDate(2000));
-      TestCase.assertTrue("item wasn't filtered", !startOnly.getVisible());
-      startOnly.filterListTo(new HiResDate(2000), new HiResDate(3000));
-      TestCase.assertTrue("item was filtered", startOnly.getVisible());
+			// test filter list to
+			startOnly.filterListTo(new HiResDate(2000), new HiResDate(3000));
+			TestCase.assertTrue("item was filtered", startOnly.getVisible());
+			startOnly.filterListTo(new HiResDate(4000), new HiResDate(5000));
+			TestCase.assertTrue("item wasn't filtered", !startOnly.getVisible());
+			startOnly.filterListTo(new HiResDate(1000), new HiResDate(2000));
+			TestCase.assertTrue("item wasn't filtered", !startOnly.getVisible());
+			startOnly.filterListTo(new HiResDate(2000), new HiResDate(3000));
+			TestCase.assertTrue("item was filtered", startOnly.getVisible());
 
-      // test get items between
-      coll = startOnly.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
-      TestCase.assertTrue("items were returned", coll != null);
-      TestCase.assertTrue("items were returned", coll.size() == 1);
-      coll = startOnly.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
-      TestCase.assertTrue("no items were returned", coll == null);
-      coll = startOnly.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
-      TestCase.assertTrue("no items were returned", coll == null);
+			// test get items between
+			coll = startOnly
+					.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
+			TestCase.assertTrue("items were returned", coll != null);
+			if (coll != null)
+				TestCase.assertTrue("items were returned", coll.size() == 1);
+			coll = startOnly
+					.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
+			TestCase.assertTrue("no items were returned", coll == null);
+			coll = startOnly
+					.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
+			TestCase.assertTrue("no items were returned", coll == null);
 
-      // test get nearest to
-      nearest = startOnly.getNearestTo(new HiResDate(3000));
-      TestCase.assertEquals("nearest item found", nearest[0], startOnly);
-      TestCase.assertEquals("nearest item found", nearest.length, 1);
+			// test get nearest to
+			nearest = startOnly.getNearestTo(new HiResDate(3000));
+			TestCase.assertEquals("nearest item found", nearest[0], startOnly);
+			TestCase.assertEquals("nearest item found", nearest.length, 1);
 
-      // test get start DTG
-      TestCase.assertEquals("no start DTG", 2500, startOnly.getStartDTG().getDate().getTime());
+			// test get start DTG
+			TestCase.assertEquals("no start DTG", 2500, startOnly.getStartDTG()
+					.getDate().getTime());
 
-      // test get end DTG
-      TestCase.assertEquals("no end DTG", null, startOnly.getEndDTG());
+			// test get end DTG
+			TestCase.assertEquals("no end DTG", null, startOnly.getEndDTG());
 
+			// test with dates
+			WatchableList withDates = getBothDates(new HiResDate(2500),
+					new HiResDate(2700));
 
-      // test with dates
-      WatchableList withDates = getBothDates(new HiResDate(2500),new HiResDate(2700));
+			// test filter list to
+			withDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
+			TestCase.assertTrue("item was filtered", withDates.getVisible());
+			withDates.filterListTo(new HiResDate(4000), new HiResDate(5000));
+			TestCase.assertTrue("item wasn't filtered", !withDates.getVisible());
+			withDates.filterListTo(new HiResDate(1000), new HiResDate(2000));
+			TestCase.assertTrue("item wasn't filtered", !withDates.getVisible());
+			withDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
+			TestCase.assertTrue("item was filtered", withDates.getVisible());
 
-      // test filter list to
-       withDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
-       TestCase.assertTrue("item was filtered", withDates.getVisible());
-       withDates.filterListTo(new HiResDate(4000), new HiResDate(5000));
-       TestCase.assertTrue("item wasn't filtered", !withDates.getVisible());
-       withDates.filterListTo(new HiResDate(1000), new HiResDate(2000));
-       TestCase.assertTrue("item wasn't filtered", !withDates.getVisible());
-       withDates.filterListTo(new HiResDate(2000), new HiResDate(3000));
-       TestCase.assertTrue("item was filtered", withDates.getVisible());
+			// test get items between
+			coll = withDates
+					.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
+			TestCase.assertTrue("items were returned", coll != null);
+			if (coll != null)
+				TestCase.assertTrue("items were returned", coll.size() == 1);
+			coll = withDates
+					.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
+			TestCase.assertTrue("no items were returned", coll == null);
+			coll = withDates
+					.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
+			TestCase.assertTrue("no items were returned", coll == null);
 
-       // test get items between
-       coll = withDates.getItemsBetween(new HiResDate(2000), new HiResDate(3000));
-       TestCase.assertTrue("items were returned", coll != null);
-       TestCase.assertTrue("items were returned", coll.size() == 1);
-       coll = withDates.getItemsBetween(new HiResDate(4000), new HiResDate(6000));
-       TestCase.assertTrue("no items were returned", coll == null);
-       coll = withDates.getItemsBetween(new HiResDate(1000), new HiResDate(2000));
-       TestCase.assertTrue("no items were returned", coll == null);
+			// test get nearest to
+			nearest = withDates.getNearestTo(new HiResDate(2600));
+			TestCase.assertEquals("nearest item found", nearest.length, 1);
+			TestCase.assertEquals("nearest item found", nearest[0], withDates);
+			nearest = withDates.getNearestTo(new HiResDate(1100));
+			TestCase.assertEquals("nearest item found", nearest.length, 0);
+			nearest = withDates.getNearestTo(new HiResDate(5100));
+			TestCase.assertEquals("nearest item found", nearest.length, 0);
 
-       // test get nearest to
-       nearest = withDates.getNearestTo(new HiResDate(2600));
-       TestCase.assertEquals("nearest item found", nearest.length, 1);
-       TestCase.assertEquals("nearest item found", nearest[0], withDates);
-       nearest = withDates.getNearestTo(new HiResDate(1100));
-       TestCase.assertEquals("nearest item found", nearest.length, 0);
-       nearest = withDates.getNearestTo(new HiResDate(5100));
-       TestCase.assertEquals("nearest item found", nearest.length, 0);
+			// test get start DTG
+			TestCase.assertEquals("start DTG", 2500, withDates.getStartDTG()
+					.getDate().getTime());
 
-       // test get start DTG
-       TestCase.assertEquals("start DTG", 2500, withDates.getStartDTG().getDate().getTime());
-
-       // test get end DTG
-       TestCase.assertEquals("end DTG", 2700, withDates.getEndDTG().getDate().getTime());
-    }
-  }
+			// test get end DTG
+			TestCase.assertEquals("end DTG", 2700, withDates.getEndDTG().getDate()
+					.getTime());
+		}
+	}
 
 }

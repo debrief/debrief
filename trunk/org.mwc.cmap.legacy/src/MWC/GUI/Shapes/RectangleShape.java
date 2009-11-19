@@ -145,7 +145,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Vector;
@@ -157,8 +156,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class RectangleShape extends PlainShape implements Editable, Serializable,
-		DraggableItem, HasDraggableComponents
+public class RectangleShape extends PlainShape implements Editable, HasDraggableComponents
 {
 
 	/**

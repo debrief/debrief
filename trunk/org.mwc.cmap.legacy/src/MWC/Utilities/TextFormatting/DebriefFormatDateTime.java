@@ -254,7 +254,8 @@ public class DebriefFormatDateTime
         }
       }
 
-      res = new HiResDate(date.getTime(), micros);
+      if(date != null)
+        res = new HiResDate(date.getTime(), micros);
     }
 
     return res;

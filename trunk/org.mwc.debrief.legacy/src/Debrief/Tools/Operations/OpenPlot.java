@@ -137,7 +137,8 @@ public final class OpenPlot extends MWC.GUI.Tools.Operations.Open
       {
         // do a closing "close" operation on the file - put it this late so that earlier errors get caught
         try{
-          is.close();
+        	if(is != null)
+            is.close();
         }
         catch(java.io.IOException ex)
         {

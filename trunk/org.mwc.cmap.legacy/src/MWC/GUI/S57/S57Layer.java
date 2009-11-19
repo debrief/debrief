@@ -42,7 +42,7 @@ import MWC.GUI.Plottables.IteratorWrapper;
 import MWC.GUI.S57.features.S57Feature;
 import MWC.GenericData.WorldArea;
 
-public class S57Layer implements Plottable, Serializable, Layer
+public class S57Layer implements Layer
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables

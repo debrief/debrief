@@ -28,7 +28,7 @@ import java.util.*;
  * Each detections is the product of a {@link ASSET.ParticipantType participant} using
  * a {@link ASSET.Models.SensorType sensor} to detect another {@link ASSET.ParticipantType participant}.
  */
-public class DetectionList extends Vector<DetectionEvent> implements Collection<DetectionEvent>
+public class DetectionList extends Vector<DetectionEvent>
 {
 
   /** our list of detections

@@ -5,7 +5,7 @@ import java.util.Enumeration;
 import MWC.GUI.*;
 import MWC.GenericData.*;
 
-public class BasePlottable implements Plottable, Layer
+public class BasePlottable implements Layer
 {
 	
 	/**

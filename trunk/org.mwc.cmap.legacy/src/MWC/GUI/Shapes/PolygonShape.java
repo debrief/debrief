@@ -80,7 +80,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -93,7 +92,7 @@ import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldPath;
 import MWC.GenericData.WorldVector;
 
-public class PolygonShape extends PlainShape implements Serializable, Editable, DraggableItem, HasDraggableComponents
+public class PolygonShape extends PlainShape implements Editable, HasDraggableComponents
 {
 
   //////////////////////////////////////////////////

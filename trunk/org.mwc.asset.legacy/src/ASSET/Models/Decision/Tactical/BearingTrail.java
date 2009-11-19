@@ -20,7 +20,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 
-public class BearingTrail extends Trail implements java.io.Serializable
+public class BearingTrail extends Trail
 {
 
   //////////////////////////////////////////////////////////////////////

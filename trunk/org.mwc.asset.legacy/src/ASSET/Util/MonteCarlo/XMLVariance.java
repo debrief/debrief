@@ -656,10 +656,7 @@ public final class XMLVariance
 			{
 				return sourceDocument.lookupNamespaceURI(null);
 			}
-			else
-			{
-				return sourceDocument.lookupNamespaceURI(prefix);
-			}
+			return sourceDocument.lookupNamespaceURI(prefix);
 		}
 
 		/**

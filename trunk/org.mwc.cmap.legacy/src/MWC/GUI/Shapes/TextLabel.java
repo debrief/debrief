@@ -150,7 +150,6 @@ package MWC.GUI.Shapes;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Point;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.StringTokenizer;
 import java.util.Vector;
@@ -172,7 +171,7 @@ import MWC.GenericData.WorldVector;
  * consequently when the label is drawn in a relative position, it is drawn
  * relative to that part of the shape (you get it really).
  */
-public class TextLabel extends PlainShape implements Serializable, Editable
+public class TextLabel extends PlainShape implements Editable
 {
 
 	// ////////////////////////////////////////////////

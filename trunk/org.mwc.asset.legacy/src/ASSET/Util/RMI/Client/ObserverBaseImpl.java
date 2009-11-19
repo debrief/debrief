@@ -23,7 +23,6 @@ import ASSET.Util.RMI.ServerRMI;
 import ASSET.Util.RMI.Server.ServerImpl;
 
 public class ObserverBaseImpl extends UnicastRemoteObject implements
-        Remote,
         ScenarioCreatedListenerRMI,
         ASSET.Util.RMI.ScenarioSteppedListenerRMI,
         ASSET.Util.RMI.ParticipantsChangedListenerRMI,

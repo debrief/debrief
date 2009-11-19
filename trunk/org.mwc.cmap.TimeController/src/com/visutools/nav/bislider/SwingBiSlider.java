@@ -1,11 +1,21 @@
 package com.visutools.nav.bislider;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.Serializable;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.DecimalFormat;
 
-import javax.swing.*;
+import javax.swing.ButtonGroup;
+import javax.swing.Icon;
+import javax.swing.JCheckBoxMenuItem;
+import javax.swing.JColorChooser;
+import javax.swing.JComponent;
+import javax.swing.JMenuItem;
+import javax.swing.JPopupMenu;
+import javax.swing.JRadioButtonMenuItem;
+import javax.swing.JSeparator;
 
 import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
 
@@ -76,7 +86,7 @@ import com.visutools.nav.bislider.BiSliderPresentation.FormatLong;
  * @version   1.4.1
  */
 
-public class SwingBiSlider extends JComponent implements Serializable
+public class SwingBiSlider extends JComponent
 {
 	//---------- MODIFIERS|-------------------- Type|----------------------------------------------- Name = Init value
 	protected final static javax.swing.text.html.parser.ParserDelegator MAXIMUM_VARIABLE_SIZE_FOR_NAME = null;

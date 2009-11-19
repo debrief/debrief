@@ -1063,7 +1063,7 @@ public class CoreScenario implements ScenarioType, ISimulation
 
       public void restart(ScenarioType scenario)
       {
-        ;
+        
       }
     }
 
@@ -1092,14 +1092,14 @@ public class CoreScenario implements ScenarioType, ISimulation
       public void newScenarioStepTime(final int val)
       {
         newStepTime = val;
-      };
+      }
       public void newStepTime(final int val)
       {
         newStepTime = val;
-      };
+      }
       public void restart(ScenarioType scenario)
       {
-        ;
+        
       }
 
     }
@@ -1114,7 +1114,7 @@ public class CoreScenario implements ScenarioType, ISimulation
 
       public void restart(ScenarioType scenario)
       {
-        ;
+        
       }
 
     }
@@ -1302,6 +1302,9 @@ public class CoreScenario implements ScenarioType, ISimulation
       final ParticipantType sc2 = srv.getThisParticipant(s2);
       assertTrue("participant returned", sc2 != null);
 
+      if(sc2 == null)
+      	return;
+      
       // make edits
       sc2.setName("participant 2");
       final ParticipantType sc3 = srv.getThisParticipant(s3);

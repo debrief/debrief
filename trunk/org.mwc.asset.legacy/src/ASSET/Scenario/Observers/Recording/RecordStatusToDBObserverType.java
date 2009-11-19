@@ -687,7 +687,7 @@ public class RecordStatusToDBObserverType extends CoreObserver implements
   public MWC.GUI.Editable.EditorType getInfo()
   {
     if (_myEditor == null)
-      _myEditor =  new RecordToDbObserverInfo(this);;
+      _myEditor =  new RecordToDbObserverInfo(this);
 
     return _myEditor;
   }

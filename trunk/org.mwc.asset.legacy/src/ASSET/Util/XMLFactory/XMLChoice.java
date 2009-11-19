@@ -116,7 +116,7 @@ public class XMLChoice implements XMLOperation
 
     // done
 
-  };
+  }
 
   /** return the human legible current value of this permutation
    *
@@ -141,7 +141,7 @@ public class XMLChoice implements XMLOperation
     }
 
     return res;
-  };
+  }
 
 
   /** return our object as a list

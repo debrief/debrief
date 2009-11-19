@@ -156,9 +156,11 @@ package Debrief.GUI.Tote.Painters;
 
 
 import Debrief.GUI.Tote.AnalysisTote;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
 
-public final class RelativePainter extends SnailPainter implements Editable
+public final class RelativePainter extends SnailPainter
 {
   ///////////////////////////////////
   // member variables

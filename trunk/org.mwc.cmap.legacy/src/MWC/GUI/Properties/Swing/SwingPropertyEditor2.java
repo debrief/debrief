@@ -1424,8 +1424,7 @@ public class SwingPropertyEditor2 extends PlainPropertyEditor implements KeyList
 
 	// custom class to remember the current value, and paint the current item in
 	// RED
-	public static class TickableComboBox extends JComboBox implements
-			java.awt.event.ActionListener
+	public static class TickableComboBox extends JComboBox
 	{
 
 		/**

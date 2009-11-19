@@ -675,7 +675,7 @@ public class Plot3dView extends ViewPart
 
 		public StringHolder()
 		{
-		};
+		}
 
 		public StringHolder(String theString)
 		{
@@ -690,7 +690,7 @@ public class Plot3dView extends ViewPart
 		public void set_myString(String string)
 		{
 			_myString = string;
-		};
+		}
 	}
 
 	/**
@@ -952,7 +952,7 @@ public class Plot3dView extends ViewPart
 				if (pl instanceof Layer)
 				{
 					res = checkThisLayer((Layer) pl, plottable);
-					if (res = true)
+					if (res == true)
 						break;
 				}
 			}

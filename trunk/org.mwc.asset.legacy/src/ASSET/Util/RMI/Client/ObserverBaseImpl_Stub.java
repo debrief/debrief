@@ -5,7 +5,7 @@ package ASSET.Util.RMI.Client;
 
 public final class ObserverBaseImpl_Stub
     extends java.rmi.server.RemoteStub
-    implements java.rmi.Remote, ASSET.Util.RMI.ScenarioCreatedListenerRMI, ASSET.Util.RMI.ScenarioSteppedListenerRMI, ASSET.Util.RMI.ParticipantsChangedListenerRMI, ASSET.Util.RMI.PropertyChangeListenerRMI
+    implements ASSET.Util.RMI.ScenarioCreatedListenerRMI, ASSET.Util.RMI.ScenarioSteppedListenerRMI, ASSET.Util.RMI.ParticipantsChangedListenerRMI, ASSET.Util.RMI.PropertyChangeListenerRMI
 {
     @SuppressWarnings("deprecation")
 		private static final java.rmi.server.Operation[] operations = {

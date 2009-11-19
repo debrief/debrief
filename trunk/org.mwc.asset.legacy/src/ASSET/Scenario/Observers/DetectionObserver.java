@@ -7,26 +7,24 @@
  */
 package ASSET.Scenario.Observers;
 
-import ASSET.Models.Decision.TargetType;
-import ASSET.Models.Detection.DetectionEvent;
-import ASSET.Models.Detection.DetectionList;
-import ASSET.ParticipantType;
-import ASSET.ScenarioType;
-import ASSET.Util.SupportTesting;
-import MWC.GUI.CanvasType;
-import MWC.GUI.Editable;
-import MWC.GUI.Plottable;
-import MWC.GenericData.WorldArea;
-import MWC.GenericData.WorldDistance;
-import MWC.GenericData.WorldLocation;
-
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.util.HashSet;
 
+import ASSET.ParticipantType;
+import ASSET.ScenarioType;
+import ASSET.Models.Decision.TargetType;
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Detection.DetectionList;
+import ASSET.Util.SupportTesting;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+
 public class DetectionObserver extends WatchParticipantObserver implements
-  ASSET.Participants.ParticipantDetectedListener,
-  Plottable
+  ASSET.Participants.ParticipantDetectedListener
 {
   /***************************************************************
    *  member variables

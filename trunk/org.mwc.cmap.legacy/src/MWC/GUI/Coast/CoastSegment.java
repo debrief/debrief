@@ -1,6 +1,5 @@
 package MWC.GUI.Coast;
 
-import java.io.Serializable;
 import java.util.Vector;
 
 import MWC.GUI.CanvasType;
@@ -10,7 +9,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 
 /** Represents a single section of coastline.*/
-public class CoastSegment extends Vector<WorldLocation> implements Plottable, Serializable
+public class CoastSegment extends Vector<WorldLocation> implements Plottable
 {
   /**
 	 * 

@@ -91,7 +91,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Collection;
 
 import MWC.GUI.CanvasType;
@@ -106,7 +105,7 @@ import MWC.GenericData.WorldVector;
  * Class representing a cart-wheel type shape - drawn with inner and outer radiuses, with
  * spokes at 60 degree intervals
  */
-public class WheelShape extends PlainShape implements Serializable, Editable
+public class WheelShape extends PlainShape implements Editable
 {
 
   //////////////////////////////////////////////////

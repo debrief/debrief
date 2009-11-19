@@ -62,7 +62,7 @@ public class VesselStatusEditor implements Editable
   public boolean hasEditor()
   {
     return true;
-  };
+  }
 
   /**
    * get the editor for this item
@@ -75,7 +75,7 @@ public class VesselStatusEditor implements Editable
       _myEditor = new VesselStatusInfo(this);
 
     return _myEditor;
-  };
+  }
   //////////////////////////////////////////////////////////////////////
   // editable getter/setter
   //////////////////////////////////////////////////////////////////////

@@ -180,23 +180,39 @@ package Debrief.Wrappers;
 // Initial revision
 //
 
-import java.awt.*;
-import java.beans.*;
-import java.io.Serializable;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.Point;
+import java.beans.BeanInfo;
+import java.beans.IntrospectionException;
+import java.beans.MethodDescriptor;
+import java.beans.PropertyDescriptor;
 import java.util.Vector;
 
 import javax.swing.JFrame;
 
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainWrapper;
 import MWC.GUI.Chart.Swing.SwingChart;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
-import MWC.GUI.Shapes.*;
+import MWC.GUI.Shapes.DraggableItem;
+import MWC.GUI.Shapes.RectangleShape;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WatchableList;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
-public class LabelWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		MWC.GenericData.WatchableList, MWC.GenericData.Watchable,
+public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericData.WatchableList, MWC.GenericData.Watchable,
 		DraggableItem, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////////////////////

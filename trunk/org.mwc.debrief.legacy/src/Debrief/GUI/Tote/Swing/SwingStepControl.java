@@ -219,25 +219,54 @@ package Debrief.GUI.Tote.Swing;
 // new Swing versions
 //
 
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.InputEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+
+import javax.swing.AbstractAction;
+import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.JToggleButton;
+import javax.swing.JToolBar;
+import javax.swing.KeyStroke;
+import javax.swing.border.CompoundBorder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import Debrief.GUI.Tote.StepControl;
 import Debrief.GUI.Tote.Painters.PainterManager;
 import Debrief.Wrappers.LabelWrapper;
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.StepperListener;
+import MWC.GUI.ToolParent;
 import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
 import MWC.GUI.Tools.Swing.RepeaterButton;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
 
-import javax.swing.*;
-import javax.swing.border.CompoundBorder;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-import java.awt.*;
-import java.awt.event.*;
-
 public final class SwingStepControl extends StepControl implements
-		java.awt.event.ActionListener, java.beans.PropertyChangeListener
+		java.awt.event.ActionListener
 {
 	// ///////////////////////////////////////////////////////////
 	// member variables

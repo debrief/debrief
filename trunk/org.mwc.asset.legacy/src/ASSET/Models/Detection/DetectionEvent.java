@@ -185,6 +185,9 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
       _targetId = null;
 
     // write the message
+    if(target == null)
+    	throw new RuntimeException("Failed to specify target");
+    
     _myMessage = target.getName() + " held on " + sensor.getName();
   }
 
@@ -231,6 +234,10 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
     else
       _targetId = null;
 
+    // check we have target
+    if(target == null)
+    	throw new RuntimeException("Failed to specify target object");
+    
     // write the message
     _myMessage = target.getName() + " held on " + sensor.getName();
   }

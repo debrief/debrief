@@ -872,7 +872,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			public void restart(ScenarioType scenario)
 			{
-				;
+				
 			}
 		}
 
@@ -885,7 +885,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			public void restart(ScenarioType scenario)
 			{
-				;
+				
 			}
 		}
 
@@ -898,7 +898,7 @@ public class CoreParticipant implements ParticipantType, java.io.Serializable
 
 			public void restart(ScenarioType scenario)
 			{
-				;
+				
 			}
 		}
 

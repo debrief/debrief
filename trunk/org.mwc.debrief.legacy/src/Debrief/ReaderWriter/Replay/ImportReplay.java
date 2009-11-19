@@ -932,7 +932,10 @@ public class ImportReplay extends PlainImporterBase
 				String thisType = thisImporter.getYourType();
 
 				if (thisType == null)
+				{
 					MWC.Utilities.Errors.Trace.trace("null returned by: " + thisImporter);
+					return null;
+				}
 
 				// does this one fit?
 				if (thisType.equals(type))

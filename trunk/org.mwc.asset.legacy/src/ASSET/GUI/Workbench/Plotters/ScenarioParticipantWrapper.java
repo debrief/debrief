@@ -17,7 +17,7 @@ import MWC.GenericData.*;
  * *********************************************************************
  */
 public class ScenarioParticipantWrapper implements
-		ASSET.Participants.ParticipantMovedListener, MWC.GUI.Plottable,
+		ASSET.Participants.ParticipantMovedListener,
 		ASSET.Participants.ParticipantDetectedListener, Layer
 
 {
@@ -387,7 +387,7 @@ public class ScenarioParticipantWrapper implements
 	public boolean hasEditor()
 	{
 		return true;
-	};
+	}
 
 	/**
 	 * get the editor for this item

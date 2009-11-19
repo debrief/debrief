@@ -41,12 +41,11 @@ package MWC.GUI.RubberBanding;
 
 import java.awt.Component;
 import java.awt.Graphics;
-import java.io.Serializable;
 
 import MWC.GUI.Rubberband;
 
 
-public class RubberbandDrag extends Rubberband implements Serializable
+public class RubberbandDrag extends Rubberband
 {
   /////////////////////////////////////////////////////////////
   // member variables

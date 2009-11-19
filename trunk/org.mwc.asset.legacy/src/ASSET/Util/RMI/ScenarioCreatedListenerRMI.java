@@ -13,9 +13,9 @@ public interface ScenarioCreatedListenerRMI extends java.rmi.Remote
     /** pass on details of the creation of a new scenario
    *
    */
-  public void scenarioCreated(int index) throws java.rmi.RemoteException;;
+  public void scenarioCreated(int index) throws java.rmi.RemoteException;
   /** pass on details of the destruction of a scenario
    *
    */
-  public void scenarioDestroyed(int index) throws java.rmi.RemoteException;;
+  public void scenarioDestroyed(int index) throws java.rmi.RemoteException;
 }

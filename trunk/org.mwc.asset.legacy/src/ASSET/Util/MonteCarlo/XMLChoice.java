@@ -107,7 +107,7 @@ public final class XMLChoice implements XMLOperation
 
     _currentVal = (String)_myList.get(index);
 
-  };
+  }
 
   /** return the current value of this permutation
    *
@@ -115,7 +115,7 @@ public final class XMLChoice implements XMLOperation
   public final String getValue()
   {
     return _currentVal;
-  };
+  }
 
   /** clone this object
    *

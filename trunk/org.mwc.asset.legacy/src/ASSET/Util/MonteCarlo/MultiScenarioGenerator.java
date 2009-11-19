@@ -107,7 +107,8 @@ public final class MultiScenarioGenerator
 		try
 		{
 			// get the root of our variances
-			XPathExpression xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator/" + GENERATOR_TYPE);
+			XPathExpression xp2 = NamespaceContextProvider
+					.createPath("//ScenarioGenerator/" + GENERATOR_TYPE);
 			NodeList nl = (NodeList) xp2.evaluate(document, XPathConstants.NODESET);
 			Element el = (Element) nl.item(0);
 
@@ -148,7 +149,7 @@ public final class MultiScenarioGenerator
 	{
 		return _numPerms;
 	}
-	
+
 	/**
 	 * set the document we are going to be changing
 	 */
@@ -188,117 +189,117 @@ public final class MultiScenarioGenerator
 		return _myFileTemplate + index;
 	}
 
-  public final Document[] createNewRandomisedPermutations() throws XMLVariance.IllegalExpressionException,
-    XMLVariance.MatchingException
-  {
+	public final Document[] createNewRandomisedPermutations()
+			throws XMLVariance.IllegalExpressionException,
+			XMLVariance.MatchingException
+	{
 		Vector<Document> results = new Vector<Document>(0, 1);
 
+		// take a copy of the document
+		final String currentDoc = ScenarioGenerator.writeToString(_myDocument);
 
-    // take a copy of the document
-    final String currentDoc = ScenarioGenerator.writeToString(_myDocument);
+		// keep a record of the scenarios we create, since
+		// the user may want to create a specific number of
+		// permutations of each test-case
+		HashMap<String, Integer> map = new HashMap<String, Integer>();
 
-    // keep a record of the scenarios we create, since
-    // the user may want to create a specific number of
-    // permutations of each test-case
-    HashMap<String, Integer> map = new HashMap<String, Integer>();
+		// keep track of number of compliant instances created
+		int counter = 0;
 
-    // keep track of number of compliant instances created
-    int counter = 0;
+		// keep track of how many we've tried to generate
+		int attempts = 0;
 
-    // keep track of how many we've tried to generate
-    int attempts = 0;
+		// set a max limit - to stop mad error conditions
 
-    // set a max limit - to stop mad error conditions
+		// loop through our permutations
+		while (counter < _numPerms)
+		{
+			// create a clone of the provided document
+			Document newDoc = createClone(currentDoc);
 
-    // loop through our permutations
-    while (counter < _numPerms)
-    {
-      // create a clone of the provided document
-      Document newDoc = createClone(currentDoc);
+			attempts++;
 
-      attempts++;
+			String thisHash = applyVariances(newDoc);
 
-      String thisHash = applyVariances(newDoc);
+			// have we already found this hash?
+			boolean isValid = true;
+			if (map.containsKey(thisHash))
+			{
+				// yes, how many have been set?
+				Integer count = map.get(thisHash);
 
-      // have we already found this hash?
-      boolean isValid = true;
-      if (map.containsKey(thisHash))
-      {
-        // yes, how many have been set?
-        Integer count = map.get(thisHash);
+				// are we counting permutations
+				if (_maxPerms != -1)
+				{
+					// so, how many are we at
+					if (count.intValue() < _maxPerms)
+					{
+						isValid = true;
+						// and increment the counter
+						map.put(thisHash, new Integer(count.intValue() + 1));
+					}
+					else
+					{
+						isValid = false;
+					}
+				}
+				else
+				{
+					// not tracking - don't bother
+					isValid = true;
+				}
+			}
+			else
+			{
+				// first time we've found this one
+				isValid = true;
 
-        // are we counting permutations
-        if (_maxPerms != -1)
-        {
-          // so, how many are we at
-          if (count.intValue() < _maxPerms)
-          {
-            isValid = true;
-            // and increment the counter
-            map.put(thisHash, new Integer(count.intValue() + 1));
-          }
-          else
-          {
-            isValid = false;
-          }
-        }
-        else
-        {
-          // not tracking - don't bother
-          isValid = true;
-        }
-      }
-      else
-      {
-        // first time we've found this one
-        isValid = true;
+				// and create it
+				map.put(thisHash, new Integer(1));
+			}
 
-        // and create it
-        map.put(thisHash, new Integer(1));
-      }
+			if (isValid)
+			{
+				//
+				counter++;
 
-      if (isValid)
-      {
-        //
-        counter++;
+				// rename the scenario - we only do it at this point since
+				// there are situations where scenarios get ditched, we ignore those
+				// in order to get a continuous series of scenario numbers
+				renameScenario(newDoc, counter);
 
-        // rename the scenario - we only do it at this point since
-        // there are situations where scenarios get ditched, we ignore those
-        // in order to get a continuous series of scenario numbers
-        renameScenario(newDoc, counter);
+				// store the case description for this scenario
+				setScenarioCase(newDoc, thisHash);
 
-        // store the case description for this scenario
-        setScenarioCase(newDoc, thisHash);
+				// and now store it
+				results.add(newDoc);
 
-        // and now store it
-        results.add(newDoc);
+				// and announce the progress to the command line
+				ScenarioGenerator.outputProgress(counter);
+			}
+			else
+			{
+				// just ditch it
+				newDoc = null;
+			}
 
-        // and announce the progress to the command line
-        ScenarioGenerator.outputProgress(counter);
-      }
-      else
-      {
-        // just ditch it
-        newDoc = null;
-      }
+			// include drop-dead case for a insolveable loop
+			if (attempts > 2 * _numPerms)
+			{
+				System.err
+						.println("Not possible to create valid number of acceptable permutations");
+			}
 
-      // include drop-dead case for a insolveable loop
-      if (attempts > 2 * _numPerms)
-      {
-        System.err.println("Not possible to create valid number of acceptable permutations");
-      }
+		}
 
-    }
+		// make sure the command line's on a new line
+		System.out.println(" attempted:" + attempts + " created:" + counter);
 
-    // make sure the command line's on a new line
-    System.out.println(" attempted:" + attempts + " created:" + counter);
+		Document[] res = results.toArray(new Document[]
+		{});
 
-    Document[] res = results.toArray(new Document[]{});
-
-    return res;
-  }
-
-
+		return res;
+	}
 
 	public final Document[] createNewRandomisedPermutationsOld()
 			throws XMLVariance.IllegalExpressionException,
@@ -557,9 +558,8 @@ public final class MultiScenarioGenerator
 			if (code_root == null)
 				code_root = "src";
 
-			final String docPath = code_root
-					+ "/ASSET/Util/MonteCarlo/";
-			
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
+
 			System.out.println("curent dir is:" + System.getProperty("user.dir"));
 
 			// create server
@@ -637,8 +637,7 @@ public final class MultiScenarioGenerator
 			if (code_root == null)
 				code_root = "src";
 
-			final String docPath = code_root
-					+ "/ASSET/Util/MonteCarlo/";
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -698,7 +697,8 @@ public final class MultiScenarioGenerator
 			// did we change the speed?
 			try
 			{
-				XPathExpression xp2 = NamespaceContextProvider.createPath("//*[@Name='bravo']/Status/Speed");
+				XPathExpression xp2 = NamespaceContextProvider
+						.createPath("//*[@Name='bravo']/Status/Speed");
 				NodeList nl = (NodeList) xp2.evaluate(thisDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -733,6 +733,8 @@ public final class MultiScenarioGenerator
 			assertTrue("check no exceptions thrown", worked);
 
 			assertNotNull("got some documents", results);
+			if(results == null)
+				return;
 			assertEquals("correct num scenarios", 3, results.length);
 
 			// hey, let's see how we got on
@@ -745,7 +747,8 @@ public final class MultiScenarioGenerator
 
 				Document resDocument = results[0];
 
-				XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='bravo']");
+				XPathExpression xp2 = NamespaceContextProvider
+						.createPath("//Participants/*[@Name='bravo']");
 				NodeList nl = (NodeList) xp2.evaluate(resDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -753,7 +756,8 @@ public final class MultiScenarioGenerator
 				assertEquals("correct name", "bravo", thisA.getAttribute("Name"));
 
 				// did we change the speed?
-				xp2 = NamespaceContextProvider.createPath("//*[@Name='bravo']/Status/Speed");
+				xp2 = NamespaceContextProvider
+						.createPath("//*[@Name='bravo']/Status/Speed");
 				nl = (NodeList) xp2.evaluate(resDocument, XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
 				assertTrue("correct name", Double.parseDouble(thisA
@@ -779,8 +783,7 @@ public final class MultiScenarioGenerator
 			if (code_root == null)
 				code_root = "src";
 
-			final String docPath = code_root
-					+ "/ASSET/Util/MonteCarlo/";
+			final String docPath = code_root + "/ASSET/Util/MonteCarlo/";
 
 			InputStream dataStream = null;
 			InputStream varianceStream = null;
@@ -817,7 +820,8 @@ public final class MultiScenarioGenerator
 			try
 			{
 
-				XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/Helo//Investigate");
+				XPathExpression xp2 = NamespaceContextProvider
+						.createPath("//Participants/Helo//Investigate");
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element thisE = (Element) nl.item(0);
@@ -827,7 +831,8 @@ public final class MultiScenarioGenerator
 				assertEquals("correct name", "Identified", thisE
 						.getAttribute("DetectionLevel"));
 
-				xp2 = NamespaceContextProvider.createPath("//Participants/Helo//Investigate//Type");
+				xp2 = NamespaceContextProvider
+						.createPath("//Participants/Helo//Investigate//Type");
 				nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				thisE = (Element) nl.item(0);
@@ -861,7 +866,8 @@ public final class MultiScenarioGenerator
 			// can we find a scenario generator?
 			try
 			{
-				XPathExpression xp2 = NamespaceContextProvider.createPath("//MultiParticipantGenerator");
+				XPathExpression xp2 = NamespaceContextProvider
+						.createPath("//MultiParticipantGenerator");
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element el = (Element) nl.item(0);
@@ -892,7 +898,8 @@ public final class MultiScenarioGenerator
 			try
 			{
 
-				XPathExpression xp2 = NamespaceContextProvider.createPath("//Environment");
+				XPathExpression xp2 = NamespaceContextProvider
+						.createPath("//Environment");
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -929,7 +936,8 @@ public final class MultiScenarioGenerator
 			// did we load the proximity observer
 			try
 			{
-				XPathExpression xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver");
+				XPathExpression xp2 = NamespaceContextProvider
+						.createPath("//StopOnProximityDetectionObserver");
 				NodeList nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				Element thisA = (Element) nl.item(0);
@@ -938,7 +946,8 @@ public final class MultiScenarioGenerator
 				val = thisA.getAttribute("Active");
 				assertTrue("set as active", true);
 
-				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Target/TargetType/Type[1]");
+				xp2 = NamespaceContextProvider
+						.createPath("//StopOnProximityDetectionObserver/Target/TargetType/Type[1]");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
@@ -953,21 +962,24 @@ public final class MultiScenarioGenerator
 				assertTrue("found number", val.length() > 0);
 				numScenariosRequested = new Integer(val).intValue();
 
-				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Watch/TargetType/Type[1]");
+				xp2 = NamespaceContextProvider
+						.createPath("//StopOnProximityDetectionObserver/Watch/TargetType/Type[1]");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "FISHING_VESSEL", val);
 
-				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Watch/TargetType/Type[2]");
+				xp2 = NamespaceContextProvider
+						.createPath("//StopOnProximityDetectionObserver/Watch/TargetType/Type[2]");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
 				val = thisA.getAttribute("Name");
 				assertEquals("correct name", "RED", val);
 
-				xp2 = NamespaceContextProvider.createPath("//StopOnProximityDetectionObserver/Range");
+				xp2 = NamespaceContextProvider
+						.createPath("//StopOnProximityDetectionObserver/Range");
 				nl = (NodeList) xp2.evaluate(thisVarianceDocument,
 						XPathConstants.NODESET);
 				thisA = (Element) nl.item(0);
@@ -986,6 +998,9 @@ public final class MultiScenarioGenerator
 			assertTrue("check no exceptions thrown", worked);
 
 			assertNotNull("got some documents", results);
+			if (results == null)
+				return;
+
 			assertEquals("correct num scenarios", numScenariosRequested,
 					results.length);
 
@@ -1000,7 +1015,8 @@ public final class MultiScenarioGenerator
 
 					Document resDocument = results[i];
 
-					XPathExpression xp2 = NamespaceContextProvider.createPath("//Participants/*[@Name='SAM_FISHER']");
+					XPathExpression xp2 = NamespaceContextProvider
+							.createPath("//Participants/*[@Name='SAM_FISHER']");
 					NodeList nl = (NodeList) xp2.evaluate(resDocument,
 							XPathConstants.NODESET);
 					Element thisE = (Element) nl.item(0);
@@ -1009,8 +1025,7 @@ public final class MultiScenarioGenerator
 
 					// did we change the sea state?
 					xp2 = NamespaceContextProvider.createPath("//Environment");
-					nl = (NodeList) xp2.evaluate(resDocument,
-							XPathConstants.NODESET);
+					nl = (NodeList) xp2.evaluate(resDocument, XPathConstants.NODESET);
 					thisE = (Element) nl.item(0);
 
 					// is this different?

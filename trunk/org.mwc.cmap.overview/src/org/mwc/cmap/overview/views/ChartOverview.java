@@ -702,7 +702,7 @@ public class ChartOverview extends ViewPart implements PropertyChangeListener
 			return new OverviewSWTCanvas(parent);
 		}
 
-	};
+	}
 
 	/**
 	 * do a fit-to-window of the target viewport

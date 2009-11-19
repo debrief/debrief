@@ -35,7 +35,7 @@ import java.util.Vector;
  * classification level is achieved, after which it will break off.
  */
 
-public class Investigate extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
+public class Investigate extends CoreDecision implements java.io.Serializable
 {
   /**
 	 * 

@@ -6,7 +6,7 @@ import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
-class DefaultSliderPointer extends PointerDrawerBase implements PointerDrawer
+class DefaultSliderPointer extends PointerDrawerBase
 {
 	private static final Point LABEL_GAP = new Point(5, 0);
 

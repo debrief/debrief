@@ -130,7 +130,6 @@ import java.awt.Color;
 import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -140,7 +139,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class ArcShape extends CircleShape implements Serializable, Editable
+public class ArcShape extends CircleShape
 {
 
   //////////////////////////////////////////////////

@@ -34,7 +34,7 @@ import MWC.GenericData.WorldSpeed;
  * <ul>
  */
 
-public class LaunchSensor extends CoreDecision implements Response, Editable, java.io.Serializable
+public class LaunchSensor extends CoreDecision implements Response, java.io.Serializable
 {
 
   /****************************************************

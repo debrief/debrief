@@ -304,13 +304,18 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							IAdaptable timeC = (IAdaptable) timeRef.getView(true);
 
 							// that's it, now get the data
-							TimePeriod period = (TimePeriod) timeC.getAdapter(TimePeriod.class);
-							if(period == null)
+							TimePeriod period = (TimePeriod) timeC
+									.getAdapter(TimePeriod.class);
+							if (period == null)
 							{
-								CorePlugin.logError(Status.ERROR, "TimeController view no longer provides TimePeriod adapter", null);
+								CorePlugin
+										.logError(
+												Status.ERROR,
+												"TimeController view no longer provides TimePeriod adapter",
+												null);
 								return;
 							}
-							
+
 							startTime = period.getStartDTG();
 							endTime = period.getEndDTG();
 
@@ -355,8 +360,12 @@ public class XYPlotGeneratorButtons implements RightClickContextItemGenerator
 							// is this a relative operation
 							if (theHolder.isARelativeCalculation())
 							{
-								// if it's relative, we use the primary track name in the title
-								theTitle = thePrimary.getName() + " " + theTitle;
+								if (thePrimary != null)
+								{
+									// if it's relative, we use the primary track name in the
+									// title
+									theTitle = thePrimary.getName() + " " + theTitle;
+								}
 							}
 
 							// and the plot itself

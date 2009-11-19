@@ -6,12 +6,16 @@
 
 package org.mwc.debrief.core.editors.painters.highlighters;
 
+import java.awt.Color;
+import java.awt.Point;
+import java.awt.Rectangle;
+
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
-import MWC.GUI.*;
-import java.awt.*;
-import MWC.GenericData.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
 import MWC.GUI.Canvas.MetafileCanvas;
 import MWC.GUI.Properties.BoundedInteger;
+import MWC.GenericData.WorldArea;
 
 /** Interface for classes which are able to draw a highlight at a particular
  * point in time
@@ -37,7 +41,7 @@ public interface SWTPlotHighlighter extends Editable  {
   //////////////////////////////////////////////////////////////////////
 /** A simple (rectangular) highlighter
  */
-  public final class RectangleHighlight implements SWTPlotHighlighter, Editable
+  public final class RectangleHighlight implements SWTPlotHighlighter
   {
 
     private Color _myColor = Color.white;

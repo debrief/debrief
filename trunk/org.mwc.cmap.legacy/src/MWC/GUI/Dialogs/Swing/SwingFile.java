@@ -93,8 +93,8 @@ public class SwingFile implements MWC.GUI.Dialogs.DialogFactory.FileGetter
 																String lastDirectory)
 	{
 
-    if(_myChooser == null);
-      _myChooser = new EFileChooser();
+    if(_myChooser == null)
+	    _myChooser = new EFileChooser();
 
 	  JFileChooser jf = _myChooser;
 

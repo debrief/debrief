@@ -78,22 +78,28 @@
 
 package Debrief.Wrappers;
 
-import MWC.GUI.CanvasType;
-import MWC.GUI.Plottable;
-import MWC.GUI.Properties.LocationPropertyEditor;
-import MWC.GUI.Shapes.EllipseShape;
-import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
-import MWC.GenericData.*;
-import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
-import MWC.Utilities.TextFormatting.GeneralFormat;
-
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Point;
 import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyDescriptor;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Plottable;
+import MWC.GUI.Properties.LocationPropertyEditor;
+import MWC.GUI.Shapes.EllipseShape;
+import MWC.GUI.Shapes.Symbols.SymbolFactoryPropertyEditor;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
+import MWC.GenericData.WorldVector;
+import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
+import MWC.Utilities.TextFormatting.GeneralFormat;
 
 /**
  * Wrapper for a single TMA solution
@@ -101,7 +107,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 
 public final class TMAContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		MWC.GUI.Plottable, MWC.GenericData.Watchable,
+		MWC.GenericData.Watchable,
 		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe
 {
 	// ///////////////////////////////////////////

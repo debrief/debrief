@@ -61,8 +61,8 @@ public class ServerImpl extends UnicastRemoteObject implements ServerRMI, Scenar
     {
       System.setSecurityManager(new RMISecurityManager()
        {
-          public void checkPropertiesAccess(){};
-          public void checkPropertyAccess(String key){};
+          public void checkPropertiesAccess(){}
+          public void checkPropertyAccess(String key){}
        }
       );
 

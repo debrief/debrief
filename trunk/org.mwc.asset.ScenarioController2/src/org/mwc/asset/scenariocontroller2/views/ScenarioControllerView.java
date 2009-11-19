@@ -392,7 +392,7 @@ public class ScenarioControllerView extends ViewPart implements
 		public void worked(int work)
 		{
 			monitor.worked(work);
-		};
+		}
 	}
 
 	protected void doGenerateOperation()

@@ -233,6 +233,9 @@ public class CoreServer implements ServerType
       final ScenarioType sc2 = srv.getThisScenario(s2);
       assertTrue("scenario returned", sc2 != null);
 
+      if(sc2 == null)
+      	return;
+      
       // make edits
       sc2.setName("scenario 2");
       sc2.setStepTime(1000);

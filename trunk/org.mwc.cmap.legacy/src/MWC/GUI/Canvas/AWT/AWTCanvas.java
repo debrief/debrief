@@ -113,7 +113,6 @@ import java.awt.Image;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.ImageObserver;
-import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -128,7 +127,7 @@ import MWC.GenericData.WorldLocation;
  * AWT implementation of a canvas
  */
 final public class AWTCanvas extends java.awt.Canvas
-  implements CanvasType, Serializable
+  implements CanvasType
 {
 
   /////////////////////////////////////////////////////////////

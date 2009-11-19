@@ -702,7 +702,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
           stepWidth = (BR.x - TL.x) / (double) num_labels;
           rectSize = new Dimension((int) stepWidth + 1, BR.y - TL.y);
           break;
-        case (KeyLocationPropertyEditor.BOTTOM):
+        default:
           TL = new Point((int) (screen_size.width * MIN_WID), (int) (screen_size.height - (screen_size.height * MIN_LEN) - txtHt));
           BR = new Point((int) (screen_size.width * (MIN_LEN + LEN)), (int) (screen_size.height - (screen_size.height * MIN_LEN)));
           num_labels = (BR.x - TL.x) / txtWid;
@@ -715,7 +715,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
 
 
       // check its worth bothering with
-      if (BR == null)
+      if ((TL == null) ||(BR == null))
         return;
 
       // sort out how many shade steps we are going to produce (it depends on how big the text string is)
@@ -944,7 +944,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   protected double contour_valAt(final int i, final int j)
   {
     return 0;
-  };
+  }
 
   /**
    * function to retrieve the x-location for a specific array index
@@ -952,7 +952,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   protected double contour_xValAt(final int i)
   {
     return 0;
-  };
+  }
 
   /**
    * function to retrieve the x-location for a specific array index
@@ -960,7 +960,7 @@ abstract public class SpatialRasterPainter extends BaseLayer implements Layer.Ba
   protected double contour_yValAt(final int i)
   {
     return 0;
-  };
+  }
 
   protected int getLatIndex(final WorldLocation val)
   {

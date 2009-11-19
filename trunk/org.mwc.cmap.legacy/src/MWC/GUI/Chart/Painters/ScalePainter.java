@@ -541,7 +541,7 @@ public class ScalePainter implements Plottable, Serializable
         TL = new Point((int) (screen_size.width * 0.05), (int) (screen_size.height * 0.987));
         BR = new Point((TL.x + scale_width), (int) (screen_size.height * 0.99));
         break;
-      case (DiagonalLocationPropertyEditor.BOTTOM_RIGHT):
+      default:
         BR = new Point((int) (screen_size.width * 0.95), (int) (screen_size.height * 0.99));
         TL = new Point((BR.x - scale_width), (int) (screen_size.height * 0.987));
         break;

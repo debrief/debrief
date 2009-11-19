@@ -91,7 +91,6 @@ package MWC.GUI.Chart.AWT;
 import java.awt.Component;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
@@ -109,7 +108,7 @@ import MWC.GUI.Canvas.AWT.AWTCanvas;
   * the parent.
   *
   */
- final public class AWTChart extends PlainChart implements Serializable{
+ final public class AWTChart extends PlainChart{
   
   /**
 	 * 

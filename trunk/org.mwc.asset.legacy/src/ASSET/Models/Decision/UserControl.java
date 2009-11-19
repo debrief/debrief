@@ -13,7 +13,7 @@ import MWC.GenericData.WorldSpeed;
  * current demanded course, speed, depth
  */
 
-public class UserControl extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
+public class UserControl extends CoreDecision implements java.io.Serializable
 {
 
 

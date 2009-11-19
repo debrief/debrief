@@ -526,7 +526,7 @@ public final class MultiParticipantGenerator
 					.get(0);
 
 			Exception ex = null;
-			;
+			
 
 			try
 			{
@@ -616,7 +616,7 @@ public final class MultiParticipantGenerator
 					.get(0);
 
 			Exception ex = null;
-			;
+			
 
 			try
 			{

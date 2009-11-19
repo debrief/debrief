@@ -232,7 +232,6 @@ import java.beans.IntrospectionException;
 import java.beans.MethodDescriptor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Collection;
 import java.util.Vector;
 
@@ -251,8 +250,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 
-public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
-		java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
+public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.PropertyChangeListener, MWC.GenericData.WatchableList,
 		MWC.GenericData.Watchable, DraggableItem, HasDraggableComponents,
 		DoNotHighlightMe
 {
@@ -677,7 +675,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements Serializable,
 
 		MWC.GenericData.Watchable[] res = new MWC.GenericData.Watchable[]
 		{};
-		;
+		
 
 		// special case, have we been asked for an invalid time period?
 		if (DTG == TimePeriod.INVALID_DATE)

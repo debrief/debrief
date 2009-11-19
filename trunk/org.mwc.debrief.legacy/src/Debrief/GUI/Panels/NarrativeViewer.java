@@ -637,7 +637,7 @@ public final class NarrativeViewer extends MWC.GUI.Properties.Swing.SwingCustomE
   public final String toString()
   {
     return "Narrative Viewer";
-  };
+  }
 
   /**
    * and the method to set the stepper

@@ -160,7 +160,7 @@ import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
 public final class SensorContactWrapper extends
 		SnailDrawTMAContact.PlottableWrapperWithTimeAndOverrideableColor implements
-		MWC.GUI.Plottable, MWC.GenericData.Watchable,
+		MWC.GenericData.Watchable,
 		CanvasType.MultiLineTooltipProvider, DoNotHighlightMe, TimeStampedDataItem
 {
 	/**

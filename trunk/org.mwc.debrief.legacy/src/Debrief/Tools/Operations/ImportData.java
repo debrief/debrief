@@ -105,237 +105,257 @@
 
 package Debrief.Tools.Operations;
 
-
 import java.io.*;
 
 import Debrief.GUI.Frames.*;
 import MWC.GUI.*;
 import MWC.GUI.Tools.*;
 
-/** command to import a file (initially just Replay) into Debrief.
- * The data used to implement the command is stored as a command,
- * so that it may be added to an undo buffer.
+/**
+ * command to import a file (initially just Replay) into Debrief. The data used
+ * to implement the command is stored as a command, so that it may be added to
+ * an undo buffer.
  */
-public final class ImportData extends PlainTool {
+public final class ImportData extends PlainTool
+{
 
-  ///////////////////////////////////////////////////////////////
-  // member variables
-  ///////////////////////////////////////////////////////////////
-  /** keep a copy of the parent Session, */
-  private final Session _theSession;
+	// /////////////////////////////////////////////////////////////
+	// member variables
+	// /////////////////////////////////////////////////////////////
+	/** keep a copy of the parent Session, */
+	private final Session _theSession;
 
-  /** keep a copy of the parent application, in case
-   * we don't have a session
-   */
-  private final Application _theApplication;
+	/**
+	 * keep a copy of the parent application, in case we don't have a session
+	 */
+	private final Application _theApplication;
 
-  /** remember the last file location we read from
-   */
-  private static String _lastDirectory = null;
+	/**
+	 * remember the last file location we read from
+	 */
+	private static String _lastDirectory = null;
 
-  ///////////////////////////////////////////////////////////////
-  // constructor
-  ///////////////////////////////////////////////////////////////
-  /** constructor, taking information ready for when the button
-   * gets pressed
-   * @param theParent the ToolParent window which we control the cursor of
-   * @param theApplication the Application to create a blank
-   * session to import the file into, if the session val is null
-   * @param theSessionVal the Session to add the file to (or null, see above)
-   */
-  public ImportData(ToolParent theParent,
-                    Application theApplication,
-                    Session theSessionVal){
-    super(theParent, "Import data", "images/import_rep.gif");
-    // store the Session
-    _theSession = theSessionVal;
-    _theApplication = theApplication;
-    if(_lastDirectory == null)
-      _lastDirectory = "";
-  }
+	// /////////////////////////////////////////////////////////////
+	// constructor
+	// /////////////////////////////////////////////////////////////
+	/**
+	 * constructor, taking information ready for when the button gets pressed
+	 * 
+	 * @param theParent
+	 *          the ToolParent window which we control the cursor of
+	 * @param theApplication
+	 *          the Application to create a blank session to import the file into,
+	 *          if the session val is null
+	 * @param theSessionVal
+	 *          the Session to add the file to (or null, see above)
+	 */
+	public ImportData(ToolParent theParent, Application theApplication,
+			Session theSessionVal)
+	{
+		super(theParent, "Import data", "images/import_rep.gif");
+		// store the Session
+		_theSession = theSessionVal;
+		_theApplication = theApplication;
+		if (_lastDirectory == null)
+			_lastDirectory = "";
+	}
 
+	/**
+	 * collate the data ready to perform the operations
+	 */
+	public final Action getData()
+	{
 
-  /** collate the data ready to perform the operations
-   */
-  public final Action getData()
-  {
+		// pass a duff stepper control to the NarrativeImporter, since a this point
+		// we
+		// may not have a View open, nor a StepControl. After the "load" operation,
+		// set the step control at that point.
+		Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
 
-    // pass a duff stepper control to the NarrativeImporter, since a this point we
-    // may not have a View open, nor a StepControl.  After the "load" operation,
-    // set the step control at that point.
-    Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
+		/**
+		 * temporary session variable. Either use the existing session variable
+		 * (which was assigned because we only ever read into one session), or
+		 * create a fresh one each time (if we need to retrieve the variable from
+		 * the application).
+		 */
+		Session tmpSession = _theSession;
 
-    /** temporary session variable.  Either use the existing session variable
-     * (which was assigned because we only ever read into one session),
-     * or create a fresh one each time (if we need to retrieve the variable
-     * from the application).
-     */
-    Session tmpSession = _theSession;
+		ImportAction res = null;
 
-    ImportAction res = null;
+		// see if we have an old directory to retrieve
+		if (_lastDirectory == "")
+		{
+			String val = getParent().getProperty("REP_Directory");
+			if (val != null)
+				_lastDirectory = val;
+		}
 
-    // see if we have an old directory to retrieve
-    if(_lastDirectory == "")
-    {
-      String val = getParent().getProperty("REP_Directory");
-      if(val != null)
-        _lastDirectory = val;
-    }
+		// get the filename of the file to import
+		File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep",
+				"Replay Files (*.rep)", _lastDirectory);
 
-    // get the filename of the file to import
-    File[] fList = MWC.GUI.Dialogs.DialogFactory.getOpenFileName("*.rep",
-                                                              "Replay Files (*.rep)",
-                                                              _lastDirectory);
+		// check if anything was returned
+		if (fList != null)
+		{
 
-    // check if anything was returned
-    if(fList != null)
-    {
+			// got the filename now do the import
+			Layers theLayers = new Layers();
 
-      // got the filename now do the import
-      Layers theLayers = new Layers();
+			// loop through
+			for (int i = 0; i < fList.length; i++)
+			{
+				File fl = fList[i];
 
-      // loop through
-      for(int i=0;i<fList.length;i++)
-      {
-        File fl = fList[i];
+				// have we got file?
+				if ((fl != null) && (!fl.getName().equals("nullnull")))
+				{
 
-        // have we got file?
-        if((fl != null) &&
-           (!fl.getName().equals("nullnull")))
-        {
+					// store the directory name
+					_lastDirectory = fl.getParent();
+					FileInputStream is = null;
 
-          // store the directory name
-          _lastDirectory = fl.getParent();
-          FileInputStream is = null;
+					try
+					{
+						is = new FileInputStream(fl);
+						MWC.Utilities.ReaderWriter.ImportManager.importThis(fl.getPath(),
+								theLayers);
 
-          try{
-            is = new FileInputStream(fl);
-            MWC.Utilities.ReaderWriter.ImportManager.importThis(fl.getPath(),
-                                                        theLayers);
+						// add the filename to the MRU
+						Application.addToMru(fl.getAbsolutePath());
 
+					}
+					catch (java.io.FileNotFoundException e)
+					{
+						MWC.Utilities.Errors.Trace.trace(e);
+					}
+					finally
+					{
+						// make sure that the file gets closed
+						try
+						{
+							if (is != null)
+								is.close();
+						}
+						catch (java.io.IOException ex)
+						{
+							MWC.Utilities.Errors.Trace.trace(ex, "Closing REPLAY file");
+						}
+					}
 
-            // add the filename to the MRU
-            Application.addToMru(fl.getAbsolutePath());
+					// sort out what session we are importing the new layers into
+					if (tmpSession == null)
+					{
+						tmpSession = _theApplication.getCurrentSession();
 
-          }catch(java.io.FileNotFoundException e){
-            MWC.Utilities.Errors.Trace.trace(e);
-          }
-          finally
-          {
-            // make sure that the file gets closed
-            try{
-              is.close();
-            }
-            catch(java.io.IOException ex)
-            {
-            MWC.Utilities.Errors.Trace.trace(ex, "Closing REPLAY file");
-            }
-          }
+						if (tmpSession == null)
+						{
+							// if we haven't got a session, then create one
+							_theApplication.newSession(null);
 
-          // sort out what session we are importing the new layers into
-          if(tmpSession == null){
-            tmpSession = _theApplication.getCurrentSession();
+							// now try again
+							tmpSession = _theApplication.getCurrentSession();
 
-            if(tmpSession == null){
-              // if we haven't got a session, then create one
-              _theApplication.newSession(null);
+							// check it worked
+							if (tmpSession == null)
+							{
+								MWC.GUI.Dialogs.DialogFactory.showMessage("Import data",
+										"Import data - create session failed!");
+							}
 
-              // now try again
-              tmpSession = _theApplication.getCurrentSession();
+						}
+					}
 
-              // check it worked
-              if(tmpSession == null)
-              {
-                MWC.GUI.Dialogs.DialogFactory.showMessage("Import data","Import data - create session failed!");
-              }
+				} // loop through list of files
 
-            }
-          }
+				// data is collated, now create 'action' function
+				if (fl != null)
+					res = new ImportAction(fl.getName(), tmpSession, theLayers);
 
-        }      	// loop through list of files
+			} //
+		} // whether a real file list was returned
 
-        // data is collated, now create 'action' function
-        res = new ImportAction(fl.getName(),
-                               tmpSession,
-                               theLayers);
+		// clear the step control pointer temporarily set in the ImportReplay object
+		Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
 
+		// return the product
+		return res;
+	}
 
-      } //
-    }  // whether a real file list was returned
+	// /////////////////////////////////////////////////////
+	// store action information
+	// /////////////////////////////////////////////////////
+	static public final class ImportAction implements Action
+	{
+		/**
+		 * the filename we originally read the data from (note that by this point
+		 * the data has already been read, and stored in the Layers object)
+		 */
+		private final String _theFileName;
+		/**
+		 * the session we are going to import the data into
+		 */
+		private final Session _theSession;
+		/**
+		 * the structure containing the imported data
+		 */
+		private final Layers _theLayers;
 
-    // clear the step control pointer temporarily set in the ImportReplay object
-    Debrief.ReaderWriter.Replay.ImportReplay.setStepper(null);
+		/**
+		 * constructor - produced AFTER we have read in the data, but before we have
+		 * added it to the session
+		 */
+		public ImportAction(String theFileName, Session theSession, Layers theLayers)
+		{
+			_theSession = theSession;
+			_theFileName = theFileName;
+			_theLayers = theLayers;
+		}
 
-    // return the product
-    return res;
-  }
+		public final boolean isRedoable()
+		{
+			return false;
+		}
 
-  ///////////////////////////////////////////////////////
-  // store action information
-  ///////////////////////////////////////////////////////
-  static public final class ImportAction implements Action{
-    /** the filename we originally read the data from (note that by this
-     * point the data has already been read, and stored in the Layers object)
-     */
-    private final String _theFileName;
-    /** the session we are going to import the data into
-     */
-    private final Session _theSession;
-    /** the structure containing the imported data
-     */
-    private final Layers _theLayers;
+		public final boolean isUndoable()
+		{
+			return false;
+		}
 
-    /** constructor - produced AFTER we have read in the data, but
-     * before we have added it to the session
-     */
-    public ImportAction(String theFileName,
-                        Session theSession,
-                        Layers theLayers){
-      _theSession = theSession;
-      _theFileName = theFileName;
-      _theLayers = theLayers;
-    }
+		public final String toString()
+		{
+			return "import " + _theFileName;
+		}
 
-    public final boolean isRedoable(){
-      return false;
-    }
+		public final void undo()
+		{
+			// delete the plottables from the Session object
+		}
 
+		public final void execute()
+		{
+			// add the plottables to the indicated session
+			_theSession.getData().addThis(_theLayers);
 
-    public final boolean isUndoable(){
-      return false;
-    }
+			// inform any NarrativeWrapper objects of the StepContorl
+			Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) _theSession
+					.getCurrentView();
+			Debrief.GUI.Tote.StepControl stepper = av.getTote().getStepper();
 
-    public final String toString(){
-      return "import " + _theFileName;
-    }
+			// find any narratives
+			int len = _theSession.getData().size();
+			for (int i = 0; i < len; i++)
+			{
+				Layer ly = _theSession.getData().elementAt(i);
+				if (ly instanceof Debrief.Wrappers.NarrativeWrapper)
+				{
+					Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper) ly;
+					nw.setStepper(stepper);
+				}
+			}
 
-    public final void undo(){
-      // delete the plottables from the Session object
-    }
-    public final void execute()
-    {
-      // add the plottables to the indicated session
-      _theSession.getData().addThis(_theLayers);
+			// instruct the session to rescale, following this import
+			_theSession.getData().fireExtended();
 
-      // inform any NarrativeWrapper objects of the StepContorl
-      Debrief.GUI.Views.AnalysisView av = (Debrief.GUI.Views.AnalysisView) _theSession.getCurrentView();
-      Debrief.GUI.Tote.StepControl stepper = av.getTote().getStepper();
-
-      // find any narratives
-      int len = _theSession.getData().size();
-      for(int i=0;i<len;i++)
-      {
-        Layer ly = _theSession.getData().elementAt(i);
-        if(ly instanceof Debrief.Wrappers.NarrativeWrapper)
-        {
-          Debrief.Wrappers.NarrativeWrapper nw = (Debrief.Wrappers.NarrativeWrapper)ly;
-          nw.setStepper(stepper);
-        }
-      }
-
-      // instruct the session to rescale, following this import
-      _theSession.getData().fireExtended();
-
-    }
-  }
+		}
+	}
 }

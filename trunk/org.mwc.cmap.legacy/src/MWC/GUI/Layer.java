@@ -107,7 +107,7 @@ import java.util.Enumeration;
  * @see Plottables
  * @see Plottable
  */
-public interface Layer extends Serializable, Editable, Plottable
+public interface Layer extends Serializable, Plottable
 {
   /////////////////////////////////////////////////////////////
   // member interfaces

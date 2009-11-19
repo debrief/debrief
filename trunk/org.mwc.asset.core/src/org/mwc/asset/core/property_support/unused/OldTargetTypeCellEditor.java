@@ -39,7 +39,7 @@ public class OldTargetTypeCellEditor extends CellEditor
 
 	final private String _environmentTip = "the environment of the subject participant(s)";
 
-	final private String _typeTip = "the type of the subject participant(s)";;
+	final private String _typeTip = "the type of the subject participant(s)";
 
 	public OldTargetTypeCellEditor(Composite parent)
 	{

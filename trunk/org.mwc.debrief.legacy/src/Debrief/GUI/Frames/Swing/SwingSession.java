@@ -97,6 +97,13 @@
 
 package Debrief.GUI.Frames.Swing;
 
+import java.awt.BorderLayout;
+
+import javax.swing.JDialog;
+import javax.swing.JInternalFrame;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Views.AnalysisView;
 import Debrief.GUI.Views.Swing.SwingAnalysisView;
@@ -105,14 +112,10 @@ import MWC.GUI.ToolParent;
 import MWC.GUI.Tools.Swing.MyMetalToolBarUI;
 import MWC.GenericData.WorldArea;
 
-import javax.swing.*;
-import java.awt.*;
-import java.io.Serializable;
-
 /**
  * Swing
  */
-public final class SwingSession extends Session implements Serializable, MyMetalToolBarUI.ToolbarOwner
+public final class SwingSession extends Session implements MyMetalToolBarUI.ToolbarOwner
 {
 
   /////////////////////////////////////////////////////////////

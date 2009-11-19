@@ -210,11 +210,34 @@ package Debrief.GUI.Tote.Painters;
 // Initial revision
 //
 
+import java.awt.BasicStroke;
+import java.awt.Color;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.Rectangle;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Vector;
+
 import Debrief.GUI.Tote.AnalysisTote;
-import Debrief.Wrappers.*;
+import Debrief.Wrappers.BuoyPatternWrapper;
+import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.LabelWrapper;
+import Debrief.Wrappers.SensorContactWrapper;
+import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.ShapeWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import Debrief.Wrappers.TMAWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.Algorithms.PlainProjection;
-import MWC.GUI.*;
+import MWC.GUI.CanvasType;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.PlainChart;
+import MWC.GUI.Plottable;
 import MWC.GUI.CanvasType.PaintListener;
 import MWC.GUI.Properties.BoundedInteger;
 import MWC.GenericData.HiResDate;
@@ -222,13 +245,7 @@ import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 
-import java.awt.*;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Vector;
-
-public class SnailPainter extends TotePainter implements Editable
+public class SnailPainter extends TotePainter
 {
 
 	public static final String SNAIL_NAME = "Snail";

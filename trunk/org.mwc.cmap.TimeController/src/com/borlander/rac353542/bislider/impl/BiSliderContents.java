@@ -6,7 +6,7 @@ import com.borlander.rac353542.bislider.BiSliderContentsDataProvider;
 import com.borlander.rac353542.bislider.BiSliderDataModel;
 import com.borlander.rac353542.bislider.BiSliderUIModel;
 
-class BiSliderContents extends BiSliderComponentBase implements Disposable {
+class BiSliderContents extends BiSliderComponentBase {
     private BiSliderContentsDataProvider myContentsDataProvider;
     private ColorDescriptor mySegmentForeground;
     private ColorDescriptor myNotColoredSegmentsBackground;

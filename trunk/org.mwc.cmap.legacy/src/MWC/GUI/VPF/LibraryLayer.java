@@ -129,7 +129,11 @@ public class LibraryLayer extends MWC.GUI.BaseLayer
       // do we want to populate the library with all of the available data?
       if(autoPopulate)
       {
+        // did we get a cat?
+        if(_myCat1 == null)
+        	return;
 
+      	
         // get the list of coverages in this library
         String[] coverages = _myCat1.getCoverageNames();
 

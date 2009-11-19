@@ -27,7 +27,7 @@ import java.util.Vector;
  *
  * @author Symantec
  */
-public class VetoableChangeSupport extends java.beans.VetoableChangeSupport implements java.io.Serializable
+public class VetoableChangeSupport extends java.beans.VetoableChangeSupport
 {
 
     /**

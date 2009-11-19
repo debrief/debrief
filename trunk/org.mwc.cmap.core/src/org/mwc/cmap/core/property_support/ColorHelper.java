@@ -24,7 +24,7 @@ public class ColorHelper extends EditorHelper
 	// the SWT color-registry. we'll keep our own local list instead...
 	private static HashMap<Color, org.eclipse.swt.graphics.Color> _myColorList = new HashMap<Color, org.eclipse.swt.graphics.Color>();
 	
-	private final static java.awt.Color OFF_WHITE = new Color(255,255,254);;
+	private final static java.awt.Color OFF_WHITE = new Color(255,255,254);
 
 	public ColorHelper(Control parentControl)
 	{

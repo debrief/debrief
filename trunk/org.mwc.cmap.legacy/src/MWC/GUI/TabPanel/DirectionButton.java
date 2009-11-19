@@ -39,7 +39,7 @@ import java.beans.VetoableChangeListener;
  * @version 1.1, June 27, 1997
  * @author  Symantec
  */
-public class DirectionButton extends ButtonBase implements java.io.Serializable
+public class DirectionButton extends ButtonBase
 {
     /**
 	 * 

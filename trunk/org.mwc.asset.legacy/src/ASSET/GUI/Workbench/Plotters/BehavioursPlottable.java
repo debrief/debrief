@@ -31,7 +31,7 @@ public class BehavioursPlottable extends BasePlottable
 	
 	public Enumeration<Editable> elements()
 	{
-		Vector<Editable> list = new Vector<Editable>(0,1);;
+		Vector<Editable> list = new Vector<Editable>(0,1);
 
 		// hmm, do we have child behaviours?
 		if(getModel() instanceof BehaviourList)

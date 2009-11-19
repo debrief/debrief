@@ -162,4 +162,10 @@ public class HiResDate implements Serializable, Comparable<HiResDate>
 		return res;
 	}
 
+	@Override
+	public int hashCode()
+	{
+		return super.hashCode();
+	}
+
 }

@@ -42,7 +42,6 @@ import javax.swing.JInternalFrame;
 import javax.swing.JToolBar;
 import javax.swing.KeyStroke;
 import javax.swing.LookAndFeel;
-import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.event.InternalFrameEvent;
@@ -62,7 +61,7 @@ import MWC.GUI.Properties.Swing.SwingPropertiesPanel;
  * @author Georges Saab
  * @author Jeff Shapiro
  */
-public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI implements SwingConstants
+public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI
 {
   protected JToolBar toolBar;
   private boolean floating;
@@ -452,7 +451,10 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
     if(toolBar != null) {
       Container p;
       for(p = toolBar.getParent() ; p != null && !(p instanceof Frame) ;
-          p = p.getParent());
+          p = p.getParent())
+			{
+				
+			}
       if(p != null && p instanceof Frame)
         frame = (Frame) p;
     }
@@ -750,7 +752,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
 	public boolean isEnabled() {
       return true;
     }
-  };
+  }
 
   @SuppressWarnings("synthetic-access")
 	static class RightAction extends KeyAction {
@@ -764,7 +766,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(EAST);
     }
-  };
+  }
 
   @SuppressWarnings("synthetic-access")
 	static class LeftAction extends KeyAction {
@@ -778,7 +780,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(WEST);
     }
-  };
+  }
 
   @SuppressWarnings("synthetic-access")
 	static class UpAction extends KeyAction {
@@ -792,7 +794,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(NORTH);
     }
-  };
+  }
 
   @SuppressWarnings("synthetic-access")
 	static class DownAction extends KeyAction {
@@ -806,7 +808,7 @@ public class MyBasicToolBarUI extends javax.swing.plaf.basic.BasicToolBarUI impl
       MyBasicToolBarUI ui = (MyBasicToolBarUI)toolBar.getUI();
       ui.navigateFocusedComp(SOUTH);
     }
-  };
+  }
 
   protected class FrameListener extends WindowAdapter {
     public void windowClosing(WindowEvent w) {

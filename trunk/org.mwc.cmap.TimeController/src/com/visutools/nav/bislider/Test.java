@@ -561,7 +561,7 @@ public class Test {
           Exception_Arg.printStackTrace();
         }
       }
-    };
+    }
 
     boolean FirstMetal = true;
     UIManager.LookAndFeelInfo[]  lafis  = UIManager.getInstalledLookAndFeels();

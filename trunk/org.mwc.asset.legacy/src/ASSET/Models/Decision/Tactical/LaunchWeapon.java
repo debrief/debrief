@@ -59,7 +59,7 @@ import java.io.StringWriter;
  * <ul>
  */
 
-public class LaunchWeapon extends CoreDecision implements MWC.GUI.Editable, java.io.Serializable
+public class LaunchWeapon extends CoreDecision implements java.io.Serializable
 {
 
   /**

@@ -221,7 +221,7 @@ public class MWCXMLReaderWriter extends MWCXMLReader implements
 			}
 			return nr;
 		}
-	};
+	}
 
 	/**
 	 * read in this whole file

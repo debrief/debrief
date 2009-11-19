@@ -299,7 +299,7 @@ public final class WorldPath implements java.io.Serializable
         currentBearing = sep.getBearing();
         leg_remaining = sep.getRange();
 
-        lastOrigin = (WorldLocation) _myPoints.elementAt(thisLeg);;
+        lastOrigin = (WorldLocation) _myPoints.elementAt(thisLeg);
 
       }
 

@@ -128,12 +128,12 @@ abstract public class PlainSymbol implements java.io.Serializable, MWC.GUI.Edita
    * first
    * @return yes/no
    */
-  public boolean hasEditor(){ return false;};
+  public boolean hasEditor(){ return false;}
 
   /** get the editor for this item
    * @return the BeanInfo data for this editable object
    */
-  public Editable.EditorType getInfo(){ return null;};
+  public Editable.EditorType getInfo(){ return null;}
 
   /** the name for this symbol
    *  @return this symbol's name

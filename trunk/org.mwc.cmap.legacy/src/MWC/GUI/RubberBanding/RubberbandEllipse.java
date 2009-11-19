@@ -3,11 +3,10 @@ package MWC.GUI.RubberBanding;
 import java.awt.Component;
 import java.awt.Graphics;
 import java.awt.Rectangle;
-import java.io.Serializable;
 
 import MWC.GUI.Rubberband;
 
-public class RubberbandEllipse extends Rubberband  implements Serializable{
+public class RubberbandEllipse extends Rubberband{
     /**
 	 * 
 	 */

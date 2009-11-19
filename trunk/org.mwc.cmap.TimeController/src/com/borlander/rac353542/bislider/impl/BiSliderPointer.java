@@ -12,7 +12,7 @@ import com.borlander.rac353542.bislider.BiSliderDataModel;
 import com.borlander.rac353542.bislider.impl.DragSupport.DragListener;
 
 
-class BiSliderPointer extends BiSliderComponentBase implements DragListener, Disposable, AreaGate  {
+class BiSliderPointer extends BiSliderComponentBase implements DragListener, AreaGate  {
     final boolean myMinNotMax;
     final PointerDrawer myDrawer;
     private final Segmenter mySegmenter;

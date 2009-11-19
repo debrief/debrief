@@ -69,8 +69,8 @@
 
 package Debrief.GUI.Frames.AWT;
 
-import java.awt.*;
-import java.io.Serializable;
+import java.awt.BorderLayout;
+import java.awt.Panel;
 
 import Debrief.GUI.Frames.Session;
 import Debrief.GUI.Views.AWT.AWTAnalysisView;
@@ -78,7 +78,7 @@ import MWC.GUI.ToolParent;
 import MWC.GenericData.WorldArea;
 
 /** an AWT implementation of our session */
-public final class AWTSession extends Session implements Serializable {
+public final class AWTSession extends Session {
 
   /////////////////////////////////////////////////////////////
   // member variables

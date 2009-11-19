@@ -1,7 +1,6 @@
 package MWC.GUI.JFreeChart;
 
 import java.awt.Color;
-import java.io.Serializable;
 
 import org.jfree.data.time.FixedMillisecond;
 import org.jfree.data.time.RegularTimePeriod;
@@ -18,7 +17,7 @@ import org.jfree.data.time.TimeSeriesDataItem;
 //////////////////////////////////////////////////
 // add a coloru to the data item pair
 //////////////////////////////////////////////////
-public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDataItem, Serializable
+public class ColouredDataItem extends TimeSeriesDataItem implements AttractiveDataItem
 {
   /**
 	 * 

@@ -37,17 +37,17 @@ public interface ParticipantRMI extends java.rmi.Remote
   /** break down the category components
    *
    */
-  String getType() throws java.rmi.RemoteException;;
+  String getType() throws java.rmi.RemoteException;
 
   /** get the force for this participant
    *
    */
-  String getForce() throws java.rmi.RemoteException;;
+  String getForce() throws java.rmi.RemoteException;
 
   /** get the environment for this participant
    *
    */
-  String getEnvironment() throws java.rmi.RemoteException;;
+  String getEnvironment() throws java.rmi.RemoteException;
 
   /** get the current activity for this participant
    *

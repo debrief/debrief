@@ -102,7 +102,6 @@ import java.awt.Point;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.image.BufferedImage;
-import java.io.Serializable;
 import java.net.URL;
 import java.util.HashMap;
 
@@ -127,7 +126,7 @@ import MWC.GenericData.WorldArea;
  * chart/panel to be the listener functions defined in
  * the parent.
  */
-public class SwingChart extends PlainChart implements Serializable
+public class SwingChart extends PlainChart
 {
 
   /////////////////////////////////////////////////////////////

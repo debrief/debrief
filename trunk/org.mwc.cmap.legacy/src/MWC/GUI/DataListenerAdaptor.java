@@ -63,7 +63,7 @@ package MWC.GUI;
  * class expecting to handle data listener messages
  */
 
-public abstract class DataListenerAdaptor implements Layers.DataListener, Layers.DataListener2
+public abstract class DataListenerAdaptor implements  Layers.DataListener2
 {
 
 

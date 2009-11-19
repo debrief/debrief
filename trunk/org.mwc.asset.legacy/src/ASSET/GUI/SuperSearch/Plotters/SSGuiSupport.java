@@ -98,7 +98,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
 
       public void restart(ScenarioType scenario)
       {
-        ;
+        
       }
 
     });
@@ -380,8 +380,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
     {
       if (_myPart.getCategory().getForce().equals(ASSET.Participants.Category.Force.BLUE))
         return java.awt.Color.blue;
-      else
-        return java.awt.Color.red;
+			return java.awt.Color.red;
     }
 
     /***********************************************************************
@@ -473,7 +472,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
     public String getName()
     {
       return _myPart.getName() + ":" + _myPart.getActivity() + " " + _myPart.getStatus().statusString();
-    };
+    }
 
     public String toString()
     {
@@ -490,7 +489,7 @@ public class SSGuiSupport extends MWC.GUI.BaseLayer implements ASSET.Scenario.Pa
     public boolean hasEditor()
     {
       return true;
-    };
+    }
 
     /**
      * get the editor for this item

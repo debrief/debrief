@@ -15,8 +15,7 @@ import MWC.GenericData.*;
  * contacts with the specified behaviour
  */
 
-public class Evade extends CoreDecision implements ASSET.Models.DecisionType,
-		MWC.GUI.Editable, java.io.Serializable
+public class Evade extends CoreDecision implements java.io.Serializable
 {
 	/**
 	 * ASSET.Models.Decision.Movement.Evade.UserControlInfo

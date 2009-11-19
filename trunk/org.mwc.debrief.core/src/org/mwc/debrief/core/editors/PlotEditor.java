@@ -774,7 +774,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				// TODO Auto-generated method stub
 				fireSelectionChanged(sel);
-			};
+			}
 
 			/**
 			 * 

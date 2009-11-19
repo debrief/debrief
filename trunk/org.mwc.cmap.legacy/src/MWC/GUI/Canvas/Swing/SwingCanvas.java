@@ -217,7 +217,6 @@ import java.awt.event.MouseEvent;
 import java.awt.image.ImageObserver;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.io.Serializable;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -236,7 +235,6 @@ import MWC.GenericData.WorldLocation;
  */
 public class SwingCanvas extends javax.swing.JComponent
   implements CanvasType,
-  Serializable,
   Editable
 {
 

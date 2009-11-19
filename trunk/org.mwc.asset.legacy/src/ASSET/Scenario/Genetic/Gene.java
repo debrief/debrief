@@ -115,7 +115,7 @@ public class Gene implements Comparable<Gene>
   {
     final Gene res = new Gene();
     res._myList = (XMLVarianceList) this._myList.clone();
-    ;
+    
     final Iterator<XMLVariance> it = res._myList.getIterator();
     while (it.hasNext())
     {

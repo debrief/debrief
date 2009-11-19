@@ -122,7 +122,7 @@ public abstract class RecordToFileObserverType extends CoreObserver
   protected String newName(final String name)
   {
     return getName() + "_" + name;
-  };
+  }
 
 
   //////////////////////////////////////////////////

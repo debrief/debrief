@@ -194,7 +194,7 @@ import MWC.GenericData.WorldLocation;
  * layers this class provides additional (GUI-independent) support for GUI
  * classes which handle layers
  */
-public class Layers implements Serializable, Editable, Plottable, PlottablesType
+public class Layers implements Serializable, Plottable, PlottablesType
 {
 
 	// ////////////////////////////////////////////////////

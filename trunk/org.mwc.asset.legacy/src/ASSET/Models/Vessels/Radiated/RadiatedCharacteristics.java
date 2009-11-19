@@ -367,8 +367,13 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
         }
       }
 
-      // get the value from this list
-      final double res = nearestBearing.valueFor(speed);
+      double res = 0;
+      
+      if(nearestBearing != null)
+      {
+        // get the value from this list
+        res = nearestBearing.valueFor(speed); 	
+      }
 
       // done
       return res;
@@ -480,12 +485,9 @@ public class RadiatedCharacteristics implements MWC.GUI.Editable, java.io.Serial
           after = thisN;
           break;
         }
-        else
-        {
-          // no, we still haven't reached the required speed, this value
-          // becomes the "before" value
-          before = thisN;
-        }
+				// no, we still haven't reached the required speed, this value
+				// becomes the "before" value
+				before = thisN;
       }
 
       // just check we found a value (to handle where the requested speed is
