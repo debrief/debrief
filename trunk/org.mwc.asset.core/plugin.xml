@@ -77,7 +77,21 @@
          </parameter>
       </describer>
    	</content-type>
-   <content-type
+   	   <content-type
+         base-type="org.eclipse.core.runtime.xml"
+         file-extensions="asset"
+         id="org.mwc.asset.contenttype.ScenarioFile"
+         name="ASSET Scenario File"
+         priority="high">
+      <describer class="com.oxygenxml.editor.editors.xml.XMLContentDescriber">
+         <parameter name="element"
+                    value="Scenario">
+         </parameter>
+      </describer>
+   	</content-type>
+	</extension>
+
+  <!-- <content-type
          base-type="org.eclipse.core.runtime.xml"
          file-extensions="asset"
          id="org.mwc.asset.contenttype.ScenarioFile"
@@ -88,8 +102,8 @@
                     value="Scenario">
          </parameter>
       </describer>
-   	</content-type>
-	</extension>
+   	</content-type> -->
+
 	<!--
    <extension
          name="create a catalog entry for the ASSET schema"
@@ -101,7 +115,8 @@
                uri="platform:/plugin/org.mwc.asset.legacy/schemas/ASSET.xsd">
          </public>
       </catalogContribution>
-   </extension>  -->
+   </extension>  
+   -->
 
 	
 	   
