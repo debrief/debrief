@@ -136,4 +136,27 @@
             name="Path editor">
       </view>
    </extension>  
+   
+      <extension
+         point="org.eclipse.ui.views">
+   </extension>
+
+   <extension
+         point="org.eclipse.ui.views">
+         <view
+         	class="com.pml.lengtheditor.views.TestViewPart"
+		    id="com.pml.lengtheditor.viewId"
+		    name="Standard Lengths Test">
+         </view>
+   </extension>
+   
+      <extension
+         point="org.eclipse.ui.preferencePages">
+      <page
+            category="org.mwc.cmap.core.preferences.CMAPPrefsPage"
+            class="com.pml.lengtheditor.preferences.LengthsLookupPreferencesPage"
+            id="com.pml.lengtheditor.preferencesId"
+            name="Standard array offsets">
+      </page>
+   </extension>
 </plugin>
