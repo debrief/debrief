@@ -8,11 +8,11 @@ import org.eclipse.jface.viewers.ILabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
+import org.mwc.cmap.core.property_support.lengtheditor.LengthPropertyCellEditor;
 import org.mwc.cmap.gridharness.data.WorldDistance;
 
 import MWC.GenericData.WorldDistance.ArrayLength;
 
-import com.pml.lengtheditor.LengthPropertyCellEditor;
 
 public class ArrayLengthHelper extends EditorHelper
 {
