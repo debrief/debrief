@@ -14,7 +14,7 @@ import junit.framework.Assert;
 /**
  * class which represents a distance as a value plus a set of units
  */
-final public class WorldDistance implements Serializable
+public class WorldDistance implements Serializable
 {
   /////////////////////////////////////////////////////////////////
   // member variables
@@ -300,6 +300,30 @@ public boolean equals(Object obj) {
       assertEquals("correct output format, received:" + res, res, "1.75 km");
     }
   }
+
+	/** convenience class for lengths that are specifically to be edited with the Array Lengths editor
+	 * 
+	 * @author ianmayo
+	 *
+	 */
+	public static class ArrayLength extends WorldDistance
+	{
+	
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+		
+		public ArrayLength(double metres)
+		{
+			super(new WorldDistance(metres, METRES));
+		}
+		
+		public ArrayLength(WorldDistance dist)
+		{
+			super(dist);
+		}
+	}
 
 	public void setValues(double range, int degs2)
 	{
