@@ -5,6 +5,8 @@ import org.eclipse.jface.viewers.ICellEditorValidator;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
+import MWC.GenericData.WorldDistance;
+
 
 public class LengthPropertyDescriptor extends TextPropertyDescriptor {
 
@@ -18,7 +20,12 @@ public class LengthPropertyDescriptor extends TextPropertyDescriptor {
 				}
 				String str = (String) value;
 				try {
-					new Double(str);
+					// right, do we end in metres? if so, ditch it
+					if(str.endsWith("m"))
+						str = str.substring(0, str.length() - 2);
+					
+					double thisLen = Double.parseDouble(str);
+					new WorldDistance.ArrayLength(thisLen);
 					return null;
 				} catch (Exception e) {
 					return Messages.LengthPropertyDescriptor_NotValid;

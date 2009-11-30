@@ -14,53 +14,68 @@ import org.eclipse.ui.views.properties.IPropertyDescriptor;
 import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldDistance.ArrayLength;
+
 import com.pml.lengtheditor.LengthPropertyDescriptor;
 
-public class TestViewPart extends ViewPart {
+public class TestViewPart extends ViewPart
+{
 
 	// init default value
-	private Double myValue = new Double(0);
+	private ArrayLength myValue = new ArrayLength(0);
 
 	private Label myLabel;
 
 	private PropertySource myPS;
 
 	@Override
-	public void createPartControl(Composite parent) {
+	public void createPartControl(Composite parent)
+	{
 		myLabel = new Label(parent, SWT.NONE);
 		myLabel.setText(myValue.toString());
 	}
 
 	@Override
-	public void init(IViewSite site) throws PartInitException {
+	public void init(IViewSite site) throws PartInitException
+	{
 		super.init(site);
-		getViewSite().setSelectionProvider(new ISelectionProvider() {
+		getViewSite().setSelectionProvider(new ISelectionProvider()
+		{
 
-			public void setSelection(ISelection selection) {
+			public void setSelection(ISelection selection)
+			{
 				// nothing
 			}
 
-			public void removeSelectionChangedListener(ISelectionChangedListener listener) {
+			public void removeSelectionChangedListener(
+					ISelectionChangedListener listener)
+			{
 				// nothing
 			}
 
-			public ISelection getSelection() {
+			public ISelection getSelection()
+			{
 				return new StructuredSelection(getPropertySource());
 			}
 
-			public void addSelectionChangedListener(ISelectionChangedListener listener) {
+			public void addSelectionChangedListener(ISelectionChangedListener listener)
+			{
 				// nothing
 			}
 		});
 	}
 
 	@Override
-	public void setFocus() {
+	public void setFocus()
+	{
 		myLabel.setFocus();
 	}
 
-	private PropertySource getPropertySource() {
-		if (myPS == null) {
+	private PropertySource getPropertySource()
+	{
+		if (myPS == null)
+		{
 			myPS = new PropertySource();
 		}
 		return myPS;
@@ -68,40 +83,60 @@ public class TestViewPart extends ViewPart {
 
 	private static String PROPERTY_ID = "value";//$NON-NLS-1$
 
-	private static final TextPropertyDescriptor LENGTH_PROP_DESC = new LengthPropertyDescriptor(PROPERTY_ID, "Length");
+	private static final TextPropertyDescriptor LENGTH_PROP_DESC = new LengthPropertyDescriptor(
+			PROPERTY_ID, "Length");
 
-	private static final IPropertyDescriptor[] DESCRIPTORS = { LENGTH_PROP_DESC };
+	private static final IPropertyDescriptor[] DESCRIPTORS =
+	{ LENGTH_PROP_DESC };
 
-	private class PropertySource implements IPropertySource {
+	private class PropertySource implements IPropertySource
+	{
 
-		public Object getEditableValue() {
+		public Object getEditableValue()
+		{
 			return myValue.toString();
 		}
 
-		public IPropertyDescriptor[] getPropertyDescriptors() {
+		public IPropertyDescriptor[] getPropertyDescriptors()
+		{
 			return DESCRIPTORS;
 		}
 
-		public Object getPropertyValue(Object id) {
-			if (PROPERTY_ID.equals(id)) {
+		public Object getPropertyValue(Object id)
+		{
+			if (PROPERTY_ID.equals(id))
+			{
 				return myValue.toString();
 			}
 			return null;
 		}
 
-		public boolean isPropertySet(Object id) {
+		public boolean isPropertySet(Object id)
+		{
 			return false;
 		}
 
-		public void resetPropertyValue(Object id) {
-			setNewValue(0.0);
+		public void resetPropertyValue(Object id)
+		{
+			setNewValue(new ArrayLength(0));
 		}
 
-		public void setPropertyValue(Object id, Object value) {
-			if (PROPERTY_ID.equals(id)) {
-				try {
-					setNewValue(new Double((String) value));
-				} catch (Exception e) {
+		public void setPropertyValue(Object id, Object value)
+		{
+			if (PROPERTY_ID.equals(id))
+			{
+				try
+				{
+					if (value instanceof String)
+					{
+						double thisD = Double.parseDouble((String) value);
+						setNewValue(new ArrayLength(thisD));
+					}
+					else if (value instanceof ArrayLength)
+						setNewValue((ArrayLength) value);
+				}
+				catch (Exception e)
+				{
 					// nothing
 				}
 			}
@@ -109,7 +144,8 @@ public class TestViewPart extends ViewPart {
 		}
 	}
 
-	public void setNewValue(Double d) {
+	public void setNewValue(ArrayLength d)
+	{
 		myValue = d;
 		myLabel.setText(myValue.toString());
 	}
