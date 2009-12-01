@@ -48,4 +48,8 @@
 		<description>Shows a 3d view of the current plot</description>
 		<topic href="html/legacy/view_3d.html" label="An overview of narrative data"/>
 	</context>		
+	<context id="LengthPrefs">
+		<description>Stores and manipulates a set of agreed sensor offset distances</description>
+		<topic href="html/legacy/sensor_data.html#LENGTH_PREFS" label="Sensor offsets"/>
+	</context>		
 </contexts>

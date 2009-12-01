@@ -161,10 +161,6 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		GriddableSeriesMarker, Cloneable
 {
 
-	// //////////////////////////////////////
-	// member variables
-	// //////////////////////////////////////
-
 	/**
 	 * 
 	 */
@@ -179,8 +175,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 	 * the (optional) sensor offset value, indicating the forward/backward offset
 	 * compared to the attack datum of the platform.
 	 */
-	private WorldDistance _sensorOffset = new WorldDistance(0,
-			WorldDistance.YARDS);
+	private WorldDistance.ArrayLength _sensorOffset = new WorldDistance.ArrayLength(0);
 
 	/**
 	 * the (optional) indicator for whether the centre of this sensor is in a
@@ -471,12 +466,12 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		_wormInHole = wormInHole;
 	}
 
-	public WorldDistance getSensorOffset()
+	public WorldDistance.ArrayLength getSensorOffset()
 	{
 		return _sensorOffset;
 	}
 
-	public void setSensorOffset(WorldDistance sensorOffset)
+	public void setSensorOffset(WorldDistance.ArrayLength sensorOffset)
 	{
 		_sensorOffset = sensorOffset;
 

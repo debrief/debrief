@@ -45,7 +45,7 @@
      <page
            class="org.mwc.cmap.core.preferences.CMAPPrefsPage"
            id="org.mwc.cmap.core.preferences.CMAPPrefsPage"
-           name="CMAP"/>
+           name="Maritime Analysis"/>
   </extension>
   <extension
         point="org.eclipse.core.runtime.preferences">

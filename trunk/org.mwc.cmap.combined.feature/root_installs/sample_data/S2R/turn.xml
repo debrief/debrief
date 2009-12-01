@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Tue Nov 17 14:00:49 GMT 2009" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Fri Nov 13 09:18:01 GMT 2009"/>
+<plot Created="Mon Nov 30 14:19:59 GMT 2009" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Mon Nov 23 09:13:33 GMT 2009"/>
 <session>
 <layers>
 <track InterpolatePoints="false" LineThickness="2" Name="MAYO" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
@@ -8,7 +8,7 @@
 <font Bold="false" Family="Sans Serif" Italic="true" Size="9"/>
 <sensor LineThickness="1" Name="BowMerchantvessel" TrackName="MAYO" Visible="true" WormInHole="false">
 <colour Value="GREEN"/>
-<Offset Units="yds" Value="-220.000"/>
+<Offset Units="m" Value="-123.000"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="259.100" Dtg="090422 182400" Frequency="300.528" HasAmbiguousBearing="false" HasFrequency="true" Label=" 1824" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="259.000" Dtg="090422 182500" Frequency="300.528" HasAmbiguousBearing="false" HasFrequency="true" Label=" 1825" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false"/>
 <sensor_contact AmbiguousBearing="0.000" Bearing="259.000" Dtg="090422 182600" Frequency="300.529" HasAmbiguousBearing="false" HasFrequency="true" Label=" 1826" LabelLocation="Left" LabelShowing="false" LineStyle="Solid" PutLabelAt="Middle" Visible="false"/>
@@ -3219,73 +3219,73 @@
 <fix Course="171.177" Dtg="090422 183700" Label="1837" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1937814" Long="30.8879924"/>
+<shortLocation Depth="18.810" Lat="5.1938786" Long="30.8876298"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 183800" Label="1838" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1932134" Long="30.8880809"/>
+<shortLocation Depth="18.810" Lat="5.1933107" Long="30.8877183"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 183900" Label="1839" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1926454" Long="30.8881694"/>
+<shortLocation Depth="18.810" Lat="5.1927428" Long="30.8878068"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184000" Label="1840" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1920773" Long="30.8882580"/>
+<shortLocation Depth="18.810" Lat="5.1921748" Long="30.8878953"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184100" Label="1841" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1915093" Long="30.8883465"/>
+<shortLocation Depth="18.810" Lat="5.1916069" Long="30.8879838"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184200" Label="1842" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1909413" Long="30.8884350"/>
+<shortLocation Depth="18.810" Lat="5.1910390" Long="30.8880723"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184300" Label="1843" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1903733" Long="30.8885235"/>
+<shortLocation Depth="18.810" Lat="5.1904711" Long="30.8881609"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184400" Label="1844" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1898053" Long="30.8886121"/>
+<shortLocation Depth="18.810" Lat="5.1899031" Long="30.8882494"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184500" Label="1845" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1892373" Long="30.8887006"/>
+<shortLocation Depth="18.810" Lat="5.1893352" Long="30.8883379"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184600" Label="1846" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1886693" Long="30.8887891"/>
+<shortLocation Depth="18.810" Lat="5.1887673" Long="30.8884264"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184700" Label="1847" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1881012" Long="30.8888777"/>
+<shortLocation Depth="18.810" Lat="5.1881994" Long="30.8885149"/>
 </centre>
 </fix>
 <fix Course="171.177" Dtg="090422 184800" Label="1848" LabelLocation="Left" LabelShowing="false" LineShowing="true" Speed="2.069" SymbolShowing="true" Visible="true">
 <font Bold="false" Family="Sans Serif" Italic="false" Size="9"/>
 <centre>
-<shortLocation Depth="18.810" Lat="5.1875332" Long="30.8889662"/>
+<shortLocation Depth="18.810" Lat="5.1876315" Long="30.8886034"/>
 </centre>
 </fix>
 <Speed Units="kts" Value="2.069"/>

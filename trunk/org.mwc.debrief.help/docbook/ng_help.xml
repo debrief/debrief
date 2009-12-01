@@ -4999,9 +4999,34 @@ and so on....</programlisting></para>
                         coordinates, Debrief reflects a Sensor Offset distance for that sensor. The
                         sensor offset distance denotes the horizontal distance between the centre of
                         the centre and the attack datum of the host platform (+ve forwards, -ve
-                        backwards - so towed array data would be -ve). The location of the start of
-                        the sensor contact bearing line is calculated using the current value of
-                        course for the host platform and the sensor offset value.</para>
+                        backwards - so towed array data would be -ve). See the side-note for more
+                        detail on the support for a shared library of array lengths. The location of
+                        the start of the sensor contact bearing line is calculated using the current
+                        value of course for the host platform and the sensor offset value.<note
+                            id="LENGTH_PREFS">
+                            <para>Since Autumn 09 Debrief has supported a library of sensor ofsets.
+                                Somewhere on your network create a csv-formatted text file that
+                                stores two columns of data. The first column is the platform/sensor
+                                name, the second column is that combination's array offset in metres
+                                (with -ve figures at the stern of the host platform). Then open the
+                                Debrief preferences page, and specify the offset file location using
+                                the <guilabel>Standard Array Offsets</guilabel> page.  Once the
+                                standard offsets file has been specified, you are provided with a
+                                drop-down list of sensor offset distances when you view sensor data
+                                in the properties window.</para>
+                            <para>The file should end in a csv suffix, and is formatted as
+                                follows:<screen>Sensor Name,Length (m)
+Platform A,-45
+Platform B,-124.6
+Platform C,-551</screen></para>
+                        </note><screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/ArrayLengthsPrefs.png" width="100%"
+                                    />
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
                     <para>Note, it is not possible to define the sensor offset value in the REP
                         file, it may only be defined from the Properties Window of Debrief NG. The
                         value is stored safely when the Debrief plot is saved, however.</para>

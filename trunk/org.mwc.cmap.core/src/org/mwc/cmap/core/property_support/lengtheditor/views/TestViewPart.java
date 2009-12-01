@@ -15,7 +15,6 @@ import org.eclipse.ui.views.properties.IPropertySource;
 import org.eclipse.ui.views.properties.TextPropertyDescriptor;
 import org.mwc.cmap.core.property_support.lengtheditor.LengthPropertyDescriptor;
 
-import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldDistance.ArrayLength;
 
 

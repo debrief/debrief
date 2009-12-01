@@ -155,6 +155,7 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
+import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -1398,7 +1399,7 @@ public final class SensorContactWrapper extends
 			assertEquals("should be fix location", locationRes, wl);
 
 			// now give it an offset
-			sw.setSensorOffset(new WorldDistance(1, WorldDistance.DEGS));
+			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1, WorldDistance.DEGS)));
 			sw.setWormInHole(false);
 
 			// and try again
@@ -1407,14 +1408,14 @@ public final class SensorContactWrapper extends
 			assertEquals("should be offset location", locationBitNorth, wl);
 
 			// and try again, with a negative offset
-			sw.setSensorOffset(new WorldDistance(-1, WorldDistance.DEGS));
+			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(-1, WorldDistance.DEGS)));
 			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be offset location", locationBitSouth, wl);
 
 			// and try again, giving the host a course this time
 			fx.setCourse(MWC.Algorithms.Conversions.Degs2Rads(90.0));
-			sw.setSensorOffset(new WorldDistance(1, WorldDistance.DEGS));
+			sw.setSensorOffset(new WorldDistance.ArrayLength(new WorldDistance(1, WorldDistance.DEGS)));
 			wl = scw.getCalculatedOrigin(host);
 			assertNotNull("should be a location", wl);
 			assertEquals("should be centre of rectangle", locationBitEast, wl);

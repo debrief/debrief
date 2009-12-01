@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.ui.IWorkbench;
 import org.eclipse.ui.IWorkbenchPreferencePage;
+import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.lengtheditor.Messages;
 
@@ -34,6 +35,8 @@ import org.mwc.cmap.core.property_support.lengtheditor.Messages;
  */
 public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
 
+	private static final String CONTEXT_ID="LengthPrefs";
+	
 	/**
 	 * extension filters for file selection dialog
 	 */
@@ -54,6 +57,10 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 		addFileEditor();
 		addOpenFileHyperlink();
 		addReloadButton();
+		addOpenHelpHyperlink();
+		
+		// and the context-sensitive help
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(getFieldEditorParent(), CONTEXT_ID);
 	}
 
 	private void addFileEditor() {
@@ -117,6 +124,28 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
 	}
 
+	private void addOpenHelpHyperlink() {
+		Composite parent = getFieldEditorParent();
+
+		Link link = new Link(parent, SWT.NONE);
+		link.setText("<a>Learn more about sensor offsets</a>");
+
+		link.addListener(SWT.Selection, new Listener() {
+
+			public void handleEvent(Event event) {
+				PlatformUI.getWorkbench().getHelpSystem().displayHelp(CONTEXT_ID);
+			}
+		});
+
+		int numColumns = ((GridLayout) parent.getLayout()).numColumns;
+		// skip last cell for 'reload' button
+		if (numColumns > 1) {
+			numColumns--;
+		}
+		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
+	}
+
+	
 	private void openSystemEditor() {
 		String fileName = getFileName();
 		if (fileName == null) {

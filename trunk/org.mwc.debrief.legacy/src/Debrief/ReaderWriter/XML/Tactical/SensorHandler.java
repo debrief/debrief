@@ -9,14 +9,14 @@ package Debrief.ReaderWriter.XML.Tactical;
  * @version 1.0
  */
 
+import org.w3c.dom.Element;
+import org.xml.sax.Attributes;
+
 import Debrief.Wrappers.SensorContactWrapper;
 import MWC.GUI.Editable;
 import MWC.GenericData.WorldDistance;
 import MWC.Utilities.ReaderWriter.XML.Util.ColourHandler;
 import MWC.Utilities.ReaderWriter.XML.Util.WorldDistanceHandler;
-
-import org.w3c.dom.Element;
-import org.xml.sax.Attributes;
 
 
 abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXMLReader
@@ -82,7 +82,7 @@ abstract public class SensorHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
 	addHandler(new WorldDistanceHandler(OFFSET) {
 		public void setWorldDistance(WorldDistance value) {
-			_mySensor.setSensorOffset(value);
+			_mySensor.setSensorOffset(new WorldDistance.ArrayLength(value));
 		}
 	});
 
