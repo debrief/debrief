@@ -4,6 +4,7 @@
 package org.mwc.debrief.track_shift.views;
 
 import java.awt.Color;
+import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
@@ -236,23 +237,16 @@ public final class StackedDotHelper
 				final Color thisColor = thisD.getColor();
 				final double measuredBearing = thisD.getMeasuredBearing();
 				final double ambigBearing = thisD.getAmbiguousMeasuredBearing();
-				final double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(thisD
-						.getHost().getCourse());
 				final HiResDate currentTime = thisD.getDTG();
-				final Color hostColor = thisD.getHost().getColor();
 				final FixedMillisecond thisMilli = new FixedMillisecond(currentTime.getDate().getTime());
 				
 				final ColouredDataItem mBearing = new ColouredDataItem(
 						thisMilli,
 						measuredBearing, thisColor, false, null);
 
-				final ColouredDataItem crseBearing = new ColouredDataItem(
-						thisMilli,
-						ownshipCourse, hostColor, true, null);
 
 				// and add them to the series
 				measuredValues.add(mBearing);
-				osCourseValues.add(crseBearing);
 
 				if (ambigBearing != Doublet.INVALID_BASE_FREQUENCY)
 				{
@@ -291,6 +285,25 @@ public final class StackedDotHelper
 
 		}
 
+		
+		// right, we do course in a special way, since it isn't dependent on the target track. Do course here.
+		HiResDate startDTG, endDTG;
+		startDTG = _primaryDoublets.firstElement().getDTG();
+		endDTG = _primaryDoublets.lastElement().getDTG();
+		Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(startDTG, endDTG);
+		
+		// loop through th items
+		for (Iterator<Editable> iterator = hostFixes.iterator(); iterator.hasNext();) {
+			Editable editable = (Editable) iterator.next();
+			FixWrapper fw = (FixWrapper) editable;
+			final FixedMillisecond thisMilli = new FixedMillisecond(fw.getDateTimeGroup().getDate().getTime());
+			final double ownshipCourse = MWC.Algorithms.Conversions.Rads2Degs(fw.getCourse());
+			final ColouredDataItem crseBearing = new ColouredDataItem(
+					thisMilli,
+					ownshipCourse, fw.getColor(), true, null);
+			osCourseValues.add(crseBearing);
+		}
+		
 		// ok, add these new series
 
 		if (showCourse)

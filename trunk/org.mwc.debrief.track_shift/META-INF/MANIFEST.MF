@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Stacked Dots
 Bundle-SymbolicName: org.mwc.debrief.track_shift; singleton:=true
-Bundle-Version: 1.0.24
+Bundle-Version: 1.0.25
 Bundle-Activator: org.mwc.debrief.track_shift.TrackShiftActivator
 Bundle-Vendor: MWC
 Require-Bundle: org.eclipse.ui,
