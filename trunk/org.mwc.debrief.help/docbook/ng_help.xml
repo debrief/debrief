@@ -4942,7 +4942,7 @@ and so on....</programlisting></para>
         <chapter id="sensor_data">
             <title>Analysing sensor data</title>
             <sect1 id="more_sensor_data">
-                <title>Sensor data</title>
+                <title id="SensorDataSection">Sensor data</title>
                 <sect2 id="sensor_Data_intro">
                     <title>Introduction</title>
                     <para>As useful as it would appear it is only in the update to <application
@@ -4995,46 +4995,54 @@ and so on....</programlisting></para>
                                     check on the shift applied.</para>
                             </listitem>
                         </itemizedlist></para>
+                    <para>Note, it is not possible to define the sensor offset value in the REP
+                        file, it may only be defined from the Properties Window of Debrief NG. The
+                        value is stored safely when the Debrief plot is saved, however.</para>
                     <para>When Sensor Contact data is being plotted for a Sensor using relative
                         coordinates, Debrief reflects a Sensor Offset distance for that sensor. The
                         sensor offset distance denotes the horizontal distance between the centre of
                         the centre and the attack datum of the host platform (+ve forwards, -ve
-                        backwards - so towed array data would be -ve). See the side-note for more
+                        backwards - so towed array data would be -ve). See the next section for more
                         detail on the support for a shared library of array lengths. The location of
                         the start of the sensor contact bearing line is calculated using the current
-                        value of course for the host platform and the sensor offset value.<note
-                            id="LENGTH_PREFS">
-                            <para>Since Autumn 09 Debrief has supported a library of sensor ofsets.
-                                Somewhere on your network create a csv-formatted text file that
-                                stores two columns of data. The first column is the platform/sensor
-                                name, the second column is that combination's array offset in metres
-                                (with -ve figures at the stern of the host platform). Then open the
-                                Debrief preferences page, and specify the offset file location using
-                                the <guilabel>Standard Array Offsets</guilabel> page.  Once the
-                                standard offsets file has been specified, you are provided with a
-                                drop-down list of sensor offset distances when you view sensor data
-                                in the properties window.</para>
-                            <para>The file should end in a csv suffix, and is formatted as
-                                follows:<screen>Sensor Name,Length (m)
-Platform A,-45
-Platform B,-124.6
-Platform C,-551</screen></para>
-                        </note><screenshot>
-                            <mediaobject>
-                                <imageobject>
-                                    <imagedata fileref="figures/ArrayLengthsPrefs.png" width="100%"
-                                    />
-                                </imageobject>
-                            </mediaobject>
-                        </screenshot></para>
-                    <para>Note, it is not possible to define the sensor offset value in the REP
-                        file, it may only be defined from the Properties Window of Debrief NG. The
-                        value is stored safely when the Debrief plot is saved, however.</para>
+                        value of course for the host platform and the sensor offset value.</para>
                     <para>When examining a Sensor in the properties view, you will see that in
                         addition to Sensor Offset, there is a 'Worm in the hole' parameter. This is
                         a 'placeholder' for a pending feature whereby start of the sensor bearing
                         line is located at the Sensor Offset distance back along the host platform
                         track, instead of in a straight line behind the host.</para>
+                </sect2>
+                <sect2 id="SensorOffsetsEditor">
+                    <title id="titleForSensorLengths">Sensor offset lengths editor</title>
+                    <para>Since Autumn 09 Debrief has supported a library of sensor ofsets. These
+                        offsets are used to populate a drop-down list of lengths, used in support of
+                        specifying sensor offsets.</para>
+                    <para>Somewhere on your network create a csv-formatted text file that stores two
+                        columns of data (as shown below). The first column is the platform/sensor
+                        name, the second column is that combination's array offset in metres (with
+                        -ve figures at the stern of the host platform). The file should end in a csv
+                        suffix, and is formatted as
+                        follows:<screen>Sensor Name,Length (m)
+Platform A,-45
+Platform B,-124.6
+Platform C,-551</screen></para>
+                    <para>Then open the Debrief preferences page, and specify the offset file
+                        location using the <guilabel>Standard Array Offsets</guilabel> page<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/ArrayLengthsPrefs.png" width=""/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
+                    <para>Once the standard offsets file has been specified, you are provided with a
+                        drop-down list of sensor offset distances when you view sensor data in the
+                        properties window:<screenshot>
+                            <mediaobject>
+                                <imageobject>
+                                    <imagedata fileref="figures/LengthsEditor.png" width=""/>
+                                </imageobject>
+                            </mediaobject>
+                        </screenshot></para>
                 </sect2>
                 <sect2 id="prepare_sensor_data">
                     <title>Preparing Sensor Data</title>

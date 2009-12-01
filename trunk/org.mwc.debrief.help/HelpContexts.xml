@@ -50,6 +50,6 @@
 	</context>		
 	<context id="LengthPrefs">
 		<description>Stores and manipulates a set of agreed sensor offset distances</description>
-		<topic href="html/legacy/sensor_data.html#LENGTH_PREFS" label="Sensor offsets"/>
+		<topic href="html/legacy/sensor_data.html#LENGTH_PREFS" label="Explanation of Sensor offsets"/>
 	</context>		
 </contexts>
