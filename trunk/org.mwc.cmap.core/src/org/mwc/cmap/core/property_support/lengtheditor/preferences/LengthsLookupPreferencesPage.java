@@ -24,7 +24,6 @@ import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.property_support.lengtheditor.Messages;
 
-
 /**
  * There are two ways to load data from a file on the preference page:
  * <ul>
@@ -33,10 +32,11 @@ import org.mwc.cmap.core.property_support.lengtheditor.Messages;
  * </ul>
  * 
  */
-public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage implements IWorkbenchPreferencePage {
+public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage
+		implements IWorkbenchPreferencePage {
 
-	private static final String CONTEXT_ID="LengthPrefs";
-	
+	private static final String CONTEXT_ID = "org.mwc.debrief.help.LengthPrefs";
+
 	/**
 	 * extension filters for file selection dialog
 	 */
@@ -58,14 +58,17 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 		addOpenFileHyperlink();
 		addReloadButton();
 		addOpenHelpHyperlink();
-		
+
 		// and the context-sensitive help
-		PlatformUI.getWorkbench().getHelpSystem().setHelp(getFieldEditorParent(), CONTEXT_ID);
+		PlatformUI.getWorkbench().getHelpSystem().setHelp(
+				getControl(), CONTEXT_ID);
 	}
 
 	private void addFileEditor() {
 		Composite parent = getFieldEditorParent();
-		myFileEditor = new FileFieldEditor(LengthsRegistry.FILE_NAME, Messages.LengthsLookupPreferencesPage_FileLabel, true, FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent) {
+		myFileEditor = new FileFieldEditor(LengthsRegistry.FILE_NAME,
+				Messages.LengthsLookupPreferencesPage_FileLabel, true,
+				FileFieldEditor.VALIDATE_ON_KEY_STROKE, parent) {
 
 			@Override
 			protected void doStore() {
@@ -73,7 +76,8 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 				reloadDataFromFile();
 			}
 		};
-		myFileEditor.setErrorMessage(Messages.LengthsLookupPreferencesPage_InvalidFileName);
+		myFileEditor
+				.setErrorMessage(Messages.LengthsLookupPreferencesPage_InvalidFileName);
 		myFileEditor.setFileExtensions(availableExtensions);
 		addField(myFileEditor);
 	}
@@ -94,9 +98,11 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 		});
 
 		int widthHint = convertHorizontalDLUsToPixels(IDialogConstants.BUTTON_WIDTH);
-		widthHint = Math.max(widthHint, reloadButton.computeSize(SWT.DEFAULT, SWT.DEFAULT, true).x);
+		widthHint = Math.max(widthHint, reloadButton.computeSize(SWT.DEFAULT,
+				SWT.DEFAULT, true).x);
 
-		GridDataFactory.fillDefaults().hint(widthHint, SWT.DEFAULT).align(SWT.FILL, SWT.CENTER).applyTo(reloadButton);
+		GridDataFactory.fillDefaults().hint(widthHint, SWT.DEFAULT).align(
+				SWT.FILL, SWT.CENTER).applyTo(reloadButton);
 	}
 
 	private void reloadDataFromFile() {
@@ -121,19 +127,20 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 		if (numColumns > 1) {
 			numColumns--;
 		}
-		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
+		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING,
+				SWT.CENTER).applyTo(link);
 	}
 
 	private void addOpenHelpHyperlink() {
 		Composite parent = getFieldEditorParent();
 
-		Link link = new Link(parent, SWT.NONE);
-		link.setText("<a>Learn more about sensor offsets</a>");
-
-		link.addListener(SWT.Selection, new Listener() {
+		Button helpBtn = new Button(parent, SWT.NONE);
+		helpBtn.setText("Find out more about sensor offsets");
+		helpBtn.addListener(SWT.Selection, new Listener() {
 
 			public void handleEvent(Event event) {
-				PlatformUI.getWorkbench().getHelpSystem().displayHelp(CONTEXT_ID);
+				PlatformUI.getWorkbench().getHelpSystem().displayHelp(
+						CONTEXT_ID);
 			}
 		});
 
@@ -142,10 +149,10 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 		if (numColumns > 1) {
 			numColumns--;
 		}
-		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING, SWT.CENTER).applyTo(link);
+		GridDataFactory.fillDefaults().span(numColumns, 1).align(SWT.BEGINNING,
+				SWT.CENTER).applyTo(helpBtn);
 	}
 
-	
 	private void openSystemEditor() {
 		String fileName = getFileName();
 		if (fileName == null) {
@@ -155,7 +162,11 @@ public class LengthsLookupPreferencesPage extends FieldEditorPreferencePage impl
 		try {
 			Desktop.getDesktop().open(file);
 		} catch (IOException e) {
-			CorePlugin.logError(Status.ERROR,Messages.LengthsLookupPreferencesPage_ErrorOnOpenFileEditor, e);
+			CorePlugin
+					.logError(
+							Status.ERROR,
+							Messages.LengthsLookupPreferencesPage_ErrorOnOpenFileEditor,
+							e);
 		}
 	}
 
