@@ -1515,9 +1515,11 @@ and so on....</programlisting></para>
                         the point on the opposing track nearest to that time. Each time the track is
                         shifted (dragged) <application>Debrief</application> calculates the error
                         between the sensor bearing and the current measured bearing, showing these
-                        in a plot (bearing error against time). Note, that a Sensor Offset
-                        measurement is applied to the sensor bearing line where there sensor datum
-                        is offset from the attack datum of the platform.</para>
+                        in a plot (bearing error against time).<note id="sensor_offset_note">
+                            <para>A Sensor Offset measurement is applied to the sensor bearing line
+                                where there sensor datum is offset from the attack datum of the
+                                platform</para>
+                        </note></para>
                     <para>
                         <application>Debrief</application> displays a symbol for each visible sensor
                         data, with the symbol being plotted the same colour as the sensor data. When
@@ -5279,7 +5281,10 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                                 <term>Stretch</term>
                                 <listitem>
                                     <para>Drag one end of the track, maintaining the target course
-                                        but changing the track length (target speed)</para>
+                                        but changing the track length (target speed). When the
+                                        centre-point of the track is dragged, the track moves in and
+                                        out stretching/contracting as necessary to adhere to the
+                                        start/end points on the host platform bearing fan.</para>
                                 </listitem>
                             </varlistentry>
                             <varlistentry>
@@ -5314,8 +5319,9 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         ends of the track - so the operation is started by dragging one end of the
                         track (once the 'selected' hover highlight is shown). In addition to the
                         specific operations performed at the ends of the target track, all modes
-                        support picking up and dragging (translating) the track when it is picked up
-                        at its centre.</para>
+                        support picking up and dragging the track when it is picked up at its centre
+                        In the Stretch mode the track shifts as described above, in all the other
+                        modes it is translated.</para>
                 </sect2>
                 <sect2>
                     <title>Combining tracks</title>
@@ -5859,24 +5865,25 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         software updates only need to be performed once, at the central location. By
                         default, however, shared installations are troublesome for Debrief - since
                         all users will be looking at a single set of settings - so administrator
-                        participation is necessary. The following guidance is taken from the Eclipse
-                        online help at <ulink
-                            url="http://help.eclipse.org/galileo/topic/org.eclipse.platform.doc.isv/reference/misc/multi_user_installs.html"
-                        /></para>
-                    <para>In this scenario, a single install area is shared by many users. The
-                        "configuration" directory under the install area is home only to the
-                        config.ini as shipped with the product (it is not initialized). Every user
-                        has their own local standalone configuration location.</para>
-                    <para> The set up for this scenario requires making the install area read-only
-                        for regular users. When users start Eclipse, this causes the configuration
-                        area to automatically default to a directory under the user home dir. If
-                        this measure is not taken, all users will end up using the same location for
-                        their configuration area, which is not supported.</para>
-                    <para>In summary, a system administrator must make the Debrief <filename
-                            >configuration</filename> directory read only for network users. Thus,
-                        when they login, Debrief will look in their login folder for a configuration
-                        folder. If there's one there it will read it and user that users' custom
-                        settings. If there isn't one there, then it will create one. </para>
+                        participation is necessary. </para>
+                    <para>Whilst a number of theoretical solutions exist for this problem, the most
+                        reliable solution to emerge is to force Debrief NG to use the workspace in
+                        the users own login directory (since each user has a unique login
+                        directory). This also overcomes the challenge of new users having to select
+                        a workspace before they know what a workspace is.</para>
+                    <para>Thus, the Debrief shortcut (.ini file) has been modified to explicitly
+                        indicate that the workspace is in the a folder in the user login
+                        area:<screen>-data
+@user.home/.DebriefNG</screen>The '.' character before
+                        the DebriefNG foldername follows a convention that is normally sufficient to
+                        make the operating system make the folder hidden by default.<tip>
+                            <para>When users are upgrading from older versions of DebriefNG, the
+                                application will ignore the last workspace location, and load a new,
+                                blank workspace from the new user directory. If the user now closes
+                                Debrief the workspace data can be copied from the old location into
+                                the new location, which will get read when the application re-opens.
+                            </para>
+                        </tip></para>
                 </sect2>
                 <sect2 id="CentralUpdates">
                     <title>Centralised software updates</title>
