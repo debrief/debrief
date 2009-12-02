@@ -96,9 +96,10 @@
    <features>
       <feature id="org.eclipse.rcp" version="3.5.1.R35x_v20090811-9SA0FxVFqE70OL1ARMrfcO6e7BA6"/>
       <feature id="org.eclipse.platform" version="3.5.1.R35x_v20090910-9gEeG1_FthkNDSP2odXdThaOu9GFDPn83DGB7"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.20"/>
-      <feature id="org.mwc.asset.core.feature" version="1.0.3"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.25"/>
+      <feature id="org.mwc.asset.core.feature" version="1.0.4"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.29"/>
+      <feature id="com.oxygenxml.editor" version="11.0.0"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.24"/>
    </features>
 
 
