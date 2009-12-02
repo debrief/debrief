@@ -162,7 +162,7 @@ public class RightClickPasteAdaptor
 					_theLayers.fireExtended();
 
 					// now clear the clipboard
-					_myClipboard.clearContents();
+			//		_myClipboard.clearContents();
 
 					return Status.OK_STATUS;
 				}

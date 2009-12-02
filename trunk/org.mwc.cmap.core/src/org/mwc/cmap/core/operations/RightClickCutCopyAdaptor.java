@@ -438,7 +438,7 @@ public class RightClickCutCopyAdaptor
 		public CopyItem(Editable[] data, Clipboard clipboard, Layer[] theParent,
 				Layers theLayers, Layer[] updateLayer)
 		{
-			super(cloneThese(data), clipboard, theParent, theLayers, updateLayer);
+			super(data, clipboard, theParent, theLayers, updateLayer);
 
 			_originalName = data[0].getName();
 			
@@ -466,7 +466,7 @@ public class RightClickCutCopyAdaptor
 						throws ExecutionException
 				{
 
-					// we stick a pointer to the ACTUAL item on the clipboard - we
+					// we stick a CLONE on the clipboard - we
 					// clone this item when we do a PASTE, so that multiple paste
 					// operations can be performed
 
@@ -502,6 +502,8 @@ public class RightClickCutCopyAdaptor
 				{
 					// remember the old contents
 					rememberPreviousContents();
+					
+					_data = cloneThese(_data);
 
 					// we stick a pointer to the ACTUAL item on the clipboard - we
 					// clone this item when we do a PASTE, so that multiple paste
