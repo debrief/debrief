@@ -60,9 +60,14 @@ public class MergeTracks implements RightClickContextItemGenerator
 				{
 					validItems++;
 				}
+				
+				
 				else
 				{
-					CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
+					// NOTE: we're no longer logging this instance - it was just of value for developing
+					// the merge operation
+//					CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
+	
 					// may as well drop out - this item wasn't compliant
 					continue;
 				}

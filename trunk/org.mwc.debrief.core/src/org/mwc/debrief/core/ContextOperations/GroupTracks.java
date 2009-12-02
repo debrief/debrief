@@ -63,7 +63,9 @@ public class GroupTracks implements RightClickContextItemGenerator
 				
 				if(!goForIt)
 				{
-					CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
+					// don't bother showing this logging, it was just of value during development phase
+					// CorePlugin.logError(Status.INFO, "Not allowing merge, there's a non-compliant entry", null);
+					
 					// may as well drop out - this item wasn't compliant
 					continue;
 				}
