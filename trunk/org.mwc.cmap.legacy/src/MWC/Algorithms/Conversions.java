@@ -7,7 +7,7 @@ final public class Conversions
   // member variables
   ////////////////////////////////////////////////////////////
   final static private double RADIAN_CONV = 180 / Math.PI;
-  final static private double YPS_KTS_CONV = 2025.371828;
+  final static private double YDS_NM_CONV = 2025.371828521435470293369;
   final static private double NM_M_CONV = 1852d;
   final static private double DEGS_KM_CONV = 60d * NM_M_CONV / 1000d;
   final static private double DEGS_M_CONV = 60d * NM_M_CONV;
@@ -45,7 +45,7 @@ final public class Conversions
 
   final public static double Kts2Yps(double val)
   {
-    return val * YPS_KTS_CONV / 3600;
+    return val * YDS_NM_CONV / 3600;
   }
 
   final public static double Kts2Mps(double val)
@@ -60,17 +60,17 @@ final public class Conversions
 
   final public static double Yps2Kts(double val)
   {
-    return val / YPS_KTS_CONV * 3600;
+    return val / YDS_NM_CONV * 3600;
   }
 
   final public static double Nm2Yds(double val)
   {
-    return val * YPS_KTS_CONV;
+    return val * YDS_NM_CONV;
   }
 
   final public static double Yds2Nm(double val)
   {
-    return val / YPS_KTS_CONV;
+    return val / YDS_NM_CONV;
   }
 
   final public static double Nm2Degs(double val)
