@@ -7,13 +7,16 @@ final public class Conversions
   // member variables
   ////////////////////////////////////////////////////////////
   final static private double RADIAN_CONV = 180 / Math.PI;
-  final static private double YDS_NM_CONV = 2025.371828521435470293369;
   final static private double NM_M_CONV = 1852d;
   final static private double DEGS_KM_CONV = 60d * NM_M_CONV / 1000d;
   final static private double DEGS_M_CONV = 60d * NM_M_CONV;
   final static private double KTS_MPS_CONV = 1852d / 3600;
-  final static private double FT_M_CONV = 0.3048;
   final static private double MILES_M_CONV = 1609.344;
+  final static private double FT_M_CONV = 0.3048;
+  /** Note method of expressing this conversion using existing, exact constants
+   * as supplied by Daniel Thibault, Dec 09
+   */
+  final static private double YDS_NM_CONV = NM_M_CONV/(3d*FT_M_CONV); 
 
   /////////////////////////////////////////////////////////////
   // constructor
@@ -200,3 +203,4 @@ final public class Conversions
     }
   }
 }
+
