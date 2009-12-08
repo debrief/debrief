@@ -5925,6 +5925,18 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         initial perspective, the memory allocation, and additional files to include
                         on the classpath (3d files in our case).</para>
                 </sect2>
+                <sect2>
+                    <title>Use of English locale</title>
+                    <para>Note that Debrief fails when on an machine set to a non-English locale,
+                        such as French(Canada). The application cannot read data-files correctly,
+                        nor can it populate screen editors. The workaround to this problem is to
+                        explicitly direct Debrief to startup using an English locale.  Do this by
+                        launching Debrief with the "-nl en" command parameter.  This can be
+                        performed either by modifying the shortcut used to start Debrief, or by
+                        adding the command parameter to the <filename>Debrief.ini</filename>
+                        configuration file (though this will have to be re-performed after each
+                        Debrief update).</para>
+                </sect2>
             </sect1>
             <sect1 id="fault_diagnosis">
                 <title>Fault-Diagnosis Instructions</title>
