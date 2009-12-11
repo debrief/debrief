@@ -1709,9 +1709,9 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 			assertEquals("min val set", 0, _min);
 			assertEquals("max val set", 100, _max);
-			assertEquals("sml tick set", 10000, _smallTick);
-			assertEquals("drag size set", 500, _dragSize);
-			assertEquals("large tick set", 100000, _largeTick);
+			assertEquals("sml tick set", 1, _smallTick);
+			assertEquals("drag size set", 0, _dragSize);
+			assertEquals("large tick set", 1000, _largeTick);
 
 			assertTrue("slider should be enabled", _enabled);
 
@@ -1739,8 +1739,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 			long diff = (enderD.getTime() - starterD.getTime()) / 1000;
 			assertEquals("correct range in secs", diff, _max);
-			assertEquals("sml tick set", 60, _smallTick);
-			assertEquals("large tick set", 600, _largeTick);
+			assertEquals("sml tick set", 1, _smallTick);
+			assertEquals("large tick set", 60000, _largeTick);
 
 		}
 
