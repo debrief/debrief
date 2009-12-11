@@ -1071,7 +1071,7 @@ public class LayerManagerView extends ViewPart
 						{
 							public void doItTo(Editable item)
 							{
-								setPlottableVisible(item, false);
+								setPlottableVisible(item, true);
 							}
 						}, new IOperateOn()
 						{
@@ -1103,7 +1103,7 @@ public class LayerManagerView extends ViewPart
 						{
 							public void doItTo(Editable item)
 							{
-								setPlottableVisible(item, true);
+								setPlottableVisible(item, false);
 							}
 						}, new IOperateOn()
 						{
