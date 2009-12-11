@@ -196,6 +196,10 @@ public final class StackedDotHelper
 			TrackManager tracks, boolean onlyVis, boolean showCourse,
 			Composite holder, ErrorLogger logger, boolean updateDoublets)
 	{
+		// do we even have a primary track
+		if(_primaryTrack == null)
+			return;
+		
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
 			initialise(tracks, false, onlyVis, holder, logger, "Bearing");
@@ -354,7 +358,6 @@ public final class StackedDotHelper
 		{
 			// output error message
 			logger.logError(IStatus.INFO, "Please open a Debrief plot", null);
-			// showMessage("Sorry, a Debrief plot must be selected", showError);
 			return;
 		}
 
@@ -418,7 +421,7 @@ public final class StackedDotHelper
 		}
 
 		// must have worked, hooray
-		logger.logError(IStatus.INFO, dataType + " error", null);
+		logger.logError(IStatus.OK, dataType + " error", null);
 
 		// ok, get the positions
 		updateDoublets(onlyVis);

@@ -8,6 +8,7 @@ import java.util.Iterator;
 import java.util.TimeZone;
 import java.util.Vector;
 
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.action.IAction;
 import org.eclipse.jface.action.IMenuManager;
@@ -264,9 +265,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 
 		// try to fix the space for the dates (so we're not recalculating them so
 		// often - it was causing a 'memory race' type of thingy)
-//		AxisSpace space = new AxisSpace();
-//		space.setLeft(50);
-//		_combined.setFixedDomainAxisSpace(space);
+		// AxisSpace space = new AxisSpace();
+		// space.setLeft(50);
+		// _combined.setFixedDomainAxisSpace(space);
 
 		// put the plot into a chart
 		_myChart = new JFreeChart(getType() + " error", null, _combined, true);
@@ -458,13 +459,21 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	{
 	}
 
-	public void logError(int info, String string, Exception object)
+	public void logError(int statusCode, String string, Exception object)
 	{
 		// somehow, put the message into the UI
 		_myChart.setTitle(string);
 
-		// and store the problem into the log
-		CorePlugin.logError(info, string, object);
+		// is it a fail status
+		if (statusCode != Status.OK)
+		{
+			// and store the problem into the log
+			CorePlugin.logError(statusCode, string, object);
+
+			// also ditch the data in the plots - to blank them out
+			_dotPlot.setDataset(null);
+			_linePlot.setDataset(null);
+		}
 	}
 
 	/**
@@ -510,9 +519,9 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		if (updateDoublets)
 		{
 			// trigger recalculation of date axis ticks
-			CachedTickDateAxis date =  (CachedTickDateAxis) _combined.getDomainAxis();
+			CachedTickDateAxis date = (CachedTickDateAxis) _combined.getDomainAxis();
 			date.clearTicks();
-			
+
 			if (_showDotPlot.isChecked())
 			{
 				_dotPlot.getDomainAxis().setAutoRange(false);
