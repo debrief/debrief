@@ -210,6 +210,10 @@ public final class StackedDotHelper
 
 		if (_primaryDoublets == null)
 			return;
+		
+		// and check there's actually something in the re
+		if(_primaryDoublets.size() == 0)
+			return;
 
 		// ok - the tracks have moved. better update the doublets
 		if (updateDoublets)
@@ -227,7 +231,7 @@ public final class StackedDotHelper
 		final TimeSeries calculatedValues = new TimeSeries("Calculated");
 
 		final TimeSeries osCourseValues = new TimeSeries("Course");
-
+		
 		// ok, run through the points on the primary track
 		Iterator<Doublet> iter = _primaryDoublets.iterator();
 		while (iter.hasNext())
