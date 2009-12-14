@@ -62,7 +62,7 @@ public class CorePlugin extends AbstractUIPlugin
 	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
 
 	public static final String NARRATIVES = "org.mwc.cmap.narrative.views.NarrativeView";
-    public static final String NARRATIVES2 = "com.borlander.ianmayo.nviewer.app.view";
+	public static final String NARRATIVES2 = "com.borlander.ianmayo.nviewer.app.view";
 
 	public static final String PLOT_3d = "org.mwc.cmap.plot3d.views.Plot3dView";
 
@@ -80,12 +80,13 @@ public class CorePlugin extends AbstractUIPlugin
 
 	public static final String POLYGON_EDITOR = "org.mwc.cmap.core.editor_views.PolygonEditorView";
 
-	/** support for lat/long editor in grid editor
+	/**
+	 * support for lat/long editor in grid editor
 	 * 
 	 */
-	static final String PREF_BASE60_FORMAT_NO_SECONDS = PLUGIN_ID + ".base60-no-seconds";
-	
-	
+	static final String PREF_BASE60_FORMAT_NO_SECONDS = PLUGIN_ID
+			+ ".base60-no-seconds";
+
 	// The shared instance.
 	private static CorePlugin plugin;
 
@@ -154,17 +155,15 @@ public class CorePlugin extends AbstractUIPlugin
 		// and the replay importer - since it needs to know what mode (ATG/DR)
 		// to use for new data
 		ImportReplay.initialise(_toolParent);
-		
+
 		// and the coastline-reader
 		CoastPainter.initialise(_toolParent);
 
 		// and the application - so we can use our own toolparent for the properties
 		Application.initialise(_toolParent);
-		
+
 		// and the range calculator (it needs to know for the user pref on units)
 		rangeCalc.init(_toolParent);
-		
-		
 
 	}
 
@@ -204,7 +203,8 @@ public class CorePlugin extends AbstractUIPlugin
 		try
 		{
 			return (bundle != null) ? bundle.getString(key) : key;
-		} catch (MissingResourceException e)
+		}
+		catch (MissingResourceException e)
 		{
 			return key;
 		}
@@ -231,7 +231,12 @@ public class CorePlugin extends AbstractUIPlugin
 	public static IOperationHistory getHistory()
 	{
 		if (_myHistory == null)
+		{
 			_myHistory = OperationHistoryFactory.getOperationHistory();
+
+			// and set the buffer length
+			_myHistory.setLimit(CorePlugin.CMAP_CONTEXT, 3);
+		}
 
 		return _myHistory;
 	}
@@ -246,7 +251,8 @@ public class CorePlugin extends AbstractUIPlugin
 			if (resourceBundle == null)
 				resourceBundle = ResourceBundle
 						.getBundle("org.mwc.cmap.core.CorePluginResources");
-		} catch (MissingResourceException x)
+		}
+		catch (MissingResourceException x)
 		{
 			resourceBundle = null;
 		}
@@ -286,18 +292,19 @@ public class CorePlugin extends AbstractUIPlugin
 					try
 					{
 						Thread.sleep(100);
-					} catch (InterruptedException e)
+					}
+					catch (InterruptedException e)
 					{
 						e.printStackTrace();
 					}
-					
+
 					// now update the selection
 					if (selectionListeners != null)
 					{
 						SelectionChangedEvent sEvent = new SelectionChangedEvent(
 								selectionProvider, asSelection);
-						for (Iterator<ISelectionChangedListener> stepper = selectionListeners.iterator(); stepper
-								.hasNext();)
+						for (Iterator<ISelectionChangedListener> stepper = selectionListeners
+								.iterator(); stepper.hasNext();)
 						{
 							ISelectionChangedListener thisL = (ISelectionChangedListener) stepper
 									.next();
@@ -310,7 +317,8 @@ public class CorePlugin extends AbstractUIPlugin
 					// and show the properties view
 					page.showView(IPageLayout.ID_PROP_SHEET, null,
 							IWorkbenchPage.VIEW_VISIBLE);
-				} catch (PartInitException e)
+				}
+				catch (PartInitException e)
 				{
 					logError(Status.ERROR,
 							"Failed to open properties view when showing timer properties", e);
@@ -385,8 +393,7 @@ public class CorePlugin extends AbstractUIPlugin
 	 * 
 	 * @param severity
 	 *          the severity; one of <code>OK</code>, <code>ERROR</code>,
-	 *          <code>INFO</code>, <code>WARNING</code>, or
-	 *          <code>CANCEL</code>
+	 *          <code>INFO</code>, <code>WARNING</code>, or <code>CANCEL</code>
 	 * @param message
 	 *          a human-readable message, localized to the current locale
 	 * @param exception
@@ -456,7 +463,9 @@ public class CorePlugin extends AbstractUIPlugin
 			{
 				// add, then run the action to the buffer
 				getHistory().execute(theAction, null, null);
-			} catch (ExecutionException e)
+
+			}
+			catch (ExecutionException e)
 			{
 				logError(Status.ERROR, "Whilst adding new action to history buffer", e);
 			}
@@ -473,7 +482,8 @@ public class CorePlugin extends AbstractUIPlugin
 			IWorkbenchPage page = win.getActivePage();
 			// right, open the view.
 			res = page.showView(viewName);
-		} catch (PartInitException e)
+		}
+		catch (PartInitException e)
 		{
 			e.printStackTrace();
 			logError(Status.ERROR, "Failed to open " + viewName + "view", e);
@@ -533,7 +543,8 @@ public class CorePlugin extends AbstractUIPlugin
 			IWorkbenchPage page = win.getActivePage();
 			// right, open the view.
 			res = page.showView(viewName, secondaryId, state);
-		} catch (PartInitException e)
+		}
+		catch (PartInitException e)
 		{
 			e.printStackTrace();
 			logError(Status.ERROR, "Failed to open secondary " + viewName + "view", e);
@@ -541,12 +552,13 @@ public class CorePlugin extends AbstractUIPlugin
 		return res;
 	}
 
-
-	public SexagesimalFormat getLocationFormat() {
+	public SexagesimalFormat getLocationFormat()
+	{
 		IPreferenceStore preferenceStore = getPreferenceStore();
-		boolean noSeconds = preferenceStore.getBoolean(PREF_BASE60_FORMAT_NO_SECONDS);
-		return noSeconds ? SexagesimalSupport._DD_MM_MMM : SexagesimalSupport._DD_MM_SS_SSS;
+		boolean noSeconds = preferenceStore
+				.getBoolean(PREF_BASE60_FORMAT_NO_SECONDS);
+		return noSeconds ? SexagesimalSupport._DD_MM_MMM
+				: SexagesimalSupport._DD_MM_SS_SSS;
 	}
-
 
 }
