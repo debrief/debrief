@@ -303,9 +303,12 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	private Boolean _showLabel;
 
 	/**
-	 * the track we are a part of
+	 * the track we are a part of (note, we're making it static so
+	 * that when we serialise it we don't store a full copy of the parent
+	 * track and all it's other fixes.  We don't need to store it since it 
+	 * gets set when we add it to a new parent layer
 	 */
-	private TrackWrapper _trackWrapper;
+	private transient TrackWrapper _trackWrapper;
 	/**
 	 * the font to draw this track in.
 	 */
@@ -318,7 +321,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	/**
 	 * the area covered by this fix
 	 */
-	private WorldArea _myArea;
+	private transient  WorldArea _myArea;
 
 	/**
 	 * a single instance of our editor type - which can be listened to by multiple

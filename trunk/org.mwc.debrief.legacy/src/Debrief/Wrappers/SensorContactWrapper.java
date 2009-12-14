@@ -155,7 +155,6 @@ import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
-import MWC.GenericData.WorldDistance.ArrayLength;
 import MWC.TacticalData.Fix;
 import MWC.Utilities.TextFormatting.DebriefFormatDateTime;
 
@@ -219,7 +218,7 @@ public final class SensorContactWrapper extends
 	/**
 	 * the parent object (which supplies our colour, should we need it)
 	 */
-	private SensorWrapper _mySensor;
+	private transient SensorWrapper _mySensor;
 
 	/**
 	 * the label describing this contact

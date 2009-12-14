@@ -160,6 +160,11 @@ public class ZoomIn extends PlainDragTool  implements Serializable
       _newArea = newArea;
     }
                         
+    public void dispose()
+    {
+    	System.err.println("disposing of zoomin action");
+    }
+    
     public boolean isRedoable(){
       return true;
     }
