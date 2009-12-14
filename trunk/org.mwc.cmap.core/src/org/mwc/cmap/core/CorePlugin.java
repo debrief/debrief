@@ -57,6 +57,11 @@ import MWC.GenericData.WorldLocation;
 public class CorePlugin extends AbstractUIPlugin
 {
 
+	/** how many UI operations to remember in the undo buffer
+	 * 
+	 */
+	private static final int LENGTH_OF_UNDO_BUFFER = 10;
+
 	public static final String PLUGIN_ID = "org.mwc.cmap.core";
 
 	public static final String LAYER_MANAGER = "org.mwc.cmap.layer_manager.views.LayerManagerView";
@@ -235,7 +240,7 @@ public class CorePlugin extends AbstractUIPlugin
 			_myHistory = OperationHistoryFactory.getOperationHistory();
 
 			// and set the buffer length
-			_myHistory.setLimit(CorePlugin.CMAP_CONTEXT, 3);
+			_myHistory.setLimit(CorePlugin.CMAP_CONTEXT, LENGTH_OF_UNDO_BUFFER);
 		}
 
 		return _myHistory;
