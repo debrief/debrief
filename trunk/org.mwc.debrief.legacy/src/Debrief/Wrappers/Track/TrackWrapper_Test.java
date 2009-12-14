@@ -3,7 +3,6 @@
  */
 package Debrief.Wrappers.Track;
 
-
 import java.awt.Color;
 import java.util.Enumeration;
 import java.util.Iterator;
@@ -33,7 +32,7 @@ import MWC.TacticalData.Fix;
  * @author Administrator
  * 
  */
-public class TrackWrapper_Test  extends junit.framework.TestCase
+public class TrackWrapper_Test extends junit.framework.TestCase
 {
 
 	private static final String TRACK_NAME = "test track";
@@ -90,55 +89,53 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("wrong bounds returned", correctBounds, _tw.getBounds());
 	}
 
-	
 	public void testGenInfill()
 	{
 		TrackSegment ts1 = new TrackSegment();
 		TrackSegment ts2 = new TrackSegment();
-		
-		ts1.addFix(createFix( 1000,1,0,5d,1,0,00d,135,12 ));
-		ts1.addFix(createFix( 2000,1,0,4d,1,0,01d,135,12 ));
-		ts1.addFix(createFix( 3000,1,0,3d,1,0,02d,135,12 ));
-		ts1.addFix(createFix( 4000,1,0,2d,1,0,03d,135,12 ));
 
-		ts2.addFix(createFix( 8000,1,0,0d,1,0,07d,90,12 ));
-		ts2.addFix(createFix( 9000,1,0,0d,1,0,08d,90,12 ));
-		ts2.addFix(createFix(10000,1,0,0d,1,0,09d,90,12 ));
-		ts2.addFix(createFix(11000,1,0,0d,1,0,10d,90,12 ));
-		ts2.addFix(createFix(12000,1,0,0d,1,0,11d,90,12 ));
-		ts2.addFix(createFix(13000,1,0,0d,1,0,12d,90,12 ));
-		
+		ts1.addFix(createFix(1000, 1, 0, 5d, 1, 0, 00d, 135, 12));
+		ts1.addFix(createFix(2000, 1, 0, 4d, 1, 0, 01d, 135, 12));
+		ts1.addFix(createFix(3000, 1, 0, 3d, 1, 0, 02d, 135, 12));
+		ts1.addFix(createFix(4000, 1, 0, 2d, 1, 0, 03d, 135, 12));
+
+		ts2.addFix(createFix(8000, 1, 0, 0d, 1, 0, 07d, 90, 12));
+		ts2.addFix(createFix(9000, 1, 0, 0d, 1, 0, 08d, 90, 12));
+		ts2.addFix(createFix(10000, 1, 0, 0d, 1, 0, 09d, 90, 12));
+		ts2.addFix(createFix(11000, 1, 0, 0d, 1, 0, 10d, 90, 12));
+		ts2.addFix(createFix(12000, 1, 0, 0d, 1, 0, 11d, 90, 12));
+		ts2.addFix(createFix(13000, 1, 0, 0d, 1, 0, 12d, 90, 12));
+
 		// try the function
 		TrackSegment infill = new TrackSegment(ts1, ts2);
-		
+
 		// check there are the correct number of items
 		assertEquals("wrong num entries", 3, infill.size());
-		
-		
+
 	}
-	
+
 	public void testDecimate()
 	{
 		TrackSegment ts1 = new TrackSegment();
-		ts1.addFix(createFix( 0 * 1000000l, 32, 33));
-		ts1.addFix(createFix( 1 * 1000000l, 32, 33));
-		ts1.addFix(createFix( 2 * 1000000l, 32, 33));
-		ts1.addFix(createFix( 3 * 1000000l, 32, 33));
-		ts1.addFix(createFix( 4 * 1000000l, 32, 33));
+		ts1.addFix(createFix(0 * 1000000l, 32, 33));
+		ts1.addFix(createFix(1 * 1000000l, 32, 33));
+		ts1.addFix(createFix(2 * 1000000l, 32, 33));
+		ts1.addFix(createFix(3 * 1000000l, 32, 33));
+		ts1.addFix(createFix(4 * 1000000l, 32, 33));
 
 		TrackSegment ts2 = new TrackSegment();
-		ts2.addFix(createFix( 5 * 1000000l, 32, 33));
-		ts2.addFix(createFix( 6 * 1000000l, 32, 33));
-		ts2.addFix(createFix( 7 * 1000000l, 32, 33));
-		ts2.addFix(createFix( 8 * 1000000l, 32, 33));
-		ts2.addFix(createFix( 9 * 1000000l, 32, 33));
+		ts2.addFix(createFix(5 * 1000000l, 32, 33));
+		ts2.addFix(createFix(6 * 1000000l, 32, 33));
+		ts2.addFix(createFix(7 * 1000000l, 32, 33));
+		ts2.addFix(createFix(8 * 1000000l, 32, 33));
+		ts2.addFix(createFix(9 * 1000000l, 32, 33));
 
 		TrackSegment ts3 = new TrackSegment();
-		ts3.addFix(createFix( 10 * 1000000l, 32, 33));
-		ts3.addFix(createFix( 11 * 1000000l, 32, 33));
-		ts3.addFix(createFix( 12 * 1000000l, 32, 33));
-		ts3.addFix(createFix( 13 * 1000000l, 32, 33));
-		ts3.addFix(createFix( 24 * 1000000l, 32, 33));
+		ts3.addFix(createFix(10 * 1000000l, 32, 33));
+		ts3.addFix(createFix(11 * 1000000l, 32, 33));
+		ts3.addFix(createFix(12 * 1000000l, 32, 33));
+		ts3.addFix(createFix(13 * 1000000l, 32, 33));
+		ts3.addFix(createFix(24 * 1000000l, 32, 33));
 
 		TrackWrapper tw = new TrackWrapper();
 		tw.add(ts1);
@@ -153,27 +150,118 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("has all fixes", 15, tw.numFixes());
 
 		// GO FOR ULTIMATE DECIMATION
-		tw.setResamplePositionsAt(new HiResDate(4  * 1000000l));
-		
+		tw.setResampleDataAt(new HiResDate(4 * 1000000l));
+
 		// how was it?
-		assertEquals("has segments", "Track segments (3 items)", sl.toString());		
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 8, tw.numFixes());
 
 		// GO FOR ULTIMATE DECIMATION
-		tw.setResamplePositionsAt(new HiResDate(500000l));
-		
+		tw.setResampleDataAt(new HiResDate(500000l));
+
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 43, tw.numFixes());
 	}
 
-	
-	
+	public void testDecimatePositionsAndData()
+	{
+		TrackSegment ts1 = new TrackSegment();
+		ts1.addFix(createFix(0 * 60 * 1000000l, 32, 33));
+		ts1.addFix(createFix(1 * 60 * 1000000l, 32, 33));
+		ts1.addFix(createFix(2 * 60 * 1000000l, 32, 33));
+		ts1.addFix(createFix(3 * 60 * 1000000l, 32, 33));
+		ts1.addFix(createFix(4 * 60 * 1000000l, 32, 33));
+
+		TrackSegment ts2 = new TrackSegment();
+		ts2.addFix(createFix(5 * 60 * 1000000l, 32, 33));
+		ts2.addFix(createFix(6 * 60 * 1000000l, 32, 33));
+		ts2.addFix(createFix(7 * 60 * 1000000l, 32, 33));
+		ts2.addFix(createFix(8 * 60 * 1000000l, 32, 33));
+		ts2.addFix(createFix(9 * 60 * 1000000l, 32, 33));
+
+		TrackSegment ts3 = new TrackSegment();
+		ts3.addFix(createFix(10 * 60 * 1000000l, 32, 33));
+		ts3.addFix(createFix(11 * 60 * 1000000l, 32, 33));
+		ts3.addFix(createFix(12 * 60 * 1000000l, 32, 33));
+		ts3.addFix(createFix(13 * 60 * 1000000l, 32, 33));
+		ts3.addFix(createFix(24 * 60 * 1000000l, 32, 33));
+
+		SensorWrapper sw = new SensorWrapper("dummy sensor");
+		SensorContactWrapper scw1 = new SensorContactWrapper("the track",
+				new HiResDate(1 * 60 * 1000000l),
+				new WorldDistance(2, WorldDistance.NM), 12, new Double(12), new Double(
+						44), null, Color.red, "aa", 1, "dummy sensor");
+		SensorContactWrapper scw2 = new SensorContactWrapper("the track",
+				new HiResDate(3 * 60 * 1000000l),
+				new WorldDistance(4, WorldDistance.NM), 14, new Double(15), new Double(
+						46), null, Color.red, "aa", 1, "dummy sensor");
+		SensorContactWrapper scw3 = new SensorContactWrapper("the track",
+				new HiResDate(7 * 60 * 1000000l), new WorldDistance(12,
+						WorldDistance.NM), 18, new Double(12), new Double(12), null,
+				Color.red, "aa", 1, "dummy sensor");
+		SensorContactWrapper scw4 = new SensorContactWrapper("the track",
+				new HiResDate(8 * 60 * 1000000l),
+				new WorldDistance(7, WorldDistance.NM), 35, new Double(12), new Double(
+						312), null, Color.red, "aa", 1, "dummy sensor");
+		sw.add(scw1);
+		sw.add(scw2);
+		sw.add(scw3);
+		sw.add(scw4);
+
+		TrackWrapper tw = new TrackWrapper();
+		tw.add(ts1);
+		tw.add(ts2);
+		tw.add(ts3);
+		tw.add(sw);
+
+		Enumeration<Editable> data = tw.elements();
+		SegmentList sl = (SegmentList) data.nextElement();
+
+		// check it's got the segs
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());
+		assertEquals("has all fixes", 15, tw.numFixes());
+		// check we've got all the sensor data
+		assertEquals("has all sensor cuts", 4, countCuts(tw.getSensors()));
+
+		// GO FOR ULTIMATE DECIMATION
+		tw.setResampleDataAt(new HiResDate(4 * 60 * 1000000l));
+
+		// how was it?
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());
+		assertEquals("has all fixes", 2, tw.numFixes());
+		assertEquals("has all sensor cuts", 4, countCuts(tw.getSensors()));
+
+		// GO FOR ULTIMATE DECIMATION
+		tw.setResampleDataAt(new HiResDate(30 * 1000000l));
+
+		// how was it?
+		assertEquals("has segments", "Track segments (3 items)", sl.toString());
+		assertEquals("has all fixes", 43, tw.numFixes());
+		assertEquals("has all sensor cuts", 8, countCuts(tw.getSensors()));
+	}
+
+	private int countCuts(Enumeration<SensorWrapper> sensors)
+	{
+		int counter=0;
+		while(sensors.hasMoreElements())
+		{
+			SensorWrapper sw = sensors.nextElement();
+			Enumeration<Editable> ele = sw.elements();
+			while(ele.hasMoreElements())
+			{
+				counter++;
+				ele.nextElement();
+			}
+		}
+		return counter;
+	}
+
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#add(MWC.GUI.Editable)}
 	 * .
 	 */
-	
+
 	public void testAdd()
 	{
 		assertEquals("start condition", 6, this.trackLength());
@@ -198,7 +286,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#addFix(Debrief.Wrappers.FixWrapper)}.
 	 */
-	
+
 	public void testAddFix()
 	{
 		assertEquals("start condition", 6, this.trackLength());
@@ -213,7 +301,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#fixMoved()}.
 	 */
-	
+
 	public void testFixMoved()
 	{
 		// now something else
@@ -246,7 +334,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#append(MWC.GUI.Layer)}
 	 * .
 	 */
-	
+
 	public void testAppend()
 	{
 		TrackWrapper tw2 = new TrackWrapper();
@@ -266,7 +354,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#contiguousElements()}.
 	 */
-	
+
 	public void testContiguousElements()
 	{
 		assertEquals("have initial items", 6, trackLength());
@@ -296,7 +384,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#elements()}.
 	 */
-	
+
 	public void testElements()
 	{
 		Enumeration<Editable> list = _tw.elements();
@@ -333,7 +421,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#filterListTo(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	
+
 	public void testFilterListTo()
 	{
 		assertEquals("start off with them all visible", 6, countVisibleItems());
@@ -344,7 +432,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getEndDTG()}.
 	 */
-	
+
 	public void testGetEndDTG()
 	{
 		HiResDate dt = _tw.getEndDTG();
@@ -356,7 +444,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#getItemsBetween(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	
+
 	public void testGetItemsBetween()
 	{
 		assertEquals("found the items", 2, _tw.getItemsBetween(
@@ -372,7 +460,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#getNearestTo(MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	
+
 	public void testGetNearestTo()
 	{
 		Watchable[] res = _tw.getNearestTo(new HiResDate(300000));
@@ -399,7 +487,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getPositions()}.
 	 */
-	
+
 	public void testGetPositions()
 	{
 		Enumeration<Editable> list = _tw.getPositions();
@@ -416,7 +504,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#getStartDTG()}.
 	 */
-	
+
 	public void testGetStartDTG()
 	{
 		HiResDate dt = _tw.getStartDTG();
@@ -428,7 +516,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#getUnfilteredItems(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	
+
 	public void testGetUnfilteredItems()
 	{
 		assertEquals("found right num ", 3, _tw.getUnfilteredItems(
@@ -438,7 +526,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * Test method for {@link Debrief.Wrappers.TrackWrapper#numFixes()}.
 	 */
-	
+
 	public void testNumFixes()
 	{
 		assertEquals("have correct num", 6, _tw.numFixes());
@@ -449,7 +537,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#rangeFrom(MWC.GenericData.WorldLocation)}
 	 * .
 	 */
-	
+
 	public void testRangeFromWorldLocation()
 	{
 		WorldLocation wl = new WorldLocation(4, 1, 0);
@@ -461,7 +549,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#removeElement(MWC.GUI.Editable)}.
 	 */
-	
+
 	public void testRemoveElement()
 	{
 		assertEquals("all there", 6, _tw.numFixes());
@@ -476,7 +564,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#shift(MWC.GenericData.WorldLocation, MWC.GenericData.WorldVector)}
 	 * .
 	 */
-	
+
 	public void testShiftWorldLocationWorldVector()
 	{
 	}
@@ -485,7 +573,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#shift(MWC.GenericData.WorldVector)}.
 	 */
-	
+
 	public void testShiftWorldVector()
 	{
 	}
@@ -495,7 +583,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#shiftTrack(java.util.Enumeration, MWC.GenericData.WorldVector)}
 	 * .
 	 */
-	
+
 	public void testShiftTrack()
 	{
 	}
@@ -505,7 +593,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#visibleBetween(MWC.GenericData.HiResDate, MWC.GenericData.HiResDate)}
 	 * .
 	 */
-	
+
 	public void testVisibleBetween()
 	{
 		assertEquals("is vis", false, _tw.visibleBetween(new HiResDate(700000),
@@ -519,7 +607,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * .
 	 */
-	
+
 	public void testTMASplit()
 	{
 		// //////////////////////////////////
@@ -575,14 +663,14 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		TrackWrapper segW = new TrackWrapper();
 		segW.setName("TMA");
 		segW.add(seg);
-		
+
 		// get hold of an item in the segment
 		Enumeration<Editable> enumer = seg.elements();
 		enumer.nextElement();
 		enumer.nextElement();
 		FixWrapper fw = (FixWrapper) enumer.nextElement();
 		assertNotNull("Found a fix", fw);
-		
+
 		// do the split
 		Vector<TrackSegment> segs = segW.splitTrack(fw, false);
 
@@ -590,7 +678,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("now two segments", 2, segs.size());
 		assertEquals("first is of correct length", 3, segs.firstElement().size());
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
-		
+
 		// check they're of the correct type
 		TrackSegment seg1 = segs.firstElement();
 		TrackSegment seg2 = segs.lastElement();
@@ -607,40 +695,39 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 				"some lable", 12, sw.getName());
 	}
 
-
 	/**
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
 	 * .
 	 */
-	
+
 	public void testFixAsVector()
 	{
 		TrackSegment ts = new TrackSegment();
 		long period = 1000 * 60 * 60;
 		double speedKts = 60;
 		WorldVector res = ts.vectorFor(period, speedKts, 0);
-		assertEquals("Correct course", 0, res.getBearing(),0.001);
-		assertEquals("Correct distance", 1, res.getRange(),0.001);
+		assertEquals("Correct course", 0, res.getBearing(), 0.001);
+		assertEquals("Correct distance", 1, res.getRange(), 0.001);
 		res = ts.vectorFor(period, speedKts, 0.6);
-		assertEquals("Correct course", 0.6, res.getBearing(),0.001);
-		assertEquals("Correct distance", 1, res.getRange(),0.001);
+		assertEquals("Correct course", 0.6, res.getBearing(), 0.001);
+		assertEquals("Correct distance", 1, res.getRange(), 0.001);
 		double easyCourse = MWC.Algorithms.Conversions.Degs2Rads(80);
 		res = ts.vectorFor(period, speedKts, easyCourse);
-		assertEquals("Correct course", easyCourse, res.getBearing(),0.001);
-		assertEquals("Correct distance", 1, res.getRange(),0.001);
+		assertEquals("Correct course", easyCourse, res.getBearing(), 0.001);
+		assertEquals("Correct distance", 1, res.getRange(), 0.001);
 		easyCourse = MWC.Algorithms.Conversions.Degs2Rads(280);
 		res = ts.vectorFor(period, speedKts, easyCourse);
-		assertEquals("Correct course", easyCourse, res.getBearing(),0.001);
-		assertEquals("Correct distance", 1, res.getRange(),0.001);
+		assertEquals("Correct course", easyCourse, res.getBearing(), 0.001);
+		assertEquals("Correct distance", 1, res.getRange(), 0.001);
 	}
-	
+
 	/**
 	 * Test method for
 	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
 	 * .
 	 */
-	
+
 	public void testSplitTrack1()
 	{
 		Vector<TrackSegment> segs = _tw.splitTrack(fw1, true);
@@ -726,7 +813,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	 * {@link Debrief.Wrappers.TrackWrapper#splitTrack(Debrief.Wrappers.FixWrapper, boolean)}
 	 * .
 	 */
-	
+
 	public void testSplitTrack2()
 	{
 		Vector<TrackSegment> segs = _tw.splitTrack(fw1, false);
@@ -735,7 +822,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("first is of correct length", 3, segs.lastElement().size());
 	}
 
-	
 	public void testTrackMerge1()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -769,7 +855,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("fix has new parent", "tw3", fw1.getTrackWrapper().getName());
 	}
 
-	
 	public void testTrackStartEnd()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -803,7 +888,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("fix has new parent", "tw3", fw1.getTrackWrapper().getName());
 	}
 
-	
 	public void testTrackMergeAllSegments()
 	{
 		TrackSegment ts1 = new TrackSegment();
@@ -853,7 +937,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 
 	}
 
-	
 	public void testTrackMerge2()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -889,7 +972,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 
 	}
 
-	
 	public void testTrackMerge3()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -936,7 +1018,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 
 	// ////////////
 
-	
 	public void testTrackGroup1()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -985,7 +1066,6 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("track got ditched", 1, theLayers.size());
 	}
 
-	
 	public void testTrackGroupOrder()
 	{
 		TrackSegment ts2 = new TrackSegment();
@@ -1039,8 +1119,8 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		return fw;
 	}
 
-	public static FixWrapper createFix(int timeMillis, int vLat, int vLong, int crseDegs,
-			int spdKts)
+	public static FixWrapper createFix(int timeMillis, int vLat, int vLong,
+			int crseDegs, int spdKts)
 	{
 		FixWrapper theFix = createFix(timeMillis, vLat, vLong);
 		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
@@ -1052,11 +1132,11 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		return theFix;
 	}
 
-	public static FixWrapper createFix(int timeMillis, int vLatDeg, int vLatMin, double vLatSec,
-			int vLongDeg, int vLongMin, double vLongSec, int crseDegs,
-			int spdKts)
+	public static FixWrapper createFix(int timeMillis, int vLatDeg, int vLatMin,
+			double vLatSec, int vLongDeg, int vLongMin, double vLongSec,
+			int crseDegs, int spdKts)
 	{
-		double vLat = vLatDeg + (vLatMin / 60d) + (vLatSec / 3600d); 
+		double vLat = vLatDeg + (vLatMin / 60d) + (vLatSec / 3600d);
 		double vLong = vLongDeg + (vLongMin / 60d) + (vLongSec / 3600d);
 		FixWrapper theFix = createFix(timeMillis, vLat, vLong);
 		theFix.getFix().setCourse(MWC.Algorithms.Conversions.Degs2Rads(crseDegs));
@@ -1067,7 +1147,7 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 
 		return theFix;
 	}
-	
+
 	private int trackLength()
 	{
 		Enumeration<Editable> all = _tw.contiguousElements();
@@ -1096,114 +1176,129 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 	/**
 	 * .
 	 */
-	
+
 	public void testTMASegmentRotate()
 	{
-		
-		
+
 		FixWrapper f1 = createFix(100000, 1, 1, 270, 12);
 		FixWrapper f2 = createFix(200000, 1, 0, 270, 12);
 		WorldVector vector = new WorldVector(0, 1, 0);
-		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
+		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
+				WorldSpeed.Kts), vector, null)
+		{
 			private static final long serialVersionUID = 1L;
+
 			public WorldLocation getHostLocation()
 			{
-				return new WorldLocation(0,1,0);
-			}};
+				return new WorldLocation(0, 1, 0);
+			}
+		};
 		ts.addFix(f1);
 		ts.addFix(f2);
-		
+
 		Iterator<Editable> iter = ts.getData().iterator();
 		iter.next();
 		FixWrapper farEnd = (FixWrapper) iter.next();
-		WorldLocation origin  = farEnd.getLocation();
+		WorldLocation origin = farEnd.getLocation();
 		double brg = MWC.Algorithms.Conversions.Degs2Rads(-90);
 		ts.rotate(brg, origin);
-		
+
 		// check we're on the new course
 		assertEquals("at new offset bearing", -90, ts.getOffsetBearing(), 0.001);
-		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(
+				WorldDistance.DEGS), 0.001);
 		assertEquals("on new course", 0, ts.getCourse(), 0.001);
-		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
-		
-	  // ok, try to turn back!
+		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
+
+		// ok, try to turn back!
 		ts.rotate(-brg, origin);
-		
+
 		// check we're on the new course
 		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
-		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(
+				WorldDistance.DEGS), 0.001);
 		assertEquals("on new course", -90, ts.getCourse(), 0.001);
-		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
+		assertEquals("at original speed", 12, ts.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
 	}
 
 	/**
 	 * .
 	 */
-	
+
 	public void testTMASegmentStretch()
 	{
 		FixWrapper f1 = createFix(0, 1, 1, 270, 12);
 		FixWrapper f2 = createFix(1000 * 60 * 60, 1, 0, 270, 12);
 		WorldVector vector = new WorldVector(0, 1, 0);
-		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12, WorldSpeed.Kts), vector, null){
+		RelativeTMASegment ts = new RelativeTMASegment(270, new WorldSpeed(12,
+				WorldSpeed.Kts), vector, null)
+		{
 			private static final long serialVersionUID = 1L;
+
 			public WorldLocation getHostLocation()
 			{
-				return new WorldLocation(0,0,0);
-			}};
+				return new WorldLocation(0, 0, 0);
+			}
+		};
 		ts.addFix(f1);
 		ts.addFix(f2);
-		
+
 		Iterator<Editable> iter = ts.getData().iterator();
 		FixWrapper nearEnd = (FixWrapper) iter.next();
-		WorldLocation origin  = nearEnd.getLocation();
+		WorldLocation origin = nearEnd.getLocation();
 		double rng = 2;
 		ts.stretch(rng, origin);
-		
+
 		// check we're on the new course
 		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
-		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(
+				WorldDistance.DEGS), 0.001);
 		assertEquals("on new course", 270, ts.getCourse(), 1);
-		assertEquals("at new speed", 120, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
-		
-	  // ok, try to turn back!
+		assertEquals("at new speed", 120, ts.getSpeed().getValueIn(WorldSpeed.Kts),
+				0.001);
+
+		// ok, try to turn back!
 		ts.rotate(-rng, origin);
-		
+
 		// check we're on the new course
 		assertEquals("at new offset bearing", 0, ts.getOffsetBearing(), 0.001);
-		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(WorldDistance.DEGS), 0.001);
+		assertEquals("at new offset range", 1, ts.getOffsetRange().getValueIn(
+				WorldDistance.DEGS), 0.001);
 		assertEquals("on new course", 385, ts.getCourse(), 1);
-		assertEquals("at original speed", 120, ts.getSpeed().getValueIn(WorldSpeed.Kts),0.001);
+		assertEquals("at original speed", 120, ts.getSpeed().getValueIn(
+				WorldSpeed.Kts), 0.001);
 	}
 
 	/**
 	 * .
 	 */
-	
+
 	public void testTMASegment()
 	{
 		// //////////////////////////////////
 		// start off building from a track
 		// //////////////////////////////////
 		TrackWrapper tw = new TrackWrapper();
-	
+
 		FixWrapper f1 = createFix(100000, 1, 1, 4, 12);
 		FixWrapper f2 = createFix(200000, 2, 3, 4, 12);
 		tw.addFix(f1);
 		tw.addFix(f2);
 		tw.addFix(createFix(300000, 3, 3, 4, 12));
 		tw.addFix(createFix(400000, 4, 6, 4, 12));
-	
+
 		WorldVector offset = new WorldVector(12, 12, 0);
 		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 		double course = 33;
-	
+
 		// ok, create the segment
 		CoreTMASegment seg = null;
-	
+
 		// check the before
 		FixWrapper firstFix = null;
-	
+
 		// ////////////////////////
 		// NOW FROM A SENSOR WRAPPER
 		// /////////////////////////
@@ -1214,10 +1309,10 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		sw.add(createSensorItem(tw, sw, 130000));
 		sw.add(createSensorItem(tw, sw, 140000));
 		seg = new RelativeTMASegment(sw, offset, speed, course, null);
-	
+
 		// check the create worked
 		assertEquals("enough points created", 4, seg.size());
-	
+
 		// check the before
 		firstFix = (FixWrapper) seg.getData().iterator().next();
 		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
@@ -1226,17 +1321,17 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
 				.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-	
+
 		seg.setCourse(35);
 		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
-	
+
 		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
 		assertEquals("correct speed after", 15, seg.getSpeed().getValueIn(
 				WorldSpeed.Kts), 0.001);
 		assertEquals("correct course after", 35, MWC.Algorithms.Conversions
 				.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
-	
+
 		// ///////////////////////////////////////////
 		// lastly, build from a set of sensor observations
 		// ///////////////////////////////////////////
@@ -1246,19 +1341,19 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		items[2] = createSensorItem(tw, sw, 119000);
 		items[3] = createSensorItem(tw, sw, 141000);
 		items[4] = createSensorItem(tw, sw, 150000);
-	
+
 		// sort out the host
 		for (int i = 0; i < items.length; i++)
 		{
 			SensorContactWrapper sensorContactWrapper = items[i];
 			sensorContactWrapper.setSensor(sw);
 		}
-		
+
 		seg = new RelativeTMASegment(items, offset, speed, course, null);
-	
+
 		// check the create worked
 		assertEquals("enough points created", 5, seg.size());
-	
+
 		Iterator<Editable> someIt = seg.getData().iterator();
 		// check the before
 		firstFix = (FixWrapper) someIt.next();
@@ -1268,40 +1363,44 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
 				.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-		
+
 		// check the next dtg
 		firstFix = (FixWrapper) someIt.next();
-		assertEquals("check dtg produced", 115000, firstFix.getDTG().getDate().getTime(), 0.001);
+		assertEquals("check dtg produced", 115000, firstFix.getDTG().getDate()
+				.getTime(), 0.001);
 		firstFix = (FixWrapper) someIt.next();
-		assertEquals("check dtg produced", 119000, firstFix.getDTG().getDate().getTime(), 0.001);
+		assertEquals("check dtg produced", 119000, firstFix.getDTG().getDate()
+				.getTime(), 0.001);
 		firstFix = (FixWrapper) someIt.next();
-		assertEquals("check dtg produced", 141000, firstFix.getDTG().getDate().getTime(), 0.001);
+		assertEquals("check dtg produced", 141000, firstFix.getDTG().getDate()
+				.getTime(), 0.001);
 		firstFix = (FixWrapper) someIt.next();
-		assertEquals("check dtg produced", 150000, firstFix.getDTG().getDate().getTime(), 0.001);
-		
+		assertEquals("check dtg produced", 150000, firstFix.getDTG().getDate()
+				.getTime(), 0.001);
+
 		seg.setCourse(35);
 		seg.setSpeed(new WorldSpeed(15, WorldSpeed.Kts));
-	
+
 		assertEquals("correct course after", 35, seg.getCourse(), 0.001);
 		assertEquals("correct speed after", 15, seg.getSpeed().getValueIn(
 				WorldSpeed.Kts), 0.001);
 		assertEquals("correct course after", 35, MWC.Algorithms.Conversions
 				.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed after", 15, firstFix.getSpeed(), 0.001);
-	
+
 	}
 
 	/**
 	 * .
 	 */
-	
+
 	public void testTMASplit2()
 	{
 		// //////////////////////////////////
 		// start off building from a track
 		// //////////////////////////////////
 		TrackWrapper tw = new TrackWrapper();
-	
+
 		tw.addFix(createFix(100000, 1, 1, 4, 12));
 		tw.addFix(createFix(200000, 2, 3, 4, 12));
 		tw.addFix(createFix(300000, 3, 3, 4, 12));
@@ -1309,28 +1408,27 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		tw.addFix(createFix(500000, 4, 6, 4, 12));
 		tw.addFix(createFix(600000, 4, 6, 4, 12));
 		tw.addFix(createFix(700000, 4, 6, 4, 12));
-	
+
 		WorldSpeed speed = new WorldSpeed(5, WorldSpeed.Kts);
 		double course = 33;
-	
+
 		// ok, create the segment
 		CoreTMASegment seg = null;
-	
+
 		// check the before
 		FixWrapper firstFix = null;
-	
+
 		// ////////////////////////
 		// NOW AN ABSOLUTE ONE
 		// /////////////////////////
-		WorldLocation origin = new WorldLocation(12,12,12);
+		WorldLocation origin = new WorldLocation(12, 12, 12);
 		HiResDate startTime = new HiResDate(11 * 60 * 1000);
 		HiResDate endTime = new HiResDate(17 * 60 * 1000);
-		seg = new AbsoluteTMASegment(course, speed, origin, startTime, 
-				endTime);
-	
+		seg = new AbsoluteTMASegment(course, speed, origin, startTime, endTime);
+
 		// check the create worked
 		assertEquals("enough points created", 7, seg.size());
-	
+
 		// check the before
 		firstFix = (FixWrapper) seg.getData().iterator().next();
 		assertEquals("correct course before", 33, seg.getCourse(), 0.001);
@@ -1339,33 +1437,33 @@ public class TrackWrapper_Test  extends junit.framework.TestCase
 		assertEquals("correct course before", 33, MWC.Algorithms.Conversions
 				.Rads2Degs(firstFix.getCourse()), 0.001);
 		assertEquals("correct speed before", 5, firstFix.getSpeed(), 0.001);
-	
+
 		// ok, now do the split
 		TrackWrapper segW = new TrackWrapper();
 		segW.setName("TMA");
 		segW.add(seg);
-		
+
 		// get hold of an item in the segment
 		Enumeration<Editable> enumer = seg.elements();
 		enumer.nextElement();
 		enumer.nextElement();
 		FixWrapper fw = (FixWrapper) enumer.nextElement();
 		assertNotNull("Found a fix", fw);
-		
+
 		// do the split
 		Vector<TrackSegment> segs = segW.splitTrack(fw, false);
-	
+
 		// check we have enough segments
 		assertEquals("now two segments", 2, segs.size());
 		assertEquals("first is of correct length", 3, segs.firstElement().size());
 		assertEquals("first is of correct length", 4, segs.lastElement().size());
-		
+
 		// check they're of the correct type
 		TrackSegment seg1 = segs.firstElement();
 		TrackSegment seg2 = segs.lastElement();
 		assertTrue(" is a tma segment", seg1 instanceof AbsoluteTMASegment);
 		assertTrue(" is a tma segment", seg2 instanceof AbsoluteTMASegment);
-	
+
 	}
 
 }

@@ -22,6 +22,7 @@ import java.util.Vector;
 
 import Debrief.ReaderWriter.Replay.FormatTracks;
 import Debrief.Wrappers.Track.AbsoluteTMASegment;
+import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import Debrief.Wrappers.Track.TrackWrapper_Support;
@@ -765,7 +766,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
 						expertLongProp("SymbolFrequency", "the symbol frequency",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class),
-						expertLongProp("ResamplePositionsAt", "the data sample rate",
+						expertLongProp("ResampleDataAt", "the data sample rate",
 								MWC.GUI.Properties.TimeFrequencyPropertyEditor.class)
 
 				};
@@ -1915,11 +1916,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	/**
-	 * method to allow the setting of data sampling frequencies for the track
+	 * method to allow the setting of data sampling frequencies for the track &
+	 * sensor data
 	 * 
 	 * @return frequency to use
 	 */
-	public final HiResDate getResamplePositionsAt()
+	public final HiResDate getResampleDataAt()
 	{
 		return this._lastDataFrequency;
 	}
@@ -2958,13 +2960,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	/**
-	 * set the data frequency (in seconds)
+	 * set the data frequency (in seconds) for the track & sensor data
 	 * 
 	 * @param theVal
 	 *          frequency to use
 	 */
 	@FireExtended
-	public final void setResamplePositionsAt(final HiResDate theVal)
+	public final void setResampleDataAt(final HiResDate theVal)
 	{
 		this._lastDataFrequency = theVal;
 
@@ -2982,6 +2984,17 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			{
 				TrackSegment seg = (TrackSegment) theEnum.nextElement();
 				seg.decimate(theVal, this);
+			}
+
+			// start off with the sensor data
+			if (_mySensors != null)
+			{
+				for (Iterator<SensorWrapper> iterator = _mySensors.iterator(); iterator
+						.hasNext();)
+				{
+					SensorWrapper thisS = (SensorWrapper) iterator.next();
+					thisS.decimate(theVal);
+				}
 			}
 		}
 	}
@@ -3287,11 +3300,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 		}
 
-		if(relevantSegment == null)
+		if (relevantSegment == null)
 		{
-			throw new RuntimeException("failed to provide relevant segment, alg will break");
+			throw new RuntimeException(
+					"failed to provide relevant segment, alg will break");
 		}
-		
+
 		// hmm, if we're splitting after the point, we need to move along the
 		// bus by
 		// one
@@ -3351,9 +3365,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			RelativeTMASegment tr2 = new RelativeTMASegment(theTMA, p2, secondOffset);
 
 			// update the freq's
-			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
 					.getBaseFrequency());
-			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment)
 					.getBaseFrequency());
 
 			// and store them
@@ -3382,9 +3396,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					null);
 
 			// update the freq's
-			tr1.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+			tr1.setBaseFrequency(((CoreTMASegment) relevantSegment)
 					.getBaseFrequency());
-			tr2.setBaseFrequency(((RelativeTMASegment) relevantSegment)
+			tr2.setBaseFrequency(((CoreTMASegment) relevantSegment)
 					.getBaseFrequency());
 
 			// and store them

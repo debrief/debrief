@@ -264,8 +264,6 @@ public class RelativeTMASegment extends CoreTMASegment
 	 */
 	private void createPointsFrom(SensorContactWrapper[] observations)
 	{
-		System.err.println("about to create:" + observations.length + " points");
-
 		// better start looping
 		for (int i = 0; i < observations.length; i++)
 		{
