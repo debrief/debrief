@@ -14,6 +14,7 @@ package Debrief.Wrappers;
 
 import java.util.Enumeration;
 import java.util.Iterator;
+import java.util.Vector;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact;
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
@@ -22,6 +23,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
 
 abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
@@ -120,6 +122,87 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 
 	}
 
+
+	/**
+	 * switch the sample rate of this track to the supplied frequency
+	 * 
+	 * @param theVal
+	 */
+	public void decimate(HiResDate theVal)
+	{
+		Vector<PlottableWrapperWithTimeAndOverrideableColor> newItems = new Vector<PlottableWrapperWithTimeAndOverrideableColor>();
+
+		long startTime = this.getStartDTG().getMicros();
+		long endTime = this.getEndDTG().getMicros();
+
+		Enumeration<Editable> _cuts = elements();
+		PlottableWrapperWithTimeAndOverrideableColor _last = (PlottableWrapperWithTimeAndOverrideableColor) _cuts.nextElement();
+		
+		// check we've got a single point
+		if(_last == null)
+			return;
+		
+		PlottableWrapperWithTimeAndOverrideableColor _next = (PlottableWrapperWithTimeAndOverrideableColor) _cuts.nextElement();
+		
+		// have we got two?
+		if(_next == null)
+			return;
+
+		// right - sort out what time period we're working through
+		for (long tNow = startTime; tNow <= endTime; tNow += theVal.getMicros())
+		{
+			if(_next == null)
+			{
+				// hey, this really shouldn't have happened, prob ignore it
+			}
+			
+			// loop through to find this item. are we looking before the first item?
+			while ((_next != null)&&(_next.getDTG().getMicros() < tNow))
+			{
+				_last = _next;
+				_next = null;
+				if(_cuts.hasMoreElements())
+   				_next = (PlottableWrapperWithTimeAndOverrideableColor) _cuts.nextElement();
+			}
+
+			// have we overshot?
+			if (_next == null)
+			{
+				// bugger, drop out
+			}
+			else
+			{
+				// right, we appear to be either side of the relevant item
+				// interpolate the values
+				// go for the freq first
+				LinearInterpolator interp = new LinearInterpolator((Watchable)_last,(Watchable) _next, tNow);
+				
+				// create a new data value
+				PlottableWrapperWithTimeAndOverrideableColor newItem = createItem(_last, _next, interp, tNow);
+
+				// and store it.
+				newItems.add(newItem);
+			}
+		}
+		
+		// ditch our positions
+		_myContacts.clear();
+
+		// store the new sensor items
+		for (Iterator<PlottableWrapperWithTimeAndOverrideableColor> iterator = newItems.iterator(); iterator
+				.hasNext();)
+		{
+			PlottableWrapperWithTimeAndOverrideableColor fix = iterator.next();
+			this.add(fix);
+		}
+	}
+	
+	abstract protected PlottableWrapperWithTimeAndOverrideableColor createItem(
+			PlottableWrapperWithTimeAndOverrideableColor last,
+			PlottableWrapperWithTimeAndOverrideableColor next, 
+			LinearInterpolator interp2, long tNow);
+
+	
 	/**
 	 * instruct this object to clear itself out, ready for ditching
 	 */
@@ -520,6 +603,42 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 		return null;
 	}
 
+	
+	/**
+	 * a specialist linear interpolator class that allows quick (repeated)
+	 * interpolations for a set of similar items
+	 * 
+	 * @author ianmayo
+	 * 
+	 */
+	protected class LinearInterpolator
+	{
+
+		private double _startTime;
+		private double _desiredTime;
+		private long _timeDelta;
+
+		/**
+		 * Prepare the temporal domain data
+		 */
+		public LinearInterpolator(Watchable startValue, Watchable endValue,
+				double desiredTime)
+		{
+			_desiredTime = desiredTime;
+			_startTime = startValue.getTime().getMicros();
+			_timeDelta = endValue.getTime().getMicros()
+					- startValue.getTime().getMicros();
+		}
+
+		/**
+		 * Return the interpolated value in the supplied domain.
+		 */
+		public double interp(double startVariable, double endVariable)
+		{
+			double gradient = (endVariable - startVariable) / (_timeDelta);
+			return startVariable + (_desiredTime - _startTime) * gradient;
+		}
+	}
 	// //////////////////////////////////////////////////////////////////
 	// embedded class to allow us to pass the local iterator (Iterator) used
 	// internally

@@ -147,15 +147,12 @@ package Debrief.Wrappers;
 
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.Vector;
 
+import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.TimeStampedDataItem;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -510,41 +507,7 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		clearChildOffsets();
 	}
 
-	/**
-	 * a specialist linear interpolator class that allows quick (repeated)
-	 * interpolations for a set of similar items
-	 * 
-	 * @author ianmayo
-	 * 
-	 */
-	protected class LinearInterpolator
-	{
-
-		private double _startTime;
-		private double _desiredTime;
-		private long _timeDelta;
-
-		/**
-		 * Prepare the temporal domain data
-		 */
-		public LinearInterpolator(Watchable startValue, Watchable endValue,
-				double desiredTime)
-		{
-			_desiredTime = desiredTime;
-			_startTime = startValue.getTime().getMicros();
-			_timeDelta = endValue.getTime().getMicros()
-					- startValue.getTime().getMicros();
-		}
-
-		/**
-		 * Return the interpolated value in the supplied domain.
-		 */
-		public double interp(double startVariable, double endVariable)
-		{
-			double gradient = (endVariable - startVariable) / (_timeDelta);
-			return startVariable + (_desiredTime - _startTime) * gradient;
-		}
-	}
+	
 
 	// //////////////////////////////////////////////////////////////////////////
 	// embedded class, used for editing the projection
@@ -956,110 +919,55 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		return result;
 	}
 
-	/**
-	 * switch the sample rate of this track to the supplied frequency
+
+	/** create a new instance of an entity of this type, interpolated between the supplied sample objects
 	 * 
-	 * @param theVal
 	 */
-	public void decimate(HiResDate theVal)
+	protected PlottableWrapperWithTimeAndOverrideableColor createItem(
+			PlottableWrapperWithTimeAndOverrideableColor last,
+			PlottableWrapperWithTimeAndOverrideableColor next, 
+			LinearInterpolator interp, long tNow)
 	{
-		Vector<SensorContactWrapper> newItems = new Vector<SensorContactWrapper>();
-
-		long startTime = this.getStartDTG().getMicros();
-		long endTime = this.getEndDTG().getMicros();
-
-		Enumeration<Editable> _cuts = super.elements();
-		SensorContactWrapper _last = (SensorContactWrapper) _cuts.nextElement();
+		SensorContactWrapper _next = (SensorContactWrapper) next;
+		SensorContactWrapper _last = (SensorContactWrapper) last;
 		
-		// check we've got a single point
-		if(_last == null)
-			return;
-		
-		SensorContactWrapper _next = (SensorContactWrapper) _cuts.nextElement();
-		
-		// have we got two?
-		if(_next == null)
-			return;
-
-		// right - sort out what time period we're working through
-		for (long tNow = startTime; tNow <= endTime; tNow += theVal.getMicros())
+		double brg = interp.interp(_last.getBearing(), _next.getBearing());
+		double ambig =0;
+		if(_last.getHasAmbiguousBearing())
 		{
-			if(_next == null)
-			{
-				// hey, this really shouldn't have happened, prob ignore it
-			}
-			
-			// loop through to find this item. are we looking before the first item?
-			while ((_next != null)&&(_next.getDTG().getMicros() <= tNow))
-			{
-				_last = _next;
-				_next = null;
-				if(_cuts.hasMoreElements())
-   				_next = (SensorContactWrapper) _cuts.nextElement();
-			}
-
-			// have we overshot?
-			if (_next == null)
-			{
-				// bugger, drop out
-			}
-			else
-			{
-				// right, we appear to be either side of the relevant item
-				// interpolate the values
-				// go for the freq first
-				LinearInterpolator interp = new LinearInterpolator(_last, _next, tNow);
-				double brg = interp.interp(_last.getBearing(), _next.getBearing());
-				double ambig =0;
-				if(_last.getHasAmbiguousBearing())
-				{
-			  	 ambig = interp.interp(_last.getAmbiguousBearing(), _next
-						.getAmbiguousBearing());
-				}
-				double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
-				// do we have range?
-				WorldDistance theRng = null;
-				if ((_last.getRange() != null) && (_next.getRange() != null))
-				{
-					double rngDegs = interp.interp(_last.getRange().getValueIn(
-							WorldDistance.DEGS), _last.getRange().getValueIn(
-							WorldDistance.DEGS));
-					theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
-				}
-				// do we have an origin?
-				WorldLocation origin = null;
-				if ((_last.getOrigin() != null) && (_next.getOrigin() != null))
-				{
-					double orLat = interp.interp(_last.getOrigin().getLat(), _next
-							.getOrigin().getLat());
-					double orLong = interp.interp(_last.getOrigin().getLong(), _next
-							.getOrigin().getLong());
-					origin = new WorldLocation(orLat, orLong, 0);
-				}
-
-				// now, go create the new data item
-				SensorContactWrapper newS = new SensorContactWrapper(_last
-						.getTrackName(), new HiResDate(0, tNow), theRng, brg, ambig, freq,
-						origin, _last.getActualColor(), _last.getName(), _last
-								.getLineStyle().intValue(), _last.getSensorName());
-				
-				// sort out the ambiguous data
-				newS.setHasAmbiguousBearing(_last.getHasAmbiguousBearing());
-				
-				// and store it.
-				newItems.add(newS);
-			}
+	  	 ambig = interp.interp(_last.getAmbiguousBearing(), _next
+				.getAmbiguousBearing());
 		}
-		
-		// ditch our positions
-		_myContacts.clear();
-
-		// store the new sensor items
-		for (Iterator<SensorContactWrapper> iterator = newItems.iterator(); iterator
-				.hasNext();)
+		double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
+		// do we have range?
+		WorldDistance theRng = null;
+		if ((_last.getRange() != null) && (_next.getRange() != null))
 		{
-			SensorContactWrapper fix = iterator.next();
-			this.add(fix);
+			double rngDegs = interp.interp(_last.getRange().getValueIn(
+					WorldDistance.DEGS), _last.getRange().getValueIn(
+					WorldDistance.DEGS));
+			theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
 		}
+		// do we have an origin?
+		WorldLocation origin = null;
+		if ((_last.getOrigin() != null) && (_next.getOrigin() != null))
+		{
+			double orLat = interp.interp(_last.getOrigin().getLat(), _next
+					.getOrigin().getLat());
+			double orLong = interp.interp(_last.getOrigin().getLong(), _next
+					.getOrigin().getLong());
+			origin = new WorldLocation(orLat, orLong, 0);
+		}
+
+		// now, go create the new data item
+		SensorContactWrapper newS = new SensorContactWrapper(_last
+				.getTrackName(), new HiResDate(0, tNow), theRng, brg, ambig, freq,
+				origin, _last.getActualColor(), _last.getName(), _last
+						.getLineStyle().intValue(), _last.getSensorName());
+		
+		// sort out the ambiguous data
+		newS.setHasAmbiguousBearing(_last.getHasAmbiguousBearing());
+		
+		return newS;
 	}
 }

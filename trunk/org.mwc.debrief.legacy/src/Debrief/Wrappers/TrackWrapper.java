@@ -2404,6 +2404,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				while (iter.hasMoreElements())
 				{
 					final TMAWrapper sw = iter.nextElement();
+					// just check that the sensor knows we're it's parent
+					if(sw.getHost() == null)
+						sw.setHost(this);
+					// and do the paint
 					sw.paint(dest);
 
 				} // through the solutions
@@ -2418,6 +2422,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				while (iter.hasMoreElements())
 				{
 					final SensorWrapper sw = iter.nextElement();
+					// just check that the sensor knows we're it's parent
+					if(sw.getHost() == null)
+						sw.setHost(this);
+					
+					// and do the paint
 					sw.paint(dest);
 
 				} // through the sensors
