@@ -63,6 +63,8 @@ package Debrief.Wrappers;
 import java.beans.*;
 import java.util.Iterator;
 
+import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
+import Debrief.Wrappers.TacticalDataWrapper.LinearInterpolator;
 import MWC.GUI.Editable;
 import MWC.GenericData.*;
 
@@ -274,6 +276,71 @@ public final class TMAWrapper  extends TacticalDataWrapper
 
     return res;
   }
+  
+
+
+	/** create a new instance of an entity of this type, interpolated between the supplied sample objects
+	 * 
+	 */
+	protected PlottableWrapperWithTimeAndOverrideableColor createItem(
+			PlottableWrapperWithTimeAndOverrideableColor last,
+			PlottableWrapperWithTimeAndOverrideableColor next, 
+			LinearInterpolator interp, long tNow)
+	{
+		TMAContactWrapper _next = (TMAContactWrapper) next;
+		TMAContactWrapper _last = (TMAContactWrapper) last;
+		
+		double brg = interp.interp(_last.getBearing(), _next.getBearing());
+		double ambig =0;
+		if(_last.getHasAmbiguousBearing())
+		{
+	  	 ambig = interp.interp(_last.getAmbiguousBearing(), _next
+				.getAmbiguousBearing());
+		}
+		double freq = interp.interp(_last.getFrequency(), _next.getFrequency());
+		// do we have range?
+		WorldDistance theRng = null;
+		if ((_last.getRange() != null) && (_next.getRange() != null))
+		{
+			double rngDegs = interp.interp(_last.getRange().getValueIn(
+					WorldDistance.DEGS), _last.getRange().getValueIn(
+					WorldDistance.DEGS));
+			theRng = new WorldDistance(rngDegs, WorldDistance.DEGS);
+		}
+		// do we have an origin?
+		WorldLocation origin = null;
+		if ((_last.getOrigin() != null) && (_next.getOrigin() != null))
+		{
+			double orLat = interp.interp(_last.getOrigin().getLat(), _next
+					.getOrigin().getLat());
+			double orLong = interp.interp(_last.getOrigin().getLong(), _next
+					.getOrigin().getLong());
+			origin = new WorldLocation(orLat, orLong, 0);
+		}
+
+		// now, go create the new data item
+		// right, do we have an origin?
+		TMAContactWrapper newS = null;
+		if(origin != null)
+		{
+		 newS = new TMAContactWrapper(_last.getTrackName(), _last.getTrackName(), new HiResDate(0,tNow), origin, courseDegs, speedKts, depthMetres, _last.getActualColor(), label, theEllipse, thSymbol);
+		}
+		else
+		{
+			newS = new TMAContactWrapper(_last.getTrackName(), _last.getTrackName(), new HiResDate(0,tNow), rangeYds, bearingDegs, courseDegs, speedKts, depthMetres, _last.getActualColor(), label, theEllipse, theSymbol)
+		}
+		
+				
+				_last
+				.getTrackName(), new HiResDate(0, tNow), theRng, brg, ambig, freq,
+				origin, _last.getActualColor(), _last.getName(), _last
+						.getLineStyle().intValue(), _last.getSensorName());
+		
+		// sort out the ambiguous data
+		newS.setHasAmbiguousBearing(_last.getHasAmbiguousBearing());
+		
+		return newS;
+	}
 
   ///////////////////////////////////////////////////////////////////
   // support for WatchableList interface (required for Snail Trail plotting)
