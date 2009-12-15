@@ -167,41 +167,41 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 	public void testDecimatePositionsAndData()
 	{
 		TrackSegment ts1 = new TrackSegment();
-		ts1.addFix(createFix(0 * 60 * 1000000l, 32, 33));
-		ts1.addFix(createFix(1 * 60 * 1000000l, 32, 33));
-		ts1.addFix(createFix(2 * 60 * 1000000l, 32, 33));
-		ts1.addFix(createFix(3 * 60 * 1000000l, 32, 33));
-		ts1.addFix(createFix(4 * 60 * 1000000l, 32, 33));
+		ts1.addFix(createFix(0 * 60000, 32, 33));
+		ts1.addFix(createFix(1 * 60000, 32, 33));
+		ts1.addFix(createFix(2 * 60000, 32, 33));
+		ts1.addFix(createFix(3 * 60000, 32, 33));
+		ts1.addFix(createFix(4 * 60000, 32, 33));
 
 		TrackSegment ts2 = new TrackSegment();
-		ts2.addFix(createFix(5 * 60 * 1000000l, 32, 33));
-		ts2.addFix(createFix(6 * 60 * 1000000l, 32, 33));
-		ts2.addFix(createFix(7 * 60 * 1000000l, 32, 33));
-		ts2.addFix(createFix(8 * 60 * 1000000l, 32, 33));
-		ts2.addFix(createFix(9 * 60 * 1000000l, 32, 33));
+		ts2.addFix(createFix(5 * 60000, 32, 33));
+		ts2.addFix(createFix(6 * 60000, 32, 33));
+		ts2.addFix(createFix(7 * 60000, 32, 33));
+		ts2.addFix(createFix(8 * 60000, 32, 33));
+		ts2.addFix(createFix(9 * 60000, 32, 33));
 
 		TrackSegment ts3 = new TrackSegment();
-		ts3.addFix(createFix(10 * 60 * 1000000l, 32, 33));
-		ts3.addFix(createFix(11 * 60 * 1000000l, 32, 33));
-		ts3.addFix(createFix(12 * 60 * 1000000l, 32, 33));
-		ts3.addFix(createFix(13 * 60 * 1000000l, 32, 33));
-		ts3.addFix(createFix(24 * 60 * 1000000l, 32, 33));
+		ts3.addFix(createFix(10 * 60000, 32, 33));
+		ts3.addFix(createFix(11 * 60000, 32, 33));
+		ts3.addFix(createFix(12 * 60000, 32, 33));
+		ts3.addFix(createFix(13 * 60000, 32, 33));
+		ts3.addFix(createFix(24 * 60000, 32, 33));
 
 		SensorWrapper sw = new SensorWrapper("dummy sensor");
 		SensorContactWrapper scw1 = new SensorContactWrapper("the track",
-				new HiResDate(1 * 60 * 1000000l),
+				new HiResDate(1 * 60000),
 				new WorldDistance(2, WorldDistance.NM), 12, new Double(12), new Double(
 						44), null, Color.red, "aa", 1, "dummy sensor");
 		SensorContactWrapper scw2 = new SensorContactWrapper("the track",
-				new HiResDate(3 * 60 * 1000000l),
-				new WorldDistance(4, WorldDistance.NM), 14, new Double(15), new Double(
+				new HiResDate(3 * 60000),
+				new WorldDistance(4, WorldDistance.NM), 15, new Double(15), new Double(
 						46), null, Color.red, "aa", 1, "dummy sensor");
 		SensorContactWrapper scw3 = new SensorContactWrapper("the track",
-				new HiResDate(7 * 60 * 1000000l), new WorldDistance(12,
+				new HiResDate(7 * 60000), new WorldDistance(12,
 						WorldDistance.NM), 18, new Double(12), new Double(12), null,
 				Color.red, "aa", 1, "dummy sensor");
 		SensorContactWrapper scw4 = new SensorContactWrapper("the track",
-				new HiResDate(8 * 60 * 1000000l),
+				new HiResDate(8 * 60000),
 				new WorldDistance(7, WorldDistance.NM), 35, new Double(12), new Double(
 						312), null, Color.red, "aa", 1, "dummy sensor");
 		sw.add(scw1);
@@ -225,20 +225,22 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has all sensor cuts", 4, countCuts(tw.getSensors()));
 
 		// GO FOR ULTIMATE DECIMATION
-		tw.setResampleDataAt(new HiResDate(4 * 60 * 1000000l));
+		tw.setResampleDataAt(new HiResDate(30 * 1000l));
 
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 2, tw.numFixes());
-		assertEquals("has all sensor cuts", 4, countCuts(tw.getSensors()));
+		assertEquals("has all fixes", 47, tw.numFixes());
+		assertEquals("has all sensor cuts", 15, countCuts(tw.getSensors()));
 
+		
 		// GO FOR ULTIMATE DECIMATION
-		tw.setResampleDataAt(new HiResDate(30 * 1000000l));
+		tw.setResampleDataAt(new HiResDate(4 * 60000));
 
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 43, tw.numFixes());
-		assertEquals("has all sensor cuts", 8, countCuts(tw.getSensors()));
+		assertEquals("has all fixes", 8, tw.numFixes());
+		assertEquals("has all resampled sensor cuts", 2, countCuts(tw.getSensors()));
+
 	}
 
 	private int countCuts(Enumeration<SensorWrapper> sensors)
@@ -251,9 +253,13 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			while(ele.hasMoreElements())
 			{
 				counter++;
-				ele.nextElement();
+				SensorContactWrapper sc = (SensorContactWrapper) ele.nextElement();
+				System.out.println("time is:" +
+						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
+						+ " brg is:" + sc.getBearing());
 			}
 		}
+		System.out.println("===========");
 		return counter;
 	}
 
