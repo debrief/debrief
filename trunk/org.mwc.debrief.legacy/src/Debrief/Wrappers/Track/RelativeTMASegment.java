@@ -349,12 +349,18 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	public double getOffsetBearing()
 	{
-		return MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
+		double res = 0;
+		if (_offset != null)
+			res = MWC.Algorithms.Conversions.Rads2Degs(_offset.getBearing());
+		return res;
 	}
 
 	public WorldDistance getOffsetRange()
 	{
-		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
+		WorldDistance res = null;
+		if (_offset != null)
+			res = new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
+		return res;
 	}
 
 	public WatchableList getReferenceTrack()
@@ -559,12 +565,12 @@ public class RelativeTMASegment extends CoreTMASegment
 			newCourse += 360;
 
 		this.setCourse(newCourse);
-		
-		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
+
+		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
+				.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
 
 		// tell the segment it's being stretched
-		_dragMsg = "[" + spdTxt  + " kts "
-				+ (int) newCourse + "\u00B0]";
+		_dragMsg = "[" + spdTxt + " kts " + (int) newCourse + "\u00B0]";
 
 	}
 
@@ -646,7 +652,8 @@ public class RelativeTMASegment extends CoreTMASegment
 		this.setSpeed(newSpeed);
 
 		// tell the segment it's being stretched
-		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
+		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
+				.formatOneDecimalPlace(newSpeed.getValueIn(WorldSpeed.Kts));
 
 		_dragMsg = "[" + spdTxt + " kts]";
 
@@ -702,11 +709,12 @@ public class RelativeTMASegment extends CoreTMASegment
 		final WorldLocation myEnd = ((FixWrapper) this.last()).getLocation();
 		final WorldLocation hisStart = sensorOriginAt(this.startDTG());
 		final WorldLocation hisEnd = sensorOriginAt(this.endDTG());
-		
+
 		// drop out if we don't have sensor data
-		if((hisStart == null ) || (hisEnd == null))
+		if ((hisStart == null) || (hisEnd == null))
 		{
-			System.err.println("Failed to find sensor data to support fan stretch (RelativeTMASegment.fanStretch)");
+			System.err
+					.println("Failed to find sensor data to support fan stretch (RelativeTMASegment.fanStretch)");
 			return;
 		}
 
@@ -735,12 +743,13 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// whats the distance to the sensor origin?
 		double currSensorDist = myStart.subtract(hisStart).getRange();
-		
+
 		// create a new distance by moving out along the sensor bearing
-		WorldLocation newStart = hisStart.add(new WorldVector(startBrg, currSensorDist
-				+ theRange, 0));
-		
-		// and calculate the new offset (relative to a fix on the host position track)
+		WorldLocation newStart = hisStart.add(new WorldVector(startBrg,
+				currSensorDist + theRange, 0));
+
+		// and calculate the new offset (relative to a fix on the host position
+		// track)
 		_offset = newStart.subtract(getHostLocation());
 
 		// re-sort out the locations, once we've updated the offset
@@ -806,16 +815,18 @@ public class RelativeTMASegment extends CoreTMASegment
 		recalcPositions();
 
 		// tell the segment it's being stretched
-		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat.formatOneDecimalPlace(this.getSpeed().getValueIn(WorldSpeed.Kts));
+		final String spdTxt = MWC.Utilities.TextFormatting.GeneralFormat
+				.formatOneDecimalPlace(this.getSpeed().getValueIn(WorldSpeed.Kts));
 
-		_dragMsg = "[" + spdTxt + " kts "
-				+ (int) this.getCourse() + "\u00B0]";
-		
+		_dragMsg = "[" + spdTxt + " kts " + (int) this.getCourse() + "\u00B0]";
+
 	}
 
-	/** convenience method to find the location of the sensor at the specified time
+	/**
+	 * convenience method to find the location of the sensor at the specified time
 	 * 
-	 * @param dtg the time we're hunting for
+	 * @param dtg
+	 *          the time we're hunting for
 	 * @return the location of the first sensor cut visible at that time
 	 */
 	private WorldLocation sensorOriginAt(HiResDate dtg)

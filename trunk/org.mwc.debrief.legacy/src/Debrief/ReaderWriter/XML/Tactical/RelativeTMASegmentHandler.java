@@ -23,8 +23,8 @@ abstract public class RelativeTMASegmentHandler extends CoreTMASegmentHandler
 	public static final String HOST="HostTrack";
 	public static final String OFFSET="Offset";	
 
-	protected String _host;
-	protected WorldVector _offset;
+	protected String _host = null;
+	protected WorldVector _offset = null;
 	private final Layers _theLayers;
 	
 	public RelativeTMASegmentHandler(Layers theLayers)

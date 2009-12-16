@@ -3005,6 +3005,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					thisS.decimate(theVal);
 				}
 			}
+			
+			// now the solutions
+			if (_mySolutions != null)
+			{
+				for (Iterator<TMAWrapper> iterator = _mySolutions.iterator(); iterator
+						.hasNext();)
+				{
+					TMAWrapper thisT = (TMAWrapper) iterator.next();
+					thisT.decimate(theVal);
+				}
+			}
+
 		}
 	}
 

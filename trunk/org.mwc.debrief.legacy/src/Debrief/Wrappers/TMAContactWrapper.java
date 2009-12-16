@@ -217,7 +217,7 @@ public final class TMAContactWrapper extends
 		this(null, null, null, null, 0d, 0d, 0d, 0d, 0d, null, null, null, null);
 	}
 
-	private TMAContactWrapper(final String sensorName, final String trackName,
+	private TMAContactWrapper(final String solutionName, final String trackName,
 			final HiResDate DTG, final WorldLocation location, final double rangeYds,
 			final double bearingDegs, final double courseDegs, final double speedKts,
 			final double depthMetres, final Color color, final String label,
@@ -245,7 +245,7 @@ public final class TMAContactWrapper extends
 		_labelledEllipse = new ShapeWrapper(label, _theEllipse, color, DTG);
 
 		// store the admin infomration
-		_trackName = sensorName;
+		_trackName = solutionName;
 		_parentTrackName = trackName;
 		_DTG = DTG;
 		_targetDepth = depthMetres;
@@ -271,7 +271,7 @@ public final class TMAContactWrapper extends
 	/**
 	 * build a new sensor contact wrapper using range and bearing
 	 * 
-	 * @param sensorName
+	 * @param solutionName
 	 * @param trackName
 	 * @param DTG
 	 * @param rangeYds
@@ -280,13 +280,13 @@ public final class TMAContactWrapper extends
 	 * @param label
 	 * @param depthMetres
 	 */
-	public TMAContactWrapper(final String sensorName, final String trackName,
+	public TMAContactWrapper(final String solutionName, final String trackName,
 			final HiResDate DTG, final double rangeYds, final double bearingDegs,
 			final double courseDegs, final double speedKts, final double depthMetres,
 			final Color color, final String label, EllipseShape theEllipse,
 			String theSymbol)
 	{
-		this(sensorName, trackName, DTG, null, rangeYds, bearingDegs, courseDegs,
+		this(solutionName, trackName, DTG, null, rangeYds, bearingDegs, courseDegs,
 				speedKts, depthMetres, color, label, theEllipse, theSymbol);
 	}
 

@@ -11,6 +11,8 @@ import java.util.Vector;
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
+import Debrief.Wrappers.TMAContactWrapper;
+import Debrief.Wrappers.TMAWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.Editable;
@@ -18,6 +20,7 @@ import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
 import MWC.GUI.Plottable;
+import MWC.GUI.Shapes.EllipseShape;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -208,12 +211,24 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		sw.add(scw2);
 		sw.add(scw3);
 		sw.add(scw4);
+		
+		TMAWrapper tmw = new TMAWrapper("dummy tma");
+		TMAContactWrapper tc1 = new TMAContactWrapper("sola", "tracla", new HiResDate(2 * 60000), 12d, 14d, 22d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 12, 12, 12), "aa");
+		TMAContactWrapper tc2 = new TMAContactWrapper("sola", "tracla", new HiResDate(7 * 60000), 13d, 22d, 17d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 14, 21, 15), "aa");
+		TMAContactWrapper tc3 = new TMAContactWrapper("sola", "tracla", new HiResDate(9 * 60000), 21d, 23d, 15d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 19, 29, 32), "aa");
+		TMAContactWrapper tc4 = new TMAContactWrapper("sola", "tracla", new HiResDate(16 * 60000), 14d, 14d, 22d, 12.2, 0d, Color.red,"bb", new EllipseShape(null, 12, 22, 12), "aa");
+		
+		tmw.add(tc1);		
+		tmw.add(tc2);		
+		tmw.add(tc3);		
+		tmw.add(tc4);		
 
 		TrackWrapper tw = new TrackWrapper();
 		tw.add(ts1);
 		tw.add(ts2);
 		tw.add(ts3);
 		tw.add(sw);
+		tw.add(tmw);
 
 		Enumeration<Editable> data = tw.elements();
 		SegmentList sl = (SegmentList) data.nextElement();
@@ -223,6 +238,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has all fixes", 15, tw.numFixes());
 		// check we've got all the sensor data
 		assertEquals("has all sensor cuts", 4, countCuts(tw.getSensors()));
+		assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()));
 
 		// GO FOR ULTIMATE DECIMATION
 		tw.setResampleDataAt(new HiResDate(30 * 1000l));
@@ -231,6 +247,7 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 47, tw.numFixes());
 		assertEquals("has all sensor cuts", 15, countCuts(tw.getSensors()));
+		assertEquals("has all tma cuts", 29, countSolutions(tw.getSolutions()));
 
 		
 		// GO FOR ULTIMATE DECIMATION
@@ -240,11 +257,38 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
 		assertEquals("has all fixes", 8, tw.numFixes());
 		assertEquals("has all resampled sensor cuts", 2, countCuts(tw.getSensors()));
+		assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()));
 
+	}
+
+	private int countSolutions(Enumeration<TMAWrapper> solutions)
+	{
+		if(solutions == null)
+			return 0;
+		
+		int counter=0;
+		while(solutions.hasMoreElements())
+		{
+			TMAWrapper sw = solutions.nextElement();
+			Enumeration<Editable> ele = sw.elements();
+			while(ele.hasMoreElements())
+			{
+				counter++;
+		//		TMAContactWrapper sc = (TMAContactWrapper) ele.nextElement();
+//				System.out.println(" solution time is:" +
+//						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
+//						+ " brg is:" + MWC.Algorithms.Conversions.Rads2Degs(sc.getCourse()));
+			}
+		}
+		System.out.println("===========");
+		return counter;
 	}
 
 	private int countCuts(Enumeration<SensorWrapper> sensors)
 	{
+		if(sensors == null)
+			return 0;
+
 		int counter=0;
 		while(sensors.hasMoreElements())
 		{
@@ -253,10 +297,10 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			while(ele.hasMoreElements())
 			{
 				counter++;
-				SensorContactWrapper sc = (SensorContactWrapper) ele.nextElement();
-				System.out.println("time is:" +
-						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
-						+ " brg is:" + sc.getBearing());
+		//		SensorContactWrapper sc = (SensorContactWrapper) ele.nextElement();
+//				System.out.println("cut time is:" +
+//						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
+//						+ " brg is:" + sc.getBearing());
 			}
 		}
 		System.out.println("===========");
