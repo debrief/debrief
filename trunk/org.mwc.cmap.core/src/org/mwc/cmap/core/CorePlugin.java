@@ -416,6 +416,31 @@ public class CorePlugin extends AbstractUIPlugin
 		return plugin._imageRegistry;
 	}
 
+	
+	public static Image getImageFromRegistry(ImageDescriptor name)
+	{
+		Image res = null;
+
+		// do we already have an image
+		if (getRegistry() == null)
+		{
+			plugin._imageRegistry = new ImageRegistry();
+		}
+
+		// ok - do we have it already?
+		res = getRegistry().get(name.toString());
+
+		if (res == null)
+		{
+			getRegistry().put(name.toString(), name);
+			res = getRegistry().get(name.toString());
+		}
+
+		// and return it..
+		return res;
+	}
+
+	
 	public static Image getImageFromRegistry(String name)
 	{
 		Image res = null;

@@ -100,9 +100,9 @@ public class CoreViewLabelProvider extends LabelProvider implements ITableLabelP
 		}
 
 		if (thirdPartyImageDescriptor != null)
-		{
-			// cool go for it
-			res = thirdPartyImageDescriptor.createImage();
+		{ 
+			// cool go for it - get the image from a cache
+			res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
 		}
 		else
 		{
