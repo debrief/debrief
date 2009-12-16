@@ -157,14 +157,14 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 8, tw.numFixes());
+		assertEquals("has all fixes", 7, tw.numFixes());
 
 		// GO FOR ULTIMATE DECIMATION
 		tw.setResampleDataAt(new HiResDate(500000l));
 
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 43, tw.numFixes());
+		assertEquals("has all fixes", 49, tw.numFixes());
 	}
 
 	public void testDecimatePositionsAndData()
@@ -245,9 +245,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 47, tw.numFixes());
-		assertEquals("has all sensor cuts", 15, countCuts(tw.getSensors()));
-		assertEquals("has all tma cuts", 29, countSolutions(tw.getSolutions()));
+		assertEquals("has all fixes", 49, tw.numFixes());
+		assertEquals("has all sensor cuts", 17, countCuts(tw.getSensors()));
+		assertEquals("has all tma cuts", 33, countSolutions(tw.getSolutions()));
 
 		
 		// GO FOR ULTIMATE DECIMATION
@@ -255,9 +255,9 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 
 		// how was it?
 		assertEquals("has segments", "Track segments (3 items)", sl.toString());
-		assertEquals("has all fixes", 8, tw.numFixes());
-		assertEquals("has all resampled sensor cuts", 2, countCuts(tw.getSensors()));
-		assertEquals("has all tma cuts", 4, countSolutions(tw.getSolutions()));
+		assertEquals("has all fixes", 7, tw.numFixes());
+		assertEquals("has all resampled sensor cuts", 3, countCuts(tw.getSensors()));
+		assertEquals("has all tma cuts", 5, countSolutions(tw.getSolutions()));
 
 	}
 
@@ -274,7 +274,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			while(ele.hasMoreElements())
 			{
 				counter++;
-		//		TMAContactWrapper sc = (TMAContactWrapper) ele.nextElement();
+				ele.nextElement();
+//				TMAContactWrapper sc = (TMAContactWrapper) ele.nextElement();
 //				System.out.println(" solution time is:" +
 //						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
 //						+ " brg is:" + MWC.Algorithms.Conversions.Rads2Degs(sc.getCourse()));
@@ -297,7 +298,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 			while(ele.hasMoreElements())
 			{
 				counter++;
-		//		SensorContactWrapper sc = (SensorContactWrapper) ele.nextElement();
+				ele.nextElement();
+	//			SensorContactWrapper sc = (SensorContactWrapper) ele.nextElement();
 //				System.out.println("cut time is:" +
 //						MWC.Utilities.TextFormatting.FormatRNDateTime.toString(sc.getTime().getDate().getTime())
 //						+ " brg is:" + sc.getBearing());

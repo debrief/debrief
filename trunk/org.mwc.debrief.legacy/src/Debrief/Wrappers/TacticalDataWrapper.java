@@ -126,13 +126,14 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	/**
 	 * switch the sample rate of this track to the supplied frequency
 	 * 
-	 * @param theVal
+	 * @param theVal the step interval to use
+	 * @param startTime the start time, to control where the resamples fall ('on the minute')
 	 */
-	public void decimate(HiResDate theVal)
+	public void decimate(HiResDate theVal, long startTime)
 	{
 		Vector<PlottableWrapperWithTimeAndOverrideableColor> newItems = new Vector<PlottableWrapperWithTimeAndOverrideableColor>();
 
-		long startTime = this.getStartDTG().getMicros();
+	//	long startTime = this.getStartDTG().getMicros();
 		long endTime = this.getEndDTG().getMicros();
 
 		Enumeration<Editable> _cuts = elements();

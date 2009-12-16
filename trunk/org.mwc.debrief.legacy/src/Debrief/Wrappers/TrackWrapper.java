@@ -2978,6 +2978,15 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final void setResampleDataAt(final HiResDate theVal)
 	{
 		this._lastDataFrequency = theVal;
+		
+		// have a go at trimming the start time to a whole number of intervals
+		final long interval = theVal.getMicros();
+		final long currentStart = this.getStartDTG().getMicros();
+		long startTime = (currentStart / interval) * interval;
+		
+		// just check we're in the range
+		if(startTime < currentStart)
+			startTime += interval;
 
 		// just check it's not a barking frequency
 		if (theVal.getDate().getTime() <= 0)
@@ -2992,7 +3001,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			while (theEnum.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) theEnum.nextElement();
-				seg.decimate(theVal, this);
+				seg.decimate(theVal, this, startTime);
 			}
 
 			// start off with the sensor data
@@ -3002,7 +3011,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						.hasNext();)
 				{
 					SensorWrapper thisS = (SensorWrapper) iterator.next();
-					thisS.decimate(theVal);
+					thisS.decimate(theVal, startTime);
 				}
 			}
 			
@@ -3013,7 +3022,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 						.hasNext();)
 				{
 					TMAWrapper thisT = (TMAWrapper) iterator.next();
-					thisT.decimate(theVal);
+					thisT.decimate(theVal, startTime);
 				}
 			}
 

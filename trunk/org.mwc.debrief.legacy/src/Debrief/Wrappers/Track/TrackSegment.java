@@ -741,7 +741,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 * @param theVal
 	 */
-	public void decimate(HiResDate theVal, TrackWrapper parentTrack)
+	public void decimate(HiResDate theVal, TrackWrapper parentTrack, long startTime)
 	{
 		Vector<FixWrapper> newItems = new Vector<FixWrapper>();
 		boolean oldInterpolateState = parentTrack.getInterpolatePoints();
@@ -751,7 +751,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		parentTrack.setInterpolatePoints(true);
 
 		// right - sort out what time period we're working through
-		for (long tNow = startDTG().getMicros(); tNow <= endDTG().getMicros(); tNow += theVal
+		for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
 				.getMicros())
 		{
 

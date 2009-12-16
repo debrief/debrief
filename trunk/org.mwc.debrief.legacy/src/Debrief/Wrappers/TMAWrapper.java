@@ -60,15 +60,19 @@
 
 package Debrief.Wrappers;
 
-import java.beans.*;
+import java.beans.IntrospectionException;
+import java.beans.PropertyDescriptor;
 import java.util.Iterator;
 
 import Debrief.GUI.Tote.Painters.SnailDrawTacticalContact.PlottableWrapperWithTimeAndOverrideableColor;
-import Debrief.Wrappers.TacticalDataWrapper.LinearInterpolator;
-import MWC.Algorithms.Conversions;
 import MWC.GUI.Editable;
 import MWC.GUI.Shapes.EllipseShape;
-import MWC.GenericData.*;
+import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
+import MWC.GenericData.Watchable;
+import MWC.GenericData.WorldArea;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Class to store a series of TMA solutions in a track
