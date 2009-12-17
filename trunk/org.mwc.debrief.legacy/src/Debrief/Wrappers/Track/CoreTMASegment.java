@@ -10,7 +10,6 @@ import Debrief.Wrappers.FixWrapper;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GenericData.HiResDate;
-import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
@@ -236,9 +235,11 @@ abstract public class CoreTMASegment extends TrackSegment {
 		// ok, plot the 1/2 way message
 		if (_dragMsg != null)
 		{
-			WorldArea area = new WorldArea(firstEnd, lastEnd);
-			WorldLocation centre = area.getCentre();
-			Point pt = dest.toScreen(centre);
+			Point pt = dest.toScreen(firstEnd);
+			
+			// project this point out past the actual start point
+			pt.translate((int)(30d * Math.cos(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))),
+					(int)(30d * Math.sin(MWC.Algorithms.Conversions.Degs2Rads(getCourse()))));
 			
 			// try to make it bold
 			Font newFont = new Font("Arial", Font.BOLD, 12);
