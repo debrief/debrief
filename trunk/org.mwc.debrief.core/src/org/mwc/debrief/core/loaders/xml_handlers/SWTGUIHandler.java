@@ -42,7 +42,7 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 
 	}
 
-	static private final java.util.Hashtable<String, StepperHandler> _myCreators = new java.util.Hashtable<String, StepperHandler>();
+	private final java.util.Hashtable<String, StepperHandler> _myCreators = new java.util.Hashtable<String, StepperHandler>();
 
 	String _primaryTrack = null;
 
@@ -93,8 +93,8 @@ abstract public class SWTGUIHandler extends MWC.Utilities.ReaderWriter.XML.MWCXM
 		if (_myStepperHandler == null)
 		{
 			_myStepperHandler = new StepperHandler();
-			_myCreators.put("Stepper", _myStepperHandler);
 		}
+		_myCreators.put("Stepper", _myStepperHandler);
 	}
 
 	public void elementClosed()

@@ -4,7 +4,6 @@
 package org.mwc.debrief.core.ContextOperations;
 
 import java.awt.Color;
-import java.util.Date;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -100,10 +99,10 @@ public class GenerateTMASegment implements RightClickContextItemGenerator
 			// now wrap it
 			_newTrack = new TrackWrapper();
 			_newTrack.setColor(Color.red);
-			String tNow = "TMA_"
-					+ FormatRNDateTime.toString(new Date().getTime());
-			_newTrack.setName(tNow);
 			_newTrack.add(seg);
+			String tNow = "TMA_"
+				+ FormatRNDateTime.toString(_newTrack.getStartDTG().getDate().getTime());
+			_newTrack.setName(tNow);
 
 			_layers.addThisLayer(_newTrack);
 
