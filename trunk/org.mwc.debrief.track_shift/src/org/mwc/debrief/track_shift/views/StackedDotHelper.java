@@ -296,6 +296,14 @@ public final class StackedDotHelper
 		
 		// right, we do course in a special way, since it isn't dependent on the target track. Do course here.
 		HiResDate startDTG, endDTG;
+		
+		// just double-check we've still got our primary doublets
+		if (_primaryDoublets == null)
+		{
+			CorePlugin.logError(Status.WARNING, "FOR SOME REASON PRIMARY DOUBLETS IS ZERO - INVESTIGATE", null);
+			return;
+		}
+		
 		startDTG = _primaryDoublets.firstElement().getDTG();
 		endDTG = _primaryDoublets.lastElement().getDTG();
 		Collection<Editable> hostFixes = _primaryTrack.getItemsBetween(startDTG, endDTG);
