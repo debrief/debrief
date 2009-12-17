@@ -741,63 +741,20 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	 * 
 	 * @param theVal
 	 */
-	public void decimate(HiResDate theVal, TrackWrapper parentTrack, long startTime)
+	public void decimate(HiResDate theVal, TrackWrapper parentTrack,
+			long startTime)
 	{
 		Vector<FixWrapper> newItems = new Vector<FixWrapper>();
 		boolean oldInterpolateState = parentTrack.getInterpolatePoints();
-		FixWrapper lastPositionStored = null;
 
 		// switch on interpolation
 		parentTrack.setInterpolatePoints(true);
 
-		// right - sort out what time period we're working through
-		for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
-				.getMicros())
-		{
-
-			// store the new position
-			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
-			if (matches.length > 0)
-			{
-				FixWrapper newF = (FixWrapper) matches[0];
-
-				// aah, if we're a relative track we have to use the course from the
-				// last interpolated point,
-				// not the last point in the track, duh
-				if (this.getPlotRelative())
-				{
-					if (lastPositionStored != null)
-					{
-						// start off with the course
-						WorldVector offset = newF.getLocation().subtract(
-								lastPositionStored.getLocation());
-						newF.getFix().setCourse(offset.getBearing());
-
-						// and now the speed
-						double distYds = new WorldDistance(offset.getRange(),
-								WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
-						double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
-						double spdYps = distYds / timeSecs;
-						newF.getFix().setSpeed(spdYps);
-					}
-				}
-
-				// do we correct the name?
-				if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
-				{
-					// reset the name
-					newF.resetName();
-				}
-
-				// add to our working list
-				newItems.add(newF);
-
-				// remember the last position - we;re going to be calculating future
-				// courses and speeds from it
-				lastPositionStored = newF;
-			}
-
-		}
+		// right, are we a relative or absolute track?
+		if (this.getPlotRelative())
+			decimateRelative(theVal, parentTrack, startTime, newItems);
+		else
+			decimateAbsolute(theVal, parentTrack, startTime, newItems);
 
 		// ditch our positions
 		this.removeAllElements();
@@ -812,6 +769,85 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		// re-instate the interpolate status
 		parentTrack.setInterpolatePoints(oldInterpolateState);
+	}
+
+	private void decimateRelative(HiResDate theVal, TrackWrapper parentTrack,
+			long startTime, Vector<FixWrapper> newItems)
+	{
+		FixWrapper lastPositionStored = null;
+		FixWrapper currentPosition = null;
+		long tNow = 0;
+
+		// right - sort out what time period we're working through
+		for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+				.getMicros())
+		{
+
+			// find hte new datum
+			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
+			if (matches.length > 0)
+			{
+				// remember the last position - we;re going to be calculating future
+				// courses and speeds from it
+				lastPositionStored = currentPosition;
+
+				currentPosition = (FixWrapper) matches[0];
+
+				// is this our first point?
+				if (lastPositionStored != null)
+				{
+					// start off with the course
+					WorldVector offset = currentPosition.getLocation().subtract(
+							lastPositionStored.getLocation());
+					lastPositionStored.getFix().setCourse(offset.getBearing());
+
+					// and now the speed
+					double distYds = new WorldDistance(offset.getRange(),
+							WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+					double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
+					double spdYps = distYds / timeSecs;
+					lastPositionStored.getFix().setSpeed(spdYps);
+
+					// do we correct the name?
+					if (lastPositionStored.getName().equals(FixWrapper.INTERPOLATED_FIX))
+					{
+						// reset the name
+						lastPositionStored.resetName();
+					}
+					// add to our working list
+					newItems.add(lastPositionStored);
+				}
+
+			}
+
+		}
+	}
+
+
+	private void decimateAbsolute(HiResDate theVal, TrackWrapper parentTrack,
+			long startTime, Vector<FixWrapper> newItems)
+	{
+		// right - sort out what time period we're working through
+		for (long tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+				.getMicros())
+		{
+			// store the new position
+			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
+			if (matches.length > 0)
+			{
+				FixWrapper newF = (FixWrapper) matches[0];
+
+				// do we correct the name?
+				if (newF.getName().equals(FixWrapper.INTERPOLATED_FIX))
+				{
+					// reset the name
+					newF.resetName();
+				}
+
+				// add to our working list
+				newItems.add(newF);
+			}
+		}
 	}
 
 	@Override

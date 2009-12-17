@@ -40,7 +40,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		private final static String OFFSET = "Offset";
 
 		private final static String SOLUTION = "Solution";
-
+		
 		/**
 		 * constructor for this editor, takes the actual track as a parameter
 		 * 
@@ -113,6 +113,11 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * 
 	 */
 	private WatchableList _referenceTrack;
+	
+	/** our editable details
+	 * 
+	 */
+	private TMASegmentInfo _myInfo = null;
 
 	/**
 	 * the layers we look at to find our host
@@ -339,7 +344,9 @@ public class RelativeTMASegment extends CoreTMASegment
 	@Override
 	public EditorType getInfo()
 	{
-		return new TMASegmentInfo(this);
+		if(_myInfo == null)
+			_myInfo = new TMASegmentInfo(this);
+		return _myInfo;
 	}
 
 	public WorldVector getOffset()

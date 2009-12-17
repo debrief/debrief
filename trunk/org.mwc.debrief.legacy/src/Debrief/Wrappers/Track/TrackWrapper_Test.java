@@ -116,7 +116,8 @@ public class TrackWrapper_Test extends junit.framework.TestCase
 		assertEquals("wrong num entries", 3, infill.size());
 
 	}
-
+	
+	
 	public void testDecimate()
 	{
 		TrackSegment ts1 = new TrackSegment();

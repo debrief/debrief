@@ -52,6 +52,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
 import MWC.TacticalData.Fix;
+import MWC.Utilities.TextFormatting.FormatRNDateTime;
 
 /**
  * the TrackWrapper maintains the GUI and data attributes of the whole track
@@ -821,20 +822,36 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					while (pts.hasMoreElements())
 					{
 						final Editable obj = pts.nextElement();
+
 						if (obj instanceof SegmentList)
 						{
-							final SegmentList sl = (SegmentList) obj;
+							final SegmentList sl = (SegmentList) obj;							
+							
 							final Enumeration<Editable> segs = sl.elements();
 							while (segs.hasMoreElements())
 							{
 								final TrackSegment ts = (TrackSegment) segs.nextElement();
+								
+								// reset the name if we need to
+								if(ts.getName().startsWith("Posi"))
+									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate().getTime()));
+									
 								target.add(ts);
 							}
 						}
 						else
 						{
-							final Layer ts = (Layer) obj;
-							target.add(ts);
+							if(obj instanceof TrackSegment)
+							{
+								TrackSegment ts = (TrackSegment) obj;
+
+								// reset the name if we need to
+								if(ts.getName().startsWith("Posi"))
+									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate().getTime()));
+
+								// and remember it
+								target.add(ts);
+							}
 						}
 					}
 				}
@@ -2490,7 +2507,11 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				while (fixWrappers.hasMoreElements())
 				{
 					final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
-
+					
+					// now there's a chance that our fix has forgotten it's parent, particularly if it's the victim of a 
+					// copy/paste operation. Tell it about it's children
+					fw.setTrackWrapper(this);
+					
 					// is this fix visible?
 					if (!fw.getVisible())
 					{
