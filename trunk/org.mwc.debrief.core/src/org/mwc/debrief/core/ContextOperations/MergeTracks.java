@@ -81,20 +81,17 @@ public class MergeTracks implements RightClickContextItemGenerator
 			// right,stick in a separator
 			parent.add(new Separator());
 
-			for (int i = 0; i < subjects.length; i++)
-			{
-				final Editable editable = subjects[i];
-				final String title = "Merge tracks into " + editable.getName();
-				// create this operation
-				Action doMerge = new Action(title){
-					public void run()
-					{
-						IUndoableOperation theAction = new MergeTracksOperation(title, editable, theLayers, parentLayers, subjects);
-							
-						CorePlugin.run(theAction );
-					}};
-				parent.add(doMerge);
-			}
+			final Editable editable = subjects[0];
+			final String title = "Merge tracks into " + editable.getName();
+			// create this operation
+			Action doMerge = new Action(title){
+				public void run()
+				{
+					IUndoableOperation theAction = new MergeTracksOperation(title, editable, theLayers, parentLayers, subjects);
+						
+					CorePlugin.run(theAction );
+				}};
+			parent.add(doMerge);
 		}
 	}
 

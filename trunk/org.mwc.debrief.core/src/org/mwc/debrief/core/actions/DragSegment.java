@@ -149,8 +149,8 @@ public class DragSegment extends DragFeature {
 			_dragModes.add(shear);
 
 			// and initiate the drag
-			translate.setChecked(true);
-			translate.run();
+			shear.setChecked(true);
+			shear.run();
 
 		}
 		return _dragModes;

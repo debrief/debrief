@@ -76,7 +76,8 @@ public class TrackManager implements TrackDataProvider // ,
 					}
 
 					processWatchableList((WatchableList) layer, onlyAssignTracks);
-				} else
+				}
+				else
 				{
 					final Enumeration<Editable> iter = layer.elements();
 					while (iter.hasMoreElements())
@@ -124,7 +125,8 @@ public class TrackManager implements TrackDataProvider // ,
 					if ((!onlyAssignTracks) || (onlyAssignTracks)
 							&& (w instanceof TrackWrapper))
 						setPrimary(w);
-			} else
+			}
+			else
 			{
 
 				boolean haveAlready = false;
@@ -285,12 +287,7 @@ public class TrackManager implements TrackDataProvider // ,
 			for (int i = 0; i < _theSecondaries.length; i++)
 			{
 				WatchableList thisSec = _theSecondaries[i];
-				String thisName = thisSec.getName();
-				// is it in our layers?
-				if (_theLayers.findLayer(thisName) != null)
-				{
-					secsFound.add(thisSec);
-				}
+				secsFound.add(thisSec);
 			}
 
 			// and store the new secs list
@@ -304,18 +301,17 @@ public class TrackManager implements TrackDataProvider // ,
 			Iterator<TrackDataListener> iter = _myDataListeners.iterator();
 			while (iter.hasNext())
 			{
-				TrackDataListener list =  iter.next();
+				TrackDataListener list = iter.next();
 				list.tracksUpdated(_thePrimary, _theSecondaries);
 			}
 		}
 	}
 
-
 	public void setSecondary(WatchableList secondary)
 	{
 		// clear out any existing secondarires
 		_theSecondaries = null;
- 		
+
 		// right, insert this as a secondary track
 		addSecondaryImpl(secondary);
 
@@ -325,7 +321,7 @@ public class TrackManager implements TrackDataProvider // ,
 
 		fireTracksChanged();
 	}
-	
+
 	public void addSecondary(WatchableList secondary)
 	{
 		// right, insert this as a secondary track
@@ -341,7 +337,7 @@ public class TrackManager implements TrackDataProvider // ,
 	private void addSecondaryImpl(WatchableList secondary)
 	{
 		// check we don't already hold it
-	
+
 		// store the new list
 		Vector<WatchableList> newList = new Vector<WatchableList>(0, 1);
 
@@ -351,13 +347,13 @@ public class TrackManager implements TrackDataProvider // ,
 			for (int i = 0; i < _theSecondaries.length; i++)
 			{
 				newList.add(_theSecondaries[i]);
-				
-				if(_theSecondaries[i] == secondary)
+
+				if (_theSecondaries[i] == secondary)
 				{
 					// we've already got it - drop out.
 					return;
 				}
-				
+
 			}
 		}
 
@@ -486,7 +482,8 @@ public class TrackManager implements TrackDataProvider // ,
 				if (curSec == thisSec)
 				{
 					// hey, just ignore it
-				} else
+				}
+				else
 				{
 					newList.add(_theSecondaries[i]);
 				}
@@ -498,7 +495,8 @@ public class TrackManager implements TrackDataProvider // ,
 			WatchableList[] demo = new WatchableList[]
 			{};
 			_theSecondaries = (WatchableList[]) newList.toArray(demo);
-		} else
+		}
+		else
 			_theSecondaries = new WatchableList[0];
 	}
 
