@@ -6,12 +6,14 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.SortedSet;
+import java.util.Vector;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.SensorContactWrapper;
 import Debrief.Wrappers.SensorWrapper;
 import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Editable;
+import MWC.GUI.FireExtended;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
@@ -21,6 +23,7 @@ import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
+import MWC.TacticalData.Fix;
 
 /**
  * extension of track segment that represents a single TMA solution as a series
@@ -40,7 +43,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		private final static String OFFSET = "Offset";
 
 		private final static String SOLUTION = "Solution";
-		
+
 		/**
 		 * constructor for this editor, takes the actual track as a parameter
 		 * 
@@ -72,7 +75,10 @@ public class RelativeTMASegment extends CoreTMASegment
 						expertProp("OffsetRange", "Distance to start point on host track",
 								OFFSET),
 						expertProp("OffsetBearing",
-								"Beraing from host track to start of this solution", OFFSET) };
+								"Bearing from host track to start of this solution", OFFSET),
+						expertProp("DTG_Start", "Start time for this TMA Solution",
+								SOLUTION),
+						expertProp("DTG_End", "End time for this TMA Solution", SOLUTION) };
 				mine = res;
 			}
 			catch (final IntrospectionException e)
@@ -113,11 +119,12 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * 
 	 */
 	private WatchableList _referenceTrack;
-	
-	/** our editable details
+
+	/**
+	 * our editable details
 	 * 
 	 */
-	private TMASegmentInfo _myInfo = null;
+	private transient TMASegmentInfo _myInfo = null;
 
 	/**
 	 * the layers we look at to find our host
@@ -306,6 +313,179 @@ public class RelativeTMASegment extends CoreTMASegment
 		return new WorldDistance(_offset.getRange(), WorldDistance.DEGS);
 	}
 
+	@FireExtended
+	public void setDTG_Start(HiResDate newStart)
+	{
+		// check that we're still after the start of the host track
+		if(newStart.lessThan(this.getReferenceTrack().getStartDTG()))
+		{
+			newStart = this.getReferenceTrack().getStartDTG();
+		}
+		
+		// ok, how far is this from the current end
+		long delta = newStart.getMicros() - startDTG().getMicros();
+		
+		// and what distance does this mean?
+		double deltaHrs = delta / 1000000d / 60d / 60d;
+		double distDegs = this.getSpeed().getValueIn(WorldSpeed.Kts) * deltaHrs / 60;
+
+		double theDirection = MWC.Algorithms.Conversions.Degs2Rads(this.getCourse());
+		
+		// we don't need to worry about reversing the direction, since we have a -ve distance
+		
+		// so what's the new origin?
+		WorldLocation currentStart =new WorldLocation(this.getTrackStart());
+		WorldLocation newOrigin = currentStart.add(new WorldVector(theDirection, distDegs, 0));
+		
+		// and what's the point on the host track
+		Watchable[] matches =	this.getReferenceTrack().getNearestTo(newStart);
+		Watchable newRefPt = matches[0];
+		WorldVector newOffset =  newOrigin.subtract(newRefPt.getLocation());
+
+		// right, we know where the new track will be, see if we need to ditch any
+		if(delta > 0)
+		{
+			// right, we're shortening the track.
+			// check the end point is before the end
+			if (newStart.getMicros() > endDTG().getMicros())
+				return;
+
+			// ok, it's worth bothering with. get ready to store ones we'll lose
+			Vector<FixWrapper> onesToRemove = new Vector<FixWrapper>();
+
+			Iterator<Editable> iter = this.getData().iterator();
+			while (iter.hasNext())
+			{
+				FixWrapper thisF = (FixWrapper) iter.next();
+				if (thisF.getTime().lessThan(newStart))
+				{
+					onesToRemove.add(thisF);
+				}
+			}
+
+			// and ditch them
+			for (Iterator<FixWrapper> iterator = onesToRemove.iterator(); iterator
+					.hasNext();)
+			{
+				FixWrapper thisFix = iterator.next();
+				this.removeElement(thisFix);
+			}
+		}
+
+		// right, we may have pruned off too far.  See if we need to put a bit back in...
+		if (newStart.lessThan(startDTG()))
+		{
+
+			// right, we if we have to add another
+			// find the current last point
+			FixWrapper theLoc = (FixWrapper) this.first();
+
+			// don't worry about the location, we're going to DR it on anyway...
+			WorldLocation newLoc = null;
+			Fix newFix = new Fix(newStart, newLoc, MWC.Algorithms.Conversions
+					.Degs2Rads(this.getCourse()), MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
+					WorldSpeed.Kts)));
+
+			// and apply the stretch
+			FixWrapper newItem = new FixWrapper(newFix);
+
+			// set some other bits
+			newItem.setColor(theLoc.getActualColor());
+			newItem.setTrackWrapper(this._myTrack);
+			newItem.setSymbolShowing(theLoc.getSymbolShowing());
+			newItem.setLabelShowing(theLoc.getLabelShowing());
+			newItem.setLabelLocation(theLoc.getLabelLocation());
+			newItem.setLabelFormat(theLoc.getLabelFormat());
+
+			this.add(newItem);
+		}
+
+		// and sort out the new offset
+		this._offset = newOffset;
+		
+
+	}
+
+	public HiResDate getDTG_Start()
+	{
+		return this.startDTG();
+	}
+
+	@FireExtended
+	public void setDTG_End(final HiResDate newEnd)
+	{
+		// ok, how far is this from the current end
+		long delta = newEnd.getMicros() - endDTG().getMicros();
+
+		// right, do we need to prune a few off?
+		if (delta < 0)
+		{
+			// right, we're shortening the track.
+			// check the end point is after the start
+			if (newEnd.getMicros() < startDTG().getMicros())
+				return;
+
+			// ok, it's worth bothering with. get ready to store ones we'll lose
+			Vector<FixWrapper> onesToRemove = new Vector<FixWrapper>();
+
+			Iterator<Editable> iter = this.getData().iterator();
+			while (iter.hasNext())
+			{
+				FixWrapper thisF = (FixWrapper) iter.next();
+				if (thisF.getTime().greaterThan(newEnd))
+				{
+					onesToRemove.add(thisF);
+				}
+			}
+
+			// and ditch them
+			for (Iterator<FixWrapper> iterator = onesToRemove.iterator(); iterator
+					.hasNext();)
+			{
+				FixWrapper thisFix = iterator.next();
+				this.removeElement(thisFix);
+			}
+		}
+
+		// right, we may have pruned off too far.  See if we need to put a bit back in...
+		if (newEnd.greaterThan(endDTG()))
+		{
+
+			// right, we if we have to add another
+			// find the current last point
+			FixWrapper theLoc = (FixWrapper) this.last();
+
+			// don't worry about the location, we're going to DR it on anyway...
+			WorldLocation newLoc = null;
+			Fix newFix = new Fix(newEnd, newLoc, MWC.Algorithms.Conversions
+					.Degs2Rads(this.getCourse()), MWC.Algorithms.Conversions.Kts2Yps(this.getSpeed().getValueIn(
+					WorldSpeed.Kts)));
+
+			// and apply the stretch
+			FixWrapper newItem = new FixWrapper(newFix);
+
+			// set some other bits
+			newItem.setColor(theLoc.getActualColor());
+			newItem.setTrackWrapper(this._myTrack);
+			newItem.setSymbolShowing(theLoc.getSymbolShowing());
+			newItem.setLabelShowing(theLoc.getLabelShowing());
+			newItem.setLabelLocation(theLoc.getLabelLocation());
+			newItem.setLabelFormat(theLoc.getLabelFormat());
+
+			this.add(newItem);
+		}
+
+	}
+
+	public HiResDate getDTG_End()
+	{
+		return this.endDTG();
+	}
+
+	/** the point on the host track that we're offset from
+	 * 
+	 * @return
+	 */
 	public WorldLocation getHostLocation()
 	{
 		WorldLocation res = null;
@@ -344,7 +524,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	@Override
 	public EditorType getInfo()
 	{
-		if(_myInfo == null)
+		if (_myInfo == null)
 			_myInfo = new TMASegmentInfo(this);
 		return _myInfo;
 	}
@@ -847,7 +1027,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		Enumeration<SensorWrapper> sensors = tw.getSensors();
 		while (sensors.hasMoreElements())
 		{
-			SensorWrapper thisS = (SensorWrapper) sensors.nextElement();
+			SensorWrapper thisS = sensors.nextElement();
 			if (thisS.getVisible())
 			{
 				Watchable[] matches = thisS.getNearestTo(dtg);

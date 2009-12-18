@@ -186,7 +186,7 @@ abstract public class CoreTMASegment extends TrackSegment {
 	
 		// remember the ends, so we can plot a point 1/2 way along them
 		WorldLocation firstEnd = null;
-		WorldLocation lastEnd = null;
+	//	WorldLocation lastEnd = null;
 	
 		for (Iterator<Editable> iterator = items.iterator(); iterator.hasNext();)
 		{
@@ -208,7 +208,7 @@ abstract public class CoreTMASegment extends TrackSegment {
 						.getCourse());
 				tmaLastLoc.addToMe(thisVec);
 	
-				lastEnd = new WorldLocation(tmaLastLoc);
+		//		lastEnd = new WorldLocation(tmaLastLoc);
 			}
 	
 			// dump the location into the fix

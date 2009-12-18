@@ -252,6 +252,7 @@ import MWC.Algorithms.Conversions;
 import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Griddable;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
@@ -658,6 +659,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _theLabel.getString();
 	}
 
+	@FireReformatted
 	public final void setLabel(final String val)
 	{
 		_theLabel.setString(val);
@@ -688,6 +690,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _showLabel.booleanValue();
 	}
 
+	@FireReformatted
 	public final void setLabelShowing(final boolean val)
 	{
 		_showLabel = new Boolean(val);
@@ -698,6 +701,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _showSymbol;
 	}
 
+	@FireReformatted
 	public final void setSymbolShowing(final boolean val)
 	{
 		_showSymbol = val;
@@ -871,6 +875,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _theFix.getTime();
 	}
 
+	@FireReformatted
 	public final void setDateTimeGroup(final HiResDate val)
 	{
 		_theFix.setTime(val);
@@ -885,6 +890,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		 */
 	}
 
+	@FireReformatted
 	public final void setLabelFormat(final String format)
 	{
 		_theFormat = format;
