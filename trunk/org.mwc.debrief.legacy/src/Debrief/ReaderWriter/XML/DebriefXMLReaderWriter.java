@@ -75,7 +75,7 @@ public final class DebriefXMLReaderWriter extends
 
 		}
 	}
-
+	
 	/**
 	 * handle the import of XML data, creating a new session for it
 	 */

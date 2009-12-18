@@ -21,7 +21,7 @@ import MWC.GUI.Layers;
 /**
  * @author ian.mayo
  */
-public class XMLLoader extends IPlotLoader.BaseLoader
+public class KMLLoader extends IPlotLoader.BaseLoader
 {
 
 	/**
@@ -29,7 +29,7 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 */
 	private static DebriefEclipseXMLReaderWriter _myReader;
 
-	public XMLLoader()
+	public KMLLoader()
 	{
 		if (_myReader == null)
 		{
@@ -58,7 +58,15 @@ public class XMLLoader extends IPlotLoader.BaseLoader
 	 */
 	public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
 	{
-
+//		if (inputStream instanceof org.eclipse.ui.part.FileEditorInput)
+//		{
+//			org.eclipse.ui.part.FileEditorInput ife = (org.eclipse.ui.part.FileEditorInput) inputStream;
+//			final IFile _theFile = ife.getFile();
+//			String theName = _theFile.getName();
+//
+//			final String thePath = _theFile.getFullPath().toOSString();
+//			CorePlugin.logError(Status.INFO, "About to load XML file:" + theName,
+//					null);
 			final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 			try

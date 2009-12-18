@@ -8,5 +8,11 @@
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="/org.mwc.cmap.legacy/libs/flanagan.jar"/>
+	<classpathentry kind="lib" path="libs/JavaAPIforKml.jar"/>
+	<classpathentry kind="lib" path="libs/activation.jar"/>
+	<classpathentry kind="lib" path="libs/jaxb-api.jar"/>
+	<classpathentry kind="lib" path="libs/jaxb-impl.jar"/>
+	<classpathentry kind="lib" path="libs/jaxb-xjc.jar"/>
+	<classpathentry kind="lib" path="libs/jsr173_1.0_api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
