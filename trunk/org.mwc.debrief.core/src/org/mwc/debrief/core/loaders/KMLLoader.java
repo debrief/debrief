@@ -16,6 +16,7 @@ import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
+import Debrief.ReaderWriter.XML.KML.ImportKML;
 import MWC.GUI.Layers;
 
 /**
@@ -24,30 +25,9 @@ import MWC.GUI.Layers;
 public class KMLLoader extends IPlotLoader.BaseLoader
 {
 
-	/**
-	 * the static object we use for data-file load/open
-	 */
-	private static DebriefEclipseXMLReaderWriter _myReader;
 
 	public KMLLoader()
 	{
-		if (_myReader == null)
-		{
-			_myReader = new DebriefEclipseXMLReaderWriter();
-		}
-	}
-
-	/**
-	 * load the data-file
-	 * 
-	 * @param destination
-	 * @param source
-	 * @param fileName
-	 */
-	public void doTheLoad(Layers destination, InputStream source,
-			String fileName, IControllableViewport view, PlotEditor plot)
-	{
-		_myReader.importThis(fileName, source, destination, view, plot);
 	}
 
 	/*
@@ -58,15 +38,6 @@ public class KMLLoader extends IPlotLoader.BaseLoader
 	 */
 	public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
 	{
-//		if (inputStream instanceof org.eclipse.ui.part.FileEditorInput)
-//		{
-//			org.eclipse.ui.part.FileEditorInput ife = (org.eclipse.ui.part.FileEditorInput) inputStream;
-//			final IFile _theFile = ife.getFile();
-//			String theName = _theFile.getName();
-//
-//			final String thePath = _theFile.getFullPath().toOSString();
-//			CorePlugin.logError(Status.INFO, "About to load XML file:" + theName,
-//					null);
 			final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 			try
@@ -94,7 +65,7 @@ public class KMLLoader extends IPlotLoader.BaseLoader
 
 								// ok - get loading going
 
-								doTheLoad(theLayers, inputStream, fileName, thePlot, thePlot);
+								ImportKML.doImport(theLayers, inputStream, fileName);
 
 								DebriefPlugin.logError(Status.INFO,
 										"completed loading:" + fileName, null);

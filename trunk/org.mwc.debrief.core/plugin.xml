@@ -70,6 +70,10 @@
 		<loader class="org.mwc.debrief.core.loaders.XMLLoader"
 			extensions="xml" name="Debrief XML Loader" />
 	</extension>
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.KMLLoader"
+			extensions="kml" name="Google earth Loader" />
+	</extension>
 
 
 
