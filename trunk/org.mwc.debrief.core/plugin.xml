@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.0"?>
-<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.82"
+<plugin id="org.mwc.debrief.core" name="Debrief Core" version="1.0.83"
 	provider-name="MWC" class="org.mwc.debrief.core.DebriefPlugin">
 
 	<runtime>
@@ -21,6 +21,10 @@
 			</contentTypeBinding>
 			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.ReplaySensorFile">
 			</contentTypeBinding>
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackFile">
+			</contentTypeBinding>
+			<contentTypeBinding contentTypeId="org.mwc.debrief.contenttype.KMZTrackArchive">
+			</contentTypeBinding>
 		</editor>
 	</extension>
 
@@ -39,6 +43,12 @@
 		</content-type>
 		<content-type id="org.mwc.debrief.contenttype.ReplaySensorFile"
 			file-extensions="dsf" name="Debrief Sensor File" priority="normal">
+		</content-type>
+		<content-type id="org.mwc.debrief.contenttype.KMZTrackArchive"
+			file-extensions="kmz" name="KMZ Track Archive" priority="normal">
+		</content-type>
+		<content-type id="org.mwc.debrief.contenttype.KMZTrackFile"
+			file-extensions="kml" name="KMZ Track File" priority="normal">
 		</content-type>
 	</extension>
 
@@ -72,7 +82,11 @@
 	</extension>
 	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
 		<loader class="org.mwc.debrief.core.loaders.KMLLoader"
-			extensions="kml" name="Google earth Loader" />
+			extensions="kml" name="KML Track File" />
+	</extension>
+	<extension point="org.mwc.debrief.core.DebriefPlotLoader">
+		<loader class="org.mwc.debrief.core.loaders.KMLLoader"
+			extensions="kmz" name="KML Track Archive" />
 	</extension>
 
 

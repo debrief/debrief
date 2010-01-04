@@ -3,18 +3,19 @@
  */
 package org.mwc.debrief.core.loaders;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
-import org.eclipse.core.runtime.*;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.operation.IRunnableWithProgress;
-import org.eclipse.ui.*;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.progress.IProgressService;
-import org.mwc.cmap.core.interfaces.IControllableViewport;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.editors.PlotEditor;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
-import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
 
 import Debrief.ReaderWriter.XML.KML.ImportKML;
 import MWC.GUI.Layers;
@@ -63,10 +64,19 @@ public class KMLLoader extends IPlotLoader.BaseLoader
 								DebriefPlugin.logError(Status.INFO, "about to start loading:"
 										+ fileName, null);
 
-								// ok - get loading going
-
-								ImportKML.doImport(theLayers, inputStream, fileName);
-
+								// quick check, is this a KMZ
+								if(fileName.endsWith(".kmz"))
+								{
+									// ok - get loading going
+									ImportKML.doZipImport(theLayers, inputStream, fileName);
+									
+								}
+								else if(fileName.endsWith(".kml"))
+								{
+									// ok - get loading going
+									ImportKML.doImport(theLayers, inputStream, fileName);									
+								}
+								
 								DebriefPlugin.logError(Status.INFO,
 										"completed loading:" + fileName, null);
 

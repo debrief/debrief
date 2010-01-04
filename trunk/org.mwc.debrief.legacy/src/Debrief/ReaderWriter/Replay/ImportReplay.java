@@ -1071,6 +1071,21 @@ public class ImportReplay extends PlainImporterBase
 
 		return res;
 	}
+	
+	static public Color replayColorFor(int index)
+	{
+		Color res = null;
+
+		// check we have the colours
+		initialiseColours();
+
+		int theIndex = index % colors.size();
+		
+		res = colors.elementAt(theIndex).color;
+
+		return res;
+	}
+
 
 	static public Color replayColorFor(String theSym)
 	{
