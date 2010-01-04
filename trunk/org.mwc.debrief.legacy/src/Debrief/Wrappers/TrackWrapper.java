@@ -33,6 +33,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.DynamicPlottable;
 import MWC.GUI.Editable;
 import MWC.GUI.FireExtended;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.MessageProvider;
@@ -2878,6 +2879,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theCol
 	 *          the colour
 	 */
+	@FireReformatted
 	public final void setColor(final Color theCol)
 	{
 		// do the parent

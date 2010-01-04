@@ -278,6 +278,11 @@ abstract public class PlainWrapper implements Plottable, Serializable,
      */
     abstract public String getName();
 
+    /** update the color for this item
+     * 
+     * @param theColor
+     */
+    @FireReformatted
     public void setColor(java.awt.Color theColor)
     {
         // store the old colour

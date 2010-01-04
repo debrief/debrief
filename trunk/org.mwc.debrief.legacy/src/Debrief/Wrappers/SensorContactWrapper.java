@@ -504,11 +504,6 @@ public final class SensorContactWrapper extends
 		_DTG = val;
 	}
 
-	public final void setColor(final Color val)
-	{
-		super.setColor(val);
-	}
-
 	/**
 	 * member function to meet requirements of comparable interface *
 	 */

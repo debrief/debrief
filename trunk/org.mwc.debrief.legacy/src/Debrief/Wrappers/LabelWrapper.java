@@ -196,6 +196,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.BaseLayer;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
@@ -431,6 +432,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 		return _theLabel.getFont();
 	}
 
+	@FireReformatted
 	public final void setColor(final java.awt.Color theCol)
 	{
 		_theLabel.setColor(theCol);

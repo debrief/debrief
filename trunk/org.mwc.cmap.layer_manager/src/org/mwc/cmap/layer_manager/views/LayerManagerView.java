@@ -1,28 +1,65 @@
 package org.mwc.cmap.layer_manager.views;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.Iterator;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.Vector;
 
 import org.eclipse.core.commands.ExecutionException;
 import org.eclipse.core.commands.operations.AbstractOperation;
-import org.eclipse.core.runtime.*;
-import org.eclipse.jface.action.*;
+import org.eclipse.core.runtime.IAdaptable;
+import org.eclipse.core.runtime.IProgressMonitor;
+import org.eclipse.core.runtime.IStatus;
+import org.eclipse.core.runtime.Status;
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.IToolBarManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.jface.viewers.*;
+import org.eclipse.jface.viewers.DoubleClickEvent;
+import org.eclipse.jface.viewers.IDoubleClickListener;
+import org.eclipse.jface.viewers.IElementComparer;
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.ISelectionProvider;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TreeViewer;
+import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.viewers.ViewerSorter;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.ui.*;
+import org.eclipse.swt.dnd.DND;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.Tree;
+import org.eclipse.swt.widgets.TreeColumn;
+import org.eclipse.swt.widgets.TreeItem;
+import org.eclipse.swt.widgets.Widget;
+import org.eclipse.ui.IActionBars;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IWorkbenchActionConstants;
+import org.eclipse.ui.IWorkbenchPart;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.core.CorePlugin;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
-import org.mwc.cmap.core.property_support.*;
+import org.mwc.cmap.core.property_support.EditableWrapper;
+import org.mwc.cmap.core.property_support.RightClickSupport;
+import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.core.ui_support.DragDropSupport;
 import org.mwc.cmap.core.ui_support.PartMonitor;
-import org.mwc.cmap.core.ui_support.CoreViewLabelProvider;
 import org.mwc.cmap.layer_manager.Layer_managerPlugin;
-import org.mwc.cmap.layer_manager.views.support.*;
+import org.mwc.cmap.layer_manager.views.support.ViewContentProvider;
 
-import MWC.GUI.*;
+import MWC.GUI.BaseLayer;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Layers;
+import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WatchableList;
@@ -107,6 +144,8 @@ public class LayerManagerView extends ViewPart
 	protected TrackManager _theTrackDataListener;
 
 	private DragDropSupport _dragDropSupport;
+
+	private CoreViewLabelProvider _myLabelProvider;
 
 	/**
 	 * whether we are already ignoring firing messages
@@ -352,7 +391,8 @@ public class LayerManagerView extends ViewPart
 		_treeViewer.setUseHashlookup(true);
 		// drillDownAdapter = new DrillDownAdapter(_treeViewer);
 		_treeViewer.setContentProvider(new ViewContentProvider(this));
-		_treeViewer.setLabelProvider(new CoreViewLabelProvider());
+		 _myLabelProvider = new CoreViewLabelProvider();
+		_treeViewer.setLabelProvider(_myLabelProvider);
 		_treeViewer.setSorter(new NameSorter());
 		_treeViewer.setInput(getViewSite());
 		_treeViewer.setComparer(new IElementComparer()
@@ -1281,6 +1321,10 @@ public class LayerManagerView extends ViewPart
 
 	protected void processReformattedLayers()
 	{
+		// right, tell our label generator to ditch it's cache, since one or more
+		// of the images may have changed
+		_myLabelProvider.resetCache();
+		
 		try
 		{
 			// right, we'll be building up a list of objects to refresh (all of the

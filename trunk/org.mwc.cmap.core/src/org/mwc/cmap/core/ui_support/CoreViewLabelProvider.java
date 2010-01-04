@@ -3,16 +3,21 @@
  */
 package org.mwc.cmap.core.ui_support;
 
+import java.awt.Color;
 import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.jface.resource.ImageDescriptor;
+import org.eclipse.jface.resource.ImageRegistry;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.LabelProvider;
+import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.ui.ISharedImages;
 import org.eclipse.ui.PlatformUI;
 import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.property_support.ColorHelper;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 
 import MWC.GUI.Editable;
@@ -22,8 +27,10 @@ import MWC.GUI.Chart.Painters.CoastPainter;
 import MWC.GUI.Chart.Painters.GridPainter;
 import MWC.GUI.Chart.Painters.ScalePainter;
 import MWC.GUI.VPF.FeaturePainter;
+import MWC.GenericData.Watchable;
 
-public class CoreViewLabelProvider extends LabelProvider implements ITableLabelProvider
+public class CoreViewLabelProvider extends LabelProvider implements
+		ITableLabelProvider
 {
 
 	static Vector<ViewLabelImageHelper> imageHelpers = null;
@@ -42,6 +49,8 @@ public class CoreViewLabelProvider extends LabelProvider implements ITableLabelP
 	 * image to indicate that item isn't plottable
 	 */
 	Image nonVisibleImage = null;
+
+	private ImageRegistry _imageRegistry;
 
 	/**
 	 * 
@@ -69,16 +78,44 @@ public class CoreViewLabelProvider extends LabelProvider implements ITableLabelP
 		imageHelpers.remove(helper);
 	}
 
-	
 	public String getText(Object obj)
 	{
 		EditableWrapper pw = (EditableWrapper) obj;
 		return pw.getEditable().toString();
 	}
 
+	protected Image getLocallyCachedImage(String index)
+	{
+		if (_imageRegistry == null)
+			_imageRegistry = new ImageRegistry();
+
+		return _imageRegistry.get(index);
+	}
+
+	protected void storeLocallyCachedImage(String index, Image image)
+	{
+		if (_imageRegistry == null)
+			_imageRegistry = new ImageRegistry();
+
+		_imageRegistry.put(index, image);
+	}
+	
+
+	/** ditch the cache, so we generate new ones as required
+	 * 
+	 */
+	public void resetCache()
+	{	
+		// ditch all of the images
+		_imageRegistry.dispose();
+		
+		_imageRegistry = new ImageRegistry();
+	}
+
+
 	public Image getImage(Object subject)
 	{
-		
+
 		EditableWrapper item = (EditableWrapper) subject;
 		Editable editable = item.getEditable();
 
@@ -88,7 +125,8 @@ public class CoreViewLabelProvider extends LabelProvider implements ITableLabelP
 		ImageDescriptor thirdPartyImageDescriptor = null;
 		if (imageHelpers != null)
 		{
-			for (Iterator<ViewLabelImageHelper> iter = imageHelpers.iterator(); iter.hasNext();)
+			for (Iterator<ViewLabelImageHelper> iter = imageHelpers.iterator(); iter
+					.hasNext();)
 			{
 				ViewLabelImageHelper helper = (ViewLabelImageHelper) iter.next();
 				thirdPartyImageDescriptor = helper.getImageFor(editable);
@@ -100,9 +138,56 @@ public class CoreViewLabelProvider extends LabelProvider implements ITableLabelP
 		}
 
 		if (thirdPartyImageDescriptor != null)
-		{ 
-			// cool go for it - get the image from a cache
-			res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
+		{
+			// right, is this something that we apply color to?
+			if (editable instanceof Watchable)
+			{
+				Watchable thisW = (Watchable) editable;
+
+				// sort out the color index
+				Color thisCol = thisW.getColor();
+				String thisId = thirdPartyImageDescriptor.toString() + thisCol;
+
+				// do we have a cached image for this combination?
+				res = getLocallyCachedImage(thisId);
+
+				// have a look
+				if (res == null)
+				{
+					// nope, better generate one
+					res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
+					
+					// now apply our decoration
+					if (res != null)
+					{
+						// take a clone of the image
+						res = new Image(Display.getCurrent(), res.getImageData());
+						int wid = res.getBounds().width;
+						int ht = res.getBounds().height;
+
+						// create a graphics context for this new image
+						GC newGC = new GC(res);
+						
+						// set the color of our editable
+						org.eclipse.swt.graphics.Color thisColor = ColorHelper.getColor(thisW.getColor());
+						newGC.setBackground(thisColor);
+						
+						// apply a color wash
+						newGC.fillRectangle(0,0,wid,ht);
+						
+						// and dispose the GC
+						newGC.dispose();
+
+						// and store the new image
+						storeLocallyCachedImage(thisId, res);
+					}
+				}
+			}
+			else
+			{
+				// nope, better generate one
+				res = CorePlugin.getImageFromRegistry(thirdPartyImageDescriptor);
+			}
 		}
 		else
 		{
@@ -128,6 +213,7 @@ public class CoreViewLabelProvider extends LabelProvider implements ITableLabelP
 				res = CorePlugin.getImageFromRegistry(imageKey);
 			}
 		}
+
 		return res;
 	}
 
