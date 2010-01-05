@@ -224,7 +224,6 @@ public final class StackedDotHelper
 		// and check there's actually something in the re
 		if (_primaryDoublets.size() == 0)
 			return;
-
 		
 		// create the collection of series
 		final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
@@ -492,14 +491,14 @@ public final class StackedDotHelper
 			TrackManager tracks, boolean onlyVis, Composite holder,
 			ErrorLogger logger, boolean updateDoublets)
 	{
+		
+		// do we have anything?
+		if(_primaryTrack == null)
+			return;
+
 		// ok, find the track wrappers
 		if (_secondaryTrack == null)
 			initialise(tracks, false, onlyVis, holder, logger, "Frequency");
-
-		// did it work?
-
-		if (_primaryDoublets == null)
-			return;
 
 		// ok - the tracks have moved. better update the doublets
 		if (updateDoublets)
