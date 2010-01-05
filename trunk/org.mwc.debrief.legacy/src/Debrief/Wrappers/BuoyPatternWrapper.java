@@ -157,6 +157,7 @@ import java.util.Vector;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Plottable;
 import MWC.GenericData.HiResDate;
@@ -541,6 +542,8 @@ public final class BuoyPatternWrapper extends MWC.GUI.PlainWrapper implements
 	 * @param theCol
 	 *          the colour
 	 */
+	@FireReformatted
+
 	public void setColor(final Color theCol)
 	{
 		super.setColor(theCol);

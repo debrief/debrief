@@ -238,6 +238,7 @@ import java.util.Vector;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.GUI.Properties.LineStylePropertyEditor;
@@ -744,6 +745,7 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 		return super.getColor();
 	}
 
+	@FireReformatted
 	public final void setColor(final java.awt.Color theCol)
 	{
 		super.setColor(theCol);

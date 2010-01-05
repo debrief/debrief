@@ -383,7 +383,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		_showSymbol = false;
 
 		// reset the colour
-		setColor(null);
+		setColorQuiet(null);
 
 		// check that/if we have an area for this fix
 		final WorldLocation wl = theFix.getLocation();
@@ -558,9 +558,25 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		 */
 	}
 
+	
+	
+	@Override
+	@FireReformatted
+	public void setColor(Color theColor) {
+		// let the parent do the business
+		super.setColor(theColor);
+		
+		// and update the color of the location wrapper
+		_theLocationWrapper.setColor(getColor());
+	}
+
+	/** paint this shape
+	 * 
+	 * @param dest
+	 * @param centre
+	 */
 	public final void paintMe(final CanvasType dest, WorldLocation centre)
 	{
-		_theLocationWrapper.setColor(getColor());
 
 		if (getSymbolShowing())
 		{

@@ -1321,9 +1321,6 @@ public class LayerManagerView extends ViewPart
 
 	protected void processReformattedLayers()
 	{
-		// right, tell our label generator to ditch it's cache, since one or more
-		// of the images may have changed
-		_myLabelProvider.resetCache();
 		
 		try
 		{
@@ -1345,7 +1342,6 @@ public class LayerManagerView extends ViewPart
 					// add the item and its children to the list
 					addItemAndChildrenToList(newList, thisItem);
 				}
-
 			}
 			else
 			{
@@ -1362,6 +1358,12 @@ public class LayerManagerView extends ViewPart
 				}
 			}
 
+			// delete the images for the specified items from the image cache
+			// right, tell our label generator to ditch it's cache, since one or more
+			// of the images may have changed
+			_myLabelProvider.resetCacheFor(newList);
+			
+			
 			// and do the update
 			Object[] itemsToUpdate = newList.toArray();
 			_treeViewer

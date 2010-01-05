@@ -289,10 +289,10 @@ public class RotateDragMode extends DragMode
 	 */
 	private static boolean showInProperties()
 	{
-		String showDragStr = CorePlugin.getToolParent().getProperty(
-				PrefsPage.PreferenceConstants.SHOW_DRAG_IN_PROPS);
-		boolean showDrag = Boolean.parseBoolean(showDragStr);
-		return showDrag;
+		String dontShowDragStr = CorePlugin.getToolParent().getProperty(
+				PrefsPage.PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS);
+		boolean dontShowDrag = Boolean.parseBoolean(dontShowDragStr);
+		return !dontShowDrag;
 	}
 
 	/**

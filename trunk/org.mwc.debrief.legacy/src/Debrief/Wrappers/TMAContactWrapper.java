@@ -87,6 +87,7 @@ import java.beans.PropertyDescriptor;
 import Debrief.GUI.Tote.Painters.SnailDrawTMAContact;
 import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
+import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.LocationPropertyEditor;
 import MWC.GUI.Shapes.EllipseShape;
@@ -403,6 +404,7 @@ public final class TMAContactWrapper extends
 		_DTG = val;
 	}
 
+	@FireReformatted
 	public final void setColor(final Color val)
 	{
 		super.setColor(val);

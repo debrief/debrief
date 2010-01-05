@@ -21,7 +21,7 @@ public class PreferenceInitializer extends
 		IPreferenceStore store = CorePlugin.getDefault().getPreferenceStore();
 		store.setDefault(PrefsPage.PreferenceConstants.AUTO_SELECT, true);
 		store.setDefault(PrefsPage.PreferenceConstants.CALC_SLANT_RANGE, false);
-		store.setDefault(PrefsPage.PreferenceConstants.SHOW_DRAG_IN_PROPS, true);
+		store.setDefault(PrefsPage.PreferenceConstants.DONT_SHOW_DRAG_IN_PROPS, true);
 	}
 
 }
