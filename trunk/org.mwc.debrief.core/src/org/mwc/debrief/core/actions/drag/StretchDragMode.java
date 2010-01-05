@@ -5,8 +5,10 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.core.DebriefPlugin;
 
 import Debrief.Wrappers.FixWrapper;
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.CoreTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
+import MWC.GUI.Layers;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -20,9 +22,9 @@ public class StretchDragMode extends RotateDragMode
 		private Double lastRange;
 
 		public StretchOperation(WorldLocation cursorLoc, WorldLocation origin,
-				CoreTMASegment segment)
+				CoreTMASegment segment, TrackWrapper parent, Layers theLayers)
 		{
-			super(cursorLoc, origin, segment);
+			super(cursorLoc, origin, segment, parent, theLayers);
 		}
 
 		public void shift(WorldVector vector)
@@ -50,6 +52,11 @@ public class StretchDragMode extends RotateDragMode
 			// and remember it
 			lastRange = new Double(rng);
 			
+			
+			// and tell the props view to update itself
+			updatePropsView(seg, _parent, _layers);
+
+			
 		}
 	
 		public Cursor getHotspotCursor()
@@ -67,9 +74,9 @@ public class StretchDragMode extends RotateDragMode
 	 *          the segment being dragged
 	 * @return an operation we can use to do this
 	 */
-	protected DraggableItem getCentreOperation(final TrackSegment seg)
+	protected DraggableItem getCentreOperation(final TrackSegment seg, TrackWrapper parent, Layers theLayers)
 	{
-		return new StretchFanOperation(seg);
+		return new StretchFanOperation(seg, parent, theLayers);
 	}
 
 
@@ -80,9 +87,9 @@ public class StretchDragMode extends RotateDragMode
 
 	@Override
 	protected DraggableItem getEndOperation(WorldLocation cursorLoc,
-			TrackSegment seg, FixWrapper subject)
+			TrackSegment seg, FixWrapper subject, TrackWrapper parent, Layers theLayers)
 	{
-		return new StretchOperation(cursorLoc, subject.getFixLocation(), (CoreTMASegment) seg);
+		return new StretchOperation(cursorLoc, subject.getFixLocation(), (CoreTMASegment) seg, parent, theLayers);
 	}
 
 	@Override

@@ -4,6 +4,7 @@ import java.awt.Point;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GenericData.WorldDistance;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -45,7 +46,7 @@ public interface DraggableItem
 	 *          the layer to update when drag is complete
 	 */
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			DraggableItem.LocationConstruct currentNearest, Layer parentLayer);
+			DraggableItem.LocationConstruct currentNearest, Layer parentLayer, Layers theLayers);
 
 	/**
 	 * get the name of the item, so we can place a detailed description on the

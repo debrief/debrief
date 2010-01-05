@@ -73,7 +73,7 @@ public class DragFeature extends CoreDragAction
 
 	public void findNearest(Layer thisLayer,
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
-			LocationConstruct currentNearest, Layer parentLayer)
+			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
 	{
 		// 
 		Layer thisParentLayer;
@@ -93,7 +93,7 @@ public class DragFeature extends CoreDragAction
 				DraggableItem dw = (DraggableItem) thisLayer;
 
 				// yup, find the distance to it's nearest point
-				dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest, thisParentLayer);
+				dw.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest, thisParentLayer, theData);
 
 				// right, this one's processed. carry on
 				sorted = true;
@@ -111,7 +111,7 @@ public class DragFeature extends CoreDragAction
 					// is this item a layer itself?
 					if (pt instanceof Layer)
 					{
-						findNearest((Layer) pt, cursorLoc, cursorPos, currentNearest, thisParentLayer);
+						findNearest((Layer) pt, cursorLoc, cursorPos, currentNearest, thisParentLayer, theData);
 					}
 					else
 					{
@@ -124,7 +124,7 @@ public class DragFeature extends CoreDragAction
 
 							// yup, find the distance to it's nearest point
 							draggable.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
-									thisParentLayer);
+									thisParentLayer, theData);
 
 							// right, this one's processed. carry on
 							sorted = true;
@@ -235,7 +235,7 @@ public class DragFeature extends CoreDragAction
 					// find the nearest items, this method call will recursively pass down
 					// through
 					// the layers
-					findNearest(thisL, cursorLoc, cursorPt, currentNearest, null);
+					findNearest(thisL, cursorLoc, cursorPt, currentNearest, null,theData);
 				}
 			}
 

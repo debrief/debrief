@@ -13,6 +13,7 @@ import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -28,7 +29,7 @@ public class TranslateOperation implements DraggableItem, IconProvider
 		
 	}
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer)
+			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
 	{
 	}
 

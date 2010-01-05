@@ -1611,7 +1611,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer)
+			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
 	{
 		// initialise thisDist, since we're going to be over-writing it
 		WorldDistance thisDist = new WorldDistance(0, WorldDistance.DEGS);

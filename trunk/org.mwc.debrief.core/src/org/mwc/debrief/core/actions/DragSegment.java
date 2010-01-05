@@ -68,7 +68,7 @@ public class DragSegment extends DragFeature {
 		public void findNearest(Layer thisLayer,
 				MWC.GenericData.WorldLocation cursorLoc,
 				java.awt.Point cursorPos, LocationConstruct currentNearest,
-				Layer parentLayer) {
+				Layer parentLayer, Layers theLayers) {
 			// we only act on track wrappers, check if this is one
 			if (thisLayer instanceof TrackWrapper) {
 				TrackWrapper thisTrack = (TrackWrapper) thisLayer;
@@ -170,7 +170,7 @@ public class DragSegment extends DragFeature {
 			IWorkbench wb = PlatformUI.getWorkbench();
 			IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
 			IWorkbenchPage page = win.getActivePage();
-			page.showView(CorePlugin.STACKED_DOTS);
+			page.showView(CorePlugin.STACKED_DOTS);			
 		} catch (PartInitException e) {
 			CorePlugin
 					.logError(IStatus.ERROR, "Failed to open stacked dots", e);
@@ -185,10 +185,10 @@ public class DragSegment extends DragFeature {
 	@Override
 	public void findNearest(Layer thisLayer,
 			MWC.GenericData.WorldLocation cursorLoc, java.awt.Point cursorPos,
-			LocationConstruct currentNearest, Layer parentLayer) {
+			LocationConstruct currentNearest, Layer parentLayer, Layers theLayers) {
 		if (_currentDragMode != null)
 			_currentDragMode.findNearest(thisLayer, cursorLoc, cursorPos,
-					currentNearest, parentLayer);
+					currentNearest, parentLayer, theLayers);
 	}
 
 	@Override

@@ -1104,7 +1104,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer)
+			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
 	{
 		// calculate the distance
 		WorldDistance thisDist = new WorldDistance(rangeFrom(cursorLoc),

@@ -239,6 +239,7 @@ import Debrief.GUI.Tote.Painters.SnailPainter.DoNotHighlightMe;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Properties.LineStylePropertyEditor;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.HasDraggableComponents;
@@ -1099,10 +1100,10 @@ public class ShapeWrapper extends MWC.GUI.PlainWrapper implements java.beans.Pro
 	}
 
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer)
+			LocationConstruct currentNearest, Layer parentLayer, Layers theData)
 	{
 		_theShape.findNearestHotSpotIn(cursorPos, cursorLoc, currentNearest,
-				parentLayer);
+				parentLayer, theData);
 
 	}
 

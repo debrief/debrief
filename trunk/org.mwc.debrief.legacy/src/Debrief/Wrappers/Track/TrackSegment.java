@@ -18,6 +18,7 @@ import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.GriddableSeriesMarker;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.PlainWrapper;
 import MWC.GUI.Plottable;
 import MWC.GUI.TimeStampedDataItem;
@@ -478,7 +479,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 	public void findNearestHotSpotIn(final Point cursorPos,
 			final WorldLocation cursorLoc, final LocationConstruct currentNearest,
-			final Layer parentLayer)
+			final Layer parentLayer, Layers theData)
 	{
 	}
 

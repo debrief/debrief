@@ -36,6 +36,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 	{
 		addField(new BooleanFieldEditor(PreferenceConstants.AUTO_SELECT, "Select newly created items in Properties View", getFieldEditorParent()));		
 		addField(new BooleanFieldEditor(PreferenceConstants.CALC_SLANT_RANGE, "Use Slant range in Tote range calculations", getFieldEditorParent()));		
+		addField(new BooleanFieldEditor(PreferenceConstants.SHOW_DRAG_IN_PROPS, "Show current details in properties window when dragging TMA solution", getFieldEditorParent()));		
 	}
 
 	/*
@@ -54,6 +55,7 @@ public class PrefsPage extends FieldEditorPreferencePage implements
 	{
 		public static final String AUTO_SELECT = "AUTO_SELECT";
 		public static final String CALC_SLANT_RANGE = "CALC_SLANT_RANGE";
+		public static final String SHOW_DRAG_IN_PROPS = "SHOW_DRAG_IN_PROPS";
 	}
 
 }

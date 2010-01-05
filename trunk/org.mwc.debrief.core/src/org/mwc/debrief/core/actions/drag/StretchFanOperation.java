@@ -10,10 +10,12 @@ import org.eclipse.swt.widgets.Display;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.IconProvider;
 
+import Debrief.Wrappers.TrackWrapper;
 import Debrief.Wrappers.Track.RelativeTMASegment;
 import Debrief.Wrappers.Track.TrackSegment;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GenericData.WorldLocation;
 import MWC.GenericData.WorldVector;
@@ -22,14 +24,18 @@ public class StretchFanOperation implements DraggableItem, IconProvider
 {
 
 	final private TrackSegment _mySegment;
+	final private Layers _layers;
+	private TrackWrapper _parent;
 
-	public StretchFanOperation(TrackSegment segment)
+	public StretchFanOperation(TrackSegment segment, TrackWrapper parent, Layers theLayers)
 	{
 		_mySegment = segment;
+		_layers = theLayers;
+		_parent = parent;
 		
 	}
 	public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-			LocationConstruct currentNearest, Layer parentLayer)
+			LocationConstruct currentNearest, Layer parentLayer, Layers theLayers)
 	{
 	}
 
@@ -53,6 +59,10 @@ public class StretchFanOperation implements DraggableItem, IconProvider
 			// tell it to do a fan stretch
 			seg.fanStretch(vector);
 			
+			
+			// and tell the props view to update itself
+			RotateDragMode.updatePropsView(seg, _parent, _layers);
+
 		}
 		else
 		{

@@ -121,6 +121,7 @@ import java.io.Serializable;
 
 import MWC.GUI.CanvasType;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Shapes.HasDraggableComponents.ComponentConstruct;
 import MWC.GenericData.WorldArea;
 import MWC.GenericData.WorldDistance;
@@ -413,7 +414,7 @@ abstract public class PlainShape implements Serializable, DraggableItem  {
 	 * @param currentNearest
 	 * @param parentLayer
 	 */
-	public final void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, LocationConstruct currentNearest, Layer parentLayer)
+	public final void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc, LocationConstruct currentNearest, Layer parentLayer, Layers theLayers)
 	{
 
 	// initialise thisDist, since we're going to be over-writing it

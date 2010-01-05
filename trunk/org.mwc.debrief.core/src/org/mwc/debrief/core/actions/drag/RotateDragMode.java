@@ -5,11 +5,24 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.Iterator;
 
+import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.graphics.Cursor;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.ui.IPageLayout;
+import org.eclipse.ui.IViewPart;
+import org.eclipse.ui.IWorkbench;
+import org.eclipse.ui.IWorkbenchPage;
+import org.eclipse.ui.IWorkbenchWindow;
+import org.eclipse.ui.PlatformUI;
+import org.eclipse.ui.views.properties.PropertySheet;
+import org.eclipse.ui.views.properties.PropertySheetPage;
+import org.mwc.cmap.core.CorePlugin;
+import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.debrief.core.DebriefPlugin;
 import org.mwc.debrief.core.actions.DragSegment.DragMode;
 import org.mwc.debrief.core.actions.DragSegment.IconProvider;
+import org.mwc.debrief.core.preferences.PrefsPage;
 
 import Debrief.Wrappers.FixWrapper;
 import Debrief.Wrappers.TrackWrapper;
@@ -18,6 +31,7 @@ import Debrief.Wrappers.Track.TrackWrapper_Support.SegmentList;
 import MWC.GUI.CanvasType;
 import MWC.GUI.Editable;
 import MWC.GUI.Layer;
+import MWC.GUI.Layers;
 import MWC.GUI.Shapes.DraggableItem;
 import MWC.GUI.Shapes.DraggableItem.LocationConstruct;
 import MWC.GenericData.WorldArea;
@@ -97,7 +111,8 @@ public class RotateDragMode extends DragMode
 
 	@Override
 	public void findNearest(Layer thisLayer, final WorldLocation cursorLoc,
-			Point cursorPos, LocationConstruct currentNearest, Layer parentLayer)
+			Point cursorPos, LocationConstruct currentNearest, Layer parentLayer,
+			Layers theLayers)
 	{
 		/**
 		 * we need to get the following hit points, both ends (to support rotate),
@@ -124,9 +139,11 @@ public class RotateDragMode extends DragMode
 				WorldDistance lastDist = calcDist(lastLoc, cursorLoc);
 				WorldDistance centreDist = calcDist(centreLoc, cursorLoc);
 
-				DraggableItem centreEnd = getCentreOperation(seg);
-				DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last);
-				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first);
+				DraggableItem centreEnd = getCentreOperation(seg, track, theLayers);
+				DraggableItem firstEnd = getEndOperation(cursorLoc, seg, last, track,
+						theLayers);
+				DraggableItem lastEnd = getEndOperation(cursorLoc, seg, first, track,
+						theLayers);
 
 				currentNearest.checkMe(firstEnd, firstDist, null, thisLayer);
 				currentNearest.checkMe(lastEnd, lastDist, null, thisLayer);
@@ -135,7 +152,8 @@ public class RotateDragMode extends DragMode
 		}
 	}
 
-	/** whether this type of track is suitable for our operation
+	/**
+	 * whether this type of track is suitable for our operation
 	 * 
 	 * @param seg
 	 * @return
@@ -154,12 +172,15 @@ public class RotateDragMode extends DragMode
 	 *          the segment that's being dragged
 	 * @param subject
 	 *          which end we're manipulating
+	 * @param parentTrack
 	 * @return
 	 */
 	protected DraggableItem getEndOperation(final WorldLocation cursorLoc,
-			final TrackSegment seg, final FixWrapper subject)
+			final TrackSegment seg, final FixWrapper subject,
+			TrackWrapper parentTrack, Layers theLayers)
 	{
-		return new RotateOperation(cursorLoc, subject.getFixLocation(), seg);
+		return new RotateOperation(cursorLoc, subject.getFixLocation(), seg,
+				parentTrack, theLayers);
 	}
 
 	/**
@@ -167,9 +188,14 @@ public class RotateDragMode extends DragMode
 	 * 
 	 * @param seg
 	 *          the segment being dragged
+	 * @param parent
+	 *          the parent track for this segment
+	 * @param theLayers
+	 *          the set of layers data
 	 * @return an operation we can use to do this
 	 */
-	protected DraggableItem getCentreOperation(final TrackSegment seg)
+	protected DraggableItem getCentreOperation(final TrackSegment seg,
+			TrackWrapper parent, Layers theLayers)
 	{
 		return new TranslateOperation(seg);
 	}
@@ -197,19 +223,22 @@ public class RotateDragMode extends DragMode
 		WorldLocation _origin;
 		Double lastRotate = null;
 		TrackSegment _segment;
+		protected TrackWrapper _parent;
+		protected Layers _layers;
 
 		public RotateOperation(WorldLocation cursorLoc, WorldLocation origin,
-				TrackSegment segment)
+				TrackSegment segment, TrackWrapper parentTrack, Layers theLayers)
 		{
 			workingLoc = cursorLoc;
 			_origin = origin;
 			originalBearing = cursorLoc.subtract(_origin).getBearing();
 			_segment = segment;
-
+			_parent = parentTrack;
+			_layers = theLayers;
 		}
 
 		public void findNearestHotSpotIn(Point cursorPos, WorldLocation cursorLoc,
-				LocationConstruct currentNearest, Layer parentLayer)
+				LocationConstruct currentNearest, Layer parentLayer, Layers theLayers)
 		{
 		}
 
@@ -243,7 +272,9 @@ public class RotateDragMode extends DragMode
 			_segment.rotate(brg, _origin);
 			// and remember it
 			lastRotate = new Double(brg);
-					
+
+			// and tell the props view to update itself
+			updatePropsView(_segment, _parent, _layers);
 		}
 
 		public Cursor getHotspotCursor()
@@ -253,4 +284,59 @@ public class RotateDragMode extends DragMode
 		}
 	}
 
+	/** whether the user wants the live solution data to be shown in the properties window
+	 * @return yes/no
+	 */
+	private static boolean showInProperties()
+	{
+		String showDragStr = CorePlugin.getToolParent().getProperty(
+				PrefsPage.PreferenceConstants.SHOW_DRAG_IN_PROPS);
+		boolean showDrag = Boolean.parseBoolean(showDragStr);
+		return showDrag;
+	}
+
+	/**
+	 * utility function to stick the supplied item on the properties view, and
+	 * then refresh it.
+	 * 
+	 * @param subject
+	 *          what to show as the current selection
+	 */
+	public static void updatePropsView(final TrackSegment subject,
+			final TrackWrapper parent, final Layers theLayers)
+	{
+		if (!showInProperties())
+			return;
+
+		// get the current properties page
+		IWorkbench wb = PlatformUI.getWorkbench();
+		IWorkbenchWindow win = wb.getActiveWorkbenchWindow();
+		final IWorkbenchPage page = win.getActivePage();
+		IViewPart view = page.findView(IPageLayout.ID_PROP_SHEET);
+
+		// do we have a properties view open?
+		if (view != null)
+		{
+			PropertySheet ps = (PropertySheet) view;
+			PropertySheetPage thisPage = (PropertySheetPage) ps.getCurrentPage();
+
+			// and have we found a properties page?
+			if (thisPage != null && !thisPage.getControl().isDisposed())
+			{
+				// wrap the plottable
+				EditableWrapper parentP = new EditableWrapper(parent, null, theLayers);
+				EditableWrapper wrapped = new EditableWrapper(subject, parentP,
+						theLayers);
+				ISelection selected = new StructuredSelection(wrapped);
+
+				// tell the properties page to show what we're dragging
+				thisPage
+						.selectionChanged(win.getActivePage().getActivePart(), selected);
+
+				// and trigger the update
+				thisPage.refresh();
+			}
+		}
+
+	}
 }
