@@ -505,6 +505,14 @@ public final class StackedDotHelper
 		if (updateDoublets)
 			updateDoublets(onlyVis);
 
+		// aah - but what if we've ditched our doublets?
+		if (_primaryDoublets == null)
+			return;
+
+		// and check there's actually something in the re
+		if (_primaryDoublets.size() == 0)
+			return;
+
 		// create the collection of series
 		final TimeSeriesCollection errorSeries = new TimeSeriesCollection();
 		final TimeSeriesCollection actualSeries = new TimeSeriesCollection();
