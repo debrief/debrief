@@ -304,10 +304,10 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	private Boolean _showLabel;
 
 	/**
-	 * the track we are a part of (note, we're making it static so
-	 * that when we serialise it we don't store a full copy of the parent
-	 * track and all it's other fixes.  We don't need to store it since it 
-	 * gets set when we add it to a new parent layer
+	 * the track we are a part of (note, we're making it static so that when we
+	 * serialise it we don't store a full copy of the parent track and all it's
+	 * other fixes. We don't need to store it since it gets set when we add it to
+	 * a new parent layer
 	 */
 	private transient TrackWrapper _trackWrapper;
 	/**
@@ -322,7 +322,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	/**
 	 * the area covered by this fix
 	 */
-	private transient  WorldArea _myArea;
+	private transient WorldArea _myArea;
 
 	/**
 	 * a single instance of our editor type - which can be listened to by multiple
@@ -347,11 +347,11 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * 
 	 */
 	private boolean _lineShowing = true;
-	
 
-	/** take a static reference for the list of property descriptors for this object,
-	 * since we repeatedly retrieve them (each time we do a property edit), yet they
-	 * are identical across all objects of this type
+	/**
+	 * take a static reference for the list of property descriptors for this
+	 * object, since we repeatedly retrieve them (each time we do a property
+	 * edit), yet they are identical across all objects of this type
 	 */
 	private static PropertyDescriptor[] _myInfoPropertyDescriptors = null;
 
@@ -398,6 +398,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * instruct this object to clear itself out, ready for ditching
 	 * 
 	 */
+	@Override
 	public final void closeMe()
 	{
 		// do the parent
@@ -423,24 +424,24 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * produce an interpolated fix between the two supplied ones
 	 * 
 	 */
-	static public FixWrapper interpolateFix(FixWrapper previous, FixWrapper next,
-			HiResDate dtg)
+	static public FixWrapper interpolateFix(final FixWrapper previous,
+			final FixWrapper next, final HiResDate dtg)
 	{
 		FixWrapper res = null;
 
 		// and the time different?
-		long timeDiffMicros = next.getTime().getMicros()
+		final long timeDiffMicros = next.getTime().getMicros()
 				- previous.getTime().getMicros();
 
 		// through what proportion are we travelling?
-		long thisDelta = dtg.getMicros() - previous.getTime().getMicros();
+		final long thisDelta = dtg.getMicros() - previous.getTime().getMicros();
 
 		// sort out the proportion
-		double proportion = (double) thisDelta / (double) timeDiffMicros;
+		final double proportion = (double) thisDelta / (double) timeDiffMicros;
 
 		// LOCATION
 		// what's the separation
-		WorldVector sep = next.getLocation().subtract(previous.getLocation());
+		final WorldVector sep = next.getLocation().subtract(previous.getLocation());
 
 		// do the calcs
 		double dLat = next.getLocation().getLat() - previous.getLocation().getLat();
@@ -460,7 +461,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		// proportion, sep.getDepth() * proportion);
 
 		// cool, sort out the new location
-		WorldLocation newLoc = new WorldLocation(previous.getLocation().getLat()
+		final WorldLocation newLoc = new WorldLocation(previous.getLocation()
+				.getLat()
 				+ dLat, previous.getLocation().getLong() + dLong, previous.getDepth()
 				+ dDepth);
 
@@ -478,7 +480,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		final double newSpeed = spdKts;
 		final double newCourse = crse;
 
-		Fix tmpFix = new Fix(dtg, newLoc, newCourse, newSpeed);
+		final Fix tmpFix = new Fix(dtg, newLoc, newCourse, newSpeed);
 
 		res = new InterpolatedFixWrapper(tmpFix);
 		res.setTrackWrapper(previous.getTrackWrapper());
@@ -510,6 +512,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * 
 	 * @return the colour of this fix, or the track if null
 	 */
+	@Override
 	public final Color getColor()
 	{
 		if (super.getColor() == null)
@@ -550,6 +553,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _theLocationWrapper.getSymbolScale();
 	}
 
+	@Override
 	public final void paint(final CanvasType dest)
 	{
 		/**
@@ -558,25 +562,32 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		 */
 	}
 
-	
-	
 	@Override
 	@FireReformatted
-	public void setColor(Color theColor) {
+	public void setColor(final Color theColor)
+	{
 		// let the parent do the business
 		super.setColor(theColor);
-		
+
 		// and update the color of the location wrapper
 		_theLocationWrapper.setColor(getColor());
 	}
 
-	/** paint this shape
+	/**
+	 * paint this shape
 	 * 
 	 * @param dest
 	 * @param centre
 	 */
-	public final void paintMe(final CanvasType dest, WorldLocation centre)
+	public final void paintMe(final CanvasType dest, final WorldLocation centre)
 	{
+
+		// check the color of the location wrapper
+		final Color locCol = _theLocationWrapper.getColor();
+		if (locCol != getColor())
+		{
+			_theLocationWrapper.setColor(getColor());
+		}
 
 		if (getSymbolShowing())
 		{
@@ -634,6 +645,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		_theFont = theFont;
 	}
 
+	@Override
 	public final WorldArea getBounds()
 	{
 		// check that our bounds have been defined
@@ -665,6 +677,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		}
 	}
 
+	@Override
 	public final String toString()
 	{
 		return getName();
@@ -681,6 +694,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		_theLabel.setString(val);
 	}
 
+	@Override
 	public final String getName()
 	{
 		return getLabel();
@@ -731,6 +745,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	/**
 	 * get the editing information for this type
 	 */
+	@Override
 	public final Editable.EditorType getInfo()
 	{
 		String trkName = "Track unset";
@@ -746,6 +761,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _myEditor;
 	}
 
+	@Override
 	public final boolean hasEditor()
 	{
 		return true;
@@ -755,6 +771,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * how far away are we from this point? or return null if it can't be
 	 * calculated
 	 */
+	@Override
 	public final double rangeFrom(final WorldLocation other)
 	{
 		return _theFix.getLocation().rangeFrom(other);
@@ -782,7 +799,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * @param val
 	 *          the course (rads)
 	 */
-	public void setCourse(double val)
+	public void setCourse(final double val)
 	{
 		_theFix.setCourse(val);
 	}
@@ -799,7 +816,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * change the course
 	 * 
 	 */
-	public void setCourseDegs(double val)
+	public void setCourseDegs(final double val)
 	{
 		_theFix.setCourse(MWC.Algorithms.Conversions.Degs2Rads(val));
 	}
@@ -810,7 +827,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * @param val
 	 *          the speed (knots)
 	 */
-	public void setSpeed(double val)
+	public void setSpeed(final double val)
 	{
 		_theFix.setSpeed(MWC.Algorithms.Conversions.Kts2Yps(val));
 	}
@@ -839,7 +856,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _theFix.getTime();
 	}
 
-	public void setDepth(double val)
+	public void setDepth(final double val)
 	{
 		_theFix.getLocation().setDepth(val);
 	}
@@ -929,7 +946,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	 * meet the requirements of the comparable interface
 	 * 
 	 */
-	public final int compareTo(Plottable o)
+	@Override
+	public final int compareTo(final Plottable o)
 	{
 		int res = 0;
 
@@ -950,7 +968,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return res;
 	}
 
-	public void setLineShowing(boolean val)
+	public void setLineShowing(final boolean val)
 	{
 		_lineShowing = val;
 	}
@@ -960,11 +978,10 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		return _lineShowing;
 	}
 
-	public void setLocation(WorldLocation val)
+	public void setLocation(final WorldLocation val)
 	{
 		_theFix.setLocation(val);
 	}
-
 
 	// ////////////////////////////////////////////////////
 	// bean info for this class
@@ -978,6 +995,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 			super(data, theName, trackName + ": theName");
 		}
 
+		@Override
 		public final String getDisplayName()
 		{
 			return getTrackWrapper().getName() + ":" + super.getName();
@@ -1001,7 +1019,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 				return res;
 
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				return super.getPropertyDescriptors();
 			}
@@ -1044,7 +1062,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 					_myInfoPropertyDescriptors = res;
 				}
 			}
-			catch (IntrospectionException e)
+			catch (final IntrospectionException e)
 			{
 				_myInfoPropertyDescriptors = super.getPropertyDescriptors();
 			}
@@ -1064,8 +1082,8 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
 		public final SubjectAction[] getUndoableActions()
 		{
-			FixWrapper fw = (FixWrapper) getData();
-			String lbl = fw.getLabel();
+			final FixWrapper fw = (FixWrapper) getData();
+			final String lbl = fw.getLabel();
 			final SubjectAction[] res = new SubjectAction[]
 			{ new SplitTrack(true, "Split track before " + lbl),
 					new SplitTrack(false, "Split track after " + lbl) };
@@ -1091,7 +1109,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		 * 
 		 * @param fixData
 		 */
-		public InterpolatedFixWrapper(Fix fixData)
+		public InterpolatedFixWrapper(final Fix fixData)
 		{
 			super(fixData);
 		}
@@ -1117,19 +1135,19 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 			return stringTags;
 		}
 
-		public void setAsText(String val)
+		public void setAsText(final String val)
 		{
 			_myFormat = getMyIndexOf(val);
 		}
 
-		private int getMyIndexOf(String val)
+		private int getMyIndexOf(final String val)
 		{
 			int res = INVALID_INDEX;
 
 			// cycle through the tags until we get a matching one
 			for (int i = 0; i < getTags().length; i++)
 			{
-				String thisTag = getTags()[i];
+				final String thisTag = getTags()[i];
 				if (thisTag.equals(val))
 				{
 					res = i;
@@ -1228,7 +1246,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	private static class SplitTrack implements SubjectAction
 	{
 		private final boolean _splitBefore;
-		private String _title;
+		private final String _title;
 		private Vector<TrackSegment> _splitSections;
 
 		/**
@@ -1239,7 +1257,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 		 * @param title
 		 *          what to call ourselves
 		 */
-		public SplitTrack(boolean splitBefore, String title)
+		public SplitTrack(final boolean splitBefore, final String title)
 		{
 			_splitBefore = splitBefore;
 			_title = title;
@@ -1250,17 +1268,17 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 			return _title;
 		}
 
-		public void execute(Editable subject)
+		public void execute(final Editable subject)
 		{
-			FixWrapper fix = (FixWrapper) subject;
-			TrackWrapper parent = fix.getTrackWrapper();
+			final FixWrapper fix = (FixWrapper) subject;
+			final TrackWrapper parent = fix.getTrackWrapper();
 			_splitSections = parent.splitTrack(fix, _splitBefore);
 		}
 
-		public void undo(Editable subject)
+		public void undo(final Editable subject)
 		{
-			FixWrapper fix = (FixWrapper) subject;
-			TrackWrapper parent = fix.getTrackWrapper();
+			final FixWrapper fix = (FixWrapper) subject;
+			final TrackWrapper parent = fix.getTrackWrapper();
 			parent.combineSections(_splitSections);
 		}
 
@@ -1276,9 +1294,9 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 
 	}
 
-	public static void main(String[] args)
+	public static void main(final String[] args)
 	{
-		testMe tm = new testMe("scrap");
+		final testMe tm = new testMe("scrap");
 		tm.testMyParams();
 	}
 
@@ -1289,7 +1307,7 @@ public class FixWrapper extends MWC.GUI.PlainWrapper implements Watchable,
 	}
 
 	@Override
-	public void setDTG(HiResDate date)
+	public void setDTG(final HiResDate date)
 	{
 		_theFix.setTime(date);
 	}
