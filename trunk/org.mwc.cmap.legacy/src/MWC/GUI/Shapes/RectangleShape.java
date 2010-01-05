@@ -395,6 +395,9 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		}
 	}
 
+	/** move the whole shape by the specified distance
+	 * 
+	 */
 	public void shift(WorldVector vector)
 	{
 
@@ -407,10 +410,16 @@ public class RectangleShape extends PlainShape implements Editable, HasDraggable
 		// ok, apply the offset to each corner
 		_myArea.setCentre(newCentre);
 		
+		// and make it square again
+		_myArea.normalise();
+		
 		// and inform the parent, so we can shift the label location
 		firePropertyChange("Location", null, null);		
 	}
 
+	/** move one of the corners of the shape
+	 * 
+	 */
 	public void shift(WorldLocation feature, WorldVector vector)
 	{
 		// ok, just shift it...
