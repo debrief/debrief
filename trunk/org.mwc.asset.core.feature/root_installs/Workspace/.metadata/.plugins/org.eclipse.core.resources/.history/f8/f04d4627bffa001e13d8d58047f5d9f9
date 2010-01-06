@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy
+END
+user_control_control.xml
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/user_control_control.xml
+END
+force_prot_control.xml
+K 25
+svn:wc:ra_dav:version-url
+V 110
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/force_prot_control.xml
+END
+lookup_tutorial_scenario.xml
+K 25
+svn:wc:ra_dav:version-url
+V 116
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/lookup_tutorial_scenario.xml
+END
+test1_scenario_valid.xml
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/test1_scenario_valid.xml
+END
+directed_routes_valid.xml
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/directed_routes_valid.xml
+END
+testdip_scenario_valid.xml
+K 25
+svn:wc:ra_dav:version-url
+V 114
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/testdip_scenario_valid.xml
+END
+force_prot_scenario.xml
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/force_prot_scenario.xml
+END
+lookup_test_control.xml
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/lookup_test_control.xml
+END
+user_control_scenario.xml
+K 25
+svn:wc:ra_dav:version-url
+V 113
+/debrief/!svn/ver/2530/trunk/org.mwc.asset.core.feature/root_installs/asset_data/legacy/user_control_scenario.xml
+END

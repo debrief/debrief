@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
+<!-- edited with XML Spy v4.3 U (http://www.xmlspy.com) by ian mayo (pml) -->
+<Scenario Created="2001-12-05T21:00:00" Name="Test 1 scenario file" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="..\schemas\ASSET.xsd" StartTime="2001-12-05T21:00:00">
+	<StepTime Units="seconds" Value="15"/>
+	<Participants>
+		<Helo Name="HELO_ALPHA">
+			<Category Environment="AIRBORNE" Force="BLUE" Type="HELICOPTER"/>
+			<SensorFit>
+				<OpticSensor Name="Helo eyesight">
+					<MinHeight Units="m" Value="0"/>
+				</OpticSensor>
+				<DippingActiveBroadbandSensor SourceLevel="100" Aperture="360" Name="Helo dipper">
+					<AirLowerRate Units="m/s" Value="6"/>
+					<AirRaiseRate Units="m/s" Value="3"/>
+					<WaterLowerRate Units="m/s" Value="4"/>
+					<WaterRaiseRate Units="m/s" Value="1"/>
+					<RaisePause Units="seconds" Value="5"/>
+					<LowerPause Units="seconds" Value="3"/>
+				</DippingActiveBroadbandSensor>
+			</SensorFit>
+			<Status Course="12" Fuel="99">
+				<Location>
+					<shortLocation Lat="0.47" Long="0.49">
+						<Height Units="m" Value="100"/>
+					</shortLocation>
+				</Location>
+				<Speed Units="m/s" Value="4"/>
+			</Status>
+			<Sequence Name="Go and do a couple of dips" IsActive="true" StayAlive="false">
+				<Move Name="move across a bit" Course="66">
+					<Speed Units="m/s" Value="12"/>
+					<Height Units="m" Value="300"/>
+					<Vector Units="km" Value="2"/>
+				</Move>
+				<Move Name="Lower for dip" Course="0">
+					<Speed Units="m/s" Value="0"/>
+					<Height Units="m" Value="100"/>
+				</Move>
+				<MarkDip Name="deploy the sensor">
+					<BodyDepth Units="m" Value="230"/>
+				</MarkDip>
+				<Wait Name="wait around for half an hour">
+					<Duration Units="minutes" Value="30"/>
+				</Wait>
+				<RaiseBody Name="get the sensor back in  the helo"/>
+				<Move Name="move across a bit more" Course="60">
+					<Speed Units="m/s" Value="60"/>
+					<Height Units="m" Value="160"/>
+					<Vector Units="km" Value="12"/>
+				</Move>
+				<Move Name="Lower for dip" Course="0">
+					<Speed Units="kts" Value="0"/>
+					<Height Units="m" Value="100"/>
+				</Move>
+				<MarkDip Name="deploy the sensor a little deeper">
+					<BodyDepth Units="m" Value="330"/>
+				</MarkDip>
+				<Wait Name="wait around for half an hour">
+					<Duration Units="minutes" Value="30"/>
+				</Wait>
+				<RaiseBody Name="get the sensor back in  the helo"/>
+				<Wander Name="just wander around">
+					<Range Units="nm" Value="9"/>
+					<Location>
+						<shortLocation Lat="0.5" Long="0.5"/>
+					</Location>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="3000"/>
+				</Wander>
+			</Sequence>
+			<RadiatedCharacteristics/>
+			<HeloMovementCharacteristics FuelUsageRate="0.0001" Name="RAW CHARACTERISTICS" DefaultTurnRate="3">
+				<MinSpeed Units="m/s" Value="0"/>
+				<MaxSpeed Units="m/s" Value="200"/>
+				<AccelerationRate Units="m/s/s" Value="4"/>
+				<DecelerationRate Units="m/s/s" Value="2"/>
+				<MinHeight Units="m" Value="10"/>
+				<MaxHeight Units="m" Value="300"/>
+				<DefaultClimbRate Units="m/s" Value="6"/>
+				<DefaultDiveRate Units="m/s" Value="40"/>
+				<DefaultClimbSpeed Units="m/s" Value="40"/>
+				<DefaultDiveSpeed Units="m/s" Value="60"/>
+			</HeloMovementCharacteristics>
+		</Helo>
+		<SSK Name="SSK_BRAVO" ChargeRate="0.025">
+			<Category Environment="SUBSURFACE" Force="RED" Type="SUBMARINE"/>
+			<SensorFit/>
+			<Status Course="11" Fuel="23">
+				<Location>
+					<shortLocation Lat="0.471" Long="0.491">
+						<Height Units="m" Value="-60"/>
+					</shortLocation>
+				</Location>
+				<Speed Units="m/s" Value="33"/>
+			</Status>
+			<Waterfall Name="SSK behaviour" StayAlive="false">
+				<SternArcClearance Name="clear arcs" RandomClearances="true">
+					<Frequency Units="minutes" Value="15"/>
+				</SternArcClearance>
+				<Wander Name="just wander around">
+					<Range Units="nm" Value="9"/>
+					<Location>
+						<shortLocation Lat="0.5" Long="0.5"/>
+					</Location>
+					<Speed Units="m/s" Value="7"/>
+					<Height Units="m" Value="-60"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SSMovementCharacteristics FuelUsageRate="0.055" Name="SSK Man model">
+				<MinSpeed Units="m/s" Value="1"/>
+				<MaxSpeed Units="m/s" Value="24"/>
+				<AccelerationRate Units="m/s/s" Value="1"/>
+				<DecelerationRate Units="m/s/s" Value="1"/>
+				<MinHeight Units="m" Value="-10"/>
+				<MaxHeight Units="m" Value="-400"/>
+				<DefaultClimbRate Units="m/s" Value="1"/>
+				<DefaultDiveRate Units="m/s" Value="1"/>
+				<TurningCircle Units="m" Value="250"/>
+			</SSMovementCharacteristics>
+		</SSK>
+	</Participants>
+</Scenario>
