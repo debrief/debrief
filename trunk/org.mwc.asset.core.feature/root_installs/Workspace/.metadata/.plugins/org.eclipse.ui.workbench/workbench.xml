@@ -73,7 +73,7 @@
 <viewState/>
 </view>
 </views>
-<perspectives activePart="org.mwc.cmap.layer_manager.views.LayerManagerView" activePerspective="org.mwc.asset.core.Perspective">
+<perspectives activePart="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" activePerspective="org.mwc.asset.core.Perspective">
 <perspective editorAreaTrimState="2" editorAreaVisible="1" fixed="0" version="0.016">
 <descriptor class="org.eclipse.ui.internal.ide.application.ResourcePerspective" id="org.eclipse.ui.resourcePerspective" label="Resource"/>
 <alwaysOnActionSet id="org.eclipse.ui.cheatsheets.actionSet"/>
