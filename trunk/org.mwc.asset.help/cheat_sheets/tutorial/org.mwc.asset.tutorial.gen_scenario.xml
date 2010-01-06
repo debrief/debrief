@@ -3,31 +3,57 @@
       title="Generate a scenario">
    <intro>
       <description>
-         <b>Body</b>
+         <b>In this part of the tutorial you are going to create a new, empty scenario file - then populate it with sample data.</b>
       </description>
    </intro>
    <item
-         title="Create empty scenario file">
+         title="Select location for new scenario">
       <description>
-         <b>Body</b>
+         Some thinking first.  Have a look in your navigator view, and decide on a location for your new scenario file.  It isn&apos;t all that tidy to put it into the existing AssetData sample data folder, so you could create a new folder in the root of your project (by right-clicking on the root folder and selecting &apos;New Folder&apos;.  The new folder could be called &apos;trials&apos;, for example.
       </description>
    </item>
    <item
-         title="Add simple element">
+         title="Create empty scenario file">
       <description>
-         <b>Body</b>
+         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  On the next page, select  <b>Create XML file from an XML schema file</b>.  Obviously, now Asset wants to know which schema (model definition) file to use, so select <b>Select file from workspace</b> and browse to <b>ASSET.XSD</b> in your sample data folder.  On the next page you must specify a root element, select &apos;Scenario&apos; - and you&apos;re done.  The file will then open.
+         
       </description>
+   </item>
+   <item
+         title="Admire the editor">
+      <description>
+         Your new scenario will probably open in <b>Source</b> view.  This is ok fo geeks, but you may find it easier to use the tree oriented view.  Switch to this by clicking on the <b>Design</b> tab at the foot of the editor pane.  
+
+Now your in the graphic view, experiment with expanding the <b>Scenario</b>.  
+
+By the way, if you look at ASSET&apos;s <b>Outline</b> view (or click the arrow below) you&apos;ll see an outline view of the current sceanrio.
+
+ASSET&apos;s Properties view is also useful when working with scenario files.  Open the properties view by selecting Window/Show View/Properties.  Now, you are able to edit the attributes for any element selected in the editor view.
+      </description>
+      <command
+            required="false"
+            serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ContentOutline)"/>
    </item>
    <item
          title="Edit scenario properties">
       <description>
-         <b>Body</b>
+         Youve got big dreams? You want fame? Well, fame costs.  And right here is where you start paying in sweat.
+
+Well, not quite, but you do have to start typing now.  So, open the Scenario element, and give the scenario a name &apos;Cheat sheet scenario&apos;.  If you switch to the properties view you&apos;ll see the other attributes needed: <b>Created</b> and <b>StartTime</b>. ASSET expects dates in the ISO 8601 date standard: <b>2010-01-12T12:13:14Z</b>.  Put in today&apos;s date as the created attribute, and any old date as the StartTime attribute.
+
+Next, specify how far in time the scenario should step forward (<b>StepTime</b>). Have a go at one minute: <b>Minutes</b> are the <b>Unit</b> and 1 is the <b>Value</b>.
+      </description>
+   </item>
+   <item
+         title="Specify Environment">
+      <description>
+         Now we have to give the scenario an environment.  Do this by right-clicking on the <b>Scenario</b> and selecting <b>Add child</b> / <b>Environment</b>.  Also, give it a name - how about <b>Atlantic Summer</b>.  Play with the sea state and atmospheric attenuation if you wish.
       </description>
    </item>
    <item
          title="Add simple participant">
       <description>
-         <b>Body</b>
+         Next, we have to put something into the scenario.  Right-click on
       </description>
    </item>
    <item

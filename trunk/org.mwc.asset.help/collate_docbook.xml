@@ -23,6 +23,17 @@
 		<delete dir="${helpDest}" />
 	</target>
 
+	<target name="insert_schema_link">
+
+		<!-- try the change -->
+		<replace file="${helpDest}\toc.xml">
+			<replacetoken>&lt;topic label="Version History"</replacetoken>
+			<replacevalue>&lt;topic label="Model reference" href="../org.mwc.asset.legacy/schemas/doc/schema.html"&gt;
+				&lt;/topic&gt;&lt;topic label="Version History"</replacevalue>
+		</replace> 
+
+	</target>
+	
 	<target name="docbook_to_eclipse" description="Generate html from docbook">
 		<!-- clear the output directories -->
 		<antcall target="clear_output">
@@ -45,6 +56,9 @@
 			<arg value="../../../org.mwc.asset.help/docbook/asset_help.xml" />
 			<arg value="../../../org.mwc.asset.help/docbook/eclipse_html_style.xsl" />
 		</java>
+		
+		<!-- and put in the link the schema documentation -->
+		<antcall target="insert_schema_link" />
 
 		<!-- hey, to maintain the correct document locations, we've got to copy the generated content back
 		  into the top-level of the docbook output directories -->
@@ -141,5 +155,7 @@
 		<!-- ok, move the output file to the target directory -->
 		<move file="docbook/AssetNG.pdf" todir="${pdfDestination}" failonerror="true" />
  	</target>
+	
+
 
 </project>

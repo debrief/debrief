@@ -32,7 +32,7 @@
         serialization="org.eclipse.ui.newWizard(newWizardId=org.eclipse.ui.wizards.new.project)"/>
 	</item>
 		<item title="Include link to sample data">
-		<description>Right-click on your current project in the Navigator view, then select &apos;Folder&apos; from the &apos;New&apos; sub-menu.  The New Folder wizard will open.  Instead of creating a fresh child folder to store our data, we&apos;re going to link to an existing folder.  So, whilst still in the New Folder Wizard, click the &apos;Advanced&apos; button to display the Advanced options.   Next, click on the &apos;Link to folder in the file system&apos;, and navigate to the &apos;sample_data&apos; folder that&apos;s contained within your ASSET installation folder, then clicking on &quot;Finish&quot; to, erm, Finish.  The &apos;Click to perform&apos; button below will open the folder dialog for you - though you&apos;ll have to specify the parent project for the folder.</description>
+		<description>Right-click on your current project in the Navigator view, then select &apos;Folder&apos; from the &apos;New&apos; sub-menu.  The New Folder wizard will open.  Instead of creating a fresh child folder to store our data, we&apos;re going to link to an existing folder.  So, whilst still in the New Folder Wizard, click the &apos;Advanced&apos; button to display the Advanced options.   Next, click on the &apos;Link to folder in the file system&apos;, and navigate to the &apos;AssetData&apos; folder that&apos;s contained within your ASSET installation folder, then clicking on &quot;Finish&quot; to, erm, Finish.  The &apos;Click to perform&apos; button below will open the folder dialog for you - though you&apos;ll have to specify the parent project for the folder.</description>
   <command
         required="false"
         serialization="org.eclipse.ui.newWizard(newWizardId=org.eclipse.ui.wizards.new.folder)"/>
@@ -44,16 +44,17 @@
          <b>ASSET uses data files that adhere to the XML data standard. XML is easily read and manipulated by computers, but can be a little verbose and fiddly when edited by humans. That&apos;s why we use an XML Editor that hides some of the fiddly details</b>
       </description>
       <subitem
-            label="The Oxygen xml editor is a mature application that&apos;s available both in standalone form and as an Eclipse plugin (Eclipse is the &apos;framework&apos; that ASSET is built on top of).   We&apos;re distributing the Oxygen xml editor with ASSET but since it&apos;s a commercial application there are unfortunately licensing issues to resolve - specifically, it requires you to enter license details before you can run it.">
+            label="ASSET is based on the Eclipse platform, which includes its own rudimentary xml editor. Check this is present by expanding the sample data folder in your Navigator. Now right-click on an xml file.  In the &apos;Open With&apos; sub-menu you should see &apos;XML Editor&apos;, this confirms the xml editor is present and working.
+
+If you don&apos;t see the XML Editor entry, please contact the mainainer - since it appears your installation is invalid.">
       </subitem>
       <subitem
-            label="Verify that Oxygen is installed by right-clicking on an xml file in your navigator.  In the Open-With drop-down of the popup menu you should see &lt;b&gt;Oxygen XML Editor&lt;/b&gt;. If it&apos;s there, you&apos;re fine.  If it isn&apos;t, then you should see your ASSET maintainer to get Oxygen installed. Of course, if you&apos;re an XML wizard you may choose to run through the tutorial in plain text mode - but I don&apos;t think you&apos;re reached level 3 geek-dom yet.">
+            label="The Oxygen xml editor is a mature application that&apos;s available both in standalone form and as an Eclipse plugin (Eclipse is the &apos;framework&apos; that ASSET is built on top of).   We&apos;re distributing the Oxygen xml editor with ASSET but since it&apos;s a commercial application there are unfortunately licensing issues to resolve - specifically, it requires you to enter license details before you can run it."
+            skip="true">
       </subitem>
-   </item>
-   <item
-         title="Configure editor file types">
-      <description>
-         <b>Body</b>
-      </description>
+      <subitem
+            label="Verify that Oxygen is installed by right-clicking on an xml file in your navigator.  In the Open-With drop-down of the popup menu you should see &lt;b&gt;Oxygen XML Editor&lt;/b&gt;. If it&apos;s there, you&apos;re fine.  If it isn&apos;t, then you should see your ASSET maintainer to get Oxygen installed. Of course, if you&apos;re an XML wizard you may choose to run through the tutorial in plain text mode - but I don&apos;t think you&apos;re reached level 3 geek-dom yet."
+            skip="true">
+      </subitem>
    </item>
 </cheatsheet>
