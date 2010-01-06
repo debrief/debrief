@@ -23,8 +23,11 @@
 		</list>
 	</section>
 	<section name="WorkbenchPreferenceDialogSettings">
-		<item value="21" key="DIALOG_Y_ORIGIN"/>
-		<item value="203" key="DIALOG_X_ORIGIN"/>
+		<item value="-629" key="DIALOG_Y_ORIGIN"/>
+		<item value="-1057" key="DIALOG_X_ORIGIN"/>
+	</section>
+	<section name="EditorSelectionDialog">
+		<item value="false" key="EditorSelectionDialog.STORE_ID_INTERNAL_EXTERNAL"/>
 	</section>
 	<section name="ImportExportAction">
 	</section>

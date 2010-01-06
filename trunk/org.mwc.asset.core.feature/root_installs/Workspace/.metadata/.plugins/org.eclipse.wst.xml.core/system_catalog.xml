@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <catalog xmlns="urn:oasis:names:tc:entity:xmlns:xml:catalog">
+  <public id="http://www.mwc.org/asset" publicId="http://www.mwc.org/asset" uri="file:/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.legacy/schemas/ASSET.xsd"/>
   <system systemId="http://www.w3.org/2001/xml.xsd" uri="jar:file:/Users/ianmayo/Apps/eclipse-SDK-3.5.1-macosx-cocoa-x86_64/eclipse/plugins/org.eclipse.xsd_2.5.0.v200906151043.jar!/cache/www.w3.org/2001/xml.xsd"/>
   <uri name="http://www.w3.org/2001/XMLSchema" uri="jar:file:/Users/ianmayo/Apps/eclipse-SDK-3.5.1-macosx-cocoa-x86_64/eclipse/plugins/org.eclipse.xsd_2.5.0.v200906151043.jar!/cache/www.w3.org/2001/XMLSchema.xsd"/>
   <public publicId="-//WAPFORUM//DTD WML 1.1//EN" uri="jar:file:/Users/ianmayo/Apps/eclipse-SDK-3.5.1-macosx-cocoa-x86_64/eclipse/plugins/org.eclipse.wst.standard.schemas_1.0.200.v200902270215.jar!/dtds/wml11.dtd"/>
