@@ -44,8 +44,8 @@
     <p class="UpdatedDTG">Last updated:11-January-2005 16:15</p>
   </xsl:template>  -->
 
-	<xsl:param name="eclipse.plugin.name">Debrief NG User Guide</xsl:param>
+	<xsl:param name="eclipse.plugin.name">ASSET User Guide</xsl:param>
 	<xsl:param name="eclipse.plugin.provider">Maritime Warfare Centre</xsl:param>
-	<xsl:param name="eclipse.plugin.id">org.mwc.debrief.help</xsl:param>
+	<xsl:param name="eclipse.plugin.id">org.mwc.asset.help</xsl:param>
 
 </xsl:stylesheet>

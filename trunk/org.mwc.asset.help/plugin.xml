@@ -9,6 +9,11 @@
             file="html/legacy/toc.xml"
             primary="true">
       </toc>
+      <toc
+            file="html/schemaDoc.xml"
+            primary="true">
+      </toc>
+      
    </extension>
    
    <extension point="org.eclipse.ui.actionSets">
