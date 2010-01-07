@@ -96,12 +96,12 @@
    <features>
       <feature id="org.eclipse.rcp" version="3.5.1.R35x_v20090811-9SA0FxVFqE70OL1ARMrfcO6e7BA6"/>
       <feature id="org.eclipse.platform" version="3.5.1.R35x_v20090910-9gEeG1_FthkNDSP2odXdThaOu9GFDPn83DGB7"/>
-      <feature id="org.mwc.asset.core.feature" version="1.0.4"/>
       <feature id="org.eclipse.wst.xml_core.feature" version="3.1.1.v200907161031-7C7OFPgF7RZHIXHvT5MhWA"/>
       <feature id="org.eclipse.wst.xml_ui.feature" version="3.1.1.v200907161031-7H6FM_DxtkM-7aeTHKEBbQqcZOZ2"/>
       <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.1.1.v200906020459-50FR7AkF77f7MESDKEF"/>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.33"/>
       <feature id="org.mwc.debrief.combined.feature" version="1.0.40"/>
+      <feature id="org.mwc.asset.core.feature" version="1.0.5"/>
    </features>
 
 
