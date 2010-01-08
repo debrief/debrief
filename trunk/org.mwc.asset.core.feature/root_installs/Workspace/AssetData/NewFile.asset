@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="Cheat sheet scenario"  xmlns="http://www.mwc.org/asset" Created='2010-01-12T12:13:14Z' StartTime="2010-01-12T12:13:14Z">
+  <StepTime Units="minutes" Value="1"/><Environment Name="Atlantic Summer"
+  	AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
+</Environment>
+	<Participants/>
+</Scenario>
