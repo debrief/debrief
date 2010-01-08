@@ -57,11 +57,12 @@
 
 	</extension>
 
+	<!-- specify the location of the asset schema -->
 	<extension name="create a catalog entry for the ASSET schema"
 		point="org.eclipse.wst.xml.core.catalogContributions">
 		<catalogContribution>
 			<public id="http://www.mwc.org/asset" publicId="http://www.mwc.org/asset"
-				uri="platform:/plugin/org.mwc.asset.legacy/schemas/ASSET.xsd">
+				uri="asset_schemas/ASSET.xsd">
 			</public>
 		</catalogContribution>
 	</extension>
