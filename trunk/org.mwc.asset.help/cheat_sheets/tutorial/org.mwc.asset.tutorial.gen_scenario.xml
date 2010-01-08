@@ -4,6 +4,8 @@
    <intro>
       <description>
          <b>In this part of the tutorial you are going to create a new, empty scenario file - then populate it with sample data.</b>
+<br/>
+Some of these steps get a little lengthy, so it may be worth making this (lower) half of the viewer a little taller in order to make it easier to read.
       </description>
    </intro>
    <item
@@ -15,7 +17,7 @@
    <item
          title="Create empty scenario file">
       <description>
-         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  On the next page, select  <b>Create XML file from an XML schema file</b>.  Obviously, now Asset wants to know which schema (model definition) file to use, so select <b>Select file from workspace</b> and browse to <b>ASSET.XSD</b> in your sample data folder.  On the next page you must specify a root element, select &apos;Scenario&apos; - and you&apos;re done.  The file will then open.
+         Now that you know where to put the new scenario, right click on the parent folder and select <b>New \ Other...</b>.  From the tree of available wizards, select &apos;XML&apos; from the &apos;XML&apos; folder. Now press &apos;Next&apos;.  On the next page of the wizard, provide a filename for the new scenario - how about <b>trial1.asset</b>.  <br/><b>Note:</b> ASSET runs more smoothly if you name scenarios with the <b>.asset</b> suffix. <br/>On the next page, select  <b>Create XML file from an XML schema file</b>.  Obviously, now Asset wants to know which schema (model definition) file to use, so select <b>Select file from workspace</b> and browse to <b>ASSET.XSD</b> in your sample data folder.  On the next page you must specify a root element, select &apos;Scenario&apos; - and you&apos;re done.  The file will then open.
          
       </description>
    </item>
@@ -44,13 +46,15 @@ Well, not quite, but you do have to start typing now.  So, open the Scenario ele
 
 Next, specify how far in time the scenario should step forward (<b>StepTime</b>). Have a go at one minute: <b>Minutes</b> are the <b>Unit</b> and 1 is the <b>Value</b>.
 
-Read more about the attributes of the scenario element using the help link below.
+Read more about the attributes of the scenario element using the help link near this text.
       </description>
    </item>
    <item
+         href="/org.mwc.asset.help/html/legacy/mod_sensors.html#mod_lookup_eyesight"
          title="Specify Environment">
       <description>
          Now we have to give the scenario an environment.  Do this by right-clicking on the <b>Scenario</b> and selecting <b>Add child</b> / <b>Environment</b>.  Also, give it a name - how about <b>Atlantic Summer</b>.  Play with the sea state and atmospheric attenuation if you wish.
+<br/> You can learn more about the role of the attributes in the attached help link.
       </description>
    </item>
    <item

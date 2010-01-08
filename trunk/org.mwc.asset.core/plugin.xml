@@ -37,7 +37,7 @@
 
 	<extension point="org.eclipse.core.contenttype.contentTypes">
 		<content-type base-type="org.eclipse.core.runtime.xml"
-			file-extensions="xml" id="org.mwc.asset.contenttype.ControlFile"
+			file-extensions="acon" id="org.mwc.asset.contenttype.ControlFile"
 			name="ASSET Control File" priority="normal">
 			<describer
 				class="org.eclipse.core.runtime.content.XMLRootElementContentDescriber">
@@ -57,15 +57,6 @@
 
 	</extension>
 
-	<!--
-		<content-type base-type="org.eclipse.core.runtime.xml"
-		file-extensions="asset" id="org.mwc.asset.contenttype.ScenarioFile"
-		name="ASSET Scenario File" priority="high"> <describer
-		class="com.oxygenxml.editor.editors.xml.XMLContentDescriber">
-		<parameter name="element" value="Scenario"> </parameter> </describer>
-		</content-type>
-	-->
-
 	<extension name="create a catalog entry for the ASSET schema"
 		point="org.eclipse.wst.xml.core.catalogContributions">
 		<catalogContribution>
@@ -74,7 +65,10 @@
 			</public>
 		</catalogContribution>
 	</extension>
-	
-	
+
+	<!--  specify the xml templates we provide to help the model editor -->
+	<extension point="org.eclipse.ui.editors.templates">
+		<include file="templates/xml-templates.xml" />
+	</extension>
 </plugin>
 
