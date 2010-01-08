@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<section name="Workbench">
+	<section name="org.eclipse.wst.xml.ui.internal.preferences.XMLTemplatePreferencePage$XMLEditTemplateDialog_dialogBounds">
+		<item value="684" key="DIALOG_WIDTH"/>
+		<item value="75" key="DIALOG_Y_ORIGIN"/>
+		<item value="337" key="DIALOG_HEIGHT"/>
+		<item value="17" key="DIALOG_X_ORIGIN"/>
+		<item value="1|Lucida Grande|13.0|0|COCOA|1|LucidaGrande" key="DIALOG_FONT_NAME"/>
+	</section>
+</section>

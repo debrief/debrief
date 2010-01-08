@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <workbench version="2.0">
 <workbenchAdvisor/>
-<window height="768" width="1024" x="0" y="33">
+<window height="878" maximized="true" width="1066" x="-1276" y="-682">
 <fastViewData fastViewLocation="1024"/>
 <perspectiveBar>
 <itemSize x="160"/>
@@ -30,19 +30,33 @@
 <folder appearance="1" expanded="2">
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
+<part id="1"/>
+<part id="2"/>
+<part id="3"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor activePart="true" focus="true" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_scenario.asset" partName="force_prot_scenario.asset" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Samples/force_prot_scenario.asset" title="force_prot_scenario.asset" tooltip="AssetData/Samples/force_prot_scenario.asset" workbook="DefaultEditorWorkbook">
+<editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_control.xml" partName="force_prot_control.xml" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Samples/force_prot_control.xml" title="force_prot_control.xml" tooltip="AssetData/Samples/force_prot_control.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/Samples/force_prot_control.xml"/>
+</editor>
+<editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_scenario.asset" partName="force_prot_scenario.asset" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Samples/force_prot_scenario.asset" title="force_prot_scenario.asset" tooltip="AssetData/Samples/force_prot_scenario.asset" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/Samples/force_prot_scenario.asset"/>
+</editor>
+<editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="NewFile.xml" partName="NewFile.xml" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/NewFile.xml" title="NewFile.xml" tooltip="AssetData/NewFile.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/NewFile.xml"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="NewFile.asset" partName="NewFile.asset" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/NewFile.asset" title="NewFile.asset" tooltip="AssetData/NewFile.asset" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/NewFile.asset"/>
 </editor>
 </editors>
 <views>
 <view id="org.eclipse.ui.navigator.ProjectExplorer" partName="Project Explorer">
 <viewState CommonNavigator.LINKING_ENABLED="0" org.eclipse.ui.navigator.resources.workingSets.showTopLevelWorkingSets="0"/>
 </view>
-<view id="org.eclipse.ui.views.PropertySheet" partName="Properties"/>
+<view id="org.eclipse.ui.views.PropertySheet" partName="Properties">
+<viewState/>
+</view>
 <view id="org.eclipse.ui.views.ResourceNavigator" partName="Navigator">
 <viewState LINK_NAVIGATOR_TO_EDITOR="0" sorter="1">
 <filters>
@@ -50,24 +64,20 @@
 </filters>
 <expanded>
 <element path="/AssetData"/>
+<element path="/AssetData/Samples"/>
 </expanded>
 <selection>
-<element path="/AssetData/schemas"/>
+<element path="/AssetData/NewFile.asset"/>
 </selection>
 </viewState>
 </view>
-<view id="org.mwc.cmap.TimeController.views.TimeController" partName="Time Controller"/>
-<view id="org.mwc.asset.VesselMonitor" partName="Vessel Monitor">
-<viewState/>
-</view>
-<view id="org.mwc.asset.ScenarioController2" partName="Scenario controller 2">
-<viewState/>
-</view>
-<view id="org.mwc.cmap.layer_manager.views.LayerManagerView" partName="Layer Manager">
-<viewState/>
-</view>
 <view id="org.eclipse.ui.views.ContentOutline" partName="Outline">
 <viewState/>
+</view>
+<view id="org.eclipse.ui.cheatsheets.views.CheatSheetView" partName="Cheat Sheets">
+<viewState>
+<cheatSheetMemento id="org.mwc.asset.help.cheatsheet406552611"/>
+</viewState>
 </view>
 <view id="org.mwc.cmap.overview.views.ChartOverview" partName="Chart overview">
 <viewState/>
@@ -160,33 +170,33 @@
 <show_view_action id="org.eclipse.ui.views.TaskList"/>
 <new_wizard_action id="org.eclipse.ui.wizards.new.folder"/>
 <hide_toolbar_item_id id="org.eclipse.ui.edit.text.toggleShowSelectedElementOnly"/>
-<view id="org.eclipse.ui.views.ResourceNavigator"/>
-<view id="org.mwc.cmap.TimeController.views.TimeController"/>
-<view id="org.mwc.asset.ScenarioController2"/>
-<view id="org.mwc.asset.VesselMonitor"/>
-<view id="org.mwc.cmap.layer_manager.views.LayerManagerView"/>
 <view id="org.eclipse.ui.views.PropertySheet"/>
+<view id="org.eclipse.ui.views.ResourceNavigator"/>
+<view id="org.eclipse.ui.cheatsheets.views.CheatSheetView"/>
 <fastViewBars/>
 <layout>
 <mainWindow>
 <info folder="true" part="topLeft">
 <folder activePageID="org.eclipse.ui.views.ResourceNavigator" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ResourceNavigator" label="Navigator"/>
-<page content="org.mwc.cmap.TimeController.views.TimeController" label="Time Controller"/>
+<page content="org.mwc.cmap.TimeController.views.TimeController" label="LabelNotFound"/>
+<page content="org.eclipse.ui.views.ContentOutline" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
-<part id="1"/>
 </presentation>
 </folder>
 </info>
-<info folder="true" part="stickyFolderRight" ratio="0.75" ratioLeft="762" ratioRight="254" relationship="2" relative="topLeft">
-<folder appearance="2" expanded="2">
+<info folder="true" part="stickyFolderRight" ratio="0.74387354" ratioLeft="941" ratioRight="324" relationship="2" relative="topLeft">
+<folder activePageID="org.eclipse.ui.cheatsheets.views.CheatSheetView" appearance="2" expanded="2">
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="Cheat Sheets"/>
 <page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
 <page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
-<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
+<part id="0"/>
+</presentation>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.36229023" ratioLeft="367" ratioRight="646" relationship="2" relative="topLeft"/>
+<info part="org.eclipse.ui.editorss" ratio="0.2867804" ratioLeft="269" ratioRight="669" relationship="2" relative="topLeft"/>
 <info folder="true" part="bottom" ratio="0.5993976" ratioLeft="398" ratioRight="266" relationship="4" relative="org.eclipse.ui.editorss">
 <folder appearance="2" expanded="2">
 <page content="org.mwc.cmap.xyplot.views.XYPlotView:*" label="LabelNotFound"/>
@@ -194,15 +204,18 @@
 <page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="upperMidLeft" ratio="0.24810892" ratioLeft="164" ratioRight="497" relationship="4" relative="topLeft">
-<folder activePageID="org.mwc.asset.VesselMonitor" appearance="2" expanded="2">
-<page content="org.mwc.asset.ScenarioController2" label="Scenario controller 2"/>
-<page content="org.mwc.asset.VesselMonitor" label="Vessel Monitor"/>
-<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@78657ce" ratio="0.5720985" ratioLeft="488" ratioRight="365" relationship="4" relative="org.eclipse.ui.editorss">
+<folder activePageID="org.eclipse.ui.views.PropertySheet" appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.PropertySheet" label="Properties"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
-<part id="1"/>
 </presentation>
+</folder>
+</info>
+<info folder="true" part="upperMidLeft" ratio="0.5340393" ratioLeft="353" ratioRight="308" relationship="4" relative="topLeft">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 <info folder="true" part="midLeft" ratio="0.54648954" ratioLeft="288" ratioRight="239" relationship="4" relative="upperMidLeft">
@@ -214,13 +227,11 @@
 </folder>
 </info>
 <info folder="true" part="bottomLeft" ratio="0.49865952" ratioLeft="186" ratioRight="187" relationship="4" relative="midLeft">
-<folder activePageID="org.mwc.cmap.layer_manager.views.LayerManagerView" appearance="2" expanded="2">
-<page content="org.mwc.cmap.layer_manager.views.LayerManagerView" label="Layer Manager"/>
-<page content="org.eclipse.ui.views.PropertySheet" label="Properties"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-<part id="1"/>
-</presentation>
+<folder appearance="2" expanded="2">
+<page content="org.mwc.cmap.layer_manager.views.LayerManagerView" label="LabelNotFound"/>
+<page content="org.mwc.asset.VesselMonitor" label="LabelNotFound"/>
+<page content="org.mwc.asset.ScenarioController2" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
 </mainWindow>
@@ -230,14 +241,124 @@
 <workingSets/>
 <navigationHistory>
 <editors>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/trial1.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Samples/force_prot_control.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.xml"/>
 <editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Samples/force_prot_scenario.asset"/>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/Samples/force_prot_scenario.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Samples/force_prot_control.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/NewFile.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/NewFile.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Samples/force_prot_control.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/NewFile.asset"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/NewFile.asset"/>
 </editors>
-<item historyLabel="force_prot_scenario.asset" index="0">
-<position info="not_deleted" x="40" y="0"/>
+<item historyLabel="trial1.asset" index="0">
+<position info="not_deleted" x="406" y="0"/>
 </item>
-<item active="true" historyLabel="force_prot_scenario.asset" index="1">
-<position info="not_deleted" x="319" y="0"/>
+<item historyLabel="force_prot_control.xml" index="1"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="force_prot_scenario.asset" index="3"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="force_prot_scenario.asset" index="3"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="force_prot_scenario.asset" index="3"/>
+<item historyLabel="NewFile.asset" index="4"/>
+<item historyLabel="force_prot_scenario.asset" index="3"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="force_prot_scenario.asset" index="3"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="force_prot_control.xml" index="5"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="NewFile.asset" index="6"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="NewFile.asset" index="7"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="NewFile.asset" index="7"/>
+<item historyLabel="NewFile.xml" index="2"/>
+<item historyLabel="NewFile.asset" index="7">
+<position info="not_deleted" x="141" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="8">
+<position info="not_deleted" x="58" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="8">
+<position info="not_deleted" x="94" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="8">
+<position info="not_deleted" x="135" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="2">
+<position info="not_deleted" x="150" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="9">
+<position info="not_deleted" x="39" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="9">
+<position info="not_deleted" x="58" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="9">
+<position info="not_deleted" x="135" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="9">
+<position info="not_deleted" x="94" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="10"/>
+<item historyLabel="NewFile.xml" index="11">
+<position info="not_deleted" x="39" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="9">
+<position info="not_deleted" x="94" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="9">
+<position info="not_deleted" x="135" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="10">
+<position info="not_deleted" x="39" y="0"/>
+</item>
+<item historyLabel="NewFile.xml" index="11"/>
+<item historyLabel="force_prot_control.xml" index="12"/>
+<item historyLabel="NewFile.xml" index="13"/>
+<item historyLabel="NewFile.asset" index="14">
+<position info="not_deleted" x="47" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="39" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="78" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="39" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="142" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="111" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="49" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="178" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="49" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="39" y="0"/>
+</item>
+<item historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="215" y="0"/>
+</item>
+<item active="true" historyLabel="NewFile.asset" index="15">
+<position info="not_deleted" x="228" y="0"/>
 </item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
@@ -256,8 +377,20 @@
 </trimLayout>
 </window>
 <mruList>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="NewFile.asset" tooltip="AssetData/NewFile.asset">
+<persistable path="/AssetData/NewFile.asset"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="NewFile.xml" tooltip="AssetData/NewFile.xml">
+<persistable path="/AssetData/NewFile.xml"/>
+</file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_scenario.asset" tooltip="AssetData/Samples/force_prot_scenario.asset">
 <persistable path="/AssetData/Samples/force_prot_scenario.asset"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.asset" tooltip="AssetData/trial1.asset">
+<persistable path="/AssetData/trial1.asset"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_control.xml" tooltip="AssetData/Samples/force_prot_control.xml">
+<persistable path="/AssetData/Samples/force_prot_control.xml"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name=".project" tooltip="AssetData/.project">
 <persistable path="/AssetData/.project"/>

@@ -1,0 +1,4 @@
+#Thu Jan 07 13:25:05 GMT 2010
+__DEFAULT__=false
+org.eclipse.help.ui.localSearch.master=true
+expression=scenario

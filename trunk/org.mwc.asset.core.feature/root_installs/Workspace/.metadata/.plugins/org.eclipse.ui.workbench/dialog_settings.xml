@@ -4,27 +4,45 @@
 		<item value="true" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_USE_PERSISTED_SIZE"/>
 		<item value="350" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_WIDTH"/>
 		<item value="false" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_USE_PERSISTED_LOCATION"/>
-		<item value="422" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_HEIGHT"/>
+		<item value="426" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_HEIGHT"/>
 		<list key="orderedProviders">
-			<item value="org.eclipse.ui.perspectives"/>
 			<item value="org.eclipse.ui.views"/>
+			<item value="org.eclipse.ui.views"/>
+			<item value="org.eclipse.ui.views"/>
+			<item value="org.eclipse.ui.views"/>
+			<item value="org.eclipse.ui.perspectives"/>
 		</list>
 		<list key="textArray">
-			<item value="tact"/>
+			<item value="chea"/>
 			<item value="navi"/>
+			<item value="prop"/>
+			<item value="outline"/>
+			<item value="tact"/>
 		</list>
 		<list key="orderedElements">
-			<item value="org.mwc.asset.core.Perspective"/>
+			<item value="org.eclipse.ui.cheatsheets.views.CheatSheetView"/>
 			<item value="org.eclipse.ui.views.ResourceNavigator"/>
+			<item value="org.eclipse.ui.views.PropertySheet"/>
+			<item value="org.eclipse.ui.views.ContentOutline"/>
+			<item value="org.mwc.asset.core.Perspective"/>
 		</list>
 		<list key="textEntries">
+			<item value="1"/>
+			<item value="1"/>
+			<item value="1"/>
 			<item value="1"/>
 			<item value="1"/>
 		</list>
 	</section>
 	<section name="WorkbenchPreferenceDialogSettings">
-		<item value="194" key="DIALOG_Y_ORIGIN"/>
-		<item value="454" key="DIALOG_X_ORIGIN"/>
+		<item value="0" key="DIALOG_Y_ORIGIN"/>
+		<item value="0" key="DIALOG_X_ORIGIN"/>
+	</section>
+	<section name="NewWizardAction">
+		<item value="org.eclipse.wst.xml.ui.internal.wizards.NewXMLWizard" key="NewWizardSelectionPage.STORE_SELECTED_ID"/>
+		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
+			<item value="org.eclipse.wst.XMLCategory"/>
+		</list>
 	</section>
 	<section name="EditorSelectionDialog">
 		<item value="false" key="EditorSelectionDialog.STORE_ID_INTERNAL_EXTERNAL"/>
