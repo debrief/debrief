@@ -215,7 +215,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 		_myLayers = null;
 
 		// empty the part monitor
-		_myPartMonitor.ditch();
+		if(_myPartMonitor != null)
+  		_myPartMonitor.ditch();
 		_myPartMonitor = null;
 	}
 
