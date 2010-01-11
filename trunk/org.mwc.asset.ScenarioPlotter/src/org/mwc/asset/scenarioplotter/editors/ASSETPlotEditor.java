@@ -83,7 +83,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 						if (edd instanceof ScenarioWrapper)
 						{
 							ScenarioWrapper sw = (ScenarioWrapper) edd;
- 
+
 							// also sort out the scenario component
 							ScenarioType scen = sw.getScenario();
 
@@ -100,7 +100,8 @@ public class ASSETPlotEditor extends CorePlotEditor
 		};
 	}
 
-	protected void updateScenario(ScenarioWrapper scenarioLayers, ScenarioType scenario)
+	protected void updateScenario(ScenarioWrapper scenarioLayers,
+			ScenarioType scenario)
 	{
 		// are we already listening to it?
 		if (_myScenario != null)
@@ -146,7 +147,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 		layers.addDataExtendedListener(_listenForMods);
 		layers.addDataModifiedListener(_listenForMods);
 		layers.addDataReformattedListener(_listenForMods);
-		
+
 		// and remember it
 		_myLayers = layers;
 
@@ -186,15 +187,15 @@ public class ASSETPlotEditor extends CorePlotEditor
 			};
 
 		scenario.addScenarioSteppedListener(_stepListener);
-		
+
 		// give it something to look at
 		update();
-		
+
 	}
 
 	private void stopListeningToThis(ScenarioType scenario)
 	{
-		if(scenario != null)
+		if (scenario != null)
 			scenario.removeScenarioSteppedListener(_stepListener);
 	}
 
@@ -342,7 +343,7 @@ public class ASSETPlotEditor extends CorePlotEditor
 
 	public void update()
 	{
-		
+
 		Display.getDefault().syncExec(new Runnable()
 		{
 
@@ -428,74 +429,74 @@ public class ASSETPlotEditor extends CorePlotEditor
 					}
 				});
 		//
-		// _myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.ACTIVATED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myScenario != part)
-		// {
-		// // are we already listening to it?
-		// if (_myScenario != null)
-		// stopListeningToThis(_myScenario);
-		//
-		// // ok, let's start listening to it
-		// _myScenario = (ScenarioType) part;
-		// startListeningTo(_myScenario);
-		// }
-		// }
-		// });
-		// _myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.CLOSED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myScenario == part)
-		// {
-		// stopListeningToThis(_myScenario);
-		// _myScenario = null;
-		// }
-		// }
-		// });
-		//
-		// _myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myLayers != part)
-		// {
-		// // are we already listening to it?
-		// if (_myLayers != null)
-		// stopListeningToThis(_myLayers);
-		//
-		// _myLayers = (Layers) part;
-		//
-		// // give it to the chart
-		// _myChart.setLayers(_myLayers);
-		//
-		// // ok, let's start listening to it
-		// startListeningTo(_myLayers);
-		//
-		// }
-		// }
-		// });
-		// _myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
-		// new PartMonitor.ICallback()
-		// {
-		// public void eventTriggered(String type, Object part,
-		// IWorkbenchPart parentPart)
-		// {
-		// if (_myLayers == part)
-		// {
-		// stopListeningToThis(_myLayers);
-		// _myLayers = null;
-		// }
-		// }
-		// });
+		_myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (_myScenario != part)
+						{
+							// are we already listening to it?
+							if (_myScenario != null)
+								stopListeningToThis(_myScenario);
+
+							// ok, let's start listening to it
+							_myScenario = (ScenarioType) part;
+							startListeningTo(_myScenario);
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(ScenarioType.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (_myScenario == part)
+						{
+							stopListeningToThis(_myScenario);
+							_myScenario = null;
+						}
+					}
+				});
+
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.ACTIVATED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (_myLayers != part)
+						{
+							// are we already listening to it?
+							if (_myLayers != null)
+								stopListeningToThis(_myLayers);
+
+							_myLayers = (Layers) part;
+
+							// give it to the chart
+							_myChart.setLayers(_myLayers);
+
+							// ok, let's start listening to it
+							startListeningTo(_myLayers);
+
+						}
+					}
+				});
+		_myPartMonitor.addPartListener(Layers.class, PartMonitor.CLOSED,
+				new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (_myLayers == part)
+						{
+							stopListeningToThis(_myLayers);
+							_myLayers = null;
+						}
+					}
+				});
 
 	}
 
