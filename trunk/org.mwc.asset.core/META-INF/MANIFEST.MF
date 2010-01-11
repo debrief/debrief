@@ -13,13 +13,12 @@ Require-Bundle: org.mwc.asset.legacy;visibility:=reexport,
  org.eclipse.wst.xml.ui
 Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.asset.core;
-  uses:="org.eclipse.jface.resource,
+  uses:="org.mwc.cmap.core.ui_support,
+   org.eclipse.jface.resource,
    org.eclipse.core.commands.operations,
-   org.mwc.cmap.layer_manager.views,
    org.eclipse.ui,
    org.eclipse.ui.plugin,
    org.osgi.framework,
-   org.mwc.cmap.layer_manager.views.support,
    MWC.GUI",
  org.mwc.asset.core.property_support;
   uses:="org.eclipse.jface.viewers,

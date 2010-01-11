@@ -637,8 +637,16 @@ public class ScenarioControllerView extends ViewPart implements
 			}
 		}
 
-		// lastly, select me - so our listeners get informed
-		activateMe();
+		// lastly, select me - so our listeners get informed.
+		// - note, we do it in a runnable because things can get a little recursive
+		//         if we're trying to show a view whilst its still being defined.
+		Runnable doIt = new Runnable(){
+			@Override
+			public void run()
+			{
+				activateMe();				
+			}};
+		Display.getCurrent().asyncExec(doIt);
 	}
 
 	private void scenarioAssigned(String thisName)
@@ -1115,7 +1123,7 @@ public class ScenarioControllerView extends ViewPart implements
 			IWorkbenchWindow window = site.getWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null)
-			{
+			{			
 				// try to find our view first
 				IViewPart theView = page.findView(site.getId());
 				if (theView != null)
