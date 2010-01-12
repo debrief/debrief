@@ -107,8 +107,7 @@ public class StopOnElapsedObserver extends
   protected void performSetupProcessing(ScenarioType scenario)
   {
     // take record of the start time
-    _startTime = scenario.getTime();
-
+    _startTime = -1;
 
     _weStoppedIt = false;
   }
@@ -143,8 +142,19 @@ public class StopOnElapsedObserver extends
     // remove ourselves as a listener
     _myScenario.removeScenarioSteppedListener(this);
   }
+  
+  
 
-  /**
+  @Override
+	public void restart(ScenarioType scenario)
+	{
+		super.restart(scenario);
+		
+		// and reset the start time indicator
+		_startTime = -1;
+	}
+
+	/**
    * the scenario has stepped forward
    */
   public void step(ScenarioType scenario, final long newTime)
@@ -157,8 +167,9 @@ public class StopOnElapsedObserver extends
 
     // find out elapsed
     final long elapsed = newTime - _startTime;
+    final double timeTest = _elapsedTime.getValueIn(Duration.MILLISECONDS);
 
-    if (elapsed >= _elapsedTime.getValueIn(Duration.MILLISECONDS))
+    if (elapsed >= timeTest)
     {
       _weStoppedIt = true;
 

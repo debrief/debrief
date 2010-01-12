@@ -239,7 +239,7 @@ public class TrackPlotObserver extends RecordToFileObserverType implements
 		if (_myScenario != null)
 			theName = _myScenario.getName();
 
-		final String thePath = getDirectory() + "/" + newName(theName);
+		final String thePath = getDirectory() + File.separator + newName(theName);
 		final File outputFilename = new File(thePath);
 
 		// do we have any data?
