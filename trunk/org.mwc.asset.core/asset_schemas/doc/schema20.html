@@ -1,0 +1,2424 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <title>Schema documentation for component ParticipantType</title>
+      <link rel="stylesheet" href="xsdDocHtml.css" type="text/css" /><script type="text/javascript">
+         <!--
+        var propertiesBoxes= new Array('properties_id81', 
+				'properties_id85', 
+				'properties_id128', 
+				'properties_id161', 
+				'properties_id168', 
+				'properties_id350', 
+				'properties_id351', 
+				'properties_id352', 
+				'properties_id366', 
+				'properties_id371', 
+				'properties_id80', 
+				'properties_id373', 
+				'properties_id374', 
+				'properties_id375');
+
+        
+        var usedByBoxes= new Array('usedBy_id80', 
+				'usedBy_id373', 
+				'usedBy_id374', 
+				'usedBy_id375');
+
+        
+        
+        
+        var annotationBoxes= new Array('annotations_id81', 
+				'annotations_id85', 
+				'annotations_id128', 
+				'annotations_id161', 
+				'annotations_id168', 
+				'annotations_id350', 
+				'annotations_id351', 
+				'annotations_id352', 
+				'annotations_id366', 
+				'annotations_id371', 
+				'annotations_id80', 
+				'annotations_id373', 
+				'annotations_id374', 
+				'annotations_id375');
+
+        var attributesBoxes= new Array('attributes_id81', 
+				'attributes_id85', 
+				'attributes_id128', 
+				'attributes_id161', 
+				'attributes_id168', 
+				'attributes_id350', 
+				'attributes_id351', 
+				'attributes_id80');
+
+        
+        var button_prefix = 'button_';
+        
+        /**
+        * Returns an element in the current HTML document.
+        *
+        * @param elementID Identifier of HTML element
+        * @return               HTML element object
+        */
+        function getElementObject(elementID) {
+            var elemObj = null;
+            if (document.getElementById) {
+                elemObj = document.getElementById(elementID);
+            }
+            return elemObj;
+        }
+        
+        /**
+        * Switches the state of a collapseable box, e.g.
+        * if it's opened, it'll be closed, and vice versa.
+        *
+        * @param boxID Identifier of box
+        */
+        function switchState(boxID) {
+            var boxObj = getElementObject(boxID);
+            var buttonObj = getElementObject(button_prefix + boxID);
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else if (boxObj.style.display == "none") {
+                // Box is closed, so open it
+                openBox(boxObj, buttonObj);
+            } else if (boxObj.style.display == "block") {
+                // Box is opened, so close it
+                closeBox(boxObj, buttonObj);
+            }
+        }
+        
+        /**
+        * Opens a collapseable box.
+        *
+        * @param boxObj       Collapseable box
+        * @param buttonObj Button controlling box
+        */
+        function openBox(boxObj, buttonObj) {
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else {
+                // Change 'display' CSS property of box
+                boxObj.style.display = "block";
+                
+                // Change text of button
+                if (boxObj.style.display == "block") {
+                    buttonObj.src = "images/button_minus.gif";
+                }
+            }
+        }
+        
+        /**
+        * Closes a collapseable box.
+        *
+        * @param boxObj       Collapseable box
+        * @param buttonObj Button controlling box
+        */
+        function closeBox(boxObj, buttonObj) {
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else {
+                // Change 'display' CSS property of box
+                boxObj.style.display = "none";
+                
+                // Change text of button
+                if (boxObj.style.display == "none") {
+                    buttonObj.src = "images/button_plus.gif";
+                }
+            }
+        }
+    
+       function switchStateForAll(buttonObj, boxList) {
+            if (buttonObj == null) {
+                // button not found
+            } else if (buttonObj.value == "+") {
+                // Expand all
+                expandAll(boxList);
+                buttonObj.value = "-";
+            } else if (buttonObj.value == "-") {
+                // Collapse all
+                collapseAll(boxList);
+                buttonObj.value = "+";
+            }
+        }
+        
+        /**
+        * Closes all boxes in a given list.
+        *
+        * @param boxList Array of box IDs
+        */
+        function collapseAll(boxList) {
+            var idx;
+            for (idx = 0; idx < boxList.length; idx++) {
+                var boxObj = getElementObject(boxList[idx]);
+                var buttonObj = getElementObject(button_prefix + boxList[idx]);
+                closeBox(boxObj, buttonObj);
+            }
+        }
+            
+        /**
+        * Open all boxes in a given list.
+        *
+        * @param boxList Array of box IDs
+        */
+        function expandAll(boxList) {
+            var idx;
+            for (idx = 0; idx < boxList.length; idx++) {
+                var boxObj = getElementObject(boxList[idx]);
+                var buttonObj = getElementObject(button_prefix + boxList[idx]);
+                openBox(boxObj, buttonObj);
+            }
+        }
+        
+        /**
+         * Update the message presented in the title of the html page.
+         * - If the documentation was splited by namespace we present something like: "Documentation for namespace 'ns'"
+         * - If the documentation was splited by location we present somehing like: "Documentation for 'Schema.xsd'"
+         * - If no split we always present: "Documentation for 'MainSchema.xsd'"
+         */
+        function updatePageTitle(message) {
+            top.document.title = message;
+        }
+        
+          
+                    
+         /**
+          * Finds an HTML element by its ID and makes it floatable over the normal content.
+          *
+          * @param x_displacement The difference in pixels to the right side of the window from 
+          *           the left side of the element.
+          * @param y_displacement The difference in pixels to the right side of the window from 
+          *           the top of the element.          
+          */
+         function findAndFloat(id, x_displacement, y_displacement){
+
+            var element = getElementObject(id);            
+            
+            window[id + "_obj"] = element;
+            
+            if(document.layers) {
+               element.style = element;
+            }
+            
+            element.current_y = y_displacement;      
+            element.first_time = true;
+         
+            element.floatElement = function(){
+               // It may be closed by an user action.
+                
+               // Target X and Y coordinates.
+               var x, y;
+               
+               var myWidth = 0, myHeight = 0;
+               if( typeof( window.innerWidth ) == 'number' ) {
+                  //Non-IE
+                  myWidth = window.innerWidth;
+                  myHeight = window.innerHeight;
+               } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+                  //IE 6+ in 'standards compliant mode'
+                  myWidth = document.documentElement.clientWidth;
+                  myHeight = document.documentElement.clientHeight;
+               } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+                  //IE 4 compatible
+                  myWidth = document.body.clientWidth;
+                  myHeight = document.body.clientHeight;
+               }
+               
+               
+               x = myWidth - x_displacement;
+               
+               var ns = (navigator.appName.indexOf("Netscape") != -1);               
+               y = ns ? pageYOffset : document.documentElement && document.documentElement.scrollTop ? 
+                  document.documentElement.scrollTop : document.body.scrollTop;               
+               y = y + y_displacement;               
+               
+               // The current y is the current coordinate of the floating element.
+               // This should be at the limit the y target coordinate.
+               this.current_y += (y - this.current_y)/1.25;
+               
+               // Add the pixels constant after the values
+               // and move the element.
+               var px = document.layers ? "" : "px";
+               this.style.left =  x + px;
+               this.style.top =  this.current_y + px;
+                              
+               setTimeout(this.id + "_obj.floatElement()", 100);
+            }
+            
+            element.floatElement();
+            return element;
+          }
+
+         /**
+          * Finds an HTML element by its ID and makes it floatable over the normal content.
+          *
+          * @param x_displacement The difference in pixels to the right side of the window from 
+          *           the left side of the element.
+          * @param y_displacement The difference in pixels to the right side of the window from 
+          *           the top of the element.          
+          */
+         function selectTOCGroupBy(id){
+            var selectIds = new Array('toc_group_by_namespace', 'toc_group_by_location', 'toc_group_by_component_type');
+            // Make all the tabs invisible.
+            for (i = 0; i < 3; i++){
+               var tab = getElementObject(selectIds[i]);
+               tab.style.display = 'none';
+            }
+            var selTab = getElementObject(id);
+            selTab.style.display = 'block';            
+         }
+          
+
+    --></script></head>
+   <body>
+      <div id="global_controls" class="globalControls" style="position:absolute;right:0;">
+         <table class="rt">
+            <tr>
+               <td class="rt_cornerTopLeft"></td>
+               <td class="rt_lineTop"></td>
+               <td class="rt_cornerTopRight"></td>
+            </tr>
+            <tr>
+               <td class="rt_lineLeft"></td>
+               <td class="rt_content">
+                  <h3>Showing:</h3>
+                  <table>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, annotationBoxes);"
+                                     class="control" /></span><span class="globalControlName">Annotations</span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, attributesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Attributes </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, propertiesBoxes);"
+                                     class="control" /></span><span class="globalControlName">Properties </span></td>
+                     </tr>
+                     <tr>
+                        <td><span><input type="checkbox" value="-" checked="checked"
+                                     onclick="switchStateForAll(this, usedByBoxes);"
+                                     class="control" /></span><span class="globalControlName">Used by </span></td>
+                     </tr>
+                  </table>
+                  <div align="right"><span><input type="button"
+                               onclick="getElementObject('global_controls').style.display = 'none';"
+                               value="Close" /></span></div>
+               </td>
+               <td class="rt_lineRight"></td>
+            </tr>
+            <tr>
+               <td class="rt_cornerBottomLeft"></td>
+               <td class="rt_lineBottom"></td>
+               <td class="rt_cornerBottomRight"></td>
+            </tr>
+         </table>
+      </div><a id="id81"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / Category</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id81" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id81');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id81" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">What type of participant this is</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema21.html#id82" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component CategoryType')">CategoryType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id81" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id81');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id81" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id81" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id81');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id81" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema21.html#id83" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Environment')">Environment</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The environment in which this vehicle travels</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema21.html#id84" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Force')">Force</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The Force which this vehicle belongs to: Blue=Own Forces,</span><span class="tokenIndent">
+</span><span class="tokenText">Red=Hostile, Green=Friendly</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema7.html#id15" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Type')">Type</a></b></td>
+                                    <td>restriction of <b>xs:NMTOKEN</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Vehicle categorisation</span></pre></td>
+                                             </tr>
+                                          </table>
+                                          <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Visible: Type Editable: Type</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id85"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / SensorFit</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id85" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id85');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id85" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">The suite of sensors on this participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema22.html#id86" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SensorFitType')">SensorFitType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type hierarchy</b></td>
+                        <td>
+                           <ul>
+                              <li><b><a href="schema23.html#id87" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for component CoreSensorType')">CoreSensorType</a></b><ul>
+                                    <li><b><a href="schema22.html#id86" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SensorFitType')">SensorFitType</a></b></li>
+                                 </ul>
+                              </li>
+                           </ul>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id85" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id85');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id85" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema22.html#id91" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BroadbandSensor{0,1}')">BroadbandSensor{0,1}</a></b> | <b><a href="schema22.html#id94" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ActiveBroadbandSensor{0,1}')">ActiveBroadbandSensor{0,1}</a></b> | <b><a href="schema22.html#id97" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DippingActiveBroadbandSensor{0,1}')">DippingActiveBroadbandSensor{0,1}</a></b> | <b><a href="schema22.html#id108" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component NarrowbandSensor{0,1}')">NarrowbandSensor{0,1}</a></b> | <b><a href="schema22.html#id111" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component OpticLookupSensor{0,1}')">OpticLookupSensor{0,1}</a></b> | <b><a href="schema22.html#id121" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadarLookupSensor{0,1}')">RadarLookupSensor{0,1}</a></b> | <b><a href="schema22.html#id124" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MADLookupSensor{0,1}')">MADLookupSensor{0,1}</a></b> | <b><a href="schema22.html#id126" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ActiveInterceptSensor{0,1}')">ActiveInterceptSensor{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema22.html#id94" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ActiveBroadbandSensor')">ActiveBroadbandSensor</a></b>, <b><a href="schema22.html#id126" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ActiveInterceptSensor')">ActiveInterceptSensor</a></b>, <b><a href="schema22.html#id91" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BroadbandSensor')">BroadbandSensor</a></b>, <b><a href="schema22.html#id97" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DippingActiveBroadbandSensor')">DippingActiveBroadbandSensor</a></b>, <b><a href="schema22.html#id124" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MADLookupSensor')">MADLookupSensor</a></b>, <b><a href="schema22.html#id108" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component NarrowbandSensor')">NarrowbandSensor</a></b>, <b><a href="schema22.html#id111" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component OpticLookupSensor')">OpticLookupSensor</a></b>, <b><a href="schema22.html#id121" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadarLookupSensor')">RadarLookupSensor</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id85" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id85');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id85" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema23.html#id88" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The name of this sensor</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema23.html#id89" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Working')">Working</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this sensor is currently working</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema23.html#id90" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component id')">id</a></b></td>
+                                    <td><b>xs:int</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The id of this sensor (only normally present in machine-generated</span><span class="tokenIndent">
+</span><span class="tokenText">scenario files)</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id128"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / Status</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id128" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id128');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id128" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">The current status of this participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema34.html#id129" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component StatusType')">StatusType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id128" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id128');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id128" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema34.html#id130" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Location')">Location</a></b> , <b><a href="schema34.html#id156" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Speed')">Speed</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema34.html#id130" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Location')">Location</a></b>, <b><a href="schema34.html#id156" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Speed')">Speed</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id128" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id128');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id128" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema34.html#id157" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Course')">Course</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema34.html#id158" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Fuel')">Fuel</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema34.html#id160" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Id')">Id</a></b></td>
+                                    <td><b>xs:int</b></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema34.html#id159" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Time')">Time</a></b></td>
+                                    <td><b>xs:dateTime</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id161"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / DemandedStatus</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id161" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id161');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id161" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">The current demanded status of this</span><span class="tokenIndent">
+</span><span class="tokenText">participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema40.html#id162" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DemandedStatusType')">DemandedStatusType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id161" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id161');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id161" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema40.html#id163" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Height')">Height</a></b> , <b><a href="schema40.html#id164" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Speed')">Speed</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema40.html#id163" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Height')">Height</a></b>, <b><a href="schema40.html#id164" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Speed')">Speed</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id161" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id161');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id161" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema40.html#id165" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Course')">Course</a></b></td>
+                                    <td><b>xs:float</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema40.html#id166" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Id')">Id</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td>0</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema40.html#id167" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Time')">Time</a></b></td>
+                                    <td><b>xs:dateTime</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation"></div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id168"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / Waterfall</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id168" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id168');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id168" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">A hierarchy of behaviours, with control falling to lower</span><span class="tokenIndent">
+</span><span class="tokenText">behaviours when higher behaviours not applicable</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema41.html#id169" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component WaterfallType')">WaterfallType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type hierarchy</b></td>
+                        <td>
+                           <ul>
+                              <li><b><a href="schema42.html#id170" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for component DecisionModelType')">DecisionModelType</a></b><ul>
+                                    <li><b><a href="schema41.html#id169" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component WaterfallType')">WaterfallType</a></b></li>
+                                 </ul>
+                              </li>
+                           </ul>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id168" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id168');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id168" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td>(<b><a href="schema41.html#id174" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Transit')">Transit</a></b> | <b><a href="schema41.html#id182" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component WorkingTransit')">WorkingTransit</a></b> | <b><a href="schema41.html#id186" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component TransitWaypoint')">TransitWaypoint</a></b> | <b><a href="schema41.html#id189" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Trail')">Trail</a></b> | <b><a href="schema41.html#id199" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SternArcClearance')">SternArcClearance</a></b> | <b><a href="schema41.html#id205" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKRecharge')">SSKRecharge</a></b> | <b><a href="schema41.html#id211" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Investigate')">Investigate</a></b> | <b><a href="schema41.html#id216" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Avoid')">Avoid</a></b> | <b><a href="schema41.html#id222" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Intercept')">Intercept</a></b> | <b><a href="schema41.html#id226" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BearingTrail')">BearingTrail</a></b> | <b><a href="schema41.html#id229" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RectangleWander')">RectangleWander</a></b> | <b><a href="schema41.html#id237" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wander')">Wander</a></b> | <b><a href="schema41.html#id243" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Evade')">Evade</a></b> | <b><a href="schema41.html#id249" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Detonate')">Detonate</a></b> | <b><a href="schema41.html#id254" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchWeapon')">LaunchWeapon</a></b> | <b><a href="schema41.html#id261" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchSensor')">LaunchSensor</a></b> | <b><a href="schema41.html#id265" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component UserControl')">UserControl</a></b> | <b><a href="schema41.html#id270" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Composite')">Composite</a></b> | <b><a href="schema41.html#id301" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Move')">Move</a></b> | <b><a href="schema41.html#id307" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component CircularDatumSearch')">CircularDatumSearch</a></b> | <b><a href="schema41.html#id316" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component NewState')">NewState</a></b> | <b><a href="schema41.html#id319" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MarkDip')">MarkDip</a></b> | <b><a href="schema41.html#id322" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RaiseBody')">RaiseBody</a></b> | <b><a href="schema41.html#id324" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LadderSearch')">LadderSearch</a></b> | <b><a href="schema41.html#id333" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ExpandingSquareSearch')">ExpandingSquareSearch</a></b> | <b><a href="schema41.html#id340" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b> | <b><a href="schema41.html#id341" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence')">Sequence</a></b> | <b><a href="schema41.html#id342" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch')">Switch</a></b> | <b><a href="schema41.html#id345" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wait')">Wait</a></b>)
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema41.html#id216" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Avoid')">Avoid</a></b>, <b><a href="schema41.html#id226" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BearingTrail')">BearingTrail</a></b>, <b><a href="schema41.html#id307" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component CircularDatumSearch')">CircularDatumSearch</a></b>, <b><a href="schema41.html#id270" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Composite')">Composite</a></b>, <b><a href="schema41.html#id249" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Detonate')">Detonate</a></b>, <b><a href="schema41.html#id243" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Evade')">Evade</a></b>, <b><a href="schema41.html#id333" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ExpandingSquareSearch')">ExpandingSquareSearch</a></b>, <b><a href="schema41.html#id222" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Intercept')">Intercept</a></b>, <b><a href="schema41.html#id211" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Investigate')">Investigate</a></b>, <b><a href="schema41.html#id324" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LadderSearch')">LadderSearch</a></b>, <b><a href="schema41.html#id261" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchSensor')">LaunchSensor</a></b>, <b><a href="schema41.html#id254" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchWeapon')">LaunchWeapon</a></b>, <b><a href="schema41.html#id319" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MarkDip')">MarkDip</a></b>, <b><a href="schema41.html#id301" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Move')">Move</a></b>, <b><a href="schema41.html#id316" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component NewState')">NewState</a></b>, <b><a href="schema41.html#id322" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RaiseBody')">RaiseBody</a></b>, <b><a href="schema41.html#id229" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RectangleWander')">RectangleWander</a></b>, <b><a href="schema41.html#id205" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKRecharge')">SSKRecharge</a></b>, <b><a href="schema41.html#id341" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence')">Sequence</a></b>, <b><a href="schema41.html#id199" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SternArcClearance')">SternArcClearance</a></b>, <b><a href="schema41.html#id342" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch')">Switch</a></b>, <b><a href="schema41.html#id189" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Trail')">Trail</a></b>, <b><a href="schema41.html#id174" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Transit')">Transit</a></b>, <b><a href="schema41.html#id186" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component TransitWaypoint')">TransitWaypoint</a></b>, <b><a href="schema41.html#id265" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component UserControl')">UserControl</a></b>, <b><a href="schema41.html#id345" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wait')">Wait</a></b>, <b><a href="schema41.html#id237" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wander')">Wander</a></b>, <b><a href="schema41.html#id340" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b>, <b><a href="schema41.html#id182" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component WorkingTransit')">WorkingTransit</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id168" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id168');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id168" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id171" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component IsActive')">IsActive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model model is active</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id173" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The name of this particular instance of this decision</span><span class="tokenIndent">
+</span><span class="tokenText">model</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id172" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component StayAlive')">StayAlive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model stays alive on</span><span class="tokenIndent">
+</span><span class="tokenText">completion</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id350"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / Sequence</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id350" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id350');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id350" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">A sequence of behaviours, activated in</span><span class="tokenIndent">
+</span><span class="tokenText">order</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema46.html#id185" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SequenceType')">SequenceType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type hierarchy</b></td>
+                        <td>
+                           <ul>
+                              <li><b><a href="schema42.html#id170" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for component DecisionModelType')">DecisionModelType</a></b><ul>
+                                    <li><b><a href="schema41.html#id169" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component WaterfallType')">WaterfallType</a></b><ul>
+                                          <li><b><a href="schema46.html#id185" target="mainFrame" title="No namespace"
+                                                   onclick="updatePageTitle('Schema documentation for component SequenceType')">SequenceType</a></b></li>
+                                       </ul>
+                                    </li>
+                                 </ul>
+                              </li>
+                           </ul>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id350" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id350');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id350" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td>(<b><a href="schema41.html#id174" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Transit')">Transit</a></b> | <b><a href="schema41.html#id182" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component WorkingTransit')">WorkingTransit</a></b> | <b><a href="schema41.html#id186" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component TransitWaypoint')">TransitWaypoint</a></b> | <b><a href="schema41.html#id189" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Trail')">Trail</a></b> | <b><a href="schema41.html#id199" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SternArcClearance')">SternArcClearance</a></b> | <b><a href="schema41.html#id205" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKRecharge')">SSKRecharge</a></b> | <b><a href="schema41.html#id211" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Investigate')">Investigate</a></b> | <b><a href="schema41.html#id216" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Avoid')">Avoid</a></b> | <b><a href="schema41.html#id222" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Intercept')">Intercept</a></b> | <b><a href="schema41.html#id226" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BearingTrail')">BearingTrail</a></b> | <b><a href="schema41.html#id229" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RectangleWander')">RectangleWander</a></b> | <b><a href="schema41.html#id237" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wander')">Wander</a></b> | <b><a href="schema41.html#id243" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Evade')">Evade</a></b> | <b><a href="schema41.html#id249" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Detonate')">Detonate</a></b> | <b><a href="schema41.html#id254" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchWeapon')">LaunchWeapon</a></b> | <b><a href="schema41.html#id261" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchSensor')">LaunchSensor</a></b> | <b><a href="schema41.html#id265" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component UserControl')">UserControl</a></b> | <b><a href="schema41.html#id270" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Composite')">Composite</a></b> | <b><a href="schema41.html#id301" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Move')">Move</a></b> | <b><a href="schema41.html#id307" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component CircularDatumSearch')">CircularDatumSearch</a></b> | <b><a href="schema41.html#id316" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component NewState')">NewState</a></b> | <b><a href="schema41.html#id319" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MarkDip')">MarkDip</a></b> | <b><a href="schema41.html#id322" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RaiseBody')">RaiseBody</a></b> | <b><a href="schema41.html#id324" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LadderSearch')">LadderSearch</a></b> | <b><a href="schema41.html#id333" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ExpandingSquareSearch')">ExpandingSquareSearch</a></b> | <b><a href="schema41.html#id340" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b> | <b><a href="schema41.html#id341" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence')">Sequence</a></b> | <b><a href="schema41.html#id342" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch')">Switch</a></b> | <b><a href="schema41.html#id345" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wait')">Wait</a></b>)
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema41.html#id216" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Avoid')">Avoid</a></b>, <b><a href="schema41.html#id226" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component BearingTrail')">BearingTrail</a></b>, <b><a href="schema41.html#id307" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component CircularDatumSearch')">CircularDatumSearch</a></b>, <b><a href="schema41.html#id270" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Composite')">Composite</a></b>, <b><a href="schema41.html#id249" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Detonate')">Detonate</a></b>, <b><a href="schema41.html#id243" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Evade')">Evade</a></b>, <b><a href="schema41.html#id333" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component ExpandingSquareSearch')">ExpandingSquareSearch</a></b>, <b><a href="schema41.html#id222" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Intercept')">Intercept</a></b>, <b><a href="schema41.html#id211" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Investigate')">Investigate</a></b>, <b><a href="schema41.html#id324" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LadderSearch')">LadderSearch</a></b>, <b><a href="schema41.html#id261" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchSensor')">LaunchSensor</a></b>, <b><a href="schema41.html#id254" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component LaunchWeapon')">LaunchWeapon</a></b>, <b><a href="schema41.html#id319" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MarkDip')">MarkDip</a></b>, <b><a href="schema41.html#id301" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Move')">Move</a></b>, <b><a href="schema41.html#id316" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component NewState')">NewState</a></b>, <b><a href="schema41.html#id322" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RaiseBody')">RaiseBody</a></b>, <b><a href="schema41.html#id229" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RectangleWander')">RectangleWander</a></b>, <b><a href="schema41.html#id205" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKRecharge')">SSKRecharge</a></b>, <b><a href="schema41.html#id341" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence')">Sequence</a></b>, <b><a href="schema41.html#id199" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SternArcClearance')">SternArcClearance</a></b>, <b><a href="schema41.html#id342" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch')">Switch</a></b>, <b><a href="schema41.html#id189" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Trail')">Trail</a></b>, <b><a href="schema41.html#id174" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Transit')">Transit</a></b>, <b><a href="schema41.html#id186" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component TransitWaypoint')">TransitWaypoint</a></b>, <b><a href="schema41.html#id265" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component UserControl')">UserControl</a></b>, <b><a href="schema41.html#id345" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wait')">Wait</a></b>, <b><a href="schema41.html#id237" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Wander')">Wander</a></b>, <b><a href="schema41.html#id340" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b>, <b><a href="schema41.html#id182" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component WorkingTransit')">WorkingTransit</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id350" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id350');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id350" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id171" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component IsActive')">IsActive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model model is active</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id173" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The name of this particular instance of this decision</span><span class="tokenIndent">
+</span><span class="tokenText">model</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id172" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component StayAlive')">StayAlive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model stays alive on</span><span class="tokenIndent">
+</span><span class="tokenText">completion</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id351"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / Switch</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id351" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id351');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id351" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">A groups of behaviours, only one of which is</span><span class="tokenIndent">
+</span><span class="tokenText">active</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema79.html#id343" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SwitchType')">SwitchType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type hierarchy</b></td>
+                        <td>
+                           <ul>
+                              <li><b><a href="schema42.html#id170" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for component DecisionModelType')">DecisionModelType</a></b><ul>
+                                    <li><b><a href="schema79.html#id343" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SwitchType')">SwitchType</a></b></li>
+                                 </ul>
+                              </li>
+                           </ul>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id351" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id351');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id351" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema79.html#id344" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema79.html#id344" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id351" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id351');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id351" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema79.html#id348" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Index')">Index</a></b></td>
+                                    <td><b>xs:integer</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The index number of the active behaviour (starting with</span><span class="tokenIndent">
+</span><span class="tokenText">1)</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id171" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component IsActive')">IsActive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model model is active</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id173" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:string</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The name of this particular instance of this decision</span><span class="tokenIndent">
+</span><span class="tokenText">model</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema42.html#id172" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component StayAlive')">StayAlive</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td>true</td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Whether this decision model stays alive on</span><span class="tokenIndent">
+</span><span class="tokenText">completion</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id352"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / RadiatedCharacteristics</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id352" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id352');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id352" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">The types of radiated noise produced by this</span><span class="tokenIndent">
+</span><span class="tokenText">participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema81.html#id353" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadiatedCharacteristicsType')">RadiatedCharacteristicsType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id352" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id352');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id352" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">maxOccurs:
+                                       
+                                    </td>
+                                    <td><b>unbounded</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema81.html#id354" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Optic{0,1}')">Optic{0,1}</a></b> , <b><a href="schema81.html#id359" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Broadband{0,1}')">Broadband{0,1}</a></b> , <b><a href="schema81.html#id362" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKBroadband{0,1}')">SSKBroadband{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema81.html#id359" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Broadband')">Broadband</a></b>, <b><a href="schema81.html#id354" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Optic')">Optic</a></b>, <b><a href="schema81.html#id362" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKBroadband')">SSKBroadband</a></b></td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id366"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / SelfNoiseCharacteristics</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id366" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id366');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id366" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">What type of self-noise encountered by this</span><span class="tokenIndent">
+</span><span class="tokenText">participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema85.html#id367" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SelfNoiseCharacteristicsType')">SelfNoiseCharacteristicsType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id366" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id366');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id366" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema85.html#id368" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Optic{0,1}')">Optic{0,1}</a></b> , <b><a href="schema85.html#id369" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Broadband{0,1}')">Broadband{0,1}</a></b> , <b><a href="schema85.html#id370" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKBroadband{0,1}')">SSKBroadband{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema85.html#id369" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Broadband')">Broadband</a></b>, <b><a href="schema85.html#id368" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Optic')">Optic</a></b>, <b><a href="schema85.html#id370" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SSKBroadband')">SSKBroadband</a></b></td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id371"></a><div class="componentTitle">Element <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / Movement</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id371" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id371');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id371" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">The movement model for this type of</span><span class="tokenIndent">
+</span><span class="tokenText">participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b><a href="schema86.html#id372" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component MovementType')">MovementType</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id371" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id371');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id371" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">content:
+                                       
+                                    </td>
+                                    <td><b>complex</b></td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn">minOccurs:
+                                       
+                                    </td>
+                                    <td><b>0</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id80"></a><div class="componentTitle">Complex Type <span class="qname">ParticipantType</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id80" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id80');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id80" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">What type of participant this is</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                              <div class="annotation">
+                                 <p><a href="http://asset.info/ui">http://asset.info/ui</a></p>
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Visible: id, overview of all params. Editable: categories, name, some</span><span class="tokenIndent">
+</span><span class="tokenText">child elements according to their UI definition</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id80" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id80');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id80" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">abstract:
+                                       
+                                    </td>
+                                    <td><b>true</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id80" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id80');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id80" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Complex Types </td>
+                                    <td><b><a href="schema95.html#id408" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component FixedWingType')">FixedWingType</a></b>, <b><a href="schema93.html#id401" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component HeloType')">HeloType</a></b>, <b><a href="schema19.html#id79" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SSKType')">SSKType</a></b>, <b><a href="schema97.html#id415" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SSNType')">SSNType</a></b>, <b><a href="schema91.html#id396" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component SurfaceType')">SurfaceType</a></b>, <b><a href="schema98.html#id418" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component TorpedoType')">TorpedoType</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Model</b></td>
+                        <td><b><a href="schema20.html#id81" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Category')">Category</a></b> , <b><a href="schema20.html#id85" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SensorFit')">SensorFit</a></b> , <b><a href="schema20.html#id128" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Status')">Status</a></b> , <b><a href="schema20.html#id161" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DemandedStatus{0,1}')">DemandedStatus{0,1}</a></b> , (<b><a href="schema20.html#id168" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall{0,1}')">Waterfall{0,1}</a></b> | <b><a href="schema20.html#id350" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence{0,1}')">Sequence{0,1}</a></b> | <b><a href="schema20.html#id351" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch{0,1}')">Switch{0,1}</a></b>) , <b><a href="schema20.html#id352" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadiatedCharacteristics*')">RadiatedCharacteristics*</a></b> , <b><a href="schema20.html#id366" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SelfNoiseCharacteristics{0,1}')">SelfNoiseCharacteristics{0,1}</a></b> , <b><a href="schema20.html#id371" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Movement{0,1}')">Movement{0,1}</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Children</b></td>
+                        <td><b><a href="schema20.html#id81" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Category')">Category</a></b>, <b><a href="schema20.html#id161" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component DemandedStatus')">DemandedStatus</a></b>, <b><a href="schema20.html#id371" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Movement')">Movement</a></b>, <b><a href="schema20.html#id352" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component RadiatedCharacteristics')">RadiatedCharacteristics</a></b>, <b><a href="schema20.html#id366" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SelfNoiseCharacteristics')">SelfNoiseCharacteristics</a></b>, <b><a href="schema20.html#id85" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component SensorFit')">SensorFit</a></b>, <b><a href="schema20.html#id350" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Sequence')">Sequence</a></b>, <b><a href="schema20.html#id128" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Status')">Status</a></b>, <b><a href="schema20.html#id351" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Switch')">Switch</a></b>, <b><a href="schema20.html#id168" target="mainFrame" title="No namespace"
+                                 onclick="updatePageTitle('Schema documentation for component Waterfall')">Waterfall</a></b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Attributes</b></div>
+                           <div class="floatRight"><input id="button_attributes_id80" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('attributes_id80');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="attributes_id80" style="display:block">
+                              <table class="attributesTable">
+                                 <thead>
+                                    <tr>
+                                       <th>QName</th>
+                                       <th>Type</th>
+                                       <th>Fixed</th>
+                                       <th>Default</th>
+                                       <th>Use</th>
+                                       <th>Annotation</th>
+                                    </tr>
+                                 </thead>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema20.html#id375" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component MonteCarloTarget')">MonteCarloTarget</a></b></td>
+                                    <td><b>xs:boolean</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">Flag to indicate that this participant should be handled with</span><span class="tokenIndent">
+</span><span class="tokenText">special Monte Carlo processing</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema20.html#id373" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component Name')">Name</a></b></td>
+                                    <td><b>xs:token</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>required</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The unique name for this participant</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                                 <tr>
+                                    <td class="firstColumn"><b><a href="schema20.html#id374" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component id')">id</a></b></td>
+                                    <td><b>xs:int</b></td>
+                                    <td></td>
+                                    <td></td>
+                                    <td>optional</td>
+                                    <td>
+                                       <div class="annotation">
+                                          <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                                 class="preWrapContainer">
+                                             <tr>
+                                                <td width="100%"><pre><span class="tokenText">The unique id for this participant</span></pre></td>
+                                             </tr>
+                                          </table>
+                                       </div>
+                                    </td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id373"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / @Name</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id373" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id373');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id373" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">The unique name for this participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:token</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id373" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id373');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id373" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>required</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id373" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id373');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id373" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id374"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / @id</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id374" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id374');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id374" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">The unique id for this participant</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:int</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id374" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id374');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id374" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id374" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id374');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id374" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table><a id="id375"></a><div class="componentTitle">Attribute <span class="qname"><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                  onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b> / @MonteCarloTarget</span></div>
+      <table class="rt">
+         <tr>
+            <td class="rt_cornerTopLeft"></td>
+            <td class="rt_lineTop"></td>
+            <td class="rt_cornerTopRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_lineLeft"></td>
+            <td class="rt_content">
+               <table class="component">
+                  <tbody>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Annotations</b></div>
+                           <div class="floatRight"><input id="button_annotations_id375" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('annotations_id375');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="annotations_id375" style="display:block">
+                              <div class="annotation">
+                                 <table style="table-layout:fixed;white-space:pre-wrap;white-space:-moz-pre-wrap;white-space:-pre-wrap;white-space: -o-pre-wrap;word-wrap: break-word;_white-space:pre;"
+                                        class="preWrapContainer">
+                                    <tr>
+                                       <td width="100%"><pre><span class="tokenText">Flag to indicate that this participant should be handled with</span><span class="tokenIndent">
+</span><span class="tokenText">special Monte Carlo processing</span></pre></td>
+                                    </tr>
+                                 </table>
+                              </div>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn"><b>Type</b></td>
+                        <td><b>xs:boolean</b></td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Properties</b></div>
+                           <div class="floatRight"><input id="button_properties_id375" type="image" src="images/button_minus.gif"
+                                     value="-"
+                                     onclick="switchState('properties_id375');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="properties_id375" style="display:block">
+                              <table class="propertiesTable">
+                                 <tr>
+                                    <td class="firstColumn">use:
+                                       
+                                    </td>
+                                    <td><b>optional</b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                     <tr>
+                        <td class="firstColumn">
+                           <div class="floatLeft"><b>Used by</b></div>
+                           <div class="floatRight"><input id="button_usedBy_id375" type="image" src="images/button_minus.gif" value="-"
+                                     onclick="switchState('usedBy_id375');"
+                                     class="control" /></div>
+                        </td>
+                        <td>
+                           <div id="usedBy_id375" style="display:block">
+                              <table class="usedByTable">
+                                 <tr>
+                                    <td class="firstColumn">Complex Type </td>
+                                    <td><b><a href="schema20.html#id80" target="mainFrame" title="No namespace"
+                                             onclick="updatePageTitle('Schema documentation for component ParticipantType')">ParticipantType</a></b></td>
+                                 </tr>
+                              </table>
+                           </div>
+                        </td>
+                     </tr>
+                  </tbody>
+               </table>
+            </td>
+            <td class="rt_lineRight"></td>
+         </tr>
+         <tr>
+            <td class="rt_cornerBottomLeft"></td>
+            <td class="rt_lineBottom"></td>
+            <td class="rt_cornerBottomRight"></td>
+         </tr>
+      </table>
+      <div class="footer">
+         <hr />
+         <div align="center">XML Schema documentation generated by <a href="http://www.oxygenxml.com" target="_parent"><span class="oXygenLogo"><span class="redX">&lt;</span>o<span class="redX">X</span>ygen<span class="redX">/&gt;</span></span></a><sup>®</sup> XML Editor.
+         </div>
+      </div><script type="text/javascript">
+         <!--                     
+                     // The namespace is the selected option in the TOC combo.
+                     
+                     // The corresponding div is already visible conf. to its style attr.                     
+                    
+                            var selectToc = getElementObject('selectTOC');
+                            if(selectToc != null){
+                                // It can be null when having chunking, the combo of the TOC is in another frame.
+                                selectToc.selectedIndex = 2;
+                            }
+                        
+                    
+                     // Floats the toolbar.
+                     var globalControls = getElementObject("global_controls"); 
+                     
+                     if(globalControls != null){
+	                     var browser=navigator.appName;
+						 var version = parseFloat(navigator.appVersion.split('MSIE')[1]);
+						 
+						 var IE6 = false;
+						 if ((browser=="Microsoft Internet Explorer") && (version < 7)){
+						 	IE6 = true;
+						 }
+	
+	                     //alert (IE6 + " |V| " + version);
+	                     
+	                     if(IE6){
+	                     	// On IE 6 the 'fixed' property is not supported. We must use javascript. 
+	                         globalControls.style.position='absolute';                         
+	                         // The global controls will do not exist in the TOC frame, when chunking.
+	                         findAndFloat("global_controls", 225, 30);    
+	                     } else {
+	                      	  globalControls.style.position='fixed';                     	
+	                     }
+	                     
+	                     globalControls.style.right='0';                       
+                     }
+                --></script></body>
+</html>
