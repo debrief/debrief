@@ -5,6 +5,7 @@ import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -130,7 +131,7 @@ public class ImportKML
 	        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
 					
 					// and create it					
-					doImport(theLayers, bis, fileName);
+					doImport(theLayers, bis, theName);
 				}
 			}
 		}
@@ -149,7 +150,7 @@ public class ImportKML
 		{
 
 			// get the main part of the file - we use it for the track name
-			String prefix = removeFileNameSuffix(fileName);
+			String prefix = tidyFileName(fileName);
 
 			// get the bits ready to do the document parsing
 			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -288,7 +289,7 @@ public class ImportKML
 	}
 
 	/**
-	 * Remove the suffix from the passed file name.
+	 * Remove the suffix from the passed file name, together with any leading path.
 	 * 
 	 * @param fileName
 	 *          File name to remove suffix from.
@@ -298,18 +299,24 @@ public class ImportKML
 	 * @throws IllegalArgumentException
 	 *           if <TT>null</TT> file name passed.
 	 */
-	private static String removeFileNameSuffix(String fileName)
+	private static String tidyFileName(final String fileName)
 	{
 		if (fileName == null)
 		{
 			throw new IllegalArgumentException("file name == null");
 		}
-		int pos = fileName.lastIndexOf('.');
-		if (pos > 0 && pos < fileName.length() - 1)
+		
+		// start off by ditching the path
+		File holder = new File(fileName);
+		String res = holder.getName();
+		
+		// now ditch the file suffix
+		int pos = res.lastIndexOf('.');
+		if (pos > 0 && pos < res.length() - 1)
 		{
-			return fileName.substring(0, pos);
+			res = res.substring(0, pos);
 		}
-		return fileName;
+		return res;
 	}
 
 	// private static String readFileAsString(String filePath)
