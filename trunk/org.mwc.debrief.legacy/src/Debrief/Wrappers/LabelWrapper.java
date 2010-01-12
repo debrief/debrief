@@ -451,6 +451,7 @@ public class LabelWrapper extends MWC.GUI.PlainWrapper implements MWC.GenericDat
 		return _theLabel.getString();
 	}
 
+	@FireReformatted
 	public final void setLabel(final String val)
 	{
 		final String oldVal = _theLabel.getString();
