@@ -5,7 +5,7 @@
    <extension
          point="org.eclipse.ui.views">
       <view
-            name="Scenario controller 2"
+            name="Scenario controller"
             icon="icons/gears_run.png"
             category="org.mwc.asset.core.simulation.category"
             class="org.mwc.asset.scenariocontroller2.views.ScenarioControllerView"
