@@ -328,9 +328,19 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					// are we playing?
 					if (_playButton.getSelection())
 					{
-						// better stop it
-						_playButton.setSelection(false);
-						System.err.println("play stopped");
+
+						Display.getDefault().asyncExec(new Runnable()
+						{
+							public void run()
+							{
+								if (!_wholePanel.isDisposed())
+								{
+									// better stop it
+									_playButton.setSelection(false);
+									System.err.println("play stopped");
+								}
+							}
+						});
 					}
 
 				}
