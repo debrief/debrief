@@ -1,8 +1,11 @@
 package org.mwc.debrief.track_shift.views;
 
+import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Frame;
+import java.awt.Paint;
+import java.awt.Stroke;
 import java.text.SimpleDateFormat;
 import java.util.Iterator;
 import java.util.TimeZone;
@@ -236,7 +239,10 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 				.setRenderer(new ColourStandardXYItemRenderer(null, null, _dotPlot));
 
 		// now try to do add a zero marker on the error bar
-		_dotPlot.addRangeMarker(new ValueMarker(0.0));
+		Paint thePaint = Color.LIGHT_GRAY;
+		Stroke theStroke = new BasicStroke(2);
+		final ValueMarker zeroMarker = new ValueMarker(0.0, thePaint, theStroke);
+		_dotPlot.addRangeMarker(zeroMarker);
 
 		_linePlot = new XYPlot();
 		NumberAxis absBrgAxis = new NumberAxis("Absolute (" + getUnits() + ")");
