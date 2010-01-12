@@ -16,10 +16,6 @@
       [Enter License Description here.]
    </license>
 
-   <url>
-      <update label="MWC Network" url="file://needles/MWC File Structure/Operational Analysis/Collaborative/Applications/Debrief/updates"/>
-   </url>
-
    <plugin
          id="org.mwc.asset.core"
          download-size="0"
