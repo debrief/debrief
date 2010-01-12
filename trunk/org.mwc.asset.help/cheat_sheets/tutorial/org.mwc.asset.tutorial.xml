@@ -29,7 +29,7 @@
       </task>
       <task kind="cheatsheet" name="Creating a control file" skip="false">
          <intro>
-            <b>The control file contains the instructions for &lt;i&gt;how&lt;/i&gt; ASSET should run a scenario</b>
+            <b>The control file contains the instructions for how ASSET should run a scenario</b>
          </intro>
          <onCompletion>
             <b>We now have a description of how our target scenario is to be executed</b>

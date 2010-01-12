@@ -44,7 +44,7 @@ ASSET&apos;s Properties view is also useful when working with scenario files.  O
 
 Well, not quite, but you do have to start typing now.  So, open the Scenario element, and give the scenario a name &apos;Cheat sheet scenario&apos;.  If you switch to the properties view you&apos;ll see the other attributes needed: <b>Created</b> and <b>StartTime</b>. ASSET expects dates in the ISO 8601 date standard: <b>2010-01-12T12:13:14Z</b>.  Put in today&apos;s date as the created attribute, and any old date as the StartTime attribute.
 
-Next, specify how far in time the scenario should step forward (<b>StepTime</b>). Have a go at one minute: <b>Minutes</b> are the <b>Unit</b> and 1 is the <b>Value</b>.
+Next, specify how far in time the scenario should step forward (<b>StepTime</b>). Have a go at five minutes: <b>Minutes</b> are the <b>Unit</b> and 5 is the <b>Value</b>.
 
 Read more about the attributes of the scenario element using the help link near this text.
       </description>
@@ -87,19 +87,19 @@ We&apos;ll leave the sensor fit empty, but we should give it an initial status. 
    <item
          title="Next comes the transit.">
       <description>
-         Right-click on the Sequence element and select <b>Transit</b> from the Add-child drop-down.  Name this transit, set <b>Looping</b> to false, and fill in the WorldPath&apos;s location as <b>Lat</b> 50.4 and <b>Long</b> -8.8.  Also specify the transit speed as 9 knots.
+         Right-click on the Sequence element and select <b>Transit</b> from the Add-child drop-down.  Name this transit as &apos;Travel to fishing grounds&apos;, set <b>Looping</b> to false, and fill in the WorldPath&apos;s location as <b>Lat</b> 50.4 and <b>Long</b> -8.8.  Also specify the transit speed as 9 knots.
       </description>
    </item>
    <item
-         title="Right-click on the Sequence element and select &lt;b&gt;Transit&lt;/b&gt; from the Add-child drop-down.  Name this transit, set &lt;b&gt;Looping&lt;/b&gt; to false, and fill in the WorldPath&apos;s location as &lt;b&gt;Lat&lt;/b&gt; 50.4 and &lt;b&gt;Long&lt;/b&gt; -8.8.  Also specify the transit speed as 9 knots.">
+         title="Gone fishing">
       <description>
-         Right-click on the <b>Transit</b> element and select <b>Wander</b> from the <b>Add After</b> drop-down.  Fill in the Wander element by specifying a speed of 9 knots, the location to 50.4, -8.8.  Specify the height as zero, and set the range to 12 nautical miles.
+         Right-click on the <b>Transit</b> element and select <b>Wander</b> from the <b>Add After</b> drop-down.  Fill in the Wander element by specifying the name as &apos;morning trawl&apos;, a speed of 9 knots, the location to 50.4, -8.8.  Specify the height as zero, and set the range to 12 nautical miles.
       </description>
    </item>
    <item
-         title="Load actual sample dataset">
+         title="Done">
       <description>
-         <b>Body</b>
+         And we&apos;re done. We&apos;ve got a valid scenario that describes what our fishing vessel is up to.
       </description>
    </item>
 </cheatsheet>
