@@ -183,6 +183,9 @@ public class ScenarioControllerView extends ViewPart implements
 
 				// update our own status indicator(s)
 				setScenarioStatus(_myScenario, reason);
+				
+				// tell the observers that it's all over
+				tearDownObservers(_myScenario);
 
 				// it's stopped running, refresh the workspace
 				IProject theProj = getAProject();
@@ -276,8 +279,9 @@ public class ScenarioControllerView extends ViewPart implements
 
 		_myUI.getMultiTableHolder().setLayoutData(
 				new GridData(SWT.FILL, SWT.FILL, true, true, 1, 1));
-		
-		_myUI.getScenarioTabs().addSelectionListener(new SelectionListener(){
+
+		_myUI.getScenarioTabs().addSelectionListener(new SelectionListener()
+		{
 
 			public void widgetDefaultSelected(SelectionEvent e)
 			{
@@ -286,7 +290,7 @@ public class ScenarioControllerView extends ViewPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				if(_myUI.getScenarioTabs().getSelectionIndex() == 0)
+				if (_myUI.getScenarioTabs().getSelectionIndex() == 0)
 				{
 					EditableWrapper ew = new EditableWrapper(_scenarioWrapper);
 					StructuredSelection sel = new StructuredSelection(ew);
@@ -296,8 +300,9 @@ public class ScenarioControllerView extends ViewPart implements
 				{
 					setSelection(null);
 				}
-			
-			}});
+
+			}
+		});
 
 		_simTable = new SimulationTable(_myUI.getMultiTableHolder(), this);
 		_simTable.getControl().setLayoutData(
@@ -612,7 +617,7 @@ public class ScenarioControllerView extends ViewPart implements
 					{
 						// remember it
 						_controlFileName = thisName;
-
+						
 						// show it
 						_myUI.getControlVal().setText(new File(thisName).getName());
 
@@ -639,13 +644,15 @@ public class ScenarioControllerView extends ViewPart implements
 
 		// lastly, select me - so our listeners get informed.
 		// - note, we do it in a runnable because things can get a little recursive
-		//         if we're trying to show a view whilst its still being defined.
-		Runnable doIt = new Runnable(){
+		// if we're trying to show a view whilst its still being defined.
+		Runnable doIt = new Runnable()
+		{
 			@Override
 			public void run()
 			{
-				activateMe();				
-			}};
+				activateMe();
+			}
+		};
 		Display.getCurrent().asyncExec(doIt);
 	}
 
@@ -684,6 +691,10 @@ public class ScenarioControllerView extends ViewPart implements
 
 	private void controllerAssigned(String controlFile)
 	{
+		// and ditch any existing observers
+		if(_myObservers != null)
+			_myObservers.removeAllElements();
+
 		try
 		{
 			// hmm, check what type of control file it is
@@ -696,6 +707,7 @@ public class ScenarioControllerView extends ViewPart implements
 			}
 			else if (controlType == ScenarioControllerHandler.type)
 			{
+				
 				_multiRunResultsStore = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
 
@@ -717,7 +729,7 @@ public class ScenarioControllerView extends ViewPart implements
 						IPath filePath = someProject.getLocation();
 
 						// ok, now stick the output folder in this parent
-						tgtDir = new File(filePath.toOSString() + "\\" + tgtDir.getPath());
+						tgtDir = new File(filePath.toOSString() + File.separator + tgtDir.getPath());
 					}
 				}
 
@@ -834,16 +846,21 @@ public class ScenarioControllerView extends ViewPart implements
 		String thePath = tgtDir.getPath();
 
 		// use series of tests to check whether this is a relative path
-		if (thePath.contains(":"))
-			res = false;
-		if (thePath.contains("\\\\"))
-			res = false;
-		if (thePath.charAt(0) == '\\')
-			res = false;
-		if (thePath.contains("//"))
-			res = false;
-		if (thePath.charAt(0) == '/')
-			res = false;
+		if (thePath.length() == 0)
+			res = true;
+		else
+		{
+			if (thePath.contains(":"))
+				res = false;
+			if (thePath.contains("\\\\"))
+				res = false;
+			if (thePath.charAt(0) == '\\')
+				res = false;
+			if (thePath.contains("//"))
+				res = false;
+			if (thePath.charAt(0) == '/')
+				res = false;
+		}
 
 		return res;
 	}
@@ -927,6 +944,20 @@ public class ScenarioControllerView extends ViewPart implements
 			thisO.setup(theScenario);
 		}
 	}
+	
+
+	private void tearDownObservers(ScenarioType theScenario)
+	{
+		// and actually setup the observers
+		for (Iterator<ScenarioObserver> iterator = _myObservers.iterator(); iterator
+				.hasNext();)
+		{
+			ScenarioObserver thisO = iterator.next();
+			thisO.tearDown(theScenario);
+		}
+	}
+	
+		
 
 	/**
 	 * a scenario has been loaded, tell our listeners
@@ -1123,7 +1154,7 @@ public class ScenarioControllerView extends ViewPart implements
 			IWorkbenchWindow window = site.getWorkbenchWindow();
 			IWorkbenchPage page = window.getActivePage();
 			if (page != null)
-			{			
+			{
 				// try to find our view first
 				IViewPart theView = page.findView(site.getId());
 				if (theView != null)
