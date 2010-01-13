@@ -8,6 +8,9 @@
 	<extension point="org.eclipse.ui.views">
 		<category id="org.mwc.asset.core.simulation.category" name="Tactical Simulation" />
 	</extension>
+		<extension point="org.eclipse.ui.startup">
+		<startup class="org.mwc.asset.core.ASSETPlugin" />
+	</extension>
 	<extension id="CMAP" point="org.eclipse.core.runtime.products">
 		<product application="org.eclipse.ui.ide.workbench" name="CMAP">
 			<property name="aboutImage" value="icons/WorkBenchLogo.gif" />
@@ -15,9 +18,6 @@
 				value="Welcome to ASSET NG, from the Maritime Warfare Centre" />
 			<property name="windowImages" value="icons/security_agent.png" />
 		</product>
-	</extension>
-	<extension point="org.eclipse.ui.startup">
-		<startup class="org.mwc.asset.core.ASSETPlugin" />
 	</extension>
 	<extension id="ASSET" point="org.eclipse.core.runtime.products">
 		<product application="org.eclipse.ui.ide.workbench" name="AssetNG">

@@ -11,7 +11,6 @@ Require-Bundle: org.mwc.asset.legacy;visibility:=reexport,
  org.mwc.cmap.legacy,
  org.eclipse.ui,
  org.eclipse.wst.xml.ui
-Bundle-ActivationPolicy: lazy
 Export-Package: org.mwc.asset.core;
   uses:="org.mwc.cmap.core.ui_support,
    org.eclipse.jface.resource,
