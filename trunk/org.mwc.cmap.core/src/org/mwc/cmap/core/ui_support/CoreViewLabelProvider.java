@@ -142,7 +142,13 @@ public class CoreViewLabelProvider extends LabelProvider implements
 		// try our helpers first
 		ImageDescriptor thirdPartyImageDescriptor = null;
 		if (imageHelpers != null) {
-			for (final Iterator<ViewLabelImageHelper> iter = imageHelpers
+			
+			// take a copy of the images listing, in case we receive a new
+			// helper whilst we're looping through
+			Vector<ViewLabelImageHelper> spareHelpers = new Vector<ViewLabelImageHelper>(imageHelpers);
+			
+			// ok, now go for it.
+			for (final Iterator<ViewLabelImageHelper> iter = spareHelpers
 					.iterator(); iter.hasNext();) {
 				final ViewLabelImageHelper helper = iter.next();
 				thirdPartyImageDescriptor = helper.getImageFor(editable);
