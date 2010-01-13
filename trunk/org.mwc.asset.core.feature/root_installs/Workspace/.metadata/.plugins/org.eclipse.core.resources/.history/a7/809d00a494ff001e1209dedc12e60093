@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name="Cheat sheet scenario" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schemas/ASSET.xsd" Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1">
+  <StepTime Units="minutes" Value="30"/><Environment Name="Atlantic Summer"
+  	AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
+</Environment>
+	<Participants>
+		<Surface Name="Fisher One">
+			<Category Type="FISHING_VESSEL" Force="GREEN"
+				Environment="SURFACE" ></Category>
+			<SensorFit></SensorFit>
+			<Status Course="30" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="50" Long="-8"></shortLocation>
+				</Location>
+				<Speed Value="6" Units="kts" />
+			</Status>
+			<Sequence Name="Southern Trawl" IsActive="true">
+				<Transit Name="Travel to fishing grounds" Looping="false">
+					<WorldPath>
+						<Point>
+							<shortLocation Lat="50.4" Long="-8.8"></shortLocation>
+						</Point>
+					</WorldPath>
+					<Speed Value="9" Units="kts" ></Speed>
+				</Transit>
+				<Wander Name="Morning trawl">
+					<Range Value="12" Units="nm" ></Range>
+					<Location>
+						<shortLocation Lat="50.4" Long="-8.8"></shortLocation>
+					</Location>
+					<Speed Value="9" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</Wander></Sequence>
+			<SurfaceMovementCharacteristics Name="9m fisherman"
+				FuelUsageRate="0.0001">
+				<MinSpeed Value="0.0" Units="kts" ></MinSpeed>
+				<MaxSpeed Value="12" Units="kts" />
+				<AccelerationRate Value="1" Units="kt/s" />
+				<DecelerationRate Value="1" Units="kt/s" />
+				<TurningCircle Value="400" Units="m" ></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface></Participants>
+</Scenario>

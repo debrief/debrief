@@ -13,20 +13,40 @@
 <subitemskipped key="5" value="1,2"/>
 </taskData>
 </task>
-<task id="TaskId_2" state="1">
-<taskData buttonstate="0" id="TaskId_2" item="5">
+<task id="TaskId_2" state="3">
+<taskData buttonstate="0" id="TaskId_2" item="12">
 <completed item="0"/>
 <completed item="1"/>
 <completed item="2"/>
 <completed item="3"/>
 <completed item="4"/>
-<expanded item="5"/>
+<completed item="5"/>
+<completed item="6"/>
+<completed item="7"/>
+<completed item="8"/>
+<completed item="9"/>
+<completed item="10"/>
+<completed item="11"/>
+<completed item="12"/>
+<expanded item="0"/>
 </taskData>
 </task>
-<task id="TaskId_3" state="0"/>
+<task id="TaskId_3" state="3">
+<taskData buttonstate="0" id="TaskId_3" item="6">
+<completed item="0"/>
+<completed item="1"/>
+<completed item="2"/>
+<completed item="3"/>
+<completed item="4"/>
+<completed item="5"/>
+<completed item="6"/>
+<expanded item="0"/>
+<expanded item="6"/>
+</taskData>
+</task>
 <task id="TaskId_4" state="0"/>
 <task id="TaskId_5" state="0"/>
 <task id="TaskId_6" state="0"/>
 <task id="TaskId_7" state="0"/>
-<layout key="selectedTask" value="TaskId_2"/>
+<layout key="selectedTask" value="TaskId_3"/>
 </compositeCheatSheetState>
