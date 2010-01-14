@@ -4,8 +4,9 @@
 		<item value="true" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_USE_PERSISTED_SIZE"/>
 		<item value="350" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_WIDTH"/>
 		<item value="false" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_USE_PERSISTED_LOCATION"/>
-		<item value="436" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_HEIGHT"/>
+		<item value="438" key="org.eclipse.ui.internal.quickaccess.QuickAccessDialogDIALOG_HEIGHT"/>
 		<list key="orderedProviders">
+			<item value="org.eclipse.ui.views"/>
 			<item value="org.eclipse.ui.views"/>
 			<item value="org.eclipse.ui.views"/>
 			<item value="org.eclipse.ui.views"/>
@@ -17,6 +18,8 @@
 			<item value="org.eclipse.ui.perspectives"/>
 		</list>
 		<list key="textArray">
+			<item value="narra"/>
+			<item value="narrat"/>
 			<item value="layer"/>
 			<item value="lay"/>
 			<item value="laye"/>
@@ -31,6 +34,7 @@
 			<item value="tact"/>
 		</list>
 		<list key="orderedElements">
+			<item value="com.borlander.ianmayo.nviewer.app.view"/>
 			<item value="org.mwc.cmap.layer_manager.views.LayerManagerView"/>
 			<item value="org.mwc.cmap.TimeController.views.TimeController"/>
 			<item value="org.mwc.asset.VesselMonitor"/>
@@ -42,6 +46,7 @@
 			<item value="org.mwc.asset.core.Perspective"/>
 		</list>
 		<list key="textEntries">
+			<item value="2"/>
 			<item value="3"/>
 			<item value="2"/>
 			<item value="1"/>

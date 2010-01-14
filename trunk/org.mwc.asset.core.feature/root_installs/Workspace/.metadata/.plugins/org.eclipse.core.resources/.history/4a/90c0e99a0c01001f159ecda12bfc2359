@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><Scenario xmlns="http://www.mwc.org/asset" Created="2001-12-12T12:23:00" Name="some test scenario" StartTime="2001-12-12T12:23:00">
+	<StepTime Units="seconds" Value="15"/>
+	<Environment AtmosphericAttenuation="CLEAR" Name="PROT_ENV" SeaState="1"/><Participants>
+		<Helo MonteCarloTarget="false" Name="HELO_ALPHA" id="1">
+			<Category Environment="AIRBORNE" Force="BLUE" Type="HELICOPTER"/>
+			<SensorFit>
+				<OpticLookupSensor CRF="0.8" IRF="0.4" MRF="1.05" Name="Eyesight" VDR="0.16" id="444">
+					<TBDO Units="seconds" Value="10"/>
+					<CTP Units="seconds" Value="20"/>
+					<ITP Units="seconds" Value="20"/>
+				</OpticLookupSensor>
+				<RadarLookupSensor CRF="0" IRF="0" K="9200" MRF="1.2" Name="The radar" VDR="0.04" id="555">
+					<TBDO Units="seconds" Value="11"/>
+					<CTP Units="seconds" Value="0"/>
+					<ITP Units="seconds" Value="0"/>
+				</RadarLookupSensor>
+			</SensorFit>
+			<Status Course="55" Fuel="99">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="0"/>
+						<East Units="nm" Value="0"/>
+						<Height Units="ft" Value="500"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="kts" Value="140"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Go and do a couple of dips" StayAlive="false">
+				<Investigate DetectionLevel="Identified" IsActive="true" Name="Find fishermen">
+					<TargetType>
+						<Type Name="FISHING_VESSEL"/>
+					</TargetType>
+				</Investigate>
+				<LadderSearch LadderAxis="90" MaxNumLegs="10" Name="First ladder search">
+					<StartPoint>
+						<relativeLocation>
+							<North Units="nm" Value="0"/>
+							<East Units="nm" Value="0"/>
+							<Height Units="ft" Value="500"/>
+						</relativeLocation>
+					</StartPoint>
+					<TrackSpacing Units="nm" Value="10"/>
+					<LegLength Units="nm" Value="40"/>
+				</LadderSearch>
+				<Wander Name="Stay in patrol area">
+					<Range Units="nm" Value="20"/>
+					<Location>
+						<relativeLocation>
+							<North Units="nm" Value="0"/>
+							<East Units="nm" Value="0"/>
+						</relativeLocation>
+					</Location>
+					<Speed Units="kts" Value="40"/>
+					<Height Units="nm" Value="0"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<HeloMovementCharacteristics DefaultTurnRate="3" FuelUsageRate="0.0001" Name="RAW CHARACTERISTICS">
+				<MinSpeed Units="m/s" Value="0"/>
+				<MaxSpeed Units="m/s" Value="200"/>
+				<AccelerationRate Units="m/s/s" Value="4"/>
+				<DecelerationRate Units="m/s/s" Value="2"/>
+				<MinHeight Units="m" Value="10"/>
+				<MaxHeight Units="m" Value="300"/>
+				<DefaultClimbRate Units="m/s" Value="6"/>
+				<DefaultDiveRate Units="m/s" Value="40"/>
+				<DefaultClimbSpeed Units="m/s" Value="40"/>
+				<DefaultDiveSpeed Units="m/s" Value="60"/>
+			</HeloMovementCharacteristics>
+		</Helo>
+		<Surface MonteCarloTarget="false" Name="SAM_FISHER">
+			<Category Environment="SURFACE" Force="RED" Type="FISHING_VESSEL"/>
+			<SensorFit>
+				<OpticLookupSensor CRF="0.8" IRF="0.4" MRF="1.05" Name="Eyesight" VDR="0.16" id="444">
+					<TBDO Units="seconds" Value="10"/>
+					<CTP Units="seconds" Value="20"/>
+					<ITP Units="seconds" Value="20"/>
+				</OpticLookupSensor>
+			</SensorFit>
+			<Status Course="22" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="5"/>
+						<East Units="nm" Value="5"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="16"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Do some stuff" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface MonteCarloTarget="false" Name="GENERIC_FISHER">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="22" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="4"/>
+						<East Units="nm" Value="3"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="16"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+	
+</Scenario>

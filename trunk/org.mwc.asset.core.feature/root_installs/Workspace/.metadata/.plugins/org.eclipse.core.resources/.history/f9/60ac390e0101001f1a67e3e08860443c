@@ -1,0 +1,2075 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><Scenario xmlns="http://www.mwc.org/asset" Case="sea_state:6 haze:LIGHT_HAZE light_level:MOON_NIGHT" Created="2001-12-12T12:23:00" Name="test_scenario_5" StartTime="2001-12-12T12:23:00">
+	<StepTime Units="seconds" Value="15"/>
+	<Environment AtmosphericAttenuation="LIGHT_HAZE" LightLevel="MOON_NIGHT" Name="PROT_ENV" SeaState="6"/><Participants>
+		<Helo MonteCarloTarget="false" Name="HELO_ALPHA" id="1">
+			<Category Environment="AIRBORNE" Force="BLUE" Type="HELICOPTER"/>
+			<SensorFit>
+				<OpticLookupSensor CRF="0.8" IRF="0.4" MRF="1.05" Name="Eyesight" VDR="0.16" id="444">
+					<TBDO Units="seconds" Value="10"/>
+					<CTP Units="seconds" Value="20"/>
+					<ITP Units="seconds" Value="20"/>
+				</OpticLookupSensor>
+				<RadarLookupSensor CRF="0" IRF="0" K="9200" MRF="1.2" Name="The radar" VDR="0.04" id="555">
+					<TBDO Units="seconds" Value="11"/>
+					<CTP Units="seconds" Value="0"/>
+					<ITP Units="seconds" Value="0"/>
+				</RadarLookupSensor>
+			</SensorFit>
+			<Status Course="55" Fuel="99">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="0"/>
+						<East Units="nm" Value="0"/>
+						<Height Units="ft" Value="500"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="kts" Value="140"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Go and do a couple of dips" StayAlive="false">
+				<Investigate DetectionLevel="Identified" IsActive="true" Name="Find fishermen">
+					<TargetType>
+						<Type Name="FISHING_VESSEL"/>
+					</TargetType>
+				</Investigate>
+				<LadderSearch LadderAxis="90" MaxNumLegs="10" Name="First ladder search">
+					<StartPoint>
+						<relativeLocation>
+							<North Units="nm" Value="0"/>
+							<East Units="nm" Value="0"/>
+							<Height Units="ft" Value="500"/>
+						</relativeLocation>
+					</StartPoint>
+					<TrackSpacing Units="nm" Value="10"/>
+					<LegLength Units="nm" Value="40"/>
+				</LadderSearch>
+				<Wander Name="Stay in patrol area">
+					<Range Units="nm" Value="20"/>
+					<Location>
+						<relativeLocation>
+							<North Units="nm" Value="0"/>
+							<East Units="nm" Value="0"/>
+						</relativeLocation>
+					</Location>
+					<Speed Units="kts" Value="40"/>
+					<Height Units="nm" Value="0"/>
+				</Wander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<HeloMovementCharacteristics DefaultTurnRate="3" FuelUsageRate="0.0001" Name="RAW CHARACTERISTICS">
+				<MinSpeed Units="m/s" Value="0"/>
+				<MaxSpeed Units="m/s" Value="200"/>
+				<AccelerationRate Units="m/s/s" Value="4"/>
+				<DecelerationRate Units="m/s/s" Value="2"/>
+				<MinHeight Units="m" Value="10"/>
+				<MaxHeight Units="m" Value="300"/>
+				<DefaultClimbRate Units="m/s" Value="6"/>
+				<DefaultDiveRate Units="m/s" Value="40"/>
+				<DefaultClimbSpeed Units="m/s" Value="40"/>
+				<DefaultDiveSpeed Units="m/s" Value="60"/>
+			</HeloMovementCharacteristics>
+		</Helo>
+		<Surface MonteCarloTarget="false" Name="SAM_FISHER_001">
+			<Category Environment="SURFACE" Force="RED" Type="FISHING_VESSEL"/>
+			<SensorFit>
+				<OpticLookupSensor CRF="0.8" IRF="0.4" MRF="1.05" Name="Eyesight" VDR="0.16" id="444">
+					<TBDO Units="seconds" Value="10"/>
+					<CTP Units="seconds" Value="20"/>
+					<ITP Units="seconds" Value="20"/>
+				</OpticLookupSensor>
+			</SensorFit>
+			<Status Course="11.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="16.11"/>
+						<East Units="nm" Value="21.86"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Do some stuff" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							
+						<shortLocation Lat="0.6788352808179912" Long="0.6774679340010875"/></TopLeft>
+						<BottomRight>
+							
+						<shortLocation Lat="0.049631040010389815" Long="0.031420034845332845"/></BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface MonteCarloTarget="false" Name="GENERIC_FISHER_001">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="30.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="32.72"/>
+						<East Units="nm" Value="4.69"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_002">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="279.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="2.5"/>
+						<East Units="nm" Value="29.64"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="7.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_003">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="111.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="14.98"/>
+						<East Units="nm" Value="4.63"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_004">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="157.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="25.05"/>
+						<East Units="nm" Value="35.88"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_005">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="225.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="37.29"/>
+						<East Units="nm" Value="38.92"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_006">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="35.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="22.13"/>
+						<East Units="nm" Value="30.57"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="7.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_007">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="234.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="16.51"/>
+						<East Units="nm" Value="34.33"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_008">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="266.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="20.09"/>
+						<East Units="nm" Value="32.65"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_009">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="323.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="24.01"/>
+						<East Units="nm" Value="39.980000000000004"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_010">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="39.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="27.12"/>
+						<East Units="nm" Value="12.450000000000001"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_011">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="312.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="3.04"/>
+						<East Units="nm" Value="32.21"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_012">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="307.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="1.82"/>
+						<East Units="nm" Value="9.3"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_013">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="250.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="20.830000000000002"/>
+						<East Units="nm" Value="28.69"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_014">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="63.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="2.46"/>
+						<East Units="nm" Value="37.12"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_015">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="102.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="29.64"/>
+						<East Units="nm" Value="11.9"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_016">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="349.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="15.65"/>
+						<East Units="nm" Value="3.2800000000000002"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_017">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="19.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="0.39"/>
+						<East Units="nm" Value="12.05"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_018">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="283.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="13.5"/>
+						<East Units="nm" Value="35.730000000000004"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_019">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="263.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="22.94"/>
+						<East Units="nm" Value="29.75"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_020">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="50.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="38.01"/>
+						<East Units="nm" Value="23.68"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="7.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_021">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="312.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="16.92"/>
+						<East Units="nm" Value="8.48"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_022">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="327.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="1.7"/>
+						<East Units="nm" Value="26.88"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_023">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="333.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="26.87"/>
+						<East Units="nm" Value="37.02"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_024">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="340.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="23.400000000000002"/>
+						<East Units="nm" Value="18.77"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_025">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="59.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="5.84"/>
+						<East Units="nm" Value="12.05"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="7.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_026">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="31.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="7.98"/>
+						<East Units="nm" Value="38.58"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_027">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="256.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="1.09"/>
+						<East Units="nm" Value="1.0"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_028">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="64.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="29.09"/>
+						<East Units="nm" Value="37.5"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_029">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="164.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="26.0"/>
+						<East Units="nm" Value="35.45"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_030">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="300.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="3.72"/>
+						<East Units="nm" Value="34.22"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_031">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="256.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="32.03"/>
+						<East Units="nm" Value="35.01"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_032">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="7.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="37.480000000000004"/>
+						<East Units="nm" Value="4.84"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_033">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="278.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="4.55"/>
+						<East Units="nm" Value="12.06"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_034">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="260.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="29.52"/>
+						<East Units="nm" Value="22.38"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_035">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="296.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="16.64"/>
+						<East Units="nm" Value="37.35"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_036">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="80.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="16.09"/>
+						<East Units="nm" Value="11.08"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_037">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="285.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="4.53"/>
+						<East Units="nm" Value="16.75"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_038">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="283.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="21.46"/>
+						<East Units="nm" Value="10.56"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_039">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="43.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="38.77"/>
+						<East Units="nm" Value="19.13"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_040">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="288.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="35.27"/>
+						<East Units="nm" Value="15.030000000000001"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_041">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="214.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="35.01"/>
+						<East Units="nm" Value="25.73"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_042">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="226.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="25.14"/>
+						<East Units="nm" Value="22.8"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_043">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="220.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="18.17"/>
+						<East Units="nm" Value="21.0"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="6.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_044">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="260.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="23.47"/>
+						<East Units="nm" Value="21.05"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_045">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="211.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="24.04"/>
+						<East Units="nm" Value="35.19"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="4.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_046">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="289.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="17.3"/>
+						<East Units="nm" Value="1.25"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_047">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="143.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="12.21"/>
+						<East Units="nm" Value="38.800000000000004"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="7.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_048">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="37.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="20.240000000000002"/>
+						<East Units="nm" Value="30.13"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="3.5"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface><Surface MonteCarloTarget="false" Name="GENERIC_FISHER_049">
+			<Category Environment="SURFACE" Force="GREEN" Type="FISHING_VESSEL"/>
+			<SensorFit/>
+			<Status Course="1.0" Fuel="22">
+				<Location>
+					<relativeLocation>
+						<North Units="nm" Value="14.1"/>
+						<East Units="nm" Value="38.96"/>
+					</relativeLocation>
+				</Location>
+				<Speed Units="m/s" Value="5.0"/>
+			</Status>
+			<Waterfall IsActive="true" Name="Fishing vessel behaviour" StayAlive="true">
+				<RectangleWander Name="just wander around my area">
+					<Area>
+						<TopLeft>
+							<relativeLocation>
+								<North Units="nm" Value="40"/>
+								<East Units="nm" Value="40"/>
+							</relativeLocation>
+						</TopLeft>
+						<BottomRight>
+							<relativeLocation>
+								<North Units="nm" Value="0"/>
+								<East Units="nm" Value="0"/>
+							</relativeLocation>
+						</BottomRight>
+					</Area>
+					<Speed Units="m/s" Value="6"/>
+					<Height Units="m" Value="0"/>
+				</RectangleWander>
+			</Waterfall>
+			<RadiatedCharacteristics/>
+			<SurfaceMovementCharacteristics FuelUsageRate="0.006" Name="2">
+				<MinSpeed Units="m/s" Value="2"/>
+				<MaxSpeed Units="m/s" Value="18"/>
+				<AccelerationRate Units="m/s/s" Value="12"/>
+				<DecelerationRate Units="m/s/s" Value="12"/>
+				<TurningCircle Units="m" Value="600"/>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+	</Participants>
+	
+</Scenario>

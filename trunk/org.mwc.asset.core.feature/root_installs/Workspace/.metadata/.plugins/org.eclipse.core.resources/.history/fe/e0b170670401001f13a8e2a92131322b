@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ScenarioController OutputDirectory="results" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core/asset_schemas/ASSET.xsd">
+	<ObserverList>
+		<TimeObserver Name="Domesday Timer" Active="true">
+			<Duration Value="24" Units="hours" />
+		</TimeObserver>
+		<TrackPlotObserver Active="true" Name="TrackPlot" show_positions="true">
+			<GridDelta Value="4" Units="nm" ></GridDelta>
+		</TrackPlotObserver>
+		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
+			record_positions="true" Active="true" record_decisions="true">
+		</DebriefReplayObserver></ObserverList>
+</ScenarioController>

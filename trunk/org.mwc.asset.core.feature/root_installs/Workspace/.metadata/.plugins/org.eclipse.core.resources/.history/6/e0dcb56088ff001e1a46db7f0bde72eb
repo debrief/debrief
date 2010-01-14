@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--Control file used in investigating ASSET lookup sensors-->
-<ScenarioController xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="d:\dev\Asset\src\schemas\ASSET.xsd" OutputDirectory=".\">
-	<ObserverList>
-		<DebriefReplayObserver directory_name=".\" Active="true" Name="Record to REP" file_name="user_tracks.rep" record_detections="false" record_positions="true" record_decisions="false"/>
-	</ObserverList>
-</ScenarioController>

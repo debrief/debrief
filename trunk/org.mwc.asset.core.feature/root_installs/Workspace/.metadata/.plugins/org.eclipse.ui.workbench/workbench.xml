@@ -12,6 +12,7 @@
 <coolItem id="additions" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.debug.ui.launchActionSet" itemType="typeToolBarContribution" x="40" y="22"/>
 <coolItem id="org.eclipse.search.searchActionSet" itemType="typeToolBarContribution" x="40" y="22"/>
+<coolItem id="org.eclipse.ui.edit.text.actionSet.presentation" itemType="typeToolBarContribution" x="54" y="22"/>
 <coolItem id="org.eclipse.wst.xml.ui.perspective.NewFileToolBar" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.wst.xml.ui.design.DesignToolBar" itemType="typeToolBarContribution" x="104" y="22"/>
 <coolItem id="org.mwc.cmap.plot3d" itemType="typeToolBarContribution" x="32" y="22"/>
@@ -19,6 +20,7 @@
 <coolItem id="group.nav" itemType="typeGroupMarker"/>
 <coolItem id="org.eclipse.ui.workbench.navigate" itemType="typeToolBarContribution" x="152" y="22"/>
 <coolItem id="group.editor" itemType="typeGroupMarker"/>
+<coolItem id="org.eclipse.ui.DefaultTextEditor" itemType="typePlaceholder" x="-1" y="-1"/>
 <coolItem id="org.mwc.asset.ASSETPlotEditor" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" itemType="typeToolBarContribution" x="-1" y="-1"/>
 <coolItem id="group.help" itemType="typeGroupMarker"/>
@@ -32,15 +34,23 @@
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
 <part id="1"/>
+<part id="2"/>
+<part id="3"/>
 </presentation>
 </folder>
 </info>
 </editorArea>
-<editor activePart="true" focus="true" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.xml" partName="trial1.xml" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial1.xml" title="trial1.xml" tooltip="AssetData/trial1.xml" workbook="DefaultEditorWorkbook">
-<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/trial1.xml"/>
-</editor>
 <editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.asset" partName="trial1.asset" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial1.asset" title="trial1.asset" tooltip="AssetData/trial1.asset" workbook="DefaultEditorWorkbook">
 <input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/trial1.asset"/>
+</editor>
+<editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial_multi.xml" partName="trial_multi.xml" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial_multi.xml" title="trial_multi.xml" tooltip="AssetData/trial_multi.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/trial_multi.xml"/>
+</editor>
+<editor id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_control.xml" partName="force_prot_control.xml" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/Samples/force_prot_control.xml" title="force_prot_control.xml" tooltip="AssetData/Samples/force_prot_control.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/Samples/force_prot_control.xml"/>
+</editor>
+<editor activePart="true" focus="true" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="Cheat sheet scenario.xml" partName="Cheat sheet scenario.xml" path="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/results/1/Cheat sheet scenario.xml" title="Cheat sheet scenario.xml" tooltip="AssetData/results/1/Cheat sheet scenario.xml" workbook="DefaultEditorWorkbook">
+<input factoryID="org.eclipse.ui.part.FileEditorInputFactory" path="/AssetData/results/1/Cheat sheet scenario.xml"/>
 </editor>
 </editors>
 <views>
@@ -52,11 +62,16 @@
 </view>
 <view id="org.eclipse.ui.views.ResourceNavigator" partName="Navigator">
 <viewState LINK_NAVIGATOR_TO_EDITOR="0" sorter="1">
-<filters>&#x0A;<filter element=".*" isEnabled="false"/>
+<filters>
+<filter element=".*" isEnabled="false"/>
 </filters>
-<expanded>&#x0A;<element path="/AssetData"/>
+<expanded>
+<element path="/AssetData"/>
+<element path="/AssetData/results"/>
+<element path="/AssetData/results/1"/>
 </expanded>
-<selection>&#x0A;<element path="/AssetData/trial1.asset"/>
+<selection>
+<element path="/AssetData/results/1/Cheat sheet scenario.xml"/>
 </selection>
 </viewState>
 </view>
@@ -67,18 +82,13 @@
 <viewState/>
 </view>
 <view id="org.mwc.asset.ScenarioController2" partName="Scenario controller">
-<viewState CONTROL_FILE="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial1.xml" SCENARIO_FILE="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial1.asset"/>
+<viewState CONTROL_FILE="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial_multi.xml" SCENARIO_FILE="/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core.feature/root_installs/Workspace/AssetData/trial1.asset"/>
 </view>
 <view id="org.mwc.cmap.layer_manager.views.LayerManagerView" partName="Layer Manager">
 <viewState/>
 </view>
 <view id="org.eclipse.ui.views.ContentOutline" partName="Outline">
 <viewState/>
-</view>
-<view id="org.eclipse.ui.cheatsheets.views.CheatSheetView" partName="Cheat Sheets">
-<viewState>
-<cheatSheetMemento id="org.mwc.asset.help.cheatsheet406552611"/>
-</viewState>
 </view>
 <view id="org.mwc.cmap.overview.views.ChartOverview" partName="Chart overview">
 <viewState/>
@@ -174,15 +184,14 @@
 <view id="org.eclipse.ui.views.ResourceNavigator"/>
 <view id="org.mwc.asset.VesselMonitor"/>
 <view id="org.mwc.cmap.TimeController.views.TimeController"/>
-<view id="org.eclipse.ui.cheatsheets.views.CheatSheetView"/>
-<view id="org.mwc.asset.ScenarioController2"/>
 <view id="org.eclipse.ui.views.PropertySheet"/>
 <view id="org.mwc.cmap.layer_manager.views.LayerManagerView"/>
+<view id="org.mwc.asset.ScenarioController2"/>
 <fastViewBars/>
 <layout>
 <mainWindow>
 <info folder="true" part="topLeft">
-<folder activePageID="org.mwc.cmap.TimeController.views.TimeController" appearance="2" expanded="2">
+<folder activePageID="org.eclipse.ui.views.ResourceNavigator" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.ResourceNavigator" label="Navigator"/>
 <page content="org.mwc.asset.VesselMonitor" label="Vessel Monitor"/>
 <page content="org.mwc.cmap.TimeController.views.TimeController" label="Time Controller"/>
@@ -194,17 +203,21 @@
 </presentation>
 </folder>
 </info>
-<info folder="true" part="stickyFolderRight" ratio="0.7525692" ratioLeft="952" ratioRight="313" relationship="2" relative="topLeft">
-<folder activePageID="org.eclipse.ui.cheatsheets.views.CheatSheetView" appearance="2" expanded="2">
-<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="Cheat Sheets"/>
-<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
-<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
-<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
-<part id="0"/>
-</presentation>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@d9be234" ratio="0.75" ratioLeft="642" ratioRight="214" relationship="4" relative="topLeft">
+<folder appearance="2" expanded="2">
+<page content="com.borlander.ianmayo.nviewer.app.view" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
 </folder>
 </info>
-<info part="org.eclipse.ui.editorss" ratio="0.47945204" ratioLeft="455" ratioRight="494" relationship="2" relative="topLeft"/>
+<info folder="true" part="stickyFolderRight" ratio="0.7826087" ratioLeft="990" ratioRight="275" relationship="2" relative="topLeft">
+<folder appearance="2" expanded="2">
+<page content="org.eclipse.ui.cheatsheets.views.CheatSheetView" label="LabelNotFound"/>
+<page content="org.eclipse.help.ui.HelpView" label="LabelNotFound"/>
+<page content="org.eclipse.ui.internal.introview" label="LabelNotFound"/>
+<presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
+</folder>
+</info>
+<info part="org.eclipse.ui.editorss" ratio="0.36758894" ratioLeft="465" ratioRight="800" relationship="2" relative="topLeft"/>
 <info folder="true" part="bottom" ratio="0.5993976" ratioLeft="398" ratioRight="266" relationship="4" relative="org.eclipse.ui.editorss">
 <folder appearance="2" expanded="2">
 <page content="org.mwc.cmap.xyplot.views.XYPlotView:*" label="LabelNotFound"/>
@@ -212,7 +225,7 @@
 <page content="org.eclipse.ui.views.TaskList" label="LabelNotFound"/>
 </folder>
 </info>
-<info folder="true" part="upperMidLeft" ratio="0.5340393" ratioLeft="353" ratioRight="308" relationship="4" relative="topLeft">
+<info folder="true" part="upperMidLeft" ratio="0.78077376" ratioLeft="666" ratioRight="187" relationship="4" relative="topLeft">
 <folder appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.BookmarkView" label="LabelNotFound"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory"/>
@@ -227,18 +240,18 @@
 </folder>
 </info>
 <info folder="true" part="bottomLeft" ratio="0.49865952" ratioLeft="186" ratioRight="187" relationship="4" relative="midLeft">
-<folder activePageID="org.mwc.asset.ScenarioController2" appearance="2" expanded="2">
-<page content="org.mwc.asset.ScenarioController2" label="Scenario controller"/>
+<folder activePageID="org.eclipse.ui.views.PropertySheet" appearance="2" expanded="2">
 <page content="org.eclipse.ui.views.PropertySheet" label="Properties"/>
+<page content="org.mwc.cmap.layer_manager.views.LayerManagerView" label="Layer Manager"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
 <part id="1"/>
 </presentation>
 </folder>
 </info>
-<info folder="true" part="org.eclipse.ui.internal.ViewStack@6fdb48f5" ratio="0.61147904" ratioLeft="277" ratioRight="176" relationship="4" relative="topLeft">
-<folder activePageID="org.mwc.cmap.layer_manager.views.LayerManagerView" appearance="2" expanded="2">
-<page content="org.mwc.cmap.layer_manager.views.LayerManagerView" label="Layer Manager"/>
+<info folder="true" part="org.eclipse.ui.internal.ViewStack@37f0c4d2" ratio="0.49127907" ratioLeft="338" ratioRight="350" relationship="4" relative="topLeft">
+<folder activePageID="org.mwc.asset.ScenarioController2" appearance="2" expanded="2">
+<page content="org.mwc.asset.ScenarioController2" label="Scenario controller"/>
 <presentation id="org.eclipse.ui.presentations.WorkbenchPresentationFactory">
 <part id="0"/>
 </presentation>
@@ -251,9 +264,154 @@
 <workingSets/>
 <navigationHistory>
 <editors>
-<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/trial1.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/trial_multi.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/trial_multi.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/results/1/Cheat sheet scenario.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/results/1/Cheat sheet scenario.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/results/1/Cheat sheet scenario.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Samples/force_prot_control.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/Samples/force_prot_control.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/results/1/Cheat sheet scenario.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.core.runtime.xml.source" path="/AssetData/results/1/Cheat sheet scenario.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/Samples/force_prot_control.xml"/>
+<editor factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" path="/AssetData/results/1/Cheat sheet scenario.xml"/>
 </editors>
-<item active="true" historyLabel="trial1.xml" index="0"/>
+<item historyLabel="trial_multi.xml" index="0">
+<position/>
+</item>
+<item historyLabel="trial_multi.xml" index="0">
+<position/>
+</item>
+<item historyLabel="trial_multi.xml" index="0">
+<position/>
+</item>
+<item historyLabel="trial_multi.xml" index="0">
+<position/>
+</item>
+<item historyLabel="trial_multi.xml" index="0">
+<position info="not_deleted" x="336" y="0"/>
+</item>
+<item historyLabel="trial_multi.xml" index="0">
+<position info="not_deleted" x="277" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="2">
+<position info="not_deleted" x="54" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="428" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="54" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="64" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="428" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="548" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="584" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="600" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="584" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="548" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="428" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="3">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="trial_multi.xml" index="1"/>
+<item historyLabel="Cheat sheet scenario.xml" index="4"/>
+<item historyLabel="trial_multi.xml" index="1"/>
+<item historyLabel="force_prot_control.xml" index="5"/>
+<item historyLabel="trial_multi.xml" index="1">
+<position info="not_deleted" x="39" y="0"/>
+</item>
+<item historyLabel="force_prot_control.xml" index="5"/>
+<item historyLabel="trial_multi.xml" index="1"/>
+<item historyLabel="force_prot_control.xml" index="5">
+<position info="not_deleted" x="155" y="32"/>
+</item>
+<item historyLabel="force_prot_control.xml" index="6">
+<position info="not_deleted" x="248" y="0"/>
+</item>
+<item historyLabel="force_prot_control.xml" index="6">
+<position info="not_deleted" x="272" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="7">
+<position info="not_deleted" x="54" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="54" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="428" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="54" y="0"/>
+</item>
+<item historyLabel="force_prot_control.xml" index="9"/>
+<item historyLabel="Cheat sheet scenario.xml" index="10">
+<position info="not_deleted" x="54" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="428" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="548" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="584" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="600" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="584" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="548" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="428" y="0"/>
+</item>
+<item historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="411" y="0"/>
+</item>
+<item active="true" historyLabel="Cheat sheet scenario.xml" index="8">
+<position info="not_deleted" x="54" y="0"/>
+</item>
 </navigationHistory>
 <input factoryID="org.eclipse.ui.internal.model.ResourceFactory" path="/" type="8"/>
 </page>
@@ -271,26 +429,50 @@
 </trimLayout>
 </window>
 <mruList>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.asset" tooltip="AssetData/trial1.asset">
-<persistable path="/AssetData/trial1.asset"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.xml" tooltip="AssetData/trial1.xml">
-<persistable path="/AssetData/trial1.xml"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="NewFile.asset" tooltip="AssetData/NewFile.asset">
-<persistable path="/AssetData/NewFile.asset"/>
-</file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_scenario.asset" tooltip="AssetData/Samples/force_prot_scenario.asset">
-<persistable path="/AssetData/Samples/force_prot_scenario.asset"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="Cheat sheet scenario.xml" tooltip="AssetData/results/1/Cheat sheet scenario.xml">
+<persistable path="/AssetData/results/1/Cheat sheet scenario.xml"/>
 </file>
 <file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="force_prot_control.xml" tooltip="AssetData/Samples/force_prot_control.xml">
 <persistable path="/AssetData/Samples/force_prot_control.xml"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name=".project" tooltip="AssetData/.project">
-<persistable path="/AssetData/.project"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="res_Cheat sheet scenario_100114 122426.103.png" tooltip="AssetData/results/res_Cheat sheet scenario_100114 122426.103.png">
+<persistable path="/AssetData/results/res_Cheat sheet scenario_100114 122426.103.png"/>
 </file>
-<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="ASSET.xsd" tooltip="AssetData/Schemas/ASSET.xsd">
-<persistable path="/AssetData/Schemas/ASSET.xsd"/>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial_multi.xml" tooltip="AssetData/trial_multi.xml">
+<persistable path="/AssetData/trial_multi.xml"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" name="Cheat sheet scenario_100114 113802.915.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 113802.915.rep">
+<persistable path="/AssetData/results/Cheat sheet scenario_100114 113802.915.rep"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="Cheat sheet scenario_100114 113557.577.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 113557.577.rep">
+<persistable path="/AssetData/results/Cheat sheet scenario_100114 113557.577.rep"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="res_Cheat sheet scenario_100114 112723.470.png" tooltip="AssetData/results/res_Cheat sheet scenario_100114 112723.470.png">
+<persistable path="/AssetData/results/res_Cheat sheet scenario_100114 112723.470.png"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" name="Cheat sheet scenario_100114 112723.004.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 112723.004.rep">
+<persistable path="/AssetData/results/Cheat sheet scenario_100114 112723.004.rep"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.DefaultTextEditor" name="Cheat sheet scenario_100114 112459.972.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 112459.972.rep">
+<persistable path="/AssetData/results/Cheat sheet scenario_100114 112459.972.rep"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.mwc.debrief.PlotEditor" name="Cheat sheet scenario_100114 111259.039.rep" tooltip="AssetData/results/Cheat sheet scenario_100114 111259.039.rep">
+<persistable path="/AssetData/results/Cheat sheet scenario_100114 111259.039.rep"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="res_test_scenario_3_100114 103149.379.png" tooltip="AssetData/force_prot_results/res_test_scenario_3_100114 103149.379.png">
+<persistable path="/AssetData/force_prot_results/res_test_scenario_3_100114 103149.379.png"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.ui.systemExternalEditor" name="res_Cheat sheet scenario_100112 162200.606.png" tooltip="AssetData/results/res_Cheat sheet scenario_100112 162200.606.png">
+<persistable path="/AssetData/results/res_Cheat sheet scenario_100112 162200.606.png"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.xml" tooltip="AssetData/trial1.xml">
+<persistable path="/AssetData/trial1.xml"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="trial1.asset" tooltip="AssetData/trial1.asset">
+<persistable path="/AssetData/trial1.asset"/>
+</file>
+<file factoryID="org.eclipse.ui.part.FileEditorInputFactory" id="org.eclipse.wst.xml.ui.internal.tabletree.XMLMultiPageEditorPart" name="NewFile.asset" tooltip="AssetData/NewFile.asset">
+<persistable path="/AssetData/NewFile.asset"/>
 </file>
 </mruList>
 </workbench>
