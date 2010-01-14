@@ -174,7 +174,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	 * the people listening to us
 	 */
 	Vector<ISelectionChangedListener> _selectionListeners;
-	
+
 	/**
 	 * and the preferences for time control
 	 */
@@ -325,14 +325,15 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			{
 				if (evt.getPropertyName() == TimeManager.LiveScenario.FINISHED)
 				{
-					// are we playing?
-					if (_playButton.getSelection())
-					{
 
-						Display.getDefault().asyncExec(new Runnable()
+					Display.getDefault().asyncExec(new Runnable()
+					{
+						public void run()
 						{
-							public void run()
+							// are we playing?
+							if (_playButton.getSelection())
 							{
+
 								if (!_wholePanel.isDisposed())
 								{
 									// better stop it
@@ -340,10 +341,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 									System.err.println("play stopped");
 								}
 							}
-						});
-					}
-
+						}
+					});
 				}
+
 			}
 		};
 
@@ -2528,17 +2529,16 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	public Object getAdapter(Class adapter)
 	{
 		Object res = null;
-		if(adapter == TimePeriod.class)
+		if (adapter == TimePeriod.class)
 		{
-			// NOTE: xy plot plugin relies on getting this time period value from the time controller
+			// NOTE: xy plot plugin relies on getting this time period value from the
+			// time controller
 			res = getPeriod();
 		}
-		else 
-			res =super.getAdapter(adapter); 
-		
-		return res; 
+		else
+			res = super.getAdapter(adapter);
+
+		return res;
 	}
 
-	
-	
 }
