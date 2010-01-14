@@ -178,12 +178,13 @@ public class ScenarioControllerView extends ViewPart implements
 			public void finished(long elapsedTime, String reason)
 			{
 				// communicate what's happened to the time controller, if there is one.
-				_scenStopSupport.firePropertyChange(TimeManager.LiveScenario.FINISHED,
-						null, this);
+				if (_scenStopSupport != null)
+					_scenStopSupport.firePropertyChange(
+							TimeManager.LiveScenario.FINISHED, null, this);
 
 				// update our own status indicator(s)
 				setScenarioStatus(_myScenario, reason);
-				
+
 				// tell the observers that it's all over
 				tearDownObservers(_myScenario);
 
@@ -358,6 +359,20 @@ public class ScenarioControllerView extends ViewPart implements
 		// if we have any pending filenames, get them dropped
 		if (_myPendingFilenames != null)
 			filesDropped(_myPendingFilenames);
+
+		// listen out for the single scenario being run
+		_myUI.getSingleRunBtn().addSelectionListener(new SelectionListener()
+		{
+			public void widgetDefaultSelected(SelectionEvent e)
+			{
+			}
+
+			public void widgetSelected(SelectionEvent e)
+			{
+				// ok, run the scenario
+				_myScenario.start();
+			}
+		});
 
 	}
 
@@ -617,7 +632,7 @@ public class ScenarioControllerView extends ViewPart implements
 					{
 						// remember it
 						_controlFileName = thisName;
-						
+
 						// show it
 						_myUI.getControlVal().setText(new File(thisName).getName());
 
@@ -692,7 +707,7 @@ public class ScenarioControllerView extends ViewPart implements
 	private void controllerAssigned(String controlFile)
 	{
 		// and ditch any existing observers
-		if(_myObservers != null)
+		if (_myObservers != null)
 			_myObservers.removeAllElements();
 
 		try
@@ -707,7 +722,7 @@ public class ScenarioControllerView extends ViewPart implements
 			}
 			else if (controlType == ScenarioControllerHandler.type)
 			{
-				
+
 				_multiRunResultsStore = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
 
@@ -729,7 +744,8 @@ public class ScenarioControllerView extends ViewPart implements
 						IPath filePath = someProject.getLocation();
 
 						// ok, now stick the output folder in this parent
-						tgtDir = new File(filePath.toOSString() + File.separator + tgtDir.getPath());
+						tgtDir = new File(filePath.toOSString() + File.separator
+								+ tgtDir.getPath());
 					}
 				}
 
@@ -813,12 +829,17 @@ public class ScenarioControllerView extends ViewPart implements
 
 	private void updateSingleTab()
 	{
-		// TODO Auto-generated method stub
+		if (_myScenario != null)
+			_myUI.getSingleRunBtn().setEnabled(true);
 
 	}
 
 	private void updateMultiTab()
 	{
+		// and disable the single run button
+		_myUI.getSingleRunBtn().setEnabled(false);
+		_myUI.getSingleScenarioStatus().setText("Pending");
+
 		// ok, disable the run button,
 		_myUI.getRunBtn().setEnabled(false);
 
@@ -944,7 +965,6 @@ public class ScenarioControllerView extends ViewPart implements
 			thisO.setup(theScenario);
 		}
 	}
-	
 
 	private void tearDownObservers(ScenarioType theScenario)
 	{
@@ -956,8 +976,6 @@ public class ScenarioControllerView extends ViewPart implements
 			thisO.tearDown(theScenario);
 		}
 	}
-	
-		
 
 	/**
 	 * a scenario has been loaded, tell our listeners

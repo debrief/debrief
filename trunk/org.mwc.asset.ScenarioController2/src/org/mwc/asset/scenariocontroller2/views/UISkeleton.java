@@ -44,6 +44,7 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	private Label controlVal;
 	private Label scenarioVal;
 	private Composite multiTableHolder;
+	private Button singleRunBtn;
 	private Composite composite2;
 	private Composite multiRunBtnHolder;
 
@@ -165,6 +166,13 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 							singleStatVal.setLayoutData(singleStatValLData);
 							singleStatVal.setText("[pending]");
 						}
+						{
+							singleRunBtn = new Button(composite1, SWT.PUSH | SWT.CENTER);
+							GridData singleRunBtnLData = new GridData();
+							singleRunBtn.setLayoutData(singleRunBtnLData);
+							singleRunBtn.setText("Run");
+							singleRunBtn.setEnabled(false);
+						}
 					}
 				}
 				{
@@ -250,6 +258,10 @@ public class UISkeleton extends org.eclipse.swt.widgets.Composite {
 	
 	public Composite getMultiTableHolder() {
 		return multiTableHolder;
+	}
+	
+	public Button getSingleRunBtn() {
+		return singleRunBtn;
 	}
 
 }
