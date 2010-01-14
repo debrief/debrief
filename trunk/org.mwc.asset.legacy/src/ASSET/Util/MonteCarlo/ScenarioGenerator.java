@@ -493,14 +493,14 @@ public final class ScenarioGenerator
 
 	/**
 	 * read in the list of variances, and collate them into our list
-	 * @param outputDirectory TODO
+	 * @param outputDirectory where to put the generated files
 	 */
 	protected void setVariances(final Document document, File outputDirectory)
 	{
 		try
 		{
 			// can we find a scenario generator?
-			XPathExpression xp2 = NamespaceContextProvider.createPath("//MultiScenarioGenerator");
+			XPathExpression xp2 = NamespaceContextProvider.createPath("//" + MultiScenarioGenerator.GENERATOR_TYPE);
 			Element el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
 			if (el != null)
@@ -509,13 +509,13 @@ public final class ScenarioGenerator
 			}
 
 			// can we find a scenario generator?
-			xp2 = NamespaceContextProvider.createPath("//MultiParticipantGenerator");
+			xp2 = NamespaceContextProvider.createPath("//" + MultiParticipantGenerator.GENERATOR_TYPE);
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 			if (el != null)
 			{
 				this._participantGenny = new MultiParticipantGenerator(document);
 			}
-
+			
 			xp2 = NamespaceContextProvider.createPath("//ScenarioGenerator");
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
@@ -523,14 +523,18 @@ public final class ScenarioGenerator
 			xp2 = NamespaceContextProvider.createPath("//ScenarioController");
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
-			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
+			if(el != null)
+			{
+  			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);	
+  			String theSeedStr = el.getAttribute(RANDOM_SEED);
+  			if (theSeedStr != null)
+  				if (theSeedStr.length() > 0)
+  					_theSeed = Integer.valueOf(theSeedStr);
+			}
+			
 			if(outputDirectory != null)
   			_myDirectory = outputDirectory.getAbsolutePath();
 
-			String theSeedStr = el.getAttribute(RANDOM_SEED);
-			if (theSeedStr != null)
-				if (theSeedStr.length() > 0)
-					_theSeed = Integer.valueOf(theSeedStr);
 
 		}
 		catch (Exception e)
@@ -583,14 +587,14 @@ public final class ScenarioGenerator
 			Vector<Document> resultsContainer, ASSETProgressMonitor mWrap)
 	{
 
-		if (mWrap != null)
-			mWrap.beginTask("Generate permutations", _scenarioGenny.getNumPerms());
 
 		String res = null;
 
 		// do we have a scenario generator?
 		if (_scenarioGenny != null)
 		{
+			if (mWrap != null)
+				mWrap.beginTask("Generate permutations", _scenarioGenny.getNumPerms());
 			writeOut("Generating scenarios");
 			writeOut("====================");
 

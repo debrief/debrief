@@ -867,7 +867,7 @@ public final class MultiScenarioGenerator
 			try
 			{
 				XPathExpression xp2 = NamespaceContextProvider
-						.createPath("//MultiParticipantGenerator");
+						.createPath("//" + MultiParticipantGenerator.GENERATOR_TYPE);
 				NodeList nl = (NodeList) xp2.evaluate(thisScenarioDocument,
 						XPathConstants.NODESET);
 				Element el = (Element) nl.item(0);
