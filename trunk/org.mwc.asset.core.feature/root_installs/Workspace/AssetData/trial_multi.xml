@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScenarioController OutputDirectory="results" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="file:/Users/ianmayo/Documents/dev/cmap_64/org.mwc.asset.core/asset_schemas/ASSET.xsd">
+	<ScenarioGenerator>
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="Fisher One" number="10">
+				<ParticipantLocation>
+					<WorldArea>
+							<TopLeft>
+								<shortLocation Lat="51" Long="-9"></shortLocation>
+							</TopLeft>
+							<BottomRight>
+								<shortLocation Lat="50" Long="-8"></shortLocation>
+							</BottomRight>
+					</WorldArea>
+				</ParticipantLocation>
+			</ParticipantVariance>
+		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
 			<Duration Value="24" Units="hours" />
