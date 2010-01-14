@@ -131,7 +131,7 @@ public class StopOnElapsedObserver extends
   protected void addListeners(ScenarioType scenario)
   {
     // and become a listener
-    _myScenario.addScenarioSteppedListener(this);
+  	scenario.addScenarioSteppedListener(this);
   }
 
   /**
@@ -140,7 +140,7 @@ public class StopOnElapsedObserver extends
   protected void removeListeners(ScenarioType scenario)
   {
     // remove ourselves as a listener
-    _myScenario.removeScenarioSteppedListener(this);
+  	scenario.removeScenarioSteppedListener(this);
   }
   
   

@@ -2,7 +2,7 @@ package ASSET.GUI.CommandLine;
 
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.Observers.CoreObserver;
-import ASSET.Scenario.Observers.IntraScenarioObserverType;
+import ASSET.Scenario.Observers.InterScenarioObserverType;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.MonteCarlo.ScenarioGenerator;
@@ -135,26 +135,26 @@ public class MultiScenarioCommandLine
 
 
     // find out if we have any intra-scenario observers
-    Vector<IntraScenarioObserverType> theIntraObservers = new Vector<IntraScenarioObserverType>(0, 1);
+    Vector<InterScenarioObserverType> theInterObservers = new Vector<InterScenarioObserverType>(0, 1);
 
     Vector<ScenarioObserver> theObservers = results.observerList;
     for (int i = 0; i < theObservers.size(); i++)
     {
       ScenarioObserver observer = (ScenarioObserver) theObservers.elementAt(i);
-      if (observer instanceof IntraScenarioObserverType)
+      if (observer instanceof InterScenarioObserverType)
       {
-        theIntraObservers.add((IntraScenarioObserverType)observer);
+        theInterObservers.add((InterScenarioObserverType)observer);
       }
     }
 
     // ok, everything's loaded.  Just have a pass through to
     // initialise any intra-scenario observers
-    for (int thisObs = 0; thisObs < theIntraObservers.size(); thisObs++)
+    for (int thisObs = 0; thisObs < theInterObservers.size(); thisObs++)
     {
-      ScenarioObserver scen = (ScenarioObserver) theIntraObservers.elementAt(thisObs);
+      ScenarioObserver scen = (ScenarioObserver) theInterObservers.elementAt(thisObs);
       if (scen.isActive())
       {
-        IntraScenarioObserverType obs = (IntraScenarioObserverType) scen;
+        InterScenarioObserverType obs = (InterScenarioObserverType) scen;
         // is it active?
         obs.initialise(results.outputDirectory);
       }
@@ -195,12 +195,12 @@ public class MultiScenarioCommandLine
 
     // ok, everything's loaded.  Just have a pass through to
     // close any intra-scenario observers
-    for (int thisObs = 0; thisObs < theIntraObservers.size(); thisObs++)
+    for (int thisObs = 0; thisObs < theInterObservers.size(); thisObs++)
     {
-      ScenarioObserver scen = (ScenarioObserver) theIntraObservers.elementAt(thisObs);
+      ScenarioObserver scen = (ScenarioObserver) theInterObservers.elementAt(thisObs);
       if (scen.isActive())
       {
-        IntraScenarioObserverType obs = (IntraScenarioObserverType) theIntraObservers.elementAt(thisObs);
+        InterScenarioObserverType obs = (InterScenarioObserverType) theInterObservers.elementAt(thisObs);
         obs.finish();
       }
     }

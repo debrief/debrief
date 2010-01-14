@@ -5,7 +5,7 @@ import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
 import ASSET.Scenario.Observers.CoreObserver;
-import ASSET.Scenario.Observers.IntraScenarioObserverType;
+import ASSET.Scenario.Observers.InterScenarioObserverType;
 import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.ScenarioStatusObserver;
@@ -64,7 +64,7 @@ public class MultiScenarioCore implements ISimulationQue
 	 */
 	protected Vector<Document> _myScenarioDocuments;
 
-	private Vector<IntraScenarioObserverType> _theIntraObservers;
+	private Vector<InterScenarioObserverType> _theInterObservers;
 
 	private Vector<ScenarioObserver> _thePlainObservers;
 
@@ -151,12 +151,12 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// ok, everything's loaded. Just have a pass through to
 		// initialise any intra-scenario observers
-		for (int thisObs = 0; thisObs < _theIntraObservers.size(); thisObs++)
+		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++)
 		{
-			ScenarioObserver scen = _theIntraObservers.elementAt(thisObs);
+			ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
 			if (scen.isActive())
 			{
-				IntraScenarioObserverType obs = (IntraScenarioObserverType) scen;
+				InterScenarioObserverType obs = (InterScenarioObserverType) scen;
 				// is it active?
 				obs.initialise(_resultsStore.outputDirectory);
 			}
@@ -164,7 +164,7 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// combine the two sets of observers
 		Vector<ScenarioObserver> _allObservers = new Vector<ScenarioObserver>();
-		_allObservers.addAll(_theIntraObservers);
+		_allObservers.addAll(_theInterObservers);
 		_allObservers.addAll(_thePlainObservers);
 		
 		
@@ -200,14 +200,14 @@ public class MultiScenarioCore implements ISimulationQue
 			ctr++;
 		}
 
-		// ok, everything's loaded. Just have a pass through to
-		// close any intra-scenario observers
-		for (int thisObs = 0; thisObs < _theIntraObservers.size(); thisObs++)
+		// ok, everything's finished running. Just have a pass through to
+		// close any i-scenario observers
+		for (int thisObs = 0; thisObs < _theInterObservers.size(); thisObs++)
 		{
-			ScenarioObserver scen = _theIntraObservers.elementAt(thisObs);
+			ScenarioObserver scen = _theInterObservers.elementAt(thisObs);
 			if (scen.isActive())
 			{
-				IntraScenarioObserverType obs = _theIntraObservers.elementAt(thisObs);
+				InterScenarioObserverType obs = _theInterObservers.elementAt(thisObs);
 				obs.finish();
 			}
 		}
@@ -295,7 +295,7 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// do a little tidying
 		_myAttributes = null;
-		_theIntraObservers = null;
+		_theInterObservers = null;
 		_thePlainObservers = null;
 
 		System.out.println("about to generate scenarios");
@@ -360,7 +360,7 @@ public class MultiScenarioCore implements ISimulationQue
 		_resultsStore = multiRunResultsStore;
 		
 		// sort out observers (inter & intra)
-		_theIntraObservers = new Vector<IntraScenarioObserverType>(0, 1);
+		_theInterObservers = new Vector<InterScenarioObserverType>(0, 1);
 		_thePlainObservers = new Vector<ScenarioObserver>();
 
 		// start off by generating the time/state observers that we create for
@@ -374,9 +374,9 @@ public class MultiScenarioCore implements ISimulationQue
 		for (int i = 0; i < theObservers.size(); i++)
 		{
 			ScenarioObserver observer = theObservers.elementAt(i);
-			if (observer instanceof IntraScenarioObserverType)
+			if (observer instanceof InterScenarioObserverType)
 			{
-				_theIntraObservers.add((IntraScenarioObserverType) observer);
+				_theInterObservers.add((InterScenarioObserverType) observer);
 			}
 			else
 				_thePlainObservers.add(observer);
@@ -491,10 +491,10 @@ public class MultiScenarioCore implements ISimulationQue
 			}
 
 			// now the multi-scenario observers
-			for (Iterator<IntraScenarioObserverType> iterator = _theIntraObservers.iterator(); iterator
+			for (Iterator<InterScenarioObserverType> iterator = _theInterObservers.iterator(); iterator
 					.hasNext();)
 			{
-				IntraScenarioObserverType thisS = iterator.next();
+				InterScenarioObserverType thisS = iterator.next();
 				if (thisS instanceof IAttribute)
 					_myAttributes.add((IAttribute) thisS);
 			}

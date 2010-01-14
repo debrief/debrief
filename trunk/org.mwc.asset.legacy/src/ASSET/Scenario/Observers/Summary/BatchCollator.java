@@ -1,6 +1,6 @@
 package ASSET.Scenario.Observers.Summary;
 
-import ASSET.Scenario.Observers.IntraScenarioObserverType;
+import ASSET.Scenario.Observers.InterScenarioObserverType;
 
 /**
  * Definition of type which is able to summarize performance across a series of runs
@@ -10,7 +10,7 @@ import ASSET.Scenario.Observers.IntraScenarioObserverType;
  * Time: 13:32:20
  * To change this template use File | Settings | File Templates.
  */
-public interface BatchCollator extends IntraScenarioObserverType
+public interface BatchCollator extends InterScenarioObserverType
 {
   /**
    * produce the average of the supplied values
