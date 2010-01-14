@@ -369,8 +369,12 @@ public class ScenarioControllerView extends ViewPart implements
 
 			public void widgetSelected(SelectionEvent e)
 			{
+				// disable the run button
+				_myUI.getSingleRunBtn().setEnabled(false);
+
 				// ok, run the scenario
 				_myScenario.start();
+				
 			}
 		});
 
