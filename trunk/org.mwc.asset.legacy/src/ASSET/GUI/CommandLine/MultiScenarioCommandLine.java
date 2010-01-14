@@ -64,9 +64,10 @@ public class MultiScenarioCommandLine
    *
    * @param scenario the scenario file
    * @param control  the control file
+   * @param outputDirectory TODO
    * @return null for success, message for failure
    */
-  private String setup(String scenario, String control)
+  private String setup(String scenario, String control, File outputDirectory)
   {
     // ok, create our genny
     _myGenny = new ScenarioGenerator();
@@ -75,7 +76,7 @@ public class MultiScenarioCommandLine
     _myScenarios = new Vector<Document>(0, 1);
 
     // and now create the list of scenarios
-    String res = _myGenny.createScenarios(scenario, control, _myScenarios, null);
+    String res = _myGenny.createScenarios(scenario, control, _myScenarios, null, outputDirectory);
 
     return res;
   }
@@ -172,7 +173,7 @@ public class MultiScenarioCommandLine
       String scenarioStr = ScenarioGenerator.writeToString(document);
       InputStream scenarioStream = new ByteArrayInputStream(scenarioStr.getBytes());
 
-      File newOutputSubDirectory = new File(results.outputDirectory, "" + (i + 1) + "/");
+      File newOutputSubDirectory = new File(results.outputDirectory, "" + (i + 1) + File.separator);
 
       // and run through this one
       runThisOne(controlStream,
@@ -306,7 +307,7 @@ public class MultiScenarioCommandLine
         System.out.println("about to generate scenarios");
 
         // and set it up (including generating the scenarios)
-        String res = setup(args[0].trim(), args[1].trim());
+        String res = setup(args[0].trim(), args[1].trim(), null);
 
         if (res != null)
         {

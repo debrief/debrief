@@ -1,26 +1,31 @@
 package ASSET.GUI.CommandLine;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintStream;
+import java.util.Iterator;
+import java.util.Vector;
+
+import org.w3c.dom.Document;
+
 import ASSET.GUI.CommandLine.CommandLine.ASSETProgressMonitor;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
 import ASSET.Scenario.Observers.CoreObserver;
 import ASSET.Scenario.Observers.InterScenarioObserverType;
-import ASSET.Scenario.Observers.RecordToFileObserverType;
 import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Scenario.Observers.ScenarioStatusObserver;
 import ASSET.Scenario.Observers.TimeObserver;
-import ASSET.Util.MonteCarlo.ScenarioGenerator;
 import ASSET.Util.SupportTesting;
+import ASSET.Util.MonteCarlo.ScenarioGenerator;
 import ASSET.Util.XML.ASSETReaderWriter;
 import ASSET.Util.XML.ASSETReaderWriter.ResultsContainer;
 import MWC.Algorithms.LiveData.IAttribute;
-
-import org.w3c.dom.Document;
-
-import java.io.*;
-import java.util.Iterator;
-import java.util.Vector;
 
 /**
  * Created by IntelliJ IDEA. User: Ian.Mayo Date: 02-Jun-2003 Time: 15:05:23
@@ -84,9 +89,10 @@ public class MultiScenarioCore implements ISimulationQue
 	 * @param control
 	 *          the control file
 	 * @param pMon 
+	 * @param outputDirectory TODO
 	 * @return null for success, message for failure
 	 */
-	private String setup(String scenario, String control, ASSETProgressMonitor pMon)
+	private String setup(String scenario, String control, ASSETProgressMonitor pMon, File outputDirectory)
 	{
 		// ok, create our genny
 		_myGenny = new ScenarioGenerator();
@@ -96,7 +102,7 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// and now create the list of scenarios
 		String res = _myGenny.createScenarios(scenario, control,
-				_myScenarioDocuments, pMon);
+				_myScenarioDocuments, pMon, outputDirectory);
 
 		return res;
 	}
@@ -179,7 +185,7 @@ public class MultiScenarioCore implements ISimulationQue
 			CoreScenario thisS = (CoreScenario) iterator.next();
 			
 			File newOutputSubDirectory = new File(_resultsStore.outputDirectory, ""
-					+ (ctr + 1) + "/");
+					+ (ctr + 1) + File.separator);
 
 			// and run through this one
 			runThisOne(controlStream, thisS, _allObservers,
@@ -248,12 +254,12 @@ public class MultiScenarioCore implements ISimulationQue
 		{
 			CoreObserver thisObs = (CoreObserver) theObservers.elementAt(i);
 
-			// is it file-related?
-			if (thisObs instanceof RecordToFileObserverType)
-			{
-				RecordToFileObserverType rec = (RecordToFileObserverType) thisObs;
-				rec.setDirectory(outputDirectory);
-			}
+//			// is it file-related?
+//			if (thisObs instanceof RecordToFileObserverType)
+//			{
+//				RecordToFileObserverType rec = (RecordToFileObserverType) thisObs;
+//				rec.setDirectory(outputDirectory);
+//			}
 
 			// and set it up
 			thisObs.setup(runner.getScenario());
@@ -266,6 +272,16 @@ public class MultiScenarioCore implements ISimulationQue
 
 		// and get going....
 		runner.run();
+		
+		// ok, tell the observers it's time for bed
+		for (int i = 0; i < theObservers.size(); i++)
+		{
+			CoreObserver thisObs = (CoreObserver) theObservers.elementAt(i);
+			
+			// go for it
+			thisObs.tearDown(runner.getScenario());
+		}
+
 
 		// and remove the observers
 		runner.clearObservers();
@@ -285,11 +301,12 @@ public class MultiScenarioCore implements ISimulationQue
 	 * @param in
 	 *          input (to receive user input)
 	 * @param pMon 
+	 * @param outputDirectory - where to put the working files
 	 * @return success code (0) or failure codes
 	 */
 
 	public int prepareFiles(String controlFile, String scenarioFile,
-			PrintStream out, PrintStream err, InputStream in, ASSETProgressMonitor pMon)
+			PrintStream out, PrintStream err, InputStream in, ASSETProgressMonitor pMon, File outputDirectory)
 	{
 		int resCode = 0;
 
@@ -301,7 +318,7 @@ public class MultiScenarioCore implements ISimulationQue
 		System.out.println("about to generate scenarios");
 
 		// and set it up (including generating the scenarios)
-		String res = setup(scenarioFile, controlFile, pMon);
+		String res = setup(scenarioFile, controlFile, pMon, outputDirectory);
 
 		if (res != null)
 		{
@@ -436,7 +453,7 @@ public class MultiScenarioCore implements ISimulationQue
 			// args[1] =
 			// "..\\src\\java\\ASSET_SRC\\ASSET\\Util\\MonteCarlo\\test_variance1.xml";
 			MultiScenarioCore scen = new MultiScenarioCore();
-			int res = scen.prepareFiles(args[0], args[1], out, err, in, null);
+			int res = scen.prepareFiles(args[0], args[1], out, err, in, null, null);
 			assertEquals("ran ok", SUCCESS, res);
 
 			// check the contents of the error message

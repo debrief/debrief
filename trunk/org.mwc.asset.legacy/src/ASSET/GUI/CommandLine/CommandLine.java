@@ -1,20 +1,26 @@
 package ASSET.GUI.CommandLine;
 
-import ASSET.ScenarioType;
-import ASSET.Scenario.CoreScenario;
-import ASSET.Scenario.Observers.CoreObserver;
-import ASSET.Scenario.Observers.RecordToFileObserverType;
-import ASSET.Scenario.Observers.ScenarioObserver;
-import ASSET.Scenario.ScenarioRunningListener;
-import ASSET.Util.MonteCarlo.MultiParticipantGenerator;
-import ASSET.Util.MonteCarlo.MultiScenarioGenerator;
-import ASSET.Util.SupportTesting;
-import ASSET.Util.XML.ASSETReaderWriter;
-import MWC.GenericData.WorldLocation;
-
-import java.io.*;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
 import java.util.Iterator;
 import java.util.Vector;
+
+import ASSET.ScenarioType;
+import ASSET.Scenario.CoreScenario;
+import ASSET.Scenario.ScenarioRunningListener;
+import ASSET.Scenario.Observers.CoreObserver;
+import ASSET.Scenario.Observers.ScenarioObserver;
+import ASSET.Util.SupportTesting;
+import ASSET.Util.MonteCarlo.MultiParticipantGenerator;
+import ASSET.Util.MonteCarlo.MultiScenarioGenerator;
+import ASSET.Util.XML.ASSETReaderWriter;
+import MWC.GenericData.WorldLocation;
 
 /**
  * Created by IntelliJ IDEA.
@@ -224,15 +230,7 @@ public class CommandLine
   private void scenarioComplete()
   {
     // clear out the observers
-    if (_myObservers != null)
-    {
-      for (int i = 0; i < _myObservers.size(); i++)
-      {
-        ScenarioObserver observer = (ScenarioObserver) _myObservers.elementAt(i);
-        observer.tearDown(_myScenario);
-      }
-    }
-
+  	// - NO, we don't setup the observers, don't tear them down
   }
 
 
@@ -340,12 +338,12 @@ public class CommandLine
     {
       ScenarioObserver observer = iter.next();
 
-      // is this an observer which is interested in the output path
-      if (observer instanceof RecordToFileObserverType)
-      {
-        RecordToFileObserverType obs = (RecordToFileObserverType) observer;
-        obs.setDirectory(outputPath);
-      }
+//      // is this an observer which is interested in the output path
+//      if (observer instanceof RecordToFileObserverType)
+//      {
+//        RecordToFileObserverType obs = (RecordToFileObserverType) observer;
+//        obs.setDirectory(outputPath);
+//      }
 
       // ok, let it set itself up
       observer.setup(_myScenario);

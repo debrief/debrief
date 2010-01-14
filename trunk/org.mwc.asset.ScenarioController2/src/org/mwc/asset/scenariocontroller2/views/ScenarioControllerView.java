@@ -337,7 +337,7 @@ public class ScenarioControllerView extends ViewPart implements
 			public void widgetSelected(SelectionEvent e)
 			{
 				// ok, do the gen
-				doGenerateOperation();
+				doMultiGenerateOperation();
 			}
 		});
 
@@ -352,7 +352,7 @@ public class ScenarioControllerView extends ViewPart implements
 			@Override
 			public void widgetSelected(SelectionEvent e)
 			{
-				doRunOperation();
+				doMultiRunOperation();
 			}
 		});
 
@@ -376,7 +376,7 @@ public class ScenarioControllerView extends ViewPart implements
 
 	}
 
-	protected void doRunOperation()
+	protected void doMultiRunOperation()
 	{
 		System.out.println("doing run");
 
@@ -415,7 +415,7 @@ public class ScenarioControllerView extends ViewPart implements
 		}
 	}
 
-	protected void doGenerateOperation()
+	protected void doMultiGenerateOperation()
 	{
 		// disable the genny button, until it's done.
 		_myUI.getDoGenerateButton().setEnabled(false);
@@ -438,7 +438,7 @@ public class ScenarioControllerView extends ViewPart implements
 
 					// and let it create some files
 					_myMultiScenario.prepareFiles(_controlFileName, _scenarioFileName,
-							System.out, System.err, System.in, pMon);
+							System.out, System.err, System.in, pMon, _multiRunResultsStore.outputDirectory);
 
 					// and sort out the observers
 					_myMultiScenario.prepareControllers(_multiRunResultsStore, pMon);
@@ -706,9 +706,8 @@ public class ScenarioControllerView extends ViewPart implements
 
 	private void controllerAssigned(String controlFile)
 	{
-		// and ditch any existing observers
-		if (_myObservers != null)
-			_myObservers.removeAllElements();
+		// ok, forget any existing observers
+		ditchObservers();
 
 		try
 		{
@@ -746,6 +745,9 @@ public class ScenarioControllerView extends ViewPart implements
 						// ok, now stick the output folder in this parent
 						tgtDir = new File(filePath.toOSString() + File.separator
 								+ tgtDir.getPath());
+						
+						// and store the new location
+						_multiRunResultsStore.outputDirectory = tgtDir;
 					}
 				}
 
@@ -764,15 +766,22 @@ public class ScenarioControllerView extends ViewPart implements
 
 			}
 
-			if (_theObservers != null)
-			{
-				loadThisObserverList(controlFile, _theObservers);
-			}
-
 			// check if it's multi scenario..
 			final boolean isMulti = CommandLine
 					.checkIfGenerationRequired(controlFile);
+
+			// setup the listeners if we're just in a single scenario run
+			if (!isMulti)
+			{
+				if (_theObservers != null)
+				{
+					loadThisObserverList(controlFile, _theObservers);
+				}
+			}
+
+			// what's the index of the multi-run scenario tab?
 			final int tgtIndex = (isMulti) ? 1 : 0;
+
 			// ui update, put it in an async operation
 			// updating the text items has to be done in the UI thread. make it
 			// so
@@ -783,16 +792,19 @@ public class ScenarioControllerView extends ViewPart implements
 					// show the correct tab
 					_myUI.getScenarioTabs().setSelection(tgtIndex);
 
-					// and update that tab
-					updateControllerTab(isMulti);
-
 					if (isMulti)
 					{
+						// ok, enable the relevant elements
+						updateMultiTab();
+
 						// set the selection object to nothing
 						setSelection(null);
 					}
 					else
 					{
+						// and enable the relevant elements
+						updateSingleTab();
+
 						// ok, now wrap it as an editable
 						EditableWrapper ew = new EditableWrapper(_scenarioWrapper);
 
@@ -814,17 +826,32 @@ public class ScenarioControllerView extends ViewPart implements
 	}
 
 	/**
-	 * ok, controller is loaded. go for it.
+	 * tell the observers to stop listening to the subject scenario, and then
+	 * ditch them
 	 * 
-	 * @param isMulti
-	 *          is this is a multi-scenario run
 	 */
-	protected void updateControllerTab(boolean isMulti)
+	private void ditchObservers()
 	{
-		if (isMulti)
-			updateMultiTab();
-		else
-			updateSingleTab();
+		// and ditch any existing observers
+		if (_myObservers != null)
+		{
+			// are we in a multi-core run
+			if (_myMultiScenario == null)
+			{
+				// tell them all we're closing
+				if (_myScenario != null)
+				{
+					for (Iterator<ScenarioObserver> iterator = _myObservers.iterator(); iterator
+							.hasNext();)
+					{
+						ScenarioObserver thisO = iterator.next();
+						thisO.tearDown(_myScenario);
+					}
+				}
+			}
+			// and ditch the list
+			_myObservers.removeAllElements();
+		}
 	}
 
 	private void updateSingleTab()

@@ -81,7 +81,7 @@ public final class ScenarioGenerator
 	/**
 	 * the directory to place the new files
 	 */
-	protected String _myDirectory;
+	private String _myDirectory;
 
 	/**
 	 * the seed to use for the random number generator
@@ -111,13 +111,13 @@ public final class ScenarioGenerator
 	/**
 	 * ************************************************************ member methods
 	 * *
-	 * 
 	 * @param mWrap
-	 *          ***********************************************************
+	 *          *
+	 * @param outputDirectory TODO**********************************************************
 	 */
 
 	public String createScenarios(String templatePath, String controlPath,
-			Vector<Document> results, ASSETProgressMonitor mWrap)
+			Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory)
 	{
 		Document theControlFile = null;
 		String res = null;
@@ -166,7 +166,7 @@ public final class ScenarioGenerator
 			{
 				// yup, go for it.
 				res = doScenarioGeneration(theScenarioTemplate, theControlFile,
-						results, mWrap);
+						results, mWrap, outputDirectory);
 			}
 
 		}
@@ -185,15 +185,16 @@ public final class ScenarioGenerator
 	 * @param results
 	 *          vector containing the new scenarios
 	 * @param mWrap
+	 * @param outputDirectory TODO
 	 * @return error message on failure, or null for success
 	 */
 	protected String doScenarioGeneration(Document template,
-			Document controlFile, Vector<Document> results, ASSETProgressMonitor mWrap)
+			Document controlFile, Vector<Document> results, ASSETProgressMonitor mWrap, File outputDirectory)
 	{
 		String res = null;
 
 		// load the files
-		setVariances(controlFile);
+		setVariances(controlFile, outputDirectory);
 
 		// create the scenario(s)
 		setTemplate(template);
@@ -492,8 +493,9 @@ public final class ScenarioGenerator
 
 	/**
 	 * read in the list of variances, and collate them into our list
+	 * @param outputDirectory TODO
 	 */
-	protected void setVariances(final Document document)
+	protected void setVariances(final Document document, File outputDirectory)
 	{
 		try
 		{
@@ -522,6 +524,8 @@ public final class ScenarioGenerator
 			el = (Element) xp2.evaluate(document, XPathConstants.NODE);
 
 			_myDirectory = el.getAttribute(OUTPUT_DIRECTORY);
+			if(outputDirectory != null)
+  			_myDirectory = outputDirectory.getAbsolutePath();
 
 			String theSeedStr = el.getAttribute(RANDOM_SEED);
 			if (theSeedStr != null)
@@ -855,7 +859,7 @@ public final class ScenarioGenerator
 				// File Templates.
 			}
 			ScenarioGenerator genny = new ScenarioGenerator();
-			genny.setVariances(doc);
+			genny.setVariances(doc, null);
 
 			// check they got loaded
 			assertEquals("loaded template name",
@@ -908,7 +912,7 @@ public final class ScenarioGenerator
 				// File Templates.
 			}
 
-			String res = genny.doScenarioGeneration(doc, var, list, null);
+			String res = genny.doScenarioGeneration(doc, var, list, null, null);
 
 			assertNull("success - no error", res);
 
@@ -929,7 +933,7 @@ public final class ScenarioGenerator
 			ScenarioGenerator genny = new ScenarioGenerator();
 
 			String res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-					+ VARIANCE_FILE, list, null);
+					+ VARIANCE_FILE, list, null, null);
 
 			assertNull("success - no error", res);
 
@@ -950,7 +954,7 @@ public final class ScenarioGenerator
 			ScenarioGenerator genny = new ScenarioGenerator();
 
 			String res = genny.createScenarios(docPath + "test_variance_scnario.xml",
-					docPath + SCENARIO_FILE, list, null);
+					docPath + SCENARIO_FILE, list, null, null);
 
 			assertNotNull("success - error returned", res);
 			assertTrue("correct error returned",
@@ -960,7 +964,7 @@ public final class ScenarioGenerator
 			assertEquals("got no scenarios", 0, list.size());
 
 			res = genny.createScenarios(docPath + SCENARIO_FILE, docPath
-					+ "test_varince1.xml", list, null);
+					+ "test_varince1.xml", list, null, null);
 
 			assertNotNull("success - error returned", res);
 			assertTrue("correct error returned", res.indexOf(CONTROL_FILE_ERROR) > -1);
@@ -1028,7 +1032,7 @@ public final class ScenarioGenerator
 				// File Templates.
 			}
 
-			String res = genny.doScenarioGeneration(doc, var, list, null);
+			String res = genny.doScenarioGeneration(doc, var, list, null, null);
 
 			assertNull("success - no error", res);
 
