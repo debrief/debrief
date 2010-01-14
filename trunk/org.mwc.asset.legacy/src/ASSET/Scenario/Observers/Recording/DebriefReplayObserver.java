@@ -222,7 +222,7 @@ public class DebriefReplayObserver extends RecordStatusToFileObserverType
   protected void writeThisDecisionDetail(ParticipantType pt, String activity, long dtg)
   {
     //To change body of implemented methods use File | Settings | File Templates.
-    String msg = ";NARRATIVE: " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg) + " " + wrapName(pt.getName()) + " " + activity + System.getProperty("line.separator");
+    String msg = ";NARRATIVE2: " + MWC.Utilities.TextFormatting.DebriefFormatDateTime.toString(dtg) + " " + wrapName(pt.getName()) + " DECISION " + activity + System.getProperty("line.separator");
     writeToFile(msg);
   }
 
