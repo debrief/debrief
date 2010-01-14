@@ -3048,7 +3048,7 @@
 			<xs:annotation>
 				<xs:documentation>A list of variances to apply</xs:documentation>
 			</xs:annotation>
-			<xs:element name="Variance" type="VarianceType" maxOccurs="unbounded">
+			<xs:element name="Variance" type="VarianceType" maxOccurs="unbounded" minOccurs="0">
 				<xs:annotation>
 					<xs:documentation>A specific variance to be applied</xs:documentation>
 				</xs:annotation>
