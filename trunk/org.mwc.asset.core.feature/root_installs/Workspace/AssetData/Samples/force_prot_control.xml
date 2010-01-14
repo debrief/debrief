@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ian Mayo (PlanetMayo Ltd) -->
 <ScenarioController  xmlns="http://www.mwc.org/asset"
- OutputDirectory="//Users/ianmayo/test_reports/asset_test_output/force_prot"
+ OutputDirectory="force_prot_results"
  RandomSeed="32">
 	<ScenarioGenerator >
 		<MultiScenarioGenerator NameTemplate="test_scenario_" Number="5" MaxPerms="100">
