@@ -634,10 +634,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			res = _timeManager;
 		}
-		else if (adapter == IRollingNarrativeProvider.class)
-		{
-			res = _theNarrativeProvider;
-		}
 		else if (adapter == IGotoMarker.class)
 		{
 			return new IGotoMarker()
