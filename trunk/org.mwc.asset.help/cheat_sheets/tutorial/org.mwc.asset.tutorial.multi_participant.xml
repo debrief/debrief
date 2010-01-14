@@ -3,31 +3,37 @@
       title="Run multi-participant scenario">
    <intro>
       <description>
-         <b>Body</b>
+         Now, we&apos;re going to work on a more complex problem - asking ASSET to generate multiple instances of our Fishing vessel.
       </description>
    </intro>
    <item
          title="View the scenario">
       <description>
-         <b>Body</b>
+         Start off by re-opening the scenario file we&apos;ve been working with - the one that contains a single fishing vessel.
       </description>
    </item>
    <item
          title="Decide what to change">
       <description>
-         <b>Body</b>
+         Right, the scenario&apos;s open. What shall we change?  I know, let&apos;s get ASSET to create 10 fishing vessels, all with different start locations.  Where&apos;s the start location specified?  Aah yes, it&apos;s the <b>shortLocation</b> within the Status element of the <b>Surface</b> participant.
+      </description>
+   </item>
+   <item
+         title="Create duplicate control file">
+      <description>
+         Now, we don&apos;t want to overwrite our existing control file, so copy/paste our existing <b>trial1.xml</b> using either the keyboard or the menus.  Name the new control file <b>trial_multi.xml</b>.
       </description>
    </item>
    <item
          title="Open the scenario controller">
       <description>
-         <b>Body</b>
+         Next, double-click on our new control file to open it in the xml editor.  Next, open the ScenarioController element and give it a <b>ScenarioGeneator</b> child element. It&apos;s this element that handles generation of both multiple participants and multiple scenarios.
       </description>
    </item>
    <item
          title="Add participant generation code">
       <description>
-         <b>Body</b>
+         Next, add a <b>MultiParticipantGenerator</b> element to the <b>ScenarioGenerator</b>.
       </description>
    </item>
    <item
