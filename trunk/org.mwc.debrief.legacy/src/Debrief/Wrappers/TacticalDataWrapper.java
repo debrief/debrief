@@ -23,6 +23,7 @@ import MWC.GUI.FireReformatted;
 import MWC.GUI.Plottable;
 import MWC.GUI.Properties.TimeFrequencyPropertyEditor;
 import MWC.GenericData.HiResDate;
+import MWC.GenericData.TimePeriod;
 import MWC.GenericData.Watchable;
 import MWC.GenericData.WorldArea;
 
@@ -127,12 +128,17 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * switch the sample rate of this track to the supplied frequency
 	 * 
 	 * @param theVal the step interval to use
-	 * @param startTime the start time, to control where the resamples fall ('on the minute')
+	 * @param startTime the start time (micros), to control where the resamples fall ('on the minute')
 	 */
 	public void decimate(HiResDate theVal, long startTime)
 	{
 		Vector<PlottableWrapperWithTimeAndOverrideableColor> newItems = new Vector<PlottableWrapperWithTimeAndOverrideableColor>();
 
+		
+		// set the start time to be the earlier of our start time and the provided time
+		long myStart = this.getStartDTG().getMicros();
+		startTime = Math.max(startTime, myStart);
+		
 	//	long startTime = this.getStartDTG().getMicros();
 		long endTime = this.getEndDTG().getMicros();
 
@@ -382,6 +388,9 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 */
 	public final void removeElement(final MWC.GUI.Editable plottable) {
 		_myContacts.remove(plottable);
+		
+		// we also need to update the start/end time
+		_timePeriod = null;
 	}
 
 	/**
@@ -436,7 +445,21 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * @return the start DTG, or -1 if not time-related
 	 */
 	public final HiResDate getStartDTG() {
+		if(_timePeriod == null)
+		  recalcTimePeriod();
+
 		return _timePeriod.getStartDTG();
+	}
+
+	/** we've forgotten our time period, recalc
+	 * 
+	 */
+	private void recalcTimePeriod()
+	{
+		PlottableWrapperWithTimeAndOverrideableColor first = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts.first();
+		PlottableWrapperWithTimeAndOverrideableColor last = (PlottableWrapperWithTimeAndOverrideableColor) _myContacts.last();
+		
+		_timePeriod = new TimePeriod.BaseTimePeriod(first.getDTG(),last.getDTG());
 	}
 
 	/**
@@ -445,6 +468,9 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	 * @return the end DTG, or -1 if not time-related
 	 */
 	public final HiResDate getEndDTG() {
+		if(_timePeriod == null)
+		  recalcTimePeriod();
+		
 		return _timePeriod.getEndDTG();
 	}
 
