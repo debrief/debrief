@@ -629,16 +629,19 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		// store the value
 		super.setWrapper(wrapper);
 
-		// update our segments
-		final Collection<Editable> items = getData();
-		for (final Iterator<Editable> iterator = items.iterator(); iterator
-				.hasNext();)
+		if (wrapper != null)
 		{
-			final FixWrapper fix = (FixWrapper) iterator.next();
-			fix.setTrackWrapper(_myTrack);
-			// and let the track wrapper listen to location changed events
-			fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, wrapper
-					.getLocationListener());
+			// update our segments
+			final Collection<Editable> items = getData();
+			for (final Iterator<Editable> iterator = items.iterator(); iterator
+					.hasNext();)
+			{
+				final FixWrapper fix = (FixWrapper) iterator.next();
+				fix.setTrackWrapper(_myTrack);
+				// and let the track wrapper listen to location changed events
+				fix.addPropertyChangeListener(PlainWrapper.LOCATION_CHANGED, wrapper
+						.getLocationListener());
+			}
 		}
 	}
 
@@ -823,7 +826,6 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 
 		}
 	}
-
 
 	private void decimateAbsolute(HiResDate theVal, TrackWrapper parentTrack,
 			long startTime, Vector<FixWrapper> newItems)

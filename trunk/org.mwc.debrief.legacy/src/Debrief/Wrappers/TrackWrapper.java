@@ -2821,10 +2821,18 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (point instanceof SensorWrapper)
 		{
 			_mySensors.remove(point);
+			
+			// tell the sensor wrapper to forget about us
+			TacticalDataWrapper sw = (TacticalDataWrapper) point;
+			sw.setHost(null);
 		}
 		else if (point instanceof TMAWrapper)
 		{
 			_mySolutions.remove(point);
+			
+			// tell the sensor wrapper to forget about us
+			TacticalDataWrapper sw = (TacticalDataWrapper) point;
+			sw.setHost(null);
 		}
 		else if (point instanceof SensorContactWrapper)
 		{
@@ -2840,6 +2848,10 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else if (point instanceof TrackSegment)
 		{
 			_thePositions.removeElement(point);
+			
+			// and clear the parent item
+			TrackSegment ts = (TrackSegment) point;
+			ts.setWrapper(null);
 		}
 		else
 		{

@@ -483,6 +483,9 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		}
 	}
 
+	/** our parent has changed, clear data that depends on it
+	 * 
+	 */
 	private void clearChildOffsets()
 	{
 		// we also need to reset the origins on our child elements, since
@@ -492,6 +495,9 @@ public class SensorWrapper extends TacticalDataWrapper implements
 		{
 			final SensorContactWrapper fw = (SensorContactWrapper) it.next();
 			fw.clearCalculatedOrigin();
+			
+			// and tell it we're the boss
+			fw.setSensor(this);
 		}
 	}
 
