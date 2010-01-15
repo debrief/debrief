@@ -100,8 +100,8 @@
       <feature id="org.eclipse.wst.xml_ui.feature" version="3.1.1.v200907161031-7H6FM_DxtkM-7aeTHKEBbQqcZOZ2"/>
       <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.1.1.v200906020459-50FR7AkF77f7MESDKEF"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.6"/>
-      <feature id="org.mwc.cmap.combined.feature" version="1.0.34"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.42"/>
+      <feature id="org.mwc.cmap.combined.feature" version="1.0.37"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.43"/>
    </features>
 
 

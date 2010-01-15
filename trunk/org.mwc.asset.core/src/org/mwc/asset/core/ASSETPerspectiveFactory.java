@@ -71,6 +71,9 @@ public class ASSETPerspectiveFactory implements IPerspectiveFactory
 		layout.addShowViewShortcut(IPageLayout.ID_PROP_SHEET);
 		layout.addShowViewShortcut(IPageLayout.ID_BOOKMARKS);
 		layout.addShowViewShortcut(IPageLayout.ID_TASK_LIST);
+		
+		// and the error log
+		layout.addShowViewShortcut("org.eclipse.pde.runtime.LogView");
 
 		// hey - try to add the 'new plot' to the New menu
 		layout.addNewWizardShortcut("org.eclipse.ui.wizards.new.folder");
