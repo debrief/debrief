@@ -513,7 +513,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					thisD = TimeControllerPlugin
 							.getImageDescriptor("icons/media_pause.png");
 					startPlaying();
-					_playButton.setToolTipText(PAUSE_TEXT);
+					_playButton.setToolTipText(PAUSE_TEXT); 
 				}
 				else
 				{
@@ -1148,6 +1148,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
+						
+						// right, we're clearly not running a simulation here, clear the simulation object
+						//     that gets uses as a flag
+						_steppableTime = null;
+						
+						
 						// implementation here.
 						ControllablePeriod ct = (ControllablePeriod) part;
 						_controllablePeriod = ct;
