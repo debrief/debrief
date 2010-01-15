@@ -15,7 +15,7 @@
    <item
          title="Create empty scenario controller file">
       <description>
-         Now you&apos;ve decided where to put the controller, right click on the parent folder in the <b>Navigator</b>,  and select &apos;New/Other..&apos;. From the options provided select <b>XML/XML</b>.  Name the control file trial1.xml,  indicate that you&apos;re going to create the xml file from an XML Schema File, and select the <b>http://www.mwc.org/asset</b> item from the <b>Select XML Catalog Entry</b> listing.  Finally, indicate that you&apos;re require a root element of <b>ScenarioController</b>.  And Finish.  On completion, the file should open in the XML editor.
+         Now you&apos;ve decided where to put the controller, right click on the parent folder in the <b>Navigator</b>,  and select &apos;New/Other..&apos;. From the options provided select <b>XML/XML</b>.  Name the control file trial1.xml,  indicate that you&apos;re going to create the xml file from an XML template, and select <b>ASSET Control File</b>.  On completion, the file should open in the XML editor.
       </description>
    </item>
    <item
