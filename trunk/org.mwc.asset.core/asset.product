@@ -15,7 +15,6 @@
 
    <launcherArgs>
       <vmArgs>-Xms40m -Xmx256m</vmArgs>
-      <vmArgsWin>-Djava.library.path=.;</vmArgsWin>
    </launcherArgs>
 
    <windowImages i16="/org.mwc.asset.core/icons/components.gif"/>
