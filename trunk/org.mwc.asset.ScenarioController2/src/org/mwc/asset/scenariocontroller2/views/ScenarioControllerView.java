@@ -188,20 +188,11 @@ public class ScenarioControllerView extends ViewPart implements
 				// tell the observers that it's all over
 				tearDownObservers(_myScenario);
 
-				// it's stopped running, refresh the workspace
-				IProject theProj = getAProject();
-				try
-				{
-					theProj.refreshLocal(2, null);
-				}
-				catch (CoreException e)
-				{
-					ASSETPlugin.logError(Status.ERROR,
-							"Had trouble refreshing project folder", e);
-					e.printStackTrace();
-				}
+				refreshWorkspace();
 
 			}
+
+
 
 			public void newScenarioStepTime(int val)
 			{
@@ -391,9 +382,13 @@ public class ScenarioControllerView extends ViewPart implements
 			public void run()
 			{
 				_myMultiScenario.nowRun(System.out, System.err, System.in);
+
+				// ok, better refresh the workspace
+				refreshWorkspace();
 			}
 		};
 		doRun.start();
+		
 	}
 
 	protected static class WrappedProgressMonitor implements ASSETProgressMonitor
@@ -416,6 +411,22 @@ public class ScenarioControllerView extends ViewPart implements
 		public void worked(int work)
 		{
 			monitor.worked(work);
+		}
+	}
+	
+	private void refreshWorkspace()
+	{
+		// it's stopped running, refresh the workspace
+		IProject theProj = getAProject();
+		try
+		{
+			theProj.refreshLocal(2, null);
+		}
+		catch (CoreException e)
+		{
+			ASSETPlugin.logError(Status.ERROR,
+					"Had trouble refreshing project folder", e);
+			e.printStackTrace();
 		}
 	}
 
