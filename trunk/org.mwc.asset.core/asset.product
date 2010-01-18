@@ -101,7 +101,7 @@
       <feature id="org.eclipse.wst.xml_userdoc.feature" version="3.1.1.v200906020459-50FR7AkF77f7MESDKEF"/>
       <feature id="org.mwc.asset.core.feature" version="1.0.7"/>
       <feature id="org.mwc.cmap.combined.feature" version="1.0.38"/>
-      <feature id="org.mwc.debrief.combined.feature" version="1.0.45"/>
+      <feature id="org.mwc.debrief.combined.feature" version="1.0.46"/>
    </features>
 
 

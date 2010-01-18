@@ -65,13 +65,13 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
          title="Re-run the scenario">
       <description>
          Ok, back to the scenario.  Click on <b>Run</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 10 participants, not one.
-         Go on then, click the <b>
+         
       </description>
    </item>
    <item
          title="Inspect a results output">
       <description>
-         <b>Body</b>
+         Once the scenario is complete, you can go into the <b>results</b> folder in the Navigator and you&apos;ll see the new output files.  If you open the <b>png</b>, you&apos;ll see the very cluttered output - with lots of vessel tracks.
       </description>
    </item>
 </cheatsheet>
