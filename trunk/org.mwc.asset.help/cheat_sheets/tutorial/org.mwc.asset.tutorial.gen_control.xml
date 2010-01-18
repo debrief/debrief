@@ -33,7 +33,7 @@
    <item
          title="Add first scenario observer">
       <description>
-         Right, we&apos;re ready to add some observers.  Right-click on the <b>ScenarioController</b>, and select <b>ObserverList</b> from the <b>Add child</b> drop-down.  Next, if you right-click on the new ObserverList, you&apos;ll see the range of observers that may be added.  First, we&apos;re going to add an observer that stops the scenario after a specified time.  Right-click on the <b>ObserverList</b>, and select <b>TimeObserver</b> from <b>add child</b>.  Configure the time observer by naming it as &apos;domesday timer&apos;, and specifying the duration as 24 hours.
+         Right, we&apos;re ready to add some observers.  Right-click on the <b>ScenarioController</b>, and select <b>ObserverList</b> from the <b>Add child</b> drop-down.  Next, if you right-click on the new ObserverList, you&apos;ll see the range of observers that may be added.  First, we&apos;re going to add an observer that stops the scenario after a specified time.  Right-click on the <b>ObserverList</b>, and select <b>TimeObserver</b> from <b>add child</b>.  Configure the time observer by naming it as &apos;doomsday timer&apos;, and specifying the duration as 24 hours.
       </description>
    </item>
    <item

@@ -21,14 +21,14 @@
    <item
          title="View Debrief tracks">
       <description>
-         As well as Debrief producing a snapshot overview of the run, we can run through the scenario using Debrief.  To do this, double-click on the <b>.rep</b> file in the results folder.  The file will open in Debrief.  If you select the <b>Time Controller</b> view, you can move back and forth through the scenario. <br/>
+         As well as Debrief producing a snapshot overview of the run, we can run through the scenario using Debrief.  To do this, double-click on the <b>.rep</b> file in the results folder.  As the plot opens, you may get invited to select between <b>DR</b> and <b>OTG</b> track mode - select OTG.  The file will open in Debrief.  If you select the <b>Time Controller</b> view, you can move back and forth through the scenario. <br/>
 
       </description>
    </item>
    <item
          title="And Debrief narrative">
       <description>
-         Lastly - still with the Debrief plot viewer open, if you open the <b>Narrative Viewer</b> view, you&apos;ll see a list of decisions made during the scenario.  Scroll back and forth with the Time Controller and see the fishing vessel&apos;s current decision state in the Narrative Viewer.
+         Lastly - still with the Debrief plot viewer open, if you open the <b>Narrative Viewer</b> view, you&apos;ll see a list of decisions made during the scenario. <b>Note</b>, you may have to switch to <b>Tactical Analysis</b> mode to see the Narrative Viewer.  Scroll back and forth with the Time Controller and see the fishing vessel&apos;s current decision state in the Narrative Viewer.
       </description>
    </item>
 </cheatsheet>

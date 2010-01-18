@@ -49,7 +49,7 @@ Once the time controller has updated (to show just 3 buttons), click the right-h
    <item
          title="Start scenario playing forward">
       <description>
-         Now we can get the scenario to play forwards on its own - by clicking on the <b>Play</b> button in the middle of the Time Controller buttons.  You&apos;ll see the scenario start to move forward - incrementing by the 10 minute time step we specified earlier. Zoom out further if the fisherman has wandered off your viewpoint.
+         Now we can get the scenario to play forwards on its own - by clicking on the <b>Play</b> button in the middle of the Time Controller buttons.  You&apos;ll see the scenario start to move forward - incrementing by the 10 minute time step we specified earlier. Zoom out further if the fisherman has wandered off your viewpoint. <b>Note</b>, if you don&apos;t have a zoom out button on the toolbar, select <b>Open Perspective</b> from the View menu, and select <b>Tactical Analysis</b> from the perspectives offered.  ASSET will re-adjust itself to show the Debrief toolbar, after which you can then switch back to <b>Tactical Simulation</b>.
       </description>
    </item>
    <item
