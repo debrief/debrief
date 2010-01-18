@@ -826,7 +826,7 @@ public abstract class LookupSensor extends CoreSensor
 				NamedList thisList = (NamedList) iterator.next();
 
 				// is this the correct one
-				if (thisList._myType == type)
+				if (thisList._myType.equals(type))
 				{
 					// cool, here we are, get the correct type
 					Double val = thisList._myValues.get(index);

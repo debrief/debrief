@@ -228,6 +228,9 @@ public class OpticLookupSensor extends LookupSensor
 		double RP_1 = -1 / attenVal * Math.log(targetVis / seaStateVal) * lightValue;
 		double RP_2 = Math.sqrt(2 * EARTH_RADIUS * myHeight / B_FACTOR)
 				+ Math.sqrt(2 * EARTH_RADIUS * hisHeight / B_FACTOR);
+		
+		// ian's fudge make the range absolute
+		RP_1 = Math.abs(RP_1);
 
 		// and use the min value.
 		double RP = Math.min(RP_1, RP_2);
