@@ -3,7 +3,7 @@
       title="Run multi-participant scenario">
    <intro>
       <description>
-         Now, we&apos;re going to work on a more complex problem - asking ASSET to generate multiple instances of our Fishing vessel.
+         Now, we&apos;re going to work on a more complex problem - asking ASSET to generate multiple instances of our Fishing vessel.  We do this by including instructions in the control file regarding which elements of the scenario to change, and how to change them.
       </description>
    </intro>
    <item
@@ -15,7 +15,7 @@
    <item
          title="Decide what to change">
       <description>
-         Right, the scenario&apos;s open. What shall we change?  I know, let&apos;s get ASSET to create 10 fishing vessels, all with different start locations.  Where&apos;s the start location specified?  Aah yes, it&apos;s the <b>shortLocation</b> within the Status element of the <b>Surface</b> participant.
+         Right, the scenario&apos;s open. What shall we change?  I know, let&apos;s get ASSET to create 10 fishing vessels, all with different start locations, and with different speeds that they conduct the Wander behaviour.<br/>There&apos;s a convenience function for changing the initial location, but we will need to sort out how to specify the Wander speed.  Have a look at how to specify the path to the Wander element.  It&apos;s the <b>Value</b> attribute of the <b>Speed</b> element, contained within the Wander element.
       </description>
    </item>
    <item
@@ -33,25 +33,39 @@
    <item
          title="Add participant generation code">
       <description>
-         Next, add a <b>MultiParticipantGenerator</b> element to the <b>ScenarioGenerator</b>.
+         Next, add a <b>MultiParticipantGenerator</b> element to the <b>ScenarioGenerator</b>.<br/>
+Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance</b> describes the variances to apply to a single participant - specified using the participant name.
       </description>
    </item>
    <item
          title="Add specification for multi participant generation">
       <description>
-         <b>Body</b>
+         So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One, and set the number to 10 - to say we want 10 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West.
       </description>
    </item>
    <item
-         title="Reload the datafiles">
+         title="Add the Wander speed variance">
       <description>
-         <b>Body</b>
+         Next we&apos;re going to specify how to vary the Wander speed. Start by adding a <b>Variance</b> element to the <b>ParticipantVariance</b> for Fisher One.  Next, right-click on the <b>LocationArea</b> element and select <b>Replace with</b> an <b>Attribute</b> element.  Name this element as &apos;Vary the wander speed&apos;.  Next. specify that we&apos;re going to vary the attribute through a <b>Range</b> of values from 2 to 10, and use the name <b>Value</b>.  We also need to tell the Variance element what it&apos;s going to apply to, so put /Wander/Speed in the id field.  This phrase is an follows the XPath regular expression standard - but essentially it just matches XML Element names, with single slashes showing the parent/child relationship, and double-slashes matching against any number of parent/child tiers.
+      </description>
+   </item>
+   <item
+         title="Load the new controller file">
+      <description>
+         Now, save our new control file, and drag it from the <b>Navigator</b> to the <b>Scenario Controller</b> view.  As you drop it, you should see the current tab switch to <b>Multiple Scenarios</b>.  This panel allows a series of scenarios tNow, in the <b>results</b> folder of the Navigator, you&apos;ll see two new files, one ending with <b>png</b> and the other with <b>rep</b>, just like for the single scenario run.  Have a look inside to see the multiple vessel tracks. <b>results</b> folder of the Navigator, you&apos;ll see two new files, one ending with <b>png</b> and the other with <b>rep</b>, just like for the single scenario run. <b>results</b> folder of the Navigator, you&apos;ll see two new files, one ending with <b>png</b> and the other with <b>rep</b>.  Double-click on the png file, and you&apos;ll a still image representing the track run.  Double-click on theyed/managed.  Start off by clicking on <b>Generate</b>.  ASSET will now go away and generate multiple participants and scenarios as necessary, finally enabling the <b>Run</b> button.
+      </description>
+   </item>
+   <item
+         title="Inspect the generated scenario">
+      <description>
+         Before we run the scenario, let&apos;s have a look at what ASSET has generated.  In the <b>Navigator</b> window, have a look in the <b>Results</b> folder.  You&apos;ll see a copy of the control file, and a folder called <b>1</b>.  ASSET numbers the generated scenarios, so you can see it&apos;s just created the one.  Open this folder and you&apos;ll see a single file titled <b>Cheat sheet scenario.xml</b>.  Double-click to open it.  Inside this scenario you&apos;ll see that there are now 10 surface participants, each with a unique vessel name.  Have a look at the Wander behaviours, and you&apos;ll see that there are a range of speeds specified.  <b>Note</b>, the random numbers have lots of decimal places, the <b>format</b> attribute of the <b>Variance</b> element we used allows us to specify the number of decimal places used.
       </description>
    </item>
    <item
          title="Re-run the scenario">
       <description>
-         <b>Body</b>
+         Ok, back to the scenario.  Click on <b>Run</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 10 participants, not one.
+         Go on then, click the <b>
       </description>
    </item>
    <item
