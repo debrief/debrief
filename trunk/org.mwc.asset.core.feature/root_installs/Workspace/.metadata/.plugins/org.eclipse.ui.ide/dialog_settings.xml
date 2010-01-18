@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <section name="Workbench">
 	<list key="installedFeatures">
+		<item value="com.oxygenxml.editor:11.0.0"/>
 		<item value="org.eclipse.help:1.1.1.R35x_v20090811-7e7eFAnFEx2XZoYz0uPgIfwD"/>
 		<item value="org.eclipse.platform:3.5.1.R35x_v20090910-9gEeG1_FthkNDSP2odXdThaOu9GFDPn83DGB7"/>
 		<item value="org.eclipse.rcp:3.5.1.R35x_v20090811-9SA0FxVFqE70OL1ARMrfcO6e7BA6"/>
