@@ -162,10 +162,12 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
                         final Float relBearing,
                         final Float strength,
                         final Category target_type,
-                        final Float speed,
+                        final Float speedKts,
                         final Float course,
                         final ParticipantType target)
   {
+
+  	
     _time = time;
     _range = range;
     _estimatedRange = estimatedRange;
@@ -174,7 +176,7 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
     _strength = strength;
     _target_type = target_type;
     _course = course;
-    _speed = speed;
+    _speed = speedKts;
     _sensorId = sensor.getId();
     _hostId = host;
     _sensorLocation = sensorLocation;
@@ -215,31 +217,11 @@ public class DetectionEvent implements java.util.Comparator<DetectionEvent>, Ser
                         final ParticipantType target,
                         final int detectionState)
   {
-    _time = time;
-    _range = range;
-    _estimatedRange = estimatedRange;
-    _bearing = bearing;
-    _relBearing = relBearing;
-    _strength = strength;
-    _target_type = target_type;
-    _course = course;
-    _speed = new Float(speed.getValueIn(WorldSpeed.M_sec));
-    _sensorId = sensor.getId();
-    _hostId = host;
-    _sensorLocation = sensorLocation;
+
+  	this(time,host,sensorLocation,sensor, range,estimatedRange,bearing,relBearing,strength,target_type,new Float(speed.getValueIn(WorldSpeed.Kts)),course,target);
+
     _detectionState = detectionState;
 
-    if (target != null)
-      _targetId = new Integer(target.getId());
-    else
-      _targetId = null;
-
-    // check we have target
-    if(target == null)
-    	throw new RuntimeException("Failed to specify target object");
-    
-    // write the message
-    _myMessage = target.getName() + " held on " + sensor.getName();
   }
 
   /**

@@ -528,6 +528,14 @@ abstract public class CoreSensor implements ASSET.Models.SensorType,
 		_TBDO = millis;
 	}
 
+	/**
+	 * calculate relative bearing of specified bearing from this vessel course
+	 */
+	protected double relativeBearing(final double course, final double bearing)
+	{
+	  return bearing - course;
+	}
+
 	// //////////////////////////////////////////////////
 	// the editor object
 	// //////////////////////////////////////////////////

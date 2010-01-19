@@ -11,6 +11,7 @@ package ASSET.GUI.Editors.Sensors;
 
 import ASSET.Models.Sensor.Initial.InitialSensor;
 import ASSET.Models.Sensor.Lookup.LookupSensor;
+import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Sensor.SensorList;
 import ASSET.Models.SensorType;
 import MWC.GUI.Editable;
@@ -109,7 +110,7 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
 
     // sort out what type of sensor this is.
     if (thisSensor instanceof InitialSensor)
-      theEditor = new CoreSensorViewer((InitialSensor) thisSensor);
+      theEditor = new CoreSensorViewer((CoreSensor) thisSensor);
     else if (thisSensor instanceof LookupSensor)
       theEditor = new LookupSensorViewer((LookupSensor) thisSensor);
 
@@ -163,7 +164,7 @@ public class SensorFitEditor extends MWC.GUI.Properties.Swing.SwingCustomEditor
      *
      * @param data the Layers themselves
      */
-    public CoreSensorViewer(final InitialSensor data)
+    public CoreSensorViewer(final CoreSensor data)
     {
       super(new WrappedSensor(data), data.getName(), "View");
     }

@@ -9,6 +9,7 @@ package ASSET.Models.Decision.Conditions;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Detection.DetectionList;
+import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Participants.Category;
 import ASSET.Participants.Status;
 import ASSET.Scenario.ScenarioActivityMonitor;
@@ -270,7 +271,7 @@ public class DetectionForPeriod extends Detection
 
       final ASSET.ParticipantType participant = new ASSET.Models.Vessels.Surface(12);
       participant.setName("un-named");
-      final ASSET.Models.Sensor.Initial.InitialSensor sensor = new ASSET.Models.Sensor.Initial.BroadbandSensor(12);
+      final CoreSensor sensor = new ASSET.Models.Sensor.Initial.BroadbandSensor(12);
       final DetectionEvent db = new DetectionEvent(120, participant.getId(), null, sensor,
                                                    new WorldDistance(1, WorldDistance.YARDS),
                                                    new WorldDistance(1, WorldDistance.YARDS),

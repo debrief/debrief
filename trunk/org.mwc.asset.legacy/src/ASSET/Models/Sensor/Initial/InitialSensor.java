@@ -105,7 +105,7 @@ abstract public class InitialSensor extends CoreSensor
       WorldDistance estimatedRange = getEstimatedRange();
 
       if (this.hasTgtSpeed())
-        tgtSpeed = new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.M_sec));
+        tgtSpeed = new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts));
 
       if (this.hasTgtCourse())
         tgtCourse = new Float(target.getStatus().getCourse());
@@ -166,14 +166,6 @@ abstract public class InitialSensor extends CoreSensor
   boolean hasTgtSpeed()
   {
     return false;
-  }
-
-  /**
-   * calculate relative bearing of specified bearing from this vessel course
-   */
-  private double relativeBearing(final double course, final double bearing)
-  {
-    return bearing - course;
   }
 
   abstract protected double getLoss(ASSET.Models.Environment.EnvironmentType environment,

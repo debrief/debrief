@@ -20,7 +20,7 @@ import ASSET.Models.Mediums.Optic;
 import ASSET.Models.Movement.SSMovementCharacteristics;
 import ASSET.Models.Movement.SimpleDemandedStatus;
 import ASSET.Models.Movement.SurfaceMovementCharacteristics;
-import ASSET.Models.Sensor.Initial.InitialSensor;
+import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.ParticipantType;
 import ASSET.Participants.Category;
@@ -834,7 +834,7 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
       final WorldDistance rng = new WorldDistance(12.1, WorldDistance.YARDS);
       final Float brg = new Float(2.1f);
 
-      final InitialSensor sensor = new ASSET.Models.Sensor.Initial.OpticSensor(12);
+      final CoreSensor sensor = new ASSET.Models.Sensor.Initial.OpticSensor(12);
       final ASSET.ParticipantType host = new ASSET.Models.Vessels.SSK(12);
       final ASSET.ParticipantType target = new ASSET.Models.Vessels.Surface(22);
 
@@ -890,7 +890,7 @@ public class LaunchWeapon extends CoreDecision implements java.io.Serializable
       final WorldDistance rng = new WorldDistance(12.1, WorldDistance.YARDS);
       final Float brg = new Float(2.1f);
 
-      final InitialSensor sensor = new ASSET.Models.Sensor.Initial.OpticSensor(12);
+      final CoreSensor sensor = new ASSET.Models.Sensor.Initial.OpticSensor(12);
       final ASSET.ParticipantType host = new ASSET.Models.Vessels.SSK(12);
       final ASSET.ParticipantType target = new ASSET.Models.Vessels.Surface(22);
 

@@ -4,6 +4,7 @@ import ASSET.Models.Decision.CoreDecision;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Movement.SimpleDemandedStatus;
+import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Participants.CoreParticipant;
 import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
@@ -645,7 +646,7 @@ public class Trail extends CoreDecision implements java.io.Serializable
 
       // create the host
       final ASSET.ParticipantType host = new ASSET.Models.Vessels.Surface(12);
-      final ASSET.Models.Sensor.Initial.InitialSensor sensor = new ASSET.Models.Sensor.Initial.BroadbandSensor(22);
+      final CoreSensor sensor = new ASSET.Models.Sensor.Initial.BroadbandSensor(22);
 
       // and the detection list
       ASSET.Models.Detection.DetectionList list = new ASSET.Models.Detection.DetectionList();

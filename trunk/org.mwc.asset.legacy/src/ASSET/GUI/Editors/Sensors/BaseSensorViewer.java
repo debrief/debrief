@@ -9,7 +9,7 @@ package ASSET.GUI.Editors.Sensors;
 import java.util.Vector;
 
 import ASSET.Models.SensorType;
-import ASSET.Models.Sensor.Initial.InitialSensor;
+import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Sensor.Initial.InitialSensor.InitialSensorComponentsEvent;
 
 public abstract class BaseSensorViewer extends MWC.GUI.Properties.Swing.SwingCustomEditor implements java.beans.PropertyChangeListener, MWC.GUI.Properties.NoEditorButtons
@@ -93,14 +93,14 @@ public abstract class BaseSensorViewer extends MWC.GUI.Properties.Swing.SwingCus
     final String type = pe.getPropertyName();
 
     // is it a new detection?
-    if (type == ASSET.Models.Sensor.Initial.InitialSensor.SENSOR_COMPONENT_EVENT)
+    if (type == CoreSensor.SENSOR_COMPONENT_EVENT)
     {
       // store these components
       _sensorEvents.add((InitialSensorComponentsEvent) pe.getNewValue());
 
     }
     // does it mark the end of this step?
-    else if (type == InitialSensor.DETECTION_CYCLE_COMPLETE)
+    else if (type == CoreSensor.DETECTION_CYCLE_COMPLETE)
     {
       // update the GUI
       updateForm();

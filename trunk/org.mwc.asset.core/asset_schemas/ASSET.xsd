@@ -169,6 +169,11 @@
 			<xs:documentation>instance of subject, declared to allow standalone instance of this object to be defined in file</xs:documentation>
 		</xs:annotation>
 	</xs:element>
+	<xs:element name="PlainCookieSensor" type="PlainCookieSensorType">
+		<xs:annotation>
+			<xs:documentation>instance of subject, declared to allow standalone instance of this object to be defined in file</xs:documentation>
+		</xs:annotation>
+	</xs:element>
 	<xs:element name="RadarLookupSensor" type="RadarLookupSensorType">
 		<xs:annotation>
 			<xs:documentation>instance of subject, declared to allow standalone instance of this object to be defined in file</xs:documentation>
@@ -200,6 +205,7 @@
 						type="DippingActiveBroadbandSensorType" minOccurs="0"/>
 					<xs:element name="NarrowbandSensor" type="NarrowbandSensorType" minOccurs="0"/>
 					<xs:element name="OpticLookupSensor" type="OpticLookupSensorType" minOccurs="0"/>
+					<xs:element name="PlainCookieSensor" type="PlainCookieSensorType" minOccurs="0"/>
 					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
 					<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
 					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType"
@@ -330,6 +336,24 @@
 							side (therefore doubled for total aperture)</xs:documentation>
 					</xs:annotation>
 				</xs:attribute>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PlainCookieSensorType">
+		<xs:annotation>
+			<xs:documentation>Very simple cookie-cutter sensor</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited, aperture Editable: inherited,
+				detection range</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreSensorType">
+				<xs:sequence>
+					<xs:element name="DetectionRange" type="WorldDistanceType">
+						<xs:annotation>
+							<xs:documentation>Range at which this sensor makes a detection - against all target y</xs:documentation>
+						</xs:annotation>						
+					</xs:element>					
+				</xs:sequence>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
