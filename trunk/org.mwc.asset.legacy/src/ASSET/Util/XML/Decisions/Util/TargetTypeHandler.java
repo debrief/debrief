@@ -25,7 +25,7 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
 
     addHandler(new TypeHandler()
     {
-      public void addAttribute(final String attr)
+      public void addType(final String attr)
       {
         if (tt == null)
           tt = new ASSET.Models.Decision.TargetType();
@@ -139,12 +139,12 @@ abstract public class TargetTypeHandler extends MWC.Utilities.ReaderWriter.XML.M
       {
         public void setValue(String name, final String val)
         {
-          addAttribute(val);
+          addType(val);
         }
       });
     }
 
-    abstract public void addAttribute(String attr);
+    abstract public void addType(String attr);
 
     static public void exportThis(final String type1, final org.w3c.dom.Element parent, final org.w3c.dom.Document doc)
     {

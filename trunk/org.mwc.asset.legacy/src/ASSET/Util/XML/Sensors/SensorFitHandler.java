@@ -47,6 +47,13 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
 				_myName = value;
 			}
     });    
+    addHandler(new TypedCookieSensorHandler()
+    {
+      public void addSensor(final SensorType sensor)
+      {
+        addThisSensor(sensor);
+      }
+    });
     
     addHandler(new PlainCookieSensorHandler()
     {
@@ -178,6 +185,10 @@ abstract  public class SensorFitHandler extends MWC.Utilities.ReaderWriter.XML.M
       if (sensor instanceof ASSET.Models.Sensor.Initial.OpticSensor)
       {
         OpticSensorHandler.exportThis(sensor, sens, doc);
+      }
+      if (sensor instanceof ASSET.Models.Sensor.Cookie.TypedCookieSensor)
+      {
+        PlainCookieSensorHandler.exportThis(sensor, sens, doc);
       }
       if (sensor instanceof ASSET.Models.Sensor.Cookie.PlainCookieSensor)
       {

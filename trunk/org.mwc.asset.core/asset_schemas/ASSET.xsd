@@ -206,6 +206,7 @@
 					<xs:element name="NarrowbandSensor" type="NarrowbandSensorType" minOccurs="0"/>
 					<xs:element name="OpticLookupSensor" type="OpticLookupSensorType" minOccurs="0"/>
 					<xs:element name="PlainCookieSensor" type="PlainCookieSensorType" minOccurs="0"/>
+					<xs:element name="TypedCookieSensor" type="TypedCookieSensorType" minOccurs="0"/>
 					<xs:element name="RadarLookupSensor" type="RadarLookupSensorType" minOccurs="0"/>
 					<xs:element name="MADLookupSensor" type="MADLookupSensorType" minOccurs="0"/>
 					<xs:element name="ActiveInterceptSensor" type="ActiveInterceptSensorType"
@@ -351,6 +352,24 @@
 					<xs:element name="DetectionRange" type="WorldDistanceType">
 						<xs:annotation>
 							<xs:documentation>Range at which this sensor makes a detection - against all target y</xs:documentation>
+						</xs:annotation>						
+					</xs:element>					
+				</xs:sequence>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="TypedCookieSensorType">
+		<xs:annotation>
+			<xs:documentation>Simple cookie-cutter sensor with per-type ranges</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: inherited, aperture Editable: inherited,
+				detection range</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="CoreSensorType">
+				<xs:sequence>
+					<xs:element name="TypedRangeDoublet" type="TypedRangeDatumType" maxOccurs="unbounded" minOccurs="1">
+						<xs:annotation>
+							<xs:documentation>Collection of detection range vs target type items</xs:documentation>
 						</xs:annotation>						
 					</xs:element>					
 				</xs:sequence>
@@ -1423,6 +1442,16 @@
 
 		<xs:sequence>
 			<xs:element name="Type" type="TypeType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+	</xs:complexType>
+	<xs:complexType name="TypedRangeDatumType">
+		<xs:annotation>
+			<xs:documentation>Collection of doublets that include a list of types and their detection range</xs:documentation>
+			<xs:documentation source="http://asset.info/ui">Visible: list of types Editable: nil</xs:documentation>
+		</xs:annotation>
+		<xs:sequence>
+			<xs:element name="Type" type="TypeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="DetectionRange" minOccurs="1"  type="WorldDistanceType"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="MovementType"/>

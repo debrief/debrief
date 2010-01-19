@@ -1,13 +1,9 @@
 package ASSET.Models.Sensor.Cookie;
 
-import ASSET.ParticipantType;
-import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
-import ASSET.Models.Sensor.CoreSensor;
 import ASSET.Models.Sensor.SensorList;
-import ASSET.Participants.DemandedStatus;
 import ASSET.Participants.Status;
 import ASSET.Util.SupportTesting;
 import MWC.GUI.Editable;
@@ -21,101 +17,23 @@ import MWC.GenericData.WorldVector;
  * @author ianmayo
  *
  */
-public class PlainCookieSensor extends CoreSensor
+public class PlainCookieSensor extends TypedCookieSensor
 {
-
-	/** the detection range for this sensor
-	 * 
-	 */
-	WorldDistance _detectionRange = null;
-	
 	
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private TypedRangeDoublet _myRangeDoublet;
 
 	public PlainCookieSensor(int id, WorldDistance detRange)
 	{
-		super(id, 0, "Plain Cookie");
+		super(id, null);
 		
-		_detectionRange = detRange;
+		 _myRangeDoublet = new TypedRangeDoublet(null, detRange);
+		 addRangeDoublet(_myRangeDoublet);
 	}
 
-	public WorldDistance getDetectionRange()
-	{
-		return _detectionRange;
-	}
-
-	public void setDetectionRange(WorldDistance detectionRange)
-	{
-		_detectionRange = detectionRange;
-	}
-
-	@Override
-	protected boolean canDetectThisType(ParticipantType ownship,
-			ParticipantType other, EnvironmentType env)
-	{
-		return true;
-	}
-
-	@Override
-	public boolean canIdentifyTarget()
-	{
-		return true;
-	}
-
-	@Override
-	protected DetectionEvent detectThis(EnvironmentType environment,
-			ParticipantType host, ParticipantType target, long time,
-			ScenarioType scenario)
-	{
-		DetectionEvent res = null;
-		
-		// right, what's the distance?
-		WorldVector sep = host.getStatus().getLocation().subtract(target.getStatus().getLocation());
-		if(sep.getRange() < _detectionRange.getValueIn(WorldDistance.DEGS))
-		{
-			double brgDegs =MWC.Algorithms.Conversions.Rads2Degs(sep.getBearing());
-			
-			// cool, in contact. write it up.
-			 res = new DetectionEvent(time,
-           host.getId(),
-           host.getStatus().getLocation(),
-           this,
-           new WorldDistance(sep.getRange(), WorldDistance.DEGS),
-           new WorldDistance(sep.getRange(), WorldDistance.DEGS),
-           new Float(brgDegs),
-           new Float(super.relativeBearing(host.getStatus().getCourse(), brgDegs)), 
-           new Float(1),
-           target.getCategory(),
-           new Float(target.getStatus().getSpeed().getValueIn(WorldSpeed.Kts)),
-           new Float(target.getStatus().getCourse()),
-           target);
-		}
-		
-		return res;
-	}
-
-	@Override
-	public WorldDistance getEstimatedRange()
-	{
-		return _detectionRange;
-	}
-
-	@Override
-	public int getMedium()
-	{
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public void update(DemandedStatus myDemandedStatus, Status myStatus,
-			long newTime)
-	{
-		// don't bother, nothing to do here
-	}
 
 	@Override
 	public EditorType getInfo()
@@ -124,6 +42,18 @@ public class PlainCookieSensor extends CoreSensor
 			_myEditor = new PlainCookieInfo(this);
 		return _myEditor;
 	}
+	
+	public void setDetectionRange(WorldDistance range)
+	{
+		_myRangeDoublet.setRange(range);
+	}
+	
+	
+	public WorldDistance getDetectionRange()
+	{
+		return _myRangeDoublet.getRange();
+	}
+	
 
 	@Override
 	public boolean hasEditor()
