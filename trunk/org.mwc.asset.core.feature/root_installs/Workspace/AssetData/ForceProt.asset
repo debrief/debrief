@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Scenario Name=""  xmlns="http://www.mwc.org/asset" >
+  <StepTime Units="minutes" Value="2"></StepTime><Environment Name="token"
+  	AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
+	<VisualLookupEnvironment Name="Easy to see">
+		<VisualAttenuationDatum Haze="0.0000001" Mist="0.0000001" LightHaze="0.0000001"
+			VeryClear="0.0000001" Fog="0.0000001" Clear="0.0000001" ></VisualAttenuationDatum>
+		<TargetVisibilitySet>
+			<TargetVisibilityDatum Type="CARRIER" Visibility="2" /><TargetVisibilityDatum
+				Type="FRIGATE" Visibility="2" ></TargetVisibilityDatum>
+		</TargetVisibilitySet>
+		<TargetSeaStateSet>
+			<TargetSeaStateDatum Type="CARRIER" SeaState_5="1"
+				SeaState_4="1" SeaState_3="1" SeaState_2="1" SeaState_1="1"
+				SeaState_0="1" SeaState_6="1" /><TargetSeaStateDatum
+				Type="FRIGATE" SeaState_5="1" SeaState_4="1" SeaState_3="1"
+				SeaState_2="1" SeaState_1="1" SeaState_0="1" SeaState_6="1" />
+		</TargetSeaStateSet>
+		<LightLevelDatum Dusk="1" DarkNight="1" MoonlitNight="1"
+			Daylight="1" />
+	</VisualLookupEnvironment>
+</Environment>
+	<Participants>
+  	<Surface Name="HVU">
+  		<Category Type="CARRIER" Force="BLUE"
+  			Environment="SURFACE" />
+  		<SensorFit></SensorFit>
+  		<Status Course="0.0" Fuel="100">
+  			<Location>
+  				<shortLocation Lat="0" Long="0">
+  					<Height Value="6" Units="m" /></shortLocation>
+  			</Location>
+  			<Speed Value="6" Units="kts" />
+  		</Status>
+  		<Waterfall Name="HVU route">
+  			<Move Name="Leg 1" Course="0" IsActive="true">
+  				<Vector Value="11" Units="nm" /></Move>
+  			<Move Name="Leg 2" Course="45" IsActive="true">
+  				<Vector Value="21" Units="nm" /></Move>
+  			<Move Name="Leg 3" Course="90" IsActive="true">
+  				<Vector Value="21" Units="nm" /></Move>
+  			<Move Name="Leg 4" Course="135" IsActive="true">
+  				<Vector Value="12" Units="nm" /></Move>
+  			<Move Name="Leg 5" Course="90" IsActive="true">
+  				<Vector Value="21" Units="nm" /></Move>
+  		</Waterfall>
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface>
+  	<Surface Name="T23_A">
+  		<Category Type="FRIGATE" Force="BLUE"
+  			Environment="SURFACE" />
+  		<SensorFit>
+  			<OpticLookupSensor CRF="0.8" MRF="1.05" VDR="0.05"
+  				IRF="0.2">
+  				<TBDO Value="1" Units="minutes" ></TBDO>
+  				<CTP Value="20" Units="seconds" />
+  				<ITP Value="30" Units="seconds" />
+  			</OpticLookupSensor></SensorFit>
+  		<Status Course="0.0" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="0" Long="0">
+  					<Height Value="6" Units="m" /></shortLocation>
+  			</Location>
+  			<Speed Value="0.0" Units="m/s" />
+  		</Status>
+  		<Waterfall Name="">
+  			<BearingTrail TrailBearing="045" Name="Stay off quarter">
+  				<TrailRange Value="3" Units="nm" />
+  				<AllowableError Value="1" Units="nm" />
+  				<TargetType>
+  					<Type Name="CARRIER" /></TargetType>
+  			</BearingTrail></Waterfall>
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface>
+  	  	<Surface Name="T23_B">
+  		<Category Type="FRIGATE" Force="BLUE"
+  			Environment="SURFACE" />
+  		<SensorFit>
+  			<OpticLookupSensor CRF="0.8" MRF="1.05" VDR="0.05"
+  				IRF="0.2">
+  				<TBDO Value="1" Units="minutes" ></TBDO>
+  				<CTP Value="20" Units="seconds" />
+  				<ITP Value="30" Units="seconds" />
+  			</OpticLookupSensor></SensorFit>
+  		<Status Course="0.0" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="0" Long="0">
+  					<Height Value="6" Units="m" /></shortLocation>
+  			</Location>
+  			<Speed Value="0.0" Units="m/s" />
+  		</Status>
+  		<Waterfall Name="">
+  			<BearingTrail TrailBearing="315" Name="Stay off quarter">
+  				<TrailRange Value="3" Units="nm" />
+  				<AllowableError Value="1" Units="nm" />
+  				<TargetType>
+  					<Type Name="CARRIER" /></TargetType>
+  			</BearingTrail></Waterfall>
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface></Participants>
+</Scenario>
