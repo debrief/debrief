@@ -1,5 +1,25 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScenarioController OutputDirectory="ForceProt"  xmlns="http://www.mwc.org/asset" >
+	<ScenarioGenerator>
+		<MultiParticipantGenerator>
+			<ParticipantVariance name="SSK" number="300">
+				<Variance name="Vary initial course" id="Status">
+					<Attribute name="Course">
+						<Range max="0" min="360" />
+					</Attribute>
+					
+				</Variance>
+				<ParticipantLocation>
+					<WorldArea>
+						<TopLeft>
+							<shortLocation Lat="0" Long="2"></shortLocation>
+						</TopLeft>
+						<BottomRight>
+							<shortLocation Lat="2" Long="0"></shortLocation>
+						</BottomRight>
+					</WorldArea>
+				</ParticipantLocation></ParticipantVariance>
+		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">
 			<Duration Value="24" Units="hours" />
@@ -9,5 +29,16 @@
 		</TrackPlotObserver>
 		<DebriefReplayObserver Name="Debrief tracks" record_detections="true"
 			record_positions="true" Active="true" record_decisions="true">
-		</DebriefReplayObserver></ObserverList>
+		</DebriefReplayObserver>
+		<RemoveDetectedObserver Name="Dith" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="RED" /></TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" ></Type>
+				</TargetType>
+			</Watch>
+		</RemoveDetectedObserver></ObserverList>
 </ScenarioController>

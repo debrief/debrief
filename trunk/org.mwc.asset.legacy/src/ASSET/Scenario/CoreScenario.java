@@ -330,7 +330,8 @@ public class CoreScenario implements ScenarioType, ISimulation
       //////////////////////////////////////////////////
       // now the detection cycle
       //////////////////////////////////////////////////
-      iter = _completeParticipantList.values().iterator();
+      HashMap<Integer, ParticipantType> copiedList = new HashMap<Integer, ParticipantType>( _completeParticipantList);
+      iter = copiedList.values().iterator();
       while (iter.hasNext())
       {
         final ParticipantType pt = (ParticipantType) iter.next();

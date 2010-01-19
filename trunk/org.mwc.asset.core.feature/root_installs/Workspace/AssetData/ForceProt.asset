@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name=""  xmlns="http://www.mwc.org/asset" >
+<Scenario Name="Force Protection Scenario"  xmlns="http://www.mwc.org/asset" StartTime="2010-01-12T12:13:14Z" Created="2010-01-19T12:13:14Z">
   <StepTime Units="minutes" Value="2"></StepTime><Environment Name="token"
   	AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
 	<VisualLookupEnvironment Name="Easy to see">
@@ -30,13 +30,13 @@
   				<shortLocation Lat="0" Long="0">
   					<Height Value="6" Units="m" /></shortLocation>
   			</Location>
-  			<Speed Value="6" Units="kts" />
+  			<Speed Value="9" Units="kts" />
   		</Status>
   		<Waterfall Name="HVU route">
   			<Move Name="Leg 1" Course="0" IsActive="true">
   				<Vector Value="11" Units="nm" /></Move>
   			<Move Name="Leg 2" Course="45" IsActive="true">
-  				<Vector Value="21" Units="nm" /></Move>
+  				<Vector Value="55" Units="nm" /></Move>
   			<Move Name="Leg 3" Course="90" IsActive="true">
   				<Vector Value="21" Units="nm" /></Move>
   			<Move Name="Leg 4" Course="135" IsActive="true">
@@ -54,14 +54,18 @@
   	</Surface>
   	<Surface Name="T23_A">
   		<Category Type="FRIGATE" Force="BLUE"
-  			Environment="SURFACE" />
+  			Environment="SURFACE" ></Category>
   		<SensorFit>
-  			<OpticLookupSensor CRF="0.8" MRF="1.05" VDR="0.05"
-  				IRF="0.2">
-  				<TBDO Value="1" Units="minutes" ></TBDO>
-  				<CTP Value="20" Units="seconds" />
-  				<ITP Value="30" Units="seconds" />
-  			</OpticLookupSensor></SensorFit>
+  			<TypedCookieSensor Name="SkimmerDetections">
+  				<TypedRangeDoublet>
+  					<Type Name="RED" />
+  					<DetectionRange Value="12" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="BLUE" />
+  					<DetectionRange Value="1000" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor></SensorFit>
   		<Status Course="0.0" Fuel="0.0">
   			<Location>
   				<shortLocation Lat="0" Long="0">
@@ -87,13 +91,16 @@
   	  	<Surface Name="T23_B">
   		<Category Type="FRIGATE" Force="BLUE"
   			Environment="SURFACE" />
-  		<SensorFit>
-  			<OpticLookupSensor CRF="0.8" MRF="1.05" VDR="0.05"
-  				IRF="0.2">
-  				<TBDO Value="1" Units="minutes" ></TBDO>
-  				<CTP Value="20" Units="seconds" />
-  				<ITP Value="30" Units="seconds" />
-  			</OpticLookupSensor></SensorFit>
+  		<SensorFit><TypedCookieSensor Name="SkimmerDetections">
+  				<TypedRangeDoublet>
+  					<Type Name="RED" />
+  					<DetectionRange Value="12" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="BLUE" />
+  					<DetectionRange Value="1000" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor></SensorFit>
   		<Status Course="0.0" Fuel="0.0">
   			<Location>
   				<shortLocation Lat="0" Long="0">
@@ -115,5 +122,54 @@
   			<DecelerationRate Value="1" Units="kt/s" />
   			<TurningCircle Value="800" Units="m" ></TurningCircle>
   		</SurfaceMovementCharacteristics>
-  	</Surface></Participants>
+  	</Surface>
+  	  	<SSK Name="SSK" ChargeRate="5" MonteCarloTarget="true">
+  	  		<Category Type="SUBMARINE" Force="RED"
+  	  			Environment="SUBSURFACE" ></Category>
+  	  		<SensorFit>
+  	  			<TypedCookieSensor>
+  	  				<TypedRangeDoublet>
+  	  					<Type Name="BLUE" />
+  	  					<DetectionRange Value="15" Units="nm" />
+  	  				</TypedRangeDoublet>
+  	  			</TypedCookieSensor></SensorFit>
+  	  		<Status Course="0.0" Fuel="100">
+  	  			<Location>
+  	  				<shortLocation Lat="5" Long="5"></shortLocation>
+  	  			</Location>
+  	  			<Speed Value="4" Units="kts" />
+  	  		</Status>
+  	  		<Waterfall Name="SSK Behaviour">
+  	  			<Evade Name="">
+  	  				<Duration Value="2" Units="hours" />
+  	  				<FleeHeight Value="-60" Units="ft" />
+  	  				<FleeSpeed Value="6" Units="kts" />
+  	  				<TargetType>
+  	  					<Type Name="BLUE" /></TargetType>
+  	  			</Evade>
+  	  			<RectangleWander Name="">
+  	  				<Area>
+  	  					<TopLeft>
+  	  						<shortLocation Lat="0" Long="2"></shortLocation>
+  	  					</TopLeft>
+  	  					<BottomRight>
+  	  						<shortLocation Lat="2" Long="0"></shortLocation>
+  	  					</BottomRight>
+  	  				</Area>
+  	  				<Speed Value="4" Units="kts" />
+  	  				<Height Value="-40" Units="m" />
+  	  			</RectangleWander></Waterfall>
+  	  		<SSMovementCharacteristics Name="SSK Behavious"
+  	  			FuelUsageRate="0">
+  	  			<MinSpeed Value="0.0" Units="kts" />
+  	  			<MaxSpeed Value="12" Units="kts" />
+  	  			<AccelerationRate Value="1.0" Units="kts/s" />
+  	  			<DecelerationRate Value="1.0" Units="kts/s" />
+  	  			<MinHeight Value="-200.0" Units="ft" />
+  	  			<MaxHeight Value="0.0" Units="ft" />
+  	  			<DefaultClimbRate Value="1.0" Units="m/s" />
+  	  			<DefaultDiveRate Value="1.0" Units="m/s" />
+  	  			<TurningCircle Value="400.0" Units="ft" />
+  	  		</SSMovementCharacteristics>
+  	  	</SSK></Participants>
 </Scenario>
