@@ -1060,7 +1060,8 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 				if (scen == _myScenario)
 				{
-					_myUI.getSingleScenarioStatus().setText(text);
+					if(!_myUI.getSingleScenarioStatus().isDisposed())
+  					_myUI.getSingleScenarioStatus().setText(text);
 				}
 			}
 		});
