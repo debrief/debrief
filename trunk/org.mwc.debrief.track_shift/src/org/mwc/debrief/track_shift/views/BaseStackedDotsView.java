@@ -169,6 +169,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 	protected void fillLocalToolBar(IToolBarManager toolBarManager)
 	{
 		// fit to window
+		toolBarManager.add(_onlyVisible);
 		toolBarManager.add(_autoResize);
 		toolBarManager.add(_showLinePlot);
 		toolBarManager.add(_showDotPlot);
@@ -453,7 +454,7 @@ abstract public class BaseStackedDotsView extends ViewPart implements
 		_onlyVisible.setChecked(true);
 		_onlyVisible.setToolTipText("Only draw dots for visible data points");
 		_onlyVisible.setImageDescriptor(CorePlugin
-				.getImageDescriptor("icons/follow_selection.gif"));
+				.getImageDescriptor("icons/reveal.gif"));
 
 	}
 
