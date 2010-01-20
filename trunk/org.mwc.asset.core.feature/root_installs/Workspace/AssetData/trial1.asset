@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Scenario Name="Cheat sheet scenario" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schemas/ASSET.xsd" Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1">
+<Scenario Name="Cheat sheet scenario"   xmlns="http://www.mwc.org/asset" Created="2010-01-12T12:13:14Z" StartTime="2010-01-12T12:13:14Z" Case="1">
   <StepTime Units="minutes" Value="5"/><Environment Name="Atlantic Summer"
   	AtmosphericAttenuation="VERY_CLEAR" SeaState="1">
 </Environment>
@@ -38,6 +38,36 @@
 				<AccelerationRate Value="1" Units="kt/s" />
 				<DecelerationRate Value="1" Units="kt/s" />
 				<TurningCircle Value="400" Units="m" ></TurningCircle>
+			</SurfaceMovementCharacteristics>
+		</Surface>
+		<Surface Name="T23">
+			<Category Type="FRIGATE" Force="BLUE"
+				Environment="SURFACE" />
+			<SensorFit>
+				<PlainCookieSensor>
+					<DetectionRange Value="3" Units="nm" ></DetectionRange>
+				</PlainCookieSensor></SensorFit>
+			<Status Course="0.0" Fuel="0.0">
+				<Location>
+					<shortLocation Lat="50" Long="-10"></shortLocation>
+				</Location>
+				<Speed Value="0.0" Units="m/s" />
+			</Status>
+			<Waterfall Name="T23 Search"><Wander Name="Count fishing vessels">
+					<Range Value="12" Units="nm" ></Range>
+					<Location>
+						<shortLocation Lat="50.4" Long="-8.8"></shortLocation>
+					</Location>
+					<Speed Value="9" Units="kts" />
+					<Height Value="0.0" Units="ft" />
+				</Wander></Waterfall>
+			<SurfaceMovementCharacteristics Name=""
+				FuelUsageRate="0.0">
+				<MinSpeed Value="0.0" Units="kts" />
+				<MaxSpeed Value="15.0" Units="kts" />
+				<AccelerationRate Value="1.0" Units="kts/s" />
+				<DecelerationRate Value="1.0" Units="kts/s" />
+				<TurningCircle Value="400.0" Units="m" />
 			</SurfaceMovementCharacteristics>
 		</Surface></Participants>
 </Scenario>

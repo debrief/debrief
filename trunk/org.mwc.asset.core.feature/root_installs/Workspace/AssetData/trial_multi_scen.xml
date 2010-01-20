@@ -35,5 +35,19 @@
 					<Type Name="BLUE" />
 				</TargetType>
 			</Watch>
-		</RemoveDetectedObserver></ObserverList>
+		</RemoveDetectedObserver>
+		<ProportionDetectedObserver Name="How many green's got detected?" Active="true">
+			<Target>
+				<TargetType>
+					<Type Name="GREEN" />
+				</TargetType>
+			</Target>
+			<Watch>
+				<TargetType>
+					<Type Name="BLUE" />
+				</TargetType>
+			</Watch>
+			<BatchCollator OnlyBatchReporting="true" Active="true"
+				CollationMethod="COUNT" PerCase="true" />
+		</ProportionDetectedObserver></ObserverList>
 </ScenarioController>

@@ -3,19 +3,19 @@
       title="Run multi-scenario simulation">
    <intro>
       <description>
-         <b>Body</b>
+         The next step on our path to enlightenment is to ask ASSET to randomly generate a number of scenarios.  To do this, we&apos;re going to add scenario generation elements to the control file.
       </description>
    </intro>
    <item
          title="View the scenario">
       <description>
-         <b>Body</b>
+         Once again we&apos;ll start off by opening the scenario file to see what we&apos;re going to change in each scenario.
       </description>
    </item>
    <item
          title="Decide what to change">
       <description>
-         <b>Body</b>
+         The (rather pointless) analysis objective we&apos;re going to consider in our multiple scenario generation is to
       </description>
    </item>
    <item
