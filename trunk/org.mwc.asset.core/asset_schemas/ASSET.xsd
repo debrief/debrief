@@ -1441,7 +1441,7 @@
 		</xs:annotation>
 
 		<xs:sequence>
-			<xs:element name="Type" type="TypeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="Type" type="TypeType" minOccurs="1" maxOccurs="unbounded"/>
 		</xs:sequence>
 	</xs:complexType>
 	<xs:complexType name="TypedRangeDatumType">
