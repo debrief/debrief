@@ -2626,6 +2626,9 @@
 		</xs:attribute>
 		<xs:attribute name="CollationMethod" use="required">
 			<xs:simpleType>
+				<xs:annotation>
+					<xs:documentation>How to statistically process the results stored</xs:documentation>
+				</xs:annotation>
 				<xs:restriction base="xs:NMTOKEN">
 					<xs:enumeration value="COUNT">
 						<xs:annotation>
