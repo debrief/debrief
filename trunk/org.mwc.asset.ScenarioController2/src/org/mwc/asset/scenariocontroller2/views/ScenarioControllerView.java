@@ -147,7 +147,7 @@ public class ScenarioControllerView extends ViewPart implements
 	private PropertyChangeSupport _scenStopSupport;
 	private SimulationTable _simTable;
 	private ISelection _currentSelection;
-	private ResultsContainer _multiRunResultsStore;
+	private ResultsContainer _scenarioController;
 
 	/**
 	 * The constructor.
@@ -453,10 +453,10 @@ public class ScenarioControllerView extends ViewPart implements
 
 					// and let it create some files
 					_myMultiScenario.prepareFiles(_controlFileName, _scenarioFileName,
-							System.out, System.err, System.in, pMon, _multiRunResultsStore.outputDirectory);
+							System.out, System.err, System.in, pMon, _scenarioController.outputDirectory);
 
 					// and sort out the observers
-					_myMultiScenario.prepareControllers(_multiRunResultsStore, pMon);
+					_myMultiScenario.prepareControllers(_scenarioController, pMon);
 
 					// ok, now give the scenarios to the multi scenario table (in the UI
 					// thread
@@ -502,11 +502,15 @@ public class ScenarioControllerView extends ViewPart implements
 
 		if (adapter == Layers.class)
 		{
-			res = _scenarioWrapper;
+			// only return the scenario if we're in a single scenario mode
+			if(inSingleScenarioRun())
+ 			  res = _scenarioWrapper;
 		}
-		else if (adapter == ScenarioType.class)
+		if (adapter == ScenarioType.class)
 		{
-			res = _myScenario;
+			// only return the scenario if we're in a single scenario mode
+			if(inSingleScenarioRun())
+			  res = _myScenario;
 		}
 		else if (adapter == TimeProvider.class)
 		{
@@ -737,14 +741,14 @@ public class ScenarioControllerView extends ViewPart implements
 			else if (controlType == ScenarioControllerHandler.type)
 			{
 
-				_multiRunResultsStore = ASSETReaderWriter.importThisControlFile(
+				_scenarioController = ASSETReaderWriter.importThisControlFile(
 						controlFile, new java.io.FileInputStream(controlFile));
 
-				_theObservers = _multiRunResultsStore.observerList;
+				_theObservers = _scenarioController.observerList;
 
 				// since we have a results container - we have enough information to set
 				// the output files
-				File tgtDir = _multiRunResultsStore.outputDirectory;
+				File tgtDir = _scenarioController.outputDirectory;
 
 				// if the tgt dir is a relative reference, make it relative to
 				// our first project, not the user's login directory
@@ -762,7 +766,7 @@ public class ScenarioControllerView extends ViewPart implements
 								+ tgtDir.getPath());
 						
 						// and store the new location
-						_multiRunResultsStore.outputDirectory = tgtDir;
+						_scenarioController.outputDirectory = tgtDir;
 					}
 				}
 
@@ -876,6 +880,15 @@ public class ScenarioControllerView extends ViewPart implements
 
 	}
 
+	/** convenience method for determining if we're in a single or multiple scenario run
+	 * 
+	 * @return
+	 */
+	private boolean inSingleScenarioRun()
+	{
+		return _myUI.getSingleRunBtn().getEnabled();
+	}
+	
 	private void updateMultiTab()
 	{
 		// and disable the single run button
