@@ -15,7 +15,7 @@
    <item
          title="Decide what to change">
       <description>
-         Right, the scenario&apos;s open. What shall we change?  I know, let&apos;s get ASSET to create 10 fishing vessels, all with different start locations, and with different speeds that they conduct the Wander behaviour.<br/>There&apos;s a convenience function for changing the initial location, but we will need to sort out how to specify the Wander speed.  Have a look at how to specify the path to the Wander element.  It&apos;s the <b>Value</b> attribute of the <b>Speed</b> element, contained within the Wander element.
+         Right, the scenario&apos;s open. What shall we change?  I know, let&apos;s get ASSET to create 100 fishing vessels, all with different start locations, plus with different search speeds.<br/>Fortunately there&apos;s a convenience function for changing the initial location of generated participants, but we have to do a little more computer jiggery-pokery to specify the speed attribute.
       </description>
    </item>
    <item
@@ -40,31 +40,37 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
    <item
          title="Add specification for multi participant generation">
       <description>
-         So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One, and set the number to 10 - to say we want 10 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West.
+         So, set the <b>name</b> attribute of the ParticipantVariance to Fisher One, and set the number to 100 - to say we want 100 of them.  Next, we&apos;ll set the initial locations, so add a <b>ParticipantLocation</b> element to this.  Give this an area of 50 to 51 degs North, and -8 to -9 degs West.
       </description>
    </item>
    <item
          title="Add the Wander speed variance">
       <description>
-         Next we&apos;re going to specify how to vary the Wander speed. Start by adding a <b>Variance</b> element to the <b>ParticipantVariance</b> for Fisher One.  Next, right-click on the <b>LocationArea</b> element and select <b>Replace with</b> an <b>Attribute</b> element.  Name this element as &apos;Vary the wander speed&apos;.  Next. specify that we&apos;re going to vary the attribute through a <b>Range</b> of values from 2 to 10, and use the name <b>Value</b>.  We also need to tell the Variance element what it&apos;s going to apply to, so put /Wander/Speed in the id field.  This phrase follows the XPath regular expression standard - but essentially it just matches XML Element names, with single slashes showing the parent/child relationship, and double-slashes matching against any number of parent/child tiers.
+         Next we&apos;re going to specify how to vary the Wander speed. Start by adding a <b>Variance</b> element to the <b>ParticipantVariance</b> for Fisher One.  Next, right-click on the <b>LocationArea</b> element and select <b>Replace with</b> an <b>Attribute</b> element.  Name this element as &apos;Vary the wander speed&apos;.  Next. specify that we&apos;re going to vary the attribute through a <b>Range</b> of values from 2 to 10, and use the name <b>Value</b>.  We also need to tell the Variance element what it&apos;s going to apply to, so put <b>/Wander/Speed</b> in the id field.  This phrase follows the XPath regular expression standard - but essentially it just matches XML Element names, with single slashes showing the parent/child relationship, and double-slashes matching against any number of parent/child tiers.
+      </description>
+   </item>
+   <item
+         title="Bring on the referee">
+      <description>
+         Now that we&apos;ve got lots of fishermen, we&apos;re going to get ASSET to help us see how effectively the frigate searches the area.  We can do this by adding a <b>RemoveDetectedObserver</b> to the <b>ObserverList</b>.  Now, name this as <b>Ditch detected fishermen</b>.  We need to tell this observer which type of vessel to track the detections of (the <b>Watch</b> type), and also what types of participant that vessel is looking for (the <b>Target</b>).  So, set the Target to <b>GREEN</b> and the Watch to <b>BLUE</b>.
       </description>
    </item>
    <item
          title="Load the new controller file">
       <description>
-         Now, save our new control file, and drag it from the <b>Navigator</b> to the <b>Scenario Controller</b> view.  As you drop it, you should see the current tab switch to <b>Multiple Scenarios</b>.  This panel allows a series of scenarios tNow, in the <b>results</b> folder of the Navigator, you&apos;ll see two new files, one ending with <b>png</b> and the other with <b>rep</b>, just like for the single scenario run.  Have a look inside to see the multiple vessel tracks. <b>results</b> folder of the Navigator, you&apos;ll see two new files, one ending with <b>png</b> and the other with <b>rep</b>, just like for the single scenario run. <b>results</b> folder of the Navigator, you&apos;ll see two new files, one ending with <b>png</b> and the other with <b>rep</b>.  Double-click on the png file, and you&apos;ll a still image representing the track run.  Double-click on theyed/managed.  Start off by clicking on <b>Generate</b>.  ASSET will now go away and generate multiple participants and scenarios as necessary, finally enabling the <b>Run</b> button.
+         Now, save our new control file, and drag it from the <b>Navigator</b> to the <b>Scenario Controller</b> view.  As you drop it, you should see the current tab switch to <b>Multiple Scenarios</b>.  This panel allows a series of scenarios to be run.   Start off by clicking on <b>Generate</b>.  ASSET will now go away and generate multiple participants and scenarios as necessary, finally enabling the <b>Run</b> button.
       </description>
    </item>
    <item
          title="Inspect the generated scenario">
       <description>
-         Before we run the scenario, let&apos;s have a look at what ASSET has generated.  In the <b>Navigator</b> window, have a look in the <b>Results</b> folder.  You&apos;ll see a copy of the control file, and a folder called <b>1</b>.  ASSET numbers the generated scenarios, so you can see it&apos;s just created the one.  Open this folder and you&apos;ll see a single file titled <b>Cheat sheet scenario.xml</b>.  Double-click to open it.  Inside this scenario you&apos;ll see that there are now 10 surface participants, each with a unique vessel name.  Have a look at the Wander behaviours, and you&apos;ll see that there are a range of speeds specified.  <b>Note</b>, the random numbers have lots of decimal places, the <b>format</b> attribute of the <b>Variance</b> element we used allows us to specify the number of decimal places used.
+         Before we run the scenario, let&apos;s have a look at what ASSET has generated.  In the <b>Navigator</b> window, have a look in the <b>Results</b> folder.  You&apos;ll see a copy of the control file, and a folder called <b>1</b>.  ASSET numbers the generated scenarios, so you can see it&apos;s just created the one.  Open this folder and you&apos;ll see a single file titled <b>Cheat sheet scenario.xml</b>.  Double-click to open it.  Inside this scenario you&apos;ll see that there are now 100 surface participants, each with a unique vessel name.  Have a look at their Wander behaviours, and you&apos;ll see that there are a range of speeds specified.  <b>Note</b>, the random numbers have lots of decimal places, the <b>format</b> attribute of the <b>Variance</b> element we used allows us to specify the number of decimal places used.
       </description>
    </item>
    <item
          title="Re-run the scenario">
       <description>
-         Ok, back to the scenario.  Click on <b>Run</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 10 participants, not one.
+         Ok, back to the scenario.  Click on <b>Run</b>, and the scenario will run through.  It will take a little longer than before, since it&apos;s now progressing 100 fishermen, not one.
          
       </description>
    </item>
@@ -72,6 +78,14 @@ Next, add a <b>ParticipantVariance</b> element to this. A <b>ParticipantVariance
          title="Inspect a results output">
       <description>
          Once the scenario is complete, you can go into the <b>results</b> folder in the Navigator and you&apos;ll see the new output files.  If you open the <b>png</b>, you&apos;ll see the very cluttered output - with lots of vessel tracks.
+      </description>
+   </item>
+   <item
+         title="Watch things unfold in Debrief">
+      <description>
+         Now that there are loads of participants in there, it&apos;s a little more interesting to watch in Debrief.  Click on <b>Generate</b> again to reset the scenario. Now, either switch to your existing Debrief plot viewer tab, or open another by clicking on the Scenario Controller&apos;s globe toolbar icon.  Debrief will be empty when it first opens.  Now click on the <b>Name</b> of the current scenario in the Scenario Controller view, and Debrief will open a view of the scenario, with all of those fishermen.
+<br/>
+Now, if you click on <b>Run</b> you&apos;ll see of the busy fishermen set off doing their business - being removed from the simulation as they&apos;re detected by the Blue frigate.  What fun!
       </description>
    </item>
 </cheatsheet>

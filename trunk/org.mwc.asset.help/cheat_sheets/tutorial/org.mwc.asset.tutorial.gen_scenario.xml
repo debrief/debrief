@@ -3,7 +3,7 @@
       title="Generate a scenario">
    <intro>
       <description>
-         <b>In this part of the tutorial you are going to create a new, empty scenario file - then populate it with sample data.</b>
+         <b>In this part of the tutorial you are going to create a new, empty scenario file - then populate it with sample data.  The scenario will describe a frigate looking for a fishing vessel</b>
 <br/>
 Some of these steps get a little lengthy, so it may be worth making this (lower) half of the viewer a little taller in order to make it easier to read.
       </description>
@@ -41,11 +41,11 @@ ASSET&apos;s Properties view is also useful when working with scenario files.  O
          title="Edit scenario properties">
       <description>
          Youve got big dreams? You want fame? Well, fame costs.  And right here is where you start paying in sweat.
-
+<br/>
 Well, not quite, but you do have to start typing now.  So, open the Scenario element, and give the scenario a name &apos;Cheat sheet scenario&apos;.  If you switch to the properties view you&apos;ll see the other attributes needed: <b>Created</b> and <b>StartTime</b>. ASSET expects dates in the ISO 8601 date standard: <b>2010-01-12T12:13:14Z</b>.  Put in today&apos;s date as the created attribute, and any old date as the StartTime attribute.
-
+<br/>
 Next, specify how far in time the scenario should step forward (<b>StepTime</b>). Have a go at five minutes: <b>Minutes</b> are the <b>Unit</b> and 5 is the <b>Value</b>.
-
+<br/>
 Read more about the attributes of the scenario element using the help link near this text.
       </description>
    </item>
@@ -115,7 +115,7 @@ We&apos;ll leave the sensor fit empty, but we should give it an initial status. 
       </description>
    </item>
    <item
-         title="Specify the warship manoevering details">
+         title="Specify the warship movement details">
       <description>
          Next, expand the <b>SurfaceMovementCharacteristics</b> item to specify how the warship moves.  I&apos;ve been finding this easier to do in the <b>Source</b> view for the editor - switch by clicking on the tab at the foot of the editor page.  Give the Frigate a max speed of 12 kts, accel and decel rates of 1 kt per second, and a turning circle of 300m.
       </description>
@@ -123,7 +123,7 @@ We&apos;ll leave the sensor fit empty, but we should give it an initial status. 
    <item
          title="Direct the warship">
       <description>
-         To create the placeholder for the Warship&apos;s behaviour, right-click on it and add a <b>Waterfall</b> behaviour.<br/>We&apos;re going to have the warship wandering around the same body of water as the fisherman, so go into the <b>Source</b> view and copy the <b>Wander</b> behaviour, and paste it into the <b>Waterfall</b> of the Frigate.
+         To create the placeholder for the Warship&apos;s behaviour, right-click on it and add a <b>Waterfall</b> behaviour.<br/>We&apos;re going to have the warship wandering around the same body of water as the fisherman, so go into the <b>Source</b> view and copy the <b>Wander</b> behaviour, and paste it into the <b>Waterfall</b> of the Frigate.  Back in the <b>Design</b> view, change the name of this Wander behaviour to <b>Count fishing vessels</b>.
       </description>
    </item>
    <item

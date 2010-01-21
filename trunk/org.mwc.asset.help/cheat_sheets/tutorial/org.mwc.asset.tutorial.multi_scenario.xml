@@ -15,19 +15,32 @@
    <item
          title="Decide what to change">
       <description>
-         The (rather pointless) analysis objective we&apos;re going to consider in our multiple scenario generation is to
+         The analysis objective we&apos;re going to consider in our multiple scenario generation is to see how the Frigate&apos;s search speed affects how many targets are spotted.  That&apos;s quite simple then, it&apos;s the <b>Value</b> attribute of the <b>Speed</b> element within the <b>Wander</b> behaviour titled <b>Count fishing vessels</b>.
       </description>
    </item>
    <item
-         title="Open the scenario controller">
+         title="Create duplicate controller file">
       <description>
-         <b>Body</b>
+         We&apos;re going to base our multi-scenario simulation on the multi-participant simulation, so make a copy of <b>trial_multi_part.xml</b> titled <b>trial_multi_scen.xml</b>.
       </description>
    </item>
    <item
          title="Add scenario generation code">
       <description>
-         <b>Body</b>
+         Right, open our new scenario control file.  Add a <b>MultiScenarioGenerator</b> element to the <b>ScenarioController</b> element.  Set the <b>Number</b> to 100. Yes, we&apos;re going to create a hundred permutations of our scenario.  Also, set the <b>NameTemplate</b> to <b>ForceProt_</b> to
+      </description>
+   </item>
+   <item
+         title="Add a new batch-run observer.">
+      <description>
+         Next, add a <b>Variance</b> element to the <b>VarianceList</b> element of the MultiScenarioGenerator.  Name this new Variance element <b>SearchSpeed</b> and specify the id as <b>//Wander[@Name=&apos;Count fishing vessels&apos;]/Speed</b>. Yes, that&apos;s a tricky string - so you&apos;re best off copying it diretly from this text.<br/>
+ By default the Variance element contains a single <b>LocationArea</b> element.  We don&apos;t want this, so right-click on it and select <b>Replace with</b> an <b>Attribute</b> element.  With our Fishing vessel wander speed we requested a range of values.  In this case we&apos;re going to specify which ones to use.  So, we need to <b>Replace</b> the <b>Range</b> element with a <b>Choice</b> element.  Now give the <b>Choice</b> element 3 <b>Value</b> children, that have values of 4, 8, and 12.
+      </description>
+   </item>
+   <item
+         title="Specify the speed variance">
+      <description>
+         Next, add a <b>Variance</b> element to the <b>VarianceList</b> element of the MultiScenarioGenerator.
       </description>
    </item>
    <item
