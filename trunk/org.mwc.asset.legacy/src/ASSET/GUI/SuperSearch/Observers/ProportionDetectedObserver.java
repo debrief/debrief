@@ -72,7 +72,7 @@ public class ProportionDetectedObserver extends
 
 		final EntryHolder eh = new EntryHolder(tgt, host);
 
-		if (_myDetections.contains(eh))
+		if ((_myDetections == null) || (_myDetections.contains(eh)))
 		{
 
 		}
@@ -91,7 +91,12 @@ public class ProportionDetectedObserver extends
 	 */
 	public double getProportionDetected()
 	{
-		return _myDetections.size() / _numTargets;
+		double res = 0;
+		if(_myDetections != null)
+		{
+			res = _myDetections.size() / _numTargets;
+		}
+		return res;
 	}
 
 	/**
