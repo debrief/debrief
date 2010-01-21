@@ -1,6 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ScenarioController OutputDirectory="results" xmlns="http://www.mwc.org/asset">
 	<ScenarioGenerator>
+		<MultiScenarioGenerator Number="100" NameTemplate="ForceProt_">
+			<VarianceList>
+				<Variance name="Vary the search speed" id="//Wander[@Name='Count fishing vessels']/Speed">
+					<Attribute name="Value">
+						<Choice>
+							<Value value="4" ></Value>
+							<Value value="8" ></Value>
+							<Value value="12" />
+						</Choice>
+						
+					</Attribute>
+					
+				</Variance></VarianceList>
+		</MultiScenarioGenerator>
 		<MultiParticipantGenerator>
 			<ParticipantVariance name="Fisher One" number="100">
 				<ParticipantLocation>
@@ -36,7 +50,7 @@
 				</TargetType>
 			</Watch>
 		</RemoveDetectedObserver>
-		<ProportionDetectedObserver Name="How many green's got detected?" Active="true">
+		<ProportionDetectedObserver Name="../What percentage of greens got detected" Active="true">
 			<Target>
 				<TargetType>
 					<Type Name="GREEN" />
@@ -48,6 +62,6 @@
 				</TargetType>
 			</Watch>
 			<BatchCollator OnlyBatchReporting="true" Active="true"
-				CollationMethod="COUNT" PerCase="true" />
+				CollationMethod="AVERAGE" PerCase="true" />
 		</ProportionDetectedObserver></ObserverList>
 </ScenarioController>

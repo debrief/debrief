@@ -37,7 +37,7 @@ ASSET&apos;s Properties view is also useful when working with scenario files.  O
             serialization="org.eclipse.ui.views.showView(org.eclipse.ui.views.showView.viewId=org.eclipse.ui.views.ContentOutline)"/>
    </item>
    <item
-         href="/org.mwc.asset.legacy/schemas/doc/schema1.html"
+         href="/org.mwc.asset.core/asset_schemas/doc/schema1.html"
          title="Edit scenario properties">
       <description>
          Youve got big dreams? You want fame? Well, fame costs.  And right here is where you start paying in sweat.

@@ -42,6 +42,9 @@ public class RemoveDetectedObserver extends ASSET.Scenario.Observers.DetectionOb
    */
   protected void validDetection(final DetectionEvent detection)
   {
+  	// let the parent do it's stuff
+  	super.validDetection(detection);
+  	
     // remove this target
     final int tgt = detection.getTarget();
 

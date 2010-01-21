@@ -6,6 +6,7 @@
  */
 package ASSET.GUI.SuperSearch.Observers;
 
+import ASSET.ScenarioType;
 import ASSET.Models.Decision.TargetType;
 import ASSET.Models.Detection.DetectionEvent;
 import ASSET.Util.SupportTesting;
@@ -26,7 +27,7 @@ public class ProportionDetectedObserver extends
 	 * a running count of how many targets are in the scenario
 	 */
 	private int _numTargets = 0;
-	private HashSet<EntryHolder> _entryHolder;
+	private HashSet<EntryHolder> _validDetections;
 
 	/**
 	 * ************************************************************ constructor
@@ -38,8 +39,28 @@ public class ProportionDetectedObserver extends
 	{
 		super(watchVessel, targetVessel, myName, detectionLevel, isActive);
 
-		_entryHolder = new HashSet<EntryHolder>();
+		_validDetections = new HashSet<EntryHolder>();
+	}
 
+	@Override
+	protected void performSetupProcessing(ScenarioType scenario)
+	{
+		super.performSetupProcessing(scenario);
+		
+		// clear our local list
+		_validDetections.clear();
+
+		// right, do we have any targets?
+		if (_numTargets == 0)
+		{
+			// nope, better process them ourselves
+			Integer[] theParts = scenario.getListOfParticipants();
+			for (int i = 0; i < theParts.length; i++)
+			{
+				int thisP = theParts[i];
+				newParticipant(thisP);
+			}
+		}
 	}
 
 	// ////////////////////////////////////////////////
@@ -64,6 +85,9 @@ public class ProportionDetectedObserver extends
 	 */
 	protected void validDetection(final DetectionEvent detection)
 	{
+		// let the parent do it's bit
+		super.validDetection(detection);
+
 		// remove this target
 		final int tgt = detection.getTarget();
 
@@ -72,14 +96,13 @@ public class ProportionDetectedObserver extends
 
 		final EntryHolder eh = new EntryHolder(tgt, host);
 
-		if ((_myDetections == null) || (_myDetections.contains(eh)))
+		if ((_validDetections == null) || (_validDetections.contains(eh)))
 		{
-
 		}
 		else
 		{
 			// create combined entry
-			_entryHolder.add(eh);
+			_validDetections.add(eh);
 		}
 
 	}
@@ -92,9 +115,12 @@ public class ProportionDetectedObserver extends
 	public double getProportionDetected()
 	{
 		double res = 0;
-		if(_myDetections != null)
+		if (_validDetections != null)
 		{
-			res = _myDetections.size() / _numTargets;
+			if (_numTargets > 0)
+			{
+				res = _validDetections.size() / (double) _numTargets;
+			}
 		}
 		return res;
 	}
