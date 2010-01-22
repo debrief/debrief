@@ -34,6 +34,7 @@ import Debrief.Wrappers.TrackWrapper;
 import MWC.GUI.Layers;
 import MWC.GenericData.HiResDate;
 import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldSpeed;
 import MWC.TacticalData.Fix;
 
 public class ImportKML
@@ -57,7 +58,8 @@ public class ImportKML
 	 * @param theLoc
 	 */
 	private static void addFix(Layers target, String trackName,
-			HiResDate theDate, WorldLocation theLoc)
+			HiResDate theDate, WorldLocation theLoc, double courseDegs,
+			double speedKts)
 	{
 		// is this our current layer?
 		if (lastLayer != null)
@@ -79,7 +81,12 @@ public class ImportKML
 			}
 		}
 
-		FixWrapper newFix = new FixWrapper(new Fix(theDate, theLoc, 0, 0));
+		double courseRads = MWC.Algorithms.Conversions.Degs2Rads(courseDegs);
+		double speedYPS = new WorldSpeed(speedKts, WorldSpeed.Kts)
+				.getValueIn(WorldSpeed.ft_sec) / 3d;
+
+		FixWrapper newFix = new FixWrapper(new Fix(theDate, theLoc, courseRads,
+				speedYPS));
 		lastLayer.addFix(newFix);
 	}
 
@@ -121,24 +128,24 @@ public class ImportKML
 					// extract the data into a stream
 					ByteArrayOutputStream bos = new ByteArrayOutputStream();
 					BufferedOutputStream fout = new BufferedOutputStream(bos);
-	        for (int c = zis.read(); c != -1; c = zis.read()) {
-	          fout.write(c);
-	        }
-	        zis.closeEntry();
-	        fout.close();
-	        bos.close();
-	        
-	        // now create a byte input stream from the byte output stream
-	        ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
-					
-					// and create it					
+					for (int c = zis.read(); c != -1; c = zis.read())
+					{
+						fout.write(c);
+					}
+					zis.closeEntry();
+					fout.close();
+					bos.close();
+
+					// now create a byte input stream from the byte output stream
+					ByteArrayInputStream bis = new ByteArrayInputStream(bos.toByteArray());
+
+					// and create it
 					doImport(theLayers, bis, theName);
 				}
 			}
 		}
 		catch (IOException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
@@ -217,8 +224,19 @@ public class ImportKML
 					double longVal = Double.parseDouble(coords[0]);
 					double latVal = Double.parseDouble(coords[1]);
 					double depthVal = Double.parseDouble(coords[2]);
+
+					// lastly, the course/speed
+					double courseDegs;
+					double speedKts;
+					String descriptionTxt = thisP.getElementsByTagName("description")
+							.item(0).getTextContent();
+
+					courseDegs = courseFrom(descriptionTxt);
+					speedKts = speedFrom(descriptionTxt);
+
 					addFix(theLayers, prefix + "-" + trackID, new HiResDate(theD
-							.getTime()), new WorldLocation(latVal, longVal, depthVal));
+							.getTime()), new WorldLocation(latVal, longVal, depthVal),
+							courseDegs, speedKts);
 				}
 			}
 
@@ -240,6 +258,50 @@ public class ImportKML
 			e.printStackTrace();
 		}
 
+	}
+
+	/** extract the course element from the supplied string
+	 * 
+	 * @param descriptionTxt
+	 * @return
+	 */
+	private static double courseFrom(String descriptionTxt)
+	{
+		double res = 0;
+		// STRING LOOKS LIKE
+		// <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
+		// 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
+		// knots<br>Date: September 12, 2009]]>
+		int startI = descriptionTxt.indexOf("Course");
+		int endI = descriptionTxt.indexOf("<br>Speed");
+		if((startI > 0) && (endI > 0))
+		{
+			String subStr = descriptionTxt.substring(startI + 7, endI-1);
+			res = Double.valueOf(subStr.trim());
+		}
+		return res;
+	}
+
+	/** extract the course element from the supplied string
+	 * 
+	 * @param descriptionTxt
+	 * @return
+	 */
+	private static double speedFrom(String descriptionTxt)
+	{
+		double res = 0;
+		// STRING LOOKS LIKE
+		// <![CDATA[<b>RADAR PLOT 20:01:12 (GMT)</b><br><hr>Lat:
+		// 05.9696<br>Lon: 07.9633<br>Course: 253.0<br>Speed: 7.1
+		// knots<br>Date: September 12, 2009]]>
+		int startI = descriptionTxt.indexOf("Speed");
+		int endI = descriptionTxt.indexOf("knots");
+		if((startI > 0) && (endI > 0))
+		{
+			String subStr = descriptionTxt.substring(startI + 6, endI-1);
+			res = Double.valueOf(subStr.trim());
+		}
+		return res;
 	}
 
 	/**
@@ -291,7 +353,8 @@ public class ImportKML
 	}
 
 	/**
-	 * Remove the suffix from the passed file name, together with any leading path.
+	 * Remove the suffix from the passed file name, together with any leading
+	 * path.
 	 * 
 	 * @param fileName
 	 *          File name to remove suffix from.
@@ -307,11 +370,11 @@ public class ImportKML
 		{
 			throw new IllegalArgumentException("file name == null");
 		}
-		
+
 		// start off by ditching the path
 		File holder = new File(fileName);
 		String res = holder.getName();
-		
+
 		// now ditch the file suffix
 		int pos = res.lastIndexOf('.');
 		if (pos > 0 && pos < res.length() - 1)
