@@ -6311,7 +6311,7 @@
       </sect1>
     </chapter>
     <chapter id="userguide_workbench">
-      <title>ProprietaryWorkbench</title>
+      <title>Custom Workbench (legacy)</title>
       <sect1 id="user_workbench">
         <title>Introduction</title>
         <para>The <application>ASSET Workbench</application> is a custom graphical front-end to the
