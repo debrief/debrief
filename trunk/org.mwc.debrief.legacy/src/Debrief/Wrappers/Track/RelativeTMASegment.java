@@ -390,8 +390,8 @@ public class RelativeTMASegment extends CoreTMASegment
 			FixWrapper newItem = new FixWrapper(newFix);
 
 			// set some other bits
-			newItem.setColor(theLoc.getActualColor());
 			newItem.setTrackWrapper(this._myTrack);
+			newItem.setColor(theLoc.getActualColor());
 			newItem.setSymbolShowing(theLoc.getSymbolShowing());
 			newItem.setLabelShowing(theLoc.getLabelShowing());
 			newItem.setLabelLocation(theLoc.getLabelLocation());
