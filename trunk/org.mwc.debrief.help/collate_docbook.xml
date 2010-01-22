@@ -3,7 +3,6 @@
 
 	<!-- and the cvs-logging related ones -->
 	<property name="rootDir" value="../" />
-	<property name="scrapRootDir" value="d:/dev/cmap_net" />
 	<property name="contribDir" value="${rootDir}/contribs" />
 	<property name="sourceDir"
 	          value="../"
@@ -19,71 +18,6 @@
 	<property name="helpDest" value="${helpDir}/html/legacy" />
 	<property name="pdfDest" value="${helpDir}/html/pdf" />
 
-	<target name="_log1_produce" description="produce the cvs change logs">
-
-		<!-- clear the output directory -->
-		<delete dir="${buildSVNLogDir}" />
-
-		<!-- create the output directory if we have to -->
-		<mkdir dir="${buildSVNLogDir}" />
-		<mkdir dir="${buildSVNLogDir}/statcvs" />
-
-		<!-- produce the CVS log -->
-		<echo message="about to log:${sourceDir}" />
-
-		<tstamp>
-			<format property="statsvn.start" pattern="yyyy-MM-dd" />
-		</tstamp>
-		<tstamp>
-			<format property="statsvn.stop"
-			        pattern="yyyy-MM-dd"
-			        offset="-60"
-			        unit="day" />
-		</tstamp>
-
-		<exec executable="svn"
-		      dir="${sourceDir}"
-		      output="../deploy/cvs/statcvs.xml">
-			<arg line="log" />
-			<arg line="-v" />
-			<arg line="--xml" />
-			<arg line="-r {${statsvn.start}}:{${statsvn.stop}}" />
-		</exec>
-
-	</target>
-
-	<target name="_log2_format" description="use the stylesheet tidier">
-		<antcall target="_svn_stat_formatter">
-			<param name="svn_stat_outputDir"
-			       value="${buildSVNLogDir}/statcvs/short" />
-			<param name="svn_stat_stylesheet"
-			       value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
-			<param name="svn_stat_outputTitle"
-			       value="Abbreviated change statistics" />
-		</antcall>
-
-<!--		<antcall target="_svn_stat_formatter">
-			<param name="svn_stat_outputDir"
-			       value="${buildSVNLogDir}/statcvs/long" />
-			<param name="svn_stat_stylesheet"
-			       value="../org.mwc.cmap.installer/statcvs_template/suite.xml" />
-			<param name="svn_stat_outputTitle"
-			       value="Debrief change statistics" />
-		</antcall> -->
-	</target>
-
-	<target name="_log3_copy"
-	        description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
-		<copy todir="..\org.mwc.debrief.help\html\history">
-			<fileset dir="${buildSVNLogDir}" />
-		</copy>
-	</target>
-
-	<target name="cvs_log" description="do the steps to produce a cvs log">
-		<antcall target="_log1_produce" />
-		<antcall target="_log2_format" />
-		<antcall target="_log3_copy" />
-	</target>
 
 	<target name="clear_output" description="ditch the existing output files">
 		<delete dir="${helpDest}" />
@@ -238,6 +172,73 @@
 	######################################################################################
 	  -->
 
+
+	<target name="_log1_produce" description="produce the cvs change logs">
+
+		<!-- clear the output directory -->
+		<delete dir="${buildSVNLogDir}" />
+
+		<!-- create the output directory if we have to -->
+		<mkdir dir="${buildSVNLogDir}" />
+		<mkdir dir="${buildSVNLogDir}/statcvs" />
+
+		<!-- produce the CVS log -->
+		<echo message="about to log:${sourceDir}" />
+
+		<tstamp>
+			<format property="statsvn.start" pattern="yyyy-MM-dd" />
+		</tstamp>
+		<tstamp>
+			<format property="statsvn.stop"
+			        pattern="yyyy-MM-dd"
+			        offset="-60"
+			        unit="day" />
+		</tstamp>
+
+		<exec executable="svn"
+		      dir="${sourceDir}"
+		      output="../deploy/cvs/statcvs.xml">
+			<arg line="log" />
+			<arg line="-v" />
+			<arg line="--xml" />
+			<arg line="-r {${statsvn.start}}:{${statsvn.stop}}" />
+		</exec>
+
+	</target>
+
+	<target name="_log2_format" description="use the stylesheet tidier">
+		<antcall target="_svn_stat_formatter">
+			<param name="svn_stat_outputDir"
+			       value="${buildSVNLogDir}/statcvs/short" />
+			<param name="svn_stat_stylesheet"
+			       value="../org.mwc.cmap.installer/statcvs_template/single_page_suite.xml" />
+			<param name="svn_stat_outputTitle"
+			       value="Abbreviated change statistics" />
+		</antcall>
+
+<!--		<antcall target="_svn_stat_formatter">
+			<param name="svn_stat_outputDir"
+			       value="${buildSVNLogDir}/statcvs/long" />
+			<param name="svn_stat_stylesheet"
+			       value="../org.mwc.cmap.installer/statcvs_template/suite.xml" />
+			<param name="svn_stat_outputTitle"
+			       value="Debrief change statistics" />
+		</antcall> -->
+	</target>
+
+	<target name="_log3_copy"
+	        description="copy the tidy cvs logs to the help structure so that they can be included in help-references">
+		<copy todir="..\org.mwc.debrief.help\html\history">
+			<fileset dir="${buildSVNLogDir}" />
+		</copy>
+	</target>
+
+	<target name="cvs_log" description="do the steps to produce a cvs log">
+		<antcall target="_log1_produce" />
+		<antcall target="_log2_format" />
+		<antcall target="_log3_copy" />
+	</target>
+	
 	<target name="_svn_stat_formatter" description="use the stylesheet tidier">
 		<!-- ok, delete the output directory -->
 		<delete dir="${svn_stat_outputDir}" />
