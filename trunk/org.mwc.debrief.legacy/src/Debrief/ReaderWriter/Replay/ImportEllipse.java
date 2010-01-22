@@ -104,7 +104,7 @@ final class ImportEllipse implements PlainLineImporter
 
     // declare local variables
     WorldLocation theLoc;
-    int latDeg, longDeg, latMin, longMin;
+    double latDeg, longDeg, latMin, longMin;
     char latHem, longHem;
     double latSec, longSec;
     double maxima, minima, orient;
@@ -131,9 +131,9 @@ final class ImportEllipse implements PlainLineImporter
 		theDate = DebriefFormatDateTime.parseThis(dateStr);
 
     // now the location
-    latDeg = Integer.parseInt(st.nextToken());
-    latMin = Integer.parseInt(st.nextToken());
-    latSec = Double.valueOf(st.nextToken()).doubleValue();
+    latDeg = Double.valueOf(st.nextToken());
+    latMin = Double.valueOf(st.nextToken());
+    latSec = Double.valueOf(st.nextToken());
 
     /** now, we may have trouble here, since there may not be
      * a space between the hemisphere character and a 3-digit
@@ -145,16 +145,16 @@ final class ImportEllipse implements PlainLineImporter
       // hmm, they are combined
       latHem = vDiff.charAt(0);
       String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Integer.parseInt(secondPart);
+      longDeg  = Double.valueOf(secondPart);
     }
     else
     {
       // they are separate, so only the hem is in this one
       latHem = vDiff.charAt(0);
-      longDeg = Integer.parseInt(st.nextToken());
+      longDeg = Double.valueOf(st.nextToken());
     }
-    longMin = Integer.parseInt(st.nextToken());
-    longSec = Double.valueOf(st.nextToken()).doubleValue();
+    longMin = Double.valueOf(st.nextToken());
+    longSec = Double.valueOf(st.nextToken());
     longHem = st.nextToken().charAt(0);
 
     // now the radius of the circle

@@ -330,7 +330,7 @@ public class GenerateTrack implements RightClickContextItemGenerator
 			WorldLocation lastLoc = null;
 			for(int i=0;i<4;i++)
 			{
-				WorldLocation thisLoc = new WorldLocation(0,i,'N',0,0,'W', 0);
+				WorldLocation thisLoc = new WorldLocation(0,i,0,'N',0,0,0,'W', 0);
 				if(lastLoc != null)
 				{
 					// ok, add the line

@@ -486,8 +486,8 @@ public class SwingWorldLocationEditorFrame extends javax.swing.JDialog {
         else
           longHem = 'W';
 
-        res = new WorldLocation(latDeg, latMin, latHem,
-                                longDeg, longMin, longHem,
+        res = new WorldLocation(latDeg, latMin,0, latHem,
+                                longDeg, longMin,0, longHem,
                                 depth);
 
       }

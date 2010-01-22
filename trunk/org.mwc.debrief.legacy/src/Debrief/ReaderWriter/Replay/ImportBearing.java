@@ -99,7 +99,7 @@ final class ImportBearing implements PlainLineImporter
 
     // declare local variables
     WorldLocation start, end;
-    int latDeg, longDeg, latMin, longMin;
+    double latDeg, longDeg, latMin, longMin;
     char latHem, longHem;
     double latSec, longSec;
     String theText="";
@@ -124,8 +124,8 @@ final class ImportBearing implements PlainLineImporter
     theDate = DebriefFormatDateTime.parseThis(dateStr).getMicros();
 
     // now the start location
-    latDeg = Integer.parseInt(st.nextToken());
-    latMin = Integer.parseInt(st.nextToken());
+    latDeg = Double.valueOf(st.nextToken());
+    latMin = Double.valueOf(st.nextToken());
     latSec = Double.valueOf(st.nextToken()).doubleValue();
 
     /** now, we may have trouble here, since there may not be
@@ -138,15 +138,15 @@ final class ImportBearing implements PlainLineImporter
       // hmm, they are combined
       latHem = vDiff.charAt(0);
       String secondPart = vDiff.substring(1, vDiff.length());
-      longDeg  = Integer.parseInt(secondPart);
+      longDeg  = Double.valueOf(secondPart);
     }
     else
     {
       // they are separate, so only the hem is in this one
       latHem = vDiff.charAt(0);
-      longDeg = Integer.parseInt(st.nextToken());
+      longDeg = Double.valueOf(st.nextToken());
     }
-    longMin = Integer.parseInt(st.nextToken());
+    longMin = Double.valueOf(st.nextToken());
     longSec = Double.valueOf(st.nextToken()).doubleValue();
     longHem = st.nextToken().charAt(0);
 

@@ -218,7 +218,7 @@ public class InterpolateTrack implements RightClickContextItemGenerator
 			
 			for(int i=0;i<3;i++)
 			{
-				WorldLocation thisLoc = new WorldLocation(0,i,'N',0,0,'W', 0);
+				WorldLocation thisLoc = new WorldLocation(0,i,0,'N',0,0,0,'W', 0);
 				Calendar cal = Calendar.getInstance();
 				cal.setTimeInMillis(0);
 				cal.set(2005, 6, 6, 12, i * 5,0);			

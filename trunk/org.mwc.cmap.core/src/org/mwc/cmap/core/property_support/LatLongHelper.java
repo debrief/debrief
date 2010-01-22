@@ -105,7 +105,7 @@ public class LatLongHelper extends EditorHelper
 	{
 
 		private PropertyChangeSupport _pSupport;
-		
+
 		/**
 		 * the working values
 		 */
@@ -189,18 +189,23 @@ public class LatLongHelper extends EditorHelper
 
 		static
 		{
-			_latCats = new String[] { "N", "S" };
-			_longCats = new String[] { "E", "W" };
+			_latCats = new String[]
+			{ "N", "S" };
+			_longCats = new String[]
+			{ "E", "W" };
 
-			descriptors = new IPropertyDescriptor[] {
+			descriptors = new IPropertyDescriptor[]
+			{
 					new CategorisedDescriptor(ID_LAT_DEG, "1. Lat Degrees", "Lat"),
 					new CategorisedDescriptor(ID_LAT_MIN, "2. Lat Minutes", "Lat"),
 					new CategorisedDescriptor(ID_LAT_SEC, "3. Lat Seconds", "Lat"),
-					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "4. Lat Hemisphere", _latCats),
+					new ComboBoxPropertyDescriptor(ID_LAT_HEM, "4. Lat Hemisphere",
+							_latCats),
 					new CategorisedDescriptor(ID_LONG_DEG, "5. Long Degrees", "Long"),
 					new CategorisedDescriptor(ID_LONG_MIN, "6. Long Minutes", "Long"),
 					new CategorisedDescriptor(ID_LONG_SEC, "7. Long Seconds", "Long"),
-					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "8. Long Hemisphere", _longCats),
+					new ComboBoxPropertyDescriptor(ID_LONG_HEM, "8. Long Hemisphere",
+							_longCats),
 					new CategorisedDescriptor(ID_DEPTH, "9. Depth", "Depth")
 					{
 						public CellEditor createPropertyEditor(Composite parent)
@@ -233,7 +238,7 @@ public class LatLongHelper extends EditorHelper
 
 			_depth = _origDepth = new WorldDistance(location.getDepth(),
 					WorldDistance.METRES);
-			
+
 			_pSupport = new PropertyChangeSupport(this);
 
 		}
@@ -242,16 +247,17 @@ public class LatLongHelper extends EditorHelper
 		{
 			_pSupport.addPropertyChangeListener(listener);
 		}
-		
+
 		public void removePropertyChangeListener(PropertyChangeListener listener)
 		{
 			_pSupport.removePropertyChangeListener(listener);
 		}
-		
+
 		private void firePropertyChanged(String type)
 		{
-			PropertyChangeEvent event = new PropertyChangeEvent(this, type, _originalLocation, getLocation());
-			_pSupport.firePropertyChange(event );
+			PropertyChangeEvent event = new PropertyChangeEvent(this, type,
+					_originalLocation, getLocation());
+			_pSupport.firePropertyChange(event);
 		}
 
 		public Object getEditableValue()
@@ -413,11 +419,11 @@ public class LatLongHelper extends EditorHelper
 				depth = _depth.getValueIn(WorldDistance.METRES);
 
 			// produce a new location from our data values
-			WorldLocation res = new WorldLocation((int) Double.parseDouble(_latDeg),
-					(int) Double.parseDouble(_latMin) + (Double.parseDouble(_latSec) / 60), _latHem
-							.charAt(0), (int) Double.parseDouble(_longDeg), (int) Double
-							.parseDouble(_longMin)
-							+ (Double.parseDouble(_longSec) / 60), _longHem.charAt(0), depth);
+			WorldLocation res = new WorldLocation(Double.parseDouble(_latDeg), Double
+					.parseDouble(_latMin), Double.parseDouble(_latSec),
+					_latHem.charAt(0), Double.parseDouble(_longDeg), Double
+							.parseDouble(_longMin), Double.parseDouble(_longSec), _longHem
+							.charAt(0), depth);
 
 			return res;
 		}
@@ -478,8 +484,8 @@ public class LatLongHelper extends EditorHelper
 				else
 				{
 					CorePlugin.showMessage("Paste location",
-							"Sorry the clipboard text is not in the right format." + "\nContents:"
-									+ txt);
+							"Sorry the clipboard text is not in the right format."
+									+ "\nContents:" + txt);
 				}
 			}
 			else

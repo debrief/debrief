@@ -116,7 +116,7 @@ final class ImportSensor2 implements PlainLineImporter {
     String theTrack;
     String sensorName;
     String dateStr;
-    int latDeg, longDeg, latMin, longMin;
+    double latDeg, longDeg, latMin, longMin;
     char latHem, longHem;
     double latSec, longSec;
     WorldLocation origin = null;
@@ -157,10 +157,10 @@ final class ImportSensor2 implements PlainLineImporter {
     } else {
 
       // get the deg out of this value
-      latDeg = Integer.parseInt(next);
+      latDeg = Double.valueOf(next);
 
       // ok, this is valid data, persevere with it
-      latMin = Integer.parseInt(st.nextToken());
+      latMin = Double.valueOf(st.nextToken());
       latSec = Double.valueOf(st.nextToken()).doubleValue();
 
       /** now, we may have trouble here, since there may not be
@@ -172,14 +172,14 @@ final class ImportSensor2 implements PlainLineImporter {
         // hmm, they are combined
         latHem = vDiff.charAt(0);
         String secondPart = vDiff.substring(1, vDiff.length());
-        longDeg = Integer.parseInt(secondPart);
+        longDeg = Double.valueOf(secondPart);
       } else {
         // they are separate, so only the hem is in this one
         latHem = vDiff.charAt(0);
-        longDeg = Integer.parseInt(st.nextToken());
+        longDeg = Double.valueOf(st.nextToken());
       }
 
-      longMin = Integer.parseInt(st.nextToken());
+      longMin = Double.valueOf(st.nextToken());
       longSec = Double.valueOf(st.nextToken()).doubleValue();
       longHem = st.nextToken().charAt(0);
 

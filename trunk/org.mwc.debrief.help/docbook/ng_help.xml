@@ -20,7 +20,8 @@
                 <orgdiv>
                     <inlinegraphic fileref="figures/mwc_crest.gif"/>
                 </orgdiv>
-            </affiliation></author>
+            </affiliation>
+        </author>
         <edition>Documentation for Debrief NG</edition>
         <pubdate>August 2009</pubdate>
         <abstract id="contact_details">
@@ -148,9 +149,9 @@
                     <application>Debrief</application> has been produced by the Maritime Warfare
                 Centre in Portsmouth UK, to support the analysis and reporting of maritime tactical
                 exercises. </para>
-            <para>In December 2000 the Maritime Warfare Centre decided to give <application
-                    >Debrief</application> an Open Source status, opening the application and its
-                source code into the public domain. Debrief has been made <indexterm>
+            <para>In December 2000 the Maritime Warfare Centre decided to give
+                    <application>Debrief</application> an Open Source status, opening the
+                application and its source code into the public domain. Debrief has been made <indexterm>
                     <primary>Open Source</primary>
                 </indexterm>Open Source to facilitate its wider use, encouraging adoption of
                 standard file formats, presentation and practices between analysis agencies.</para>
@@ -329,10 +330,10 @@
                         <primary>COMSUBDEVRON 12</primary>
                         <secondary>CSDS 12</secondary>
                     </indexterm>COMSUBDEVRON 12 of the US Navy. </para>
-                <para> In 1999 development of an updated version of <application
-                        >Debrief</application>, <application>Debrief</application> 2000 was started.
-                    Over the previous four years a number of fresh requirements had arisen,
-                    requirements which could not be economically met using the existing
+                <para> In 1999 development of an updated version of
+                        <application>Debrief</application>, <application>Debrief</application> 2000
+                    was started. Over the previous four years a number of fresh requirements had
+                    arisen, requirements which could not be economically met using the existing
                     architecture. Accordingly development of the <application>Debrief</application>
                     2000 application started from a fresh-whiteboard, adopting a modern modular
                     approach to allow incremental implementation and insertion of future modules as
@@ -354,21 +355,21 @@
                     affects MWC in a number of ways: <orderedlist>
                         <title>List of Debrief adopters</title>
                         <listitem>
-                            <para> Organisations that are currently using <application
-                                    >Debrief</application> will have full access to the source code
-                                of <application>Debrief</application>, allowing them to identify and
-                                correct bugs (provided they have sufficiently trained staff). The
-                                licensing is such that these modifications can be again made public
-                                through the re-insertion into the central, online "code base".
-                            </para>
+                            <para> Organisations that are currently using
+                                    <application>Debrief</application> will have full access to the
+                                source code of <application>Debrief</application>, allowing them to
+                                identify and correct bugs (provided they have sufficiently trained
+                                staff). The licensing is such that these modifications can be again
+                                made public through the re-insertion into the central, online "code
+                                base". </para>
                         </listitem>
                         <listitem>
-                            <para> Organisations that are not currently using <application
-                                    >Debrief</application> also have full access to the application
-                                and its source code. Since the application and its supporting
-                                documentation clearly describe its origins in MWC this will spread
-                                the name of the organisation together with enforcing its reputation
-                                as a centre of maritime tactical analysis. </para>
+                            <para> Organisations that are not currently using
+                                    <application>Debrief</application> also have full access to the
+                                application and its source code. Since the application and its
+                                supporting documentation clearly describe its origins in MWC this
+                                will spread the name of the organisation together with enforcing its
+                                reputation as a centre of maritime tactical analysis. </para>
                         </listitem>
                         <listitem>
                             <para> Any organisation using <application>Debrief</application> that
@@ -388,30 +389,30 @@
                                 and fellow organisations. </para>
                         </listitem>
                         <listitem>
-                            <para> The wider national/international use of <application
-                                    >Debrief</application> will also lead to easier exchange of
-                                exercise data between nations (through common file formats) and
-                                potentially offer an increase in efficiency and the general quality
-                                of naval exercise analysis </para>
+                            <para> The wider national/international use of
+                                    <application>Debrief</application> will also lead to easier
+                                exchange of exercise data between nations (through common file
+                                formats) and potentially offer an increase in efficiency and the
+                                general quality of naval exercise analysis </para>
                         </listitem>
                     </orderedlist></para>
             </sect2>
             <sect2 id="TwoThouOnwards">
                 <title>Debrief 2001 onwards</title>
                 <para>At the end of 2000, Ian Mayo, the developer and <link
-                        linkend="project_manager">project manager</link> of <application
-                        >Debrief</application>, left full-time employment at the Maritime Warfare
-                    Centre to setup his own software development consultancy, <indexterm>
+                        linkend="project_manager">project manager</link> of
+                        <application>Debrief</application>, left full-time employment at the
+                    Maritime Warfare Centre to setup his own software development consultancy, <indexterm>
                         <primary>PlanetMayo</primary>
                     </indexterm>PlanetMayo Ltd. </para>
                 <para> A competitive open tender process was conducted during late 2001 to supply
                     the Maritime Warfare Centre with <application>Debrief</application> support. The
                     contract was won by PlanetMayo, who grouped up the implementation of the
-                    MWC&apos;s fresh requirements in a major update to <application
-                        >Debrief</application>, titled <application>Debrief 2001</application>. This
-                    update bought new, large areas of functionality to <application
-                        >Debrief</application> including vectored chart data, display of narrative
-                    text, and display of sensor-data. </para>
+                    MWC&apos;s fresh requirements in a major update to
+                        <application>Debrief</application>, titled <application>Debrief
+                        2001</application>. This update bought new, large areas of functionality to
+                        <application>Debrief</application> including vectored chart data, display of
+                    narrative text, and display of sensor-data. </para>
                 <para>Debrief development continued in 2002, with the update to <application>Debrief
                         2002</application>, which bought greatly improved 3-d plotting facilities
                     and a number of incremental improvements to other areas of functionality. </para>
@@ -421,8 +422,7 @@
                     </indexterm>Undersea Defence Technology 2002 in La Spetzia, Italy. The paper
                     itself is available for viewing at the: <ulink url="http://www.debrief.info"
                         >Debrief web site</ulink>. </para>
-                <para>Another significant step forward for Debrief in 2002 was the contribution from
-                        <indexterm>
+                <para>Another significant step forward for Debrief in 2002 was the contribution from <indexterm>
                         <primary>NUWC</primary>
                     </indexterm>
                     <link linkend="nuwc_address">NUWC</link> of an algorithm and code suitable for
@@ -691,20 +691,20 @@ Naval Undersea Warfare Center (NUWC)
                             <secondary>Obtaining Debrief</secondary>
                         </indexterm>support activities (news, feature-requests, bug-reports) for
                             <application>Debrief</application> are conducted online, at a web-site
-                        known as <application>SourceForge</application>. <application
-                            >SourceForge</application> is also used to store the newest versions of
-                        Debrief, ready for download. </para>
-                    <para>The home page for <application>Debrief</application> on <application
-                            >SourceForge</application> is at <ulink
+                        known as <application>SourceForge</application>.
+                            <application>SourceForge</application> is also used to store the newest
+                        versions of Debrief, ready for download. </para>
+                    <para>The home page for <application>Debrief</application> on
+                            <application>SourceForge</application> is at <ulink
                             url="http://sourceforge.net/projects/debrief"
                             >http://sourceforge.net/projects/debrief</ulink>. From this home you can
                         read the latest news on Debrief, request new features, report bugs, and
                         download the most recent version. </para>
                     <para>To obtain the latest version, examine the table titled "Latest File
                         Releases", and click on the <guilabel>Download</guilabel> link next to
-                            <guilabel>Debrief-Installation-Set</guilabel>. Then click on <guilabel
-                            >install.exe</guilabel> for a windows version of Debrief, or <guilabel
-                            >install.bin</guilabel> for a unix version. </para>
+                            <guilabel>Debrief-Installation-Set</guilabel>. Then click on
+                            <guilabel>install.exe</guilabel> for a windows version of Debrief, or
+                            <guilabel>install.bin</guilabel> for a unix version. </para>
                     <tip>
                         <para>If you already have <application>DebriefNG</application> installed,
                             but just want to install an update, look at the files listed in the
@@ -728,8 +728,7 @@ Naval Undersea Warfare Center (NUWC)
                 </sect2>
                 <sect2 id="where_to_get_help">
                     <title>Where to get Help on Debrief</title>
-                    <para>If you get stuck with Debrief, the following sources of information are
-                            available:<orderedlist>
+                    <para>If you get stuck with Debrief, the following sources of information are available:<orderedlist>
                             <listitem>
                                 <formalpara>
                                     <title>This document</title>
@@ -782,9 +781,9 @@ Naval Undersea Warfare Center (NUWC)
                             button on the <application>Windows</application>
                             <guibutton>Start</guibutton> menu. </para>
                     </warning>
-                    <para>Once you have downloaded Debrief NG, double-click on <filename
-                            >install.exe</filename> and follow the steps provided. You are first met
-                        with the welcome screen: <figure id="installer_welcome" float="0">
+                    <para>Once you have downloaded Debrief NG, double-click on
+                            <filename>install.exe</filename> and follow the steps provided. You are
+                        first met with the welcome screen: <figure id="installer_welcome" float="0">
                             <title>Welcome view of the installer</title>
                             <screenshot>
                                 <mediaobject>
@@ -939,8 +938,8 @@ Naval Undersea Warfare Center (NUWC)
                         are closed by clicking on the white diagonally oriented cross. To re-open a
                         view, or open a fresh view select <guimenuitem>Show View</guimenuitem> from
                         the <guimenu>Window</guimenu> menu. A list of Debrief-related views will be
-                        shown. Other views can be selected from the <guimenuitem
-                            >Other...</guimenuitem> menu item</para>
+                        shown. Other views can be selected from the
+                            <guimenuitem>Other...</guimenuitem> menu item</para>
                 </sect2>
                 <sect2 id="navigating_debrief">
                     <title>Navigating around Debrief</title>
@@ -991,8 +990,8 @@ Naval Undersea Warfare Center (NUWC)
                             Workbench window. We've attempted to provide a logical arrangement of
                             Debrief views, but feel free to experiment. Debrief will remember your
                             settings, but you can return to the defaults at any point by selecting
-                                <guimenuitem>Reset Perspective</guimenuitem> from the <guimenu
-                                >Window</guimenu> menu.</para>
+                                <guimenuitem>Reset Perspective</guimenuitem> from the
+                                <guimenu>Window</guimenu> menu.</para>
                     </sect3>
                     <sect3 id="debrief_toolbars">
                         <title>Toolbars</title>
@@ -1044,8 +1043,9 @@ Naval Undersea Warfare Center (NUWC)
                                         perspective that you build in this manner, making your own
                                         custom perspective that you can open again later. You can
                                         use the <guilabel>General</guilabel> &gt;
-                                        <guilabel>Perspectives</guilabel> preference page to open
-                                        perspectives in the same window or in a new window. </para>
+                                            <guilabel>Perspectives</guilabel> preference page to
+                                        open perspectives in the same window or in a new window.
+                                    </para>
                                 </formalpara>
                             </note></para>
                     </sect3>
@@ -1065,9 +1065,9 @@ Naval Undersea Warfare Center (NUWC)
                             <primary>Replay </primary>
                             <secondary>Introduction</secondary>
                         </indexterm>Replay file format ( <glossterm linkend="g_replay"
-                            >Replay</glossterm> was an application used in <application
-                            >Debrief</application>-style tasks in Royal Navy analysis in past
-                        years). </para>
+                            >Replay</glossterm> was an application used in
+                            <application>Debrief</application>-style tasks in Royal Navy analysis in
+                        past years). </para>
                     <para>Replay files are ASCII-files containing vessel position data in a
                         flat-file format similar to that below:</para>
                     <example id="sample_replay_file">
@@ -1292,8 +1292,9 @@ and so on....</programlisting></para>
                                         mid-point of the connecting, as shown below. The default
                                         units are yards, but different units may be selected from
                                         the <guimenuitem>CMAP</guimenuitem> section of the
-                                        properties shown in the <guimenu>Window</guimenu>/<guimenu
-                                            >Preferences</guimenu> dialog. </para>
+                                        properties shown in the
+                                            <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>
+                                        dialog. </para>
                                     <para>
                                         <guiicon>
                                             <inlinegraphic fileref="figures/RngDisplay.png"
@@ -1443,11 +1444,11 @@ and so on....</programlisting></para>
                     <secondary>Track data</secondary>
                 </indexterm> what you see to improve its legibility. Learn more about formatting
                 tracks in the <emphasis>Editing your data</emphasis> cheat-sheet. <note>
-                    <para>Apologies in advance to the British users of <application
-                            >Debrief</application> for the American-spelling of colour. The software
-                        environment within which <application>Debrief</application> is developed is
-                        American, and in this case superimposing the UK spelling upon it is not a
-                        battle worth fighting. </para>
+                    <para>Apologies in advance to the British users of
+                            <application>Debrief</application> for the American-spelling of colour.
+                        The software environment within which <application>Debrief</application> is
+                        developed is American, and in this case superimposing the UK spelling upon
+                        it is not a battle worth fighting. </para>
                 </note></para>
             <sect1 id="property_editing">
                 <title>Property editing</title>
@@ -1576,9 +1577,9 @@ and so on....</programlisting></para>
                     <para>Debrief also allows you to add items to the <glossterm linkend="g_plt"
                             >plot</glossterm>. </para>
                     <para>These items are contained in two menus; <guilabel>Chart
-                            Features</guilabel> and <guilabel>Drawing</guilabel>. In <application
-                            >Debrief</application>, hover the mouse over them to see what type of
-                        item they create. <figure id="chart_features_demo" float="0">
+                            Features</guilabel> and <guilabel>Drawing</guilabel>. In
+                            <application>Debrief</application>, hover the mouse over them to see
+                        what type of item they create. <figure id="chart_features_demo" float="0">
                             <title>Chart features menu</title>
                             <screenshot>
                                 <mediaobject>
@@ -1817,15 +1818,15 @@ and so on....</programlisting></para>
                         </screenshot>
                     </figure></para>
                 <note>
-                    <para>By default, new drawing features are placed in the <computeroutput
-                            >Misc</computeroutput> layer, from where they can be moved to other
-                        layers as required. If you're creating lots of drawing features, and want to
-                        place them directly into target layers, select on <guimenuitem>Manually
-                            select target layer</guimenuitem> from the top of the Drawing menu. When
-                        this setting is ticked, Debrief will prompt you to select a target layer for
-                        each new drawing feature added to the plot. Clear the ticked setting to
-                        return the target layer to the <computeroutput>Misc</computeroutput> layer
-                    </para>
+                    <para>By default, new drawing features are placed in the
+                            <computeroutput>Misc</computeroutput> layer, from where they can be
+                        moved to other layers as required. If you're creating lots of drawing
+                        features, and want to place them directly into target layers, select on
+                            <guimenuitem>Manually select target layer</guimenuitem> from the top of
+                        the Drawing menu. When this setting is ticked, Debrief will prompt you to
+                        select a target layer for each new drawing feature added to the plot. Clear
+                        the ticked setting to return the target layer to the
+                            <computeroutput>Misc</computeroutput> layer </para>
                 </note>
                 <sect2 id="the_labels">
                     <title>Label</title>
@@ -1841,15 +1842,16 @@ and so on....</programlisting></para>
                     <para>
                         <tip>
                             <para>A custom editor is supplied (see below) for editing locations of
-                                data items, it is used frequently in <application
-                                    >Debrief</application>. Clicking on the expand button will let
-                                you edit individual lat/long fields (shown in figure <xref
-                                    linkend="editor_expanded"/>). Alternatively, you may set the
-                                location to a specific point on the plot. Right-click on the plot
-                                and select <guimenuitem>Copy cursor location</guimenuitem>. Then
-                                click once on the location editor to reveal the <guibutton
-                                    >Paste</guibutton> button (shown in <xref linkend="editor_paste"
-                                />), and click it to paste the cursor location.</para>
+                                data items, it is used frequently in
+                                    <application>Debrief</application>. Clicking on the expand
+                                button will let you edit individual lat/long fields (shown in figure
+                                    <xref linkend="editor_expanded"/>). Alternatively, you may set
+                                the location to a specific point on the plot. Right-click on the
+                                plot and select <guimenuitem>Copy cursor location</guimenuitem>.
+                                Then click once on the location editor to reveal the
+                                    <guibutton>Paste</guibutton> button (shown in <xref
+                                    linkend="editor_paste"/>), and click it to paste the cursor
+                                location.</para>
                             <figure float="0" id="editor_initial">
                                 <title>Location Editor (initial view)</title>
                                 <screenshot>
@@ -1889,10 +1891,10 @@ and so on....</programlisting></para>
                             text will be centre formatted on screen according to the <guilabel>Label
                                 Location</guilabel> property. The multi-line label is also available
                             for all labels on the <application>Debrief</application> plot. Note that
-                            when the label is stored to disk in the <application
-                                >Debrief</application> plot-file format, the '\n' character used
-                            internally to represent the new line is converted to a '\\n' string to
-                            allow its easy storage. </para>
+                            when the label is stored to disk in the
+                                <application>Debrief</application> plot-file format, the '\n'
+                            character used internally to represent the new line is converted to a
+                            '\\n' string to allow its easy storage. </para>
                     </note>
                 </sect2>
                 <sect2 id="the_ellipse">
@@ -1906,10 +1908,10 @@ and so on....</programlisting></para>
                         semi-minor axes, expressed in user-selectable distance units. These values
                         are the distances from the centre of the ellipse to the furthest and closest
                         points on it&apos;s perimeter, respectively. The direction of the ellipse is
-                        specified by the orientation, expressed in degrees. <application
-                            >Debrief</application> does not check that the maxima is larger that the
-                        minima, it merely plots an ellipse oriented about the semi-major axis.
-                    </para>
+                        specified by the orientation, expressed in degrees.
+                            <application>Debrief</application> does not check that the maxima is
+                        larger that the minima, it merely plots an ellipse oriented about the
+                        semi-major axis. </para>
                 </sect2>
                 <sect2 id="the_polygon">
                     <title>Polygon</title>
@@ -1964,9 +1966,9 @@ and so on....</programlisting></para>
                             <secondary>Rectangle, Circle, Line, Arc</secondary>
                         </indexterm>work in the same way as the others described here, the Location
                         Editor described above being used to set the corners, centre, or ends as required.<note>
-                            <para>Some of the more basic drawing items have a single <guilabel
-                                    >DTG</guilabel> parameter instead of <guilabel
-                                    >TimeStart</guilabel> and <guilabel>Time_End</guilabel>
+                            <para>Some of the more basic drawing items have a single
+                                    <guilabel>DTG</guilabel> parameter instead of
+                                    <guilabel>TimeStart</guilabel> and <guilabel>Time_End</guilabel>
                                 properties. Where there is a single time, the time-analytical
                                 features of Debrief (such as Snail mode) treat the feature as
                                     <emphasis>alive</emphasis> for three minutes either side of the
@@ -1975,16 +1977,16 @@ and so on....</programlisting></para>
                     <tip>
                         <para>To draw a line created from an origin with values of range and
                             bearing, first create the line, and put the start point of the line at
-                            the origin. Now switch the mouse mode to <guilabel
-                                >Range/Bearing</guilabel> ( <guiicon>
+                            the origin. Now switch the mouse mode to
+                                <guilabel>Range/Bearing</guilabel> ( <guiicon>
                                 <inlinegraphic fileref="figures/RngBrg.png" align="center"/>
                             </guiicon>). Now click on the button labelled <guilabel>Select
                                 Point</guilabel> for <guilabel>LineStart</guilabel>, and drag the
                             mouse out from the origin point. The current range and bearing will be
                             displayed at the bottom-left of the screen. When the mouse is at the
                             desired range and bearing right-click and copy the position onto the
-                            clipboard. Next, paste that location into the <guilabel
-                                >LineEnd</guilabel> value. </para>
+                            clipboard. Next, paste that location into the
+                                <guilabel>LineEnd</guilabel> value. </para>
                     </tip>
                 </sect2>
                 <sect2 id="buoyfields_intro">
@@ -2024,17 +2026,17 @@ and so on....</programlisting></para>
                                 </mediaobject>
                             </screenshot>
                         </figure></para>
-                    <para>Reveal the Layer Manager by selecting it from the <guimenu
-                            >Window</guimenu>/<guimenuitem>Show View...</guimenuitem> drop-down
-                        list. Once open you will see the data shown as a series of layers - each
-                        with a tick indicating if it's visible or not. A toolbar provides command
-                        buttons to make items visible or not visible, and buttons are enabled to
-                        make an entity the primary or secondary track, or to add the selected item
-                        as another secondary (when applicable). Note that not just tracks may be
-                        denoted primary or secondary: and graphic item with a position and date-time
-                        can be selected: thus Debrief can be configured to show a running indication
-                        of bearing and range for a series of vessels from a single label datum
-                        (representing a sonar-buoy or mine).</para>
+                    <para>Reveal the Layer Manager by selecting it from the
+                            <guimenu>Window</guimenu>/<guimenuitem>Show View...</guimenuitem>
+                        drop-down list. Once open you will see the data shown as a series of layers
+                        - each with a tick indicating if it's visible or not. A toolbar provides
+                        command buttons to make items visible or not visible, and buttons are
+                        enabled to make an entity the primary or secondary track, or to add the
+                        selected item as another secondary (when applicable). Note that not just
+                        tracks may be denoted primary or secondary: and graphic item with a position
+                        and date-time can be selected: thus Debrief can be configured to show a
+                        running indication of bearing and range for a series of vessels from a
+                        single label datum (representing a sonar-buoy or mine).</para>
                     <para>The drop-down menu provides further commands, significantly including the
                         ability to add a new layer; <guimenuitem>Create Layer</guimenuitem>. Further
                         commands are available when right-clicking on one or more Layer Manager
@@ -2052,8 +2054,8 @@ and so on....</programlisting></para>
                     <para>In addition to copying/moving items between layers, items and layers
                         themselves can be copied or moved between sessions within Debrief.</para>
                     <para>To paste a layer (or track) into the top level of the layer manager just
-                        click on the white space below the displayed layers and select <guibutton
-                            >Paste Item</guibutton> form the popup menu. </para>
+                        click on the white space below the displayed layers and select
+                            <guibutton>Paste Item</guibutton> form the popup menu. </para>
                     <note>
                         <para>All top-level layers (that it screen items which appear at the top
                             level in Layer Manager, such as Tracks, ETOPO data and Layers
@@ -2071,10 +2073,11 @@ and so on....</programlisting></para>
                 <sect2 id="save_Detail">
                     <title>Save</title>
                     <para>You may (or my not) know what the <glossterm linkend="g_replay"
-                            >Replay</glossterm> file format used to load data into <application
-                            >Debrief</application> looked like. Whilst it is compact and easy to
-                        use, unfortunately the Replay file format does not allow us to store all of
-                        the formatting we have applied to the <application>Debrief</application>
+                            >Replay</glossterm> file format used to load data into
+                            <application>Debrief</application> looked like. Whilst it is compact and
+                        easy to use, unfortunately the Replay file format does not allow us to store
+                        all of the formatting we have applied to the
+                            <application>Debrief</application>
                         <glossterm linkend="g_plt">plot</glossterm>, nor the coordinates of what you
                         are currently viewing, nor how you have arranged to store your data in
                             <glossterm linkend="g_layer">layers</glossterm>. This problem is
@@ -2094,11 +2097,12 @@ and so on....</programlisting></para>
                                         >http://www.w3c.org</ulink>. </para>
                             </listitem>
                             <listitem>
-                                <para>XML files can be edited outside <application
-                                        >Debrief</application>, allowing you to cut and paste
-                                    between <glossterm linkend="g_plot_file">plot-files</glossterm>
-                                    to build up a new <glossterm linkend="g_plot_file"
-                                        >Plot-File</glossterm>, all in a text editor </para>
+                                <para>XML files can be edited outside
+                                        <application>Debrief</application>, allowing you to cut and
+                                    paste between <glossterm linkend="g_plot_file"
+                                        >plot-files</glossterm> to build up a new <glossterm
+                                        linkend="g_plot_file">Plot-File</glossterm>, all in a text
+                                    editor </para>
                             </listitem>
                         </itemizedlist></para>
                     <para>Whilst a plot is typically created from an REP file, it may not be saved
@@ -2109,8 +2113,8 @@ and so on....</programlisting></para>
                         </guiicon> from the Workbench toolbar or the <guimenu>File</guimenu> menu. A
                         file dialog will open (see below), allowing you to save the current session
                         as a <application>Debrief</application>
-                        <glossterm linkend="g_plot_file">Plot-File</glossterm> ( <filename
-                            >xml</filename>).<note>
+                        <glossterm linkend="g_plot_file">Plot-File</glossterm> (
+                            <filename>xml</filename>).<note>
                             <para>Debrief will only let you save the new plot into one of your
                                 project folders, so you must both select a folder and a provide a
                                 filename for the new file. Usefully, Debrief guesses that you
@@ -2147,18 +2151,18 @@ and so on....</programlisting></para>
                         <para>The save operation itself is conducted in a two-stage process. If the
                             operation entails saving over an existing file (when you just do a plain
                             Save, or Save As over-writing an older version) Debrief first writes the
-                            plot to a subtlely different filename in the same directory (<filename
-                                >plot.xml</filename> would get saved to <filename
-                                >~plot.tmp</filename>). If the save operation completes successfully
-                            then the older file is deleted and the temporary file renamed to the
-                            originally requested filename. Thus, your existing file only gets
-                            overwritten on successful completion of the save.</para>
+                            plot to a subtlely different filename in the same directory
+                                (<filename>plot.xml</filename> would get saved to
+                                <filename>~plot.tmp</filename>). If the save operation completes
+                            successfully then the older file is deleted and the temporary file
+                            renamed to the originally requested filename. Thus, your existing file
+                            only gets overwritten on successful completion of the save.</para>
                     </sidebar>
                 </sect2>
                 <sect2 id="adding_more_data">
                     <title>Adding more data to a plot</title>
-                    <para>With a plot already open, you are able to drag a <application
-                            >Debrief</application>
+                    <para>With a plot already open, you are able to drag a
+                            <application>Debrief</application>
                         <filename>XML</filename> or <filename>REP</filename> file into it&apos;s
                         chart, adding the content to the existing session. Dragging multiple files
                         onto the plot area adds them all to the existing session. To create a
@@ -2379,10 +2383,11 @@ and so on....</programlisting></para>
                             assigned to the Target, thereby allowing a constant display of target
                             bearing and range. </para>
                     </note>
-                    <para>There can be any number of secondary tracks. <application
-                            >Debrief</application> displays calculated results of the relationship
-                        between each one and the Primary Track. To see the relationship between a
-                        pair of secondary tracks, one of them must be set to the Primary track. </para>
+                    <para>There can be any number of secondary tracks.
+                            <application>Debrief</application> displays calculated results of the
+                        relationship between each one and the Primary Track. To see the relationship
+                        between a pair of secondary tracks, one of them must be set to the Primary
+                        track. </para>
                     <para>The following calculated data is presented, where the current point on
                         each track is used for the calculation: <variablelist>
                             <varlistentry>
@@ -2468,10 +2473,10 @@ and so on....</programlisting></para>
                                 </listitem>
                             </varlistentry>
                         </variablelist><note>
-                            <para>When more than two tracks are loaded, the value <guilabel
-                                    >n/a</guilabel> is shown in Tote calculations for the primary
-                                track which rely on other track data (range, bearing, rel bearing,
-                                brg rate). This is because it is unclear which inter-track
+                            <para>When more than two tracks are loaded, the value
+                                    <guilabel>n/a</guilabel> is shown in Tote calculations for the
+                                primary track which rely on other track data (range, bearing, rel
+                                bearing, brg rate). This is because it is unclear which inter-track
                                 relationship is being calculated. Where only two tracks are loaded
                                 (one primary and one secondary), the tote is able to show relative
                                 calculated data for both. </para>
@@ -2565,8 +2570,9 @@ and so on....</programlisting></para>
                     <title>The Time Controller</title>
                     <para>Time is managed within Debrief through the Time Controller. This view
                         displays the current serial time, allows control of that time, and provides
-                        access to a series of time-related functions in <application
-                            >Debrief</application>.<figure id="time_controller_demo" float="0">
+                        access to a series of time-related functions in
+                            <application>Debrief</application>.<figure id="time_controller_demo"
+                            float="0">
                             <title>Time Controller View</title>
                             <screenshot>
                                 <mediaobject>
@@ -2839,10 +2845,10 @@ and so on....</programlisting></para>
                         <title>Bookmarking</title>
                         <para>Debrief NG introduces the concept of <glossterm linkend="g_bookmarks"
                                 >Bookmarks</glossterm>. These represent the combination of a DTG, a
-                            remark, and the name of a plot-file, and are displayed in the <guibutton
-                                >Bookmarks</guibutton> view. With the view open you can quickly move
-                            between significant events across a number of files. Bookmarks are added
-                            by clicking on the <guiicon>
+                            remark, and the name of a plot-file, and are displayed in the
+                                <guibutton>Bookmarks</guibutton> view. With the view open you can
+                            quickly move between significant events across a number of files.
+                            Bookmarks are added by clicking on the <guiicon>
                                 <inlinegraphic fileref="figures/AddBookmark.png"/>
                             </guiicon><guimenuitem>Add DTG as bookmark</guimenuitem> command from
                             the <guiicon>Time Controller</guiicon>'s drop-down menu. The bookmarks
@@ -2877,8 +2883,7 @@ and so on....</programlisting></para>
                     <sect3 id="time_copy">
                         <title>Copy to clipboard</title>
                         <para>Another operation that relies on the selected time period is exporting
-                            calculated data to the clipboard. This operation is available form the
-                                <guiicon>
+                            calculated data to the clipboard. This operation is available form the <guiicon>
                                 <inlinegraphic fileref="figures/Calculator.png"/>
                             </guiicon><guibutton>Time Controller</guibutton>'s drop-down menu, and
                             it performs a series of calculations for each data-point in the
@@ -2907,8 +2912,8 @@ and so on....</programlisting></para>
                                         </listitem>
                                         <listitem>
                                             <para>Rel Bearing(degs - using <varname>Relative bearing
-                                                  format</varname> specified in the <guimenu
-                                                  >Window</guimenu>/<guimenu>Preferences</guimenu>dialog)
+                                                  format</varname> specified in the
+                                                  <guimenu>Window</guimenu>/<guimenu>Preferences</guimenu>dialog)
                                             </para>
                                         </listitem>
                                         <listitem>
@@ -2959,11 +2964,11 @@ and so on....</programlisting></para>
                             time step continuously (small or large step, backwards or forwards). The
                             remaining buttons repeat these operations in the "forward" direction.
                             The size of small and large steps is controlled by the Time Controller
-                            properties window, accessed by selecting <guimenu
-                                >Properties</guimenu>/<guimenuitem>Time Controller</guimenuitem>.
-                            Also available from this set of properties is the <guibutton>Step
-                                Interval</guibutton>; the time interval that Debrief waits before
-                            automatically moving forwards.</para>
+                            properties window, accessed by selecting
+                                <guimenu>Properties</guimenu>/<guimenuitem>Time
+                                Controller</guimenuitem>. Also available from this set of properties
+                            is the <guibutton>Step Interval</guibutton>; the time interval that
+                            Debrief waits before automatically moving forwards.</para>
                     </sect3>
                     <sect3 id="other_ops">
                         <title>Other time operations</title>
@@ -2987,10 +2992,11 @@ and so on....</programlisting></para>
                         bearing is displayed at the mid-point of the line and at the foot of the
                         DebriefNG screen (where it remains until you make another measurement). </para>
                     <para>The default units for the range displayed are configured using the
-                            <guimenu>CMAP</guimenu> section of the <guimenuitem
-                            >Preferences</guimenuitem> dialog in the <guimenu>Window</guimenu> menu.
-                        The preferences page can also be accessed by double-clicking on the
-                        range/bearing slave display at the foot of the screen. </para>
+                            <guimenu>CMAP</guimenu> section of the
+                            <guimenuitem>Preferences</guimenuitem> dialog in the
+                            <guimenu>Window</guimenu> menu. The preferences page can also be
+                        accessed by double-clicking on the range/bearing slave display at the foot
+                        of the screen. </para>
                 </sect2>
                 <sect2 id="earth_model">
                     <title>Earth Model</title>
@@ -3006,8 +3012,7 @@ and so on....</programlisting></para>
                         Formulae for Short-distance sailing, as described in <quote>Admiralty Manual
                             of Navigation, Volume 2, 1973</quote>. Short-distance sailing is defined
                         as <quote>the following of a rhumb-line track for a distance not greater
-                            than 600&apos;
-                        </quote>. </para>
+                            than 600&apos; </quote>. </para>
                 </sect2>
             </sect1>
             <sect1 id="view_3d">
@@ -3037,10 +3042,10 @@ and so on....</programlisting></para>
                     </note>
                     <para>Unfortunately there is not any 3-d data in the sample plots we&apos;ve
                         been using so far, but another sample file does. Close the current session,
-                        open a new, blank, one, and load the data-file named <filename
-                            >sen_tracks.xml</filename>. This is a datafile produced using <glossterm
-                            linkend="g_asset">ASSET</glossterm>, a simulator under development at
-                        PlanetMayo. </para>
+                        open a new, blank, one, and load the data-file named
+                            <filename>sen_tracks.xml</filename>. This is a datafile produced using
+                            <glossterm linkend="g_asset">ASSET</glossterm>, a simulator under
+                        development at PlanetMayo. </para>
                     <para>Once the tracks are loaded, you will see the view as below: <figure
                             id="tracks_loaded_demo" float="0">
                             <title>View with tracks loaded</title>
@@ -3053,17 +3058,17 @@ and so on....</programlisting></para>
                             </screenshot>
                         </figure></para>
                     <para>If you don't have primary and secondary tracks on the tote, initialise
-                        them now (or do it automatically, if you know how). <application
-                            >Debrief</application> now knows the time period covered by the tracks.
-                        The updated 3D viewer in Debrief now shows 3-dimensional models of the
-                        exercise participants. The model used is taken from the <guilabel
-                            >SymbolType</guilabel> property of each track (although the default type
-                        is <guilabel>Submarine</guilabel>). So before opening the 3-d view, change
-                        the <guilabel>SymbolType</guilabel> of the <emphasis>Frigate</emphasis>
-                        track to <guilabel>Frigate. </guilabel>To do this, right-click on the track
-                        and select <guilabel>Frigate</guilabel> from the <guilabel
-                            >SymbolType</guilabel> drop-down list. Next press the "View in 3D"
-                        button <guiicon>
+                        them now (or do it automatically, if you know how).
+                            <application>Debrief</application> now knows the time period covered by
+                        the tracks. The updated 3D viewer in Debrief now shows 3-dimensional models
+                        of the exercise participants. The model used is taken from the
+                            <guilabel>SymbolType</guilabel> property of each track (although the
+                        default type is <guilabel>Submarine</guilabel>). So before opening the 3-d
+                        view, change the <guilabel>SymbolType</guilabel> of the
+                            <emphasis>Frigate</emphasis> track to <guilabel>Frigate. </guilabel>To
+                        do this, right-click on the track and select <guilabel>Frigate</guilabel>
+                        from the <guilabel>SymbolType</guilabel> drop-down list. Next press the
+                        "View in 3D" button <guiicon>
                             <inlinegraphic fileref="figures/view3d.gif"/>
                         </guiicon> to open the 3-d view window. </para>
                 </sect2>
@@ -3140,9 +3145,9 @@ and so on....</programlisting></para>
                         adjust the current view depth, heading, pan and zoom. Experiment with moving
                         around the plot using these controls aswell as the mouse.</para>
                     <para>The drop-down list provided in the centre of the window provides a list of
-                        preset viewpoints. The <guilabel>Surface Look</guilabel> and <guilabel
-                            >Underwater Look</guilabel> viewpoints zoom out to the south of the
-                        centre of the plot, positioning the viewer either slightly above, or
+                        preset viewpoints. The <guilabel>Surface Look</guilabel> and
+                            <guilabel>Underwater Look</guilabel> viewpoints zoom out to the south of
+                        the centre of the plot, positioning the viewer either slightly above, or
                         slightly below the water surface. The <guilabel>Top-Down</guilabel>
                         viewpoint provides a god's-eye view of the data. Lastly are a series of
                         viewpoints which each provide a "chase-plane" view of a particular
@@ -3161,8 +3166,7 @@ and so on....</programlisting></para>
                                 </mediaobject>
                             </screenshot>
                         </figure></para>
-                    <para>A set of properties are also provided from the 3d view toolbar to
-                            <indexterm>
+                    <para>A set of properties are also provided from the 3d view toolbar to <indexterm>
                             <primary>3D View</primary>
                             <secondary>Editable properties</secondary>
                         </indexterm>support the 3-d editing. The following properties are provided: </para>
@@ -3358,9 +3362,10 @@ and so on....</programlisting></para>
                         <application>Debrief</application> performs special processing depending on
                         whether the selected items contain valid time data or not. In general, when
                         an annotation (such as a label) does not contain DTG data Debrief assumes
-                        that it is valid throughout the selected time period. <application
-                            >Debrief</application> produces the time-variable plot according to the
-                        following tables: <table id="relative_calculations" frame="sides">
+                        that it is valid throughout the selected time period.
+                            <application>Debrief</application> produces the time-variable plot
+                        according to the following tables: <table id="relative_calculations"
+                            frame="sides">
                             <title>Relative Calculations (range, bearing, etc)</title>
                             <tgroup cols="3">
                                 <thead>
@@ -3495,17 +3500,18 @@ and so on....</programlisting></para>
                     <para>By default the <indexterm>
                             <primary>Time Zero</primary>
                             <secondary>in time-variable plots</secondary>
-                        </indexterm>time-variable plot shows absolute times (e.g. <computeroutput
-                            >12:34.00</computeroutput>). Some forms of analysis conducted with
-                        Debrief rely on the use of relative times, such as a weapon firing where
-                        T-Zero is the time of fire, as described in <xref linkend="z_zero_times"/>.
-                        To show these relative times on the lower axis of the time-variable plot,
-                        select <guilabel>RelativeTimes</guilabel> from the time-variable plot
-                        property window. Once this mode is selected, times will be shown relative to
-                        the last time-zero value set. By default, the times are shown in a normal
-                            <computeroutput>HH:mm:ss</computeroutput> format, but the <guilabel
-                            >DateTickUnits</guilabel> drop-down list contains a number of display
-                        formats which specifically support presentation of elapsed times. </para>
+                        </indexterm>time-variable plot shows absolute times (e.g.
+                            <computeroutput>12:34.00</computeroutput>). Some forms of analysis
+                        conducted with Debrief rely on the use of relative times, such as a weapon
+                        firing where T-Zero is the time of fire, as described in <xref
+                            linkend="z_zero_times"/>. To show these relative times on the lower axis
+                        of the time-variable plot, select <guilabel>RelativeTimes</guilabel> from
+                        the time-variable plot property window. Once this mode is selected, times
+                        will be shown relative to the last time-zero value set. By default, the
+                        times are shown in a normal <computeroutput>HH:mm:ss</computeroutput>
+                        format, but the <guilabel>DateTickUnits</guilabel> drop-down list contains a
+                        number of display formats which specifically support presentation of elapsed
+                        times. </para>
                 </sect2>
             </sect1>
             <!--  Track/time toolbox                                           -->
@@ -3570,25 +3576,25 @@ and so on....</programlisting></para>
                             <primary>WMF</primary>
                             <secondary>Writing to File</secondary>
                         </indexterm>conducting tactical analysis, <application>Debrief</application>
-                        allows the analyst user to create plots for insertion into <application
-                            >Microsoft Windows</application> applications; particularly <application
-                            >Word</application>. </para>
+                        allows the analyst user to create plots for insertion into
+                            <application>Microsoft Windows</application> applications; particularly
+                            <application>Word</application>. </para>
                     <para>To do this load the data into <application>Debrief</application> and
                         format the plot, adding scales, grids, coastlines, and annotations as
                         desired. </para>
-                    <para>To export this image as a Windows Metafile (WMF), select the <guibutton
-                            >Export WMF</guibutton> (<guiicon>
+                    <para>To export this image as a Windows Metafile (WMF), select the
+                            <guibutton>Export WMF</guibutton> (<guiicon>
                             <inlinegraphic fileref="figures/ExportToWMF.png"/>
                         </guiicon>) operation from the <guimenu>File</guimenu> menu. Alternatively
-                        to copy the image to the clipboard (still as a WMF) select <guibutton
-                            >Copy</guibutton> from the Edit menu whilst the Debrief plot is
-                        active.</para>
-                    <para>This will place the image in a time-stamped file named <filename
-                            >d3_minute_second.WMF</filename>, located in the directory indicated in
-                        the <application>Debrief</application> properties file. If the location is
-                        not specified in the properties file, the <filename>WMF</filename> image
-                        will be created in the <application>Debrief</application> installation
-                        directory. </para>
+                        to copy the image to the clipboard (still as a WMF) select
+                            <guibutton>Copy</guibutton> from the Edit menu whilst the Debrief plot
+                        is active.</para>
+                    <para>This will place the image in a time-stamped file named
+                            <filename>d3_minute_second.WMF</filename>, located in the directory
+                        indicated in the <application>Debrief</application> properties file. If the
+                        location is not specified in the properties file, the
+                            <filename>WMF</filename> image will be created in the
+                            <application>Debrief</application> installation directory. </para>
                     <para>Also, don't forget that time-variable graphs produced by the <link
                             linkend="track_toolbox">Track-Time toolbox</link> can be exported to WMF
                         aswell, as described in Section <xref linkend="show_time_vars"/>, titled
@@ -3848,12 +3854,12 @@ and so on....</programlisting></para>
                             </varlistentry>
                         </variablelist>
                     </para>
-                    <para> Once you have completed editing these parameters, press the <guibutton
-                            >Build</guibutton> button, which will create a buoyfield using the
-                        defaults indicated. The properties for the buoyfield as a whole will open up
-                        in the properties window. From these properties you make any necessary
-                        corrections to the name of the buoyfield, or the location of the name
-                        relative to the buoys themselves. </para>
+                    <para> Once you have completed editing these parameters, press the
+                            <guibutton>Build</guibutton> button, which will create a buoyfield using
+                        the defaults indicated. The properties for the buoyfield as a whole will
+                        open up in the properties window. From these properties you make any
+                        necessary corrections to the name of the buoyfield, or the location of the
+                        name relative to the buoys themselves. </para>
                     <para> The buoyfield which is produced will look something similar to that shown
                         below. </para>
                 </sect2>
@@ -3881,11 +3887,12 @@ and so on....</programlisting></para>
                     <title>Tote</title>
                     <para>Buoyfields have some similar properties to vessel tracks when placed on
                         the <glossterm linkend="g_tote">Tote</glossterm>. </para>
-                    <para>Once a buoyfield is made a <guilabel>Primary</guilabel> or <guilabel
-                            >Secondary</guilabel> track, a highlight is drawn around the buoy at or
-                        immediately after the current time. Additionally, if the buoyfield is
-                        designated as a secondary track the Tote continuously displays it&apos;s
-                        range and bearing from the current location on the primary track. </para>
+                    <para>Once a buoyfield is made a <guilabel>Primary</guilabel> or
+                            <guilabel>Secondary</guilabel> track, a highlight is drawn around the
+                        buoy at or immediately after the current time. Additionally, if the
+                        buoyfield is designated as a secondary track the Tote continuously displays
+                        it&apos;s range and bearing from the current location on the primary track.
+                    </para>
                 </sect2>
                 <sect2 id="buoy_analysis">
                     <title>Analysis</title>
@@ -3975,14 +3982,15 @@ and so on....</programlisting></para>
                         databases. </para>
                     <para>One of the databases, the Vector Map (VMap) Level O is an unclassified
                         global database of many features, including coastlines, depth and elevation
-                        contours. This is the favoured VPF database for use in <application
-                            >Debrief</application>. But note that <application>Debrief</application>
-                        makes no assumptions of or optimisations for the VMap data - any VPF data
-                        source can be used. <application>Debrief</application> can also import
-                        Digital Nautical Chart (DNC) databases. The Digital Nautical Chart is
-                        produced by the National Imagery and Mapping Agency (NIMA) and is an
-                        unclassified, vector-based digital database containing maritime significant
-                        features essential for safe marine navigation. </para>
+                        contours. This is the favoured VPF database for use in
+                            <application>Debrief</application>. But note that
+                            <application>Debrief</application> makes no assumptions of or
+                        optimisations for the VMap data - any VPF data source can be used.
+                            <application>Debrief</application> can also import Digital Nautical
+                        Chart (DNC) databases. The Digital Nautical Chart is produced by the
+                        National Imagery and Mapping Agency (NIMA) and is an unclassified,
+                        vector-based digital database containing maritime significant features
+                        essential for safe marine navigation. </para>
                     <para>Here is an introduction to VPF from the US National Imagery and Mapping
                         Agency&apos;s web site ( <ulink url="http://www.nima.mil"
                             >http://www.nima.mil</ulink>): <blockquote>
@@ -4066,8 +4074,7 @@ and so on....</programlisting></para>
                 <sect2 id="getting_vpf">
                     <title>Obtaining VPF data</title>
                     <para>
-                        <glossterm linkend="g_vpf">VPF</glossterm> data can be obtained from a
-                            <indexterm>
+                        <glossterm linkend="g_vpf">VPF</glossterm> data can be obtained from a <indexterm>
                             <primary>VPF Data</primary>
                             <secondary>Obtaining VPF data</secondary>
                         </indexterm> number of different sources, although the main resource is the
@@ -4110,11 +4117,12 @@ and so on....</programlisting></para>
                                     manager (e.g. <application>Windows Explorer</application>). You
                                     need to find which directory contains the actual data, so have a
                                     look in each of the top level directories for a directory which
-                                    contains the files <filename>DHT</filename> and <filename
-                                        >LAT</filename>. Note, for VMap data this is a directory
-                                    named <filename>VMAPLV0</filename>. When you&apos;ve found this
-                                    directory copy it across to the <filename>VPF</filename>
-                                    directory you created on your hard disk. </para>
+                                    contains the files <filename>DHT</filename> and
+                                        <filename>LAT</filename>. Note, for VMap data this is a
+                                    directory named <filename>VMAPLV0</filename>. When you&apos;ve
+                                    found this directory copy it across to the
+                                        <filename>VPF</filename> directory you created on your hard
+                                    disk. </para>
                             </listitem>
                             <listitem>
                                 <para>So for VMap data, your hard disk you should have a directory
@@ -4135,8 +4143,8 @@ and so on....</programlisting></para>
                             </listitem>
                             <listitem>
                                 <para>Once you&apos;ve repeated this process for all of the CDs for
-                                    the current database it&apos;s time to configure <application
-                                        >Debrief</application> to load the data. </para>
+                                    the current database it&apos;s time to configure
+                                        <application>Debrief</application> to load the data. </para>
                             </listitem>
                         </orderedlist></para>
                 </sect2>
@@ -4147,9 +4155,9 @@ and so on....</programlisting></para>
                             <primary>VPF Data</primary>
                             <secondary>Configuring Debrief</secondary>
                         </indexterm>the <guibutton>VPF Data storage</guibutton> tab of the
-                            <guibutton>Preferences</guibutton> dialog from the <guimenu
-                            >Window</guimenu> menu. Indicate the four data-file locations using the
-                        file-browser buttons.<figure id="VPF_Prefs_Demo" float="0">
+                            <guibutton>Preferences</guibutton> dialog from the
+                            <guimenu>Window</guimenu> menu. Indicate the four data-file locations
+                        using the file-browser buttons.<figure id="VPF_Prefs_Demo" float="0">
                             <title>VPF preferences</title>
                             <screenshot>
                                 <mediaobject>
@@ -4167,9 +4175,9 @@ and so on....</programlisting></para>
                         change, and re-use the Source Code for <application>Debrief</application>,
                         provided they meet the terms of the <application>Debrief</application>
                         license. </para>
-                    <para>The VPF plotting libraries we&apos;re using in <application
-                            >Debrief</application> are taken from another Open Source application,
-                            <application>OpenMap</application> from BBN Technologies. </para>
+                    <para>The VPF plotting libraries we&apos;re using in
+                            <application>Debrief</application> are taken from another Open Source
+                        application, <application>OpenMap</application> from BBN Technologies. </para>
                     <para>
                         <inlinegraphic fileref="figures/VPF_OpenMap.gif"/>
                         <inlinegraphic fileref="figures/VPF_BBN_2c_primary.jpg"/>
@@ -4191,8 +4199,7 @@ and so on....</programlisting></para>
                         </indexterm> any attention to <glossterm linkend="g_vpf">VPF</glossterm>
                         data until it loads a plot which requires the data, or until the user
                         requests that VPF layers be added. </para>
-                    <para>VPF layers are loaded into a plot using the "Create VPF Layers" button:
-                            <guiicon>
+                    <para>VPF layers are loaded into a plot using the "Create VPF Layers" button: <guiicon>
                             <inlinegraphic fileref="figures/create_vpf.png"/>
                         </guiicon>
                     </para>
@@ -4261,12 +4268,13 @@ and so on....</programlisting></para>
                             </screenshot>
                         </figure></para>
                     <para>Now you are going to configure the plotting of coastlines. Right-click on
-                        the <guilabel>Coastlines</guilabel> entry, and from the <guilabel
-                            >Coastlines</guilabel> drop-down list, select <guilabel
-                        >Color</guilabel>, and then <guilabel>Light Grey</guilabel>. Note that
-                            <guilabel>White</guilabel> is the default colour for all VPF features. </para>
-                    <para>Next, right-click on the coastlines entry again, and make the <guilabel
-                            >coastline</guilabel> Visible. </para>
+                        the <guilabel>Coastlines</guilabel> entry, and from the
+                            <guilabel>Coastlines</guilabel> drop-down list, select
+                            <guilabel>Color</guilabel>, and then <guilabel>Light Grey</guilabel>.
+                        Note that <guilabel>White</guilabel> is the default colour for all VPF
+                        features. </para>
+                    <para>Next, right-click on the coastlines entry again, and make the
+                            <guilabel>coastline</guilabel> Visible. </para>
                     <para>Whilst we&apos;ve made the <guilabel>Coastlines</guilabel> visible, the
                         layers above it aren&apos;t, so now you make its parents visible.
                         Right-click on the <guilabel>Boundaries</guilabel> layer and make it
@@ -4350,9 +4358,9 @@ and so on....</programlisting></para>
                     <title>Storing VPF settings</title>
                     <para>As explained earlier, when you save the <glossterm linkend="g_vpf"
                             >VPF</glossterm> plot your VPF settings get saved with it. So have a go
-                        at saving your current view, exiting/re-starting <application
-                            >Debrief</application> then re-loading it. You should find yourself
-                        seeing the same view which you saved. </para>
+                        at saving your current view, exiting/re-starting
+                            <application>Debrief</application> then re-loading it. You should find
+                        yourself seeing the same view which you saved. </para>
                 </sect2>
                 <sect2 id="vpf_best_practice">
                     <title>VPF Best Practice</title>
@@ -4390,10 +4398,10 @@ and so on....</programlisting></para>
                     <title>The solution</title>
                     <para>How does it <application>Debrief</application> handle VPF data? <itemizedlist>
                             <listitem>
-                                <para>When you save a plot with VPF data loaded, <application
-                                        >Debrief</application> stores the names of all of the layers
-                                    loaded, together with the colours and visibility of any features
-                                    on them. </para>
+                                <para>When you save a plot with VPF data loaded,
+                                        <application>Debrief</application> stores the names of all
+                                    of the layers loaded, together with the colours and visibility
+                                    of any features on them. </para>
                             </listitem>
                             <listitem>
                                 <para>When you re-load an existing session with VPF data,
@@ -4495,15 +4503,16 @@ and so on....</programlisting></para>
                     <para>As you can see above, the file starts with an entry beginning with the
                         characters <guilabel>&lt;?xml</guilabel>. This line indicates that you are
                         handling <glossterm linkend="g_xml">XML</glossterm> data. </para>
-                    <para>Next you have a series of lines of data, which start with <guilabel
-                            >&lt;plot&gt;</guilabel> and end with <guilabel
-                        >&lt;/plot&gt;</guilabel>. This format is similar to that found in HTML, and
-                        indicates that this file contains details of plot. Inside the <guilabel
-                            >&lt;plot&gt;</guilabel> you can see a <guilabel
-                            >&lt;session&gt;</guilabel>, which in turn contains a <guilabel
-                            >&lt;layers&gt;</guilabel> object, containing a series of <guilabel
-                            >&lt;layer&gt;</guilabel> items, followed by a <guilabel
-                            >&lt;projection&gt;</guilabel>, and a <guilabel>&lt;gui&gt;</guilabel>. </para>
+                    <para>Next you have a series of lines of data, which start with
+                            <guilabel>&lt;plot&gt;</guilabel> and end with
+                            <guilabel>&lt;/plot&gt;</guilabel>. This format is similar to that found
+                        in HTML, and indicates that this file contains details of plot. Inside the
+                            <guilabel>&lt;plot&gt;</guilabel> you can see a
+                            <guilabel>&lt;session&gt;</guilabel>, which in turn contains a
+                            <guilabel>&lt;layers&gt;</guilabel> object, containing a series of
+                            <guilabel>&lt;layer&gt;</guilabel> items, followed by a
+                            <guilabel>&lt;projection&gt;</guilabel>, and a
+                            <guilabel>&lt;gui&gt;</guilabel>. </para>
                     <para>What you are going to do is strip out everything except the Layers object,
                         and then thin this out. </para>
                     <para>So, move the cursor to the <guilabel>&lt;layers&gt;</guilabel> line.
@@ -4515,8 +4524,9 @@ and so on....</programlisting></para>
                             <guilabel>Chart Features</guilabel> is the first one in the example
                         above). It is the <guilabel>Chart Features</guilabel> layer which you want
                         to keep, so navigate down to the next Layer (which may have a track name),
-                        and delete that and all others (down to, but not including the <guilabel
-                            >&lt;/layers&gt;</guilabel> line which marks the end of the data). </para>
+                        and delete that and all others (down to, but not including the
+                            <guilabel>&lt;/layers&gt;</guilabel> line which marks the end of the
+                        data). </para>
                     <para>Within the <guilabel>Chart Features</guilabel> layer you can see an entry
                         named <guilabel>&lt;vpf_database&gt;</guilabel> - this is the vpf data.
                         Inside the vpf_database are <guilabel>&lt;vpf_library&gt;</guilabel>
@@ -4526,9 +4536,10 @@ and so on....</programlisting></para>
                             <guilabel>&lt;vpf_coverage&gt;</guilabel> entries. It is these which you
                         will thin out. Work down through them deleting any you don&apos;t want. In
                         your instance you only want to keep the boundaries data, so you will delete
-                        all other coverages. So, select blocks of text beginning with <guilabel
-                            >&lt;vpf_coverage&gt;</guilabel> and ending with <guilabel
-                            >&lt;/vpf_coverage&gt;</guilabel> and delete those you don&apos;t want. </para>
+                        all other coverages. So, select blocks of text beginning with
+                            <guilabel>&lt;vpf_coverage&gt;</guilabel> and ending with
+                            <guilabel>&lt;/vpf_coverage&gt;</guilabel> and delete those you
+                        don&apos;t want. </para>
                     <para>Finally, delete any &lt;vpf_features&gt; you don&apos;t want. </para>
                     <para>I&apos;ve deleted all those I don&apos;t want, leaving the text below:
                         <screen>
@@ -4563,16 +4574,16 @@ and so on....</programlisting></para>
                 </sect2>
                 <sect2 id="steps_complete">
                     <title>At last!</title>
-                    <para>Now, you can drag and drop this file into any <application
-                            >Debrief</application> session to instantly give you your "favourite"
-                        set of layers. </para>
+                    <para>Now, you can drag and drop this file into any
+                            <application>Debrief</application> session to instantly give you your
+                        "favourite" set of layers. </para>
                     <para>To test it, follow the steps described above (or copy the text I&apos;ve
-                        just given you into a blank text file and save it as <filename
-                            >default_layers.xml</filename>). Then create a new <application
-                            >Debrief</application> session, load one of your demo tracks ( <filename
-                            >boat1.rep</filename>), then drag in <filename
-                            >default_layers.xml</filename>. Zoom out, and have a look at the lovely,
-                        pre-formatted data. </para>
+                        just given you into a blank text file and save it as
+                            <filename>default_layers.xml</filename>). Then create a new
+                            <application>Debrief</application> session, load one of your demo tracks
+                        ( <filename>boat1.rep</filename>), then drag in
+                            <filename>default_layers.xml</filename>. Zoom out, and have a look at
+                        the lovely, pre-formatted data. </para>
                 </sect2>
             </sect1>
             <sect1 id="etopo_data">
@@ -4584,9 +4595,9 @@ and so on....</programlisting></para>
                             <primary>ETOPO Data</primary>
                             <secondary>Configuring Debrief</secondary>
                         </indexterm>the <guibutton>ETOPO Data storage</guibutton> tab of the
-                            <guibutton>Preferences</guibutton> dialog from the <guimenu
-                            >Window</guimenu> menu. Indicate the location of your ETOPO.RAW datafile
-                        using the file-browser button.<figure id="vpf_prefs" float="0">
+                            <guibutton>Preferences</guibutton> dialog from the
+                            <guimenu>Window</guimenu> menu. Indicate the location of your ETOPO.RAW
+                        datafile using the file-browser button.<figure id="vpf_prefs" float="0">
                             <title>VPF preferences</title>
                             <screenshot>
                                 <mediaobject>
@@ -4652,8 +4663,8 @@ and so on....</programlisting></para>
                             contains several datasets. The Dataset supported by Debrief is the
                                 <filename>ETOPO2.RAW </filename> file containing data in the
                                 <emphasis>big-endian</emphasis> format. This file must be copied
-                            into an <filename
-                                >plugins\org.mwc.cmap.static_resources_1.0.0\data</filename>
+                            into an
+                                <filename>plugins\org.mwc.cmap.static_resources_1.0.0\data</filename>
                             sub-directory of the Debrief installation. This 2-minute dataset offers
                             more than 6 times the detail of the ETOPO-5 dataset. This 2-minute data
                             is derived from the following sources: <itemizedlist>
@@ -4841,8 +4852,8 @@ and so on....</programlisting></para>
                 <sect2 id="more_loading_narr">
                     <title>Loading the data</title>
                     <para>Narrative data is loaded into <application>Debrief</application> in the
-                        same way as other data, by dragging and dropping, or using the <guibutton
-                            >Import Data</guibutton> button. </para>
+                        same way as other data, by dragging and dropping, or using the
+                            <guibutton>Import Data</guibutton> button. </para>
                 </sect2>
                 <sect2 id="viewing_narrative_data">
                     <title>Viewing the data</title>
@@ -4891,9 +4902,9 @@ and so on....</programlisting></para>
                             </varlistentry>
                         </variablelist></para>
                     <para>Also, the narrative viewer is able to filter your data for you.
-                        Double-click on the <guibutton>Source</guibutton> or <guibutton
-                            >Type</guibutton> headings and a filter dialog will open.<figure
-                            id="filtering_narrative" float="0">
+                        Double-click on the <guibutton>Source</guibutton> or
+                            <guibutton>Type</guibutton> headings and a filter dialog will
+                            open.<figure id="filtering_narrative" float="0">
                             <title>Filtering a narrative</title>
                             <screenshot>
                                 <mediaobject>
@@ -4947,10 +4958,10 @@ and so on....</programlisting></para>
                 <title id="SensorDataSection">Sensor data</title>
                 <sect2 id="sensor_Data_intro">
                     <title>Introduction</title>
-                    <para>As useful as it would appear it is only in the update to <application
-                            >Debrief</application> 2001 that <application>Debrief</application> has
-                        been able to properly show <glossterm linkend="g_sensor">sensor</glossterm>
-                        data. </para>
+                    <para>As useful as it would appear it is only in the update to
+                            <application>Debrief</application> 2001 that
+                            <application>Debrief</application> has been able to properly show
+                            <glossterm linkend="g_sensor">sensor</glossterm> data. </para>
                     <para>A rudimentary way of showing bearing lines has been present for a number
                         of years, but Debrief has not performed any useful processing on this data. </para>
                     <para>The following terms are used: <variablelist>
@@ -5255,8 +5266,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             <guilabel>Bearing Residuals</guilabel> view, which displays bearing
                         residual data - subject to the constraints <link linkend="DotsConstraints">
                             listed earlier</link> (with the TMA Segment present as the secondary
-                        track). If your data contains frequency data then you can open the <guilabel
-                            >Frequency Residuals</guilabel> view, which display actual, and
+                        track). If your data contains frequency data then you can open the
+                            <guilabel>Frequency Residuals</guilabel> view, which display actual, and
                         calculated frequencies (based on the selected solution). Read more about the
                         frequency algorithms in <xref linkend="freq_alg"/></para>
                     <para>Once the plot is in 'Drag track segment' mode a series of track-dragging
@@ -5370,14 +5381,14 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     </figure></para>
                 <para>The <application>SourceForge.net</application> page, used to support the
                     project management of Debrief, is described later in <link
-                        linkend="debrief_feedback">Providing Feedback</link>, and the <application
-                        >Debrief</application> news list is described in the <link
+                        linkend="debrief_feedback">Providing Feedback</link>, and the
+                        <application>Debrief</application> news list is described in the <link
                         linkend="debrief_news">next section</link>. </para>
             </sect1>
             <sect1 id="debrief_news">
                 <title>Keeping up to date</title>
-                <para>News lists (more commonly known as mailing lists) are one of the <application
-                        >SourceForge.net</application> services <indexterm>
+                <para>News lists (more commonly known as mailing lists) are one of the
+                        <application>SourceForge.net</application> services <indexterm>
                         <primary>SourceForge</primary>
                         <secondary>Keeping up to date</secondary>
                     </indexterm> which are employed by <application>Debrief</application>. The lists
@@ -5392,11 +5403,11 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <link linkend="project_manager">Project Manager</link> publishing news each time
                     a new version of <application>Debrief</application> is made available for
                     download. </para>
-                <para>There is currently just one mailing list related to <application
-                        >Debrief</application>, this is named <application
-                        >debrief-news</application>. This is quite a low volume mailing list, with
-                    at the most two messages a month; so there&apos;s no need to worry about getting
-                    snowed-under with news items. </para>
+                <para>There is currently just one mailing list related to
+                        <application>Debrief</application>, this is named
+                        <application>debrief-news</application>. This is quite a low volume mailing
+                    list, with at the most two messages a month; so there&apos;s no need to worry
+                    about getting snowed-under with news items. </para>
                 <sect2 id="debrief_news_list">
                     <title>Joining</title>
                     <para>To join to the <application>Debrief</application> news list, send an
@@ -5410,9 +5421,9 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <title>Submitting</title>
                     <para>Once you have joined the list, you are then entitled to submit news,
                         should you wish to. So, if you have identified or fixed a significant bug,
-                        or have contributed significant content to the <application
-                            >Debrief</application> web-site, please feel free to e-mail the news
-                        list directly. Just send an e-mail to
+                        or have contributed significant content to the
+                            <application>Debrief</application> web-site, please feel free to e-mail
+                        the news list directly. Just send an e-mail to
                             <email>debrief-news@lists.sourceforge.net</email>
                     </para>
                 </sect2>
@@ -5469,11 +5480,11 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                                 be informed of any significant changes to Debrief.</para>
                         </formalpara>
                     </sidebar>
-                    <para>Don't worry about always having the newest version of <application
-                            >Debrief</application>. Most software changes only apply to a small
-                        portion of the software and don't justify the upgrade effort. If, however, a
-                        Debrief fix applies specifically to your work, you should follow these steps
-                        to upgrade your Debrief installation:<orderedlist
+                    <para>Don't worry about always having the newest version of
+                            <application>Debrief</application>. Most software changes only apply to
+                        a small portion of the software and don't justify the upgrade effort. If,
+                        however, a Debrief fix applies specifically to your work, you should follow
+                        these steps to upgrade your Debrief installation:<orderedlist
                             id="search_software_updates_internet">
                             <title>Searching for software updates</title>
                             <listitem>
@@ -5483,8 +5494,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             </listitem>
                             <listitem>
                                 <para>Select <guibutton>Search for updates of the currently
-                                        installed features</guibutton>, then <guibutton
-                                        >Next</guibutton>.</para>
+                                        installed features</guibutton>, then
+                                        <guibutton>Next</guibutton>.</para>
                             </listitem>
                             <listitem>
                                 <para>Follow the instructions provided to view what updates are
@@ -5494,8 +5505,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         </orderedlist></para>
                     <para>Now, Debrief may now have found any updates. Hey, maybe there weren't any.
                         But maybe Debrief's not looking in the right place. If no updates are found,
-                        follow these steps to ensure the MWC download server is
-                            configured:<orderedlist>
+                        follow these steps to ensure the MWC download server is configured:<orderedlist>
                             <listitem>
                                 <para>Select <guimenu>Help</guimenu>/<guimenu>Software
                                         Updates</guimenu>/<guimenu>Find and
@@ -5512,8 +5522,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             </listitem>
                             <listitem>
                                 <para>A file dialog will open. From it, enter <filename>Network
-                                        Neighbourhood </filename>, and navigate to <filename
-                                        >//Needles/Operational
+                                        Neighbourhood </filename>, and navigate to
+                                        <filename>//Needles/Operational
                                         Analysis/collaborative/applications/Debrief/Updates</filename>.
                                     Then press <guibutton>OK</guibutton> and name the local site as
                                         <userinput>MWC Updates</userinput>. Accept this. Now, from
@@ -5553,11 +5563,11 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         of analysis. Where new features relate to a wide body of users , or where a
                         significant bug is fixed, e-mails are sent out to the Debrief user mailing
                         list.</para>
-                    <para>Don't worry about always having the newest version of <application
-                            >Debrief</application>. Most software changes only apply to a small
-                        portion of the software and don't justify the upgrade effort. If, however, a
-                        Debrief fix applies specifically to your work, you should follow these steps
-                        to upgrade your Debrief installation:<orderedlist
+                    <para>Don't worry about always having the newest version of
+                            <application>Debrief</application>. Most software changes only apply to
+                        a small portion of the software and don't justify the upgrade effort. If,
+                        however, a Debrief fix applies specifically to your work, you should follow
+                        these steps to upgrade your Debrief installation:<orderedlist
                             id="search_software_updates">
                             <title>Searching for software updates</title>
                             <listitem>
@@ -5567,8 +5577,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             </listitem>
                             <listitem>
                                 <para>Select <guibutton>Search for updates of the currently
-                                        installed features</guibutton>, then <guibutton
-                                        >Next</guibutton>.</para>
+                                        installed features</guibutton>, then
+                                        <guibutton>Next</guibutton>.</para>
                             </listitem>
                             <listitem>
                                 <para>Follow the instructions provided to view what updates are
@@ -5578,8 +5588,7 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                         </orderedlist></para>
                     <para>Now, Debrief may now have found any updates. Hey, maybe there weren't any.
                         But maybe Debrief's not looking in the right place. If no updates are found,
-                        follow these steps to ensure the Debrief update server is
-                            configured:<orderedlist>
+                        follow these steps to ensure the Debrief update server is configured:<orderedlist>
                             <listitem>
                                 <para>Select <guimenu>Help</guimenu>/<guimenu>Software
                                         Updates</guimenu>/<guimenu>Find and
@@ -5596,11 +5605,12 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             </listitem>
                             <listitem>
                                 <para>A file dialog will open. In it, enter <filename>Debrief update
-                                        site</filename> for the Name, and <filename
-                                        >http://debrief.sourceforge.net/eclipse/</filename> for the
-                                    URL. Now, from the list of update sites, ensure <userinput
-                                        >Debrief update site</userinput> is ticked, but not the
-                                    others (since they rely on an internet connection).</para>
+                                        site</filename> for the Name, and
+                                        <filename>http://debrief.sourceforge.net/eclipse/</filename>
+                                    for the URL. Now, from the list of update sites, ensure
+                                        <userinput>Debrief update site</userinput> is ticked, but
+                                    not the others (since they rely on an internet
+                                    connection).</para>
                             </listitem>
                             <listitem>
                                 <para>Now you should be able to perform the <link
@@ -5613,8 +5623,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
             <sect1 id="debrief_feedback">
                 <title>Providing feedback</title>
                 <para>In addition to the <application>Debrief</application> web-site, the
-                        <application>Debrief</application> project makes use of <application
-                        >SourceForge</application>, an online development web-site <indexterm>
+                        <application>Debrief</application> project makes use of
+                        <application>SourceForge</application>, an online development web-site <indexterm>
                         <primary>SourceForge</primary>
                         <secondary>Providing Feedback</secondary>
                     </indexterm> which provides us with bug-tracking, file download support, and
@@ -5656,8 +5666,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                 <sect2 id="debrief_bugs">
                     <title>Reporting Bugs</title>
                     <para>To report a bug, or a feature which you believe is behaving incorrectly,
-                        press the <guibutton>Tracker</guibutton> link from the <application
-                            >SourceForge.net</application> homepage <indexterm>
+                        press the <guibutton>Tracker</guibutton> link from the
+                            <application>SourceForge.net</application> homepage <indexterm>
                             <primary>SourceForge</primary>
                             <secondary>Reporting Bugs</secondary>
                         </indexterm> for Debrief. These <emphasis>Trackers</emphasis> allow
@@ -5703,13 +5713,13 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                             linkend="project_manager">Project Manager</link>, normally containing a
                         time-frame for resolution of the bug. </para>
                     <tip>
-                        <para>If you find yourself frequently submitting bugs via <application
-                                >SourceForge.net</application> (hopefully not) then it may prove
-                            worthwhile to register with <application>SourceForge.net</application>.
-                            Registering gives you your own ID within <application
-                                >SourceForge.net</application>, and gives you a dedicated personal
-                            page which allows you track the progress of all bug-reports and feature
-                            requests submitted. </para>
+                        <para>If you find yourself frequently submitting bugs via
+                                <application>SourceForge.net</application> (hopefully not) then it
+                            may prove worthwhile to register with
+                                <application>SourceForge.net</application>. Registering gives you
+                            your own ID within <application>SourceForge.net</application>, and gives
+                            you a dedicated personal page which allows you track the progress of all
+                            bug-reports and feature requests submitted. </para>
                     </tip>
                 </sect2>
                 <sect2 id="debrief_features">
@@ -5837,9 +5847,9 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <para>Debrief installs itself into a <filename>Debrief NG</filename> folder in
                         the top level of your C:\ drive.. Within the Debrief NG folder you will find
                         the DebriefNG executable in the top-level, together with some additional
-                            <filename>dll</filename> files used for optimised graphics (<filename
-                            >gdiplus.dll</filename>), and copy to clipboard (<filename
-                            >JavaClipboard.dll</filename>).</para>
+                            <filename>dll</filename> files used for optimised graphics
+                            (<filename>gdiplus.dll</filename>), and copy to clipboard
+                            (<filename>JavaClipboard.dll</filename>).</para>
                     <para>The <filename>jre</filename> folder contains a Java Runtime Environment
                         that's been modified by the inclusion of a current set of Java3d libraries.
                         In the absence of this <filename>jre</filename> folder Debrief (Eclipse)
@@ -5895,8 +5905,8 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <para>Start by locating a central shared folder, and creating a
                             <emphasis>Repository</emphasis> folder in it. This is where your Debrief
                         maintainer will unzip Debrief updates. Next, you must tell the individual
-                        Debrief installations where the repository is. Do this from the <guilabel
-                            >Preferences</guilabel>
+                        Debrief installations where the repository is. Do this from the
+                            <guilabel>Preferences</guilabel>
                         <guilabel>Install/Update</guilabel>
                         <guilabel>Available Software Sites</guilabel> dialog:<figure
                             id="ReposLocation" float="0">
@@ -5920,37 +5930,36 @@ track name, ellipse orientation (deg from north),  maxima (yds),
                     <para>The shortcut placed on the <guimenu>Start|Program Files|Debrief
                             NG</guimenu> menu actually calls the <filename>DebriefNG.exe</filename>
                         file found in the startup directory. This application triggers the startup
-                        of Debrief, passing to it the parameters contained in the <filename
-                            >DebriefNG.ini</filename> file. This file contains options to select the
-                        initial perspective, the memory allocation, and additional files to include
-                        on the classpath (3d files in our case).</para>
+                        of Debrief, passing to it the parameters contained in the
+                            <filename>DebriefNG.ini</filename> file. This file contains options to
+                        select the initial perspective, the memory allocation, and additional files
+                        to include on the classpath (3d files in our case).</para>
                 </sect2>
                 <sect2>
                     <title>Use of English locale</title>
                     <para>Note that Debrief fails when on an machine set to a non-English locale,
                         such as French(Canada). The application cannot read data-files correctly,
                         nor can it populate screen editors. The workaround to this problem is to
-                        explicitly direct Debrief to startup using an English locale.  Do this by
-                        launching Debrief with the "-nl en" command parameter.  This can be
-                        performed either by modifying the shortcut used to start Debrief, or by
-                        adding the command parameter to the <filename>Debrief.ini</filename>
-                        configuration file (though this will have to be re-performed after each
-                        Debrief update).</para>
+                        explicitly direct Debrief to startup using an English locale. Do this by
+                        launching Debrief with the "-nl en" command parameter. This can be performed
+                        either by modifying the shortcut used to start Debrief, or by adding the
+                        command parameter to the <filename>Debrief.ini</filename> configuration file
+                        (though this will have to be re-performed after each Debrief update).</para>
                 </sect2>
             </sect1>
             <sect1 id="fault_diagnosis">
                 <title>Fault-Diagnosis Instructions</title>
                 <sect2 id="more_fault_diagnosis">
                     <title>How-to</title>
-                    <para>With the adoption of the Eclipse framework, <application
-                            >Debrief</application> enjoys the benefits of the Eclipse configuration
-                        and logging engine. Debrief uses this for information, warning, and error
-                        reporting.</para>
+                    <para>With the adoption of the Eclipse framework,
+                            <application>Debrief</application> enjoys the benefits of the Eclipse
+                        configuration and logging engine. Debrief uses this for information,
+                        warning, and error reporting.</para>
                     <para>Details of an individual Debrief NG installation can be obtained by
-                        selecting <guimenuitem>About Debrief NG</guimenuitem> from the <guimenu
-                            >Help</guimenu> menu. From the dialog that opens, select <guibutton
-                            >Configuration Details</guibutton>. This will open a text dialog
-                        providing the following information:<itemizedlist>
+                        selecting <guimenuitem>About Debrief NG</guimenuitem> from the
+                            <guimenu>Help</guimenu> menu. From the dialog that opens, select
+                            <guibutton>Configuration Details</guibutton>. This will open a text
+                        dialog providing the following information:<itemizedlist>
                             <listitem>
                                 <para>Date stamp</para>
                             </listitem>
@@ -6139,7 +6148,9 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                                             <para>5</para>
                                         </entry>
                                         <entry>
-                                            <para>Latitude Degrees</para>
+                                            <para>Latitude Degrees (Debrief is able to handle
+                                                decimal degrees - provide zeros for mins and
+                                                secs)</para>
                                         </entry>
                                     </row>
                                     <row>
@@ -6147,7 +6158,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                                             <para>6</para>
                                         </entry>
                                         <entry>
-                                            <para>Latitude Minutes</para>
+                                            <para>Latitude Minutes (Debrief is able to handle
+                                                decimal mins - provide zeros for secs)</para>
                                         </entry>
                                     </row>
                                     <row>
@@ -6171,7 +6183,9 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                                             <para>9</para>
                                         </entry>
                                         <entry>
-                                            <para>Longitude Degrees</para>
+                                            <para>Longitude Degrees (Debrief is able to handle
+                                                decimal degrees - provide zeros for mins and
+                                                secs)</para>
                                         </entry>
                                     </row>
                                     <row>
@@ -6179,7 +6193,8 @@ YYYYMMDD HHMMSS.SSS "XYX XYX XYX" SY DD MM SS.SS H DDD MM SS.SS H CCC.C SS.S DDD
                                             <para>10</para>
                                         </entry>
                                         <entry>
-                                            <para>Longitude Minutes</para>
+                                            <para>Longitude Minutes (Debrief is able to handle
+                                                decimal mins - provide zeros for secs)</para>
                                         </entry>
                                     </row>
                                     <row>
@@ -6540,6 +6555,11 @@ course, speed, depth (m), label string
                                 track/ownship name may now contain multi-word phrases if they are
                                 enclosed in quotation marks ("), and the year can be expressed as 2
                                 or 4 figures.</para>
+                        </note><note>
+                            <para>Debrief can handle decimal values for degrees or minutes.  If you
+                                original data is in decimal degrees or degrees plus decimal minutes
+                                feel free to use these values directly, but remember to provide a
+                                zero for the unused column(s)</para>
                         </note></para>
                     <para>
                         <glossterm linkend="g_annotation">Annotation</glossterm> positions are
@@ -6565,9 +6585,9 @@ course, speed, depth (m), label string
                 </sect2>
                 <sect2 id="more_adopting_xml">
                     <title>Adoption of XML</title>
-                    <para>An acknowledged shortcoming of the former file format ( <filename
-                            >dpl</filename>) used in <application>Debrief</application> was the
-                        frequency with which <application> Debrief</application> modifications
+                    <para>An acknowledged shortcoming of the former file format (
+                            <filename>dpl</filename>) used in <application>Debrief</application> was
+                        the frequency with which <application> Debrief</application> modifications
                         rendered previous <filename>DPL</filename> files unreadable. This use of
                             <application>Java</application> serialization offered low cost in
                         development terms and was seen as essential to store the more complex data
@@ -6575,12 +6595,12 @@ course, speed, depth (m), label string
                         formatting data). </para>
                     <para>The only way to divorce the <application>Debrief</application> version
                         from the file format has been to adopt an independent file format. This
-                        independent format must be structured in order to store <application
-                            >Debrief</application> data tidily, and the development to support it
-                        must not be too "expensive". The adoption of <application> XML</application>
-                        meets both of these criteria = it is quite capable of storing <application
-                            >Debrief</application> data, and there are a number of libraries
-                        available which support it. </para>
+                        independent format must be structured in order to store
+                            <application>Debrief</application> data tidily, and the development to
+                        support it must not be too "expensive". The adoption of <application>
+                            XML</application> meets both of these criteria = it is quite capable of
+                        storing <application>Debrief</application> data, and there are a number of
+                        libraries available which support it. </para>
                     <para>XML provides additional benefits beyond those described above: <itemizedlist>
                             <listitem>
                                 <para>It is human-readable, offering the following benefits: <itemizedlist>
@@ -7480,7 +7500,8 @@ departure / d.lat = tan (course)</markup>
 77º 38&apos; 6.8250" W
               </markup>
             </screen></para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="G_AFWTF">
                 <glossterm>AFWTF</glossterm>
                 <glossdef>
@@ -7492,7 +7513,8 @@ departure / d.lat = tan (course)</markup>
 17º 38.1577&apos; N 
 065º 4.2065&apos; W</markup>
             </screen></para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_annotation">
                 <glossterm>Annotation</glossterm>
                 <glossdef>
@@ -7500,7 +7522,8 @@ departure / d.lat = tan (course)</markup>
                         added to a plot which do not represent vehicle positions, or bearings
                         recorded on vehicle-mounted sensors. Examples of annotations are rectangles,
                         ellipses and lines.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_asset">
                 <glossterm>ASSET</glossterm>
                 <glossdef>
@@ -7512,7 +7535,8 @@ departure / d.lat = tan (course)</markup>
                         Quickly it was recognised that Debrief could also be usefully employed in
                         the analysis of real exercise tracks. Aaah, how close we came to not having
                         Debrief at all...</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_bearing_rate">
                 <glossterm>Bearing Rate</glossterm>
                 <glossdef>
@@ -7532,27 +7556,31 @@ range = Range to target from ownship (yds)</markup>
 </screen></para>
                     <para>Positive and negative bearing rates are named Right and Left according to
                         naval convention, abreviated to R and L in the tote.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_bookmarks">
                 <glossterm>Bookmarks</glossterm>
                 <glossdef>
                     <para>The combination of a DTG, a remark and the name of a plot-file. Debrief NG
                         presents the series of bookmarks allowing you to quickly move through events
                         of interest across a series of plot-files.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_buoyfields">
                 <glossterm>Buoyfields</glossterm>
                 <glossdef>
                     <para>A series of sonar buoys which are laid in a particular pattern during
                         Anti-Submarine Warfare.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="G_BUILD_DATE">
                 <glossterm>Build Date</glossterm>
                 <glossdef>
                     <para>Each copy of Debrief is aware of the date is was built. Find this out by
                         selecting <guimenuitem>About</guimenuitem> from the <guimenu>Help</guimenu>
                         menu.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_cmap">
                 <glossterm>CMAP</glossterm>
                 <glossdef>
@@ -7560,18 +7588,19 @@ range = Range to target from ownship (yds)</markup>
                         intended to be reused across a range of maritime analysis applications. The
                         two initial CMAP applications are Debrief and <glossterm linkend="g_asset"
                             >ASSET</glossterm>.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_coastline_file">
                 <glossterm>Coastline File</glossterm>
                 <glossdef>
                     <para>Debrief expects to <indexterm>
                             <primary>Coastline</primary>
                             <secondary>File Format</secondary>
-                        </indexterm>find a coastline file (named <application
-                            >World.dat</application>) in its installation directory. Debrief loads
-                        this file in the background as soon as it opens; regardless of whether the
-                        user has requested to add a coastline to the current plot. Once the
-                        coastline is loaded (for the standard 1.2Mb file this takes around 8
+                        </indexterm>find a coastline file (named
+                            <application>World.dat</application>) in its installation directory.
+                        Debrief loads this file in the background as soon as it opens; regardless of
+                        whether the user has requested to add a coastline to the current plot. Once
+                        the coastline is loaded (for the standard 1.2Mb file this takes around 8
                         seconds) there is no further performance penalty within the application. </para>
                     <para>The coastline file should be formatted in the following way: <itemizedlist>
                             <listitem>
@@ -7606,7 +7635,8 @@ range = Range to target from ownship (yds)</markup>
 -11.351642    6.803475
               </markup>
             </screen></para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_DeadReckoning">
                 <glossterm>Dead Reckoning</glossterm>
                 <glossdef>
@@ -7617,7 +7647,8 @@ range = Range to target from ownship (yds)</markup>
                         course/speed legs from an origin. Debrief plots lats/longs unchanged when in
                             <glossterm linkend="g_OverTheGround">Over the Ground</glossterm>
                         mode.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_display_mode">
                 <glossterm>Display Mode</glossterm>
                 <glossdef>
@@ -7626,7 +7657,8 @@ range = Range to target from ownship (yds)</markup>
                         shown in full, with a highlight drawn over the current point (as indicated
                         in the Tote). When in snail mode only the current point plus an optional
                         back-track is plotted. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_earth_model">
                 <glossterm>Earth Model</glossterm>
                 <glossdef>
@@ -7635,32 +7667,37 @@ range = Range to target from ownship (yds)</markup>
                         Formulae, as described in &apos;Admiralty Manual of Navigation, Volume 2,
                         1973&apos;. Short-distance sailing is defined as "the following of a
                         rhumb-line track for a distance not greater than 600"</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_dtg">
                 <glossterm>DTG</glossterm>
                 <glossdef>
                     <para>Acronym representing Date Time Group</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_etopo">
                 <glossterm>ETOPO</glossterm>
                 <glossdef>
                     <para>Standard for digital topographic data, predominantly distributed by the
                         NOAA</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_cheat">
                 <glossterm>Cheat Sheets</glossterm>
                 <glossdef>
                     <para>Cheat sheets guide users through tasks. The task is broken down into steps
                         and presented to the user one step at a time, and the user checks off the
                         steps as he/she completes them.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_highlighter">
                 <glossterm>Highlighter</glossterm>
                 <glossdef>
                     <para>The highlighter is the graphic used to indicate the current point on a
                         track. Use of different highlighters allows range rings or a vessel-specific
                         symbol to be plotted at the current point</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_layer">
                 <glossterm>Layer</glossterm>
                 <glossdef>
@@ -7674,7 +7711,8 @@ range = Range to target from ownship (yds)</markup>
                         to a file of its own, then dropping this file of exercise areas into new
                         files - an example of this is in the <link linkend="vpf_how_to">VPF
                             best-practice</link>.) </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_MWC">
                 <glossterm>MWC</glossterm>
                 <glossdef>
@@ -7689,7 +7727,8 @@ range = Range to target from ownship (yds)</markup>
                         Maritime Warfare Development Centre at HMS Dolphin and the Maritime Tactical
                         School at HMS Dryad to create a focal point for doctrine and tactical
                         development. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_narrative">
                 <glossterm>Narrative</glossterm>
                 <glossdef>
@@ -7698,7 +7737,8 @@ range = Range to target from ownship (yds)</markup>
                         they may contain a series of status messages retrieved from a sensor or
                         weapon. All that is required is that the message have a DTG attached and
                         that it may be represented in text form.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_OverTheGround">
                 <glossterm>Over the ground</glossterm>
                 <glossdef>
@@ -7707,7 +7747,8 @@ range = Range to target from ownship (yds)</markup>
                         they do not contribute to how the positions are plotted. Debrief plots a
                         track using course and speed data when in <glossterm
                             linkend="g_DeadReckoning">Dead Reckoning</glossterm> mode.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_overview">
                 <glossterm>Overview</glossterm>
                 <glossdef>
@@ -7717,7 +7758,8 @@ range = Range to target from ownship (yds)</markup>
                         the selected area. The formatting on the overview chart is identical to (and
                         unchangeable from) that on the main plot, with the exception that text is
                         not plotted - to reduce clutter.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_perspective">
                 <glossterm>Perspective</glossterm>
                 <glossdef>
@@ -7739,7 +7781,8 @@ range = Range to target from ownship (yds)</markup>
                         custom perspective that you can open again later. </para>
                     <para>You can use the <guimenu>General &gt; Perspectives</guimenu> preference
                         page to open perspectives in the same window or in a new window. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_pfwtf">
                 <glossterm>PFWTF</glossterm>
                 <glossdef>
@@ -7751,14 +7794,16 @@ range = Range to target from ownship (yds)</markup>
 159º 55.17&apos; W
               </markup>
             </screen></para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_plt">
                 <glossterm>Plot</glossterm>
                 <glossdef>
                     <para>A graphic <emphasis>God&apos;s-eye</emphasis> representation of the
                         current dataset. By default the plot has a black background but this may be
                         altered by the user. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_plot_file">
                 <glossterm>Plot-File</glossterm>
                 <glossdef>
@@ -7783,14 +7828,16 @@ range = Range to target from ownship (yds)</markup>
                         </itemizedlist> Plot-Files end with an XML suffix and may be viewed in
                             <application>Internet Explorer</application> or edited using
                             <application>Notepad</application>. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_property_window">
                 <glossterm>Properties Window</glossterm>
                 <glossdef>
                     <para>A view containing a list of all of the editable properties for an object
                         within Debrief. Where applicable, custom editors are supplied (Color,
                         Location, DTG, etc)</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_range_rate">
                 <glossterm>Range Rate</glossterm>
                 <glossdef>
@@ -7807,20 +7854,23 @@ Ospd, Ocrse = Ownship course and speed (degs &amp; yps)
 brg = Bearing to target from ownship (degs)
               </markup>
             </screen></para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_replay">
                 <glossterm>Replay</glossterm>
                 <glossdef>
                     <para>Replay is the name of the Unix application used for viewing tracks back in
                         the early 90&apos;s at MWC</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_serial">
                 <glossterm>Serial</glossterm>
                 <glossdef>
                     <para>A "block" of exercise time, typically a sub-section of an exercise. An
                         analyst will normally analyse and exercise one serial at a time, and it is
                         usual for the exercise data to be broken down into serials.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_sensor">
                 <glossterm>Sensor</glossterm>
                 <glossdef>
@@ -7828,20 +7878,23 @@ brg = Bearing to target from ownship (degs)
                         could clearly be an acoustic sensor such as a sonar, but could also be a
                         periscope or radar. <application>Debrief</application> makes no specific
                         assumptions regarding what type of sensor is being represented. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_sensor_contact">
                 <glossterm>Sensor Contact</glossterm>
                 <glossdef>
                     <para>This is an individual contact recorded on a sensor, a single bearing line
                         reaching from the sensor location (origin) along the contact bearing to the
                         contact range.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_session">
                 <glossterm>Session</glossterm>
                 <glossdef>
                     <para>The layers, projection details, and settings of any GUI-elements for the
                         current view</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_slant_range">
                 <glossterm>Slant Range</glossterm>
                 <glossdef>
@@ -7851,14 +7904,16 @@ brg = Bearing to target from ownship (degs)
                         the Preferences window. Slant ranges are particularly useful in Debrief when
                         analysing the proximity of two entities that are very close when measured at
                         the surface but who possess a significant depth separation.</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_snail_trail">
                 <glossterm>Snail Trail</glossterm>
                 <glossdef>
                     <para>A mode within <application>Debrief</application> where only the current
                         vessel position plus a short back-track of previous positions is shown.
                     </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_stepper_control">
                 <glossterm>Stepper Control</glossterm>
                 <glossdef>
@@ -7877,7 +7932,8 @@ brg = Bearing to target from ownship (degs)
                                 </mediaobject>
                             </screenshot>
                         </figure></para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_symbology">
                 <glossterm>Symbology</glossterm>
                 <glossdef>
@@ -7885,14 +7941,16 @@ brg = Bearing to target from ownship (degs)
                         indicate the formatting to be applied to this particular
                         track/fix/annotation, although they can be over-ridden once the data is open
                         in <application>Debrief</application>. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_tzero">
                 <glossterm>T-Zero</glossterm>
                 <glossdef>
                     <para>A specific time of interest, particularly the start of a particular event.
                         Contexts typically have their own convention of t-zero. Lightweight torpedo
                         launches use weapon-splash time. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_tma_solution">
                 <glossterm>TMA Solution</glossterm>
                 <glossdef>
@@ -7902,7 +7960,8 @@ brg = Bearing to target from ownship (degs)
                         uncertainty over target location by representing the location as an ellipse
                         - given by a centre-point, an orientation and dimensions for the maximum and
                         minimum axis (as diameter, not radius).</para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_track">
                 <glossterm>Track</glossterm>
                 <glossdef>
@@ -7910,7 +7969,8 @@ brg = Bearing to target from ownship (degs)
                         helo, etc). A track has its own characteristics such as colour, label and
                         symbol frequency, and the symbol used to represent it when the <link
                             linkend="intro_to_sym_sets">symbol highlighter</link> is in use. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_tote">
                 <glossterm>Tote</glossterm>
                 <glossdef>
@@ -7919,7 +7979,8 @@ brg = Bearing to target from ownship (degs)
                         Stepper, beneath which are shown the primary and secondary tracks, when
                         assigned. When stepping forward through a <glossterm>serial</glossterm> the
                         Tote contains data calculated from the current vessel positions. </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_vpf">
                 <glossterm>VPF</glossterm>
                 <glossdef>
@@ -7932,14 +7993,16 @@ brg = Bearing to target from ownship (degs)
                             and organization for large geographic databases that are based on a
                             georelational data model and are intended for direct use. </quote>
                     </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
             <glossentry id="g_xml">
                 <glossterm>XML</glossterm>
                 <glossdef>
                     <para>The eXtensible Markup Language, as recommend by the World Wide Web
                         consortium. See the <link linkend="intro_xml">XML description</link> of the
                         Debrief reference guide </para>
-                </glossdef></glossentry>
+                </glossdef>
+            </glossentry>
         </glossary>
     </appendix>
     <!-- ********************************************************************** -->
@@ -7961,9 +8024,9 @@ brg = Bearing to target from ownship (degs)
         <para>Debrief has been authored in DocBook XML version 4.2 using XMetal version 3. Version
             6.5.2 of Saxon used version 1.61.2 of the Docbook XSL stylesheets and version 0.20.5 of
             fop to publish the document to PDF and HTML. </para>
-        <para>The majority of the text was originally imported from previous <application
-                >Debrief</application> help-files, but the reviews conducted in the transfer to
-            DocBook have resulted in many corrections and clarifications. </para>
+        <para>The majority of the text was originally imported from previous
+                <application>Debrief</application> help-files, but the reviews conducted in the
+            transfer to DocBook have resulted in many corrections and clarifications. </para>
     </colophon>
 </book>
 <!-- 
