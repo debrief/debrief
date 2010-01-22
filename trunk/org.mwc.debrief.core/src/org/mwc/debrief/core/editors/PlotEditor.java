@@ -305,9 +305,9 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	private void loadThisFile(IEditorInput input)
 	{
+		InputStream is = null;
 		try
 		{
-			InputStream is = null;
 			IPersistableElement persist = input.getPersistable();
 			if (input instanceof IFileEditorInput)
 			{
@@ -349,7 +349,6 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		}
 		catch (CoreException e)
 		{
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}

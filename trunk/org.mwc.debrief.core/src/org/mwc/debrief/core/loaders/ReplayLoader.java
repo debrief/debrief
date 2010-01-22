@@ -35,8 +35,8 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	 * @param theLayers
 	 * @param is
 	 */
-	void doTheLoad(final String thePath, final String theFileName, final Layers theLayers,
-			final InputStream is)
+	void doTheLoad(final String thePath, final String theFileName,
+			final Layers theLayers, final InputStream is)
 	{
 		final PlainImporterBase importer = new Debrief.ReaderWriter.Replay.ImportReplay()
 		{
@@ -52,14 +52,18 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 					// create ourselves a fresh stream. we create some fresh streams
 					// based on this one which get closed in processing
 					final FileInputStream lineCounterStream = new FileInputStream(fName);
-					lines = super.countLinesInStream(lineCounterStream);			
+					lines = super.countLinesInStream(lineCounterStream);
 					lineCounterStream.close();
-					DebriefPlugin.logError(Status.INFO, "Replay loader - counted:" + lines
-							+ " lines", null);
+					DebriefPlugin.logError(Status.INFO, "Replay loader - counted:"
+							+ lines + " lines", null);
 				}
 				catch (FileNotFoundException fe)
 				{
-					DebriefPlugin.logError(Status.INFO, "Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.", fe);
+					DebriefPlugin
+							.logError(
+									Status.INFO,
+									"Ongoing problem related to counting lines in REP file, the counter isn't receiving sufficient file-path to open the file.",
+									fe);
 				}
 				catch (IOException e)
 				{
@@ -78,23 +82,24 @@ public class ReplayLoader extends IPlotLoader.BaseLoader
 	/*
 	 * (non-Javadoc)
 	 * 
-	 * @see org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer.editors.CorePlotEditor,
-	 *      org.eclipse.ui.IEditorInput)
+	 * @see
+	 * org.mwc.debrief.core.interfaces.IPlotLoader#loadFile(org.mwc.cmap.plotViewer
+	 * .editors.CorePlotEditor, org.eclipse.ui.IEditorInput)
 	 */
-public void loadFile(final PlotEditor thePlot, final InputStream inputStream, final String fileName)
+	public void loadFile(final PlotEditor thePlot, final InputStream inputStream,
+			final String fileName)
 	{
 
+		// org.eclipse.ui.part.FileEditorInput ife =
+		// (org.eclipse.ui.part.FileEditorInput) input;
+		// final IFile _theFile = ife.getFile();
+		// String theName = _theFile.getName();
 
-// org.eclipse.ui.part.FileEditorInput ife =
-// (org.eclipse.ui.part.FileEditorInput) input;
-// final IFile _theFile = ife.getFile();
-// String theName = _theFile.getName();
+		// final String thePath = _theFile.getFullPath().toOSString();
+		// IPath iPath = _theFile.getFullPath();
 
-// final String thePath = _theFile.getFullPath().toOSString();
-// IPath iPath = _theFile.getFullPath();
-
-		DebriefPlugin.logError(Status.INFO, "About to load REPLAY file:" + fileName,
-				null);
+		DebriefPlugin.logError(Status.INFO,
+				"About to load REPLAY file:" + fileName, null);
 		final Layers theLayers = (Layers) thePlot.getAdapter(Layers.class);
 
 		try
@@ -113,14 +118,15 @@ public void loadFile(final PlotEditor thePlot, final InputStream inputStream, fi
 					{
 						// ok - get loading going
 						doTheLoad(fileName, fileName, theLayers, inputStream);
-						
+
 						// and inform the plot editor
 						thePlot.loadingComplete(this);
 					}
 					catch (RuntimeException e)
 					{
 						e.printStackTrace();
-						DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:" + fileName, e);
+						DebriefPlugin.logError(Status.ERROR, "Problem loading datafile:"
+								+ fileName, e);
 					}
 					finally
 					{
@@ -128,8 +134,21 @@ public void loadFile(final PlotEditor thePlot, final InputStream inputStream, fi
 						// again
 						theLayers.suspendFiringExtended(false);
 
+						// and close the stream, just to be tidy.
+						if (inputStream != null)
+						{
+							try
+							{
+								inputStream.close();
+							}
+							catch (IOException e)
+							{
+								e.printStackTrace();
+							}
+						}
+
 						// and trigger an update ourselves
-				//		theLayers.fireExtended();
+						// theLayers.fireExtended();
 					}
 				}
 			});
@@ -148,5 +167,7 @@ public void loadFile(final PlotEditor thePlot, final InputStream inputStream, fi
 		{
 		}
 		// ok, load the data...
-		DebriefPlugin.logError(Status.INFO, "Successfully loaded REPLAY file", null);
-	}}
+		DebriefPlugin
+				.logError(Status.INFO, "Successfully loaded REPLAY file", null);
+	}
+}
