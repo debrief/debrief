@@ -13,6 +13,7 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -177,6 +178,7 @@ public class ImportKML
 			// get our XML date parser ready
 			final SimpleDateFormat parser = new SimpleDateFormat(
 					"yyyy-MM-d'T'HH:mm:ss'Z'");
+			parser.setTimeZone(TimeZone.getTimeZone("GMT"));
 
 			// find the placemarks
 			NodeList nodeList = doc.getElementsByTagName("Placemark");
