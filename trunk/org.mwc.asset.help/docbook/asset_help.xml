@@ -5186,12 +5186,11 @@
           file. The instructions lead you through creating the files using the <application>
             <glossterm linkend="G_XMLSPY">XMLSpy</glossterm>
           </application> editor, though any other data-oriented XML editor will do.<note><para>In
-              2009 ASSET switched to using an internal XML editor.  Use of the internal XML editor
-              is very similar to the steps described here, but is covered in detail in the
-                <emphasis>Getting started with ASSET</emphasis> cheat-sheet.  The cheat-sheet
-              doesn't quite have the breadth that's covered in this document - so this content is
-              worth keeping.</para></note>
-        </para>
+              2009 ASSET switched to using an internal XML editor. Use of the internal XML editor is
+              very similar to the steps described here, but is covered in detail in the
+                <emphasis>Getting started with ASSET</emphasis> cheat-sheet. The cheat-sheet doesn't
+              quite have the breadth that's covered in this document - so this content is worth
+              keeping.</para></note></para>
         <sect2 id="tutorial_create_scenario">
           <title>Creating a scenario file</title>
           <para>Right, we&apos;re going to break down creating the scenario file into two stages:
@@ -6763,42 +6762,42 @@
       <sect1 id="user_eclipse">
         <title>Introduction</title>
         <para>The <application>ASSET Workbench</application> is a graphical front-end to the
-            <application>ASSET</application> modelling engine. Scenario (and occasionally Control)
-          files are loaded into the <application>Workbench</application>, and then you step forward
-          through the scenario. Graphical dialogs are provided to allow you to drill-down into the
-          detailed attributes, settings, and behaviours of the scenario participants - allowing (to
-          a limited degree) interactive scenario design and modification to be performed. The
-            <application>Workbench</application> application makes extensive re-use of components
-          developed for MWC's <ulink url="www.debrief.info">Debrief</ulink> application -
-          particularly with regard to the graphical plot, property editing, and core units
-          (distance, locations, areas). </para>
+            <application>ASSET</application> modelling engine.  Together with it's integrated
+            <application>Debrief</application> application it's able to support the full modelling
+          lifecyle. Scenario (and occasionally Control) files are edited then loaded into the
+            <application>Workbench</application>, and then you step forward through the scenario.
+          Graphical dialogs are provided to allow you to drill-down into the detailed attributes,
+          settings, and behaviours of the scenario participants - giving you fine control and
+          detailed understanding of a live simulation. The <application>Workbench</application>
+          application makes extensive re-use of components developed for MWC's <ulink
+            url="www.debrief.info">Debrief</ulink> application - particularly with regard to the
+          graphical plot, property editing, and core units (distance, locations, areas). </para>
       </sect1>
       <sect1>
         <title>Workbench user interface</title>
         <para>The following diagram highlights the main areas of the <application
-            >Workbench</application> user interface: <figure float="0"><title>Screenshot of
-              Workbench application</title><mediaobject><imageobject>
-                <imagedata fileref="figures/WorkbenchGUI.gif"/>
-              </imageobject></mediaobject></figure><variablelist><varlistentry><term>Toolbar</term><listitem><para>In
-                  the top-left hand corner of the <application>Workbench</application> interface is
-                  the toolbar. This comprises a series of toolbars, one of which ( <guilabel
-                    >Controls</guilabel>) contains its own series of toolbars. Lower sections
-                  provide more detail on individual toolbar buttons. In addition to the <guilabel
-                    >Controls</guilabel> toolbar, the <guilabel>Behaviours</guilabel> and <guilabel
-                    >Vessels</guilabel> toolbars provide a library of behaviours and vessels
-                  suitable for inclusion in a scenario. Drag a vessel onto the Plot to create and
-                  position it, drag a Behaviour onto the Waterfall editor to add that behaviour to
-                  the current vessel.
-                </para></listitem></varlistentry><varlistentry><term>Tote</term><listitem><para>The
-                  tote is located immediately below the toolbar, and displays the current model
-                  time.</para></listitem></varlistentry><varlistentry id="ECLIPSE_PROPERTIES_WINDOW"
-                ><term>Properties Window</term><listitem><para>Below the Tote is the properties
-                  window, a holder for a wide range of editor panels - from the Layer Manager which
-                  shows all current data stored, through to the vessel status viewer which shows the
-                  course, speed, depth (demanded and current) for the selected participant, together
-                  with providing access to the editable attributes of that participant - all in the
-                  tabbed properties
-                window.</para></listitem></varlistentry><varlistentry><term>Plot</term><listitem><para>The
+            >Workbench</application> user interface, though note that the screen elements are
+          completely configurable - elements can be drag/dropped to any other location (including
+          out of the application): <figure float="0"><title>Screenshot of Workbench
+              application</title><mediaobject><imageobject>
+                <imagedata fileref="figures/workbench_view.png"/>
+              </imageobject></mediaobject></figure><variablelist><varlistentry><term>Toolbar</term><listitem><para>Along
+                  the top of the <application>Workbench</application> user interface is the toolbar.
+                  This toolbar support file-based operations (such as save), and geospatial
+                  operations (such as zoom-in, fit to window) for when a 2d geospatial plot is being
+                  viewed - either when running live or in post-event analysis (via <application
+                    >Debrief</application>).
+                </para></listitem></varlistentry><varlistentry><term>Time
+                  Controller</term><listitem><para>The time controller displays the current model
+                  time, and provides operations to restart a scenario, play automatically or step
+                  forward a single step.  The time controller properties (available from the
+                  dropdown menu) allow the time-step sizes to be
+              adjusted.</para></listitem></varlistentry><varlistentry id="ECLIPSE_PROPERTIES_WINDOW"
+                ><term>Properties Window</term><listitem><para>In the top-right of the screenshot is
+                  the properties window - which displays editable properties for the currently
+                  selected object, regardless of where the selection is (layer manager, gui,
+                  scenario
+                controller).</para></listitem></varlistentry><varlistentry><term>Plot</term><listitem><para>The
                   right-hand side of the screen is dedicated to the Plot itself, a 2-dimensional
                   snapshot view of the scenario. Double-clicking on a participant's icon will open
                   that participant in the properties window, and the <guilabel>Chart
