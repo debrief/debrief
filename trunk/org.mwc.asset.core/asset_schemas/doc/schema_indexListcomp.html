@@ -1,0 +1,686 @@
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+   <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <title>Schema documentation for </title>
+      <link rel="stylesheet" href="docHtml.css" type="text/css" /><script type="text/javascript">
+         <!--
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        var button_prefix = 'button_';
+        
+        /**
+        * Returns an element in the current HTML document.
+        *
+        * @param elementID Identifier of HTML element
+        * @return               HTML element object
+        */
+        function getElementObject(elementID) {
+            var elemObj = null;
+            if (document.getElementById) {
+                elemObj = document.getElementById(elementID);
+            }
+            return elemObj;
+        }
+        
+        /**
+        * Switches the state of a collapseable box, e.g.
+        * if it's opened, it'll be closed, and vice versa.
+        *
+        * @param boxID Identifier of box
+        */
+        function switchState(boxID) {
+            var boxObj = getElementObject(boxID);
+            var buttonObj = getElementObject(button_prefix + boxID);
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else if (boxObj.style.display == "none") {
+                // Box is closed, so open it
+                openBox(boxObj, buttonObj);
+            } else if (boxObj.style.display == "block") {
+                // Box is opened, so close it
+                closeBox(boxObj, buttonObj);
+            }
+        }
+        
+        /**
+        * Opens a collapseable box.
+        *
+        * @param boxObj       Collapseable box
+        * @param buttonObj Button controlling box
+        */
+        function openBox(boxObj, buttonObj) {
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else {
+                // Change 'display' CSS property of box
+                boxObj.style.display = "block";
+                
+                // Change text of button
+                if (boxObj.style.display == "block") {
+                    buttonObj.src = "img/btM.gif";
+                }
+            }
+        }
+        
+        /**
+        * Closes a collapseable box.
+        *
+        * @param boxObj       Collapseable box
+        * @param buttonObj Button controlling box
+        */
+        function closeBox(boxObj, buttonObj) {
+            if (boxObj == null || buttonObj == null) {
+                // Box or button not found
+            } else {
+                // Change 'display' CSS property of box
+                boxObj.style.display = "none";
+                
+                // Change text of button
+                if (boxObj.style.display == "none") {
+                    buttonObj.src = "img/btP.gif";
+                }
+            }
+        }
+    
+       function switchStateForAll(buttonObj, boxList) {
+            if (buttonObj == null) {
+                // button not found
+            } else if (buttonObj.value == "+") {
+                // Expand all
+                expandAll(boxList);
+                buttonObj.value = "-";
+            } else if (buttonObj.value == "-") {
+                // Collapse all
+                collapseAll(boxList);
+                buttonObj.value = "+";
+            }
+        }
+        
+        /**
+        * Closes all boxes in a given list.
+        *
+        * @param boxList Array of box IDs
+        */
+        function collapseAll(boxList) {
+            var idx;
+            for (idx = 0; idx < boxList.length; idx++) {
+                var boxObj = getElementObject(boxList[idx]);
+                var buttonObj = getElementObject(button_prefix + boxList[idx]);
+                closeBox(boxObj, buttonObj);
+            }
+        }
+            
+        /**
+        * Open all boxes in a given list.
+        *
+        * @param boxList Array of box IDs
+        */
+        function expandAll(boxList) {
+            var idx;
+            for (idx = 0; idx < boxList.length; idx++) {
+                var boxObj = getElementObject(boxList[idx]);
+                var buttonObj = getElementObject(button_prefix + boxList[idx]);
+                openBox(boxObj, buttonObj);
+            }
+        }
+        
+        /**
+         * Update the message presented in the title of the html page.
+         * - If the documentation was splited by namespace we present something like: "Documentation for namespace 'ns'"
+         * - If the documentation was splited by location we present somehing like: "Documentation for 'Schema.xsd'"
+         * - If no split we always present: "Documentation for 'MainSchema.xsd'"
+         */
+        function updatePageTitle(message) {
+            top.document.title = message;
+        }
+        
+          
+                    
+         /**
+          * Finds an HTML element by its ID and makes it floatable over the normal content.
+          *
+          * @param x_displacement The difference in pixels to the right side of the window from 
+          *           the left side of the element.
+          * @param y_displacement The difference in pixels to the right side of the window from 
+          *           the top of the element.          
+          */
+         function findAndFloat(id, x_displacement, y_displacement){
+
+            var element = getElementObject(id);            
+            
+            window[id + "_obj"] = element;
+            
+            if(document.layers) {
+               element.style = element;
+            }
+            
+            element.current_y = y_displacement;      
+            element.first_time = true;
+         
+            element.floatElement = function(){
+               // It may be closed by an user action.
+                
+               // Target X and Y coordinates.
+               var x, y;
+               
+               var myWidth = 0, myHeight = 0;
+               if( typeof( window.innerWidth ) == 'number' ) {
+                  //Non-IE
+                  myWidth = window.innerWidth;
+                  myHeight = window.innerHeight;
+               } else if( document.documentElement && ( document.documentElement.clientWidth || document.documentElement.clientHeight ) ) {
+                  //IE 6+ in 'standards compliant mode'
+                  myWidth = document.documentElement.clientWidth;
+                  myHeight = document.documentElement.clientHeight;
+               } else if( document.body && ( document.body.clientWidth || document.body.clientHeight ) ) {
+                  //IE 4 compatible
+                  myWidth = document.body.clientWidth;
+                  myHeight = document.body.clientHeight;
+               }
+               
+               
+               x = myWidth - x_displacement;
+               
+               var ns = (navigator.appName.indexOf("Netscape") != -1);               
+               y = ns ? pageYOffset : document.documentElement && document.documentElement.scrollTop ? 
+                  document.documentElement.scrollTop : document.body.scrollTop;               
+               y = y + y_displacement;               
+               
+               // The current y is the current coordinate of the floating element.
+               // This should be at the limit the y target coordinate.
+               this.current_y += (y - this.current_y)/1.25;
+               
+               // Add the pixels constant after the values
+               // and move the element.
+               var px = document.layers ? "" : "px";
+               this.style.left =  x + px;
+               this.style.top =  this.current_y + px;
+                              
+               setTimeout(this.id + "_obj.floatElement()", 100);
+            }
+            
+            element.floatElement();
+            return element;
+          }
+
+         /**
+          * Finds an HTML element by its ID and makes it floatable over the normal content.
+          *
+          * @param x_displacement The difference in pixels to the right side of the window from 
+          *           the left side of the element.
+          * @param y_displacement The difference in pixels to the right side of the window from 
+          *           the top of the element.          
+          */
+         function selectTOCGroupBy(id, isChunked, indexFileLocation, indexFileNamespace, indexFileComponent){
+
+            if (!isChunked) {
+             var selectIds = new Array('toc_group_by_namespace', 'toc_group_by_location', 'toc_group_by_component_type');
+             // Make all the tabs invisible.
+               for (i = 0; i < 3; i++){
+                  var tab = getElementObject(selectIds[i]);
+                  tab.style.display = 'none';
+               }
+               var selTab = getElementObject(id);
+               selTab.style.display = 'block';
+            } else {
+             if (id == 'toc_group_by_namespace') {
+               parent.indexFrame.location = indexFileNamespace;
+             } else  if (id == 'toc_group_by_location') {
+               parent.indexFrame.location = indexFileLocation;
+             } else  if (id == 'toc_group_by_component_type') {
+              parent.indexFrame.location = indexFileComponent;
+             }
+            }
+         }
+          
+
+    --></script></head>
+   <body>
+      <h2><a id="INDEX">Table of Contents</a></h2>
+      <div class="toc">
+         <form action="none">
+            <div><span> Group by: <select id="selectTOC"
+                          onchange="selectTOCGroupBy(this.options[this.selectedIndex].value, true, 'schema_indexList.html', 'schema_indexListns.html', 'schema_indexListcomp.html');">
+                     <option value="toc_group_by_namespace">Namespace</option>
+                     <option value="toc_group_by_location">Location</option>
+                     <option value="toc_group_by_component_type" selected="selected">Component Type</option></select></span></div>
+         </form>
+         <div class="level1" id="toc_group_by_component_type" style="display:block">
+            <div>
+               <div class="horizontalLayout">
+                  <table class="rt">
+                     <tr>
+                        <td class="rt_cornerTopLeft"></td>
+                        <td class="rt_lineTop"></td>
+                        <td class="rt_cornerTopRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_lineLeft"></td>
+                        <td class="rt_content">
+                           <div class="componentGroupTitle">Elements
+                              
+                           </div>
+                           <div id="Element" style="display:block">
+                              <div><b><a href="schema0.html#id569" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ActiveBroadbandSensor</a></b></div>
+                              <div><b><a href="schema0.html#id576" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ActiveInterceptSensor</a></b></div>
+                              <div><b><a href="schema0.html#id568" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">BroadbandSensor</a></b></div>
+                              <div><b><a href="schema0.html#id570" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DippingActiveBroadbandSensor</a></b></div>
+                              <div><b><a href="schema0.html#id582" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">FixedWing</a></b></div>
+                              <div><b><a href="schema0.html#id583" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">Helo</a></b></div>
+                              <div><b><a href="schema0.html#id575" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MADLookupSensor</a></b></div>
+                              <div><b><a href="schema0.html#id571" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">NarrowbandSensor</a></b></div>
+                              <div><b><a href="schema0.html#id572" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">OpticLookupSensor</a></b></div>
+                              <div><b><a href="schema0.html#id573" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">PlainCookieSensor</a></b></div>
+                              <div><b><a href="schema0.html#id574" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RadarLookupSensor</a></b></div>
+                              <div><b><a href="schema0.html#id585" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SSK</a></b></div>
+                              <div><b><a href="schema0.html#id584" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SSN</a></b></div>
+                              <div><b><a href="schema0.html#id1" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">Scenario</a></b></div>
+                              <div><b><a href="schema0.html#id509" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ScenarioController</a></b></div>
+                              <div><b><a href="schema0.html#id590" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">Sequence</a></b></div>
+                              <div><b><a href="schema0.html#id435" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">StandaloneObserverList</a></b></div>
+                              <div><b><a href="schema0.html#id587" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">Surface</a></b></div>
+                              <div><b><a href="schema0.html#id589" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">Switch</a></b></div>
+                              <div><b><a href="schema0.html#id586" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">Torpedo</a></b></div>
+                              <div><b><a href="schema0.html#id588" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">Waterfall</a></b></div>
+                           </div>
+                        </td>
+                        <td class="rt_lineRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_cornerBottomLeft"></td>
+                        <td class="rt_lineBottom"></td>
+                        <td class="rt_cornerBottomRight"></td>
+                     </tr>
+                  </table>
+               </div>
+               <div class="horizontalLayout">
+                  <table class="rt">
+                     <tr>
+                        <td class="rt_cornerTopLeft"></td>
+                        <td class="rt_lineTop"></td>
+                        <td class="rt_cornerTopRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_lineLeft"></td>
+                        <td class="rt_content">
+                           <div class="componentGroupTitle">Complex Types
+                              
+                           </div>
+                           <div id="Complex_Type" style="display:block">
+                              <div><b><a href="schema0.html#id392" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">AccelerationType</a></b></div>
+                              <div><b><a href="schema0.html#id95" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ActiveBroadbandSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id141" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ActiveInterceptSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id535" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">AttributeType</a></b></div>
+                              <div><b><a href="schema0.html#id226" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">AvoidType</a></b></div>
+                              <div><b><a href="schema0.html#id463" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">BatchCollatorType</a></b></div>
+                              <div><b><a href="schema0.html#id236" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">BearingTrailType</a></b></div>
+                              <div><b><a href="schema0.html#id92" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">BroadbandSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id369" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">BroadbandType</a></b></div>
+                              <div><b><a href="schema0.html#id473" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CSVTrackObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id82" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CategoryType</a></b></div>
+                              <div><b><a href="schema0.html#id306" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ChangeSensorLineUpType</a></b></div>
+                              <div><b><a href="schema0.html#id545" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ChoiceType</a></b></div>
+                              <div><b><a href="schema0.html#id317" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CircularDatumSearchType</a></b></div>
+                              <div><b><a href="schema0.html#id280" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CompositeType</a></b></div>
+                              <div><b><a href="schema0.html#id8" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CoreEnvironmentType</a></b></div>
+                              <div><b><a href="schema0.html#id440" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CoreFileObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id113" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CoreLookupSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id441" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CoreObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id87" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">CoreSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id451" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DebriefDeployableSensorLocationObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id430" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DebriefLayerType</a></b></div>
+                              <div><b><a href="schema0.html#id439" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DebriefReplayObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id181" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DecisionModelType</a></b></div>
+                              <div><b><a href="schema0.html#id173" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DemandedStatusType</a></b></div>
+                              <div><b><a href="schema0.html#id286" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DetectionForPeriodType</a></b></div>
+                              <div><b><a href="schema0.html#id494" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DetectionObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id282" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DetectionType</a></b></div>
+                              <div><b><a href="schema0.html#id259" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DetonateType</a></b></div>
+                              <div><b><a href="schema0.html#id98" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DippingActiveBroadbandSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id3" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">DurationType</a></b></div>
+                              <div><b><a href="schema0.html#id461" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ElapsedTimeObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id292" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ElapsedTimeType</a></b></div>
+                              <div><b><a href="schema0.html#id253" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">EvadeType</a></b></div>
+                              <div><b><a href="schema0.html#id343" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ExpandingSquareSearchType</a></b></div>
+                              <div><b><a href="schema0.html#id470" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">FinalStateObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id419" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">FixedWingMovementCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id417" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">FixedWingType</a></b></div>
+                              <div><b><a href="schema0.html#id412" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">HeloMovementCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id410" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">HeloType</a></b></div>
+                              <div><b><a href="schema0.html#id232" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">InterceptType</a></b></div>
+                              <div><b><a href="schema0.html#id221" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">InvestigateType</a></b></div>
+                              <div><b><a href="schema0.html#id334" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LadderSearchType</a></b></div>
+                              <div><b><a href="schema0.html#id271" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LaunchSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id264" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LaunchWeaponType</a></b></div>
+                              <div><b><a href="schema0.html#id577" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LightAttenuationDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id57" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LightLevelDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id519" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LocationAreaType</a></b></div>
+                              <div><b><a href="schema0.html#id524" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LocationOffsetType</a></b></div>
+                              <div><b><a href="schema0.html#id145" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">LocationType</a></b></div>
+                              <div><b><a href="schema0.html#id139" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MADLookupSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id64" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MADLookupType</a></b></div>
+                              <div><b><a href="schema0.html#id299" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ManoeuvreToCourseType</a></b></div>
+                              <div><b><a href="schema0.html#id295" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ManoeuvreToLocationType</a></b></div>
+                              <div><b><a href="schema0.html#id329" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MarkDipType</a></b></div>
+                              <div><b><a href="schema0.html#id311" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MoveType</a></b></div>
+                              <div><b><a href="schema0.html#id388" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MovementCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id381" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MovementType</a></b></div>
+                              <div><b><a href="schema0.html#id556" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MultiParticipantGeneratorType</a></b></div>
+                              <div><b><a href="schema0.html#id513" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">MultiScenarioGeneratorType</a></b></div>
+                              <div><b><a href="schema0.html#id109" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">NarrowbandSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id326" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">NewStateType</a></b></div>
+                              <div><b><a href="schema0.html#id528" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">NodeType</a></b></div>
+                              <div><b><a href="schema0.html#id437" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ObserverListType</a></b></div>
+                              <div><b><a href="schema0.html#id112" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">OpticLookupSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id364" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">OpticType</a></b></div>
+                              <div><b><a href="schema0.html#id560" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ParticipantLocatorType</a></b></div>
+                              <div><b><a href="schema0.html#id80" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ParticipantType</a></b></div>
+                              <div><b><a href="schema0.html#id558" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ParticipantVariancesType</a></b></div>
+                              <div><b><a href="schema0.html#id77" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ParticipantsType</a></b></div>
+                              <div><b><a href="schema0.html#id122" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">PlainCookieSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id68" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">PredictedRangeDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id66" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">PredictedRangeSetType</a></b></div>
+                              <div><b><a href="schema0.html#id505" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ProportionDetectedObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id478" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ProximityObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id136" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RadarLookupSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id10" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RadarLookupType</a></b></div>
+                              <div><b><a href="schema0.html#id362" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RadiatedCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id332" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RaiseBodyType</a></b></div>
+                              <div><b><a href="schema0.html#id520" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RandomVarianceType</a></b></div>
+                              <div><b><a href="schema0.html#id537" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RangeType</a></b></div>
+                              <div><b><a href="schema0.html#id239" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RectangleWanderType</a></b></div>
+                              <div><b><a href="schema0.html#id490" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">RemoveDetectedObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id372" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SSKBroadbandType</a></b></div>
+                              <div><b><a href="schema0.html#id215" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SSKRechargeType</a></b></div>
+                              <div><b><a href="schema0.html#id79" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SSKType</a></b></div>
+                              <div><b><a href="schema0.html#id386" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SSMovementCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id424" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SSNType</a></b></div>
+                              <div><b><a href="schema0.html#id511" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ScenarioGeneratorType</a></b></div>
+                              <div><b><a href="schema0.html#id376" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SelfNoiseCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id86" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SensorFitType</a></b></div>
+                              <div><b><a href="schema0.html#id196" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SequenceType</a></b></div>
+                              <div><b><a href="schema0.html#id100" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SpeedType</a></b></div>
+                              <div><b><a href="schema0.html#id143" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">StatusType</a></b></div>
+                              <div><b><a href="schema0.html#id209" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SternArcClearanceType</a></b></div>
+                              <div><b><a href="schema0.html#id500" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">StopOnDetectionObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id502" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">StopOnProximityDetectionObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id487" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">StopOnProximityObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id407" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SurfaceMovementCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id405" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SurfaceType</a></b></div>
+                              <div><b><a href="schema0.html#id352" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">SwitchType</a></b></div>
+                              <div><b><a href="schema0.html#id14" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetAspectDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id12" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetAspectSetType</a></b></div>
+                              <div><b><a href="schema0.html#id25" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetSeaStateDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id23" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetSeaStateSetType</a></b></div>
+                              <div><b><a href="schema0.html#id480" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetType</a></b></div>
+                              <div><b><a href="schema0.html#id205" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetTypeType</a></b></div>
+                              <div><b><a href="schema0.html#id52" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetVisibilityDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id50" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TargetVisibilitySetType</a></b></div>
+                              <div><b><a href="schema0.html#id387" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ThreeDimMovementCharacteristicsType</a></b></div>
+                              <div><b><a href="schema0.html#id475" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TimeObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id507" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TimeToLaunchObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id427" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TorpedoType</a></b></div>
+                              <div><b><a href="schema0.html#id453" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TrackPlotObserverType</a></b></div>
+                              <div><b><a href="schema0.html#id201" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TrailType</a></b></div>
+                              <div><b><a href="schema0.html#id186" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TransitType</a></b></div>
+                              <div><b><a href="schema0.html#id198" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TransitWaypointType</a></b></div>
+                              <div><b><a href="schema0.html#id132" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TypeType</a></b></div>
+                              <div><b><a href="schema0.html#id128" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TypedCookieSensorType</a></b></div>
+                              <div><b><a href="schema0.html#id130" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">TypedRangeDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id275" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">UserControlType</a></b></div>
+                              <div><b><a href="schema0.html#id547" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">ValueType</a></b></div>
+                              <div><b><a href="schema0.html#id515" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">VarianceListType</a></b></div>
+                              <div><b><a href="schema0.html#id517" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">VarianceType</a></b></div>
+                              <div><b><a href="schema0.html#id42" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">VisualAttenuationDatumType</a></b></div>
+                              <div><b><a href="schema0.html#id40" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">VisualLookupType</a></b></div>
+                              <div><b><a href="schema0.html#id355" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WaitType</a></b></div>
+                              <div><b><a href="schema0.html#id247" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WanderType</a></b></div>
+                              <div><b><a href="schema0.html#id483" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WatchType</a></b></div>
+                              <div><b><a href="schema0.html#id180" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WaterfallType</a></b></div>
+                              <div><b><a href="schema0.html#id194" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WorkingTransitType</a></b></div>
+                              <div><b><a href="schema0.html#id241" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WorldAreaType</a></b></div>
+                              <div><b><a href="schema0.html#id124" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WorldDistanceType</a></b></div>
+                              <div><b><a href="schema0.html#id188" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">WorldPathType</a></b></div>
+                              <div><b><a href="schema0.html#id530" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">XMLChoiceType</a></b></div>
+                              <div><b><a href="schema0.html#id152" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">longLocationType</a></b></div>
+                              <div><b><a href="schema0.html#id163" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">relativeLocationType</a></b></div>
+                              <div><b><a href="schema0.html#id147" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">shortLocationType</a></b></div>
+                           </div>
+                        </td>
+                        <td class="rt_lineRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_cornerBottomLeft"></td>
+                        <td class="rt_lineBottom"></td>
+                        <td class="rt_cornerBottomRight"></td>
+                     </tr>
+                  </table>
+               </div>
+               <div class="horizontalLayout">
+                  <table class="rt">
+                     <tr>
+                        <td class="rt_cornerTopLeft"></td>
+                        <td class="rt_lineTop"></td>
+                        <td class="rt_cornerTopRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_lineLeft"></td>
+                        <td class="rt_content">
+                           <div class="componentGroupTitle">Simple Types
+                              
+                           </div>
+                           <div id="Simple_Type" style="display:block">
+                              <div><b><a href="schema0.html#id543" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">validString</a></b></div>
+                           </div>
+                        </td>
+                        <td class="rt_lineRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_cornerBottomLeft"></td>
+                        <td class="rt_lineBottom"></td>
+                        <td class="rt_cornerBottomRight"></td>
+                     </tr>
+                  </table>
+               </div>
+               <div class="horizontalLayout">
+                  <table class="rt">
+                     <tr>
+                        <td class="rt_cornerTopLeft"></td>
+                        <td class="rt_lineTop"></td>
+                        <td class="rt_cornerTopRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_lineLeft"></td>
+                        <td class="rt_content">
+                           <div class="componentGroupTitle">Attributes
+                              
+                           </div>
+                           <div id="Attribute" style="display:block">
+                              <div><b><a href="schema0.html#id15" target="mainFrame" title="No namespace"
+                                       onclick="updatePageTitle('Schema documentation for ASSET.xsd')">@Type</a></b></div>
+                           </div>
+                        </td>
+                        <td class="rt_lineRight"></td>
+                     </tr>
+                     <tr>
+                        <td class="rt_cornerBottomLeft"></td>
+                        <td class="rt_lineBottom"></td>
+                        <td class="rt_cornerBottomRight"></td>
+                     </tr>
+                  </table>
+               </div>
+               <div style="clear:left"></div>
+            </div>
+         </div>
+      </div>
+   </body>
+</html>
