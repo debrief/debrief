@@ -24,7 +24,8 @@ import MWC.GenericData.WorldSpeed;
 import MWC.GenericData.WorldVector;
 
 /**
- * simple sensor that uses cookie cutter model for detections
+ * Extension of the simple cookie cutter model that allows different cookie cutter ranges to
+ * be specified for different target types
  * 
  * @author ianmayo
  * 
