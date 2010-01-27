@@ -2,23 +2,27 @@
 <ScenarioController OutputDirectory="Wales"  xmlns="http://www.mwc.org/asset" >
 	<ScenarioGenerator>
 		<MultiParticipantGenerator>
-			<ParticipantVariance name="FISHER" number="40">
+			<ParticipantVariance name="FISHER_A" number="5">
 				<Variance name="Vary initial course" id="Status">
 					<Attribute name="Course">
 						<Range max="0" min="360" />
 					</Attribute>
 					
-				</Variance>
-				<ParticipantLocation>
-					<WorldArea>
-						<TopLeft>
-							<shortLocation Lat="4" Long="0"></shortLocation>
-						</TopLeft>
-						<BottomRight>
-							<shortLocation Lat="0" Long="0.2"></shortLocation>
-						</BottomRight>
-					</WorldArea>
-				</ParticipantLocation></ParticipantVariance>
+				</Variance></ParticipantVariance>
+				<ParticipantVariance name="FISHER_B" number="5">
+				<Variance name="Vary initial course" id="Status">
+					<Attribute name="Course">
+						<Range max="0" min="360" />
+					</Attribute>
+					
+				</Variance></ParticipantVariance>
+				<ParticipantVariance name="FISHER_C" number="5">
+				<Variance name="Vary initial course" id="Status">
+					<Attribute name="Course">
+						<Range max="0" min="360" />
+					</Attribute>
+					
+				</Variance></ParticipantVariance>
 		</MultiParticipantGenerator></ScenarioGenerator>
 	<ObserverList>
 		<TimeObserver Name="Domesday Timer" Active="true">

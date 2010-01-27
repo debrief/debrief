@@ -53,13 +53,13 @@
   			<TurningCircle Value="800" Units="m" ></TurningCircle>
   		</SurfaceMovementCharacteristics>
   	</Surface>
-  	<Surface Name="MOTHER">
+  	<Surface Name="MOTHER_A">
   		<Category Type="OILER" Force="GREEN"
   			Environment="SURFACE" ></Category>
   		<SensorFit></SensorFit>
   		<Status Course="0.0" Fuel="0.0">
   			<Location>
-  				<shortLocation Lat="0" Long="0">
+  				<shortLocation Lat="1" Long="0">
   					<Height Value="6" Units="m" /></shortLocation>
   			</Location>
   			<Speed Value="0.0" Units="m/s" />
@@ -85,7 +85,74 @@
   			<TurningCircle Value="800" Units="m" ></TurningCircle>
   		</SurfaceMovementCharacteristics>
   	</Surface>
-  	  	<Surface Name="FISHER">
+  	  	<Surface Name="FISHER_A">
+  		<Category Type="FISHING_VESSEL" Force="GREEN"
+  			Environment="SURFACE" ></Category>
+  		<SensorFit><TypedCookieSensor Name="FisherDetections">
+  				<TypedRangeDoublet>
+  					<Type Name="OILER" />
+  					<DetectionRange Value="12" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="FRIGATE" />
+  					<DetectionRange Value="10" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor></SensorFit>
+  		<Status Course="33" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="1" Long="0">
+  					<Height Value="6" Units="m" /></shortLocation>
+  			</Location>
+  			<Speed Value="7" Units="kts" />
+  		</Status>
+  		<Waterfall Name="Fisher behaviour">
+  			<Trail Name="Stay near mother">
+  				<TrailRange Value="10" Units="nm" />
+  				<AllowableError Value="12" Units="nm" />
+  				<TargetType>
+  					<Type Name="OILER" />
+  				</TargetType>
+  			</Trail></Waterfall>
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface><Surface Name="MOTHER_B">
+  		<Category Type="OILER" Force="GREEN"
+  			Environment="SURFACE" ></Category>
+  		<SensorFit></SensorFit>
+  		<Status Course="0.0" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="2" Long="0">
+  					<Height Value="6" Units="m" /></shortLocation>
+  			</Location>
+  			<Speed Value="0.0" Units="m/s" />
+  		</Status>
+  		<Waterfall Name="Mother behaviour">
+  			<RectangleWander Name="Fishing area">
+  				<Area>
+  					<TopLeft>
+  						<shortLocation Lat="4" Long="0"></shortLocation>
+  					</TopLeft>
+  					<BottomRight>
+  						<shortLocation Lat="0" Long="0.2"></shortLocation>
+  					</BottomRight>
+  				</Area>
+  				<Speed Value="6" Units="kts" />
+  				<Height Value="0.0" Units="ft" />
+  			</RectangleWander></Waterfall>
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface>
+  	  	<Surface Name="FISHER_B">
   		<Category Type="FISHING_VESSEL" Force="GREEN"
   			Environment="SURFACE" ></Category>
   		<SensorFit><TypedCookieSensor Name="FisherDetections">
@@ -100,7 +167,7 @@
   			</TypedCookieSensor></SensorFit>
   		<Status Course="33" Fuel="0.0">
   			<Location>
-  				<shortLocation Lat="0" Long="0">
+  				<shortLocation Lat="2" Long="0">
   					<Height Value="6" Units="m" /></shortLocation>
   			</Location>
   			<Speed Value="7" Units="kts" />
@@ -108,7 +175,74 @@
   		<Waterfall Name="Fisher behaviour">
   			<Trail Name="Stay near mother">
   				<TrailRange Value="10" Units="nm" />
-  				<AllowableError Value="12" Units="degs" />
+  				<AllowableError Value="12" Units="nm" />
+  				<TargetType>
+  					<Type Name="OILER" />
+  				</TargetType>
+  			</Trail></Waterfall>
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface><Surface Name="MOTHER_A">
+  		<Category Type="OILER" Force="GREEN"
+  			Environment="SURFACE" ></Category>
+  		<SensorFit></SensorFit>
+  		<Status Course="0.0" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="3" Long="0">
+  					<Height Value="6" Units="m" /></shortLocation>
+  			</Location>
+  			<Speed Value="0.0" Units="m/s" />
+  		</Status>
+  		<Waterfall Name="Mother behaviour">
+  			<RectangleWander Name="Fishing area">
+  				<Area>
+  					<TopLeft>
+  						<shortLocation Lat="4" Long="0"></shortLocation>
+  					</TopLeft>
+  					<BottomRight>
+  						<shortLocation Lat="0" Long="0.2"></shortLocation>
+  					</BottomRight>
+  				</Area>
+  				<Speed Value="6" Units="kts" />
+  				<Height Value="0.0" Units="ft" />
+  			</RectangleWander></Waterfall>
+  		<SurfaceMovementCharacteristics Name="" FuelUsageRate="0.0">
+  			<MinSpeed Value="0" Units="kts" />
+  			<MaxSpeed Value="20" Units="kts" />
+  			<AccelerationRate Value="1" Units="kt/s" />
+  			<DecelerationRate Value="1" Units="kt/s" />
+  			<TurningCircle Value="800" Units="m" ></TurningCircle>
+  		</SurfaceMovementCharacteristics>
+  	</Surface>
+  	  	<Surface Name="FISHER_A">
+  		<Category Type="FISHING_VESSEL" Force="GREEN"
+  			Environment="SURFACE" ></Category>
+  		<SensorFit><TypedCookieSensor Name="FisherDetections">
+  				<TypedRangeDoublet>
+  					<Type Name="OILER" />
+  					<DetectionRange Value="100" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="FRIGATE" />
+  					<DetectionRange Value="10" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor></SensorFit>
+  		<Status Course="33" Fuel="0.0">
+  			<Location>
+  				<shortLocation Lat="3" Long="0">
+  					<Height Value="6" Units="m" /></shortLocation>
+  			</Location>
+  			<Speed Value="7" Units="kts" />
+  		</Status>
+  		<Waterfall Name="Fisher behaviour">
+  			<Trail Name="Stay near mother">
+  				<TrailRange Value="10" Units="nm" />
+  				<AllowableError Value="12" Units="nm" />
   				<TargetType>
   					<Type Name="OILER" />
   				</TargetType>
