@@ -455,12 +455,7 @@ Export-Package: ASSET;
  ASSET.Util.XMLFactory;uses:="org.w3c.dom",
  ASSET.Util.jip.rmi,
  ASSET.Util.jip.tools
-Bundle-ClassPath: libs/jaxen-full.jar,
- libs/jdom.jar,
- libs/parser.jar,
- libs/postgis_1.3.5.jar,
+Bundle-ClassPath: libs/postgis_1.3.5.jar,
  libs/postgresql-8.3-604.jdbc4.jar,
- libs/saxpath.jar,
- libs/xerces.jar,
  .
 Bundle-RequiredExecutionEnvironment: JavaSE-1.6
