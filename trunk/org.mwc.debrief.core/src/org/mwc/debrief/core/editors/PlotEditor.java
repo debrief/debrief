@@ -908,90 +908,102 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					tmpOS.close();
 					tmpOS = null;
 
-					// 4. overwrite the existing file with the saved file
-					// - note we will only reach this point if the save succeeded.
-					if (tmpOS == null)
-					{
-						// sort out where we're saving to
-						if (input instanceof IFileEditorInput)
+					// 4. Check there's something in the temp file
+					if (tmpFile.exists())
+						if (tmpFile.length() == 0)
 						{
-							IFile file = ((IFileEditorInput) getEditorInput()).getFile();
-
-							// get the current path (since we're going to be moving the temp
-							// one to it
-							IPath thePath = file.getLocation();
-
-							// create a backup path
-							IPath bakPath = file.getFullPath().addFileExtension("bak");
-
-							// delete any existing backup file
-							File existingBackupFile = new File(file.getLocation()
-									.addFileExtension("bak").toOSString());
-							if (existingBackupFile.exists())
-							{
-								CorePlugin.logError(Status.INFO,
-										"Existing back file still there, having to delete"
-												+ existingBackupFile.getAbsolutePath(), null);
-								existingBackupFile.delete();
-							}
-
-							// now rename the existing file as the backup
-							file.move(bakPath, true, monitor);
-
-							// move the temp file to be our real working file
-							tmpFile.renameTo(thePath.toFile().getAbsoluteFile());
-
-							// finally, delete the backup file
-							if (existingBackupFile.exists())
-							{
-								CorePlugin.logError(Status.INFO,
-										"Save operation completed successfully, deleting backup file"
-												+ existingBackupFile.getAbsolutePath(), null);
-								existingBackupFile.delete();
-							}
-
-							// throw in a refresh - since we've done the save outside Eclipse
-							file.getParent().refreshLocal(IResource.DEPTH_INFINITE, monitor);
-
+							// save failed throw exception (to be collected shortly afterwards)
+							throw new RuntimeException("Stored file is of zero size");
 						}
-						else if (input instanceof FileStoreEditorInput)
+						else
 						{
-							// get the data-file
-							FileStoreEditorInput fi = (FileStoreEditorInput) input;
-							URI _uri = fi.getURI();
-							Path _p = new Path(_uri.getPath());
 
-							// create pointers to the existing file, and the backup file
-							IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
-							IFileStore backupFile = EFS.getLocalFileSystem().getStore(
-									_p.addFileExtension("bak"));
-
-							// delete any existing backup file
-							IFileInfo backupStatus = backupFile.fetchInfo();
-							if (backupStatus.exists())
+							// save worked. cool.
+							
+							// 5. overwrite the existing file with the saved file
+							// - note we will only reach this point if the save succeeded.
+							// sort out where we're saving to
+							if (input instanceof IFileEditorInput)
 							{
-								CorePlugin.logError(Status.INFO,
-										"Existing back file still there, having to delete"
-												+ backupFile.toURI().getRawPath(), null);
-								backupFile.delete(EFS.NONE, monitor);
+								IFile file = ((IFileEditorInput) getEditorInput()).getFile();
+
+								// get the current path (since we're going to be moving the temp
+								// one to it
+								IPath thePath = file.getLocation();
+
+								// create a backup path
+								IPath bakPath = file.getFullPath().addFileExtension("bak");
+
+								// delete any existing backup file
+								File existingBackupFile = new File(file.getLocation()
+										.addFileExtension("bak").toOSString());
+								if (existingBackupFile.exists())
+								{
+									CorePlugin.logError(Status.INFO,
+											"Existing back file still there, having to delete"
+													+ existingBackupFile.getAbsolutePath(), null);
+									existingBackupFile.delete();
+								}
+
+								// now rename the existing file as the backup
+								file.move(bakPath, true, monitor);
+
+								// move the temp file to be our real working file
+								tmpFile.renameTo(thePath.toFile().getAbsoluteFile());
+
+								// finally, delete the backup file
+								if (existingBackupFile.exists())
+								{
+									CorePlugin.logError(Status.INFO,
+											"Save operation completed successfully, deleting backup file"
+													+ existingBackupFile.getAbsolutePath(), null);
+									existingBackupFile.delete();
+								}
+
+								// throw in a refresh - since we've done the save outside
+								// Eclipse
+								file.getParent()
+										.refreshLocal(IResource.DEPTH_INFINITE, monitor);
+
 							}
-
-							// now rename the existing file as the backup
-							existingFile.move(backupFile, EFS.OVERWRITE, monitor);
-
-							// and rename the temp file as the working file
-							tmpFile.renameTo(existingFile.toLocalFile(EFS.NONE, monitor));
-
-							if (backupStatus.exists())
+							else if (input instanceof FileStoreEditorInput)
 							{
-								CorePlugin.logError(Status.INFO,
-										"Save operation successful, deleting backup file"
-												+ backupFile.toURI().getRawPath(), null);
-								backupFile.delete(EFS.NONE, monitor);
-							}
+								// get the data-file
+								FileStoreEditorInput fi = (FileStoreEditorInput) input;
+								URI _uri = fi.getURI();
+								Path _p = new Path(_uri.getPath());
 
+								// create pointers to the existing file, and the backup file
+								IFileStore existingFile = EFS.getLocalFileSystem().getStore(_p);
+								IFileStore backupFile = EFS.getLocalFileSystem().getStore(
+										_p.addFileExtension("bak"));
+
+								// delete any existing backup file
+								IFileInfo backupStatus = backupFile.fetchInfo();
+								if (backupStatus.exists())
+								{
+									CorePlugin.logError(Status.INFO,
+											"Existing back file still there, having to delete"
+													+ backupFile.toURI().getRawPath(), null);
+									backupFile.delete(EFS.NONE, monitor);
+								}
+
+								// now rename the existing file as the backup
+								existingFile.move(backupFile, EFS.OVERWRITE, monitor);
+
+								// and rename the temp file as the working file
+								tmpFile.renameTo(existingFile.toLocalFile(EFS.NONE, monitor));
+
+								if (backupStatus.exists())
+								{
+									CorePlugin.logError(Status.INFO,
+											"Save operation successful, deleting backup file"
+													+ backupFile.toURI().getRawPath(), null);
+									backupFile.delete(EFS.NONE, monitor);
+								}
+
+							}
 						}
-					}
 				}
 				catch (CoreException e)
 				{
