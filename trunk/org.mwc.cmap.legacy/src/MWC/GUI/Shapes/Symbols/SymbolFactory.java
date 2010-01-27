@@ -350,6 +350,9 @@ public class SymbolFactory
       vessels.put("Merchant", MWC.GUI.Shapes.Symbols.Vessels.MerchantSym.class);
       vessels.put("Troop_Carrier", MWC.GUI.Shapes.Symbols.Vessels.TroopCarrierSym.class);
 
+      vessels.put("Oiler", MWC.GUI.Shapes.Symbols.Vessels.FishingVesselSym.class);
+
+      
       // add some other (A SSET related) items
       vessels.put("MPA", MWC.GUI.Shapes.Symbols.Vessels.AircraftSym.class);
 

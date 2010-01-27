@@ -192,8 +192,6 @@ public class ScenarioControllerView extends ViewPart implements
 
 			}
 
-
-
 			public void newScenarioStepTime(int val)
 			{
 			}
@@ -365,7 +363,7 @@ public class ScenarioControllerView extends ViewPart implements
 
 				// ok, run the scenario
 				_myScenario.start();
-				
+
 			}
 		});
 
@@ -388,7 +386,7 @@ public class ScenarioControllerView extends ViewPart implements
 			}
 		};
 		doRun.start();
-		
+
 	}
 
 	protected static class WrappedProgressMonitor implements ASSETProgressMonitor
@@ -413,7 +411,7 @@ public class ScenarioControllerView extends ViewPart implements
 			monitor.worked(work);
 		}
 	}
-	
+
 	private void refreshWorkspace()
 	{
 		// it's stopped running, refresh the workspace
@@ -453,7 +451,8 @@ public class ScenarioControllerView extends ViewPart implements
 
 					// and let it create some files
 					_myMultiScenario.prepareFiles(_controlFileName, _scenarioFileName,
-							System.out, System.err, System.in, pMon, _scenarioController.outputDirectory);
+							System.out, System.err, System.in, pMon,
+							_scenarioController.outputDirectory);
 
 					// and sort out the observers
 					_myMultiScenario.prepareControllers(_scenarioController, pMon);
@@ -503,14 +502,14 @@ public class ScenarioControllerView extends ViewPart implements
 		if (adapter == Layers.class)
 		{
 			// only return the scenario if we're in a single scenario mode
-			if(inSingleScenarioRun())
- 			  res = _scenarioWrapper;
+			if (inSingleScenarioRun())
+				res = _scenarioWrapper;
 		}
 		if (adapter == ScenarioType.class)
 		{
 			// only return the scenario if we're in a single scenario mode
-			if(inSingleScenarioRun())
-			  res = _myScenario;
+			if (inSingleScenarioRun())
+				res = _myScenario;
 		}
 		else if (adapter == TimeProvider.class)
 		{
@@ -764,7 +763,7 @@ public class ScenarioControllerView extends ViewPart implements
 						// ok, now stick the output folder in this parent
 						tgtDir = new File(filePath.toOSString() + File.separator
 								+ tgtDir.getPath());
-						
+
 						// and store the new location
 						_scenarioController.outputDirectory = tgtDir;
 					}
@@ -880,7 +879,9 @@ public class ScenarioControllerView extends ViewPart implements
 
 	}
 
-	/** convenience method for determining if we're in a single or multiple scenario run
+	/**
+	 * convenience method for determining if we're in a single or multiple
+	 * scenario run
 	 * 
 	 * @return
 	 */
@@ -888,7 +889,7 @@ public class ScenarioControllerView extends ViewPart implements
 	{
 		return _myUI.getSingleRunBtn().getEnabled();
 	}
-	
+
 	private void updateMultiTab()
 	{
 		// and disable the single run button
@@ -1073,8 +1074,8 @@ public class ScenarioControllerView extends ViewPart implements
 			{
 				if (scen == _myScenario)
 				{
-					if(!_myUI.getSingleScenarioStatus().isDisposed())
-  					_myUI.getSingleScenarioStatus().setText(text);
+					if (!_myUI.getSingleScenarioStatus().isDisposed())
+						_myUI.getSingleScenarioStatus().setText(text);
 				}
 			}
 		});
@@ -1298,11 +1299,15 @@ public class ScenarioControllerView extends ViewPart implements
 		// and tell everybody about it
 		if (_selectionListeners != null)
 		{
-			SelectionChangedEvent event = new SelectionChangedEvent(this,
-					_currentSelection);
-			for (ISelectionChangedListener thisL : _selectionListeners)
+			// is there something there?
+			if (selection != null)
 			{
-				thisL.selectionChanged(event);
+				SelectionChangedEvent event = new SelectionChangedEvent(this,
+						_currentSelection);
+				for (ISelectionChangedListener thisL : _selectionListeners)
+				{
+					thisL.selectionChanged(event);
+				}
 			}
 		}
 	}
