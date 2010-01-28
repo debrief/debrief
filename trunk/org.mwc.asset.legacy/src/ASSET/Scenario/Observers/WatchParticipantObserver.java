@@ -152,6 +152,10 @@ abstract public class WatchParticipantObserver extends CoreObserver implements A
     }
   }
 
+  public Vector<ParticipantType> getWatchedVessels()
+  {
+  	return _watchedVessels;
+  }
 
   /**
    * we've finish running, get the results value to pass to the batch-processor

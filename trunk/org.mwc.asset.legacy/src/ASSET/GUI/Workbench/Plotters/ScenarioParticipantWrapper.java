@@ -1,15 +1,21 @@
 package ASSET.GUI.Workbench.Plotters;
 
 import java.awt.Point;
-import java.util.*;
+import java.util.Enumeration;
+import java.util.Vector;
 
 import ASSET.ScenarioType;
-import ASSET.Models.Detection.*;
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Vessels.Radiated.RadiatedCharacteristics;
 import ASSET.Participants.Status;
-import MWC.GUI.*;
+import MWC.GUI.Editable;
+import MWC.GUI.Layer;
+import MWC.GUI.Plottable;
 import MWC.GUI.Shapes.Symbols.PlainSymbol;
-import MWC.GenericData.*;
+import MWC.GenericData.WorldDistance;
+import MWC.GenericData.WorldLocation;
+import MWC.GenericData.WorldVector;
 
 /**
  * ******************************************************************** class to
@@ -155,15 +161,21 @@ public class ScenarioParticipantWrapper implements
 		return false;
 	}
 	
-	public java.awt.Color getColor()
+	public static java.awt.Color getColorFor(String force)
 	{
-		if (_myPart.getCategory().getForce().equals(ASSET.Participants.Category.Force.BLUE))
+		if (force.equals(ASSET.Participants.Category.Force.BLUE))
 			return java.awt.Color.blue;
-		else if (_myPart.getCategory().getForce().equals(
+		else if (force.equals(
 				ASSET.Participants.Category.Force.GREEN))
 			return java.awt.Color.green;
 		else
 			return java.awt.Color.red;
+		
+	}
+	
+	public java.awt.Color getColor()
+	{
+		return getColorFor(_myPart.getCategory().getForce());
 	}
 
 	public String toString()

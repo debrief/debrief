@@ -62,6 +62,7 @@ package ASSET.Util.XML.Control.Observers;
 import ASSET.GUI.SuperSearch.Observers.ProportionDetectedObserver;
 import ASSET.GUI.SuperSearch.Observers.RemoveDetectedObserver;
 import ASSET.Scenario.Observers.*;
+import ASSET.Scenario.Observers.Plotting.PlotSensorObserver;
 import ASSET.Scenario.Observers.Recording.CSVTrackObserver;
 import ASSET.Scenario.Observers.Recording.DebriefDeployableSensorLocationObserver;
 import ASSET.Scenario.Observers.Recording.DebriefReplayObserver;
@@ -147,6 +148,14 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
         _myList.add(obs);
       }
     });
+    addHandler(new PlotSensorObserverHandler()
+    {
+      public void setObserver(final ScenarioObserver obs)
+      {
+        _myList.add(obs);
+      }
+    });
+
     addHandler(new DetectionObserverHandler()
     {
       public void setObserver(final ScenarioObserver obs)
@@ -154,6 +163,7 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
         _myList.add(obs);
       }
     });
+
 
     addHandler(new StopOnDetectionObserverHandler()
     {
@@ -297,6 +307,10 @@ abstract public class ObserverListHandler extends MWC.Utilities.ReaderWriter.XML
       else if (observer instanceof ProportionDetectedObserver)
       {
         ProportionDetectedObserverHandler.exportThis(observer, sens, doc);
+      }
+      else if (observer instanceof PlotSensorObserver)
+      {
+        PlotSensorObserverHandler.exportThis(observer, sens, doc);
       }
       else if (observer instanceof DetectionObserver)
       {

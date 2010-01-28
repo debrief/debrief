@@ -78,56 +78,7 @@ public class RectangleWander extends Wander
    */
   protected String setNewCourse(Status status, Double oldDemCourse, SimpleDemandedStatus res)
   {
-    String activity;
-
-    //    if (true)
-    //    {
-    activity = super.setNewCourse(status, oldDemCourse, res);
-    return activity;
-    //    }
-    //
-    //    // do we have a demanded course?
-    //    if (_demCourse != null)
-    //    {
-    //
-    //      // is the user already on course?
-    //      double courseError = Math.abs(_demCourse.doubleValue() - status.getCourse());
-    //
-    //      if (courseError > 180)
-    //        courseError -= 360;
-    //
-    //      if (courseError < -180)
-    //        courseError += 360;
-    //
-    //      // is the error acceptable?
-    //      if (courseError < 5)
-    //      {
-    //        // yes, decide a new course
-    //        _demCourse = null;
-    //      }
-    //    }
-    //
-    //
-    //    if (_demCourse == null)
-    //    {
-    //      // determine the new course
-    //      double demCourse = status.getCourse() + 180;
-    //
-    //      if (demCourse > 360)
-    //        demCourse -= 360;
-    //
-    //      if (demCourse < -360)
-    //        demCourse += 360;
-    //
-    //      _demCourse = new Double(demCourse);
-    //    }
-    //    else
-    //    {
-    //      _demCourse = new Double(status.getCourse());
-    //    }
-    //
-    //    // and head for the new dem course
-    //    res.setCourse(_demCourse.doubleValue());
+    return super.setNewCourse(status, oldDemCourse, res, _ourArea.getCentre());
   }
 
 

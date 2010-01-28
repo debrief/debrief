@@ -248,15 +248,22 @@ public class Wander extends CoreDecision implements Response,
 	 *          the old demanded course
 	 * @param res
 	 *          the demanded status object (to place our data into)
+	 * @param origin
 	 * @return the status message
 	 */
 	protected String setNewCourse(final Status status, Double oldDemCourse,
 			SimpleDemandedStatus res)
 	{
+		return setNewCourse(status, oldDemCourse, res, _origin);
+	}
+
+	protected String setNewCourse(final Status status, Double oldDemCourse,
+			SimpleDemandedStatus res, WorldLocation origin)
+	{
 		StringBuffer activity = new StringBuffer();
 
 		// what's the range to the origin?
-		final MWC.GenericData.WorldVector offset = _origin.subtract(status
+		final MWC.GenericData.WorldVector offset = origin.subtract(status
 				.getLocation());
 
 		// plot a course back to the centre

@@ -95,6 +95,8 @@ public class ScenarioControllerView extends ViewPart implements
 		ISelectionProvider, TimeManager.LiveScenario
 {
 
+	private static final String PAUSE_SCENARIO = "Stop";
+	private static final String RUN_SCENARIO = " Run ";
 	private static final String CONTROL_FILE_INDEX = "CONTROL_FILE";
 	private static final String SCENARIO_FILE_INDEX = "SCENARIO_FILE";
 	/**
@@ -358,11 +360,22 @@ public class ScenarioControllerView extends ViewPart implements
 
 			public void widgetSelected(SelectionEvent e)
 			{
-				// disable the run button
-				_myUI.getSingleRunBtn().setEnabled(false);
+				String currLabel = _myUI.getSingleRunBtn().getText().trim();
+				if (currLabel.equals(RUN_SCENARIO.trim()))
+				{
+					// tell it we're running
+					_myUI.getSingleRunBtn().setText(PAUSE_SCENARIO);
 
-				// ok, run the scenario
-				_myScenario.start();
+					// ok, run the scenario
+					_myScenario.start();
+				}
+				else
+				{
+					// tell it we're running
+					_myUI.getSingleRunBtn().setText(RUN_SCENARIO);
+
+					_myScenario.pause();
+				}
 
 			}
 		});
@@ -696,7 +709,7 @@ public class ScenarioControllerView extends ViewPart implements
 		{
 			// ditch any existing participants
 			_myScenario.emptyParticipants();
-			
+
 			// and ditch any layers
 			_scenarioWrapper.ditchChartFeatures();
 

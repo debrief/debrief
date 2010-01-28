@@ -62,7 +62,7 @@ public class ScenarioWrapper extends Layers
 		while (layers.hasMoreElements())
 		{
 			Layer thisLayer = (Layer) layers.nextElement();
-			if ((thisLayer == _scenLayer) && (thisLayer == _theController))
+			if ((thisLayer == _scenLayer) || (thisLayer == _theController))
 			{
 				// ok, leave it
 			}

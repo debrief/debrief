@@ -1,11 +1,13 @@
 package ASSET.Models.Sensor.Cookie;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Vector;
 
 import ASSET.ParticipantType;
 import ASSET.ScenarioType;
 import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Detection.DetectionList;
 import ASSET.Models.Environment.EnvironmentType;
 import ASSET.Models.Environment.SimpleEnvironment;
 import ASSET.Models.Sensor.CoreSensor;
@@ -34,6 +36,8 @@ public class TypedCookieSensor extends CoreSensor
 {
 
 	private Vector<TypedRangeDoublet> _rangeDoublets;
+	
+	private HashMap<TypedRangeDoublet, DetectionList> _typedDetections;
 
 	/**
 	 * 
@@ -45,6 +49,12 @@ public class TypedCookieSensor extends CoreSensor
 		super(id, 0, "Plain Cookie");
 
 		_rangeDoublets = rangeDoublets;
+		_typedDetections = new HashMap<TypedRangeDoublet, DetectionList>();
+	}
+	
+	public Vector<TypedRangeDoublet> getRanges()
+	{
+		return _rangeDoublets;
 	}
 
 	@Override
@@ -96,12 +106,38 @@ public class TypedCookieSensor extends CoreSensor
 						new Float(1), target.getCategory(), new Float(target.getStatus()
 								.getSpeed().getValueIn(WorldSpeed.Kts)), new Float(target
 								.getStatus().getCourse()), target);
+				
+				// store this detection
+				storeThisDetection(doublet, res);
 
 			}
 
 		}
 
 		return res;
+	}
+
+	
+	public DetectionList getDetectionsFor(TypedRangeDoublet doublet)
+	{
+		return _typedDetections.get(doublet);
+	}
+	
+	/** store this detection in our typed collections
+	 * 
+	 * @param doublet
+	 * @param detection
+	 */
+	private void storeThisDetection(TypedRangeDoublet doublet, DetectionEvent detection)
+	{
+		DetectionList dl = _typedDetections.get(doublet);
+		if(dl == null)
+		{
+			dl = new DetectionList();
+			_typedDetections.put(doublet, dl);
+		}
+		
+		dl.add(detection);
 	}
 
 	@Override
@@ -113,7 +149,6 @@ public class TypedCookieSensor extends CoreSensor
 	@Override
 	public int getMedium()
 	{
-		// TODO Auto-generated method stub
 		return 0;
 	}
 
@@ -218,6 +253,11 @@ public class TypedCookieSensor extends CoreSensor
 			_range = range;
 		}
 
+		public Vector<String> getMyTypes()
+		{
+			return _types;
+		}
+		
 		/**
 		 * see if we can detect the target
 		 * 
