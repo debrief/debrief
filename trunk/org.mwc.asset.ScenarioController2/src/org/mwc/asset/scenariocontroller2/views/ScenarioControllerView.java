@@ -696,6 +696,9 @@ public class ScenarioControllerView extends ViewPart implements
 		{
 			// ditch any existing participants
 			_myScenario.emptyParticipants();
+			
+			// and ditch any layers
+			_scenarioWrapper.ditchChartFeatures();
 
 			// now load the new ones
 			String scenarioStr = thisName;
