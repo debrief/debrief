@@ -206,8 +206,17 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 			{
 				if (propId == PROP_INPUT)
 				{
-					IFileEditorInput inp = (IFileEditorInput) getEditorInput();
-					setPartName(inp.getName());
+					Object input = getEditorInput();
+					if (input instanceof IFileEditorInput)
+					{
+						IFileEditorInput inp = (IFileEditorInput) getEditorInput();
+						setPartName(inp.getName());
+					}
+					else
+					{
+						CorePlugin.logError(Status.ERROR,"data source for PlotEditor not of expected type:" + input, null);
+						System.err.println("Not expected file type:" + input);
+					}
 				}
 			}
 		});
@@ -912,14 +921,15 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					if (tmpFile.exists())
 						if (tmpFile.length() == 0)
 						{
-							// save failed throw exception (to be collected shortly afterwards)
+							// save failed throw exception (to be collected shortly
+							// afterwards)
 							throw new RuntimeException("Stored file is of zero size");
 						}
 						else
 						{
 
 							// save worked. cool.
-							
+
 							// 5. overwrite the existing file with the saved file
 							// - note we will only reach this point if the save succeeded.
 							// sort out where we're saving to
