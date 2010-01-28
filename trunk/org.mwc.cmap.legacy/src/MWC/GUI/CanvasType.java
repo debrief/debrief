@@ -163,7 +163,8 @@ public interface CanvasType {
   /**
    * drawOval
    *
-   * @param x parameter for drawOval
+   * @param x upper left hand corner
+   * @param y upper left hand corner
    *
    */
   public void drawOval( int x, int y, int width, int height );
