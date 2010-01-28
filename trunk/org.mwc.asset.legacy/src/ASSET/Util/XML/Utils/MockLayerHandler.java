@@ -9,6 +9,7 @@ package ASSET.Util.XML.Utils;
  * @version 1.0
  */
 
+import Debrief.ReaderWriter.XML.DebriefLayerHandler;
 import MWC.GUI.*;
 import MWC.Utilities.ReaderWriter.XML.*;
 
@@ -22,7 +23,7 @@ abstract public class MockLayerHandler extends MWCXMLReader
 		super(elementName);
 
 		// and add the layer handler...
-		addHandler(new LayerHandler(null)
+		addHandler(new DebriefLayerHandler(null)
 		{
 			public void elementClosed()
 			{
