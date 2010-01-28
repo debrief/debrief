@@ -28,7 +28,7 @@ import MWC.Utilities.ReaderWriter.XML.Features.ScaleHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFCoastlineHandler;
 import MWC.Utilities.ReaderWriter.XML.Features.VPFDatabaseHandler;
 
-public final class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.LayerHandler
+public class DebriefLayerHandler extends MWC.Utilities.ReaderWriter.XML.LayerHandler
 {
   public DebriefLayerHandler(MWC.GUI.Layers theLayers)
   {
