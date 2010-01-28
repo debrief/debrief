@@ -78,17 +78,7 @@ public class LayerHandler extends MWCXMLReader
 			{
 				addThis(plottable);
 			}
-		});
-		
-
-//		addHandler(new S57Handler()
-//		{
-//			public void addPlottable(MWC.GUI.Plottable plottable)
-//			{
-//				addThis(plottable);
-//			}
-//		});
-		
+		});		
 
 		addHandler(new LocalGridHandler()
 		{
