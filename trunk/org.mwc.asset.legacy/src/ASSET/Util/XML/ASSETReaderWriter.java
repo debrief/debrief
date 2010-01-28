@@ -23,6 +23,7 @@ import ASSET.Scenario.Observers.ScenarioObserver;
 import ASSET.Util.XML.Control.StandaloneObserverListHandler;
 import ASSET.Util.XML.Control.Observers.ScenarioControllerHandler;
 import ASSET.Util.XML.Decisions.WaterfallHandler;
+import MWC.GUI.BaseLayer;
 import MWC.GUI.Layer;
 import MWC.GUI.Layers;
 import MWC.Utilities.ReaderWriter.XML.LayersHandler;
@@ -96,11 +97,21 @@ public class ASSETReaderWriter extends MWC.Utilities.ReaderWriter.XML.MWCXMLRead
   {
     // create the new handler
     final ASSETReaderWriter xr = new ASSETReaderWriter();
+    
+    final Layers backdropHolder = new Layers();
 
-    final MWCXMLReader handler = new ScenarioHandler(theScenario);
-
+    final MWCXMLReader handler = new ScenarioHandler(theScenario, backdropHolder);
+        
     // import the datafile into this set of layers
     xr.doImport(new InputSource(is), handler);
+ 
+    if(backdropHolder.size() > 0)
+    {
+    	Layer firstLayer = backdropHolder.elementAt(0);
+    	if(firstLayer instanceof BaseLayer)
+        theScenario.setBackdrop((BaseLayer) firstLayer);
+    }
+
   }
   
   /**

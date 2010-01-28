@@ -41,6 +41,7 @@ import ASSET.Scenario.LiveScenario.ISimulationQue;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
 import MWC.Algorithms.LiveData.IAttribute.IndexedAttribute;
+import MWC.GUI.Layer;
 
 public class SimulationTable
 {
@@ -126,16 +127,24 @@ public class SimulationTable
 
 				if (newSel instanceof CoreScenario)
 				{
+					ScenarioType theScenario = (ScenarioType) newSel;
+
 					// better wrap it
 					ScenarioLayer sl = new ScenarioLayer();
-					sl.setScenario((ScenarioType) theSim);
+					sl.setScenario(theScenario);
 
 					// right, do we have a wrapper for this object. we cache them so we
 					// aren't always changing
-					ScenarioWrapper sw = _wrappedScenarios.get(theSim);
+					ScenarioWrapper sw = _wrappedScenarios.get(theScenario);
 					if (sw == null)
 					{
 						sw = new ScenarioWrapper(_myControllerView, sl);
+						
+						// tell it about any backdrop data
+						Layer theBackdrop = theScenario.getBackdrop();
+						if(theBackdrop != null)
+							sw.addThisLayer(theBackdrop);				
+						
 						_wrappedScenarios.put((ScenarioType) theSim, sw);
 					}
 
