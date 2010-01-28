@@ -711,7 +711,7 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
     public final void drawOval(final int x, final int y, final int width,
             final int height)
-    {
+    {  	
         if (_theDest != null)
             if (!_theDest.isDisposed())
                 this.switchAntiAliasOn(SWTCanvasAdapter.antiAliasThisLine(this
@@ -719,7 +719,9 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
 
         if (_theDest != null)
             if (!_theDest.isDisposed())
+            {
                 _theDest.drawOval(x, y, width, height);
+            }
     }
 
     public final void fillOval(final int x, final int y, final int width,
@@ -727,7 +729,11 @@ public class SWTCanvasAdapter implements CanvasType, Serializable, Editable
     {
         if (_theDest != null)
             if (!_theDest.isDisposed())
-                _theDest.fillOval(x, y, width, height);
+            {
+            	_theDest.setAlpha(45);
+              _theDest.fillOval(x, y, width, height);
+              _theDest.setAlpha(255);
+            }
         // else
         // MWC.Utilities.Errors.Trace.trace("Graphics object not available when
         // painting oval - occasionally happens in first pass", false);
