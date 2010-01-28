@@ -28,10 +28,20 @@
 	<Participants>
 		<Surface Name="T23">
 			<Category Type="FRIGATE" Force="BLUE" Environment="SURFACE" />
-			<SensorFit></SensorFit>
+			<SensorFit>
+				<TypedCookieSensor>
+					<TypedRangeDoublet>
+						<Type Name="OILER" />
+						<DetectionRange Value="15" Units="nm" />
+					</TypedRangeDoublet>
+					<TypedRangeDoublet>
+						<Type Name="FISHING_VESSEL" />
+						<DetectionRange Value="7" Units="nm" ></DetectionRange>
+					</TypedRangeDoublet>
+				</TypedCookieSensor></SensorFit>
 			<Status Course="0.0" Fuel="100">
 				<Location>
-					<shortLocation Lat="0" Long="0.2">
+					<shortLocation Lat="0" Long="0.25">
 						<Height Value="6" Units="m" />
 					</shortLocation>
 				</Location>
@@ -41,13 +51,13 @@
 				<Transit Name="" Looping="true">
 					<WorldPath>
 						<Point>
-							<shortLocation Lat="0" Long="0.2"></shortLocation>
+							<shortLocation Lat="0" Long="0.25"></shortLocation>
 						</Point>
 						<Point>
-							<shortLocation Lat="4" Long="0.2"></shortLocation>
+							<shortLocation Lat="4" Long="0.25"></shortLocation>
 						</Point>
 					</WorldPath>
-					<Speed Value="12" Units="kts" />
+					<Speed Value="12" Units="kts" ></Speed>
 				</Transit>
 			</Waterfall>
 			<SurfaceMovementCharacteristics Name=""
