@@ -13,6 +13,7 @@ import java.io.StringReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.StringTokenizer;
 import java.util.TimeZone;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
@@ -238,6 +239,27 @@ public class ImportKML
 							.getTime()), new WorldLocation(latVal, longVal, depthVal),
 							courseDegs, speedKts);
 				}
+				else
+				{
+					// see if it's from a GPS tracker
+					NodeList lineString = thisP.getElementsByTagName("LineString");
+					if (lineString != null)
+					{
+						Element theString = (Element) lineString.item(0);
+						if (theString != null)
+						{
+							NodeList theCoords = theString
+									.getElementsByTagName("coordinates");
+							if (theCoords != null)
+							{
+								Node theCoordStr = theCoords.item(0);
+								String contents = theCoordStr.getTextContent();
+								parseTheseCoords(contents, theLayers, prefix);
+							}
+						}
+					}
+
+				}
 			}
 
 		}
@@ -260,7 +282,26 @@ public class ImportKML
 
 	}
 
-	/** extract the course element from the supplied string
+	private static void parseTheseCoords(String contents, Layers theLayers,
+			String prefix)
+	{
+		StringTokenizer token = new StringTokenizer(contents, ",\n",false);
+		
+		while(token.hasMoreElements())
+		{
+			String longV = token.nextToken();
+			String latV = token.nextToken();
+			String altitude = token.nextToken();
+
+			addFix(theLayers,  prefix, new HiResDate(new Date().getTime()), new WorldLocation(Double.valueOf(latV), Double.valueOf(longV),- Double.valueOf(altitude)),
+					0, 0);
+		}
+		
+		
+	}
+
+	/**
+	 * extract the course element from the supplied string
 	 * 
 	 * @param descriptionTxt
 	 * @return
@@ -274,15 +315,16 @@ public class ImportKML
 		// knots<br>Date: September 12, 2009]]>
 		int startI = descriptionTxt.indexOf("Course");
 		int endI = descriptionTxt.indexOf("<br>Speed");
-		if((startI > 0) && (endI > 0))
+		if ((startI > 0) && (endI > 0))
 		{
-			String subStr = descriptionTxt.substring(startI + 7, endI-1);
+			String subStr = descriptionTxt.substring(startI + 7, endI - 1);
 			res = Double.valueOf(subStr.trim());
 		}
 		return res;
 	}
 
-	/** extract the course element from the supplied string
+	/**
+	 * extract the course element from the supplied string
 	 * 
 	 * @param descriptionTxt
 	 * @return
@@ -296,9 +338,9 @@ public class ImportKML
 		// knots<br>Date: September 12, 2009]]>
 		int startI = descriptionTxt.indexOf("Speed");
 		int endI = descriptionTxt.indexOf("knots");
-		if((startI > 0) && (endI > 0))
+		if ((startI > 0) && (endI > 0))
 		{
-			String subStr = descriptionTxt.substring(startI + 6, endI-1);
+			String subStr = descriptionTxt.substring(startI + 6, endI - 1);
 			res = Double.valueOf(subStr.trim());
 		}
 		return res;
