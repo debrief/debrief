@@ -1159,8 +1159,8 @@ public final class SensorContactWrapper extends
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("Label", "the label for this data item"),
-						prop("Visible", "whether this sensor contact data is visible"),
+						prop("Label", "the label for this data item", FORMAT),
+						prop("Visible", "whether this sensor contact data is visible", FORMAT),
 						prop("Frequency", "the frequency measurement for this data item",
 								OPTIONAL),
 						prop("Bearing", "bearing to target", SPATIAL),
@@ -1187,11 +1187,11 @@ public final class SensorContactWrapper extends
 			{
 				final PropertyDescriptor[] res =
 				{
-						prop("Label", "the label for this data item"),
-						prop("Visible", "whether this sensor contact data is visible"),
+						prop("Label", "the label for this data item", FORMAT),
+						prop("Visible", "whether this sensor contact data is visible", FORMAT),
 						prop("LabelVisible",
-								"whether the label for this contact is visible"),
-						prop("Color", "the color for this sensor contact"),
+								"whether the label for this contact is visible", FORMAT),
+						prop("Color", "the color for this sensor contact", FORMAT),
 						prop("HasFrequency",
 								"whether this data item includes frequency data", OPTIONAL),
 						prop("HasAmbiguousBearing",

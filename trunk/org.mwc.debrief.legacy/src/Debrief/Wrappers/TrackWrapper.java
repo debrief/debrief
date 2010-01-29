@@ -2484,13 +2484,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// ///////////////////////////////////////////
 			// let the fixes draw themselves in
 			// ///////////////////////////////////////////
-
+			
 			Enumeration<Editable> segments = _thePositions.elements();
 			while (segments.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
 				lineStyle = seg.getLineStyle();
-
+	
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
 				// RELATIVE
 				// MODE

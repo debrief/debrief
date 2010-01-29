@@ -134,9 +134,14 @@ abstract public class TacticalDataWrapper extends MWC.GUI.PlainWrapper
 	{
 		Vector<PlottableWrapperWithTimeAndOverrideableColor> newItems = new Vector<PlottableWrapperWithTimeAndOverrideableColor>();
 
+		// get the time interval
+		final long interval = theVal.getMicros();
 		
-		// set the start time to be the earlier of our start time and the provided time
+		// round myStart time to the supplied interval
 		long myStart = this.getStartDTG().getMicros();
+		myStart = (myStart / interval) * interval;
+		
+		// set the start time to be the later of our start time and the provided time
 		startTime = Math.max(startTime, myStart);
 		
 	//	long startTime = this.getStartDTG().getMicros();

@@ -109,7 +109,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate();
+		sortOutDate(null);
 
 	}
 
@@ -139,7 +139,7 @@ public class AbsoluteTMASegment extends CoreTMASegment
 		}
 
 		// now sort out the name
-		sortOutDate();
+		sortOutDate(null);
 	}
 
 	/**

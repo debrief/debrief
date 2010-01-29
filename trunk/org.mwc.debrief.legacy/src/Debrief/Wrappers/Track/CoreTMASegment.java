@@ -59,12 +59,6 @@ abstract public class CoreTMASegment extends TrackSegment {
 		_baseFreq = baseFrequency;
 	}
 
-	@Override
-	public boolean getPlotRelative() {
-		// always return true for TMA Segments
-		return true;
-	}
-
 	/**
 	 * the constant speed of this segment
 	 * 
@@ -94,6 +88,9 @@ abstract public class CoreTMASegment extends TrackSegment {
 	{
 		_courseDegs = courseDegs;
 		_speed = speed;
+		
+		// tell the parent that we're a relative track
+		setPlotRelative(true);
 	}
 	
 	/**

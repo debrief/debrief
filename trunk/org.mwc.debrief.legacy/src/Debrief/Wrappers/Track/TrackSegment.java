@@ -69,7 +69,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 			{
 				final PropertyDescriptor[] res =
 				{ expertProp("Visible", "whether this layer is visible", FORMAT),
-						expertProp("LineStyle", "how to plot this line", FORMAT), };
+						expertProp("LineStyle", "how to plot this line", FORMAT),
+						expertProp("Name", "Name of this track segment", FORMAT) };
 				res[1].setPropertyEditorClass(LineStylePropertyEditor.class);
 				return res;
 			}
@@ -143,7 +144,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate();
+		sortOutDate(null);
 	}
 
 	/**
@@ -357,7 +358,7 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		this.addFixSilent(fix);
 
 		// override the name, just in case this point is earlier
-		sortOutDate();
+		sortOutDate(null);
 	}
 
 	public void addFixSilent(final FixWrapper fix)
@@ -695,10 +696,15 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 		}
 	}
 
-	public void sortOutDate()
+	public void sortOutDate(HiResDate startDTG)
 	{
 		if (getData().size() > 0)
-			setName(FormatRNDateTime.toString(startDTG().getDate().getTime()));
+		{
+			if(startDTG == null)
+				startDTG = startDTG();
+			
+			setName(FormatRNDateTime.toString(startDTG.getDate().getTime()));
+		}
 	}
 
 	/**
@@ -778,53 +784,110 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	private void decimateRelative(HiResDate theVal, TrackWrapper parentTrack,
 			long startTime, Vector<FixWrapper> newItems)
 	{
-		FixWrapper lastPositionStored = null;
-		FixWrapper currentPosition = null;
 		long tNow = 0;
 
-		// right - sort out what time period we're working through
-		for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
-				.getMicros())
+		if (this instanceof CoreTMASegment)
 		{
+			CoreTMASegment tma = (CoreTMASegment) this;
 
-			// find hte new datum
-			Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
-			if (matches.length > 0)
+			// hey, it's a TMA segment - on steady course/speed. cool
+			double courseRads = MWC.Algorithms.Conversions.Degs2Rads(tma.getCourse());
+			double speedYps = tma.getSpeed().getValueIn(WorldSpeed.ft_sec) / 3;
+
+			// find the new start location - after we've slipped
+			WorldLocation myStartLocation = new WorldLocation(tma.getTrackStart());
+
+			
+			// right - sort out what time period we're working through
+			for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+					.getMicros())
 			{
-				// remember the last position - we;re going to be calculating future
-				// courses and speeds from it
-				lastPositionStored = currentPosition;
+				Fix theFix = new Fix(new HiResDate(0, tNow), new WorldLocation(
+						myStartLocation), courseRads, speedYps);
+				FixWrapper newFix = new FixWrapper(theFix);
+				newFix.setSymbolShowing(true);
+				newItems.add(newFix);
+			}
 
-				currentPosition = (FixWrapper) matches[0];
-
-				// is this our first point?
-				if (lastPositionStored != null)
+			// right, if it's a relative segment, then we need to shift the offset to
+			// reflect the new relationship
+			if (tma instanceof RelativeTMASegment)
+			{
+				FixWrapper myStarter = (FixWrapper) tma.first();
+				FixWrapper myEnder = (FixWrapper) tma.last();
+				HiResDate startDTG = new HiResDate(0, startTime);
+				FixWrapper newStarter = FixWrapper.interpolateFix(myStarter, myEnder, startDTG);
+				WorldLocation newStartLoc = newStarter.getLocation();
+				 
+				RelativeTMASegment rel = (RelativeTMASegment) tma;
+				Watchable[] newHost = rel.getReferenceTrack().getNearestTo(startDTG);
+				if (newHost.length > 0)
 				{
-					// start off with the course
-					WorldVector offset = currentPosition.getLocation().subtract(
-							lastPositionStored.getLocation());
-					lastPositionStored.getFix().setCourse(offset.getBearing());
-
-					// and now the speed
-					double distYds = new WorldDistance(offset.getRange(),
-							WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
-					double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
-					double spdYps = distYds / timeSecs;
-					lastPositionStored.getFix().setSpeed(spdYps);
-
-					// do we correct the name?
-					if (lastPositionStored.getName().equals(FixWrapper.INTERPOLATED_FIX))
-					{
-						// reset the name
-						lastPositionStored.resetName();
-					}
-					// add to our working list
-					newItems.add(lastPositionStored);
+					WorldLocation newOrigin = newHost[0].getLocation();
+					WorldVector newOffset = newStartLoc.subtract(newOrigin);
+					rel.setOffset(newOffset); 
 				}
-
+				
+				// lastly, reset the track name
+				rel.sortOutDate(startDTG);
+				
+				// and change the track name
+				rel._myTrack.setName(rel.getName());
 			}
 
 		}
+		else
+		{
+			FixWrapper lastPositionStored = null;
+			FixWrapper currentPosition = null;
+			tNow = 0;
+
+			// right - sort out what time period we're working through
+			for (tNow = startTime; tNow <= endDTG().getMicros(); tNow += theVal
+					.getMicros())
+			{
+
+				// find hte new datum
+				Watchable[] matches = parentTrack.getNearestTo(new HiResDate(0, tNow));
+				if (matches.length > 0)
+				{
+					// remember the last position - we;re going to be calculating future
+					// courses and speeds from it
+					lastPositionStored = currentPosition;
+
+					currentPosition = (FixWrapper) matches[0];
+
+					// is this our first point?
+					if (lastPositionStored != null)
+					{
+						// start off with the course
+						WorldVector offset = currentPosition.getLocation().subtract(
+								lastPositionStored.getLocation());
+						lastPositionStored.getFix().setCourse(offset.getBearing());
+
+						// and now the speed
+						double distYds = new WorldDistance(offset.getRange(),
+								WorldDistance.DEGS).getValueIn(WorldDistance.YARDS);
+						double timeSecs = (tNow - lastPositionStored.getTime().getMicros()) / 1000000d;
+						double spdYps = distYds / timeSecs;
+						lastPositionStored.getFix().setSpeed(spdYps);
+
+						// do we correct the name?
+						if (lastPositionStored.getName()
+								.equals(FixWrapper.INTERPOLATED_FIX))
+						{
+							// reset the name
+							lastPositionStored.resetName();
+						}
+						// add to our working list
+						newItems.add(lastPositionStored);
+					}
+
+				}
+
+			}
+		}
+
 	}
 
 	private void decimateAbsolute(HiResDate theVal, TrackWrapper parentTrack,

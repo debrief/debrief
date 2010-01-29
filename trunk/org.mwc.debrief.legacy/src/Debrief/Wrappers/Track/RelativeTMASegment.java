@@ -118,7 +118,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	 * the feature we're based on
 	 * 
 	 */
-	private WatchableList _referenceTrack;
+	private TrackWrapper _referenceTrack;
 
 	/**
 	 * our editable details
@@ -187,7 +187,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		getData().addAll(theItems);
 
 		// now sort out the name
-		sortOutDate();
+		sortOutDate(null);
 
 	}
 
@@ -211,7 +211,7 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		// sort out the origin
 		SensorContactWrapper scw = observations[0];
-		_referenceTrack = scw.getSensor().getHost();
+		_referenceTrack = (TrackWrapper) scw.getSensor().getHost();
 
 		// create the points
 		createPointsFrom(observations);
@@ -236,7 +236,7 @@ public class RelativeTMASegment extends CoreTMASegment
 		this(courseDegs, speed, offset, theLayers);
 
 		// sort out the origin
-		_referenceTrack = sw.getHost();
+		_referenceTrack = (TrackWrapper) sw.getHost();
 
 		// create the points
 		createPointsFrom(sw);
@@ -498,11 +498,18 @@ public class RelativeTMASegment extends CoreTMASegment
 
 		if (_referenceTrack != null)
 		{
+			// interpolate on the parent track
+			boolean oldInterpSetting = _referenceTrack.getInterpolatePoints();
+			
+			_referenceTrack.setInterpolatePoints(true);
+			
 			Watchable[] pts = _referenceTrack.getNearestTo(startDTG());
 			if (pts.length > 0)
 			{
 				res = pts[0].getLocation();
 			}
+			
+			_referenceTrack.setInterpolatePoints(oldInterpSetting);
 		}
 		return res;
 	}
@@ -563,7 +570,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	@Override
 	public WorldLocation getTrackStart()
 	{
-		WorldLocation res = getHostLocation();
+		WorldLocation res = getHostLocation(); 
 		if (res != null)
 		{
 			res = res.add(_offset);
@@ -577,7 +584,7 @@ public class RelativeTMASegment extends CoreTMASegment
 	 */
 	private void identifyReferenceTrack()
 	{
-		_referenceTrack = (WatchableList) _theLayers.findLayer(_hostName);
+		_referenceTrack = (TrackWrapper) _theLayers.findLayer(_hostName);
 	}
 
 	@Override
@@ -680,12 +687,20 @@ public class RelativeTMASegment extends CoreTMASegment
 
 	}
 
+	/** manage the offset bearing (in degrees)
+	 * 
+	 * @param offsetBearing
+	 */
 	public void setOffsetBearing(double offsetBearing)
 	{
 		_offset.setValues(MWC.Algorithms.Conversions.Degs2Rads(offsetBearing),
 				_offset.getRange(), _offset.getDepth());
 	}
 
+	/** manage the offset range (in degrees)
+	 * 
+	 * @param offsetRange
+	 */
 	public void setOffsetRange(WorldDistance offsetRange)
 	{
 		_offset.setValues(_offset.getBearing(), offsetRange
@@ -1048,6 +1063,11 @@ public class RelativeTMASegment extends CoreTMASegment
 			res = nearestContact.getLocation();
 
 		return res;
+	}
+
+	public void setOffset(WorldVector newOffset)
+	{
+		_offset = newOffset;
 	}
 
 }
