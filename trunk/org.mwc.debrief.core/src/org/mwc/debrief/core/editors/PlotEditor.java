@@ -214,8 +214,19 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 					}
 					else
 					{
-						CorePlugin.logError(Status.ERROR,"data source for PlotEditor not of expected type:" + input, null);
-						System.err.println("Not expected file type:" + input);
+						if (input instanceof FileStoreEditorInput)
+						{
+							FileStoreEditorInput fsi = (FileStoreEditorInput) input;
+							String theName = fsi.getName();
+							setPartName(theName);
+						}
+						else
+						{
+							CorePlugin.logError(Status.ERROR,
+									"data source for PlotEditor not of expected type:" + input,
+									null);
+							System.err.println("Not expected file type:" + input);
+						}
 					}
 				}
 			}
