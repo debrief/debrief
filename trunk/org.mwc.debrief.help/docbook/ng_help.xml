@@ -6556,7 +6556,7 @@ course, speed, depth (m), label string
                                 enclosed in quotation marks ("), and the year can be expressed as 2
                                 or 4 figures.</para>
                         </note><note>
-                            <para>Debrief can handle decimal values for degrees or minutes.  If you
+                            <para>Debrief can handle decimal values for degrees or minutes. If you
                                 original data is in decimal degrees or degrees plus decimal minutes
                                 feel free to use these values directly, but remember to provide a
                                 zero for the unused column(s)</para>
@@ -6649,6 +6649,105 @@ course, speed, depth (m), label string
                                 </imageobject>
                             </mediaobject>
                         </figure></para>
+                </sect2>
+            </sect1>
+            <sect1 id="Section_KML">
+                <title id="SectionKML_Title">KML File Format</title>
+                <sect2 id="IntroToKML">
+                    <title>Introduction to KML File Format</title>
+                    <para>
+                        <blockquote>
+                            <attribution><ulink url="http://en.wikipedia.org/wiki/Kml"
+                                    >WikiPedia</ulink>, 2010</attribution>
+                            <para>Keyhole Markup Language (KML) is an XML-based language schema for
+                                expressing geographic annotation and visualization on existing or
+                                future Internet-based, two-dimensional maps and three-dimensional
+                                Earth browsers. KML was developed for use with Google Earth, which
+                                was originally named Keyhole Earth Viewer. It was created by
+                                Keyhole, Inc, which was acquired by Google in 2004. The name
+                                "Keyhole" is an homage to the KH reconnaissance satellites, the
+                                original eye-in-the-sky military reconnaissance system first
+                                launched in 1976. KML is an international standard of the Open
+                                Geospatial Consortium. Google Earth was the first program able to
+                                view and graphically edit KML files, and other projects such as
+                                Marble have also started to develop KML support</para>
+                        </blockquote>
+                    </para>
+                    <para>Whilst it has miliary roots, the KML dialect of XML has received wide
+                        adoption for the recording and distribution of positional information.  KML
+                        extends the GML standard.  KML and GML provide a number of ways of recording
+                        positional data.  This section will record the KML dialects that Debrief
+                        understands.</para>
+                </sect2>
+                <sect2 id="KML_LineString">
+                    <title>LineString KML Files</title>
+                    <para>Handheld GPS systems (including mobile phones) tend to store positional
+                        data in a <command>Placemark</command> that contains a single, lengthy
+                            <command>LineString</command> element containing a series of long, lat,
+                        altitude elements - devoid of time stamps. Debrief makes the following
+                        assumptions regarding this format:<orderedlist>
+                            <listitem>
+                                <para>If altitude data is missing, it's comma separator will still
+                                    be present</para>
+                            </listitem>
+                            <listitem>
+                                <para>The filename will be of the form w20090802164801.kml, where
+                                    the digits represent year, month, day, hour, minute,
+                                    second</para>
+                            </listitem>
+                            <listitem>
+                                <para>The data items will have been recorded at one second
+                                    intervals</para>
+                            </listitem>
+                            <listitem>
+                                <para>The filename (without suffix) is used as the track
+                                    identifier</para>
+                            </listitem>
+                        </orderedlist></para>
+                </sect2>
+                <sect2 id="KML_MultiGeometry">
+                    <title>MultiGeometry KML Files</title>
+                    <para>More capable recording systems tend to store positional data in a more
+                        refined, time-stamped format - using series of <command>Placemark</command>
+                        entries - each containing a <command>MultiGeometry</command> record.
+                        Additionally, these more complex files are able to represent data for a
+                        number of different vehicles.  Debrief makes the following assumptions
+                        regarding this file format:<orderedlist>
+                            <listitem>
+                                <para>Only <command>Placemark</command> elements that contain a
+                                        <command>MultiGeometry</command> element are treated as
+                                    compliant and processed</para>
+                            </listitem>
+                            <listitem>
+                                <para>The <command>Placemark</command> name element is used to
+                                    determine the track id:  any digits/letters appearing before a
+                                    "-" hyphen are treated as a track id, this multiple positions
+                                    are attributed to their relevant track</para>
+                            </listitem>
+                            <listitem>
+                                <para>Tracks imported into Debrief from this file format are named
+                                    as the first component of the filename (before the "."),
+                                    followed by the unique id declared in the Placemark
+                                    entries.</para>
+                            </listitem>
+                            <listitem>
+                                <para>The contents of the <command>when</command> element are
+                                    treated as the time-stamp of the position record (time-zone
+                                    ignored, always treated as GMT)</para>
+                            </listitem>
+                            <listitem>
+                                <para>The long/lat/altitude coordinates are taken from the first
+                                        <command>coordinates</command> element in the
+                                        <command>Placemark</command></para>
+                            </listitem>
+                            <listitem>
+                                <para>Course and speed data is  taken from the
+                                        <command>description</command> element, based on a
+                                    presumption that the element contains a string formatted like:
+                                        <code>&lt;br>Course: 345.2&lt;br>Speed: 9.6
+                                        knots&lt;br>Date:</code></para>
+                            </listitem>
+                        </orderedlist></para>
                 </sect2>
             </sect1>
             <sect1 id="intro_xml">
