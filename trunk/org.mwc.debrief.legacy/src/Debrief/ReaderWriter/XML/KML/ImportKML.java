@@ -229,7 +229,7 @@ public class ImportKML
 					String[] coords = coordsTxt.split(",");
 					double longVal = Double.parseDouble(coords[0]);
 					double latVal = Double.parseDouble(coords[1]);
-					double depthVal = Double.parseDouble(coords[2]);
+					double altitudeVal = Double.parseDouble(coords[2]);
 
 					// lastly, the course/speed
 					double courseDegs;
@@ -241,7 +241,7 @@ public class ImportKML
 					speedKts = speedFrom(descriptionTxt);
 
 					addFix(theLayers, prefix + "-" + trackID, new HiResDate(theD
-							.getTime()), new WorldLocation(latVal, longVal, depthVal),
+							.getTime()), new WorldLocation(latVal, longVal, -altitudeVal),
 							courseDegs, speedKts);
 				}
 				else
