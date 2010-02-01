@@ -898,7 +898,8 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public static int mergeTracks(final Editable target, Layers theLayers,
 			final Layer[] parents, final Editable[] subjects)
 	{
-		final Layer receiver = (Layer) target;
+		// where we dump the new data points
+		 Layer receiver = (Layer) target;
 
 		// first, check they don't overlap.
 		// start off by collecting the periods
@@ -952,11 +953,39 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			return MessageProvider.ERROR;
 		}
 
+		// right, if the target is a TMA track, we have to change it into a proper track, since
+		// the merged tracks probably contain manoeuvres
+		if(target instanceof CoreTMASegment)
+		{
+			CoreTMASegment tma = (CoreTMASegment) target;
+			TrackSegment newSegment = new TrackSegment();
+			newSegment.setName(tma.getName());
+			newSegment.setVisible(tma.getVisible());
+			newSegment.setWrapper(tma.getWrapper());
+			
+			// add the elements from the target
+			Enumeration<Editable> points = tma.elements();
+			while(points.hasMoreElements())
+			{
+				Editable next = points.nextElement();
+				newSegment.add(next);
+			}
+			
+			// now do some fancy footwork to remove the target from the wrapper, and replace it with our new segment
+			newSegment.getWrapper().removeElement(target);
+			newSegment.getWrapper().add(newSegment);
+			
+			// store the new segment into the receiver
+			receiver = newSegment;
+		}
+		
 		// ok, loop through the subjects, adding them onto the target
 		for (int i = 0; i < subjects.length; i++)
 		{
 			final Layer thisL = (Layer) subjects[i];
 			final TrackWrapper thisP = (TrackWrapper) parents[i];
+			// is this the target item (note we're comparing against the item passed in, not our
+			//   temporary receiver, since the receiver may now be a tracksegment, not a TMA segment
 			if (thisL != target)
 			{
 				// is it a plain segment?
@@ -1012,6 +1041,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 
 		}
+		
 
 		return MessageProvider.OK;
 	}

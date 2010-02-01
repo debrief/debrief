@@ -786,6 +786,17 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 	{
 		long tNow = 0;
 
+		// get the time interval
+		final long interval = theVal.getMicros();
+		
+		// round myStart time to the supplied interval
+		long myStart = this.startDTG().getMicros();
+		myStart = (myStart / interval) * interval;
+		
+		// set the start time to be the later of our start time and the provided time
+		startTime = Math.max(startTime, myStart);
+
+		
 		if (this instanceof CoreTMASegment)
 		{
 			CoreTMASegment tma = (CoreTMASegment) this;
@@ -909,6 +920,8 @@ public class TrackSegment extends BaseItemLayer implements DraggableItem,
 					// reset the name
 					newF.resetName();
 				}
+				
+				newF.setSymbolShowing(true);
 
 				// add to our working list
 				newItems.add(newF);

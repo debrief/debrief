@@ -146,6 +146,11 @@ public class TrackWrapper_Support
 			_myTrack = wrapper;
 		}
 
+		public TrackWrapper getWrapper()
+		{
+			return _myTrack;
+		}
+		
 	}
 
 	/**
