@@ -49,6 +49,11 @@ public class ImportKML
 	 * colors
 	 */
 	private static int colorCounter = 0;
+	
+	/** the time-stamp presumed for LineString data that may not contain time data
+	 * 
+	 */
+	private static int DEFAULT_TIME_STEP = 1000;
 
 	/**
 	 * create a fix using the supplied data
@@ -245,6 +250,25 @@ public class ImportKML
 					NodeList lineString = thisP.getElementsByTagName("LineString");
 					if (lineString != null)
 					{
+						// yup, suspect it's from a NokiaSportsTracker file
+						String trimmedFile = fileName.substring(1, fileName.length() - 1);
+						trimmedFile = trimmedFile.substring(0, trimmedFile.length() - 4);
+
+						// get our XML date parser ready
+						final SimpleDateFormat nokiaDateFormat = new SimpleDateFormat(
+								"yyyyMMddHHmms");
+						nokiaDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+						Date theDate = new Date();
+
+						try
+						{
+							theDate = nokiaDateFormat.parse(trimmedFile);
+						}
+						catch (Exception e)
+						{
+							e.printStackTrace();
+						}
+
 						Element theString = (Element) lineString.item(0);
 						if (theString != null)
 						{
@@ -254,7 +278,7 @@ public class ImportKML
 							{
 								Node theCoordStr = theCoords.item(0);
 								String contents = theCoordStr.getTextContent();
-								parseTheseCoords(contents, theLayers, prefix);
+								parseTheseCoords(contents, theLayers, theDate);
 							}
 						}
 					}
@@ -282,22 +306,38 @@ public class ImportKML
 
 	}
 
+	/** utility to run through the contents of a LineString item - presuming the presence of altitude data
+	 * 
+	 * @param contents the inside of the linestring construct
+	 * @param theLayers where we're going to stick the data
+	 * @param startDate the start date for the track
+	 */
 	private static void parseTheseCoords(String contents, Layers theLayers,
-			String prefix)
+			Date startDate)
 	{
-		StringTokenizer token = new StringTokenizer(contents, ",\n",false);
-		
-		while(token.hasMoreElements())
+		StringTokenizer token = new StringTokenizer(contents, ",\n", false);
+
+		Date newDate = new Date(startDate.getTime());
+
+		while (token.hasMoreElements())
 		{
 			String longV = token.nextToken();
 			String latV = token.nextToken();
 			String altitude = token.nextToken();
+			
+			// just check that we have altitude data
+			double theAlt = 0;
+			if(altitude.length() > 0)
+				theAlt = Double.valueOf(altitude);
 
-			addFix(theLayers,  prefix, new HiResDate(new Date().getTime()), new WorldLocation(Double.valueOf(latV), Double.valueOf(longV),- Double.valueOf(altitude)),
-					0, 0);
+			addFix(theLayers, startDate.toString(), new HiResDate(newDate.getTime()),
+					new WorldLocation(Double.valueOf(latV), Double.valueOf(longV),
+							-theAlt), 0, 0);
+
+			// add a second incremenet to the date, to create the new date
+			newDate = new Date(newDate.getTime() + DEFAULT_TIME_STEP);
 		}
-		
-		
+
 	}
 
 	/**
