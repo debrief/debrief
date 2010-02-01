@@ -123,7 +123,7 @@ public class MergeTracks implements RightClickContextItemGenerator
 			int res = TrackWrapper.mergeTracks(_target, _layers, _parents, _subjects);
 			if(res == IStatus.OK)
 				fireModified();
-			return new Status(res, null, "Merge successful", null);
+			return Status.OK_STATUS;
 		}
 
 		

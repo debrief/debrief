@@ -826,29 +826,31 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 
 						if (obj instanceof SegmentList)
 						{
-							final SegmentList sl = (SegmentList) obj;							
-							
+							final SegmentList sl = (SegmentList) obj;
+
 							final Enumeration<Editable> segs = sl.elements();
 							while (segs.hasMoreElements())
 							{
 								final TrackSegment ts = (TrackSegment) segs.nextElement();
-								
+
 								// reset the name if we need to
-								if(ts.getName().startsWith("Posi"))
-									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate().getTime()));
-									
+								if (ts.getName().startsWith("Posi"))
+									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate()
+											.getTime()));
+
 								target.add(ts);
 							}
 						}
 						else
 						{
-							if(obj instanceof TrackSegment)
+							if (obj instanceof TrackSegment)
 							{
 								TrackSegment ts = (TrackSegment) obj;
 
 								// reset the name if we need to
-								if(ts.getName().startsWith("Posi"))
-									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate().getTime()));
+								if (ts.getName().startsWith("Posi"))
+									ts.setName(FormatRNDateTime.toString(ts.startDTG().getDate()
+											.getTime()));
 
 								// and remember it
 								target.add(ts);
@@ -899,7 +901,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			final Layer[] parents, final Editable[] subjects)
 	{
 		// where we dump the new data points
-		 Layer receiver = (Layer) target;
+		Layer receiver = (Layer) target;
 
 		// first, check they don't overlap.
 		// start off by collecting the periods
@@ -953,39 +955,43 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			return MessageProvider.ERROR;
 		}
 
-		// right, if the target is a TMA track, we have to change it into a proper track, since
+		// right, if the target is a TMA track, we have to change it into a proper
+		// track, since
 		// the merged tracks probably contain manoeuvres
-		if(target instanceof CoreTMASegment)
+		if (target instanceof CoreTMASegment)
 		{
 			CoreTMASegment tma = (CoreTMASegment) target;
 			TrackSegment newSegment = new TrackSegment();
 			newSegment.setName(tma.getName());
 			newSegment.setVisible(tma.getVisible());
 			newSegment.setWrapper(tma.getWrapper());
-			
+
 			// add the elements from the target
 			Enumeration<Editable> points = tma.elements();
-			while(points.hasMoreElements())
+			while (points.hasMoreElements())
 			{
 				Editable next = points.nextElement();
 				newSegment.add(next);
 			}
-			
-			// now do some fancy footwork to remove the target from the wrapper, and replace it with our new segment
+
+			// now do some fancy footwork to remove the target from the wrapper, and
+			// replace it with our new segment
 			newSegment.getWrapper().removeElement(target);
 			newSegment.getWrapper().add(newSegment);
-			
+
 			// store the new segment into the receiver
 			receiver = newSegment;
 		}
-		
+
 		// ok, loop through the subjects, adding them onto the target
 		for (int i = 0; i < subjects.length; i++)
 		{
 			final Layer thisL = (Layer) subjects[i];
 			final TrackWrapper thisP = (TrackWrapper) parents[i];
-			// is this the target item (note we're comparing against the item passed in, not our
-			//   temporary receiver, since the receiver may now be a tracksegment, not a TMA segment
+			// is this the target item (note we're comparing against the item passed
+			// in, not our
+			// temporary receiver, since the receiver may now be a tracksegment, not a
+			// TMA segment
 			if (thisL != target)
 			{
 				// is it a plain segment?
@@ -1041,7 +1047,6 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			}
 
 		}
-		
 
 		return MessageProvider.OK;
 	}
@@ -2453,7 +2458,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				{
 					final TMAWrapper sw = iter.nextElement();
 					// just check that the sensor knows we're it's parent
-					if(sw.getHost() == null)
+					if (sw.getHost() == null)
 						sw.setHost(this);
 					// and do the paint
 					sw.paint(dest);
@@ -2471,9 +2476,9 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				{
 					final SensorWrapper sw = iter.nextElement();
 					// just check that the sensor knows we're it's parent
-					if(sw.getHost() == null)
+					if (sw.getHost() == null)
 						sw.setHost(this);
-					
+
 					// and do the paint
 					sw.paint(dest);
 
@@ -2514,13 +2519,13 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 			// ///////////////////////////////////////////
 			// let the fixes draw themselves in
 			// ///////////////////////////////////////////
-			
+
 			Enumeration<Editable> segments = _thePositions.elements();
 			while (segments.hasMoreElements())
 			{
 				TrackSegment seg = (TrackSegment) segments.nextElement();
 				lineStyle = seg.getLineStyle();
-	
+
 				// SPECIAL HANDLING, SEE IF IT'S A TMA SEGMENT TO BE PLOTTED IN
 				// RELATIVE
 				// MODE
@@ -2538,11 +2543,12 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 				while (fixWrappers.hasMoreElements())
 				{
 					final FixWrapper fw = (FixWrapper) fixWrappers.nextElement();
-					
-					// now there's a chance that our fix has forgotten it's parent, particularly if it's the victim of a 
+
+					// now there's a chance that our fix has forgotten it's parent,
+					// particularly if it's the victim of a
 					// copy/paste operation. Tell it about it's children
 					fw.setTrackWrapper(this);
-					
+
 					// is this fix visible?
 					if (!fw.getVisible())
 					{
@@ -2851,7 +2857,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		if (point instanceof SensorWrapper)
 		{
 			_mySensors.remove(point);
-			
+
 			// tell the sensor wrapper to forget about us
 			TacticalDataWrapper sw = (TacticalDataWrapper) point;
 			sw.setHost(null);
@@ -2859,7 +2865,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else if (point instanceof TMAWrapper)
 		{
 			_mySolutions.remove(point);
-			
+
 			// tell the sensor wrapper to forget about us
 			TacticalDataWrapper sw = (TacticalDataWrapper) point;
 			sw.setHost(null);
@@ -2878,7 +2884,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 		else if (point instanceof TrackSegment)
 		{
 			_thePositions.removeElement(point);
-			
+
 			// and clear the parent item
 			TrackSegment ts = (TrackSegment) point;
 			ts.setWrapper(null);
@@ -3043,14 +3049,14 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 	public final void setResampleDataAt(final HiResDate theVal)
 	{
 		this._lastDataFrequency = theVal;
-		
+
 		// have a go at trimming the start time to a whole number of intervals
 		final long interval = theVal.getMicros();
 		final long currentStart = this.getStartDTG().getMicros();
 		long startTime = (currentStart / interval) * interval;
-		
+
 		// just check we're in the range
-		if(startTime < currentStart)
+		if (startTime < currentStart)
 			startTime += interval;
 
 		// just check it's not a barking frequency
@@ -3079,7 +3085,7 @@ public final class TrackWrapper extends MWC.GUI.PlainWrapper implements
 					thisS.decimate(theVal, startTime);
 				}
 			}
-			
+
 			// now the solutions
 			if (_mySolutions != null)
 			{
