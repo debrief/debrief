@@ -165,6 +165,7 @@
 			<xs:element name="RemoveDetectedObserver" type="RemoveDetectedObserverType" />
 			<xs:element name="DetectionObserver" type="DetectionObserverType" />
 			<xs:element name="PlotSensorObserver" type="PlotSensorObserverType" />
+			<xs:element name="PlotDetectionStatusObserver" type="PlotDetectionStatusObserverType" />
 			<xs:element name="StopOnDetectionObserver" type="StopOnDetectionObserverType" />
 			<xs:element name="StopOnProximityDetectionObserver" type="StopOnProximityDetectionObserverType" />
 			<xs:element name="ProportionDetectedObserver" type="ProportionDetectedObserverType" />
@@ -441,6 +442,11 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
+				<xs:attribute name="DetectionLevel"  type="DetectionLevelType" default="">
+					<xs:annotation>
+						<xs:documentation>The level of detection delivered by this sensor</xs:documentation>
+					</xs:annotation>
+				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
@@ -2432,20 +2438,12 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="DetectionLevel" use="required">
+				<xs:attribute name="DetectionLevel" type="DetectionLevelType" use="required">
 					<xs:annotation>
 						<xs:documentation>The level of classification to achieve for each
 							target
 							before moving onto the next</xs:documentation>
 					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:NMTOKEN">
-							<xs:enumeration value="Undetected" />
-							<xs:enumeration value="Detected" />
-							<xs:enumeration value="Classified" />
-							<xs:enumeration value="Identified" />
-						</xs:restriction>
-					</xs:simpleType>
 				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
@@ -3108,24 +3106,24 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="DetectionLevel" use="optional">
-					<xs:annotation>
-						<xs:documentation>The level of identification/classification
-							required to
-							count as detected</xs:documentation>
-					</xs:annotation>
-					<xs:simpleType>
-						<xs:restriction base="xs:NMTOKEN">
-							<xs:enumeration value="Undetected" />
-							<xs:enumeration value="Detected" />
-							<xs:enumeration value="Classified" />
-							<xs:enumeration value="Identified" />
-						</xs:restriction>
-					</xs:simpleType>
+				<xs:attribute name="DetectionLevel" type="DetectionLevelType">
 				</xs:attribute>
 			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
+	<xs:simpleType name="DetectionLevelType">
+		<xs:annotation>
+			<xs:documentation>The level of identification/classification
+				required to
+				count as detected</xs:documentation>
+		</xs:annotation>
+		<xs:restriction base="xs:NMTOKEN">
+			<xs:enumeration value="Undetected" />
+			<xs:enumeration value="Detected" />
+			<xs:enumeration value="Classified" />
+			<xs:enumeration value="Identified" />
+		</xs:restriction>
+	</xs:simpleType>
 	<xs:complexType name="CoreFileObserverType">
 		<xs:annotation>
 			<xs:documentation>Record information to file</xs:documentation>
@@ -3315,6 +3313,19 @@
 				</xs:attribute>
 			</xs:extension>
 
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="PlotDetectionStatusObserverType">
+		<xs:annotation>
+			<xs:documentation>Plot the changing detection state of a target. Red for undetected, for detected</xs:documentation>
+			<xs:documentation source="UI">Visible: inherited, target,
+				watch. Editable:
+				inherited.</xs:documentation>
+		</xs:annotation>
+		<xs:complexContent>
+			<xs:extension base="DetectionObserverType">
+				<xs:sequence />
+			</xs:extension>
 		</xs:complexContent>
 	</xs:complexType>
 	<xs:complexType name="ProximityObserverType">
