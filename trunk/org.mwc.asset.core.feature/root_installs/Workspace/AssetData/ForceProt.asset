@@ -56,16 +56,27 @@
   		<Category Type="FRIGATE" Force="BLUE"
   			Environment="SURFACE" ></Category>
   		<SensorFit>
-  			<TypedCookieSensor Name="SkimmerDetections">
+  			<TypedCookieSensor Name="SkimmerDetections" DetectionLevel="Detected">
   				<TypedRangeDoublet>
   					<Type Name="RED" />
-  					<DetectionRange Value="12" Units="nm" />
+  					<DetectionRange Value="15" Units="nm" />
   				</TypedRangeDoublet>
   				<TypedRangeDoublet>
   					<Type Name="BLUE" />
   					<DetectionRange Value="1000" Units="nm" />
   				</TypedRangeDoublet>
-  			</TypedCookieSensor></SensorFit>
+  			</TypedCookieSensor>
+  			<TypedCookieSensor Name="SkimmerDetections" DetectionLevel="Classified">
+  				<TypedRangeDoublet>
+  					<Type Name="RED" />
+  					<DetectionRange Value="10" Units="nm" />
+  				</TypedRangeDoublet>
+  				<TypedRangeDoublet>
+  					<Type Name="BLUE" />
+  					<DetectionRange Value="1000" Units="nm" />
+  				</TypedRangeDoublet>
+  			</TypedCookieSensor>
+  			</SensorFit>
   		<Status Course="0.0" Fuel="0.0">
   			<Location>
   				<shortLocation Lat="0" Long="0">
@@ -91,10 +102,10 @@
   	  	<Surface Name="T23_B">
   		<Category Type="FRIGATE" Force="BLUE"
   			Environment="SURFACE" />
-  		<SensorFit><TypedCookieSensor Name="SkimmerDetections">
+  		<SensorFit><TypedCookieSensor Name="SkimmerDetections" Working="true">
   				<TypedRangeDoublet>
   					<Type Name="RED" />
-  					<DetectionRange Value="12" Units="nm" />
+  					<DetectionRange Value="15" Units="nm" />
   				</TypedRangeDoublet>
   				<TypedRangeDoublet>
   					<Type Name="BLUE" />
@@ -123,14 +134,14 @@
   			<TurningCircle Value="800" Units="m" ></TurningCircle>
   		</SurfaceMovementCharacteristics>
   	</Surface>
-  	  	<SSK Name="SSK" ChargeRate="5" MonteCarloTarget="true">
+  	  	<SSK Name="SSK" ChargeRate="5">
   	  		<Category Type="SUBMARINE" Force="RED"
   	  			Environment="SUBSURFACE" ></Category>
   	  		<SensorFit>
-  	  			<TypedCookieSensor>
+  	  			<TypedCookieSensor Working="true" Name="Look out for Blue">
   	  				<TypedRangeDoublet>
   	  					<Type Name="BLUE" />
-  	  					<DetectionRange Value="15" Units="nm" />
+  	  					<DetectionRange Value="8" Units="nm" />
   	  				</TypedRangeDoublet>
   	  			</TypedCookieSensor></SensorFit>
   	  		<Status Course="0.0" Fuel="100">
