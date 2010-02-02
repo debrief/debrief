@@ -5,6 +5,7 @@ import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Vector;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
@@ -38,6 +39,7 @@ import ASSET.GUI.Workbench.Plotters.ScenarioLayer;
 import ASSET.Scenario.CoreScenario;
 import ASSET.Scenario.LiveScenario.ISimulation;
 import ASSET.Scenario.LiveScenario.ISimulationQue;
+import ASSET.Scenario.Observers.ScenarioObserver;
 import MWC.Algorithms.LiveData.DataDoublet;
 import MWC.Algorithms.LiveData.IAttribute;
 import MWC.Algorithms.LiveData.IAttribute.IndexedAttribute;
@@ -146,6 +148,10 @@ public class SimulationTable
 							sw.addThisLayer(theBackdrop);				
 						
 						_wrappedScenarios.put((ScenarioType) theSim, sw);
+						
+						// also tell it about any observers
+						sw.fireNewController();
+						
 					}
 
 					// ok, now wrap it as an editable

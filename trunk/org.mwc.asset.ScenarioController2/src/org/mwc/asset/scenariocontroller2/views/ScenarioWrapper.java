@@ -94,7 +94,7 @@ public class ScenarioWrapper extends Layers
 
 	public void fireNewController()
 	{
-		_theController.setScenario(_theCont.getObservers());
+		_theController.setObservers(_theCont.getObservers());
 		this.fireExtended();
 	}
 
@@ -118,7 +118,7 @@ public class ScenarioWrapper extends Layers
 			this.setName("Generator Pending");
 		}
 
-		public void setScenario(Vector<ScenarioObserver> observers)
+		public void setObservers(Vector<ScenarioObserver> observers)
 		{
 			// clear out
 			this.removeAllElements();
