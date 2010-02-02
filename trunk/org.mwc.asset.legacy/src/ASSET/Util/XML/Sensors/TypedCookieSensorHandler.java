@@ -12,6 +12,8 @@ package ASSET.Util.XML.Sensors;
 import java.util.Vector;
 
 import ASSET.Models.SensorType;
+import ASSET.Models.Detection.DetectionEvent;
+import ASSET.Models.Detection.DetectionEvent.DetectionStatePropertyEditor;
 import ASSET.Models.Sensor.Cookie.TypedCookieSensor;
 import ASSET.Models.Sensor.Cookie.TypedCookieSensor.TypedRangeDoublet;
 import ASSET.Util.XML.Decisions.Util.TargetTypeHandler;
@@ -23,6 +25,10 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 
   private final static String type = "TypedCookieSensor";
 	private Vector<TypedRangeDoublet> _rangeDoublets;
+	
+  String _detectionLevel;
+  protected final static String DETECTION_LEVEL = "detection_level";
+
 
 
   public TypedCookieSensorHandler()
@@ -40,13 +46,32 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 				_rangeDoublets.add(doublet);
 			}});
     
+    addAttributeHandler(new HandleAttribute(DETECTION_LEVEL)
+    {
+      public void setValue(String name, final String val)
+      {
+        _detectionLevel = val;
+      }
+    });
+    
   }
   protected SensorType getSensor(int myId, String myName)
   {
-    final ASSET.Models.Sensor.Cookie.TypedCookieSensor typedSensor = new TypedCookieSensor(myId, _rangeDoublets);
+    Integer thisDetLevel = DetectionEvent.DETECTED;
+
+    if (_detectionLevel != null)
+    {
+    	DetectionStatePropertyEditor detHandler = 
+    		new DetectionEvent.DetectionStatePropertyEditor();
+    	detHandler.setAsText(_detectionLevel);
+      thisDetLevel = ((Integer) detHandler.getValue());
+    }
+    
+    final ASSET.Models.Sensor.Cookie.TypedCookieSensor typedSensor = new TypedCookieSensor(myId, _rangeDoublets, thisDetLevel);
     typedSensor.setName(myName);
     
     _rangeDoublets = null;
+    _detectionLevel = null;
 
     return typedSensor;
   }

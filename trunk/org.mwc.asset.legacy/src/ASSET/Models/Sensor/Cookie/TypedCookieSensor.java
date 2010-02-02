@@ -39,17 +39,27 @@ public class TypedCookieSensor extends CoreSensor
 	
 	private HashMap<TypedRangeDoublet, DetectionList> _typedDetections;
 
+	private Integer _detectionState = DetectionEvent.DETECTED;
+
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	
 
-	public TypedCookieSensor(int id, Vector<TypedRangeDoublet> rangeDoublets)
+	public TypedCookieSensor(int id, Vector<TypedRangeDoublet> rangeDoublets, Integer detectionState)
 	{
 		super(id, 0, "Plain Cookie");
 
 		_rangeDoublets = rangeDoublets;
 		_typedDetections = new HashMap<TypedRangeDoublet, DetectionList>();
+		_detectionState  = detectionState;
+		
+	}
+
+	public TypedCookieSensor(int id, Vector<TypedRangeDoublet> rangeDoublets)
+	{
+		this(id, rangeDoublets, DetectionEvent.DETECTED);
 	}
 	
 	public Vector<TypedRangeDoublet> getRanges()
@@ -106,6 +116,8 @@ public class TypedCookieSensor extends CoreSensor
 						new Float(1), target.getCategory(), new Float(target.getStatus()
 								.getSpeed().getValueIn(WorldSpeed.Kts)), new Float(target
 								.getStatus().getCourse()), target);
+				
+				res.setDetectionState(_detectionState);
 				
 				// store this detection
 				storeThisDetection(doublet, res);
