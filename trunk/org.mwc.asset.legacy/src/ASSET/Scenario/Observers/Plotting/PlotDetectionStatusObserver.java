@@ -35,7 +35,7 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 	/***************************************************************
 	 * constructor
 	 ***************************************************************/
-	
+
 	/**
 	 * the list of targets - and their detection status
 	 * 
@@ -91,12 +91,20 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 				// have we already detected it?
 				int tgtId = de.getTarget();
 
-				// ditch any old state
-				_detectionStates.remove(tgtId);
-
-				// and store the new state
+				Integer oldVal = _detectionStates.get(tgtId);
 				int detectionState = de.getDetectionState();
+
+
+				if(oldVal != null)
+				{
+					// ditch any old state
+					_detectionStates.remove(tgtId);
+					
+					detectionState = Math.max(oldVal, detectionState);
+				}
+
 				_detectionStates.put(tgtId, detectionState);
+				
 			}
 
 		}
@@ -283,8 +291,7 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 			{
 				final PropertyDescriptor[] res =
 				{ prop("Name", "the name of this observer"),
-						prop("Active", "whether this listener is active")
-				};
+						prop("Active", "whether this listener is active") };
 				return res;
 			}
 			catch (IntrospectionException e)
@@ -294,7 +301,5 @@ public class PlotDetectionStatusObserver extends DetectionObserver
 			}
 		}
 	}
-
-
 
 }

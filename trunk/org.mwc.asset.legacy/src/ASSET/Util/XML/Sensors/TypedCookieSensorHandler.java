@@ -27,7 +27,7 @@ abstract public  class TypedCookieSensorHandler extends CoreSensorHandler
 	private Vector<TypedRangeDoublet> _rangeDoublets;
 	
   String _detectionLevel;
-  protected final static String DETECTION_LEVEL = "detection_level";
+  protected final static String DETECTION_LEVEL = "DetectionLevel";
 
 
 

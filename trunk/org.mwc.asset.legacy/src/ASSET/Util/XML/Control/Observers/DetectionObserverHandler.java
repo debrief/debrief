@@ -22,7 +22,7 @@ abstract public class DetectionObserverHandler extends MWC.Utilities.ReaderWrite
   private final static String type = "DetectionObserver";
 
   protected final static String ELAPSED = "elapsed_time";
-  protected final static String DETECTION_LEVEL = "detection_level";
+  protected final static String DETECTION_LEVEL = "DetectionLevel";
 
   final static String ACTIVE = "Active";
 
