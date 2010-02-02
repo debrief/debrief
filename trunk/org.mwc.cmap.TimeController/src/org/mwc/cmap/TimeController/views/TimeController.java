@@ -1,5 +1,8 @@
 package org.mwc.cmap.TimeController.views;
 
+import interfaces.TimeControllerOperation;
+import interfaces.TimeControllerOperation.TimeControllerOperationStore;
+
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -10,6 +13,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Vector;
@@ -21,6 +25,7 @@ import org.eclipse.core.resources.IResource;
 import org.eclipse.core.runtime.CoreException;
 import org.eclipse.core.runtime.Status;
 import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IContributionItem;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.IToolBarManager;
 import org.eclipse.jface.action.MenuManager;
@@ -106,6 +111,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 	private static final String PAUSE_TEXT = "Pause automatically moving forward";
 
 	private static final String PLAY_TEXT = "Start automatically moving forward";
+
+	private static final String TOOLBOX_PROPERTIES = "ToolboxProperties";
 
 	private PartMonitor _myPartMonitor;
 
@@ -513,7 +520,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					thisD = TimeControllerPlugin
 							.getImageDescriptor("icons/media_pause.png");
 					startPlaying();
-					_playButton.setToolTipText(PAUSE_TEXT); 
+					_playButton.setToolTipText(PAUSE_TEXT);
 				}
 				else
 				{
@@ -843,6 +850,10 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	protected PropertyChangeListener _myStoppedListener;
 
+	protected TimeControllerOperationStore _timeOperations;
+
+	private Vector<Action> _legacyTimeOperations;
+
 	void fireNewTime(HiResDate dtg)
 	{
 		if (!_firingNewTime)
@@ -1008,6 +1019,23 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					}
 				});
 
+		_myPartMonitor.addPartListener(TimeControllerOperationStore.class,
+				PartMonitor.ACTIVATED, new PartMonitor.ICallback()
+				{
+					public void eventTriggered(String type, Object part,
+							IWorkbenchPart parentPart)
+					{
+						if (part != _timeOperations)
+						{
+							_timeOperations = (TimeControllerOperationStore) part;
+
+							// and refresh the dropdown menu
+							refreshTimeOperations();
+						}
+					}
+
+				});
+
 		_myPartMonitor.addPartListener(SteppableTime.class, PartMonitor.ACTIVATED,
 				new PartMonitor.ICallback()
 				{
@@ -1148,12 +1176,12 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 					public void eventTriggered(String type, Object part,
 							IWorkbenchPart parentPart)
 					{
-						
-						// right, we're clearly not running a simulation here, clear the simulation object
-						//     that gets uses as a flag
+
+						// right, we're clearly not running a simulation here, clear the
+						// simulation object
+						// that gets uses as a flag
 						_steppableTime = null;
-						
-						
+
 						// implementation here.
 						ControllablePeriod ct = (ControllablePeriod) part;
 						_controllablePeriod = ct;
@@ -1341,6 +1369,59 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 						}
 					}
 				});
+	}
+
+	protected void refreshTimeOperations()
+	{
+		// ok, loop through them, deleting them
+		final IMenuManager menuManager = getViewSite().getActionBars()
+				.getMenuManager();
+
+		// do we have any legacy time operations
+		if (_legacyTimeOperations == null)
+		{
+			_legacyTimeOperations = new Vector<Action>();
+		}
+		else
+		{
+			// yup, we do have one - better ditch the old ones
+			Iterator<Action> iter = _legacyTimeOperations.iterator();
+			while (iter.hasNext())
+			{
+				Action action = iter.next();
+				menuManager.remove((IContributionItem) action);
+			}
+
+			// and clear the list
+			_legacyTimeOperations.removeAllElements();
+		}
+
+		// ok, now add the new ones
+		if (_timeOperations != null)
+		{
+			Iterator<TimeControllerOperation> newOps = _timeOperations.iterator();
+			while (newOps.hasNext())
+			{
+				final TimeControllerOperation newOp = (TimeControllerOperation) newOps
+						.next();
+				Action newAction = new Action(newOp.getName())
+				{
+
+					@Override
+					public void run()
+					{
+						newOp.run(_myTrackProvider.getPrimaryTrack(), _myTrackProvider
+								.getSecondaryTracks(), getPeriod());
+					}
+				};
+
+				ImageDescriptor id = newOp.getDescriptor();
+				if (id != null)
+					newAction.setImageDescriptor(id);
+
+				menuManager.insertBefore(TOOLBOX_PROPERTIES, newAction);
+			}
+		}
 	}
 
 	/**
@@ -2007,6 +2088,8 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		toolboxProperties.setToolTipText("Edit Time Controller properties");
 		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/properties.gif"));
+		toolboxProperties.setId(TOOLBOX_PROPERTIES); // give it an id, so we can
+																									// refer to this later on.
 
 		menuManager.add(toolboxProperties);
 		toolManager.add(toolboxProperties);

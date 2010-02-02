@@ -3,6 +3,9 @@
  */
 package org.mwc.debrief.core.editors;
 
+import interfaces.TimeControllerOperation;
+import interfaces.TimeControllerOperation.TimeControllerOperationStore;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
@@ -72,6 +75,7 @@ import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
+import org.mwc.debrief.core.operations.ExportToFlatFile;
 import org.mwc.debrief.core.operations.PlotOperations;
 import org.osgi.framework.Bundle;
 
@@ -154,6 +158,8 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	private TimeManager _timeManager;
 
+	private TimeControllerOperationStore _timeControllerOperations;
+
 	/**
 	 * constructor - quite simple really.
 	 */
@@ -175,6 +181,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 				fireDirty();
 			}
 		});
+		
+		// sort out the time controlleroperations
+		_timeControllerOperations = new TimeControllerOperationStore();
+		_timeControllerOperations.add(new ExportToFlatFile());
 
 		_layerPainterManager = new LayerPainterManager(_trackDataProvider);
 		_layerPainterManager.addPropertyChangeListener(new PropertyChangeListener()
@@ -633,6 +643,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			res = super.getChart().getCanvas().getProjection();
 		}
+		else if (adapter == TimeControllerOperation.TimeControllerOperationStore.class)
+		{
+			res = getTimeControllerOperations();
+		}
 		else if (adapter == LayerPainterManager.class)
 		{
 			res = _layerPainterManager;
@@ -741,6 +755,14 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 
 		// ok, done
 		return res;
+	}
+
+	
+	
+	
+	private TimeControllerOperationStore getTimeControllerOperations()
+	{
+		return _timeControllerOperations;
 	}
 
 	/**
