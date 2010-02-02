@@ -1,8 +1,5 @@
 package org.mwc.cmap.TimeController.views;
 
-import interfaces.TimeControllerOperation;
-import interfaces.TimeControllerOperation.TimeControllerOperationStore;
-
 import java.awt.event.ActionEvent;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -65,7 +62,6 @@ import org.eclipse.ui.PartInitException;
 import org.eclipse.ui.PlatformUI;
 import org.eclipse.ui.part.ViewPart;
 import org.mwc.cmap.TimeController.TimeControllerPlugin;
-import org.mwc.cmap.TimeController.Operations.ExportTimeDataToClipboard;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider;
 import org.mwc.cmap.TimeController.controls.DTGBiSlider.DoFineControl;
 import org.mwc.cmap.TimeController.properties.FineTuneStepperProps;
@@ -79,6 +75,8 @@ import org.mwc.cmap.core.DataTypes.Temporal.TimeManager;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeProvider;
 import org.mwc.cmap.core.DataTypes.Temporal.TimeManager.LiveScenario;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
+import org.mwc.cmap.core.interfaces.TimeControllerOperation;
+import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
 import org.mwc.cmap.core.property_support.EditableWrapper;
 import org.mwc.cmap.core.ui_support.PartMonitor;
 import org.mwc.cmap.plotViewer.editors.CorePlotEditor;
@@ -838,8 +836,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	Action _relPlotToggle;
 
-	private Action _exportDataToClipboard;
-
 	/**
 	 * keep track of what tracks are open - we may want to use them for our
 	 * exporting calc data to clipboard
@@ -850,7 +846,11 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 	protected PropertyChangeListener _myStoppedListener;
 
-	protected TimeControllerOperationStore _timeOperations;
+	/**
+	 * the list of operations that the current plot wants us to display
+	 * 
+	 */
+	protected TimeControllerOperation.TimeControllerOperationStore _timeOperations;
 
 	private Vector<Action> _legacyTimeOperations;
 
@@ -1402,8 +1402,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 			Iterator<TimeControllerOperation> newOps = _timeOperations.iterator();
 			while (newOps.hasNext())
 			{
-				final TimeControllerOperation newOp = (TimeControllerOperation) newOps
-						.next();
+				final TimeControllerOperation newOp = newOps.next();
 				Action newAction = new Action(newOp.getName())
 				{
 
@@ -1421,6 +1420,7 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 
 				menuManager.insertBefore(TOOLBOX_PROPERTIES, newAction);
 			}
+
 		}
 	}
 
@@ -2056,26 +2056,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 				.setToolTipText("Filter plot data to selected time period");
 		menuManager.add(_filterToSelectionAction);
 
-		// hmm, what about our export to clipboard action
-		if (_exportDataToClipboard == null)
-		{
-			_exportDataToClipboard = new Action()
-			{
-
-				public void run()
-				{
-					exportDataToClipboard();
-				}
-			};
-			_exportDataToClipboard.setText("Export calculated data to clipboard");
-			_exportDataToClipboard
-					.setToolTipText("For the indicated time period, export data calculated between current primary and secondary tracks to the clipboard");
-			_exportDataToClipboard.setImageDescriptor(CorePlugin
-					.getImageDescriptor("icons/Calculator.gif"));
-		}
-		// ok, stick it on the clipboard
-		menuManager.add(_exportDataToClipboard);
-
 		// now our own menu editor
 		Action toolboxProperties = new Action("Edit Time controller properties",
 				Action.AS_PUSH_BUTTON)
@@ -2089,10 +2069,13 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		toolboxProperties.setImageDescriptor(org.mwc.debrief.core.DebriefPlugin
 				.getImageDescriptor("icons/properties.gif"));
 		toolboxProperties.setId(TOOLBOX_PROPERTIES); // give it an id, so we can
-																									// refer to this later on.
+		// refer to this later on.
 
 		menuManager.add(toolboxProperties);
 		toolManager.add(toolboxProperties);
+
+		// and sort out our specific items
+		refreshTimeOperations();
 
 		// and the help link
 		menuManager.add(new Separator());
@@ -2579,38 +2562,6 @@ public class TimeController extends ViewPart implements ISelectionProvider,
 		if (_relativeProjector != null)
 			res = _relativeProjector.getLocation();
 		return res;
-	}
-
-	/**
-	 * ok - do the export to clipboard
-	 */
-	void exportDataToClipboard()
-	{
-		if (_myTrackProvider != null)
-		{
-			WatchableList thePrimary = _myTrackProvider.getPrimaryTrack();
-			WatchableList[] theSecList = _myTrackProvider.getSecondaryTracks();
-			if (thePrimary == null)
-			{
-				CorePlugin.showMessage("Export data",
-						"Please select a primary track for the current plot");
-			}
-			else if ((theSecList == null) || (theSecList.length == 0))
-			{
-				CorePlugin.showMessage("Export data",
-						"Please select one or more secondary tracks for the current plot");
-			}
-			else
-			{
-				Vector<WatchableList> theSecs = new Vector<WatchableList>(0, 1);
-				for (int i = 0; i < theSecList.length; i++)
-				{
-					WatchableList list = theSecList[i];
-					theSecs.add(list);
-				}
-				ExportTimeDataToClipboard.export(getPeriod(), thePrimary, theSecs);
-			}
-		}
 	}
 
 	@SuppressWarnings("unchecked")

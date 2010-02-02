@@ -3,9 +3,6 @@
  */
 package org.mwc.debrief.core.editors;
 
-import interfaces.TimeControllerOperation;
-import interfaces.TimeControllerOperation.TimeControllerOperationStore;
-
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.ByteArrayInputStream;
@@ -67,6 +64,7 @@ import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackManager;
 import org.mwc.cmap.core.DataTypes.TrackData.TrackDataProvider.TrackDataListener;
 import org.mwc.cmap.core.interfaces.INamedItem;
+import org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore;
 import org.mwc.cmap.core.property_support.RightClickSupport;
 import org.mwc.cmap.plotViewer.editors.chart.SWTCanvas;
 import org.mwc.cmap.plotViewer.editors.chart.SWTChart;
@@ -75,6 +73,7 @@ import org.mwc.debrief.core.editors.painters.LayerPainterManager;
 import org.mwc.debrief.core.interfaces.IPlotLoader;
 import org.mwc.debrief.core.loaders.LoaderManager;
 import org.mwc.debrief.core.loaders.xml_handlers.DebriefEclipseXMLReaderWriter;
+import org.mwc.debrief.core.operations.ExportTimeDataToClipboard;
 import org.mwc.debrief.core.operations.ExportToFlatFile;
 import org.mwc.debrief.core.operations.PlotOperations;
 import org.osgi.framework.Bundle;
@@ -158,7 +157,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	 */
 	private TimeManager _timeManager;
 
-	private TimeControllerOperationStore _timeControllerOperations;
+	private org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore _timeControllerOperations;
 
 	/**
 	 * constructor - quite simple really.
@@ -183,8 +182,10 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		});
 		
 		// sort out the time controlleroperations
-		_timeControllerOperations = new TimeControllerOperationStore();
+		_timeControllerOperations = new org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore();
+		_timeControllerOperations.add(new ExportTimeDataToClipboard());
 		_timeControllerOperations.add(new ExportToFlatFile());
+		
 
 		_layerPainterManager = new LayerPainterManager(_trackDataProvider);
 		_layerPainterManager.addPropertyChangeListener(new PropertyChangeListener()
@@ -643,7 +644,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 		{
 			res = super.getChart().getCanvas().getProjection();
 		}
-		else if (adapter == TimeControllerOperation.TimeControllerOperationStore.class)
+		else if (adapter == TimeControllerOperationStore.class)
 		{
 			res = getTimeControllerOperations();
 		}
@@ -760,7 +761,7 @@ public class PlotEditor extends org.mwc.cmap.plotViewer.editors.CorePlotEditor
 	
 	
 	
-	private TimeControllerOperationStore getTimeControllerOperations()
+	private org.mwc.cmap.core.interfaces.TimeControllerOperation.TimeControllerOperationStore getTimeControllerOperations()
 	{
 		return _timeControllerOperations;
 	}

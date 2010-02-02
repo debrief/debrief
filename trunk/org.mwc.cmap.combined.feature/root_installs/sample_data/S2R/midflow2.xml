@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<plot Created="Mon Jan 04 14:24:06 GMT 2010" Name="Debrief Plot">
-<details Text="Saved with Debrief version dated Mon Jan 04 11:52:50 GMT 2010"/>
+<plot Created="Tue Feb 02 21:27:51 GMT 2010" Name="Debrief Plot">
+<details Text="Saved with Debrief version dated Tue Feb 02 21:21:35 GMT 2010"/>
 <session>
 <layers>
 <track InterpolatePoints="false" LineThickness="2" Name="NONSUCH" NameAtStart="true" NameLocation="Right" NameVisible="true" PositionsVisible="true" Symbol="Unknown" Visible="true">
@@ -5115,6 +5115,7 @@
 <gui>
 <tote>
 <primary Name="NONSUCH"/>
+<secondary Name="TMA_271305.18"/>
 </tote>
 <component Type="Stepper">
 <property Name="VectorStretch" Value="1.000"/>
