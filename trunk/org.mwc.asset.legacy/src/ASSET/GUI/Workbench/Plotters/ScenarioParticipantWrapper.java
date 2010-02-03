@@ -222,7 +222,7 @@ public class ScenarioParticipantWrapper implements
 					{
 						// hey, plot it!
 						final WorldVector wv = new WorldVector(MWC.Algorithms.Conversions
-								.Degs2Rads(brg.floatValue()), rng.getValueIn(WorldDistance.YARDS), 0);
+								.Degs2Rads(brg.floatValue()), rng.getValueIn(WorldDistance.DEGS), 0);
 						final WorldLocation other_end = _curLocation.add(wv);
 						// take copy of original location, since we don't want to over-write
 						// it
@@ -352,7 +352,7 @@ public class ScenarioParticipantWrapper implements
 	 */
 	public void setShowContacts(boolean val)
 	{
-		_showDetections = true;
+  		_showDetections = val;
 	}
 
 	/**
