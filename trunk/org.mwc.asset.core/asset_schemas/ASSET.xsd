@@ -442,7 +442,7 @@
 						</xs:annotation>
 					</xs:element>
 				</xs:sequence>
-				<xs:attribute name="DetectionLevel"  type="DetectionLevelType" default="">
+				<xs:attribute name="DetectionLevel"  type="DetectionLevelType">
 					<xs:annotation>
 						<xs:documentation>The level of detection delivered by this sensor</xs:documentation>
 					</xs:annotation>
